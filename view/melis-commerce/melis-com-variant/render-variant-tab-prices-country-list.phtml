@@ -1,0 +1,16 @@
+<?php 
+    $id = 'id="';
+    if (!empty($this->variantId)){
+        $id .= $this->variantId.'_';
+    }
+    
+    $id .= $this->zoneconfig['conf']['id'].'"';
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<ul <?= $id. ' '. $data_melisKey?> class="nav-tabs product-text-tab country-price-tab">
+	<?php 
+	foreach ($this->countries as $country){
+	    echo $country;
+	}
+	?>
+</ul>

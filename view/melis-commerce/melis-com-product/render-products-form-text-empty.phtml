@@ -1,0 +1,23 @@
+<?php 
+$del = '<a data-text="'.$this->text.'"><i class="deleteTextInput fa fa-times"></i></a>&nbsp;';
+if($this->typeData) {
+    $form = $this->productTextForm;
+    $form->get('ptxt_type')->setAttribute('style','display:none')->setLabel('');
+    $form->get('ptxt_type')->setValue($this->typeData->ptt_id);
+    if((int) $this->typeData->ptt_field_type == 1){
+        //$a =  ($prodText->ptt_name == 'Title') ? $prodText->ptt_name : $del.$prodText->ptt_name;
+        $form->get('ptxt_field_short')->setAttribute('style', 'display:block')->setLabel($del.$this->typeData->ptt_name);
+        $form->get('ptxt_field_long')->setAttribute('style', 'display:none')->setLabel('');
+    }
+    if((int) $this->typeData->ptt_field_type == 2){
+        $form->get('ptxt_field_long')
+        ->setAttribute('class', 'product-text-mce')
+        ->setAttribute("data-display", "true")
+        ->setLabel($del.$this->typeData->ptt_name);
+        $form->get('ptxt_field_short')->setAttribute('style', 'display:none')->setAttribute("data-display", "false")->setLabel('');
+    }
+    echo $this->form()->openTag($form);
+    echo $this->melisFieldCollection($form);
+    echo $this->form()->closeTag();
+}
+?>

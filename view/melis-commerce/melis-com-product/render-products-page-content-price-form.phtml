@@ -1,0 +1,25 @@
+<br>
+<div class="tab-content product-prices-forms">
+    <?php 
+        $c = 0;
+        foreach($this->data as $country){
+            if($country == 'general'){$active='active';} else {$active='';}
+//             echo '<pre>'; print_r($this->priceForm->getElements()); echo '</pre>';die();
+    ?>
+    <div id="<?= $this->productId ?>_productprice-<?= str_replace(' ', '', $country['ctry_name'])?>" class="tab-pane ">
+        <?php   
+            $form = clone($this->priceForm);
+            
+            $form->setData((array)$country);
+            $form->get('price_country_id')->setValue($country['ctry_id']);
+            $form->get('price_currency')->setValue($country['ctry_currency_id']);
+            echo $this->form()->openTag($form);
+            echo $this->melisFieldCollection($form);
+            echo $this->form()->closeTag();
+            $c++;
+        ?>
+    </div>
+    <?php }?>
+</div>
+<div class="clearfix"></div>
+

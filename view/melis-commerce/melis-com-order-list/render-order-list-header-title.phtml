@@ -1,0 +1,12 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = $this->zoneconfig['conf']['id'];
+    }
+    $name = '';
+    if (!empty($this->zoneconfig['conf']['name'])){
+        $name = $this->zoneconfig['conf']['name'];
+    }
+    
+?>
+<h1 id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="content-heading"><?= $this->translate($name); ?></h1>

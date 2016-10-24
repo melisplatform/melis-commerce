@@ -1,0 +1,28 @@
+<?php 
+    $name = '';
+    if (!empty($this->zoneconfig['conf']['name'])){
+            $name = $this->zoneconfig['conf']['name'];
+        }
+    $icon = '';
+    if (!empty($this->zoneconfig['conf']['icon'])){
+        $icon = $this->zoneconfig['conf']['icon'];
+    }
+    
+    $id = 'id="';
+    if (!empty($this->variantId)){
+        $id .= $this->variantId.'_';
+    }
+    
+    $class = '';
+    if(!empty($this->zoneconfig['conf']['class'])){
+        $class = 'class="'.$this->zoneconfig['conf']['class'].'"';
+    }
+    
+    $id .= $this->zoneconfig['conf']['id'].'"';
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+
+?>
+<h4 <?php echo $id. ' '.$data_melisKey;?>>
+	<i class="<?= $icon;?>"></i>
+	<span <?= $class ?>><?= $name;?></span>
+</h4>

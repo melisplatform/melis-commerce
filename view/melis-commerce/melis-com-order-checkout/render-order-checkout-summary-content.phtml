@@ -1,0 +1,138 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = 'id="'.$this->zoneconfig['conf']['id'] .'"';
+    }
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<div <?php echo $id.' '.$data_melisKey; ?>>
+	<div class="row">
+        <div class="me-hl col-xs-12 col-md-4">
+            <div class="red-box-panel basket-panel">
+                <h3>Basket List</h3>
+                <div class="red-box-panel-list basket-panel-list">                                  
+                    <div class="order-basket-list">
+                        <div class="form-group">                                                
+                            <h4>Simple Long Sleeve</h4>
+                            <span>PRD-003</span>
+                        </div>
+                        <div class="form-group">
+                            <a href="#"><i class="fa fa-minus qty-minus"></i></a>
+                            <input type="text" class="form-control qty-val" style="width:40px" name="" id="" placeholder="" value="4">
+                            <a href="#"><i class="fa fa-plus qty-plus"></i></a>
+                            <strong class="order-price float-right">£ 88,00</strong>
+                        </div>
+                    </div>
+                    <div class="order-basket-list">
+                        <div class="form-group">                                                
+                            <h4>Simple Long Sleeve</h4>
+                            <span>PRD-001</span>
+                        </div>
+                        <div class="form-group">
+                            <a href="#"><i class="fa fa-minus qty-minus"></i></a>
+                            <input type="text" class="form-control qty-val" style="width:40px" name="" id="" placeholder="" value="1">
+                            <a href="#"><i class="fa fa-plus qty-plus"></i></a>
+                            <strong class="order-price float-right">£ 120,00</strong>
+                        </div>
+                    </div>
+                    <div class="order-basket-list">
+                        <div class="form-group">                                                
+                            <h4>Simple Long Sleeve</h4>
+                            <span>PRD-004</span>
+                        </div>
+                        <div class="form-group">
+                            <a href="#"><i class="fa fa-minus qty-minus"></i></a>
+                            <input type="text" class="form-control qty-val" style="width:40px" name="" id="" placeholder="" value="1">
+                            <a href="#"><i class="fa fa-plus qty-plus"></i></a>
+                            <strong class="order-price float-right">£ 50,00</strong>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <br><h4 class="float-right" style="margin: 0 10px 0 0;"><strong>Sub Total: £ 522,00</strong></h4><br>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="me-hl col-xs-12 col-md-4">
+            <div class="red-box-panel billing-address-panel">
+                <h3>Billing Address</h3>
+                <div class="red-box-panel-list">
+                    <table class="info-table">
+                        <tr>
+                            <td><label>Stair</label></td>
+                            <td>17th Fl.</td>
+                        </tr>
+                        <tr>
+                            <td><label>Building</label></td>
+                            <td>Konami Bldg.</td>
+                        </tr>
+                        <tr>
+                            <td><label>Company</label></td>
+                            <td>Konami Inc.</td>
+                        </tr>
+                        <tr>
+                            <td><label>Street</label></td>
+                            <td>Somewhere Street</td>
+                        </tr>
+                        <tr>
+                            <td><label>Zip Code</label></td>
+                            <td>70001</td>
+                        </tr>
+                        <tr>
+                            <td><label>City</label></td>
+                            <td>Maimi</td>
+                        </tr>
+                        <tr class="last-tr">
+                            <td><label>Country</label></td>
+                            <td>USA</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="me-hl col-xs-12 col-md-4">
+            <div class="red-box-panel delivery-address-panel">
+                <h3>Delivery Address</h3>
+                <div class="red-box-panel-list">
+                    <table class="info-table">
+                        <tr>
+                            <td><label>Stair</label></td>
+                            <td>17th Fl.</td>
+                        </tr>
+                        <tr>
+                            <td><label>Building</label></td>
+                            <td>Konami Bldg.</td>
+                        </tr>
+                        <tr>
+                            <td><label>Company</label></td>
+                            <td>Konami Inc.</td>
+                        </tr>
+                        <tr>
+                            <td><label>Street</label></td>
+                            <td>Somewhere Street</td>
+                        </tr>
+                        <tr>
+                            <td><label>Zip Code</label></td>
+                            <td>70001</td>
+                        </tr>
+                        <tr>
+                            <td><label>City</label></td>
+                            <td>Maimi</td>
+                        </tr>
+                        <tr class="last-tr">
+                            <td><label>Country</label></td>
+                            <td>USA</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+	<br>
+    <div class="row bottom-bottons">
+        <div class="me-hl col-xs-12 col-md-12">
+            <a href="#id_meliscommerce_order_checkout_select_addresses_step" data-toggle="tab" class="btn btn-success prev-step"><i class="fa fa-arrow-left"></i> Back to Address </a>
+            <a href="#id_meliscommerce_order_checkout_payment_step" data-toggle="tab" class="float-right btn btn-success next-step float-right"> Proceed to Payment <i class="fa fa-arrow-right"></i></a>
+        </div>
+    </div>
+</div>

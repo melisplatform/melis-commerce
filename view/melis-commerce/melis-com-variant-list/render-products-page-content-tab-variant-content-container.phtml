@@ -1,0 +1,48 @@
+<?php 
+	$id = '';
+	if (!empty($this->zoneconfig['conf']['id']))
+		$id = ' id="'.$this->productId.'_'.$this->zoneconfig['conf']['id'] . '"';
+	
+	$data_melisKey = $this->melisKey;
+?>
+
+<div <?= $id?> data-meliskey="<?= $data_melisKey; ?>">
+<br>
+<?php 
+//     if(!empty($this->zoneconfig['interface'])) {
+//         foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+//             echo $this->$keyConfig;
+//         }
+//     }
+
+    $this->melisGenericTable()->setTable(array(
+        'id' => $this->productId.'_tableProductVariantList',
+        'class' => 'table table-striped table-primary dt-responsive nowrap',
+        'cellspacing' => '0',
+        'width' => '100%'
+    ));
+   
+    $columns = array();
+    $columnStyle = array();
+    foreach($this->tableColumns as $columnText)
+    {
+        $columns[] = $columnText['text'];
+    
+    }
+    $this->melisGenericTable()->setColumns($columns);
+    echo $this->melisGenericTable()->renderTable();
+    
+?>
+	<script type="text/javascript">
+	// this script cannot be separated to this file since all table configuration and initialization are done here
+	// render table to DataTable plugin
+	$(document).ready(function() {
+		<?php echo $this->getToolDataTableConfig; ?>
+		$(document).on('a[data-toggle="tab"]','shown.bs.tab', function (e) {
+			$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
+		});
+        // add event for the product title
+	});
+	</script>
+
+</div>

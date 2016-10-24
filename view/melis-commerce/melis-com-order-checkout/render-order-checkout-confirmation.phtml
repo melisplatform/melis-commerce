@@ -1,0 +1,32 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = 'id="'.$this->zoneconfig['conf']['id'].'"';
+    }
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<div class="tab-pane" <?php echo $id. ' '.$data_melisKey?>>				
+	<div class="row">
+        <div class="me-hl col-xs-12 col-md-9">
+            <h1 class="content-heading">Confirmation</h1>
+        </div>
+        <div class="me-hl col-xs-12 col-md-3">
+        </div>
+    </div>
+    <div class="row">
+        <div class="me-hl col-xs-12 col-md-12">
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ultrices libero vel massa
+            egestas facilisis. Mauris convallis augue nec dolor dignissim vestibulum. Praesent imperdiet
+            elit posuere arcu posuere consectetur. Morbi dignissim eleifend nibh, eget tincidunt nibh
+            dignissim hendrerit. Cras iaculis congue lorem, eget gravida augue vehicula sed. Nam lorem
+            sem, consectetur ac tempus quis, consectetur ut lectus. In bibendum luctus pharetra. Morbi
+            lacinia sem sem. Phasellus quis tellus magna.</p>
+        </div>
+    </div>
+    <br>
+    <div class="row bottom-bottons">
+        <div class="me-hl col-xs-12 col-md-12">
+            <a href="#id_meliscommerce_order_checkout_payment_step" data-toggle="tab" class="btn btn-success prev-step"><i class="fa fa-arrow-left"></i> Back to Payment </a>
+        </div>
+    </div>
+</div>

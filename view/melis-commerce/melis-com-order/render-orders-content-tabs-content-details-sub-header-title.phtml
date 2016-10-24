@@ -1,0 +1,20 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id .= $this->orderId.'_'.$this->zoneconfig['conf']['id'];
+    }
+    $icon = '';
+    if (!empty($this->zoneconfig['conf']['icon'])){
+        $icon = $this->zoneconfig['conf']['icon'];
+    }
+    $name = '';
+    if (!empty($this->zoneconfig['conf']['name'])){
+        $name = $this->zoneconfig['conf']['name'];
+    }
+    $order = empty($this->layout()->order->ord_id)? 0 : $this->layout()->order->ord_id;
+    $order = empty(!$this->layout()->order->ord_reference)? $this->layout()->order->ord_reference : $order;
+?>
+<h4 id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>">
+	<i class="<?= $icon; ?>"></i>
+	<?= $name. ' ' .$order ?>
+</h4>

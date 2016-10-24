@@ -1,0 +1,53 @@
+<?php 
+    $id = 'id="';
+    if (!empty($this->variantId)){
+        $id .= $this->variantId;
+    }
+    
+    $id .= '_'.$this->zoneconfig['conf']['id'].'"';
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+    $c = 0;
+?>
+<div <?= $id. ' '. $data_melisKey?> class="me-action-button-cont attribute-area">
+	
+    	<table>
+    		<?php foreach($this->attr as $attr){?>			
+    			<tr>
+        			<td>
+        				<label><?= $attr->getAttribute()->attr_trans[0]->atrans_name?>:&nbsp;</label>
+        			</td>
+        			<td>
+        				<form name ="attrVal">        				
+        				<div class="form-group">
+        					<select class="form-control" name="vatv_attribute_value_id">
+        						<option value ="0" >
+        							<?= $this->translate('tr_meliscommerce_variant_main_information_attribute_select');?>
+        						</option>
+        						<?php 
+        						  foreach($attr->getAttributeValues() as $attrVal){
+        						      $selected = ''; 
+        						      foreach($this->varAttrVals as $varAttrVal){
+        						          if($attrVal->atval_id == $varAttrVal->atval_trans[0]->av_attribute_value_id){
+        						              $selected = 'selected';        						            
+        						          }
+        						      }
+        						?>        						
+        						<option value ="<?= $attrVal->atval_id?>" <?= $selected ?> >
+        							<?php 
+        							 $col = 'avt_v_'.$attrVal->atype_column_value;
+        							 echo $attrVal->atval_trans[0]->$col;
+        							?>
+        						</option>
+        						<?php }?>
+        					</select>        					
+        				</div>
+        				</form>
+        			</td>
+        		</tr>
+    		<?php
+    		    
+                $c++;
+            }?>
+    	</table>
+	
+</div>

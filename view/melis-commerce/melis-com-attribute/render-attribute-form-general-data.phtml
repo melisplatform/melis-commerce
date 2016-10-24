@@ -1,0 +1,32 @@
+<?php 
+
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id .= $this->attributeId.'_'.$this->zoneconfig['conf']['id'];
+    }       
+ 
+?>
+<?php 
+    $form = $this->attributeForm;
+    echo $this->form()->openTag($form);
+    echo $this->melisFieldCollection($form);
+    echo $this->form()->closeTag();
+?>
+<div class="form-group">
+	<label class="label-block" for="" style="padding-top: 5px;"><?= $this->translate('tr_meliscommerce_attribute_page_tabs_visible')?></label>
+	<div id="<?= $id ?>_visible" data-melisKey="<?= $this->melisKey; ?>" class="make-switch main_variant_switch" data-on-label="<?php echo $this->translate('tr_meliscommerce_attribute_page_tabs_yes')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_attribute_page_tabs_no')?>" data-text-label="<i class='fa fa-arrows-h'>">
+        <input type="checkbox" name="attr_visible" id="coup_type"  <?= $this->visible ?>>
+    </div>
+    <script type="text/javascript">
+    	$("#<?= $id ?>_visible").bootstrapSwitch();
+    </script>	
+</div>
+<div class="form-group">
+	<label class="label-block" for="" style="padding-top: 5px;"><?= $this->translate('tr_meliscommerce_attribute_page_tabs_searchable')?></label>
+	<div id="<?= $id ?>_searchable" data-melisKey="<?= $this->melisKey; ?>" class="make-switch main_variant_switch" data-on-label="<?php echo $this->translate('tr_meliscommerce_attribute_page_tabs_yes')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_attribute_page_tabs_no')?>" data-text-label="<i class='fa fa-arrows-h'>">
+        <input type="checkbox" name="attr_searchable" id="coup_type"  <?= $this->searchable ?>>
+    </div>
+    <script type="text/javascript">
+    	$("#<?= $id ?>_searchable").bootstrapSwitch();
+    </script>	
+</div>

@@ -1,0 +1,122 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = 'id="'.$this->clientId.'_'.$this->zoneconfig['conf']['id'] .'"';
+    }
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+
+<div <?php echo $id.' '.$data_melisKey; ?>>
+	<div class="row">
+		<div class="col-xs-12 col-md-3">
+    		<div class="product-text-tab-container">
+            	<ul class="nav-tabs product-text-tab" id="<?php echo $this->clientId.'_client_contact_tab_nav' ?>">
+            		<?php foreach ($this->clientPerson As $val):?>
+            			<?php 
+            			    $tabId = md5($val->cper_id);
+            			?>
+                		<li class="">
+                			<a class="clearfix" data-toggle="tab" id="<?php echo 'nav_'.$tabId ?>" href="#<?php echo $tabId ?>" aria-expanded="false">
+                				<span>
+                					<?php if ($val->cper_status):?>
+                						<label class="fa fa-circle text-success"></label>
+                					<?php else:?>
+                						<label class="fa fa-circle text-danger"></label>
+                					<?php endif;?>
+                					<?php if ($val->cper_is_main_person):?>
+            							<label class="fa fa-star text-success"></label>
+            						<?php endif;?>
+                					<?php echo $val->cper_firstname.' '.$val->cper_name?> 
+            					</span> 
+                			</a>
+                		</li>
+            		<?php endforeach;?>
+            	</ul>
+            </div>
+		</div>
+		<div class="col-xs-12 col-md-9">
+			<div class="tab-content client-contact-tab-content" id="<?php echo $this->clientId.'_client_contact_tab_content' ?>">
+				<?php foreach ($this->clientPerson As $val):?>
+					<?php $tabId = md5($val->cper_id); ?>
+					<div id="<?php echo $tabId ?>" class="tab-pane product-text-tab-content" style="border: 1px solid #eee; padding: 15px; margin-bottom: 20px">
+						<div class="me-heading bg-white border-bottom" style="margin-bottom: 15px">
+                			<h3 class=""><i class="fa fa-user" aria-hidden="true"></i> <?php echo $this->translate('tr_meliscommerce_client_Contact_main_datas') ?></h3>
+                		</div>
+                		<div class="form-group me-action-button-cont">
+                			<label for="cper_is_main_person" style="display: block"><?php echo $this->translate('tr_meliscommerce_client_Main_contact')?></label>
+                            <div class="make-switch clientMainContact <?php echo $this->clientId.'-client-contact-main-switch'?>" data-clientid="<?php echo $this->clientId ?>" data-tabid="<?php echo $tabId ?>" data-label-icon="fa fa-arrows-h" data-on-label="<?php echo $this->translate('tr_meliscommerce_clients_common_label_yes')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_clients_common_label_no')?>">
+                                <input type="checkbox" name="cper_is_main_person" <?php echo ($val->cper_is_main_person) ? 'checked' : ''?>>
+                            </div>
+                    		<?php 
+                        		$form = $this->meliscommerce_clients_contact_form;
+                        		$form->bind($val);
+                        		$form->setAttribute('id', $tabId.'_contact_form');
+                        		$form->setAttribute('data-tabid', $tabId);
+                        		$form->get('cper_password')->setValue('');
+                        		$form->get('cper_password')->setAttribute('placeholder', $this->translate('tr_meliscommerce_client_Contact_password_placeholder'));
+                        		$form->get('cper_confirm_password')->setAttribute('placeholder', $this->translate('tr_meliscommerce_client_Contact_password_placeholder'));
+                        		$form->prepare();
+                        		echo $this->form()->openTag($form);
+                        		echo $this->melisFieldCollection($form);
+                        		echo $this->form()->closeTag();
+                    		?>
+                    	</div>
+                    	<br>
+                    	<div class="me-heading bg-white border-bottom" style="margin-bottom: 15px">
+                    		<div class="row">
+                    			<div class="col-xs-12 col-md-6">
+                    				<h3 class=""><i class="fa fa-map-marker"></i>  <?php echo $this->translate('tr_meliscommerce_client_Contact_addresses')?></h3>
+                    			</div>
+                    			<div class="col-xs-12 col-md-6" align="right">
+                    				<button class="btn btn-success addNewContactAddress" data-loading-text="<?php echo $this->translate('tr_meliscommerce_clients_common_label_loading') ?>" data-clientid="<?php echo $this->clientId ?>" data-tabid="<?php echo $tabId ?>"><i class="fa fa-plus"></i> <?php echo $this->translate('tr_meliscommerce_clients_add_contact_address')?></button>
+                    			</div>
+                    		</div>
+                		</div>
+                    	<div class="panel-group accordion client-contact-address" id="<?php echo  $tabId.'_contact_address' ?>">
+                    		<?php foreach ($val->addresses As $pVal):?>
+                        		<?php $contactAddressId = md5($pVal->cadd_id)?>
+                            	<div class="panel panel-default" id="<?php echo $contactAddressId.'_contact_address_content'?>">
+                            		<div class="panel-heading">
+                        				<div class="row">
+                        					<div class="col-xs-11">
+                        						<h4 class="panel-title">
+                                    				<a class="accordion-toggle collapsed" id="<?php echo 'nav_'.$contactAddressId ?>" data-toggle="collapse" data-parent="#<?php echo  $tabId.'_address' ?>" href="#<?php echo $contactAddressId.'_address_acordion' ?>">
+                                    					<?php echo $pVal->cadd_address_name ?>
+                                    					
+                                					</a>
+                            					</h4>
+                        					</div>
+                        					<div class="col-xs-1">
+                        						<i class="fa fa-times pull-right fa-lg deleteClientCotactAddress" data-tabid="<?php echo $tabId?>" data-addressid="<?php echo $pVal->cadd_id ?>" data-addressaccordionid="<?php echo $contactAddressId ?>" data-isnewadded="0" style="margin-top: 5px; cursor: pointer"></i>
+                        					</div>
+                        				</div>
+                            	    </div>
+                            	    <div id="<?php echo $contactAddressId.'_address_acordion' ?>" class="panel-collapse collapse">
+                            	      	<div class="panel-body">
+                            	      		<div class="innerAll spacing-x2">
+                            	        		<?php 
+                                	        		$addForm = $this->meliscommerce_clients_addresses_form;
+                                	        		$addForm->setAttribute('id', $contactAddressId.'_contact_address_form');
+                                	        		$addForm->setAttribute('data-contactaddressid', $contactAddressId);
+                                	        		$addForm->setAttribute('class', 'clientContactAddressForm');
+                                	        		$addForm->prepare();
+                                	        		$addForm->bind($pVal);
+                                	        		echo $this->form()->openTag($addForm);
+                                	        		echo $this->melisFieldCollection($addForm);
+                                	        		echo $this->form()->closeTag();
+                            	        		?>
+                            	      		</div>
+                            	      	</div>
+                            	    </div>
+                              	</div>
+                          	<?php endforeach;?>
+                        </div>
+                	</div>
+            	<?php endforeach;?>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	$('.<?php echo $this->clientId.'-client-contact-main-switch'?>').bootstrapSwitch();
+</script>

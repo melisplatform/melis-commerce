@@ -1,0 +1,46 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = 'id="'.$this->zoneconfig['conf']['id'] .'"';
+    }
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<div <?php echo $id.' '.$data_melisKey; ?> style="position:relative;" class="<?php echo $this->hide ?>">	
+	<div class="panel-group" id="accordion">
+		<div class="panel panel-default" >
+    		<?php 
+            	if(!empty($this->zoneconfig['interface'])) {
+            	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+            	        echo $this->$keyConfig.' ';
+            	    }
+            	}
+            ?>
+        </div>
+    </div>
+</div>
+<script>
+$(document).ready(function(){
+	$(document).on('column-sizing.dt','#categoryProductListTbl', function(e, settings) {
+		if( melisCore.screenSize >= 768){
+			$("#categoryProductListTbl thead tr").find("th:nth-child(1)").attr("style", "").css({"width" : "1px"});
+			$("#categoryProductListTbl thead tr").find("th:nth-child(7)").attr("style", "").css({"width" : "1px"});
+			$("#categoryProductListTbl thead tr").find("th:nth-child(2)").attr("style", "").css({"width" : "1px"});
+			$("#categoryProductListTbl thead tr").find("th:nth-child(4)").attr("style", "").css({"width" : "1px"});
+			$("#categoryProductListTbl thead tr").find("th:nth-child(6)").attr("style", "").css({"width" : "1px"});
+		} else {
+			$("#categoryProductListTbl thead tr").find("th:nth-child(1)").css({"width" : "1px"});
+			$("#categoryProductListTbl thead tr").find("th:nth-child(7)").css({"width" : "1px"});
+			$("#categoryProductListTbl thead tr").find("th:nth-child(2)").css({"width" : "1px"});
+			$("#categoryProductListTbl thead tr").find("th:nth-child(4)").css({"width" : "1px"});
+			$("#categoryProductListTbl thead tr").find("th:nth-child(6)").css({"width" : "1px"});
+		}
+	});
+	$(document).on('a[data-toggle="tab"]','shown.bs.tab', function (e) {
+		$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
+	});					
+	$(document).on("draw.dt", function(e, settings) {
+		$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
+	});
+	$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
+});
+</script>

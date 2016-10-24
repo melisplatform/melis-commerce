@@ -1,0 +1,23 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id .= $this->orderId.'_'.$this->zoneconfig['conf']['id'];
+    }
+?>
+<ul id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="nav-tabs product-text-tab">
+	<?php 
+	$c = 0 ;
+	foreach($this->addressTypes as $type):
+	if($c<1){$active='active';}else{$active='';}
+	$name = $this->orderId .'_'. $type->catypt_name;
+	?>
+	<li class="<?= $active?>">
+		<a class="clearfix" data-toggle="tab" href="#<?= $name?>" aria-expanded="true">
+			<i class=""></i>
+			<span><?= $type->catypt_name ?></span>
+		</a>
+	</li>
+	<?php 
+	$c++;
+	endforeach;?>
+</ul>

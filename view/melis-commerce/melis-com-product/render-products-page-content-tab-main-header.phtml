@@ -1,0 +1,12 @@
+<?php 
+$id = '';
+if (!empty($this->zoneconfig['conf']['id']))
+    $id = ' id="'.$this->productId.'_'.$this->zoneconfig['conf']['id'] . '"';
+$data_melisKey = ' data-meliskey="'. $this->melisKey. '"';
+$name = '';
+    if (!empty($this->zoneconfig['conf']['name'])){
+        $name = $this->zoneconfig['conf']['name'];
+    }
+?>
+
+	<h3 <?php echo $id . ' '.$data_melisKey;?>><?php echo $name;?></h3>

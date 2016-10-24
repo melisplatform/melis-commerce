@@ -1,0 +1,23 @@
+<div class="widget widget-tabs widget-tabs-double-2 widget-tabs-responsive" style="margin-bottom:0">
+	<div class="widget-head nav">
+		<ul class="tabs-label nav-tabs">
+			<?php 
+    			if(empty($this->noAccess))
+    			{
+    			    if(!empty($this->zoneconfig['interface'])) {
+    			        foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+    			            echo $this->$keyConfig;
+    			        }
+    			    }
+    			}
+    	        else 
+    	        {
+    	            echo '<h4>'.$this->noAccess.'</h4>';
+    	        }
+            
+    		?>		
+		</ul>
+	</div>
+</div>
+				
+				

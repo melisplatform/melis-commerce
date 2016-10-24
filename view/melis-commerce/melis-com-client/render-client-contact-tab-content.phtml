@@ -1,0 +1,37 @@
+<div id="<?php echo $this->tabId ?>" class="<?php echo $this->tabId.'_client_contact' ?> tab-pane product-text-tab-content" style="border: 1px solid #eee; padding: 15px; margin-bottom: 20px">
+	<div class="me-heading bg-white border-bottom" style="margin-bottom: 15px">
+		<h3 class=""><i class="fa fa-user" aria-hidden="true"></i> <?php echo $this->translate('tr_meliscommerce_client_Contact_main_datas') ?></h3>
+	</div>
+	<div class="form-group me-action-button-cont">
+		<label for="cper_is_main_person" style="display: block"><?php echo $this->translate('tr_meliscommerce_client_Main_contact')?></label>
+        <div class="make-switch clientMainContact <?php echo $this->tabId.'-client-contact-main-switch'?>" data-clientid="<?php echo $this->clientId ?>" data-tabid="<?php echo $this->tabId ?>" data-label-icon="fa fa-arrows-h" data-on-label="<?php echo $this->translate('tr_meliscommerce_clients_common_label_yes')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_clients_common_label_no')?>">
+            <input type="checkbox" name="cper_is_main_person">
+        </div>
+		<?php 
+    		$form = $this->meliscommerce_clients_contact_form;
+    		$form->setAttribute('id', $this->tabId.'_contact_form');
+    		$form->setAttribute('data-tabid', $this->tabId);
+    		$form->prepare();
+    		echo $this->form()->openTag($form);
+    		echo $this->melisFieldCollection($form);
+    		echo $this->form()->closeTag();
+		?>
+	</div>
+	<br>
+	<div class="me-heading bg-white border-bottom" style="margin-bottom: 15px">
+		<div class="row">
+			<div class="col-xs-12 col-md-6">
+				<h3 class=""><i class="fa fa-map-marker"></i>  <?php echo $this->translate('tr_meliscommerce_client_Contact_addresses')?></h3>
+			</div>
+			<div class="col-xs-12 col-md-6" align="right">
+				<button class="btn btn-success addNewContactAddress" data-clientid="<?php echo $this->clientId ?>" data-tabid="<?php echo $this->tabId ?>"><i class="fa fa-plus"></i> <?php echo $this->translate('tr_meliscommerce_clients_add_contact_address')?></button>
+			</div>
+		</div>
+	</div>
+	<div class="panel-group accordion client-contact-address" id="<?php echo  $this->tabId.'_contact_address' ?>">
+		
+    </div>
+</div>
+<script>
+	$('.<?php echo $this->tabId.'-client-contact-main-switch'?>').bootstrapSwitch();
+</script>

@@ -1,0 +1,11 @@
+<?php 
+$name = '';
+    if (!empty($this->zoneconfig['conf']['name'])){
+        $name = $this->zoneconfig['conf']['name'];
+    }
+?>
+
+<a data-toggle="modal" data-target="#addTextModal" class="btn btn-success add-product" title="Create New Field Type">
+	<i class="fa fa-file-text-o" style="padding-right:10px;"></i>
+	<?php echo $name;?>
+</a>

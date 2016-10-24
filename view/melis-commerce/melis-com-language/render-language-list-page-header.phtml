@@ -1,0 +1,17 @@
+<div class="me-heading bg-white border-bottom">      		
+	<div class="row">
+		<div class="me-hl col-xs-12 col-md-9">
+			<h1 class="content-heading"><?= $this->title; ?></h1>
+		</div>
+		<div class="me-hl col-xs-12 col-md-3">
+		<?php 
+    	    if(!empty($this->zoneconfig['interface'])) {
+    	        foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+    	            echo $this->$keyConfig;
+    	        }
+    	    }
+    	?>
+  		</div>
+	</div>  
+ 		
+</div>

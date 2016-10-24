@@ -1,0 +1,9 @@
+<div class="tab-content product-text-forms">
+	<?php 
+    	if(!empty($this->zoneconfig['interface'])) {
+    	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+    	        echo $this->$keyConfig.' ';
+    	    }
+    	}
+    ?>
+</div>

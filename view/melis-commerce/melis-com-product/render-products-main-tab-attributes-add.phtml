@@ -1,0 +1,21 @@
+<?php 
+$id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = ' id="'.$this->productId.'_'.$this->zoneconfig['conf']['id'] . '"';
+    }
+
+$icon = '';
+    if (!empty($this->zoneconfig['conf']['icon'])){
+        $icon = $this->zoneconfig['conf']['icon'];
+    }
+$name = '';
+    if (!empty($this->zoneconfig['conf']['name'])){
+        $name = $this->zoneconfig['conf']['name'];
+    }
+?>
+<div class="ui-widget" <?= $id; ?> data-melisKey="<?= $this->melisKey; ?>">
+	
+	<div class="form-group attr-input-dropdown">
+		<input type="text" style="width: 180px;" placeholder="<?= $this->translate('tr_meliscommerce_products_main_tab_attributes_content_label');?>" class="form-control awesomplete dropdown-input<?= $this->productId; ?>" name="prodAttrib" id="<?= $this->productId; ?>_prodAttribInput"/><button class="btn dropdown-btn" id="attrButton<?= $this->productId; ?>"type="button"><i class="caret"></i></button>&nbsp;
+	</div><br/>
+</div>	

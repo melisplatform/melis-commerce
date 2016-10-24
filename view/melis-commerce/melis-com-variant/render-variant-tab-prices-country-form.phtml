@@ -1,0 +1,30 @@
+<?php 
+    $id = 'id="';
+    if (!empty($this->variantId)){
+        $id .= $this->variantId.'_';
+    }
+    
+    $id .= $this->zoneconfig['conf']['id'].'"';
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<div <?= $id. ' '. $data_melisKey?> class="tab-content variant-prices-forms">
+	<?php
+	$c = 0;
+	foreach($this->data as $country){
+		if($country == 'general'){$active='active';} else {$active='';}
+         
+		?>			
+	<div id="<?= $this->variantId ?>_price-<?= str_replace(' ', '', $country['name'])?>" class="tab-pane <?=$active?>">
+		<?php
+        	$form = clone($this->meliscommerce_variants_prices_form);
+        	$form->setAttribute('id',$this->variantId.'_meliscommerce_variants_prices_form_'.$country['name']);
+        	$form->setData($country);
+  
+        	echo $this->form()->openTag($form); 
+        	echo $this->melisFieldCollection($form);
+        	echo $this->form()->closeTag(); 
+        $c++;	
+        ?>		
+	</div>
+	<?php } ?>
+</div> 

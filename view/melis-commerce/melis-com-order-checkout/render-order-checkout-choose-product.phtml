@@ -1,0 +1,16 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = 'id="'.$this->zoneconfig['conf']['id'].'"';
+    }
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<div class="tab-pane active" <?php echo $id. ' '.$data_melisKey?>>				
+	<?php 
+    	if(!empty($this->zoneconfig['interface'])) {
+    	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+    	        echo $this->$keyConfig;
+    	    }
+    	}
+    ?>
+</div>

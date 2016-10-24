@@ -1,0 +1,20 @@
+<div class="me-action-button-cont" id="<?= $this->productId?>_product_category_area">
+<?php 
+if($this->layout()->prodCategories) {
+    foreach($this->layout()->prodCategories as $category) { ?>
+        <span class="prod-cat-values" data-pcat-id="<?= $category['pcat_id']; ?>" data-pcat-cat-id="<?= $category['pcat_cat_id']; ?>" data-pcat-order="<?= $category['pcat_order']; ?>">
+        	<span class="ab-attr"><?= $category['catt_name']; ?> <i class="prdDelCat fa fa-times"></i>
+        	</span>
+		</span>
+		<p style="display:none" id="<?= $this->productId; ?>_no_categories"><?= $this->translate('tr_meliscommerce_products_no_categories'); ?></p>
+    <?php }
+}
+else {
+?>
+<p id="<?= $this->productId; ?>_no_categories"><?= $this->translate('tr_meliscommerce_products_no_categories'); ?></p>
+<?php 
+}?>
+</div>
+
+<div class="me-action-button-cont hidden" id="<?= $this->productId?>_deleted_product_category_area">
+</div> 

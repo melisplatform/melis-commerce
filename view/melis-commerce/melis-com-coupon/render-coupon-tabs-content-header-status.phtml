@@ -1,0 +1,15 @@
+<?php 
+
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id .= $this->couponId.'_'.$this->zoneconfig['conf']['id'];
+    }       
+ 
+   
+?>
+<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="make-switch main_variant_switch" data-on-label="<?php echo $this->translate('tr_meliscommerce_coupon_page_status_online')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_coupon_page_status_offline')?>" data-text-label="<?php echo $this->translate('tr_meliscommerce_coupon_page_status')?>">
+    <input type="checkbox" name="coup_status" id="var_status"  <?= $this->status ?>>
+</div>
+<script type="text/javascript">
+	$("#<?= $id ?>").bootstrapSwitch();
+</script>	

@@ -1,0 +1,64 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id .= $this->orderId.'_'.$this->zoneconfig['conf']['id'];
+    }
+    $c = 0;
+    $collapse = 'collapse in';
+?>
+<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="tab-pane active custom-field-type">
+	<?php 
+	foreach($this->payments as $payment):
+	if($c>0){
+	    $collapse = 'collapse';
+	}
+	?>
+	<a class="btn btn-primary form-control collapsed a-accordion" data-toggle="collapse" href="#<?= $payment->opay_id.'_'.$this->melisKey?>" aria-expanded="false" aria-controls="payment1">
+		<span><?= $this->translate('tr_meliscommerce_orders_content_tab_paymnet'). ' ' .$payment->payment_type->opty_name?></span>
+		<span style="float:right"><?= $payment->opay_date_payment?></span>
+	</a>
+	<div class="<?= $collapse?>" id="<?= $payment->opay_id.'_'.$this->melisKey?>">
+		<table class="info-table">
+			<tr>
+				<td><label><?= $this->translate('tr_meliscommerce_order_payment_paid')?></label></td>
+				<td><?= $payment->cur_symbol.' '.$payment->opay_transac_price_paid_confirm ?></td>
+			</tr>
+			<tr>
+				<td><label><?= $this->translate('tr_meliscommerce_order_payment_price')?></label></td>
+				<td><?= $payment->cur_symbol.' '.$payment->opay_price_total ?></td>
+			</tr>
+			<tr>
+				<td><label><?= $this->translate('tr_meliscommerce_order_payment_shipment')?></label></td>
+				<td><?= $payment->cur_symbol.' '.$payment->opay_price_shipping ?></td>
+			</tr>
+			<tr>
+				<td><label><?= $this->translate('tr_meliscommerce_order_payment_type')?></label></td>
+				<td><?= $payment->payment_type->opty_name ?></td>
+			</tr>
+			<tr>
+				<td><label><?= $this->translate('tr_meliscommerce_order_payment_validation')?></label></td>
+				<td><?= $payment->opay_transac_id ?></td>
+			</tr>
+			<tr>
+				<td><label><?= $this->translate('tr_meliscommerce_order_payment_date')?></label></td>
+				<td><?= $payment->opay_date_payment?></td>
+			</tr>
+			<tr>
+				<td><label><?= $this->translate('tr_meliscommerce_order_payment_coupon')?></label></td>
+				<td>
+					<?php 
+					foreach($payment->coupons as $coupon){
+					    echo $coupon->coup_code . ' ';
+					}
+					?>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<br>
+	<?php
+	
+	$c++;
+	endforeach;
+	?>
+</div>

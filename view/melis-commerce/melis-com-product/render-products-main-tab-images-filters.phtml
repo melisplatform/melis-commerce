@@ -1,0 +1,9 @@
+<div class="melis-product-filter clearfix">
+	<?php 
+    	if(!empty($this->zoneconfig['interface'])) {
+    	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+    	        echo $this->$keyConfig.' ';
+    	    }
+    	}
+    ?>
+</div>

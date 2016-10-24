@@ -1,0 +1,54 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = 'id="'.$this->zoneconfig['conf']['id'] .'"';
+    }
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<style>
+.order-checkout-steps >li a{
+	cursor: default;;
+}
+</style>
+<div <?php echo $id.' '.$data_melisKey; ?>>
+	<div class="spacing-x2 innerAll">
+		<div class="relativeWrap">
+            <div class="box-generic">
+            	<div class="tabsbar">
+            		<ul class="order-checkout-steps">
+            			<?php 
+                        	if(!empty($this->zoneconfig['interface'])) {
+                        	    $active = 'active';
+                        	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+                        	        
+                        	        $tabId = $menuConfig['conf']['id'];
+                        	        $tabIcon = $menuConfig['conf']['icon'];
+                        	        $tabName = $menuConfig['conf']['name'];
+                        	        
+                        	        echo '<li class="'.$tabIcon.' '.$active.'">
+                        	                <a href="#" data-tab="'.$tabId.'">
+                            	               <i></i> '.$this->translate($tabName).' 
+                    	                    </a>
+                        	            </li>';
+                        	        
+                        	        if (!empty($active)){
+                        	            $active = '';
+                        	        }
+                        	    }
+                        	}
+                        ?>
+            		</ul>
+            	</div>
+            	<div class="tab-content">
+                	<?php 
+                    	if(!empty($this->zoneconfig['interface'])) {
+                    	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+                    	        echo $this->$keyConfig.' ';
+                    	    }
+                    	}
+                    ?>
+                </div>
+            </div>
+        </div>
+	</div>
+</div>

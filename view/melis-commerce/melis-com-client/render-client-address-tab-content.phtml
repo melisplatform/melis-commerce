@@ -1,0 +1,14 @@
+<div id="<?php echo $this->addressId.'_address' ?>" class="<?php echo $this->addressId.'_address'?> tab-pane product-text-tab-content" style="border: 1px solid #eee; padding: 15px; margin-bottom: 20px">
+	<div class="me-action-button-cont">
+		<?php 
+    		$form = $this->meliscommerce_clients_addresses_form;
+    		$form->setAttribute('id', $this->addressId.'_address_form');
+    		$form->setAttribute('class', 'clientAddressForm');
+    		$form->setAttribute('data-addressid', $this->addressId);
+    		$form->prepare();
+    		echo $this->form()->openTag($form);
+    		echo $this->melisFieldCollection($form);
+    		echo $this->form()->closeTag();
+		?>
+	</div>
+</div>

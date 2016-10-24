@@ -1,0 +1,11 @@
+<div class="pdc-content border-bottom">
+	<div class="">
+		<?php 
+        	if(!empty($this->zoneconfig['interface'])) {
+        	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+        	        echo $this->$keyConfig.' ';
+        	    }
+        	}
+        ?>	
+	</div>
+</div>	

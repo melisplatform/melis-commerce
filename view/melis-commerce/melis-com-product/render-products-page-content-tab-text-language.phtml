@@ -1,0 +1,36 @@
+<?php 
+$name = '';
+    if (!empty($this->zoneconfig['conf']['name'])){
+        $name = $this->zoneconfig['conf']['name'];
+    }
+$icon = '';
+    if (!empty($this->zoneconfig['conf']['icon'])){
+        $icon = $this->zoneconfig['conf']['icon'];
+    }   
+$img = '';
+    if (!empty($this->zoneconfig['conf']['img'])){
+        $img = $this->zoneconfig['conf']['img'];
+    }
+$active = 'active';
+$ctr = 0;
+    ?>
+<?php 
+foreach($this->lang as $lang):
+
+$href = $this->layout()->productId . '_id_meliscommerce_products_page_content_tab_text_language_list_field_'.$lang->elang_name;
+if($ctr>0){
+    $active = '';
+}
+?>
+
+<li class="<?= $active ?>">
+	<a class="clearfix" data-toggle="tab" href="#<?php echo $href;?>" aria-expanded="true">
+		&nbsp;<span class="fa fa-language"></span>
+		<span><?php echo $lang->elang_name;?></span>
+	</a>
+</li>
+
+<?php 
+$ctr++;
+endforeach;
+?>

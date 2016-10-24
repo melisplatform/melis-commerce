@@ -1,0 +1,250 @@
+<?php
+
+/**
+ * Melis Technology (http://www.melistechnology.com)
+ *
+ * @copyright Copyright (c) 2016 Melis Technology (http://www.melistechnology.com)
+ *
+ */
+
+namespace MelisCommerce\Controller;
+
+use Zend\Mvc\Controller\AbstractActionController;
+use Zend\View\Model\ViewModel;
+use Zend\View\Model\JsonModel;
+use Zend\Session\Container;
+
+class MelisComAttributeListController extends AbstractActionController
+{
+    /**
+     * renders the attribute list page container
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderAttributeListPageAction()
+    {
+        $view = new ViewModel();
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view->melisKey = $melisKey;
+        return $view;
+    }
+    
+    /**
+     * renders the attribute list page header container
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderAttributeListHeaderContainerAction()
+    {
+        $view = new ViewModel();
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view->melisKey = $melisKey;
+        return $view;
+    }
+    
+    /**
+     * renders the attribute list page left header container
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderAttributeListHeaderLeftContainerAction()
+    {
+        $view = new ViewModel();
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view->melisKey = $melisKey;
+        return $view;
+    }
+    
+    /**
+     * renders the attribute list page left header container
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderAttributeListHeaderRightContainerAction()
+    {
+        $view = new ViewModel();
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view->melisKey = $melisKey;
+        return $view;
+    }
+    
+    /**
+     * renders the attribute list page header title
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderAttributeListHeaderTitleAction()
+    {
+        $view = new ViewModel();
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view->melisKey = $melisKey;
+        return $view;
+    }
+    
+    /**
+     * renders the add new attribute button
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderAttributeListAddAttributeAction()
+    {
+        return new ViewModel();
+    }
+    
+    /**
+     * renders the attribute list page content container
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderAttributeListContentAction()
+    {
+        $view = new ViewModel();
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view->melisKey = $melisKey;
+        return $view;
+    }
+    
+    /**
+     * renders the attribute list page table
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderAttributeListContentTableAction()
+    {
+        $columns = $this->getTool()->getColumns();
+        $columns['actions'] = array('text' => 'Action');
+        $view = new ViewModel();
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view->melisKey = $melisKey;
+        $view->tableColumns = $columns;
+        $view->getToolDataTableConfig = $this->getTool()->getDataTableConfiguration('#tableAttributeList', true);
+        return $view;
+    }
+    
+    /**
+     * renders the attribute list content table filter limit
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderAttributeListContentFilterLimitAction()
+    {
+        return new ViewModel();
+    }
+    
+    /**
+     * renders the attribute list content table filter search
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderAttributeListContentFilterSearchAction()
+    {
+        return new ViewModel();
+    }
+    
+    /**
+     * renders the attribute list content table filter refresh
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderAttributeListContentFilterRefreshAction()
+    {
+        return new ViewModel();
+    }
+    
+    /**
+     * renders the attribute list content table action info
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderAttributeListContentActionInfoAction()
+    {
+        return new ViewModel();
+    }
+    
+    /**
+     * renders the attribute list content table action delete
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderAttributeListContentActionDeleteAction()
+    {
+        return new ViewModel();
+    }
+    
+    /**
+     * retrieves the data for the attribute list table
+     * @return \Zend\View\Model\JsonModel
+     */
+    public function getAttributeListDataAction()
+    {
+        $success = 0;
+        $colId = array();
+        $dataCount = 0;
+        $draw = 0;
+        $tableData = array();
+        $langId = $this->getTool()->getCurrentLocaleID();
+        $attributeSvc = $this->getServiceLocator()->get('MelisComAttributeService');
+        $attributeTypeTable = $this->getServiceLocator()->get('MelisEcomAttributeTypeTable');
+        $checked = '<span class="text-danger"><i class="fa fa-check"></i></span>';
+        
+        if($this->getRequest()->isPost()) {
+            $colId = array_keys($this->getTool()->getColumns());
+            
+            $sortOrder = $this->getRequest()->getPost('order');
+            $sortOrder = $sortOrder[0]['dir'];
+            
+            $selCol = $this->getRequest()->getPost('order');
+            $selCol = $colId[$selCol[0]['column']];
+            $colOrder = $selCol. ' ' . $sortOrder;
+            
+            $draw = (int) $this->getRequest()->getPost('draw');
+            
+            $start = (int) $this->getRequest()->getPost('start');
+            $length =  (int) $this->getRequest()->getPost('length');
+            
+            $search = $this->getRequest()->getPost('search');
+            $search = $search['value'];
+            
+            $attributeList = $attributeSvc->getAttributes($langId, null, null, null, $start, $length, $colOrder, $search);
+            $dataCount = count($attributeList);
+//             echo '<pre>'; print_r($attributeList); echo '</pre>'; die();
+            $c = 0;
+            foreach($attributeList as $attribute){
+                $status = '<span class="text-danger"><i class="fa fa-fw fa-circle"></i></span>';
+                $visible = '';
+                $searchable = '';
+                if($attribute->getAttribute()->attr_status){
+                    $status = '<span class="text-success"><i class="fa fa-fw fa-circle"></i></span>';
+                }
+                
+                if($attribute->getAttribute()->attr_visible){
+                    $visible = $checked;
+                }
+                
+                if($attribute->getAttribute()->attr_searchable){
+                    $searchable = $checked;
+                }
+                
+                $atype_name = $attributeTypeTable->getEntryById($attribute->getAttribute()->attr_type_id)->current()->atype_name;
+                
+                $tableData[$c]['DT_RowId']          = $attribute->getId();
+                $tableData[$c]['attr_id']           = $attribute->getId();
+                $tableData[$c]['attr_status']       = $status;
+                $tableData[$c]['attr_visible']      = $visible;
+                $tableData[$c]['attr_searchable']   = $searchable;
+                $tableData[$c]['atrans_name']       = $attribute->getAttribute()->attr_trans[0]->atrans_name;
+                $tableData[$c]['attr_reference']    = $attribute->getAttribute()->attr_reference;
+                $tableData[$c]['atype_name']        = $atype_name;
+                $c++;
+            }
+        }
+        
+        return new JsonModel(array (
+            'draw' => (int) $draw,
+            'recordsTotal' => $dataCount,
+            'recordsFiltered' =>  $dataCount,
+            'data' => $tableData,
+        ));
+    }
+    
+    /**
+     * Returns the Tool Service Class
+     * @return MelisCoreTool
+     */
+    private function getTool()
+    {
+        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_attribute_list');
+    
+        return $melisTool;
+    
+    }
+    
+}

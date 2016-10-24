@@ -1,0 +1,15 @@
+<?php 
+	$id = 'id="';
+    if (!empty($this->variantId)){
+        $id .= $this->variantId.'_';
+    }
+    
+    $id .= $this->zoneconfig['conf']['id'].'"';
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+    
+    $var_sku = (!empty($this->layout()->variantObj)) ? $this->layout()->variantObj->getVariant()->var_sku : 'New SKU';
+    $prod_name = empty($this->prodTitle) ? '' : $this->prodTitle;
+?>
+<h1 class="content-heading" <?php echo $id. ' '. $data_melisKey;?>>
+<a href="products.php" style="color: #686868;"><?= $this->translate('tr_meliscommerce_variants_Products');?></a>
+ / <a href="#" style="color: #686868;"><?= $prod_name ?></a>  / <?= $var_sku ?></h1>

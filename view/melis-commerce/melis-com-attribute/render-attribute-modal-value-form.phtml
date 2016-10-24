@@ -1,0 +1,48 @@
+<?php 
+
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id .= $this->attributeId.'_'.$this->zoneconfig['conf']['id'];
+    }       
+ 
+?>
+<div class="modal-content">
+	<div class="modal-body padding-none">
+		<div class="wizard">
+			<div class="widget widget-tabs widget-tabs-double widget-tabs-responsive margin-none border-none">
+                <div class="widget-head">
+                	<ul class="nav nav-tabs">
+                		<li class="active"><a href="#<?php echo $this->zoneconfig['conf']['id'] ?>" class="glyphicons list" data-toggle="tab" aria-expanded="true"><i></i> 
+                		<?= $this->zoneconfig['conf']['name'] ?></a></li>
+            		</ul>
+        		</div>
+        		<div class="widget-body innerAll inner-2x">
+        			<div class="tab-content">
+        				<div class="tab-pane active" id="<?php echo $id ?>">
+                            <div class="row">
+                            	<div class="col-md-12">
+                                    <?php 
+                                        $forms = $this->forms;
+                                        for($c = 0; $c< count($this->langs); $c++):
+                                            echo '<h4>'.$this->langs[$c]->elang_name.'</h4>';
+                                            echo $this->form()->openTag($forms[$c]);
+                                            echo $this->melisFieldCollection($forms[$c]);
+                                            echo $this->form()->closeTag();
+                                              
+                                        endfor;
+                                     
+                                    ?>
+                                    <br>
+                                 	<div align="right">
+                                 		<button data-dismiss="modal" class="btn btn-danger pull-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
+                                 		<button class="btn btn-success" id="saveAttributeValue"><i class="fa fa-save"></i>  <?php echo $this->translate('tr_meliscommerce_orders_common_btn_save') ?></button>
+                                 	</div>                                 	
+                            	</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

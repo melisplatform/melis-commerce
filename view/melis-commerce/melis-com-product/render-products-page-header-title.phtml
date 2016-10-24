@@ -1,0 +1,23 @@
+
+<?php 
+	$id = '';
+	if (!empty($this->zoneconfig['conf']['id']))
+		$id = ' id="'.$this->productId.'_'.$this->zoneconfig['conf']['id'] . '"';
+	$data_melisKey = ' data-meliskey="'. $this->melisKey. '"';
+	$name = '';
+	if (!empty($this->zoneconfig['conf']['name']))
+	    $name = $this->zoneconfig['conf']['name'];
+
+$prodName = '';
+if($this->productId == '0') {
+    $prodName = $this->translate('tr_meliscommerce_products_page_new_product');
+}
+else {
+    $prodName = $this->layout()->prodName;
+}
+?>
+
+<h1 class="content-heading">
+	<?php echo $this->translate($name)?>
+	 / <?= $prodName; ?>
+</h1>

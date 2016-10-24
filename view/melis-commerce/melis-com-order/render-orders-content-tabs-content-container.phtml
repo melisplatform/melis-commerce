@@ -1,0 +1,24 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id .= $this->orderId.'_'.$this->zoneconfig['conf']['id'];
+    }
+    $active = '';
+    if (!empty($this->zoneconfig['conf']['active'])){
+        $active = $this->zoneconfig['conf']['active'];
+    }
+    
+    $accord = '';
+    if (!empty($this->zoneconfig['conf']['accord'])){
+        $accord = $this->zoneconfig['conf']['accord'];
+    }
+?>
+<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="<?= $active; ?> tab-pane <?= $accord; ?>">
+	<?php 
+    	if(!empty($this->zoneconfig['interface'])) {
+    	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+    	        echo $this->$keyConfig;
+    	    }
+    	}
+   ?>
+</div>

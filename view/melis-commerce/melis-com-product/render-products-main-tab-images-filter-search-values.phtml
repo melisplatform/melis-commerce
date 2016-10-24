@@ -1,0 +1,22 @@
+<?php 
+$icon = '';
+    if (!empty($this->zoneconfig['conf']['icon'])){
+        $icon = $this->zoneconfig['conf']['icon'];
+    }
+$name = '';
+    if (!empty($this->zoneconfig['conf']['name'])){
+        $name = $this->zoneconfig['conf']['name'];
+    }
+?>
+<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+	<i class="<?php echo $icon;?>" style="padding-right:10px;"></i>
+	<span class="filter-key"><?php echo $name;?></span>
+	<span class="caret"></span>
+</a>
+<ul class="portfolioFilter dropdown-menu filter-key-values">
+	<?php 
+	foreach ($this->data[$name] as $value){
+	    echo '<li><a data-filter="'. $value['data-filter']. '" data-text="' .$value['value']. '" class="current">' .$value['value']. '</a></li>';
+	}
+	?>
+</ul>

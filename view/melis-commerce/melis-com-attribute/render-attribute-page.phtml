@@ -1,0 +1,15 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id .= $this->attributeId.'_'.$this->zoneconfig['conf']['id'];
+    }
+?>
+<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" data-couponId="<?= $this->attributeId?>" data-pageId="attribute" class="tab-pane container-level-a">
+	<?php 
+    	if(!empty($this->zoneconfig['interface'])) {
+    	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+    	        echo $this->$keyConfig;
+    	    }
+    	}
+	?>
+</div>   

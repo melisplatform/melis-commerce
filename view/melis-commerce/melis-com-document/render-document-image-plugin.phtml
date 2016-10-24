@@ -1,0 +1,30 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = 'id="'.$this->zoneconfig['conf']['id'] .'"';
+    }
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+if($this->relationId):
+?>
+<div <?php echo $id. ' '.$data_melisKey?>>
+	<div class="pdc-heading clearfix">
+		<h4>
+			<i class="fa fa-image"></i>
+			<?php echo $this->translate('tr_meliscommerce_documents_product_imgs')?>
+		</h4>
+		<button class="btn btn-success addFileImageDocument" data-type="image">
+			<i class="fa fa-plus"></i>
+			<?php echo $this->translate('tr_meliscommerce_documents_add_image_button_text')?>
+		</button>
+	</div>	
+
+</div>					
+
+<?php 
+    if(!empty($this->zoneconfig['interface'])) {
+        foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+            echo $this->$keyConfig;
+        }
+    }
+endif;
+?>

@@ -1,0 +1,19 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id .= $this->orderId.'_'.$this->zoneconfig['conf']['id'];
+    } 
+?>
+<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="widget widget-tabs widget-tabs-double-2 widget-tabs-responsive">
+    <div class="widget-head nav">
+    	<ul class="tabs-label nav-tabs">
+    		<?php 
+            	if(!empty($this->zoneconfig['interface'])) {
+            	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+            	        echo $this->$keyConfig;
+            	    }
+            	}
+    	   ?>
+    	</ul>
+    </div>
+</div>

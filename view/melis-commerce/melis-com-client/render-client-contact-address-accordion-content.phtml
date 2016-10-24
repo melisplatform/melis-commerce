@@ -1,0 +1,28 @@
+<div class="panel panel-default" id="<?php echo $this->contactAddressId.'_contact_address_content'?>">
+	<div class="panel-heading">
+    	<div class="row">
+			<div class="col-xs-11">
+				<h4 class="panel-title"><a class="accordion-toggle collapsed" id="<?php echo 'nav_'.$this->contactAddressId ?>" data-toggle="collapse" data-parent="#<?php echo  $this->tabId.'_contact_address' ?>" href="#<?php echo $this->contactAddressId.'_address_acordion' ?>"><?php echo $this->contactAddressName.' '.$this->newAddedLabel ?></a></h4>
+			</div>
+			<div class="col-xs-1">
+				<i class="fa fa-times pull-right fa-lg deleteClientCotactAddress" data-addressid="0" data-addressaccordionid="<?php echo $this->contactAddressId ?>" data-isnewadded="1" style="margin-top: 5px; cursor: pointer"></i>
+			</div>
+		</div>
+    </div>
+    <div id="<?php echo $this->contactAddressId.'_address_acordion' ?>" class="panel-collapse collapse">
+      	<div class="panel-body">
+      		<div class="innerAll spacing-x2">
+        		<?php 
+	        		$form = $this->meliscommerce_clients_addresses_form;
+	        		$form->setAttribute('id', $this->contactAddressId.'_contact_address_form');
+	        		$form->setAttribute('data-contactaddressid', $this->contactAddressId);
+	        		$form->setAttribute('class', 'clientContactAddressForm');
+	        		$form->prepare();
+	        		echo $this->form()->openTag($form);
+	        		echo $this->melisFieldCollection($form);
+	        		echo $this->form()->closeTag();
+        		?>
+      		</div>
+      	</div>
+    </div>
+</div>

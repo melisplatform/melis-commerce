@@ -1,0 +1,28 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id .= $this->orderId.'_'.$this->zoneconfig['conf']['id'];
+    }
+    $active = '';
+    if (!empty($this->zoneconfig['conf']['active'])){
+        $active = $this->zoneconfig['conf']['active'];
+    }
+    $href = '';
+    if (!empty($this->zoneconfig['conf']['href'])){
+        $href = $this->orderId.'_'.$this->zoneconfig['conf']['href'];
+    }
+    $icon = '';
+    if (!empty($this->zoneconfig['conf']['icon'])){
+        $icon = $this->zoneconfig['conf']['icon'];
+    }
+    $name = '';
+    if (!empty($this->zoneconfig['conf']['name'])){
+        $name = $this->zoneconfig['conf']['name'];
+    }
+?>
+<li class="<?= $active; ?>">
+	<a data-toggle="tab" href="#<?= $href; ?>" aria-expanded="true" class="<?= $icon; ?>">
+		<i ></i>
+		<span><?= $name ?></span>
+	</a>
+</li>

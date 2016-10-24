@@ -1,0 +1,25 @@
+<?php 
+$id ='';
+if (!empty($this->zoneconfig['conf']['id'])){
+    $id = $this->productId.'_'.$this->zoneconfig['conf']['id'];
+}
+
+$formText = $this->productTextForm;
+$formText->setAttribute('data-modalForm', $this->productId.'_productTextForm');
+$formText->get('ptxt_id')->setAttribute('style', 'display: none')->setLabel('');
+$formText->get('ptxt_lang_id')->setAttribute('style', 'display: none')->setLabel('');
+$formText->get('ptxt_field_short')->setAttribute('style', 'display: none')->setLabel('');
+$formText->get('ptxt_field_long')->setAttribute('style', 'display: none')->setLabel('');
+$content = '<div id="'.$id.'" data-melisKey="'.$this->melisKey.'">'.
+    '<h4>'.$this->translate('tr_meliscommerce_products_add_product_text').'</h4>'.
+    '<div data-class="addTextFieldNotif"></div>'.
+    $this->form()->openTag($formText).
+    $this->melisFieldCollection($formText).
+    $this->form()->closeTag() .
+    '<button class="btn btn-success pull-right btnAddText" id="btnAddText"><i class="fa fa-plus"></i> '.$this->translate('tr_meliscommerce_general_common_add').'</button>'.
+    '<div class="clearfix"></div>'.
+    '</div>';
+
+echo $content;
+
+?>

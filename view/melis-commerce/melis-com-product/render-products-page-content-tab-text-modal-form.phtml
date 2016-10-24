@@ -1,0 +1,38 @@
+<?php 
+$name = '';
+$id = '';
+    if (!empty($this->zoneconfig['conf']['name'])){
+        $name = $this->zoneconfig['conf']['name'];
+    }
+    
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = $this->productId.'_'.$this->zoneconfig['conf']['id'];
+    }
+$content = '';
+
+if(!empty($this->zoneconfig['interface'])) {
+    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+        $content .= $this->$keyConfig.' ';
+    }
+}
+?>
+
+<?php 
+$this->melisModal()->setModalId($this->productId.'_modal-add-product-text');
+$this->melisModal()->setAttributes(array(
+   'data-modalName' => 'genericProductTextModal' 
+));
+$this->melisModal()->setTabs(array(
+    'Add' => array(
+        'tab-header' => $this->translate('tr_meliscommerce_products_page_content_tab_main_header_add_button'),
+        'tab-text' => '', 
+        'class' => 'glyphicons plus',
+        'id' => 'idAddProductText',
+        'content' => $content,
+    )
+), 'idAddProductText');
+
+$this->melisModal()->hasCloseButton(false);
+echo $this->melisModal()->renderModal();
+
+?>

@@ -1,0 +1,18 @@
+<?php 
+	$id = 'id="';
+	if (!empty($this->variantId)){
+		$id .= $this->variantId.'_';
+	}
+	
+	$id .= $this->zoneconfig['conf']['id'].'"';
+	$data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<div <?= $id. ' '. $data_melisKey?> class="content-cont">
+	<?php 
+    	if(!empty($this->zoneconfig['interface'])) {
+    	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+    	        echo $this->$keyConfig;
+    	    }
+    	}
+	?>
+</div>

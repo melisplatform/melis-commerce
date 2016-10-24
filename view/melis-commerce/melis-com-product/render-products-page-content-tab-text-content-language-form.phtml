@@ -1,0 +1,71 @@
+<?php 
+$name = '';
+    if (!empty($this->zoneconfig['conf']['name'])){
+        $name = $this->zoneconfig['conf']['name'];
+    }
+$id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = $this->productId.'_'.$this->zoneconfig['conf']['id'];
+    }
+$active = 'active';
+$ctr = 0;
+$c= 0;
+$del = '<a data-text="%s"><i class="deleteTextInput fa fa-times"></i></a>&nbsp;';
+
+?>
+<?php foreach($this->lang as $lang) {
+    $href = $this->layout()->productId . '_id_meliscommerce_products_page_content_tab_text_language_list_field_'.$lang->elang_name;
+    if($ctr>0){
+        $active = '';
+    }
+?>
+<div id="<?= $href?>" class="tab-pane <?= $active ?> custom-field-type" style="border: 1px solid #eee; padding: 15px;" data-lang-id="<?= $lang->elang_id; ?>">
+	<h3><?= $lang->elang_name?></h3><br>
+	<div class="alert alert-danger notifTinyMcePreloaInfo" style="display:none"><span class="fa fa-info-circle"></span> <?= $this->translate('tr_meliscommerce_products_page_tinymce_load_notif'); ?></div>
+  		
+	
+	<div class="custom-field-type-area" id="<?= $this->layout()->productId ?>_productTextForm">
+		<?php 
+		$form = $this->productTextForm;
+		$form->get('ptxt_type')->setAttribute('style','display:none')->setLabel('');
+		if($this->layout()->prodText) {
+    		foreach($this->layout()->prodText as $prodText) {
+    
+    	      if($prodText->ptxt_lang_id == $lang->elang_id) {
+    
+    	          $textId = isset($prodText->ptxt_id) ? $prodText->ptxt_id : null;
+    		      $form = $this->productTextForm;
+    		      $form->setAttribute('data-text-id', $textId);
+    		      $form->setAttribute('data-text-lang-id', $prodText->ptxt_lang_id);
+    	          $form->setData((array)$prodText);
+    		      if((int) $prodText->ptt_field_type == 1){
+    		          $form->get('ptxt_field_short')->setAttribute('style', 'display:block')->setLabel(sprintf($del, $prodText->ptt_name).$prodText->ptt_name);
+    		          $form->get('ptxt_field_long')->setAttribute('style', 'display:none')->setAttribute("data-display", "false")->setLabel('');
+    		      }
+    		      if((int) $prodText->ptt_field_type == 2){
+    		          $form->get('ptxt_field_long')
+    		          ->setAttribute('class', 'product-text-mce')
+    		          ->setAttribute("data-display", "true")
+    		          ->setLabel(sprintf($del, $prodText->ptt_name).$prodText->ptt_name);
+    		          $form->get('ptxt_field_short')->setAttribute('style', 'display:none')->setLabel('');
+    		      }
+    		      
+    		      echo $this->form()->openTag($form);
+    		      echo $this->melisFieldCollection($form);
+    		      echo $this->form()->closeTag();
+    		      $c++;
+    		  }
+    		}
+		}
+	    ?>
+	</div>
+</div>
+<?php $ctr++; }?>
+
+<script type="text/javascript">
+initProductTextTinyMce();
+</script>
+
+
+
+

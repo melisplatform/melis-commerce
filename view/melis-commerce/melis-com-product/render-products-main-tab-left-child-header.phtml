@@ -1,0 +1,27 @@
+<?php 
+    $name = '';
+    $icon = '';
+    if (!empty($this->zoneconfig['conf']['name'])){
+        $name = $this->zoneconfig['conf']['name'];
+    }
+   
+   
+    if (!empty($this->zoneconfig['conf']['icon'])){
+        $icon = $this->zoneconfig['conf']['icon'];
+    }
+
+?>
+<div class="pdc-heading clearfix">
+	<h4>
+		<i class="<?php echo $icon ?>"></i>
+		<?php echo $this->translate($name);?>
+	</h4>
+
+	<?php 
+    	if(!empty($this->zoneconfig['interface'])) {
+    	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+    	        echo $this->$keyConfig.' ';
+    	    }
+    	}
+    ?>
+</div>							

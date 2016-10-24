@@ -1,0 +1,19 @@
+<?php 
+    $id = 'id="';
+    if (!empty($this->variantId)){
+        $id .= $this->variantId.'_';
+    }
+    
+    $id .= $this->zoneconfig['conf']['id'].'"';
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<div <?= $id. ' '. $data_melisKey?> class="tab-content">						
+	<div id="ptext-french" class="tab-pane active custom-field-type" style="border: 1px solid #eee; padding: 15px;">
+		<h3>French</h3><br>
+		<div class="custom-field-type-area"></div>
+	</div>						
+	<div id="ptext-english" class="tab-pane custom-field-type" style="border: 1px solid #eee; padding: 15px;">
+		<h3>English</h3><br>
+		<div class="custom-field-type-area"></div>
+	</div>						
+</div>	

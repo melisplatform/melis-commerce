@@ -1,0 +1,14 @@
+<?php 
+$id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = ' id="'.$this->productId.'_'.$this->zoneconfig['conf']['id'] . '"';
+    }
+$name = '';
+    if (!empty($this->zoneconfig['conf']['name'])){
+        $name = $this->zoneconfig['conf']['name'];
+    }
+?>
+<button class="btn btn-success add-attribute" <?php echo $id; ?> title="<?php echo $name; ?>">
+<i class="fa fa-plus" style="padding-right:10px;"></i>
+	<?php echo $name; ?>
+</button>

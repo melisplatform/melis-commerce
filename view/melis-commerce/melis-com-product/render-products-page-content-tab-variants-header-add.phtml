@@ -1,0 +1,20 @@
+<?php 
+$icon = '';
+    if (!empty($this->zoneconfig['conf']['icon'])){
+        $icon = $this->zoneconfig['conf']['icon'];
+    }
+$href = '';
+    if (!empty($this->zoneconfig['conf']['href'])){
+        $href = $this->zoneconfig['conf']['href'];
+    }
+$name = '';
+    if (!empty($this->zoneconfig['conf']['name'])){
+        $name = $this->zoneconfig['conf']['name'];
+    }
+    if($this->productId):
+?>
+<a href="#" class="btn btn-success add-variant" title="<?= $name;?>">
+	<i class="<?= $icon;?>" style="padding-right:10px;"></i>
+	<?= $name;?>
+</a>
+<?php endif;?>

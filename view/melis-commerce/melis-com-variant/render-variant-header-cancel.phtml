@@ -1,0 +1,19 @@
+<?php 
+$name = '';
+    if (!empty($this->zoneconfig['conf']['name'])){
+        $name = $this->zoneconfig['conf']['name'];
+    }
+$icon = '';
+if (!empty($this->zoneconfig['conf']['icon'])){
+        $icon = $this->zoneconfig['conf']['icon'];
+    }
+    
+    $id = 'id="';
+    if (!empty($this->variantId)){
+        $id .= $this->variantId.'_';
+    }
+    
+    $id .= $this->zoneconfig['conf']['id'].'"';
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<a <?= $id. ' '.$data_melisKey?> class="btn btn-danger cancel-add-variant" title="<?= $name;?>" style="width:100px;"><i class="<?= $icon;?>" style="padding-right:10px;"></i><?= $name;?></a>

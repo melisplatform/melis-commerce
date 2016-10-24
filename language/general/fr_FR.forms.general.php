@@ -1,0 +1,31 @@
+<?php
+	return array(
+        'tr_meliscommerce_general_form_' => 'Texte',
+	    
+	    //address form
+	    'tr_meliscommerce_address_civility' => 'Civilité',
+	    'tr_meliscommerce_address_lname' => 'Nom',
+	    'tr_meliscommerce_address_mname' => 'Deuxième nom',
+	    'tr_meliscommerce_address_fname' => 'Prénom',
+	    'tr_meliscommerce_address_address_num' => 'Numéro de rue',
+	    'tr_meliscommerce_address_floor' => 'Etage',
+        'tr_meliscommerce_address_building' => 'Bâtiment',
+        'tr_meliscommerce_address_company' => 'Société',
+        'tr_meliscommerce_address_street' => 'Rue',
+        'tr_meliscommerce_address_zip' => 'Code Postal',
+        'tr_meliscommerce_address_city' => 'Ville',
+        'tr_meliscommerce_address_state' => 'Etat',
+        'tr_meliscommerce_address_country' => 'Pays',
+        'tr_meliscommerce_address_comments' => 'Informations complémentaires',
+        'tr_meliscommerce_address_mobile' => 'Téléphone mobile',
+        'tr_meliscommerce_address_phone' => 'Téléphone fixe',
+        'tr_meliscommerce_address_error_long_255' => 'Valeur trop longue, elle doit être de moins de 255 caractères',
+        'tr_meliscommerce_address_error_long_10' => 'Valeur trop longue, elle doit être de moins de 10 caractères',
+        'tr_meliscommerce_address_error_long_45' => 'Valeur trop longue, elle doit être de moins de 45 caractères',
+        'tr_meliscommerce_address_error_long_100' => 'Valeur trop longue, elle doit être de moins de 100 caractères',
+        'tr_meliscommerce_address_error_long_15' => 'Valeur trop longue, elle doit être de moins de 15 caractères',
+        'tr_meliscommerce_address_error_long_50' => 'Valeur trop longue, elle doit être de moins de 50 caractères',
+        'tr_meliscommerce_address_error_empty' => 'Le champ ne peut être vide',
+        'tr_meliscommerce_address_civility_select' => 'Choisir',
+        'tr_meliscommerce_address_billing_form_empty' => 'L\'adresse de facturation ne peut être vide',
+	);

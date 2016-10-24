@@ -1,0 +1,92 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = 'id="'.$this->zoneconfig['conf']['id'] .'" ';
+    } 
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<div <?= $id . $data_melisKey; ?>>
+	<div class="row">
+		<div class="col-xs-12 col-md-12 col-lg-12">
+			<div class="melis-filter-image filter-dropdown filter-search-container clearfix">
+        		<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+        			<i class="fa fa-globe"></i>
+        			<span class="filter-key"><?php echo $this->translate('tr_meliscommerce_documents_main_information_update_file_country')?></span>
+        			<span class="caret"></span>
+        		</a>
+        		<ul class="documentImageFilter dropdown-menu filter-key-values" data-filter-group="country">
+        			<li>
+        				<a data-filter-value=".image" data-text='<?= $this->translate('tr_meliscommerce_documents_filter_all_option'); ?>'><?= $this->translate('tr_meliscommerce_documents_filter_all_option'); ?></a>
+        			</li>
+        			<li>
+        				<a data-filter-value=".-1" data-text='<?= $this->translate('tr_meliscommerce_documents_action_all_countries'); ?>'><?= $this->translate('tr_meliscommerce_documents_action_all_countries'); ?></a>
+        			</li>
+        			<?php 
+        			foreach($this->country as $country):
+        			?>
+        			<li>
+        				<a data-filter-value=".<?= $country['ctry_id']; ?>" data-text='<?= $country['ctry_name']; ?>'><?= $country['ctry_name']; ?></a>
+        			</li>
+        			<?php endforeach; ?>
+        		</ul>
+        	</div>
+			<div class="melis-filter-image filter-dropdown filter-search-container clearfix">
+        		<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+        			<i class="fa fa-image"></i>
+        			<span class="filter-key"><?php echo $this->translate('tr_meliscommerce_documents_main_information_update_file_image')?></span>
+        			<span class="caret"></span>
+        		</a>
+        		<ul class="documentImageFilter dropdown-menu filter-key-values" data-filter-group="type">
+        			<li>
+        				<a data-filter-value=".image" data-text='<?= $this->translate('tr_meliscommerce_documents_filter_all_option'); ?>'><?= $this->translate('tr_meliscommerce_documents_filter_all_option'); ?></a>
+        			</li>
+    				<?php 
+        			foreach($this->imageType as $img):
+        			?>
+        			<li>
+        				<a data-filter-value=".<?= $img['dtype_code']; ?>" data-text='<?= $img['dtype_name']; ?>'><?= $img['dtype_name']; ?></a>
+        			</li>
+        			<?php endforeach; ?>
+        		</ul>
+        	</div>
+		</div>
+	</div>
+    <div class="imageDocumentContainer">	
+		<?php 
+		if($this->images) {
+		    $typeUpload = "image";
+		    $zoneId = 'id_meliscommerce_documents_modal_form';
+		    $melisKey = 'meliscommerce_documents_modal_form';
+		    $modalUrl = '/melis/MelisCommerce/MelisComDocument/renderDocumentGenericModalContainer';
+		    foreach($this->images as $image) {
+		        $imageLoc = $image['doc_path'];
+		    
+		?>
+                <div class="imageDocumentItem image <?= $image['dtype_code'] .' ' . $image['rdoc_country_id']; ?>">
+                	<div class="me-p-image">
+                	<img src="<?= $imageLoc; ?>"/>
+                		<div class="hover-details">
+                			<div class="me-p-btn-cont" data-doc-id="<?= $image['doc_id']; ?>" data-doc-type="image">
+                				<a class="viewImageDocument" href="<?= $imageLoc; ?>" data-lightbox="selected-images-<?= $docRelationType.'-'.$docRelationId; ?>" data-title="<?= $image['doc_name'] . ' | ' . $image['dtype_name'] . ' | ' . $image['country_name']; ?>">
+                					<i class="fa fa-eye"></i>
+                				</a>
+                				<a class="editImageDocumentModal" data-doc-id="<?= $image['doc_id']; ?>">
+                					<i class="fa fa-pencil"></i>
+                				</a>
+                				<a class="deleteFileImageDocument" data-type="image" data-doc-id="<?= $image['doc_id']; ?>">
+                					<i class="fa fa-times"></i>
+                				</a>
+                			</div>
+                		</div>
+                	</div> 
+                </div> 
+		<?php 
+		    }
+		} else {
+		?>
+		<p><?= $this->translate('tr_meliscommerce_documents_no_image'); ?></p>
+		<?php 
+		}
+		?>
+    </div>
+</div>

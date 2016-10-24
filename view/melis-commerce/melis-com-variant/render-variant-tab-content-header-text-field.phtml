@@ -1,0 +1,22 @@
+<?php 
+    $name = '';
+    if (!empty($this->zoneconfig['conf']['name'])){
+            $name = $this->zoneconfig['conf']['name'];
+        }
+    $icon = '';
+    if (!empty($this->zoneconfig['conf']['icon'])){
+        $icon = $this->zoneconfig['conf']['icon'];
+    }
+    
+    $id = 'id="';
+    if (!empty($this->variantId)){
+        $id .= $this->variantId.'_';
+    }
+    
+    $id .= $this->zoneconfig['conf']['id'].'"';
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<a <?= $id. ' '. $data_melisKey?> data-toggle="modal" data-target="#addTextModal" class="btn btn-success add-product" title="Create New Field Type">
+	<i class="<?= $icon;?>" style="padding-right:10px;"></i>
+	<?= $name;?>
+</a>

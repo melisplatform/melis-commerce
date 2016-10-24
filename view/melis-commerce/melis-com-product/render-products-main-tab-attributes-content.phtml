@@ -1,0 +1,33 @@
+<?php 
+$id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = ' id="'.$this->productId.'_'.$this->zoneconfig['conf']['id'] . '"';
+    }
+$name = '';
+    if (!empty($this->zoneconfig['conf']['name'])){
+        $name = $this->zoneconfig['conf']['name'];
+    }
+    
+$attributes = array();
+if(isset($this->layout()->prodAttributes)) {
+    $attributes = $this->layout()->prodAttributes;
+}
+?>
+<br/>
+<div id="frmProdAttribNotif"></div>	
+<div class="me-action-button-cont" id="<?= $this->productId?>_attribute_area">
+<?php 
+if($attributes) {
+foreach($attributes as $attribute){
+   
+?>
+<span class="attr-values" data-patt-attribute-id="<?= $attribute->patt_attribute_id; ?>" data-patt-id="<?= $attribute->patt_id?>">
+	<span class="ab-attr"><span class="attrib-value"><?= $attribute->atrans_name; ?></span> <i class="prdDelAttr fa fa-times"></i>
+	</span>
+</span>
+<p style="display:none" id="<?= $this->productId; ?>_no_attributes"><?= $this->translate('tr_meliscommerce_products_no_attributes'); ?></p>
+<?php }
+}else { ?>
+<p id="<?= $this->productId; ?>_no_attributes"><?= $this->translate('tr_meliscommerce_products_no_attributes'); ?></p>
+<?php }?>
+</div>		

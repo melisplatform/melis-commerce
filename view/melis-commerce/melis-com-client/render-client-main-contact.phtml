@@ -1,0 +1,46 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = 'id="'.$this->clientId.'_'.$this->zoneconfig['conf']['id'] .'"';
+    }
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<?php 
+    $personData = array();
+    if (!empty($this->clientPerson)){
+        $personData = $this->clientPerson;
+    }
+?>
+<div <?php echo $id.' '.$data_melisKey; ?>>
+	<div class="pdc-heading clearfix">
+		<h4>
+			<i class="fa fa-user"></i> <?php echo $this->translate('tr_meliscommerce_client_Main_contact')?>
+		</h4>								
+	</div>						
+	<div class="pdc-content">
+		<div class="">
+			<?php if (!empty($personData)) :?>
+			<table class="info-table">
+				<tbody>
+					<?php if ($personData->civility_trans):?>
+    				<tr>
+    					<td><label><?php echo $this->translate('tr_meliscommerce_client_Main_contact_civility')?></label></td>
+    					<td><?php echo $personData->civility_trans->civt_max_name ?></td>
+    				</tr>
+    				<?php endif;?>
+    				<tr>
+    					<td><label><?php echo $this->translate('tr_meliscommerce_client_Main_contact_name')?></label></td>
+    					<td><?php echo $personData->cper_firstname.' '.$personData->cper_name ?></td>
+    				</tr>
+    				<tr>
+    					<td><label><?php echo $this->translate('tr_meliscommerce_client_Main_contact_email')?></label></td>
+    					<td><?php echo $personData->cper_email ?></td>
+    				</tr>
+				</tbody>
+			</table>
+			<?php else :?>
+				<div class="alert alert-melis-default"><?php echo $this->translate('tr_meliscommerce_client_No_main_contact')?></div>
+			<?php endif;?>
+		</div>
+	</div>
+</div>

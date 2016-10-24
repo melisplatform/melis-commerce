@@ -1,0 +1,17 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id']))
+        $id = ' id="'.$this->productId.'_'.$this->zoneconfig['conf']['id'] . '"';
+    $data_melisKey = ' data-meliskey="'. $this->melisKey. '"';
+    $name = '';
+        if (!empty($this->zoneconfig['conf']['name'])){
+            $name = $this->zoneconfig['conf']['name'];
+        }
+?>
+<ul <?= $id. ' '. $data_melisKey?> class="nav-tabs product-text-tab country-price-tab">
+	<?php 
+	foreach ($this->countries as $country){
+	    echo $country;
+	}
+	?>
+</ul>

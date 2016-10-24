@@ -1,0 +1,15 @@
+.checkout-product-variant-list{
+	min-height: 35px;
+	position: relative;
+}
+
+.cell-val-table {
+	margin: 0px 5px 0px;
+}
+
+.order-variant {
+    overflow: hidden;
+}
+.order-basket-variant-qty-btn{
+	cursor: pointer;
+}

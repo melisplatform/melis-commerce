@@ -1,0 +1,17 @@
+.widget.widget-tabs-double-2>.widget-head ul li a.glyphicons {
+    min-width: 90px;
+}
+
+.panel-heading .accordion-toggle:before {
+    margin: auto; 
+}
+
+#content .panel-title {
+    border-bottom: 0px;
+}
+
+.client-contact-tab-content .accordion-toggle {
+    background: initial;
+    border-bottom: dadada;
+    padding: 0 10px 0;
+}

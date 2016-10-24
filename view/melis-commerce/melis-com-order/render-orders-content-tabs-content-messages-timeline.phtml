@@ -1,0 +1,42 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id .= $this->orderId.'_'.$this->zoneconfig['conf']['id'];
+    }
+    $tmp = '';
+?>
+<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="innerAll">    					
+	<ul class="timeline">
+		<?php foreach($this->messages as $message):?>
+		<li class="active">    		
+			<div class="separator bottom">
+				<?php 				
+				if($message['day'] != $tmp):
+				$tmp = $message['day'];
+				?>
+				<span class="date box-generic"><strong><?= $message['day'] ?></strong><?= $message['month'] ?></span>
+				<?php endif;?>
+				<div class="separator">
+					<span class="type glyphicons comments"><?= $message['urole_name'] ?> <i></i></span>
+				</div>
+				<span class="type glyphicons comments"><?= $message['urole_name'] ?> <i></i></span>
+			</div>    		
+			<div class="widget widget-heading-simple widget-body-white margin-none pagecomment">
+				<div class="widget-body">
+					<div class="media">
+						<div class="media-object pull-left"><img src="<?= $message['usr_image'] ?>" alt="Image" class="img-circle"></div>
+						<div class="media-body">
+							<span class="text-danger"><i class="fa fa-user"></i> <?= $message['name'] ?></span><br>
+							<span class="muted"><i class="fa fa-envelope"></i> <?= $message['email'] ?></span>
+							<span class="muted text-small clearfix"><i class="fa fa-clock-o"></i> <?= $message['time'] ?></span>
+						</div>
+					</div>
+					<div class="alert alert-gray">
+						<?= $message['omsg_message'] ?>
+					</div>
+				</div>
+			</div>
+		</li> 
+		<?php endforeach;?>   		
+	</ul>    	
+</div>

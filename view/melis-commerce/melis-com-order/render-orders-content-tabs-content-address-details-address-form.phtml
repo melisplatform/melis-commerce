@@ -1,0 +1,29 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id .= $this->orderId.'_'.$this->zoneconfig['conf']['id'];
+    } 
+?>
+<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="tab-content">						
+	<?php 
+	$c = 0;
+	$forms = $this->orderAdressForms;
+	foreach($this->addressTypes as $type):
+	$name = $this->orderId .'_'. $type->catypt_name;
+	?>
+	<div id="<?= $name ?>" class="tab-pane custom-field-type" style="border: 1px solid #eee; padding: 15px;">
+		<div class="pdc-heading clearfix">
+			<h4>
+				<i class="fa fa-map"></i>
+				<?= $type->catypt_name ?>
+			</h4>
+		</div>
+    	<?php 
+	    echo $this->form()->openTag($forms[$c]);
+	    echo $this->melisFieldCollection($forms[$c]);
+	    echo $this->form()->closeTag();
+	    $c++;	    
+    	?>
+	</div>
+	<?php endforeach;?>				
+</div>

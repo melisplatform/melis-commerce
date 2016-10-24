@@ -1,0 +1,11 @@
+<h3>Product SEO</h3>
+<?php 
+$form = $this->seoForm;
+$form->get('eseo_meta_title')->setName('seoForm[eseo_meta_title]');
+$form->get('eseo_meta_description')->setName('seoForm[eseo_meta_description]');
+$form->get('eseo_url')->setName('seoForm[eseo_url]');
+echo $this->form()->openTag($form);
+echo $this->melisFieldCollection($form);
+echo $this->form()->closeTag();
+
+?>

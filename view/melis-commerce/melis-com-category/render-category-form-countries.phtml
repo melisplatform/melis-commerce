@@ -1,0 +1,52 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = 'id="'.$this->zoneconfig['conf']['id'] .'"';
+    }
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<div <?php echo $id. ' '.$data_melisKey?> class="border-bottom">	
+	<div class="form-group">
+    	<div class="row">
+    		<div class="col-xs-12">
+    			<div class="pdc-heading clearfix">
+                    <h4>
+                    	<i class="fa fa-globe"></i> <?php echo $this->translate('tr_meliscommerce_categories_category_countries')?>
+                    </h4>
+                </div>
+    		</div>
+    		<form>
+        		<?php 
+        		    $checked = '';
+        		    if (!empty($this->categoryCountries)){
+        		        if (in_array('-1', $this->categoryCountries)){
+        		            $checked = 'check';
+        		        }
+        		    }
+        		?>
+        		<div class="col-xs-4">
+                	<label class="ecom-coutries-checkbox">
+                		<i class="fa fa-<?php echo ($checked) ? $checked.'-' : '' ?>square-o fa-lg check-all"></i> <?php echo $this->translate('tr_meliscommerce_categories_common_label_all')?>
+                		<input type="checkbox" name="cat_country[]" value="-1" <?php echo ($checked) ? $checked.'ed' : '' ?>>
+                	</label>
+        		</div>
+        		<?php foreach ($this->ecomCountries As $val):?>
+        			<?php
+        			    $checked = '';
+        			    if (!empty($this->categoryCountries)){
+        			        if(in_array($val['ctry_id'], $this->categoryCountries)){
+        			            $checked = 'check';
+        			        }
+        			    }
+        			?>
+        			<div class="col-xs-4">
+                    	<label class="ecom-coutries-checkbox">
+                    		<i class="fa fa-<?php echo ($checked) ? $checked.'-' : '' ?>square-o fa-lg"></i> <?php echo $val['ctry_name']?>
+                    		<input type="checkbox" name="cat_country[]" value="<?php echo $val['ctry_id']?>" <?php echo ($checked) ? $checked.'ed' : '' ?>>
+                    	</label>
+            		</div>
+        		<?php endforeach;?>
+    		</form>
+    	</div>
+	</div>
+</div>

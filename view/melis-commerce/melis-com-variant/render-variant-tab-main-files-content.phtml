@@ -1,0 +1,23 @@
+<?php 
+    $id = 'id="';
+    if (!empty($this->variantId)){
+        $id .= $this->variantId.'_';
+    }
+    
+    $id .= $this->zoneconfig['conf']['id'].'"';
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+</br>
+<div <?= $id. ' '. $data_melisKey?> class="me-file-cont">
+	<p>awesomefile.attached-here.pdf 
+		<i class="fa fa-times-circle" ></i>
+	</p>								
+	<p>shirt-collection01.doc 
+		<i class="fa fa-times-circle" ></i>
+	</p>								
+	<p>product-documentations-guide.pdf 
+		<i class="fa fa-times-circle" ></i>
+	</p>
+	
+</div>							
+<br/><br/>

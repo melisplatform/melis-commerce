@@ -1,0 +1,7 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id .= $this->attributeId.'_'.$this->zoneconfig['conf']['id'];
+    }
+?>
+<h1 id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="content-heading attributeHeading"><a href="#" style="color: #686868;"><?= $this->translate('tr_meliscommerce_attribute_page');?></a> / <?= $this->atrans_name; ?></h1>

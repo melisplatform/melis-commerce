@@ -1,0 +1,85 @@
+/**HOTFIX **/
+a.save_product{
+	margin-right:8px;
+}
+btn.add-product, a.add-product{
+    margin-right: 1px;
+}
+span.attribute-buttons * {
+    margin-top: -1px;
+}
+.melis-product-heading{
+	margin-bottom:10px;
+}
+#prd_reference{
+	margin-left: 5px;
+}
+button.dropdown-btn{
+   height: 34px;
+   margin-top: -1px;
+}
+
+input#productCategorySearch{
+	width:100%;
+}
+
+span.productCategoryItems *{
+	margin-left: 15px;
+}
+
+/* MODAL  */
+.me-commerce .modal-content-cont{
+	padding: 25px;
+}
+.me-commerce .modal .modal-content{
+	border-width: 0px;
+}
+.me-commerce .modal .modal-header .modal-title{
+	font-weight: normal;
+    line-height: 36px;
+    height: 34px;
+}
+.me-commerce .modal .modal-header .modal-title i{
+	font-size: 18px;
+	margin-right: 5px;
+}
+.me-commerce .modal .modal-header{
+	padding: 5px 25px;
+	background: none;
+}
+.me-commerce .modal .modal-header .close{
+	font-size: 30px;
+    top: 7px;
+    right: 20px;
+}
+.me-commerce .modal .modal-footer{
+	background: none;
+}
+.me-commerce .modal .modal-footer{
+	padding: 10px 0;
+	border: none;
+}
+.me-commerce .modal .modal-footer .btn{
+	min-width: 120px;
+}
+
+.productCategoryView {
+	overflow: auto;
+	height: 300px;
+}
+#productCategorySearch{
+	margin-bottom: 5px;
+}
+.productCategoryLangDropdown{
+	margin-bottom: 5px;
+}
+
+div.prodCatLangDropDownContainer > .filter-dropdown {
+    width: 100%;
+}
+.productCategoryLangDropdown ul{
+	width:inherit;
+}
+div.melis-pdc *.btn {
+	margin-right:1px;
+}

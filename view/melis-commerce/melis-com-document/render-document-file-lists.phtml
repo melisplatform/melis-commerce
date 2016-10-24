@@ -1,0 +1,32 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = 'id="'.$this->zoneconfig['conf']['id'] .'" ';
+    }
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+
+<div class="pdc-content border-bottom" <?= $id . $data_melisKey ; ?>>
+	<div class="me-file-cont">
+		<?php 
+		if($this->files) {
+		foreach($this->files as $file) { ?>
+        <p data-doc-id="<?= $file['doc_id']; ?>" data-doc-type="file">
+        	<a href="<?= $file['doc_path'] ?>" target="_blank"><?= $file['doc_name']; ?></a>
+        	<span class="pull-right">
+            	<label>
+            		<span class="fa fa-pencil updateFileDocument" data-doc-id="<?= $file['doc_id']; ?>" data-type="file"/>
+            	</label>&nbsp;
+            	<label>
+            		<span class="fa fa-times-circle deleteFileImageDocument" data-doc-id="<?= $file['doc_id']; ?>" data-type="file"/>
+            	</label>
+        	</span>
+    	</p>
+		<?php }
+		}else { ?>
+		<p><?= $this->translate('tr_meliscommerce_documents_no_file'); ?></p>
+		<?php 
+        }
+		?>
+	</div>					
+</div>

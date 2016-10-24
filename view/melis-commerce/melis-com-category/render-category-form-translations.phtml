@@ -1,0 +1,65 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = 'id="'.$this->zoneconfig['conf']['id'] .'"';
+    }
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<div <?php echo $id. ' '.$data_melisKey?> class="border-bottom">
+	<div class="row">
+    	<div class="col-xs-12">	
+        	<div class="pdc-heading clearfix">
+                <h4>
+                	<i class="fa fa-cog"></i> <?php echo $this->translate('tr_meliscommerce_categories_common_label_texts')?>
+                </h4>
+            </div>
+        </div>
+		<div class="col-xs-12 col-md-3">
+    		<div class="product-text-tab-container">
+            	<ul class="nav-tabs product-text-tab">
+            		<?php foreach ($this->ecomLang As $key => $val):?>
+                		<li class="">
+                			<a class="clearfix" data-toggle="tab" href="#<?php echo $val['elang_locale'].'_categoryInfo' ?>" aria-expanded="false">
+                				<span><?php echo $val['elang_name']?></span>
+                			</a>
+                		</li>
+            		<?php endforeach;?>
+            	</ul>
+            </div>
+		</div>
+		<div class="col-xs-12 col-md-9">
+			<div class="tab-content">
+				<?php  foreach ($this->ecomLang As $key => $val):?>
+					<div id="<?php echo $val['elang_locale'].'_categoryInfo' ?>" class="tab-pane product-text-tab-content">
+    					<div class="me-heading bg-white border-bottom">
+                			<h3 class=""><i class="fa fa-language" aria-hidden="true"></i> <?php echo $val['elang_name']?></h3>
+                		</div>
+                		<div class="product-text-tab-form-content" style="padding-bottom: 0px; padding-right: 0px;">
+            				<?php
+                            	$form = $this->meliscommerce_categories_category_information_form;
+                            	$form->setData($this->formDefaultValues);
+                            	$form->setAttribute('class','cat_trans_form');
+                            	$form->setAttribute('data-langid', $val['elang_id']);
+                            	$form->get('catt_description')->setAttribute('class','form-control');
+                            	$form->get('catt_description')->setAttribute('rows','10');
+                            	$form->get('catt_lang_id')->setValue($val['elang_id']);
+                            	if (!empty($this->categoryTrans)){
+                                	foreach ($this->categoryTrans As $tVal){
+                                	    if ($val['elang_id']==$tVal->elang_id){
+                                	        $form->bind($tVal);
+                                	    }
+                                	}
+                            	}
+                            	
+                            	$form->prepare();
+                            	echo $this->form()->openTag($form); 
+                            	echo $this->melisFieldCollection($form);
+                            	echo $this->form()->closeTag(); 
+                            ?>
+                        </div>
+                    </div>
+                <?php endforeach;?>
+			</div>
+		</div>
+	</div>
+</div>

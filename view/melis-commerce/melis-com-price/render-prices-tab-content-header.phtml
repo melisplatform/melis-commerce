@@ -1,0 +1,18 @@
+<?php 
+	$name = '';
+	if (!empty($this->zoneconfig['conf']['name'])){
+	    $name = $this->zoneconfig['conf']['name'];
+	}
+	
+	$id = 'id="';
+	if (!empty($this->prefixId)){
+	    $id .= $this->prefixId.'_';
+	}
+	
+	$id .= $this->zoneconfig['conf']['id'].'"';
+	$data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+
+?>
+
+	<h3 <?= $id. ' '.$data_melisKey?>><?= $name;?></h3>
+	

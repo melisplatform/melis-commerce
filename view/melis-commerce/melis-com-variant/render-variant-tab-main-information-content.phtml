@@ -1,0 +1,44 @@
+<?php 
+    
+    $var_main_variant = "";
+    $sku ="";
+    $varId = "";
+    
+    $id = 'id="';
+    $varStatusId= "";
+    if (!empty($this->variantId)){
+        $id .= $this->variantId.'_';
+        $varStatusId .= $this->variantId.'_';
+    }
+    
+    $id .= $this->zoneconfig['conf']['id'].'"';
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+    $varStatusId .= 'var_status';    
+    if(!empty($this->layout()->variantObj)){
+        $var_main_variant = $this->layout()->variantObj->getVariant()->var_main_variant ? 'checked="checked"' : '';
+        $sku = (!empty($this->layout()->variantObj->getVariant()->var_sku)) ? $this->layout()->variantObj->getVariant()->var_sku : "";
+        $varId = (!empty($this->layout()->variantObj->getVariant()->var_id) ? $this->layout()->variantObj->getVariant()->var_id : "");
+    }
+?>
+<div <?= $id. ' '.$data_melisKey?> class="me-action-button-cont">							
+	<?php
+    	$form = $this->meliscommerce_variants_information_form;
+    	$form->setAttribute('id',$this->variantId.'_meliscommerce_variants_information_form');
+    	$form->setAttribute('data-changed','false');
+    	$form->get('var_sku')->setValue($sku);
+    	$form->prepare();
+    	echo $this->form()->openTag($form); 
+    	echo $this->melisFieldCollection($form);
+    	echo $this->form()->closeTag(); 
+    ?>
+	<label for=""><?= $this->translate('tr_meliscommerce_variant_main_information_main_variant_title')?></label><br>
+		
+		
+		<div id ="<?= $this->variantId.'_'.$this->zoneconfig['conf']['id'].'_mainvar'?>" class="make-switch bs-melis main_variant_switch" data-on-label="<?= $this->translate('tr_meliscommerce_variant_main_information_main_variant_yes')?>" data-off-label="<?= $this->translate('tr_meliscommerce_variant_main_information_main_variant_no'); ?>" data-text-label="<i class='fa fa-arrows-h'>">
+           <input type="checkbox" name="var_main_variant" id="<?= $varStatusId ?>" <?= $var_main_variant ?>>
+        </div>
+						
+</div>
+<script type="text/javascript">
+	$("#<?= $this->variantId.'_'.$this->zoneconfig['conf']['id'].'_mainvar'?>").bootstrapSwitch();
+</script>

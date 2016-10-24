@@ -1,0 +1,42 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = 'id="'.$this->zoneconfig['conf']['id'] .'"';
+    }
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<div class="col-xs-12 col-lg-4" <?php echo $id.' '.$data_melisKey; ?>>
+	<?php
+    	$form = $this->meliscommerce_categories_search_input;
+    	$form->prepare();
+    	echo $this->form()->openTag($form); 
+    	echo $this->melisFieldCollection($form);
+    	echo $this->form()->closeTag(); 
+    ?>
+	<div class="row">
+		<div class="col-xs-6 col-md-6 col-lg-3">
+			<button class="btn btn-success btn-block margin-bottom-10" id="clearSearchInputBtn" title="<?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_clear')?>">
+				<i class="fa fa-eraser"></i> 
+				<span><?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_clear')?></span>
+			</button>
+		</div>
+		<div class="col-xs-6 col-md-6 col-lg-3 margin-bottom-10">
+			<button class="btn btn-success btn-block" id="collapseCategoryTreeViewBtn" title="<?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_collapse_all')?>">
+				<i class="fa fa-compress fa-flip-horizontal"></i> 
+				<span><?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_collapse_all')?></span>
+			</button>
+		</div>
+		<div class="col-xs-6 col-md-6 col-lg-3">
+			<button class="btn btn-success btn-block margin-bottom-10" id="expandCategoryTreeViewBtn" title="<?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_expand_all')?>">
+				<i class="fa fa-expand fa-flip-horizontal"></i> 
+				<span><?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_expand_all')?></span>
+			</button>
+		</div>
+		<div class="col-xs-6 col-md-6 col-lg-3">
+			<button class="btn btn-success btn-block margin-bottom-10" id="refreshCategoryTreeView" title="<?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_refresh')?>">
+				<i class="fa fa-refresh"></i> 
+				<span><?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_refresh')?></span>
+			</button>
+		</div>
+	</div>
+</div> 

@@ -1,0 +1,33 @@
+<?php 
+    $id = 'id="';
+    if (!empty($this->variantId)){
+        $id .= $this->variantId.'_';
+    }
+    
+    $id .= $this->zoneconfig['conf']['id'].'"';
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<div <?= $id. ' '. $data_melisKey?> class="melis-filter-image filter-dropdown filter-search-container clearfix">
+	<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+		<i class="fa fa-clone" style="padding-right:10px;"></i>
+		<span class="filter-key">Type</span>
+		<span class="caret"></span>
+	</a>
+	<ul class="portfolioFilter dropdown-menu filter-key-values">
+		<li>
+			<a data-filter="*" data-text='All' class="current">All Categories</a>
+		</li>
+		<li>
+			<a data-filter=".people" data-text='People'>People</a>
+		</li>
+		<li>
+			<a data-filter=".places" data-text='Places'>Places</a>
+		</li>
+		<li>
+			<a data-filter=".food" data-text='Food'>Food</a>
+		</li>
+		<li>
+			<a data-filter=".objects" data-text='Objects'>Objects</a>
+		</li>
+	</ul>
+</div>

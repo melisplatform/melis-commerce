@@ -1,0 +1,17 @@
+<?php 
+$id ='';
+if (!empty($this->zoneconfig['conf']['id'])){
+    $id = $this->productId.'_'.$this->zoneconfig['conf']['id'];
+}
+
+$formTextType = $this->productTextTypeForm;
+$content = '<div id="'.$id.'" data-melisKey="'.$this->melisKey.'"><a class="toggleformCreateTextTypeContainer"><h4>'.$this->translate('tr_meliscommerce_products_text_modal_create').'</h4></a>'.
+    '<div class="formCreateTextTypeContainer" style="display:none">'.
+     $this->form()->openTag($formTextType).
+     $this->melisFieldCollection($formTextType).
+     $this->form()->closeTag().
+    '<button id="addProdTextType" class="btn btn-success pull-right"><i class="fa fa-plus"></i> '.$this->translate('tr_meliscommerce_general_common_add').'</button>'.
+    '</div>'.
+'</div>';
+echo $content;
+?>

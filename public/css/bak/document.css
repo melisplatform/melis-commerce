@@ -1,0 +1,22 @@
+.imageDocumentContainer{
+	height: 100%;
+}
+.imageDocumentContainer .imageDocumentItem {
+  width: 33.333%;
+  float: left;
+}
+.imageDocumentContainer .imageDocumentItem img{
+	display:block;
+	width: 100%;
+}
+
+/**
+ * File Attachments
+ */
+.me-file-cont p {
+    margin: 8px 0px 10px 0;
+}
+
+.melis-filter-image {
+    width: 100%;
+}

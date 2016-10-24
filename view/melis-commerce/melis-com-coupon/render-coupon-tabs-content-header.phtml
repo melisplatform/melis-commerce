@@ -1,0 +1,17 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id .= $this->couponId.'_'.$this->zoneconfig['conf']['id'];
+    }
+?>
+<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>">
+	<div class="melis-product-heading border-bottom clearfix" style="margin-bottom: 20px">
+    	<?php 
+        	if(!empty($this->zoneconfig['interface'])) {
+        	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+        	        echo $this->$keyConfig;
+        	    }
+        	}
+       ?>
+   </div>
+</div>

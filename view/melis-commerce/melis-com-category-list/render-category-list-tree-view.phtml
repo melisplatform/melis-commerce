@@ -1,0 +1,27 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = 'id="'.$this->zoneconfig['conf']['id'] .'"';
+    }
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<div class="col-xs-12 col-lg-8" <?php echo $id. ' '.$data_melisKey?>>
+	<div class="cat-tree-view-languages filter-dropdown clearfix">
+		<a href="#" class="dropdown-toggle category-list-lang-dropdown" data-toggle="dropdown">
+			<i class="fa fa-language"></i>
+			<span class="filter-key"><?php echo $this->currentLangName?></span>
+			<span class="caret"></span>
+		</a>
+		<ul class="dropdown-menu category-tree-view-lang">
+			<?php foreach ($this->ecomLang As $val):?>
+    			<li>
+    				<a data-locale="<?php echo $val['elang_locale']?>"><?php echo $val['elang_name']?></a>
+    			</li>
+			<?php endforeach;?>
+		</ul>
+	</div>
+	<div class="cat-div">
+		<div class="alert alert-warning hidden" id="searchNoResult">"<strong></strong>" <?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_search_not_found')?></div>	
+		<div id="categoryTreeView" data-langlocale="<?php echo $this->currentLangLocale ?>"></div>	
+	</div>
+</div>

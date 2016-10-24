@@ -1,0 +1,33 @@
+<?php 
+$name = '';
+    if (!empty($this->zoneconfig['conf']['name'])){
+        $name = $this->zoneconfig['conf']['name'];
+    }
+$icon = '';
+if (!empty($this->zoneconfig['conf']['icon'])){
+        $icon = $this->zoneconfig['conf']['icon'];
+    }
+$active = '';
+if (!empty($this->zoneconfig['conf']['icon'])){
+    $icon = $this->zoneconfig['conf']['icon'];
+}
+$href = '';
+if (!empty($this->zoneconfig['conf']['href'])){
+    $href = $this->zoneconfig['conf']['href'];
+}
+
+    $id = 'id="';
+    if (!empty($this->variantId)){
+        $id .= $this->variantId.'_';
+        $href = $this->variantId . '_' . $this->zoneconfig['conf']['href'];
+    }
+    
+    $id .= $this->zoneconfig['conf']['id'].'"';
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<li <?= $id. ' '. $data_melisKey?> class="<?= $active;?>">
+	<a data-toggle="tab" href="#<?= $href;?>" aria-expanded="true" class="<?= $icon;?>">
+		<i ></i>
+		<span><?= $name;?></span>
+	</a>
+</li>

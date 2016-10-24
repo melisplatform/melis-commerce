@@ -1,0 +1,17 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id .= $this->orderId.'_'.$this->zoneconfig['conf']['id'];
+    }
+?>
+<div class="col-xs-12 col-md-2">						
+					</div>
+<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="col-xs-12 col-md-10">
+	<?php 
+    	if(!empty($this->zoneconfig['interface'])) {
+    	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+    	        echo $this->$keyConfig;
+    	    }
+    	}
+   ?>
+</div>

@@ -1,0 +1,26 @@
+<?php 
+    $id = 'id="';
+    if (!empty($this->prefixId)){
+        $id .= $this->prefixId.'_';
+    }
+    
+    $id .= $this->zoneconfig['conf']['id'].'"';
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<div <?= $id. ' '. $data_melisKey?> class="tab-content variant-prices-forms">
+	<?php
+	
+	for($c = 0; $c < count($this->forms); $c++){
+		if($this->data[$c]['name'] == 'general'){$active='active';} else {$active='';}
+         
+		?>			
+	<div id="<?= $this->data[$c]['tab_id']?>" class="tab-pane <?=$active?>">
+		<?php
+        	echo $this->form()->openTag($forms[$c]); 
+        	echo $this->melisFieldCollection($forms[$c]);
+        	echo $this->form()->closeTag(); 
+        	
+        ?>		
+	</div>
+	<?php } ?>
+</div> 

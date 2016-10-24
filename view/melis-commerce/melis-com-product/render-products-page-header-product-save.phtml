@@ -1,0 +1,14 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = ' id="'.$this->productId.'_'.$this->zoneconfig['conf']['id'] . '"';
+    }
+    
+    $name = '';
+    if (!empty($this->zoneconfig['conf']['name'])){
+        $name = $this->zoneconfig['conf']['name'];
+    }
+    
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<button class="btn btn-success save_product" data-productId="<?= $this->productId; ?>"  <?php echo $id.' '.$data_melisKey; ?> ><i class="fa fa-save" style="padding-right:10px;"></i><?php echo $this->translate($name)?></button>

@@ -1,0 +1,31 @@
+<?php 
+	$id = 'id="';
+	if (!empty($this->variantId)){
+		$id .= $this->variantId.'_';
+	}
+	
+	$id .= $this->zoneconfig['conf']['id'].'"';
+	$data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+	
+	$productId = 'data-prodId="'.$this->productId.'"';
+?>
+<div   class="tab-pane container-level-a" <?php echo $id. ' '. $data_melisKey. ' '. $productId;?>> 
+
+		<?php 
+			
+			if(empty($this->noAccess))
+			{
+			    if(!empty($this->zoneconfig['interface'])) {
+			        foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+			            echo $this->$keyConfig;
+			        }
+			    }
+			}
+	        else 
+	        {
+	            echo '<h4>'.$this->noAccess.'</h4>';
+	        }
+        
+		?>
+</div>
+ 

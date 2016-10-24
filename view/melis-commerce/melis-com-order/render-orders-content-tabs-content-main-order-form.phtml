@@ -1,0 +1,12 @@
+<?php 
+    $form = $this->meliscommerce_order_information_form;
+    $form->setData((array)$this->layout()->status);
+    $form->get('ord_status')->setAttribute('id', 'colorStatus');
+    $form->prepare();
+    echo $this->form()->openTag($form);
+    echo $this->melisFieldCollection($form);
+    echo $this->form()->closeTag();
+    
+    echo $this->colorScript;
+?>
+
