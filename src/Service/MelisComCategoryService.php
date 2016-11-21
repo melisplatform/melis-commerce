@@ -843,7 +843,7 @@ class MelisComCategoryService extends MelisComGeneralService
     
     /**
      * Delete Categpry Product
-     * @param int $categoryProductId
+     * @param int $categoryProductId, primary key of the entry
      * @return boolean true if success, otherwise false
      */
     public function deleteCategoryProduct($categoryProductId)
@@ -881,7 +881,6 @@ class MelisComCategoryService extends MelisComGeneralService
             }
             catch(\Exception $e)
             {
-                echo $e->getMessage();
                 $successFlag = false;
             }
         }
@@ -896,6 +895,11 @@ class MelisComCategoryService extends MelisComGeneralService
         return $arrayParameters['results'];
     }
     
+    /**
+     * This method will setup the ordering of product list on category
+     * @param int $categoryId
+     * @return Boolean
+     */
     public function reorderProductCategory($categoryId)
     {
         // Event parameters prepare

@@ -10,7 +10,7 @@
 namespace MelisCommerce\Model\Tables;
 
 use Zend\Db\TableGateway\TableGateway;
-
+use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Where;
 
 class MelisEcomProductCategoryTable extends MelisEcomGenericTable 
@@ -34,10 +34,19 @@ class MelisEcomProductCategoryTable extends MelisEcomGenericTable
         }
         
         $select->where('pcat_cat_id = '.$categoryId);
-        $select->order('pcat_order ASC');
+        $select->order(array('pcat_order' => 'ASC'));
         
         $resultSet = $this->tableGateway->selectWith($select);
         
         return $resultSet;
+    }
+    
+    public function getCategoryProductCount($categoryId)
+    {
+        $select = $this->tableGateway->getSql()->select();    
+        $select->columns(array('count'=> new Expression('COUNT(DISTINCT pcat_prd_id)')));
+        $select->where('pcat_cat_id = '.$categoryId);
+        $resultData = $this->tableGateway->selectWith($select);
+        return $resultData;
     }
 }

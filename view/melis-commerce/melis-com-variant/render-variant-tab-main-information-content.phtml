@@ -22,10 +22,7 @@
 ?>
 <div <?= $id. ' '.$data_melisKey?> class="me-action-button-cont">							
 	<?php
-    	$form = $this->meliscommerce_variants_information_form;
-    	$form->setAttribute('id',$this->variantId.'_meliscommerce_variants_information_form');
-    	$form->setAttribute('data-changed','false');
-    	$form->get('var_sku')->setValue($sku);
+    	$form = $this->meliscommerce_variants_information_form;    	
     	$form->prepare();
     	echo $this->form()->openTag($form); 
     	echo $this->melisFieldCollection($form);

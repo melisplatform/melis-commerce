@@ -501,7 +501,7 @@ class MelisComBasketService extends MelisComGeneralService
         if (!empty($persistentData))
         {
             $melisEcomBasketPersistentTable->deleteByField('bper_client_id', $arrayParameters['clientId']);
-            $results = $arrayParameters['clientKey'];
+            $results = $arrayParameters['clientId'];
         }
         
         // Adding results to parameters for events treatment if needed

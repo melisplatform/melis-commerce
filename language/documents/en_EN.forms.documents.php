@@ -2,33 +2,33 @@
 return array(
     'tr_meliscommerce_documents_form_' => 'text',
     
-    'tr_meliscommerce_documents_add_image_button_text' => 'Add Image',
+    'tr_meliscommerce_documents_add_image_button_text' => 'Add image',
     
     // Upload File Attachment Form
-    'tr_meliscommerce_documents_main_information_upload_file_select' => 'Select File',
-    'tr_meliscommerce_documents_main_information_update_file_country' => 'Select Country',
+    'tr_meliscommerce_documents_main_information_upload_file_select' => 'Select file',
+    'tr_meliscommerce_documents_main_information_update_file_country' => 'Select country',
     'tr_meliscommerce_documents_main_information_update_file_image' => 'Select type',
     // Images Filter Dropdown
     
     'tr_meliscommerce_documents_filter_all_option' => 'All',
     'tr_meliscommerce_documents_action_type' => 'Type',
-    'tr_meliscommerce_documents_action_all_type' => 'All Type',
+    'tr_meliscommerce_documents_action_all_type' => 'All type',
     'tr_meliscommerce_documents_action_country' => 'Country',
-    'tr_meliscommerce_documents_action_all_countries' => 'All Countries',
-    'tr_meliscommerce_documents_action_all_image' => 'All Image',
+    'tr_meliscommerce_documents_action_all_countries' => 'All countries',
+    'tr_meliscommerce_documents_action_all_image' => 'All image',
     
     // Upload Image Form
-    'tr_meliscommerce_documents_main_information_upload_select_img' => 'Select Image',
-    'tr_meliscommerce_documents_main_information_upload_select_type' => 'Select Type',
+    'tr_meliscommerce_documents_main_information_upload_select_img' => 'Select image',
+    'tr_meliscommerce_documents_main_information_upload_select_type' => 'Select type',
     'tr_meliscommerce_documents_main_information_upload_select_type_default' => 'Default',
     'tr_meliscommerce_documents_main_information_upload_select_type_small' => 'Small',
     'tr_meliscommerce_documents_main_information_upload_select_type_large' => 'Large',
     'tr_meliscommerce_documents_main_information_upload_select_type_top' => 'Top',
     
     // Delete Message Confimation
-    'tr_meliscommerce_documents_delete_file_title' => 'Delete File',
+    'tr_meliscommerce_documents_delete_file_title' => 'Delete file',
     'tr_meliscommerce_documents_delete_file_msg_confirm' => 'Are you sure you want to remove this file?',
-    'tr_meliscommerce_documents_delete_image_title' => 'Delete Image',
+    'tr_meliscommerce_documents_delete_image_title' => 'Delete image',
     'tr_meliscommerce_documents_delete_image_msg_confirm' => 'Are you sure you want to remove this image?',
     'tr_meliscommerce_documents_delete_file_success' => 'File has been successfully removed',
     'tr_meliscommerce_documents_delete_image_success' => 'Image has been successfully removed',
@@ -87,17 +87,17 @@ return array(
     'tr_meliscommerce_docuemts_update_file_failed' => 'Unable to update file, please try again later',
     
     // File Type
-    'tr_meliscommerce_documents_file_add_banner_title' => 'New File Type',
+    'tr_meliscommerce_documents_file_add_banner_title' => 'New file type',
     'tr_meliscommerce_documents_file_type_add' => 'Add a file type',
-    'tr_meliscommerce_documents_file_type_code' => 'Type Code',
-    'tr_meliscommerce_documents_file_type_name' => 'Type Name',
+    'tr_meliscommerce_documents_file_type_code' => 'Type code',
+    'tr_meliscommerce_documents_file_type_name' => 'Type name',
     'tr_meliscommerce_documents_file_type_add_success' => 'File type has been added successfully',
     'tr_meliscommerce_documents_File_type_add_failed' => 'Unable to add file type, please review your entry',
     
     // Image Type
-    'tr_meliscommerce_documents_image_type_add' => 'Add Image Type',
-    'tr_meliscommerce_documents_image_type_code' => ' Type Code',
-    'tr_meliscommerce_documents_image_type_name' => 'Type Name',
+    'tr_meliscommerce_documents_image_type_add' => 'Add image type',
+    'tr_meliscommerce_documents_image_type_code' => ' Type code',
+    'tr_meliscommerce_documents_image_type_name' => 'Type name',
     'tr_meliscommerce_documents_image_type_code_empty' => 'Please enter your type code',
     'tr_meliscommerce_documents_image_type_code_long' => ' Type code too long, it should not be more than 10 characters',
     'tr_meliscommerce_documents_image_type_name_empty' => 'Please enter your type name',

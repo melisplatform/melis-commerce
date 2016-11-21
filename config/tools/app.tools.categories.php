@@ -24,14 +24,19 @@ return array(
                                 ),
 //                                 'category-product-list-search' => array(
 //                                     'module' => 'MelisCommerce',
-//                                     'controller' => 'MelisComCategory',
-//                                     'action' => 'render-category-product-list-filter-serach',
+//                                     'controller' => 'MelisComCategory', 
+//                                     'action' => 'render-category-product-list-filter-serach', 
 //                                 ),
                             ),
                             'center' => array(
                                 
                             ),
                             'right' => array(
+                                'category-product-list-export' => array(
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComCategory',
+                                    'action' => 'render-category-product-list-export',
+                                ),
                                 'category-product-list-refresh' => array(
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComCategory',
@@ -41,13 +46,13 @@ return array(
                         ),
                         'columns' => array(
                             'pcat_order' => array(
-                                'text' => 'tr_meliscommerce_categories_common_label_order',
-                                'css' => array('width' => '5%', 'padding-right' => '0'),
+                                'text' => '<i class="fa fa-plus"> </i> ',
+                                'css' => array('width' => '1%', 'padding-right' => '0'),
                                 'sortable' => true,
                             ),
                             'prd_id' => array(
                                 'text' => 'tr_meliscommerce_categories_category_prd_id',
-                                'css' => array('width' => '5%', 'padding-right' => '0'),
+                                'css' => array('width' => '1%', 'padding-right' => '0'),
                                 'sortable' => false,
                             ),
                             'prd_img' => array(
@@ -57,7 +62,7 @@ return array(
                             ),
                             'prd_status' => array(
                                 'text' => 'tr_meliscommerce_categories_category_prd_status',
-                                'css' => array('width' => '10%', 'padding-right' => '0'),
+                                'css' => array('width' => '1%', 'padding-right' => '0'),
                                 'sortable' => false,
                             ),
                             'prd_name' => array(
@@ -67,7 +72,7 @@ return array(
                             ),
                             'prd_date_creation' => array(
                                 'text' => 'tr_meliscommerce_categories_category_prd_date_creation',
-                                'css' => array('width' => '20%', 'padding-right' => '0'),
+                                'css' => array('width' => '1%', 'padding-right' => '0'),
                                 'sortable' => false,
                             ),
                         ),

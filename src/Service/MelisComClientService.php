@@ -33,8 +33,8 @@ class MelisComClientService extends MelisComGeneralService
 	 * 
 	 * @return MelisClient[] Array of Client objects
 	 */
-	public function getClientList($countryId = null, $dateCreationMin = null, $dateCreationMax = null, 
-	                              $onlyValid = null, $start = 0, $limit = null, $search = null, $order = 'ASC')
+	public function getClientList($countryId = null, $dateCreationMin = null, $dateCreationMax = null, $onlyValid = null, 
+                                    $start = 0, $limit = null, $order = null, $search = null)
 	{
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -49,25 +49,15 @@ class MelisComClientService extends MelisComGeneralService
 	    $melisEcomClientAddressTable = $this->getServiceLocator()->get('MelisEcomClientAddressTable');
 	    
 	    // Get Client Data
-	    $clientData = $melisEcomClientTable->getClientList($arrayParameters['countryId'], $arrayParameters['dateCreationMin'], $arrayParameters['dateCreationMax'],
-	                                                           $arrayParameters['onlyValid'], $arrayParameters['start'], $arrayParameters['limit'], $arrayParameters['order']);
+	    $clientData = $melisEcomClientTable->getClientList($arrayParameters['countryId'], $arrayParameters['dateCreationMin'], $arrayParameters['dateCreationMax'], $arrayParameters['onlyValid'], 
+	                                                       $arrayParameters['start'], $arrayParameters['limit'], $arrayParameters['order'],$arrayParameters['search']);
 	    $ctr = 0;
 	    foreach ($clientData As $val)
 	    {
-	        $idSearchFlag = false;
-	        $personSearchFlag = false;
 	        $companySearchFlag = false;
 	        
 	        $melisClient = new \MelisCommerce\Entity\MelisClient();
 	        $melisClient->setId($val->cli_id);
-	        
-	        if (!empty($arrayParameters['search']))
-	        {
-                if (strpos($val->cli_id, mb_strtolower($arrayParameters['search'])) !== false)
-                {
-                    $idSearchFlag = true;
-                }
-	        }
 	        
 	        // Set Client Data to MelisClient
 	        $melisClient->setClient($val);
@@ -79,14 +69,6 @@ class MelisComClientService extends MelisComGeneralService
             {
                 $pval->civility_trans = $this->getCivilityTransByCivilityIdAndLangId($pval->civ_id);
                 $pval->addresses = $this->getClientAddressesByClientPersonId($pval->cper_id);
-                
-                if (!empty($arrayParameters['search']))
-                {
-                    if (strpos(mb_strtolower($pval->cper_firstname.' '.$pval->cper_name), mb_strtolower($arrayParameters['search'])) !== false)
-                    {
-                        $personSearchFlag = true;
-                    }
-                }
                 
                 array_push($clientPerson, $pval);
             }
@@ -109,63 +91,11 @@ class MelisComClientService extends MelisComGeneralService
 	        $clientCompany = array();
 	        foreach ($clientCompanyData As $cVal)
 	        {
-	            if (!empty($arrayParameters['search']))
-	            {
-	                if (strpos(mb_strtolower($cVal->ccomp_name), mb_strtolower($arrayParameters['search'])) !== false)
-	                {
-	                    $companySearchFlag = true;
-	                }
-	            }
-	            
                 array_push($clientCompany, $cVal);
 	        }
 	        $melisClient->setCompany($clientCompany);
 	        
-	        $isIncluded = false;
-            if (!empty($arrayParameters['search']))
-            {
-                if ($idSearchFlag || $personSearchFlag || $companySearchFlag)
-                {
-                    if (is_null($arrayParameters['limit']))
-                    {
-                        $isIncluded = true;
-                    }
-                    elseif ($arrayParameters['limit'] == -1)
-                    {
-                        $isIncluded = true;
-                    }
-                    elseif (count($results)<$arrayParameters['limit'])
-                    {
-                        $isIncluded = true;
-                    }
-                }
-            }
-            else
-            {
-                if (is_null($arrayParameters['limit']))
-                {
-                    $isIncluded = true;
-                }
-                elseif ($arrayParameters['limit'] == -1)
-                {
-                    $isIncluded = true;
-                }
-                elseif (count($results)<$arrayParameters['limit'])
-                {
-                    $isIncluded = true;
-                }
-            }
-	        
-	        
-	        if ($isIncluded)
-	        {
-	            if ($ctr>=$arrayParameters['start'])
-	            {
-	                array_push($results, $melisClient);
-	            }
-	            
-	            $ctr++;
-	        }
+            array_push($results, $melisClient);
 	    }
 	    // Service implementation end
 	    
@@ -797,6 +727,16 @@ class MelisComClientService extends MelisComGeneralService
                 $arrayParameters['person']['cper_password'] = $this->crypt($arrayParameters['person']['cper_password']);
             }
             
+            $arrayParameters['person']['cper_firstname'] = ucwords(mb_strtolower($arrayParameters['person']['cper_firstname']));
+            $arrayParameters['person']['cper_name'] = mb_strtoupper($arrayParameters['person']['cper_name']);
+            
+            if (!empty($arrayParameters['person']['cper_middle_name']))
+            {
+                $arrayParameters['person']['cper_middle_name'] = ucwords(mb_strtolower($arrayParameters['person']['cper_middle_name']));
+            }
+            
+            $arrayParameters['person']['cper_email'] = mb_strtolower($arrayParameters['person']['cper_email']);
+            
             $perId = $melisEcomClientPersonTable->save($arrayParameters['person'], $arrayParameters['personId']);
             
             $clientPersonAddData = $arrayParameters['clientPersonAddresses'];
@@ -813,6 +753,14 @@ class MelisComClientService extends MelisComGeneralService
                 }
                 
                 $val['cadd_civility'] = (!empty($val['cadd_civility'])) ? $val['cadd_civility'] : 0;
+                
+                $val['cadd_name'] = mb_strtoupper($val['cadd_name']);
+                $val['cadd_firstname'] = ucwords(mb_strtolower($val['cadd_firstname']));
+                if (!empty($val['cadd_middle_name']))
+                {
+                    $val['cadd_middle_name'] = ucwords(mb_strtolower($val['cadd_middle_name']));
+                }
+                
                 $melisEcomClientAddressTable->save($val, $caddId);
             }
             
@@ -914,6 +862,13 @@ class MelisComClientService extends MelisComGeneralService
             $arrayParameters['address']['cadd_client_person'] = null;
             
             $arrayParameters['address']['cadd_civility'] = (!empty($arrayParameters['address']['cadd_civility'])) ? $arrayParameters['address']['cadd_civility'] : 0;
+           
+            $arrayParameters['address']['cadd_name'] = mb_strtoupper($arrayParameters['address']['cadd_name']);
+            $arrayParameters['address']['cadd_firstname'] = ucwords(mb_strtolower($arrayParameters['address']['cadd_firstname']));
+            if (!empty($arrayParameters['address']['cadd_middle_name']))
+            {
+                $arrayParameters['address']['cadd_middle_name'] = ucwords(mb_strtolower($arrayParameters['address']['cadd_middle_name']));
+            }
             
             $caddId = $melisEcomClientAddressTable->save($arrayParameters['address'], $arrayParameters['addressId']);
             $results = $caddId;
@@ -1173,4 +1128,39 @@ class MelisComClientService extends MelisComGeneralService
 	
 	    return $arrayParameters['results'];
 	}
+	
+	/**
+	 * This method retrieves the data used for the list widget
+	 * @param varchar $identifier accepts curMonth|avgMonth
+	 * @return float|null , float on success, otherwise null
+	 */
+	public function getWidgetClients($identifier)
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = null;
+	     
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_widget_client_start', $arrayParameters);
+	     
+	    // Service implementation start
+	    $clientTable = $this->getServiceLocator()->get('MelisEcomClientTable');
+	    switch($arrayParameters['identifier']){
+	        case 'curMonth':
+	            $results = $clientTable->getCurrentMonth()->count(); break;
+	        case 'avgMonth':
+	            $results = $clientTable->getAvgMonth()->current(); break;
+	        default:
+	            break;
+	    }
+	    // Service implementation end
+	     
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_widget_client_end', $arrayParameters);
+	     
+	    return $arrayParameters['results'];
+	}
+	
 }

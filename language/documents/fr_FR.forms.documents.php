@@ -5,28 +5,28 @@ return array(
     'tr_meliscommerce_documents_add_image_button_text' => 'Ajouter une image',
     
     // Upload File Attachment Form
-    'tr_meliscommerce_documents_main_information_upload_file_select' => 'Choisir un Fichier',
-    'tr_meliscommerce_documents_main_information_update_file_country' => 'Choisir un Pays',
+    'tr_meliscommerce_documents_main_information_upload_file_select' => 'Choisir un fichier',
+    'tr_meliscommerce_documents_main_information_update_file_country' => 'Choisir un pays',
     'tr_meliscommerce_documents_main_information_update_file_image' => 'Choisir un type d\'image',
     
     // Images Filter Dropdown
     'tr_meliscommerce_documents_filter_all_option' => 'Tous',
     'tr_meliscommerce_documents_action_type' => 'Type',
-    'tr_meliscommerce_documents_action_all_type' => 'Tous les Types',
+    'tr_meliscommerce_documents_action_all_type' => 'Tous les types',
     'tr_meliscommerce_documents_action_country' => 'Pays',
-    'tr_meliscommerce_documents_action_all_countries' => 'Tous les Pays',
+    'tr_meliscommerce_documents_action_all_countries' => 'Tous les pays',
     'tr_meliscommerce_documents_action_all_image' => 'Toutes les images',
     
     // Upload Image Form
-    'tr_meliscommerce_documents_main_information_upload_select_img' => 'Choisir une Image',
-    'tr_meliscommerce_documents_main_information_upload_select_type' => 'Choisir un Type',
+    'tr_meliscommerce_documents_main_information_upload_select_img' => 'Choisir une image',
+    'tr_meliscommerce_documents_main_information_upload_select_type' => 'Choisir un type',
     'tr_meliscommerce_documents_main_information_upload_select_type_default' => 'Défaut',
     'tr_meliscommerce_documents_main_information_upload_select_type_small' => 'Petit',
     'tr_meliscommerce_documents_main_information_upload_select_type_large' => 'Grand',
     'tr_meliscommerce_documents_main_information_upload_select_type_top' => 'Haut',
     
     // Delete Message Confimation 
-    'tr_meliscommerce_documents_delete_file_title' => 'Supprimer le Fichier',
+    'tr_meliscommerce_documents_delete_file_title' => 'Supprimer le fichier',
     'tr_meliscommerce_documents_delete_file_msg_confirm' => 'Êtes-vous sûr de vouloir supprimer ce fichier ?',
     'tr_meliscommerce_documents_delete_image_title' => 'Supprimer l\'image',
     'tr_meliscommerce_documents_delete_image_msg_confirm' => 'Êtes-vous sûr de vouloir supprimer cette image?',
@@ -72,7 +72,7 @@ return array(
     'tr_meliscommerce_documents_image_save_success' => 'L\'image a été uploadée avec succès',
     'tr_meliscommerce_documents_image_update_success' => 'Image has been updated successfully',
     
-    'tr_meliscommerce_documents_upload_doc_name' => 'Name',
+    'tr_meliscommerce_documents_upload_doc_name' => 'Nom',
     'tr_meliscommerce_documents_upload_doc_name_empty' => 'Please enter the name',
     'tr_meliscommerce_documents_upload_doc_name_long' => 'Name too long, it should not be greater than 255 characters',
     

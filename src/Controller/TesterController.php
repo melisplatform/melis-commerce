@@ -11,69 +11,82 @@ namespace MelisCommerce\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
+use Zend\View\Model\ViewModel;
 class TesterController extends AbstractActionController
 {
 
-    
-    public function runAction()
+    public function displayTestAction()
     {
-        echo 'Tester Controller' . PHP_EOL;
+        $request = $this->getRequest();
+        $searchProductByTextFieldsRes = array();
+        $searchProductByAttributeValuesAndPriceRangeRes = array();
+        $searchProductFullRes = array();
         
-        $docService = $this->getServiceLocator()->get('MelisComDocumentService');
-        print_r(
-            $docService->getDocumentsByRelation('product', 1)
-        );
+        if($request->isPost()) {
+            $prodSearchSvc = $this->getServiceLocator()->get('MelisComProductSearchService');
+            $postData = $request->getPost()->getArrayCopy();
 
-        return new JsonModel(array());
+            $formType = $postData['actionType'];
+            $searchProductByTextFieldsRes = array();
+            $searchProductByAttributeValuesAndPriceRangeRes = array();
+            $searchProductFullRes = array();
+            
+
+            
+            $catIds = $postData['categoryId'] ? str_replace(' ', '', trim($postData['categoryId'])) : null;
+            if($catIds) {
+                $catIds = explode(',', $catIds);
+            }
+            
+            switch($formType) {
+                case 'searchProductByTextFields':
+                    $types = str_replace(' ', '', trim($postData['fieldTypeCodes']));
+                    $types = explode(',', $types);
+                    $searchProductByTextFieldsRes = $prodSearchSvc->searchProductByTextFields($postData['productName'], $types, $postData['langId'], $catIds, null, $postData['productStatus']);
+                break;
+                case 'searchProductByAttributeValuesAndPriceRange':
+                    $attr = str_replace(' ', '', trim($postData['attributeIds']));
+                    $attr = explode(',', $attr);
+                    $searchProductByAttributeValuesAndPriceRangeRes = $prodSearchSvc->searchProductByAttributeValuesAndPriceRange($attr, $postData['minPrice'], $postData['maxPrice'],
+                        $postData['langId'],
+                        $catIds, null, $postData['productStatus']);
+                break;
+                case 'searchProductFull':
+                    $types = str_replace(' ', '', trim($postData['fieldTypeCodes']));
+                    $types = explode(',', $types);
+                    
+                    $attr = str_replace(' ', '', trim($postData['attributeIds']));
+                    $attr = explode(',', $attr);
+                    $searchProductFullRes = $prodSearchSvc->searchProductFull($postData['productName'], $types, $attr, $postData['minPrice'], $postData['maxPrice'],
+                        $postData['langId'], $catIds, null, $postData['productStatus']
+                    );
+                break;
+               
+            }
+            
+        }
+        
+        
+        
+        $view = new ViewModel();
+        $view->searchProductByTextFieldsRes = $searchProductByTextFieldsRes;
+        $view->searchProductByAttributeValuesAndPriceRangeRes = $searchProductByAttributeValuesAndPriceRangeRes;
+        $view->searchProductFullRes = $searchProductFullRes;
+        
+        return $view;
     }
     
-    public function saveDocTypeAction()
-    {
-        echo 'Tester Controller' . PHP_EOL;
-        
-        $docService = $this->getServiceLocator()->get('MelisComDocumentService');
-        print_r(
-            $docService->saveDocumentType('IMAGE', 'imageShirt')
-            );
-        print_r(
-            $docService->saveDocumentType('IMAGES', 'imageShirt')
-            );
-        
-        return new JsonModel(array());
-    }
     
-    function typesAction()
+    public function testAction()
     {
-        echo 'Tester Controller' . PHP_EOL;
+        $langId = 6;
+        $attrService = $this->getServiceLocator()->get('MelisComAttributeService');
+        $attrData = $attrService->getAttributeText(27, 2);
+        echo $attrData;
         
-        $docService = $this->getServiceLocator()->get('MelisComDocumentService');
-        print_r(
-            $docService->getDocumentTypes()
-            );
-        
-        return new JsonModel(array());
-    }
-    
-    public function attributesAction()
-    {
-        echo 'Tester Controller' . PHP_EOL;
-        
-        $prodService = $this->getServiceLocator()->get('MelisComProductService');
-        print_r(
-            $prodService->getProductList()
-            );
-        
-        return new JsonModel(array());
-    }
-    
-    public function currencyAction()
-    {
-        $coreConfig = $this->getServiceLocator()->get('MelisCoreConfig');
-        $data = $coreConfig->getItem('meliscommerce/interface/meliscommerce_coupon_list/interface/meliscommerce_coupon_list_leftmenu');
-        print '<pre>';
-        print_r($data);
-        print '</pre>';
+
         die;
     }
+
     
 }

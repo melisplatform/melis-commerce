@@ -19,7 +19,7 @@ class MelisEcomAttributeValueTable extends MelisEcomGenericTable
     public function __construct(TableGateway $tableGateway)
     {
         parent::__construct($tableGateway);
-        $this->idField = 'attr_id';
+        $this->idField = 'atval_id';
     }
     
     public function getAttributeValuesById($attributeValueId)

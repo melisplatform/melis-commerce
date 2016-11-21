@@ -1,14 +1,22 @@
 var pUniqueId = [];
-
-/* #### FIX DataTable issue in Tab #### */
+  
 $(document).ready(function(){
-	$('body').on('a[data-toggle="tab"]','shown.bs.tab', function (e) {
+	var $body = $('body');
+	
+	/* #### FIX DataTable issue in Tab #### */
+	$body.on('a[data-toggle="tab"]','shown.bs.tab', function (e) {
 		$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
-	});		
+	});
+	$body.on("init.dt", function(e, settings) {
+		$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
+	});	
+	$body.on("mouseenter click", '.tab-pane.active', function(e, settings) {		
+		$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
+	});
+	
 });
 
 var melisCommerce = (function(window) {
-
 	function initTooltipTable() {
 		$(".tooltipTable").each(function() {
 			$(this).qtip({
@@ -24,13 +32,45 @@ var melisCommerce = (function(window) {
 					delay: 300
 				},
 				position: {
-					my: 'top center', 
-					at: 'bottom center',
+					target: 'mouse',
+					adjust: {
+						mouse: false
+					},
+					my: 'center center', 
+					at: 'center center',
 					//container : false,
 				},
 //			    adjust:{
 //		          screen: true,
 //			    },
+			});
+		});
+	}
+	
+	function initTooltipVarTable() {
+		$(".tooltipTableVar").each(function() {
+			$(this).qtip({
+				content: {
+					text: $(this).next('.tooltiptext')
+				},
+				overwrite: false,
+				style: {
+					classes: 'qtip-tipsy qtip-shadow',
+					width: "auto",
+				},
+				hide: {
+					fixed: true,
+					delay: 300,
+					event: "mouseleave"
+				},				
+				position: {
+					target: 'mouse',
+					adjust: {
+						mouse: false, 					
+					},
+					my: 'center center',
+					at: 'center center',				
+				},
 			});
 		});
 	}
@@ -203,6 +243,7 @@ var melisCommerce = (function(window) {
 
 	return {
 		initTooltipTable: initTooltipTable,
+		initTooltipVarTable: initTooltipVarTable,
 		initCommerceTable : initCommerceTable,
 		openProductPage : openProductPage,
 		postSave: postSave,
@@ -220,3 +261,7 @@ var melisCommerce = (function(window) {
 	}
 	
 })(window);
+
+setInterval(function() {
+	melisCommerce.enableAllTabs();
+}, 10000)

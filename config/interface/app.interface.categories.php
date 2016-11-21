@@ -32,7 +32,7 @@ return array(
                                 'id' => 'id_meliscommerce_categories_page',
                                 'melisKey' => 'meliscommerce_categories_page',
                                 'name' => 'tr_meliscommerce_categories_Categories',
-                                'icon' => 'fa fa-list-ul',
+                                'icon' => 'fa fa-book',
                             ),
                         ),
                         'meliscommerce_categories_page' => array(
@@ -71,6 +71,18 @@ return array(
                                                 'action' => 'render-category-list-header',
                                             ),
                                             'interface' => array(
+                                                'meliscommerce_categories_list_header_add_catalog' => array(
+                                                    'conf' => array(
+                                                        'id' => 'id_meliscommerce_categories_list_header_add_catalog',
+                                                        'melisKey' => 'meliscommerce_categories_list_header_add_catalog',
+                                                        'name' => 'tr_meliscommerce_categories_list_header_add_catalog'
+                                                    ),
+                                                    'forward' => array(
+                                                        'module' => 'MelisCommerce',
+                                                        'controller' => 'MelisComCategoryList',
+                                                        'action' => 'render-category-list-header-add-catalog'
+                                                    )
+                                                ),
                                                 'meliscommerce_categories_list_header_add_category' => array(
                                                     'conf' => array(
                                                         'id' => 'id_meliscommerce_categories_list_header_add_category',
@@ -263,6 +275,18 @@ return array(
                                                                                         'module' => 'MelisCommerce',
                                                                                         'controller' => 'MelisComCategory',
                                                                                         'action' => 'render-category-form-translations',
+                                                                                    )
+                                                                                ),
+                                                                                'meliscommerce_categories_category_form_date_validity' => array(
+                                                                                    'conf' => array(
+                                                                                        'id' => 'id_meliscommerce_categories_category_form_date_validity',
+                                                                                        'melisKey' => 'meliscommerce_categories_category_form_date_validity',
+                                                                                        'name' => 'tr_meliscommerce_categories_category_form_date_validity',
+                                                                                    ),
+                                                                                    'forward' => array(
+                                                                                        'module' => 'MelisCommerce',
+                                                                                        'controller' => 'MelisComCategory',
+                                                                                        'action' => 'render-category-form-date-validity',
                                                                                     )
                                                                                 ),
                                                                                 'meliscommerce_categories_category_form_countries' => array(

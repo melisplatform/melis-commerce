@@ -42,7 +42,7 @@ return array(
                     '/MelisCommerce/css/jquery.qtip.min.css',
                     '/MelisCommerce/css/bootstrap-datetimepicker.min.css',
                     '/MelisCommerce/assets/jstree/dist/themes/proton/style.min.css',
-                    '/MelisCommerce/css/awesomplete.css',                    
+                    '/MelisCommerce/css/awesomplete.css',   
                     '/MelisCommerce/css/ecommerce-common.css',
                 ),
             ),
@@ -85,15 +85,14 @@ return array(
                                         'type' => 'meliscommerce/interface/meliscommerce_coupon_list/interface/meliscommerce_coupon_list_leftmenu'
                                     ),
                                 ),
-//                                 'meliscommerce_currency_lists' => array(
-//                                     'conf' => array(
-//                                         'type' => 'meliscommerce/interface/meliscommerce_currency_lists/interface/meliscommerce_currency_left_menu'
-//                                     ),
-//                                 ),
-
                                 'meliscommerce_attribute_list' => array(
                                     'conf' => array(
                                         'type' => 'meliscommerce/interface/meliscommerce_attribute_list/interface/meliscommerce_attribute_list_leftmenu'
+                                    ),
+                                ),
+                                'meliscommerce_country_list' => array(
+                                    'conf' => array(
+                                        'type' => 'meliscommerce/interface/meliscommerce_country_list/interface/meliscommerce_country_list_leftmenu'
                                     ),
                                 ),
                                 'meliscommerce_language_list' => array(
@@ -101,6 +100,11 @@ return array(
                                         'type' => 'meliscommerce/interface/meliscommerce_language_list/interface/meliscommerce_language_list_leftmenu'
                                     ),
                                 ),
+                                'meliscommerce_currency_lists' => array(
+                                    'conf' => array(
+                                        'type' => 'meliscommerce/interface/meliscommerce_currency_lists/interface/meliscommerce_currency_left_menu'
+                                    ),
+                                ),                               
                             ),
                         ),
                     ),

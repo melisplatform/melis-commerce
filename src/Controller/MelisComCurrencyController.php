@@ -14,80 +14,385 @@ use Zend\View\Model\JsonModel;
 use Zend\View\Model\ViewModel;
 class MelisComCurrencyController extends AbstractActionController
 {
-
-    public function containerAction()
+    public function renderCurrencyContainerAction()
     {
-        $melisKey = $this->params()->fromRoute('melisKey', $this->params()->fromQuery('melisKey', null));
-        
-        $view = new ViewModel();
-        $view->melisKey = $melisKey;
-        
-        $view = new ViewModel();
-        $view->title = $this->getTool()->getTitle();
-        $view->melisKey = $melisKey;
-        $view->noAccess = null;
-        
-        return $view;
-    }
-    
-    public function headerAction()
-    {
-
         $melisKey = $this->params()->fromRoute('melisKey', '');
         
         $view = new ViewModel();
-        $view->title = $this->getTool()->getTitle();
         $view->melisKey = $melisKey;
+        
         return $view;
     }
     
-    public function contentAction()
+    public function renderCurrencyHeaderAction()
     {
-        $melisKey = $this->params()->fromRoute('melisKey', $this->params()->fromQuery('melisKey', null));
+        $melisKey = $this->params()->fromRoute('melisKey', '');
         
         $view = new ViewModel();
         $view->melisKey = $melisKey;
-        
+        $view->title = $this->getTool()->getTitle();
         return $view;
     }
     
+    public function renderCurrencyHeaderAddAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+    
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        $view->title = $this->getTool()->getTitle();
+        return $view;
+    }
+    
+    public function renderCurrencyContentAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        
+        $columns = $this->getTool()->getColumns();
+
+        $columns['action'] =  array(
+            'text' => $this->getTool()->getTranslation('tr_meliscommerce_product_list_col_action'),
+            'css' => array('width' => '10%')
+        );
+        
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        $view->tableColumns = $columns;
+        $view->getToolDataTableConfig = $this->getTool()->getDataTableConfiguration(null, null, null, array('order' => '[[ 0, "desc" ]]'));
+        return $view;
+    }
+    
+    public function renderCurrencyTableFilterLimitAction()
+    {
+        $view = new ViewModel();
+        return $view;
+    }
+    
+    public function renderCurrencyTableFilterSearchAction()
+    {
+        $view = new ViewModel();
+        return $view;
+    }
+    
+    public function renderCurrencyTableFilterRefreshAction()
+    {
+        $view = new ViewModel();
+        return $view;
+    }
+    
+    public function renderCurrencyContentActionDefaultAction()
+    {
+        $view = new ViewModel();
+        return $view;
+    }
+    
+    public function renderCurrencyContentActionEditAction()
+    {
+        $view = new ViewModel();
+        return $view;
+    }
+    
+    public function renderCurrencyContentActionDeleteAction()
+    {
+        $view = new ViewModel();
+        return $view;
+    }
+    
+    public function renderCurrencyModalContainerAction()
+    {
+        $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id', ''));
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view = new ViewModel();
+        $view->setTerminal(false);
+        $view->melisKey = $melisKey;
+        $view->id = $id;
+        return $view;
+    }
+    
+    public function renderCurrencyModalFormAction()
+    {
+        $id = $this->params()->fromRoute('curId', $this->params()->fromQuery('curId', ''));
+        $saveType = $this->params()->fromRoute('saveType', $this->params()->fromQuery('saveType', ''));
+    
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $title = $this->getTool()->getTranslation('tr_meliscommerce_currency_form_new');
+        $data = array();
+
+       
+        $form = $this->getTool()->getForm('meliscommerce_currency_form');
+        $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+    
+        if(is_numeric($id)) {
+            $title = $this->getTool()->getTranslation('tr_meliscommerce_currency_form_edit');
+            $data = (array) $currencyTable->getEntryById((int) $id)->current();
+        }
+    
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        $view->id = $id;
+        $view->title = $title;
+        $view->form = $form;
+        $view->data = $data;
+        $view->saveType = $saveType;
+        return $view;
+    }
+    
+    public function getComCurrencyDataAction()
+    {
+        $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+        
+        $colId = array();
+        $dataCount = 0;
+        $draw = 0;
+        $tableData = array();
+        
+        if($this->getRequest()->isPost()) {
+        
+            $colId = array_keys($this->getTool()->getColumns());
+        
+            $sortOrder = $this->getRequest()->getPost('order');
+            $sortOrder = $sortOrder[0]['dir'];
+        
+            $selCol = $this->getRequest()->getPost('order');
+            $selCol = $colId[$selCol[0]['column']];
+        
+            $draw = $this->getRequest()->getPost('draw');
+        
+            $start = $this->getRequest()->getPost('start');
+            $length =  $this->getRequest()->getPost('length');
+        
+            $search = $this->getRequest()->getPost('search');
+            $search = $search['value'];
+        
+            $dataCount =  $currencyTable->getTotalData();
+        
+            $getData =  $currencyTable->getPagedData(array(
+                'where' => array(
+                    'key' => 'cur_id',
+                    'value' => $search,
+                ),
+                'order' => array(
+                    'key' => $selCol,
+                    'dir' => $sortOrder,
+                ),
+                'start' => $start,
+                'limit' => $length,
+                'columns' => $this->getTool()->getSearchableColumns(),
+                'date_filter' => array()
+            ));
+        
+            $tableData = $getData->toArray();
+            $activeDom     = '<span class="text-success"><i class="fa fa-fw fa-circle"></i></span>';
+            $inactiveDom   = '<span class="text-danger"><i class="fa fa-fw fa-circle"></i></span>';
+            for($ctr = 0; $ctr < count($tableData); $ctr++)
+            {
+                // apply text limits
+                foreach($tableData[$ctr] as $vKey => $vValue)
+                {
+                    $tableData[$ctr][$vKey] = $this->getTool()->limitedText($vValue);
+        
+                }
+        
+                // manually modify value of the desired row
+                // add DataTable RowID, this will be added in the <tr> tags in each rows
+                $tableData[$ctr]['DT_RowId'] = $tableData[$ctr]['cur_id'];
+
+                $status = (int) $tableData[$ctr]['cur_status'];
+                $tableData[$ctr]['cur_status'] = $status ? $activeDom : $inactiveDom;
+        
+                $tableData[$ctr]['cur_default'] = ($tableData[$ctr]['cur_default']) ? '<i class="fa fa-star"></i>' : '';
+                $tableData[$ctr]['DT_RowClass'] = ($tableData[$ctr]['cur_default']) ? 'defaultEcomCurrency' : '';
+            }
+        
+        }
+        
+        
+        return new JsonModel(array(
+            'draw' => (int) $draw,
+            'recordsTotal' => $dataCount,
+            'recordsFiltered' => $currencyTable->getTotalFiltered(),
+            'data' => $tableData,
+        ));
+    }
+    
+    public function saveAction()
+    {
+        $success = 0;
+        $errors  = array();
+        $textTitle = 'tr_meliscommerce_currency_form_new';
+        $textMessage = 'tr_meliscommerce_currency_form_add_fail';
+        $form = $this->getTool()->getForm('meliscommerce_currency_form');
+        $isExistsError['ctry_name'] = array(
+            'countryNameExists' => $this->getTool()->getTranslation('tr_meliscommerce_currency_form_code_already_exists'),
+            'label' => $this->getTool()->getTranslation('tr_meliscommerce_currency_code'),
+        );
+        if($this->getRequest()->isPost()) {
+            $hasErrorFlag = false;
+            $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+    
+            $postData = get_object_vars($this->getRequest()->getPost());
+            $this->getEventManager()->trigger('meliscommerce_currency_save_start', $this, $postData);
+            if($postData['cur_id']) {
+                $textTitle = 'tr_meliscommerce_currency_form_edit';
+                $textMessage = 'tr_meliscommerce_currency_form_edit_fail';
+            }
+    
+            $tmpCode = $postData['tmp_cur_code'];
+            $code = $postData['cur_code'];
+            $saveType = $postData['saveType'];
+            $currencyCodeData = $currencyTable->getEntryByField('cur_code', $code)->current();
+    
+            $form->setData($postData);
+            if($form->isValid()) {
+                $data = $form->getData();
+                $curId = $data['cur_id'];
+                // unset data
+                unset($data['tmp_cur_code']);
+                unset($data['saveType']);
+                $data['cur_status'] = (int) $postData['cur_status'];
+                // for adding a new country
+                if($currencyCodeData && $saveType == 'new') {
+                    $hasErrorFlag = true;
+                    $errors = $isExistsError;
+                    
+                }
+    
+                // accept update if name wasn't change
+                if($tmpCode == $code && $saveType == 'edit') {
+                    $hasErrorFlag = false;
+                }
+                elseif($saveType == 'edit' && empty($currencyCodeData)) {
+                    $hasErrorFlag = false;
+                }
+                elseif(!empty($currencyCodeData) && $saveType == 'edit') {
+                    $hasErrorFlag = true;
+                    $errors = $isExistsError;
+                }
+    
+                if(!$hasErrorFlag) {
+                    unset($data['cur_id']);
+                    if($currencyTable->save($data, $curId)) {
+                        $success = 1;
+                        if($curId) {
+                            $textMessage = 'tr_meliscommerce_currency_form_edit_success'; 
+                        }
+                        else {
+                            $textMessage = 'tr_meliscommerce_currency_form_add_success';
+                        }
+                    }
+                }
+    
+    
+            }
+            else {
+                $errors = $form->getMessages();
+            }
+    
+            $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+            $appConfigForm = $melisMelisCoreConfig->getItem('meliscommerce/tools/meliscommerce_currency/forms/meliscommerce_currency_form');
+            $appConfigForm = $appConfigForm['elements'];
+    
+            foreach ($errors as $keyError => $valueError)
+            {
+                foreach ($appConfigForm as $keyForm => $valueForm)
+                {
+                    if ($valueForm['spec']['name'] == $keyError &&
+                        !empty($valueForm['spec']['options']['label']))
+                        $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                }
+            }
+        }
+    
+        $response = array(
+            'success' => $success,
+            'errors' => $errors,
+            'textMessage' => $this->getTool()->getTranslation($textMessage),
+            'textTitle' => $this->getTool()->getTranslation($textTitle),
+        );
+    
+        $this->getEventManager()->trigger('meliscommerce_currency_save_end', $this, $response);
+    
+        return new JsonModel($response);
+    }
+    
+    public function deleteAction()
+    {
+        $response = array();
+        $this->getEventManager()->trigger('meliscommerce_currency_delete_start', $this, $response);
+        $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+        $textMessage = 'tr_meliscommerce_currency_delete_failed';
+    
+        $id = 0;
+        $success = 0;
+    
+        if($this->getRequest()->isPost())
+        {
+            $id = $this->getRequest()->getPost('id');
+            if(is_numeric($id))
+            {
+                $currencyData = $currencyTable->getEntryById($id)->current();
+                if($currencyData)
+                {
+                    $currencyTable->deleteById($id);
+                    $textMessage = 'tr_meliscommerce_currency_delete_successful';
+                    $success = 1;
+                }
+            }
+        }
+    
+        $response = array(
+            'textTitle' => $this->getTool()->getTranslation('tr_meliscommerce_currency_delete_currency'),
+            'textMessage' => $this->getTool()->getTranslation($textMessage),
+            'success' => $success
+        );
+        $this->getEventManager()->trigger('meliscommerce_currency_delete_end', $this, array_merge($response, array('currencyId' => $id)));
+    
+        return new JsonModel($response);
+    }
+    
+    public function setDefaultCurrencyAction(){
+        $response = array();
+        $this->getEventManager()->trigger('meliscommerce_currency_set_default_start', $this, $response);
+        $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+        $textMessage = 'tr_meliscommerce_currency_set_default_failed';
+        
+        $id = 0;
+        $success = 0;
+        
+        if($this->getRequest()->isPost())
+        {
+            $id = $this->getRequest()->getPost('id');
+            if(is_numeric($id))
+            {
+                $defaultCurrencyData = $currencyTable->getEntryByField('cur_default','1')->current();
+                $currencyData = $currencyTable->getEntryById($id)->current();
+                
+                if (!empty($defaultCurrencyData) && !empty($currencyData))
+                {
+                    $currencyTable->save(array('cur_default' => '0'), $defaultCurrencyData->cur_id);
+                    $currencyTable->save(array('cur_default' => '1'), $currencyData->cur_id);
+                    
+                    $textMessage = 'tr_meliscommerce_currency_set_default_success';
+                    $success = 1;
+                }
+            }
+        }
+        
+        $response = array(
+            'textTitle' => $this->getTool()->getTranslation('tr_meliscommerce_currency_set_default'),
+            'textMessage' => $this->getTool()->getTranslation($textMessage),
+            'success' => $success
+        );
+        $this->getEventManager()->trigger('meliscommerce_currency_set_default_end', $this, array_merge($response, array('currencyId' => $id)));
+        
+        return new JsonModel($response);
+    }
     
     private function getTool()
     {
         $tool = $this->getServiceLocator()->get('MelisCoreTool');
         $tool->setMelisToolKey('meliscommerce', 'meliscommerce_currency');
-        
+    
         return $tool;
     }
-    
-//     private function hasAccess($key = 'meliscommerce_currency_lists')
-//     {
-//         $melisCoreAuth = $this->getServiceLocator()->get('MelisCoreAuth');
-//         $melisCoreRights = $this->getServiceLocator()->get('MelisCoreRights');
-//         $xmlRights = $melisCoreAuth->getAuthRights();
-        
-//         $isAccessible = $melisCoreRights->isAccessible($xmlRights, MelisCoreRightsService::MELISCORE_PREFIX_TOOLS, $key);
-        
-//         return $isAccessible;
-//     }
-
-    public function hasAccessAction()
-    {
-        $melisCoreAuth = $this->getServiceLocator()->get('MelisCoreAuth');
-        $melisCoreRights = $this->getServiceLocator()->get('MelisCoreRights');
-        $xmlRights = $melisCoreAuth->getAuthRights();
-
-        print_r($xmlRights);
-        $key = 'meliscommerce_currency_conf';
-
-        $isAccessible = $melisCoreRights->isAccessible($xmlRights, MelisCoreRightsService::MELISCORE_PREFIX_TOOLS, $key);
-
-        //return $isAccessible;
-        
-        die;
-    }
-    
-    
-
-    
 }

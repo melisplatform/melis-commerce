@@ -1,8 +1,8 @@
 <?php
     return array(
         'tr_meliscommerce_orders_status' => 'Status',
-        'tr_meliscommerce_orders_code' => 'Order Code',
-        'tr_meliscommerce_orders_select' => 'Select status',
+        'tr_meliscommerce_orders_code' => 'Order code',
+        'tr_meliscommerce_orders_select' => 'Order status',
         'tr_meliscommerce_orders_tracking_code' => 'Tracking code',
         'tr_meliscommerce_orders_tracking_details' => 'Shipping details',
         'tr_meliscommerce_orders_tracking_date' => 'Shipping date',

@@ -1,0 +1,311 @@
+<?php 
+function getValues($name)
+{
+    if(isset($_POST[$name])) {
+        return $_POST[$name];
+    }
+    
+    return null;
+}
+
+function displayResults($results)
+{
+    $resProduct1 = $results;
+    $ctr = 1;
+    foreach($resProduct1 as $data) {
+        
+        $product =  $data->getProduct();
+        echo '<h4>Product Details</h4>';
+        echo '<table>';
+            echo '<tr>';
+                echo '<td >Product ID: </td>';
+                echo '<td>'.$product['prd_id'] . '</td>';
+            echo '</tr>';
+            echo '<tr>';
+                echo '<td >Reference: </td>';
+                echo '<td>'.$product['prd_reference'] . '</td>';
+            echo '</tr>';
+            echo '<tr>';
+                echo '<td >Status: </td>';
+                echo '<td>'.( (int) $product['prd_status'] ? 'Active' : 'Inactive' ) . '</td>';
+            echo '</tr>';
+        echo '</table>';
+        
+        
+        echo '<h4>Product Categories</h4>';
+        $categories = $data->getCategories();
+        if($categories) {
+            foreach($categories as $category) {
+                echo '(' . $ctr . ')<br/>';
+                echo '<table>';
+                echo '<tr>';
+                echo '<td >Category ID: </td>';
+                echo '<td>'.$category['cat_id'] . '</td>';
+                echo '</tr>';
+                echo '<tr>';
+                echo '<td >Name: </td>';
+                echo '<td>'.$category['catt_name'] . '</td>';
+                echo '</tr>';
+                echo '<tr>';
+                echo '<td >Language ID: </td>';
+                echo '<td>'.$category['catt_lang_id'] . '</td>';
+                echo '</tr>';
+                echo '<tr>';
+                echo '<td >Status: </td>';
+                echo '<td>'.( (int) $category['cat_status'] ? 'Active' : 'Inactive' ) . '</td>';
+                echo '</tr>';
+                echo '</table>';
+                echo '<br/>';
+                $ctr++;
+            }
+        }
+        $ctr = 1;
+
+        
+        echo '<h4>Documents</h4>';
+        $documents = $data->getDocuments();
+        if($documents) {
+            foreach($documents as $document) {
+                echo '(' . $ctr . ')<br/>';
+                echo '<table>';
+                echo '<tr>';
+                echo '<td >Document ID: </td>';
+                echo '<td>'.$document['doc_id'] . '</td>';
+                echo '</tr>';
+                echo '<tr>';
+                echo '<td >Name: </td>';
+                echo '<td>'.$document['doc_name'] . '</td>';
+                echo '</tr>';
+                echo '<tr>';
+                echo '<td >Path: </td>';
+                echo '<td>'.$document['doc_path'] . '</td>';
+                echo '</tr>';
+                echo '</table>';
+                echo '<br/>';
+                $ctr++;
+            }
+        }
+        $ctr = 1;
+        
+        echo '<h4>Texts</h4>';
+        $texts = $data->getTexts();
+        if($texts) {
+            foreach($texts as $text) {
+                echo '(' . $ctr . ')<br/>';
+                echo '<table>';
+                echo '<tr>';
+                echo '<td >Text ID: </td>';
+                echo '<td>'.$text['ptxt_id'] . '</td>';
+                echo '</tr>';
+                echo '<tr>';
+                echo '<td >Code: </td>';
+                echo '<td>'.$text['ptt_code'] . '</td>';
+                echo '</tr>';
+                echo '<tr>';
+                echo '<td >Short Text: </td>';
+                echo '<td>'.$text['ptxt_field_short'] . '</td>';
+                echo '</tr>';
+                echo '<tr>';
+                echo '<td >Long Text: </td>';
+                echo '<td>'.$text['ptxt_field_long'] . '</td>';
+                echo '</tr>';
+                echo '</table>';
+                echo '<br/>';
+                $ctr++;
+            }
+        }
+        $ctr = 1;
+        
+        echo '<h4>Prices</h4>';
+        $prices = $data->getPrice();
+        if($prices) {
+            foreach($prices as $price) {
+                echo '(' . $ctr . ')<br/>';
+                echo '<table>';
+                echo '<tr>';
+                echo '<td >Price ID: </td>';
+                echo '<td>'.$price['price_id'] . '</td>';
+                echo '</tr>';
+                echo '<tr>';
+                echo '<td >Net: </td>';
+                echo '<td>'.$price['price_net'] . '</td>';
+                echo '</tr>';
+                echo '<tr>';
+                echo '<td >Gross: </td>';
+                echo '<td>'.$price['price_gross'] . '</td>';
+                echo '</tr>';
+                echo '<tr>';
+                echo '<td >VAT Percent: </td>';
+                echo '<td>'.$price['price_vat_percent'] . '</td>';
+                echo '</tr>';
+                echo '<tr>';
+                echo '<td >VAT Price: </td>';
+                echo '<td>'.$price['price_vat_price'] . '</td>';
+                echo '</tr>';
+                echo '<tr>';
+                echo '<td> OTher Tax Price: </td>';
+                echo '<td>'.$price['price_other_tax_price'] . '</td>';
+                echo '</tr>';
+                echo '</table>';
+                echo '<br/>';
+                $ctr++;
+            }
+        }
+        $ctr = 1;
+        
+        
+        
+        echo '<hr/>';
+    }
+}
+
+?>
+
+<h1>Search Product By Text Fields</h1>
+
+<form method="POST" action="/melis/MelisCommerce/Tester/displayTest">
+	<input type="hidden" name="actionType" value="searchProductByTextFields" />
+	<table border="0">
+		<tr>
+			<td><label>Product Text: </label></td>
+			<td><input type="text" name="productName" value="<?php echo getValues('productName'); ?>" placeholder="Pants" required/></td>
+		</tr>
+		<tr>
+			<td><label>Field Type Codes: </label></td>
+			<td><input type="text" name="fieldTypeCodes" value="<?php echo getValues('fieldTypeCodes')?>" placeholder="TITLE, DESC" required/></td>
+		</tr>
+		<tr>
+			<td><label>Language ID: </label></td>
+			<td><input type="text" name="langId" value="<?php echo getValues('langId')?>" placeholder="1"/></td>
+		</tr>
+		<tr>
+			<td><label>Category IDs: </label></td>
+			<td><input type="text" name="categoryId" value="<?php echo getValues('categoryId')?>" placeholder="1,2,3,4"/></td>
+		</tr>
+		<tr  style="display:none">
+			<td><label>Product Status: </label></td>
+			<td>
+				<select name="productStatus">
+					<option value="1">Enabled</option>
+					<option value="0">Disabled</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td><div style="overflow: auto;zoom: 1;"></div></td>
+			<td><button type="submit" style="float:right">Search</button></td>
+			
+		</tr>
+	</table>
+ 	<pre>
+<?php //print_r($this->searchProductByTextFieldsRes); ?>
+<?php 
+//print_r($this->searchProductByTextFieldsRes);
+displayResults($this->searchProductByTextFieldsRes);
+?>
+ 	</pre>
+</form>
+
+<br/><br/><br/>
+<h1>Search Product By Attributes Values &amp; Price Range</h1>
+<form method="POST" action="/melis/MelisCommerce/Tester/displayTest">
+	<input type="hidden" name="actionType" value="searchProductByAttributeValuesAndPriceRange" />
+	<table border="0">
+		<tr>
+			<td><label>Attribute Value IDs: </label></td>
+			<td><input type="text" name="attributeIds" value="<?php echo getValues('attributeIds')?>" placeholder="1,2,3" required/></td>
+		</tr>
+		<tr>
+			<td><label>Minimum Price: </label></td>
+			<td><input type="text" name="minPrice" value="<?php echo getValues('minPrice')?>" placeholder="0"/></td>
+		</tr>
+		<tr>
+			<td><label>Maximum Price: </label></td>
+			<td><input type="text" name="maxPrice" value="<?php echo getValues('maxPrice')?>" placeholder="1500"/></td>
+		</tr>
+		<tr>
+			<td><label>Language ID: </label></td>
+			<td><input type="text" name="langId" value="<?php echo getValues('langId')?>" placeholder="1"/></td>
+		</tr>
+		<tr>
+			<td><label>Category IDs: </label></td>
+			<td><input type="text" name="categoryId" value="<?php echo getValues('categoryId')?>" placeholder="1,2,3,4"/></td>
+		</tr>
+		<tr  style="display:none">
+			<td><label>Product Status: </label></td>
+			<td>
+				<select name="productStatus">
+					<option value="1">Enabled</option>
+					<option value="0">Disabled</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td><div style="overflow: auto;zoom: 1;"></div></td>
+			<td><button type="submit" style="float:right">Search</button></td>
+			
+		</tr>
+	</table>
+ 	<h4>Results:</h4>
+ 	<pre>
+<?php displayResults($this->searchProductByAttributeValuesAndPriceRangeRes); ?>
+
+ 	</pre>
+</form>
+
+
+
+
+<br/><br/><br/>
+<h1>Search Product Full</h1>
+<form method="POST" action="/melis/MelisCommerce/Tester/displayTest">
+	<input type="hidden" name="actionType" value="searchProductFull" />
+	<table border="0">
+		<tr>
+			<td><label>Product Text: </label></td>
+			<td><input type="text" name="productName" value="<?php echo getValues('productName')?>" placeholder="Pants" required/></td>
+		</tr>
+		<tr>
+			<td><label>Field Type Codes: </label></td>
+			<td><input type="text" name="fieldTypeCodes" value="<?php echo getValues('fieldTypeCodes')?>" placeholder="TITLE, DESC" required/></td>
+		</tr>
+		<tr>
+			<td><label>Attribute Value IDs: </label></td>
+			<td><input type="text" name="attributeIds" value="<?php echo getValues('attributeIds')?>" placeholder="1,2,3" required/></td>
+		</tr>
+		<tr>
+			<td><label>Minimum Price: </label></td>
+			<td><input type="text" name="minPrice" value="<?php echo getValues('minPrice')?>" placeholder="0" required/></td>
+		</tr>
+		<tr>
+			<td><label>Maximum Price: </label></td>
+			<td><input type="text" name="maxPrice" value="<?php echo getValues('maxPrice')?>" placeholder="1500" required/></td>
+		</tr>
+		<tr>
+			<td><label>Category IDs: </label></td>
+			<td><input type="text" name="categoryId" value="<?php echo getValues('categoryId')?>" placeholder="1,2,3,4"/></td>
+		</tr>
+		<tr>
+			<td><label>Language ID: </label></td>
+			<td><input type="text" name="langId" value="<?php echo getValues('langId')?>" placeholder="1"/></td>
+		</tr>
+		<tr  style="display:none">
+			<td><label>Product Status: </label></td>
+			<td>
+				<select name="productStatus">
+					<option value="1">Enabled</option>
+					<option value="0">Disabled</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td><div style="overflow: auto;zoom: 1;"></div></td>
+			<td><button type="submit" style="float:right">Search</button></td>
+			
+		</tr>
+	</table>
+ 	<h4>Results:</h4>
+ 	<pre>
+<?php displayResults($this->searchProductFullRes); ?>
+ 	</pre>
+</form>

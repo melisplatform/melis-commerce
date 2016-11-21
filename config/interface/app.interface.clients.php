@@ -73,6 +73,59 @@ return array(
                                         )
                                     )
                                 ),
+                                'meliscommerce_clients_list_widgets' => array(
+                                    'conf' => array(
+                                        'id' => 'id_meliscommerce_clients_list_widgets',
+                                        'melisKey' => 'meliscommerce_clients_list_widgets',
+                                        'name' => 'tr_meliscommerce_clients_list_widgets',
+                                    ),
+                                    'forward' => array(
+                                        'module' => 'MelisCommerce',
+                                        'controller' => 'MelisComClientList',
+                                        'action' => 'render-client-list-widgets',
+                                    ),
+                                    'interface' => array(
+                                        'meliscommerce_clients_list_widgets_num_clients' => array(
+                                            'conf' => array(
+                                                'id' => 'id_meliscommerce_clients_list_widgets_num_clients',
+                                                'melisKey' => 'meliscommerce_clients_list_widgets_num_clients',
+                                                'name' => 'tr_meliscommerce_clients_list_widgets_num_clients',
+                                                'width' => '4'
+                                            ),
+                                            'forward' => array(
+                                                'module' => 'MelisCommerce',
+                                                'controller' => 'MelisComClientList',
+                                                'action' => 'render-client-list-widgets-num-clients',
+                                            ),
+                                        ),
+                                        'meliscommerce_clients_list_widgets_month_clients' => array(
+                                            'conf' => array(
+                                                'id' => 'id_meliscommerce_clients_list_widgets_month_clients',
+                                                'melisKey' => 'meliscommerce_clients_list_widgets_month_clients',
+                                                'name' => 'tr_meliscommerce_clients_list_widgets_month_clients',
+                                                'width' => '4'
+                                            ),
+                                            'forward' => array(
+                                                'module' => 'MelisCommerce',
+                                                'controller' => 'MelisComClientList',
+                                                'action' => 'render-client-list-widgets-month-clients',
+                                            ),
+                                        ),
+                                        'meliscommerce_clients_list_widgets_avg_clients' => array(
+                                            'conf' => array(
+                                                'id' => 'id_meliscommerce_clients_list_widgets_avg_clients',
+                                                'melisKey' => 'meliscommerce_clients_list_widgets_avg_clients',
+                                                'name' => 'tr_meliscommerce_clients_list_widgets_avg_clients',
+                                                'width' => '4'
+                                            ),
+                                            'forward' => array(
+                                                'module' => 'MelisCommerce',
+                                                'controller' => 'MelisComClientList',
+                                                'action' => 'render-client-list-widgets-avg-clients',
+                                            ),
+                                        ),
+                                    ),
+                                ),
                                 'meliscommerce_clients_list_content' => array(
                                     'conf' => array(
                                         'id' => 'id_meliscommerce_clients_list_content',
@@ -268,7 +321,7 @@ return array(
                                                 'id' => 'id_meliscommerce_client_page_tab_contact',
                                                 'melisKey' => 'meliscommerce_client_page_tab_contact',
                                                 'name' => 'tr_meliscommerce_client_page_tab_contact',
-                                                'icon' => 'glyphicons earphone'
+                                                'icon' => 'glyphicons parents'
                                             ),
                                             'forward' => array(
                                                 'module' => 'MelisCommerce',
@@ -387,7 +440,7 @@ return array(
                                                 'id' => 'id_meliscommerce_client_page_tab_orders',
                                                 'melisKey' => 'meliscommerce_client_page_tab_orders',
                                                 'name' => 'tr_meliscommerce_client_page_tab_orders',
-                                                'icon' => 'glyphicons notes_2'
+                                                'icon' => 'glyphicons shopping_cart'
                                             ),
                                             'forward' => array(
                                                 'module' => 'MelisCommerce',
@@ -435,6 +488,7 @@ return array(
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComClient',
                                 'action' => 'render-client-modal-contact-address-form',
+                                'jscallback' => 'initClientContactAddressForm();'
                             ),
                         ),
                         'meliscommerce_client_modal_address_form' => array(

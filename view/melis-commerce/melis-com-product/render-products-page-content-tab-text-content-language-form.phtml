@@ -10,7 +10,7 @@ $id = '';
 $active = 'active';
 $ctr = 0;
 $c= 0;
-$del = '<a data-text="%s"><i class="deleteTextInput fa fa-times"></i></a>&nbsp;';
+$del = '<label class="pull-right"><a data-text-identifier="%s"><i class="deleteTextInput fa fa-trash-o"></i></a><div class="clearfix"></div>';
 
 ?>
 <?php foreach($this->lang as $lang) {
@@ -39,14 +39,14 @@ $del = '<a data-text="%s"><i class="deleteTextInput fa fa-times"></i></a>&nbsp;'
     		      $form->setAttribute('data-text-lang-id', $prodText->ptxt_lang_id);
     	          $form->setData((array)$prodText);
     		      if((int) $prodText->ptt_field_type == 1){
-    		          $form->get('ptxt_field_short')->setAttribute('style', 'display:block')->setLabel(sprintf($del, $prodText->ptt_name).$prodText->ptt_name);
+    		          $form->get('ptxt_field_short')->setAttribute('style', 'display:block')->setLabel($prodText->ptt_name . ' (' . $prodText->ptt_code . ')</label>'.sprintf($del, $prodText->ptt_name));
     		          $form->get('ptxt_field_long')->setAttribute('style', 'display:none')->setAttribute("data-display", "false")->setLabel('');
     		      }
     		      if((int) $prodText->ptt_field_type == 2){
     		          $form->get('ptxt_field_long')
-    		          ->setAttribute('class', 'product-text-mce')
+    		          ->setAttribute('class', 'product-text-mce pull-left')
     		          ->setAttribute("data-display", "true")
-    		          ->setLabel(sprintf($del, $prodText->ptt_name).$prodText->ptt_name);
+                      ->setLabel(sprintf($del, $prodText->ptt_name).'</label><label>'.$prodText->ptt_name . ' (' . $prodText->ptt_code . ')');
     		          $form->get('ptxt_field_short')->setAttribute('style', 'display:none')->setLabel('');
     		      }
     		      

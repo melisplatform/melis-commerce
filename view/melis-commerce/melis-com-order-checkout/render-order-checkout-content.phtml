@@ -10,7 +10,7 @@
 	cursor: default;;
 }
 </style>
-<div <?php echo $id.' '.$data_melisKey; ?>>
+<div <?php echo $id.' '.$data_melisKey; ?> style="position: relative">
 	<div class="spacing-x2 innerAll">
 		<div class="relativeWrap">
             <div class="box-generic">
@@ -26,9 +26,10 @@
                         	        $tabName = $menuConfig['conf']['name'];
                         	        
                         	        echo '<li class="'.$tabIcon.' '.$active.'">
-                        	                <a href="#" data-tab="'.$tabId.'">
+                        	                <a href="#">
                             	               <i></i> '.$this->translate($tabName).' 
                     	                    </a>
+                        	                <a href="#'.$tabId.'" id="'.$tabId.'_nav" data-toggle="tab" class="hidden"></a>
                         	            </li>';
                         	        
                         	        if (!empty($active)){

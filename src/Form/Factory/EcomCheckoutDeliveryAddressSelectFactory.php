@@ -29,12 +29,12 @@ class EcomCheckoutDeliveryAddressSelectFactory extends MelisSelectFactory
         
         // Saving addresses in session for later use
         $container = new Container('meliscommerce');
-        if (empty($container['checkout']))
+        if (!empty($container['checkout']['clientId']))
         {
             $clientId = $container['checkout']['clientId'];
             
             $melisEcomClientAddressTable = $serviceManager->get('MelisEcomClientAddressTable');
-            $ecomAddress = $melisEcomClientAddressTable->getClientDeliveryAddresses(1);
+            $ecomAddress = $melisEcomClientAddressTable->getClientDeliveryAddresses($clientId);
             
             foreach ($ecomAddress As $val)
             {
@@ -45,6 +45,14 @@ class EcomCheckoutDeliveryAddressSelectFactory extends MelisSelectFactory
                 }
                 
                 $valueoptions[$val->cadd_id] = $val->cadd_address_name.$contactName;
+            }
+            
+            $contactId = $container['checkout']['contactId'];
+            $contactAddress = $melisEcomClientAddressTable->getContactDeliveryAddresses($contactId);
+            
+            foreach ($contactAddress As $val)
+            {
+                $valueoptions[$val->cadd_id] = $val->cadd_address_name;
             }
         }
         

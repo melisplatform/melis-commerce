@@ -8,16 +8,17 @@ $(document).ready(function() {
 		var variantName = $(this).parent().parent().find("td a").data("variantname");
 		var productId   = $(this).closest('.container-level-a').attr('id').replace(/[^0-9]/g,'');
 		var prodTabId   = productId+"_id_meliscommerce_products_page";
-		melisCommerce.disableTab(prodTabId);
+		melisCommerce.disableAllTabs();
 		melisHelper.tabOpen(variantName, 'icon-tag-2', variantId+'_id_meliscommerce_variants_page', 'meliscommerce_variants_page', { variantId : variantId, productId : productId});
 		melisCommerce.setUniqueId(variantId);
+		melisCommerce.enableAllTabs();
 
 	});
 	
 	body.on("click", ".add-variant", function(){
 		var productId   = $(this).closest('.container-level-a').attr('id').replace(/[^0-9]/g,'');
 		melisCoreTool.processing();
-		melisHelper.tabOpen('New SKU', 'icon-tag-2', 'id_meliscommerce_variants_page', 'meliscommerce_variants_page', { productId : productId, page : 'newvar'});
+		melisHelper.tabOpen(translations.tr_meliscommerce_variant_main_information_sku_new, 'icon-tag-2', 'id_meliscommerce_variants_page', 'meliscommerce_variants_page', { productId : productId, page : 'newvar'});
 		melisCommerce.setUniqueId(0);
 		melisCoreTool.processDone();
 	});
@@ -140,12 +141,49 @@ $(document).ready(function() {
 			console.log(data);
 		});
 		
-	})
+	})	
+	
+	$("body").on("mouseenter mouseleave", ".toolTipVarHoverEvent", function(e) {
+		
+		  var variantId = $(this).data("variantid");
+		  var productId   = $(this).closest('.container-level-a').attr('id').replace(/[^0-9]/g,'');
+		  var loaderText = '<div class="qtipLoader"><hr/><span class="text-center col-lg-12">Loading...</span><br/></div>';
+		  $.each($("table#variantTable"+variantId + " thead").nextAll(), function(i,v) {
+			  $(v).remove();
+		  });
+		  $(loaderText).insertAfter("table#variantTable"+variantId + " thead");
+			var xhr = $.ajax({
+		        type        : 'POST', 
+		        url         : 'melis/MelisCommerce/MelisComProductList/getToolTip',
+		        data		: {variantId : variantId, productId : productId},
+		        dataType    : 'json',
+		        encode		: true,
+		     }).success(function(data){
+	    	 	 $("div.qtipLoader").remove();
+			     if(data.content.length === 0) {
+			    	 $('<div class="qtipLoader"><hr/><span class="text-center col-lg-12">'+translations.tr_meliscommerce_product_tooltip_no_variants+'</span><br/></div>').insertAfter("table.qtipTable thead");
+			     }
+			     else {
+			    	 // make sure tbody is clear
+					  $.each($("table#variantTable"+variantId + " thead").nextAll(), function(i,v) {
+						  $(v).remove();
+					  });
+	    		     $.each(data.content.reverse(), function(i ,v) {
+	    		    	 $(v).insertAfter("table#variantTable"+variantId + " thead");
+	    		     });
+			    	 
+			     }
+
+		     });
+			if(e.type === "mouseout") {
+				xhr.abort();
+			}
+	  });
 	
 });
 //variant list table in product page
 window.initProductVariant = function(data, tblSettings) {
-	var prodId = melisCommerce.getCurrentProductId();
+	var prodId = $("#" + tblSettings.sTableId ).data("prodid");
 	data.prodId = prodId	
 }
 window.variantLoaded = function() {

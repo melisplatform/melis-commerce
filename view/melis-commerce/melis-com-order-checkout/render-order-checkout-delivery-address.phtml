@@ -1,0 +1,35 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = 'id="'.$this->zoneconfig['conf']['id'] .'"';
+    }
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<div class="me-hl col-xs-12 col-md-6" <?php echo $id.' '.$data_melisKey; ?> style="position: relative">
+    <div class="red-box-panel">
+        <h3><?php echo $this->translate('tr_meliscommerce_order_checkout_address_delivery')?></h3>
+        <div class="red-box-panel-list">
+            <?php
+            	$form = $this->meliscommerce_order_checkout_delivery_address_form;
+            	$form->prepare();
+            	echo $this->form()->openTag($form); 
+            	echo $this->melisFieldCollection($form);
+            	echo $this->form()->closeTag(); 
+            ?>
+            <div class="form-group" align="right">
+                <button class="btn btn-success" id="orderCheckoutCreateDeliveryAdd"><i class="fa fa-plus"></i> <?php echo $this->translate('tr_meliscommerce_order_checkout_address_create_delivery_btn')?></button>
+            </div>
+            <?php
+            	$form = $this->meliscommerce_order_checkout_address_form;
+            	if ($this->hideAddressForm){
+            	    $form->setAttribute('class','hidden');
+            	}
+            	$form->setAttribute('id', 'deliveryAddressOrderCheckoutForm');
+            	$form->prepare();
+            	echo $this->form()->openTag($form); 
+            	echo $this->melisFieldCollection($form);
+            	echo $this->form()->closeTag(); 
+            ?>
+        </div>
+    </div>
+</div>

@@ -22,4 +22,16 @@ class MelisEcomLangTable extends MelisEcomGenericTable
         $this->idField = 'elang_id';
     }
     
+    // get all lang ordered by name ASC
+    public function langOrderByName()
+    {
+        $select = $this->tableGateway->getSql()->select();
+        $select->where->equalTo('elang_status', 1);
+        $order = 'elang_name ASC';
+        $select->order($order);
+        
+        $resultData = $this->tableGateway->selectWith($select);
+        return $resultData;
+    }
+    
 }

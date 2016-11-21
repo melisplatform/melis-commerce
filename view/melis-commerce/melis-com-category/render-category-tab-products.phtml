@@ -7,7 +7,11 @@
 ?>
 <div class="tab-pane <?php echo $this->activateTab ?>" <?php echo $id. ' '.$data_melisKey?> style="position: relative">				
 	<div class="melis-product-heading border-bottom">
-		<h3><?php echo $this->translate('tr_meliscommerce_categories_category_tab_content_products_title')?></h3>					
+		<div>
+    		<h3><?php echo $this->translate('tr_meliscommerce_categories_category_tab_content_products_title')?></h3>
+    		<br>
+    		<span><?php echo $this->prodCount.' '.$this->translate('tr_meliscommerce_categories_common_label_producs')?></span>
+		</div>					
 	</div>
 	<?php 
 		$this->melisGenericTable()->setTable(array(
@@ -31,12 +35,22 @@
 	<script type="text/javascript">
 		// this script cannot be separated to this file since all table configuration and initialization are done here
 		// render table to DataTable plugin
+		<?php echo $this->getToolDataTableConfig; ?>
 		$(document).ready(function() {
-			<?php echo $this->getToolDataTableConfig; ?>
+			$(document).on('column-sizing.dt','#categoryProductListTbl', function(e, settings) {
+				$("#categoryProductListTbl thead tr").find("th:nth-child(1)").css({"width" : "1%", "padding": "10px"});	
+				$("#categoryProductListTbl thead tr").find("th:nth-child(7)").css({"width" : "1px"});
+				$("#categoryProductListTbl thead tr").find("th:nth-child(6)").css({"width" : "1px"});
+			}); 
 			$(document).on("init.dt", function(e, settings) {
+				if($('html').hasClass('touch')){
+					$("#categoryProductListTbl thead tr").find("th:nth-child(1)").attr("style", "").css({"width" : "1px"}).addClass('control');
+				} else {
+					$("#categoryProductListTbl thead tr").find("th:nth-child(1)").attr("style", "").css({"width" : "1px"}).addClass('control').hide();
+				}
 				melisCommerce.initTooltipTable(".tooltipTable");				
 			});
-			$("#categoryProductListTbl").DataTable().columns.adjust().responsive.recalc();
-		});		
+			$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc(); 
+		});
 	</script>
 </div>

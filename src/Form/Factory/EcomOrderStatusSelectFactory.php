@@ -24,6 +24,7 @@ class EcomOrderStatusSelectFactory extends MelisSelectFactory
 		$orderStatusTransTable = $serviceManager->get('MelisComOrderService');	
 		$melisTool = $serviceManager->get('MelisCoreTool');
         foreach($orderStatusTransTable->getOrderStatusList($melisTool->getCurrentLocaleID()) as $status){
+            if($status->ostt_status_id != -1)
             $orderStatus[$status->ostt_status_id ] = $status->ostt_status_name;            
         }       
 		

@@ -55,12 +55,14 @@ return array(
                             array(
                                 'spec' => array(
                                     'name' => 'eseo_meta_description',
-                                    'type' => 'MelisText',
+                                    'type' => 'Textarea',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_seo_Meta_description',
                                     ),
                                     'attributes' => array(
                                         'id' => 'eseo_meta_description',
+                                        'rows' => 5,
+                                        'class' => 'melis-seo-desc form-control'
                                     ),
                                 ),
                             ),

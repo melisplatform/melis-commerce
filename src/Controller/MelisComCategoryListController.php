@@ -65,7 +65,19 @@ class MelisComCategoryListController extends AbstractActionController
     }
     
     /**
-     * Render Category List Header Add Button
+     * Render Category List Header Add Catalog Button
+     * 
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderCategoryListHeaderAddCatalogAction(){
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        return $view;
+    }
+    
+    /**
+     * Render Category List Header Add Category Button
      * 
      * @return \Zend\View\Model\ViewModel
      */
@@ -106,7 +118,7 @@ class MelisComCategoryListController extends AbstractActionController
     public function renderCategoryListTreeViewAction(){
         
         $melisEcomLangTable = $this->getServiceLocator()->get('MelisEcomLangTable');
-        $ecomLang = $melisEcomLangTable->fetchAll();
+        $ecomLang = $melisEcomLangTable->langOrderByName();
         $ecomLangData = $ecomLang->toArray(); 
         
         // Get the locale used from meliscore session
@@ -172,7 +184,13 @@ class MelisComCategoryListController extends AbstractActionController
      */
     public function prepareCategoryDataForTreeView($categoryList, $selected = false, $openedStateParent = array()){
         
+        $translator = $this->getServiceLocator()->get('translator');
+        
+        $melisEcomProductCategoryTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');
         foreach ($categoryList As $key => $val){
+            
+            $numProducts = '<span title="'.$translator->translate('tr_meliscommerce_categories_list_tree_view_product_num').'">(%s)</span>';
+            $numProducts = sprintf($numProducts, $melisEcomProductCategoryTable->getTotalData('pcat_cat_id', $val['cat_id']));
             
             $categoryList[$key]['id'] = $val['cat_id'];
             
@@ -184,7 +202,17 @@ class MelisComCategoryListController extends AbstractActionController
             }
             unset($categoryList[$key]['cat_status']);
             
-            $categoryList[$key]['text'] = $val['cat_id'].' - '.$categoryList[$key]['text'];
+            $categoryList[$key]['type'] = 'category';
+            if ($val['cat_father_cat_id'] == -1){
+                $itemIcon = '<i class="fa fa-book"></i>';
+                $categoryList[$key]['type'] = 'catalog';
+                $categoryList[$key]['text'] = $itemIcon.' <b>'.$val['cat_id'].' - '.$categoryList[$key]['text'].' '.$numProducts.'</b>';
+            }else{
+                $categoryList[$key]['text'] = $val['cat_id'].' - '.$categoryList[$key]['text'].' '.$numProducts;
+            }
+            unset($categoryList[$key]['cat_father_cat_id']);
+            
+            
             
             $selectedState = false;
             if (!is_null($selected)){

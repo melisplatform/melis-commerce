@@ -7,17 +7,20 @@ return array(
                 'name' => 'tr_meliscommerce_currency',
             ),  
             'ressources' => array(
-                
+                'js' => array(
+                    '/MelisCommerce/js/tools/ecomCurrency.tool.js',
+                ),
+                'css' => array(),
             ),
             'interface' => array(
                 'meliscommerce_currency_lists' => array(
                     'interface' => array(
                         'meliscommerce_currency_left_menu' => array(
                             'conf' => array(
-                                'id' => 'id_meliscommerce_currency_left_menu',
+                                'id' => 'id_meliscommerce_currency_conf',
                                 'melisKey' => 'meliscommerce_currency_conf',
-                                'name' => 'tr_meliscommerce_currency',
-                                'icon' => 'fa fa-globe',
+                                'name' => 'tr_meliscommerce_currencies',
+                                'icon' => 'fa fa-euro',
                                 'rights_checkbox_disable' => true,
                             ),
                         ),
@@ -30,7 +33,7 @@ return array(
                             'forward' => array(
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComCurrency',
-                                'action' => 'container',
+                                'action' => 'render-currency-container',
                             ),
                             'interface' => array(
                                 'meliscommerce_currency_header'=> array(
@@ -42,10 +45,21 @@ return array(
                                     'forward' => array(
                                         'module' => 'MelisCommerce',
                                         'controller' => 'MelisComCurrency',
-                                        'action' => 'header',
+                                        'action' => 'render-currency-header',
                                     ),
                                     'interface' => array(
-                                        
+                                        'meliscommerce_currency_header_add'=> array(
+                                            'conf' => array(
+                                                'id' => 'id_meliscommerce_currency_header_add',
+                                                'melisKey' => 'meliscommerce_currency_header_add',
+                                                'name' => 'tr_meliscommerce_currency_form_add',
+                                            ),
+                                            'forward' => array(
+                                                'module' => 'MelisCommerce',
+                                                'controller' => 'MelisComCurrency',
+                                                'action' => 'render-currency-header-add',
+                                            ),
+                                        ),
                                     ),
                                 ),
                                 'meliscommerce_currency_content' => array(
@@ -57,24 +71,40 @@ return array(
                                     'forward' => array(
                                         'module' => 'MelisCommerce',
                                         'controller' => 'MelisComCurrency',
-                                        'action' => 'content',
+                                        'action' => 'render-currency-content',
                                     ),
                                     'interface' => array(
                                         
                                     ),
                                 ),
-                                'meliscommerce_currency_modal' => array(
+                                
+                                'meliscommerce_currency_content_modal_container' => array(
                                     'conf' => array(
-                                        'id' => 'id_meliscommerce_currency_modal',
-                                        'melisKey' => 'meliscommerce_currency_modal',
-                                        'name' => 'tr_meliscommerce_currency_modal',
+                                        'id' => 'id_meliscommerce_currency_content_modal_container',
+                                        'melisKey' => 'meliscommerce_currency_content_modal_container',
+                                        'name' => 'tr_meliscommerce_currency_modal'
                                     ),
                                     'forward' => array(
-                                    
+                                        'module' => 'MelisCommerce',
+                                        'controller' => 'MelisComCurrency',
+                                        'action' => 'render-currency-modal-container',
+                                
                                     ),
                                     'interface' => array(
-                                    
-                                    ),
+                                        'meliscommerce_currency_content_modal_form' => array(
+                                            'conf' => array(
+                                                'id' => 'id_meliscommerce_currency_content_modal_form',
+                                                'melisKey' => 'meliscommerce_currency_content_modal_form',
+                                                'name' => 'tr_meliscommerce_currency_modal'
+                                            ),
+                                            'forward' => array(
+                                                'module' => 'MelisCommerce',
+                                                'controller' => 'MelisComCurrency',
+                                                'action' => 'render-currency-modal-form',
+                                                'jscallback' => 'initProductSwitch();'
+                                            ),
+                                        )
+                                    )
                                 ),
                             ),
                             

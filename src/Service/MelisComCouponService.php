@@ -155,4 +155,40 @@ class MelisComCouponService extends MelisCoreGeneralService
         return $arrayParameters['results'];
     }
     
+    /**
+     * This method deletes a coupon by ID
+     * This method is only used when the coupon is unused
+     * 
+     * @param int $couponId Id of the coupon to be deleted
+     * 
+     * @return boolean true on success, otherwise false
+     */
+    public function deleteCouponById($couponId)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = null;
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_coupon_client_save_start', $arrayParameters);
+        
+        // Service implementation start
+        $couponTable = $this->getServiceLocator()->get('MelisEcomCouponTable');
+        $couponClientTable = $this->getServiceLocator()->get('MelisEcomCouponClientTable');
+        try {
+            $results = $couponClientTable->deleteByField('ccli_coupon_id', $arrayParameters['couponId']);
+            $results = $couponTable->deleteById($arrayParameters['couponId']);
+        }catch(\Exception $e){
+            
+        }        
+        // Service implementation end
+         
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_coupon_client_save_end', $arrayParameters);
+        
+        return $arrayParameters['results'];
+    }
+    
 }

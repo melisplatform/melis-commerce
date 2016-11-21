@@ -1,4 +1,4 @@
-$(function(){
+$(function(){ 
 	
 	$("body").on("click", ".addNewClient", function(){ 
 		melisHelper.tabOpen(translations.tr_meliscommerce_clients_add_client, "fa fa-user-plus", "0_id_meliscommerce_client_page", "meliscommerce_client_page", {clientId:0});
@@ -273,21 +273,52 @@ $(function(){
 		});
 	});
 	
-	$("body").on("switch-change", ".clientMainContact", function(){
+	$("body").on("click", ".clientMainContact", function(){
+		var clientId = $(this).data("clientid");
+		var tabId = $(this).data("tabid");
+		
+		if($(this).hasClass("fa-star-o")){
+			// Set other OFF
+			$("#"+clientId+"_client_contact_tab_content .clientMainContact").removeClass("fa-star");
+			$("#"+clientId+"_client_contact_tab_content .clientMainContact").addClass("fa-star-o");
+			// Activate current star
+			$(this).addClass("fa-star");
+			$(this).removeClass("fa-star-o");
+			// Set other form main contact input to zero (0)
+			$("#"+clientId+"_client_contact_tab_content").find('form input[name="cper_is_main_person"]').val(0);
+			// Set current switch main contact input to one (1) 
+			$("#"+tabId).find("form input[name='cper_is_main_person']").val(1);
+		}else{
+			// Deactivate current star
+			$(this).removeClass("fa-star");
+			$(this).addClass("fa-star-o");
+			$("#"+tabId).find("form input[name='cper_is_main_person']").val(0);
+		}
+	});
+	
+	$("body").on("switch-change", ".clientContactStatus", function(){
 		var clientId = $(this).data("clientid");
 		var tabId = $(this).data("tabid");
 		
 		if($(this).find(".switch-animate").hasClass("switch-on")){
-			// Set other OFF
-			$("#"+clientId+"_client_contact_tab_content .make-switch").find('.switch-on').removeClass('switch-on').addClass('switch-off');
-			// Set other form main contact input to zero (0)
-			$("#"+clientId+"_client_contact_tab_content").find('form input[name="cper_is_main_person"]').val(0);
 			// Set back On the current switch
 			$(this).find(".switch-animate").removeClass('switch-off').addClass("switch-on");
-			// Set current switch main contact input to one (1) 
-			$("#"+tabId).find("form input[name='cper_is_main_person']").val(1);
+			// Set current switch input to one (1) 
+			$("#"+tabId).find("form input[name='cper_status']").val(1);
 		}else{
-			$("#"+tabId).find("form input[name='cper_is_main_person']").val(0);
+			$("#"+tabId).find("form input[name='cper_status']").val(0);
+		}
+	});
+	
+	$("body").on("switch-change", ".modalClientContactStatus", function(){
+		var clientId = $(this).data("clientid");
+		if($(this).find(".switch-animate").hasClass("switch-on")){
+			// Set back On the current switch
+			$(this).find(".switch-animate").removeClass('switch-off').addClass("switch-on");
+			// Set current switch input to one (1) 
+			$("#melisCommerceClientContactFormModal").find("input[name='cper_status']").val(1);
+		}else{
+			$("#melisCommerceClientContactFormModal").find("input[name='cper_status']").val(0);
 		}
 	});
 	
@@ -494,7 +525,24 @@ window.initClientStatus = function(){
 window.initClientOrderList = function(data, tblSettings){
 	
 	// get Category Id from table data
-	var clientId = $("#" + tblSettings.sTableId ).data("clientid");
+	clientId       = $("#" + tblSettings.sTableId ).data("clientid");
+	data.clientId  = clientId;
+	data.osta_id   = $('#'+ clientId +'_id_meliscommerce_client_page_tab_orders .orderFilterStatus').val();	
+	data.startDate = $('#'+ clientId +'_tableClientOrderList').data('dStartDate');
+	data.endDate   = $('#'+ clientId +'_tableClientOrderList').data('dEndDate');
+	var icon = '<i class="glyphicon glyphicon-calendar fa fa-calendar"></i> ';
+	if(tblSettings.iDraw > 1) {
+		dateSelectionContent = translations.tr_meliscore_datepicker_select_date  + icon + "<span class='sdate'>" + dStartDate + ' - ' + dEndDate + '</span> <b class="caret"></b>';
+		$('#'+clientId+'_tableClientOrderList_wrapper .dt_orderdatepicker .dt_dateInfo').html(dateSelectionContent);
+	}
+	dStartDate = ""; dEndDate = ""; //clear date when Prospects page is reloaded	    		
 	
-	data.clientId = clientId;
+}
+
+window.initClientContactAddressForm = function(){
+	var tabId = $("#saveClientContactAddress").data("tabid");
+	$("#melisCommerceClientContactAddressFormModal").find("#cadd_civility").val($("#"+tabId+"_contact_form").find("#cper_civility").val());
+	$("#melisCommerceClientContactAddressFormModal").find("#cadd_firstname").val($("#"+tabId+"_contact_form").find("#cper_firstname").val());
+	$("#melisCommerceClientContactAddressFormModal").find("#cadd_name").val($("#"+tabId+"_contact_form").find("#cper_name").val());
+	$("#melisCommerceClientContactAddressFormModal").find("#cadd_middle_name").val($("#"+tabId+"_contact_form").find("#cper_middle_name").val());
 }

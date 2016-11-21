@@ -436,55 +436,38 @@ class MelisComVariantService extends MelisComGeneralService
 	     
 	    // Service implementation start
 	    $priceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');
-	    $variantPrices = $priceTable->getVariantFinalPrice($arrayParameters['variantId']);
+	    $variantPrice = $priceTable->getVariantFinalPrice($arrayParameters['variantId'], $arrayParameters['countryId'])->current();
 	    
-	    $generalPrices = array();
-	    $findPriceOnGeneral = true;
-	    $isCountryPriceFound = false;
-	    foreach ($variantPrices As $val)
+	    if(!empty($variantPrice))
 	    {
-	        // Getting the General Price which is CountryId is 0 (Zero)
-	        if ($val->price_country_id == 0)
-	        {
-	            $generalPrices = $val;
-	        }
-	        // Checking if CountryId match to Price CountryId
-	        if ($val->price_country_id == $arrayParameters['countryId'])
-	        {
-	            // Just to be sure that data on Price is in Numeric data type
-	            if (is_numeric($val->price_net))
-	            {
-	                $results = $val;
-	                
-	                $findPriceOnGeneral = false;
-	            }
-	            $isCountryPriceFound = true;
-	        }
-	         
-	        /**
-	         * If Gerenal price has already has a data and Variant Coutnry Price found,
-	         * loop will break and proceed to next process
-	         * In this process loop will stop after data needed are found.
-	         */
-	        if (!empty($generalPrices) && $isCountryPriceFound)
-	        {
-	            break;
-	        }
+	        // Just to be sure that data on Price is in Numeric data type
+	        if (is_numeric($variantPrice->price_net))
+            {
+                $results = $variantPrice;
+            }
 	    }
 	     
-	    // If CountryId did not match to data result, this will try to look Stocks on General Stocks
-	    if ($findPriceOnGeneral)
+	    if (is_null($results))
 	    {
-	        if (!empty($generalPrices))
+	        $variantPrice = $priceTable->getVariantGeneralPrice($arrayParameters['variantId'])->current();
+	        
+	        if (!empty($variantPrice))
 	        {
-	            // Just to be sure that data on price is in Numeric data type
-	            if (is_numeric($generalPrices->price_net))
+	            // Just to be sure that data on Price is in Numeric data type
+	            if (is_numeric($variantPrice->price_net))
 	            {
-	                $results = $generalPrices;
+	                // Getting the default currency
+	                $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+	                $generalCurrency = $currencyTable->getEntryByField('cur_default', 1)->current();
+	                
+	                if(!empty($generalCurrency))
+	                {
+	                    // Merging results and cast as Object
+	                    $results = (object) array_merge((array)$variantPrice, (array)$generalCurrency);
+	                }
 	            }
 	        }
 	    }
-	    
 	    // Service implementation end
 	    
 	    // Adding results to parameters for events treatment if needed
@@ -637,9 +620,12 @@ class MelisComVariantService extends MelisComGeneralService
 	    
 	    // Service implementation start
        $priceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');    
+       $productSvc = $this->getServiceLocator()->get('MelisComProductService');
        try{
           $results = true;
-          $priceTable->save($arrayParameters['prices'],$arrayParameters['priceId']);
+          $results = (bool) $priceTable->save($arrayParameters['prices'], $arrayParameters['priceId']);
+
+          //$priceTable->save($arrayParameters['prices'],$arrayParameters['priceId']);
        }catch(\Exception $e){
           $results = false; 
        }

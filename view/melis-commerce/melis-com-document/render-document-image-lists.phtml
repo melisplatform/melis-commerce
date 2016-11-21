@@ -7,19 +7,16 @@
 ?>
 <div <?= $id . $data_melisKey; ?>>
 	<div class="row">
-		<div class="col-xs-12 col-md-12 col-lg-12">
-			<div class="melis-filter-image filter-dropdown filter-search-container clearfix">
-        		<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-        			<i class="fa fa-globe"></i>
+		<div class="col-xs-12 col-md-12 col-lg-12">			
+			<div class="melis-filter-image filter-dropdown filter-div-country filter-search-container clearfix">
+        		<a href="#" class="dropdown-toggle" id="filter-text-country" data-toggle="dropdown">
+        			<i class="fa fa-globe"></i> 
         			<span class="filter-key"><?php echo $this->translate('tr_meliscommerce_documents_main_information_update_file_country')?></span>
         			<span class="caret"></span>
         		</a>
         		<ul class="documentImageFilter dropdown-menu filter-key-values" data-filter-group="country">
         			<li>
         				<a data-filter-value=".image" data-text='<?= $this->translate('tr_meliscommerce_documents_filter_all_option'); ?>'><?= $this->translate('tr_meliscommerce_documents_filter_all_option'); ?></a>
-        			</li>
-        			<li>
-        				<a data-filter-value=".-1" data-text='<?= $this->translate('tr_meliscommerce_documents_action_all_countries'); ?>'><?= $this->translate('tr_meliscommerce_documents_action_all_countries'); ?></a>
         			</li>
         			<?php 
         			foreach($this->country as $country):
@@ -29,9 +26,9 @@
         			</li>
         			<?php endforeach; ?>
         		</ul>
-        	</div>
-			<div class="melis-filter-image filter-dropdown filter-search-container clearfix">
-        		<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+        	</div>			
+			<div class="melis-filter-image filter-dropdown filter-div-file-type filter-search-container clearfix">
+        		<a href="#" class="dropdown-toggle" id="filter-text-file-type"  data-toggle="dropdown">
         			<i class="fa fa-image"></i>
         			<span class="filter-key"><?php echo $this->translate('tr_meliscommerce_documents_main_information_update_file_image')?></span>
         			<span class="caret"></span>
@@ -48,7 +45,7 @@
         			</li>
         			<?php endforeach; ?>
         		</ul>
-        	</div>
+        	</div>			
 		</div>
 	</div>
     <div class="imageDocumentContainer">	

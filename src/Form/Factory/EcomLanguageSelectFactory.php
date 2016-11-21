@@ -13,7 +13,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 use MelisCore\Form\Factory\MelisSelectFactory;
 
 /**
- * MelisCommerce Countries select factory
+ * MelisCommerce Language select factory
  */
 class EcomLanguageSelectFactory extends MelisSelectFactory
 {
@@ -22,14 +22,16 @@ class EcomLanguageSelectFactory extends MelisSelectFactory
 		$serviceManager = $formElementManager->getServiceLocator();
 
 		$langTable = $serviceManager->get('MelisEcomLangTable');
-		$langData = $langTable->fetchAll();
+		$langData = $langTable->langOrderByName();
 
 		$valueoptions = array();
 		$max = $langData->count();
 		for ($i = 0; $i < $max; $i++)
 		{
 			$data = $langData->current();
-			$valueoptions[$data->elang_id] = $data->elang_name;
+            if($data->elang_status) {
+                $valueoptions[$data->elang_id] = $data->elang_name;
+            }
 			$langData->next();
 		}
 		return $valueoptions;

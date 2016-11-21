@@ -5,12 +5,14 @@ return array(
             'forms' => array(
                 'meliscommerce_order_checkout' => array(
                     'meliscommerce_order_checkout_billing_address_form' => array(
-                        'attributes' => array(),
+                        'attributes' => array(
+                            'id' => 'EcomCheckoutBillingAddressForm'
+                        ),
                         'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
                         'elements' => array(
                             array(
                                 'spec' => array(
-                                    'name' => 'orderCheckoutBillingSelect',
+                                    'name' => 'cadd_id',
                                     'type' => 'EcomCheckoutBillingAddressSelect',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_order_checkout_address_billing_Select',
@@ -25,12 +27,14 @@ return array(
                         )
                     ),
                     'meliscommerce_order_checkout_delivery_address_form' => array(
-                        'attributes' => array(),
+                        'attributes' => array(
+                            'id' => 'EcomCheckoutDeliveryAddressForm'
+                        ),
                         'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
                         'elements' => array(
                             array(
                                 'spec' => array(
-                                    'name' => 'orderCheckoutDeliverySelect',
+                                    'name' => 'cadd_id',
                                     'type' => 'EcomCheckoutDeliveryAddressSelect',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_order_checkout_address_delivery_Select',
@@ -55,12 +59,6 @@ return array(
                         'elements' => array(
                             array(
                                 'spec' => array(
-                                    'name' => 'cadd_id',
-                                    'type' => 'hidden',
-                                )
-                            ),
-                            array(
-                                'spec' => array(
                                     'name' => 'cadd_client_id',
                                     'type' => 'hidden',
                                 )
@@ -73,6 +71,12 @@ return array(
                             ),
                             array(
                                 'spec' => array(
+                                    'name' => 'cadd_type',
+                                    'type' => 'hidden',
+                                )
+                            ),
+                            array(
+                                'spec' => array(
                                     'name' => 'cadd_address_name',
                                     'type' => 'MelisText',
                                     'options' => array(
@@ -80,20 +84,6 @@ return array(
                                     ),
                                     'attributes' => array(
                                         'id' => 'cadd_address_name',
-                                    )
-                                )
-                            ),
-                            array(
-                                'spec' => array(
-                                    'name' => 'cadd_type',
-                                    'type' => 'EcomAddressTypeSelect',
-                                    'options' => array(
-                                        'label' => 'tr_meliscommerce_client_Contact_address_type',
-                                        'empty_option' => 'tr_meliscommerce_clients_common_label_choose',
-                                        'disable_inarray_validator' => true,
-                                    ),
-                                    'attributes' => array(
-                                        'id' => 'cadd_type',
                                     )
                                 )
                             ),
@@ -222,11 +212,9 @@ return array(
                             array(
                                 'spec' => array(
                                     'name' => 'cadd_country',
-                                    'type' => 'EcomCountriesNoAllCountriesSelect',
+                                    'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_address_country',
-                                        'empty_option' => 'tr_meliscommerce_clients_common_label_choose',
-                                        'disable_inarray_validator' => true,
                                     ),
                                     'attributes' => array(
                                         'id' => 'cadd_country',
@@ -309,24 +297,6 @@ return array(
                                             ),
                                         ),
                                     ),
-                                    array(
-                                        'name' => 'NotEmpty',
-                                        'options' => array(
-                                            'messages' => array(
-                                                \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_client_Contact_input_empty',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'cadd_type' => array(
-                                'name'     => 'cadd_type',
-                                'required' => true,
-                                'validators' => array(
                                     array(
                                         'name' => 'NotEmpty',
                                         'options' => array(
@@ -578,6 +548,18 @@ return array(
                             'cadd_country' => array(
                                 'name'     => 'cadd_country',
                                 'required' => false,
+                                'validators' => array(
+                                    array(
+                                        'name'    => 'StringLength',
+                                        'options' => array(
+                                            'encoding' => 'UTF-8',
+                                            'max'      => 50,
+                                            'messages' => array(
+                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_50',
+                                            ),
+                                        ),
+                                    )
+                                ),
                                 'filters'  => array(
                                     array('name' => 'StripTags'),
                                     array('name' => 'StringTrim'),

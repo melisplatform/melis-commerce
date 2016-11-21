@@ -31,12 +31,12 @@
 	width: 100%;
 }
 
-me-file-cont label span.updateFileDocument, span.deleteFileImageDocument{
+.me-file-cont label span.updateFileDocument, span.deleteFileImageDocument{
 	font-size: 20px;
 	margin-top: -3px;
 }
 
-me-file-cont label span.deleteFileImageDocument, span.updateFileDocument{
+.me-file-cont label span.deleteFileImageDocument, span.updateFileDocument{
 	font-size: 20px;
 	margin-top: -3px;
 }
@@ -45,3 +45,14 @@ me-file-cont label span.deleteFileImageDocument, span.updateFileDocument{
 	cursor: pointer;
  	color: #cb4040;
  }
+
+#imgCountryFlag {
+ 	border: none !important;
+	max-width:32px !important;
+	max-height:32px !important;
+}
+.imgDisplay {
+	border: none !important;
+	max-width:32px !important;
+	max-height:32px !important;
+}

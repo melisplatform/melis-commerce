@@ -5,15 +5,13 @@
     }
     $c = 0;
     $collapse = 'collapse in';
+    $collapsed = '';
 ?>
 <div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="tab-pane active custom-field-type">
 	<?php 
-	foreach($this->payments as $payment):
-	if($c>0){
-	    $collapse = 'collapse';
-	}
+	foreach($this->payments as $payment):	   
 	?>
-	<a class="btn btn-primary form-control collapsed a-accordion" data-toggle="collapse" href="#<?= $payment->opay_id.'_'.$this->melisKey?>" aria-expanded="false" aria-controls="payment1">
+	<a class="btn btn-primary form-control a-accordion <?= $collapsed?>" data-toggle="collapse" href="#<?= $payment->opay_id.'_'.$this->melisKey?>" aria-expanded="false" aria-controls="payment1">
 		<span><?= $this->translate('tr_meliscommerce_orders_content_tab_paymnet'). ' ' .$payment->payment_type->opty_name?></span>
 		<span style="float:right"><?= $payment->opay_date_payment?></span>
 	</a>
@@ -57,7 +55,8 @@
 	</div>
 	<br>
 	<?php
-	
+	$collapse = 'collapse';
+	$collapsed = 'collapsed';
 	$c++;
 	endforeach;
 	?>

@@ -45,3 +45,15 @@
     margin: 2px 0px;
 }
 
+.main-contact-start .fa{
+	cursor: pointer;
+}
+
+.main-contact-start .fa-star-o{
+	color: #f9bb49;
+}
+
+.main-contact-start .fa-star{
+	color: #f9bb49;
+}
+

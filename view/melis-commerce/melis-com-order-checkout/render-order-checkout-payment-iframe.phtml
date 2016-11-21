@@ -1,0 +1,89 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Payment API</title>
+        <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+        <script type="text/javascript" src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+        <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    </head>
+<body>
+    <div class="container">
+      	<form class="form-horizontal" role="form" id="paymentForm" action="/melis/MelisCommerce/MelisComOrderCheckout/renderOrderCheckoutPaymentDone" method="post">
+      		
+      		<input type="hidden"name="order-id" value="<?php echo $this->orderId?>">
+      		<!-- Static values, assume this Values are generated form API application -->
+      		<input type="hidden"name="payment-type-id" value="1">
+      		<input type="hidden"name="payment-type-value" value="VISA">
+      		<input type="hidden"name="payment-transaction-price-paid" value="<?php echo $this->totalCost?>">
+      		<input type="hidden"name="payment-transaction-price-paid-confirm" value="<?php echo $this->totalCost?>">
+      		<input type="hidden"name="payment-transaction-id" value="<?php echo 'VISA-'.$this->retrunCode?>">
+      		<input type="hidden"name="payment-transaction-return-code" value="<?php echo $this->retrunCode?>">
+      		<input type="hidden"name="payment-transaction-raw-response" value="<?php echo 'Visa confirms'?>">
+      		<input type="hidden"name="payment-transaction-date" value="<?php echo date('Y-m-d-H:i:s')?>">
+      		
+          	<legend>Payment API</legend>
+          		<div class="form-group">
+                <label class="col-sm-3 control-label" for="card-holder-name">Name on Card</label>
+                <div class="col-sm-9">
+                  	<input type="text" class="form-control" name="card-holder-name" id="card-holder-name" placeholder="Card Holder's Name" required>
+                </div>
+          	</div>
+          	<div class="form-group">
+            	<label class="col-sm-3 control-label" for="card-number">Card Number</label>
+            	<div class="col-sm-9">
+              		<input type="text" class="form-control" name="card-number" id="card-number" placeholder="Debit/Credit Card Number" required>
+            	</div>
+          	</div>
+          	<div class="form-group">
+                <label class="col-sm-3 control-label" for="expiry-month">Expiration Date</label>
+                <div class="col-sm-9">
+                  	<div class="row">
+                        <div class="col-xs-3">
+                          	<select class="form-control col-sm-2" name="expiry-month" id="expiry-month" required>
+                                <option value="" selected>Month</option>
+                                <option value="01">Jan (01)</option>
+                                <option value="02">Feb (02)</option>
+                                <option value="03">Mar (03)</option>
+                                <option value="04">Apr (04)</option>
+                                <option value="05">May (05)</option>
+                                <option value="06">June (06)</option>
+                                <option value="07">July (07)</option>
+                                <option value="08">Aug (08)</option>
+                                <option value="09">Sep (09)</option>
+                                <option value="10">Oct (10)</option>
+                                <option value="11">Nov (11)</option>
+                                <option value="12">Dec (12)</option>
+                          	</select>
+                        </div>
+                        <div class="col-xs-3">
+                          	<select class="form-control" name="expiry-year" required>
+                          		<option value="" selected>Year</option>
+                                <option value="16">2016</option>
+                                <option value="17">2017</option>
+                                <option value="18">2018</option>
+                                <option value="19">2019</option>
+                                <option value="20">2020</option>
+                                <option value="21">2021</option>
+                                <option value="22">2022</option>
+                                <option value="23">2023</option>
+                          	</select>
+                        </div>
+                  	</div>
+            	</div>
+      		</div>
+          	<div class="form-group">
+                <label class="col-sm-3 control-label" for="cvv">Card CVV</label>
+                <div class="col-sm-3">
+                  	<input type="text" class="form-control" name="cvv" id="cvv" placeholder="Security Code" required>
+                </div>
+          	</div>
+          	<div class="form-group">
+                <div class="col-sm-offset-3 col-sm-9">
+                  	<button type="submit" class="btn btn-success" id="payNowBtn">Pay Now</button>
+                </div>
+          	</div>
+    	</form>
+    </div>
+</body>
+</html>

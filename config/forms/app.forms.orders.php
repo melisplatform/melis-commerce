@@ -80,18 +80,18 @@ return array(
                                     ),                                    
                                 ),
                             ),
-                            array(
-                                'spec' => array(
-                                    'name' => 'ord_status',
-                                    'type' => 'EcomOrderStatusSelect',
-                                    'options' => array(
-                                        'label' => 'tr_meliscommerce_orders_status',
-                                    ),
-                                    'attributes' => array(
-                                        'id' => '',
-                                    ),
-                                ),
-                            ),
+//                             array(
+//                                 'spec' => array(
+//                                     'name' => 'ord_status',
+//                                     'type' => 'EcomOrderStatusSelect',
+//                                     'options' => array(
+//                                         'label' => 'tr_meliscommerce_orders_status',
+//                                     ),
+//                                     'attributes' => array(
+//                                         'id' => '',
+//                                     ),
+//                                 ),
+//                             ),
                             array(
                                 'spec' => array(
                                     'name' => 'ord_reference',
@@ -118,24 +118,24 @@ return array(
                                     array('name' => 'StringTrim'),
                                 ),
                             ),
-                            'ord_status' => array(
-                                'name'     => 'ord_status',
-                                'required' => true,
-                                'validators' => array(
-                                    array(
-                                        'name'    => '\Zend\I18n\Validator\IsInt',
-                                        'options' => array(
-                                            'messages'=> array(
-                                                \Zend\I18n\Validator\IsInt::NOT_INT   => 'tr_meliscommerce_orders_invalid_status',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
+//                             'ord_status' => array(
+//                                 'name'     => 'ord_status',
+//                                 'required' => true,
+//                                 'validators' => array(
+//                                     array(
+//                                         'name'    => '\Zend\I18n\Validator\IsInt',
+//                                         'options' => array(
+//                                             'messages'=> array(
+//                                                 \Zend\I18n\Validator\IsInt::NOT_INT   => 'tr_meliscommerce_orders_invalid_status',
+//                                             ),
+//                                         ),
+//                                     ),
+//                                 ),
+//                                 'filters'  => array(
+//                                     array('name' => 'StripTags'),
+//                                     array('name' => 'StringTrim'),
+//                                 ),
+//                             ),
                             'ord_reference' => array(
                                 'name'     => 'ord_reference',
                                 'required' => true,
@@ -741,11 +741,10 @@ return array(
                                         ),
                                     ),
                                     array(
-                                        'name'    => '\Zend\I18n\Validator\IsInt',
+                                        'name'    => 'regex', false,
                                         'options' => array(
-                                            'messages'=> array(
-                                                \Zend\I18n\Validator\IsInt::NOT_INT   => 'tr_meliscommerce_orders_invalid_phone',
-                                            ),
+                                            'pattern' => '/^([0-9\(\)\/\+ \-]*)$/',
+                                            'messages'=> array(\Zend\Validator\Regex::NOT_MATCH => 'tr_meliscommerce_orders_invalid_phone'),
                                         ),
                                     ),
 //                                     array(
@@ -777,11 +776,10 @@ return array(
                                         ),
                                     ),
                                     array(
-                                        'name'    => '\Zend\I18n\Validator\IsInt',
+                                        'name'    => 'regex', false,
                                         'options' => array(
-                                            'messages'=> array(
-                                                \Zend\I18n\Validator\IsInt::NOT_INT   => 'tr_meliscommerce_orders_invalid_phone',
-                                            ),
+                                            'pattern' => '/^([0-9\(\)\/\+ \-]*)$/',
+                                            'messages'=> array(\Zend\Validator\Regex::NOT_MATCH => 'tr_meliscommerce_orders_invalid_phone'),
                                         ),
                                     ),
 //                                     array(
@@ -967,7 +965,15 @@ return array(
                             'omsg_message' => array(
                                 'name'     => 'omsg_message',
                                 'required' => true,
-                                'validators' => array(
+                                'validators' => array(                                    
+                                    array(
+                                        'name' => '\Zend\Validator\NotEmpty',
+                                        'options' => array(
+                                            'messages' => array(
+                                                \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_address_error_empty',
+                                            ),
+                                        ),
+                                    ),
                                     array(
                                         'name'    => 'StringLength',
                                         'options' => array(
@@ -975,14 +981,6 @@ return array(
                                             'max'      => 1200,
                                             'messages' => array(
                                                 \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_address_error_long_1200',
-                                            ),
-                                        ),
-                                    ),
-                                    array(
-                                        'name' => 'NotEmpty',
-                                        'options' => array(
-                                            'messages' => array(
-                                                \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_address_error_empty',
                                             ),
                                         ),
                                     ),

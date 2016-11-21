@@ -1,8 +1,13 @@
 $(function(){
+	$('body').on("click", ".addNewOrder", function(){
+		melisHelper.tabOpen(translations.tr_meliscommerce_order_checkout_title, 'fa fa fa-plus fa-2x', 'id_meliscommerce_order_checkout', 'meliscommerce_order_checkout');
+	});
 	// Add event listener for opening and closing details
+	// This event will create extra row on DataTable as Product Variant List container
     $('body').on('click', '.orderCheckoutProduListViewVariant', function () {
         var tr = $(this).closest('tr');
         var row = $orderCheckoutProductListTbl.row( tr );
+        // Getting the product Id from the row Id
         var productId = tr.attr("id");
         
         if(row.child.isShown()){
@@ -10,8 +15,10 @@ $(function(){
             row.child.hide();
             tr.removeClass("shown");
         }else{
+        	// Extra row Attributes
         	var zoneId = productId+"_id_meliscommerce_order_checkout_product_variant_list";
         	var melisKey = "meliscommerce_order_checkout_product_variant_list";
+        	// Extra row Container
         	var variantContainer = '<div class="checkout-product-variant-list" id="'+zoneId+'" melisKey="'+melisKey+'"></div>';
         	
             // Open this row
@@ -19,10 +26,43 @@ $(function(){
             tr.addClass("shown");
             
             $('.checkout-product-variant-list').attr('style','margin-bottom: 10px;');
+            // Reloading the Product variant container,
+            // this process will request to server for variant list depend on ProductId
             melisHelper.zoneReload(zoneId, melisKey, {productId: productId});
         }
     });
     
+    // Checkout country event
+    // This Process will create a Session variable on for Country Id that will use for processing Checkout
+    $("body").on("change", "#orderCheckoutCountries", function(){
+    	$countryId = $(this).val();
+    	var dataString = new Array;
+    	
+    	dataString.push({
+    		name : 'countryId',
+    		value : $countryId
+    	});
+    	
+    	$.ajax({
+	        type        : "POST", 
+	        url         : "/melis/MelisCommerce/MelisComOrderCheckout/orderCheckoutSetCountry",
+	        data		: dataString,
+	        dataType    : "json",
+	        encode		: true
+		}).done(function(data) {
+			if(data.success) {
+				var zoneId = "id_meliscommerce_order_checkout_content";
+	        	var melisKey = "meliscommerce_order_checkout_content";
+				melisHelper.zoneReload(zoneId, melisKey);
+			}else{
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+			}
+		}).fail(function(){
+			alert( translations.tr_meliscore_error_message );
+		});
+    });
+    
+    // Adding variant to Basket List
     $('body').on('click', '.orderCheckoutVariantAddBasket', function () {
     	var variantId = $(this).data('variantid');
     	
@@ -44,6 +84,7 @@ $(function(){
 				var zoneId = "id_meliscommerce_order_checkout_product_bakset";
 	        	var melisKey = "meliscommerce_order_checkout_product_bakset";
 				melisHelper.zoneReload(zoneId, melisKey);
+				melisHelper.melisOkNotification(data.textTitle, data.textMessage, '#72af46');
 			}else{
 				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
 			}
@@ -52,21 +93,22 @@ $(function(){
 		});
     });
     
+    // Changing the Quantity by typing the number of the quantity of the variant in Basket List
     $('body').on('change', '.orderBasketVariantQty', function () {
     	var variantId = $(this).data("variantid");
     	var varQty = parseInt($(this).data("quantity"));
-    	var varNewQty = parseInt($(this).val());
-    	
-    	var zoneId = "id_meliscommerce_order_checkout_product_bakset";
-    	var melisKey = "meliscommerce_order_checkout_product_bakset";
-    	
-    	if(varQty < varNewQty){
-    		melisHelper.zoneReload(zoneId, melisKey, {action: "add", variantId : variantId, variantQty : varNewQty});
+    	var variantQty = parseInt($(this).val());
+    	// Checking the last Variant qunatity and the New Quantity
+    	if(varQty < variantQty){
+    		// Adding Variant quantity
+    		updateVariantbasket("add", variantId, variantQty);
     	}else{
-    		melisHelper.zoneReload(zoneId, melisKey, {action: 'deduct', variantId : variantId, variantQty : varNewQty});
+    		// Deducting Variant quantity
+    		updateVariantbasket("deduct", variantId, variantQty);
     	}
     });
     
+    // Binding Variant quantity input to Numeric characters only
     $('body').on("keydown", ".orderBasketVariantQty", function (e) {
         // Allow: backspace, delete, tab, escape, enter and .
         if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
@@ -83,39 +125,407 @@ $(function(){
         }
     });
     
+    // Variant quantity + (plus) button
+    // This action will add 1 (One) quantity to the Variant current quantity
     $('body').on('click', '.qty-plus', function () {
     	var variantId = $(this).data("variantid");
-    	
     	variantQty = parseInt($("#"+variantId+"_orderBasketVariantQty").val()) + 1;
     	$("#"+variantId+"_orderBasketVariantQty").val(variantQty);
-    	
-    	var zoneId = "id_meliscommerce_order_checkout_product_bakset";
-    	var melisKey = "meliscommerce_order_checkout_product_bakset";
-		melisHelper.zoneReload(zoneId, melisKey, {action: "add", variantId : variantId, variantQty : variantQty});
+    	updateVariantbasket("add", variantId, variantQty);
     });
     
+    // Variant quantity - (minus) button
+    // This action will deduct 1 (One) quantity to the Variant current quantity
     $('body').on('click', '.qty-minus', function () {
     	var variantId = $(this).data("variantid");
     	$varQty = $("#"+variantId+"_orderBasketVariantQty").val();
     	
     	if(parseInt($varQty) > 0){
-    		
     		variantQty = parseInt($("#"+variantId+"_orderBasketVariantQty").val()) - 1;
-    		
     		$("#"+variantId+"_orderBasketVariantQty").val(variantQty);
-    		
-    		var zoneId = "id_meliscommerce_order_checkout_product_bakset";
-        	var melisKey = "meliscommerce_order_checkout_product_bakset";
-    		melisHelper.zoneReload(zoneId, melisKey, {action: 'deduct', variantId : variantId, variantQty : variantQty});
+    		updateVariantbasket("deduct", variantId, variantQty);
+    	}
+    });
+    
+    // Checkout First step Next button
+    // This action will validate if the basket has Content, else this action will show a message
+    $('body').on('click', '.orderCheckoutFirstStepBtn', function () {
+    	
+    	$(".orderCheckoutFirstStepBtn").button("loading");
+    	
+    	$.ajax({
+	        type        : "POST", 
+	        url         : "/melis/MelisCommerce/MelisComOrderCheckout/checkBasket",
+	        dataType    : "json",
+	        encode		: true
+		}).done(function(data) {
+			if(data.success) {
+				$($(".orderCheckoutFirstStepBtn").data("tabid")).tab("show");
+			}else{
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+			}
+			$(".orderCheckoutFirstStepBtn").button("reset");
+		}).fail(function(){
+			alert( translations.tr_meliscore_error_message );
+			$(".#orderCheckoutFirstStepBtn").button("reset");
+		});
+    });
+    
+    // Next button event
+    $('body').on('click', '.orderCheckoutNextStep', function () {
+    	var body = $("html, body");
+    	body.stop().animate({scrollTop:0}, '500', 'swing');
+    });
+    
+    // Preview button, activating previews step of the checkout steps
+    $('body').on('click', '.orderCheckoutPrevStep', function () {
+		$($(this).data("tabid")).tab("show");
+		
+		if($(this).data("tabid") == '#id_meliscommerce_order_checkout_summary_step_nav'){
+			// Zone reload Summary Basket List at step 4 and Product Basket at step 1
+			melisHelper.zoneReload("id_meliscommerce_order_checkout_summary_basket", "meliscommerce_order_checkout_summary_basket");
+			melisHelper.zoneReload("id_meliscommerce_order_checkout_product_bakset", "meliscommerce_order_checkout_product_bakset");
+		}else if($(this).data("tabid") == '#id_meliscommerce_order_checkout_select_addresses_step_nav'){
+			// Zone reload Checkout Addresses
+			melisHelper.zoneReload('id_meliscommerce_order_checkout_billing_address','meliscommerce_order_checkout_billing_address')
+			melisHelper.zoneReload('id_meliscommerce_order_checkout_delivery_address','meliscommerce_order_checkout_delivery_address')
+		}
+		
+		var body = $("html, body");
+		body.stop().animate({scrollTop:0}, '500', 'swing');
+    });
+    
+    // Selecting Contact on Checkout Second Step
+    $('body').on('click', '.orderCheckoutSelectContact', function () {
+    	
+    	var btn = $(this);
+    	var tr = $(this).closest('tr');
+    	// Getting the contactId from the row id attribute
+    	var contactId = tr.attr("id");
+    	var nxtTabid = $(this).data("tabid");
+    	
+    	btn.attr('disabled', true);
+    	
+    	var dataString = new Array;
+    	
+    	dataString.push({
+    		name : 'contactId',
+    		value : contactId
+    	});
+    	
+    	$.ajax({
+	        type        : "POST", 
+	        url         : "/melis/MelisCommerce/MelisComOrderCheckout/selectContact",
+	        data		: dataString,
+	        dataType    : "json",
+	        encode		: true
+		}).done(function(data) {
+			if(data.success) {
+				
+				$(nxtTabid).tab("show");
+				
+				setTimeout(function(){ 
+					melisHelper.zoneReload('id_meliscommerce_order_checkout_product_bakset', 'meliscommerce_order_checkout_product_bakset');
+					melisHelper.zoneReload("id_meliscommerce_order_checkout_billing_address", "meliscommerce_order_checkout_billing_address");
+					melisHelper.zoneReload("id_meliscommerce_order_checkout_delivery_address", "meliscommerce_order_checkout_delivery_address");
+				}, 300);
+				
+			}else{
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+			}
+			btn.attr('disabled', false);
+		}).fail(function(){
+			alert( translations.tr_meliscore_error_message );
+			btn.attr('disabled', false);
+		});
+    });
+    
+    // Refresh button for Contact List table
+    $('body').on('click', '.orderCheckoutContactListRefresh', function () {
+    	melisHelper.zoneReload("id_meliscommerce_order_checkout_choose_contact_step_content", "meliscommerce_order_checkout_choose_contact_step_content");
+    });
+    
+    // Selecting Checkout Billing Address
+    $('body').on('change', '#orderCheckoutBillingSelect', function () {
+    	var clientAddId = $(this).val();
+    	melisHelper.zoneReload("id_meliscommerce_order_checkout_billing_address", "meliscommerce_order_checkout_billing_address", {cadd_id: clientAddId});
+    });
+    // Selecting Checkout Delivery Address
+    $('body').on('change', '#orderCheckoutDeliverySelect', function () {
+    	var clientAddId = $(this).val();
+    	melisHelper.zoneReload("id_meliscommerce_order_checkout_delivery_address", "meliscommerce_order_checkout_delivery_address", {cadd_id: clientAddId});
+    });
+    // Create new Billing Address button by clearing the Form fields for address
+    $('body').on('click', '#orderCheckoutCreateBillingAdd', function () {
+    	melisHelper.zoneReload("id_meliscommerce_order_checkout_billing_address", "meliscommerce_order_checkout_billing_address", {emptyBillingAddress : 1});
+    });
+    // Create new Billing Address button by clearing the Form fields for address
+    $('body').on('click', '#orderCheckoutCreateDeliveryAdd', function () {
+    	melisHelper.zoneReload("id_meliscommerce_order_checkout_delivery_address", "meliscommerce_order_checkout_delivery_address", {emptyDeliveryAddress : 1});
+    });
+    // Checkout Addresses validations
+    $('body').on('click', '.orderCheckoutValidateAddresses', function () {
+    	
+    	var btn = $(this);
+    	var dataString = new Array;
+    	var nxtTabid = $(this).data("tabid");
+    	
+    	// Serializing Billing address form
+    	$("#id_meliscommerce_order_checkout_billing_address form").each(function(){
+    		var billingAddressFrom = $(this).serializeArray();
+    		$.each(billingAddressFrom, function(){
+    			dataString.push({
+    				name: 'billing['+this.name+']',
+					value: this.value
+    			});
+    		});
+    	});
+    	
+    	if($('#billingAddressOrderCheckoutForm').hasClass('hidden')){
+    		dataString.push({
+				name: 'billing[noSelected]',
+				value: true
+			});
     	}
     	
-    	initOrderCheckoutFirstStepBtn();
+    	// Serializing Delivery address form
+    	$("#id_meliscommerce_order_checkout_delivery_address form").each(function(){
+    		var billingAddressFrom = $(this).serializeArray();
+    		$.each(billingAddressFrom, function(){
+    			dataString.push({
+    				name: 'delivery['+this.name+']',
+					value: this.value
+    			});
+    		});
+    	});
+    	
+    	if($('#deliveryAddressOrderCheckoutForm').hasClass('hidden')){
+    		dataString.push({
+				name: 'delivery[noSelected]',
+				value: true
+			});
+    	}
+    	
+    	btn.attr('disabled', true);
+    	
+    	$.ajax({
+	        type        : "POST", 
+	        url         : "/melis/MelisCommerce/MelisComOrderCheckout/selectAddresses",
+	        data		: dataString,
+	        dataType    : "json",
+	        encode		: true
+		}).done(function(data) {
+			if(data.success) {
+				$(nxtTabid).tab("show");
+				
+				melisHelper.zoneReload('id_meliscommerce_order_checkout_summary_basket','meliscommerce_order_checkout_summary_basket');
+				melisHelper.zoneReload('id_meliscommerce_order_checkout_summary_billing_address','meliscommerce_order_checkout_summary_billing_address');
+				melisHelper.zoneReload('id_meliscommerce_order_checkout_summary_delivery_address','meliscommerce_order_checkout_summary_delivery_address');
+				
+			}else{
+				melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				highlightErrors(data.success, data.errors,  activeTabId+" form");
+			}
+			btn.attr('disabled', false);
+		}).fail(function(){
+			alert( translations.tr_meliscore_error_message );
+			btn.attr('disabled', false);
+		});
+    	
+    });
+    // Changing the Quantity by typing the number of the quantity of the variant in Basket List in Summary Step
+    $('body').on('change', '.orderSummaryBasketVariantQty', function () {
+    	var variantId = $(this).data("variantid");
+    	var varQty = parseInt($(this).data("quantity"));
+    	var variantQty = parseInt($(this).val());
+    	// Checking the last Variant qunatity and the New Quantity
+    	if(varQty < variantQty){
+    		// Adding Variant quantity
+    		updateSummaryVariantbasket("add", variantId, variantQty);
+    	}else{
+    		// Deducting Variant quantity
+    		updateSummaryVariantbasket("deduct", variantId, variantQty);
+    	}
+    });
+    // Binding Variant quantity input to Numeric characters only
+    $('body').on("keydown", ".orderSummaryBasketVariantQty", function (e) {
+        // Allow: backspace, delete, tab, escape, enter and .
+        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
+             // Allow: Ctrl+A, Command+A
+            (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) || 
+             // Allow: home, end, left, right, down, up
+            (e.keyCode >= 35 && e.keyCode <= 40)) {
+                 // let it happen, don't do anything
+                 return;
+        }
+        // Ensure that it is a number and stop the keypress
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
+    });
+    
+    // Variant quantity + (plus) button
+    // This action will add 1 (One) quantity to the Variant current quantity
+    $('body').on('click', '.summary-qty-plus', function () {
+    	var variantId = $(this).data("variantid");
+    	variantQty = parseInt($("#"+variantId+"_orderSummaryBasketVariantQty").val()) + 1;
+    	$("#"+variantId+"_orderSummaryBasketVariantQty").val(variantQty);
+		updateSummaryVariantbasket("add", variantId, variantQty);
+    });
+    
+    // Variant quantity - (minus) button
+    // This action will deduct 1 (One) quantity to the Variant current quantity
+    $('body').on('click', '.summary-qty-minus', function () {
+    	var variantId = $(this).data("variantid");
+    	$varQty = $("#"+variantId+"_orderSummaryBasketVariantQty").val();
+    	
+    	if(parseInt($varQty) > 0){
+    		variantQty = parseInt($("#"+variantId+"_orderSummaryBasketVariantQty").val()) - 1;
+    		$("#"+variantId+"_orderSummaryBasketVariantQty").val(variantQty);
+    		updateSummaryVariantbasket("deduct", variantId, variantQty);
+    	}
+    });
+    // Confirming Client basket button
+    $('body').on('click', '.orderCheckoutConfirmSummary', function () {
+    	var btn = $(this);
+    	var nxtTabid = $(this).data("tabid");
+    	
+    	$.ajax({
+	        type        : "POST", 
+	        url         : "/melis/MelisCommerce/MelisComOrderCheckout/confirmOrderCheckoutSummary",
+	        dataType    : "json",
+	        encode		: true
+		}).done(function(data) {
+			if(data.success) {
+				$(nxtTabid).tab("show");
+				
+				melisHelper.zoneReload("id_meliscommerce_order_checkout_payment_step_content", "meliscommerce_order_checkout_payment_step_content");
+				
+			}else{
+				melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+			}
+			btn.attr('disabled', false);
+		}).fail(function(){
+			alert( translations.tr_meliscore_error_message );
+			btn.attr('disabled', false);
+		});
+    });
+    
+    $('body').on('click', '.orderCheckoutConfirmPayment', function () {
+    	var btn = $(this);
+    	var nxtTabid = $(this).data("tabid");
+    	$(nxtTabid).tab("show");
+    	
+    	var zoneId = "id_meliscommerce_order_checkout_confirmation_step";
+		var melisKey = "meliscommerce_order_checkout_confirmation_step";
+		melisHelper.zoneReload(zoneId, melisKey, {activateTab : true});
     });
 });
 
-window.initOrderCheckoutFirstStepBtn = function({
+window.productNextButtonState = function(){
 	
+	var nextButton = $(".orderCheckoutFirstStepBtn");
+	$.ajax({
+        type        : "POST", 
+        url         : "/melis/MelisCommerce/MelisComOrderCheckout/checkBasket",
+        dataType    : "json",
+        encode		: true
+	}).done(function(data) {
+		if(data.success) {
+			nextButton.attr('disabled', false);
+			nextButton.attr('title', '');
+		}else{
+			nextButton.attr('disabled', true);
+			nextButton.attr('title', translations.tr_meliscommerce_order_checkout_product_basket_empty);
+		}
+	}).fail(function(){});
+}
+
+// This method will update the Summary step basket list
+window.updateSummaryVariantbasket = function(action, variantId, variantQty){
+	var zoneId = "id_meliscommerce_order_checkout_summary_basket";
+	var melisKey = "meliscommerce_order_checkout_summary_basket";
+	melisHelper.zoneReload(zoneId, melisKey, {action: action, variantId : variantId, variantQty : variantQty});
+	// this will also update the basket list at First step
+	setTimeout(function(){ 
+		melisHelper.zoneReload("id_meliscommerce_order_checkout_product_bakset", "meliscommerce_order_checkout_product_bakset");
+	}, 3000);
 	
+}
+// This method will update the Basket list at First Step
+window.updateVariantbasket = function(action, variantId, variantQty){
+	var zoneId = "id_meliscommerce_order_checkout_product_bakset";
+	var melisKey = "meliscommerce_order_checkout_product_bakset";
+	melisHelper.zoneReload(zoneId, melisKey, {action: action, variantId : variantId, variantQty : variantQty});
+}
+
+// Highliting errors from the Form field
+window.highlightErrors = function(success, errors, divContainer){
 	
-	$("#orderCheckoutFirstStepBtn").attr('disabled', true);
-});
+	// if all form fields are error color them red
+	if(success === 0){
+		
+		if(divContainer !== ''){
+			$("#" + divContainer + " .form-group label").css("color","#686868");
+		}
+		
+		$.each( errors, function( key, error ) { 
+			
+			if("form" in error){
+				$.each(this.form, function( fkey, fvalue ){
+					$("#" + fvalue + " .form-control[name='"+key +"']").prev("label").css("color","red");
+				});
+			}else{
+				if(divContainer !== ''){
+					$("#" + divContainer + " .form-control[name='"+key +"']").prev("label").css("color","red");
+				}
+			}
+		});
+	}
+	// remove red color for correctly inputted fields
+	else{
+		$("#" + divContainer + " .form-group label").css("color","#686868");
+	}
+}
+
+// Pop-up dialog for errors after validation
+window.melisKoNotification = function(title, message, errors, closeByButtonOnly){
+	
+	( closeByButtonOnly !== 'closeByButtonOnly' ) ? closeByButtonOnly = 'overlay-hideonclick' : closeByButtonOnly = '';
+
+	var errorTexts = '<h3>'+ title +'</h3>';
+		errorTexts +='<h4>'+ message +'</h4>';
+		$.each( errors, function( key, error ) {
+			if(key !== 'label'){
+				errorTexts += '<p class="modal-error-cont"><b>'+ (( errors[key]['label'] == undefined ) ? ((errors['label']== undefined) ? key : errors['label'] ) : errors[key]['label'] )+ ': </b>  ';
+				// catch error level of object
+				try {
+					$.each( error, function( key, value ) {
+						if(key !== 'label' && key !== 'form'){
+							
+							$errMsg = '';
+							if(value instanceof Object){
+								$errMsg = value[0];
+							}else{
+								$errMsg = value;
+							}
+							errorTexts += '<span><i class="fa fa-circle"></i>'+ $errMsg + '</span>';
+						}
+					});
+				} catch(Tryerror) {
+					if(key !== 'label' && key !== 'form'){
+						 errorTexts +=  '<span><i class="fa fa-circle"></i>'+ error + '</span>';
+					} 
+				}	
+				errorTexts += '</p>';
+			}
+		});
+		
+	var div = "<div class='melis-modaloverlay "+ closeByButtonOnly +"'></div>";
+	div += "<div class='melis-modal-cont KOnotif'>  <div class='modal-content'>"+ errorTexts +" <span class='btn btn-block btn-primary'>"+ translations.tr_meliscore_notification_modal_Close +"</span></div> </div>";
+	$body.append(div);
+}
+
+window.initCheckoutSelectContactTable = function(){
+	$('.checkoutSelectContactOrderHeader').attr('title', translations.tr_meliscommerce_checkout_tbl_cper_num_orders);
+}

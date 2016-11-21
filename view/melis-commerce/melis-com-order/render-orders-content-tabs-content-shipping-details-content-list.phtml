@@ -4,6 +4,7 @@
         $id .= $this->orderId.'_'.$this->zoneconfig['conf']['id'];
     }
     $collapse = 'collapse in';
+    $collapsed = '';
 ?>
 <div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="tab-pane active custom-field-type">
 	
@@ -11,11 +12,8 @@
 	$forms = $this->orderShippingForm;
 	$shippings = $this->shippings;
 	for($c = 0; $c < count($forms); $c++):
-	if($c>0){
-	    $collapse = 'collapse';
-	}
 	?>
-	<a class="btn btn-primary form-control collapsed a-accordion" data-toggle="collapse" href="#<?= $shippings[$c]->oship_id.'_'.$this->melisKey?>" aria-expanded="false" aria-controls="shipping1">
+	<a class="btn btn-primary form-control a-accordion <?= $collapsed?>" data-toggle="collapse" href="#<?= $shippings[$c]->oship_id.'_'.$this->melisKey?>" aria-expanded="false" aria-controls="shipping1">
 		<span><?= $shippings[$c]->oship_tracking_code ?></span>
 		<span style="float:right"><?=$shippings[$c]->oship_date_sent;?></span>
 		
@@ -33,6 +31,8 @@
 	</div>
 	<br>
 	<?php 
+	$collapse = 'collapse';
+	$collapsed = 'collapsed';
 	endfor;
 	?>
 </div>

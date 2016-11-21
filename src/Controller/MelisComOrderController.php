@@ -343,21 +343,50 @@ class MelisComOrderController extends AbstractActionController
     public function renderOrdersContentTabsContentMainOrderFormAction()
     {
         $statusAttrib = array();
+        $status = array();
+        $statusButtons = '';
+        $currStatus = '';
+        $button = '<a href="#" class="mainOrderStatus %s" data-statusid="%s" style="text-decoration:none">
+				        <span class="btn order-status-%s">%s</span>
+				   </a>';
+        
+        if(isset($this->layout()->order)){
+            $currStatus = $this->layout()->order->ord_status;
+        }
+        
+        $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
+        $langId = $this->getTool()->getCurrentLocaleID();
+        foreach($orderSvc->getOrderStatusList($langId) as $orderStatus){
+            $status[] = $orderStatus;
+            
+            if($currStatus == $orderStatus->osta_id){
+                $statusButtons .= sprintf($button, 'selectedStatus', $orderStatus->osta_id, $orderStatus->osta_id, $orderStatus->ostt_status_name);
+            }
+            
+            if(($orderStatus->osta_id != -1 && $orderStatus->osta_id != 6) && $orderStatus->osta_id != $currStatus){
+                
+                $statusButtons .= sprintf($button, '', $orderStatus->osta_id, $orderStatus->osta_id, $orderStatus->ostt_status_name);
+            }            
+        }
+        
         $infoForm = 'meliscommerce_order_information_form';
         $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
         $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_orders/'.$infoForm,$infoForm);
+        
         $factory = new \Zend\Form\Factory();
         $formElements = $this->serviceLocator->get('FormElementManager');
         $factory->setFormElementManager($formElements);
+        
         $orderInfoForm = $factory->createForm($appConfigForm);
-        $orderStatusTransTable = $this->getServiceLocator()->get('MelisComOrderService');
-        $colorScript = $this->colorScript('colorStatus');
+        
         $view = new ViewModel();
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $orderId = (int) $this->params()->fromQuery('orderId', '');
         $view->melisKey = $melisKey;
         $view->orderId = $orderId;
-        $view->colorScript = $colorScript;
+        $view->status = $status;
+        $view->currStatus = $currStatus;
+        $view->statusButtons = $statusButtons;
         $view->setVariable($infoForm, $orderInfoForm);
         return $view;
     }
@@ -373,7 +402,7 @@ class MelisComOrderController extends AbstractActionController
         $view = new ViewModel();
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $orderId = (int) $this->params()->fromQuery('orderId', '');
-        $tableConfig = $this->getTool()->getDataTableConfiguration('#'.$orderId.'_tableOrderBasketList');
+        $tableConfig = $this->getTool()->getDataTableConfiguration('#'.$orderId.'_tableOrderBasketList', null, null, array('order' => '[[ 0, "desc" ]]'));
         $view->melisKey = $melisKey;
         $view->orderId = $orderId;
         $view->tableColumns = $columns;
@@ -498,7 +527,7 @@ class MelisComOrderController extends AbstractActionController
         foreach($payments as $payment){
             $payment->opay_date_payment = $this->getTool()->dateFormatLocale($payment->opay_date_payment);
             $currency = $currencyTable->getEntryById($payment->opay_currency_id)->current();
-            $payment->cur_symbol = $currency->cur_symbol;
+            $payment->cur_symbol = isset($currency->cur_symbol)? $currency->cur_symbol: '';
             foreach($couponSvc->getCouponList($payment->opay_order_id, null, null, null, 'coup_id asc', null) as $coupon){
                 $coupons[] = $coupon->getCoupon();
             }
@@ -547,6 +576,8 @@ class MelisComOrderController extends AbstractActionController
         usort($ships, function($a, $b) {
             return strtotime($b->oship_date_sent) - strtotime($a->oship_date_sent);
         });
+        $forms = array();
+        $shippings = array();
         foreach($ships as $shipping){
             $shipping->oship_date_sent = $this->getTool()->dateFormatLocale($shipping->oship_date_sent);
             $form = clone $shippingForm;
@@ -899,7 +930,7 @@ class MelisComOrderController extends AbstractActionController
                 $formData = $container['order-valid-data']['datas'];
         }
         unset($container['order-valid-data']);
-        
+//         echo '<pre>'; print_r($formData); echo '</pre>'; die();
         if(!$errors && !empty($formData)){
             $formData['baskets'] = array();
             $formData['payment'] = array();
@@ -908,10 +939,10 @@ class MelisComOrderController extends AbstractActionController
             $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
             unset($formData['order']['ord_id']);
             $reference = $formData['order']['ord_reference'];
-            $data = $orderSvc->saveOrder($formData['order'], $formData['baskets'], $formData['billing'],
+            $result = $orderSvc->saveOrder($formData['order'], $formData['baskets'], $formData['billing'],
                 $formData['delivery'], $formData['payment'], $formData['shipping'], $orderId);
             
-            if(!empty($data['ord_id'])){
+            if($result){
                 $success = true;
                 $data['ord_reference'] = $reference;
             }
@@ -942,17 +973,18 @@ class MelisComOrderController extends AbstractActionController
         $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
         $appConfigOrderForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_orders/meliscommerce_order_information_form','meliscommerce_order_information_form');
         $postValues = get_object_vars($this->getRequest()->getPost());
-        
+//         echo '<pre>'; print_r($postValues['order']); echo '</pre>'; die();
         // form validations
         if(!empty($postValues['order'])){
             foreach($postValues['order'] as $order){
                 $orderForm = $factory->createForm($appConfigOrderForm);
                 $orderForm->setData($order);
                 if(!$orderForm->isValid()){
-                    $success = false;
+                    $success = 0;
                     $errors[] = $this->getFormErrors($orderForm, $appConfigOrderForm);
                 }
-                $data['order'] = $orderForm->getData();
+               
+                $data['order'] = $order;
             }        
         }
         $results = array(
@@ -986,13 +1018,13 @@ class MelisComOrderController extends AbstractActionController
                 foreach($value as $addr){
                     $addressForm = $factory->createForm($appConfigAddressForm);
                     if(!array_filter($addr)&& $key == 'BIL'){                       
-                        $success = false;
+                        $success = 0;
                         $errors[]['address'] = $this->getTool()->getTranslation('tr_meliscommerce_address_billing_form_empty');
                     }
                     if(array_filter($addr)){
                         $addressForm->setData($addr);                        
                         if(!$addressForm->isValid()){
-                            $success = false;
+                            $success = 0;
                             $errors[] = $this->getFormErrors($addressForm, $appConfigAddressForm);
                         }
                         $data = $addressForm->getData();
@@ -1038,7 +1070,7 @@ class MelisComOrderController extends AbstractActionController
                 $shippingForm = $factory->createForm($appConfigShippingForm);
                 $shippingForm->setData($tracking);
                 if(!$shippingForm->isValid()){
-                    $success = false;
+                    $success = 0;
                     $errors[] = $this->getFormErrors($shippingForm, $appConfigShippingForm);
                 }
                 $shipping = $shippingForm->getData();
@@ -1057,7 +1089,7 @@ class MelisComOrderController extends AbstractActionController
     public function saveOrderMessageAction()
     {
         $response = array();
-        $success = false;
+        $success = 0;
         $errors  = array();
         $data = array();
         $orderId = null;
@@ -1066,23 +1098,36 @@ class MelisComOrderController extends AbstractActionController
         $this->getEventManager()->trigger('meliscommerce_order_message_save_start', $this, array());
         $melisComOrderService = $this->getServiceLocator()->get('MelisComOrderService');
         
+        $factory = new \Zend\Form\Factory();
+        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $appConfigMessageForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_orders/meliscommerce_order_message_form','meliscommerce_order_message_form');
+        $messageForm = $factory->createForm($appConfigMessageForm);
+        
         if($this->getRequest()->isPost()){
             $postValues = get_object_vars($this->getRequest()->getPost());
             $order = $melisComOrderService->getOrderById($postValues['orderId'], $this->getTool()->getCurrentLocaleID())->getOrder();
             $userId = !empty($this->getTool()->getCurrentUserId())? $this->getTool()->getCurrentUserId(): '';
-//             echo '<pre>'; print_r($order); echo '</pre>'; die();
-            $orderMesasge = array(
-                'omsg_order_id' => $postValues['orderId'],
-                'omsg_client_id' => $order->ord_client_id,
-                'omsg_client_person_id' => $order->ord_client_person_id,
-                'omsg_user_id' => $userId,
-                'omsg_message' => $postValues['omsg_message'],
-                'omsg_date_creation' => date('Y-m-d H:i:s'),
-            );
-            $omsg_id = $melisComOrderService->saveOrderMessage($orderMesasge);
-            if($omsg_id){
-                $success = true;
-                $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_order_message_save_success');               
+            $messageForm->setData($postValues);
+            if(!$messageForm->isValid()){
+                $errors = $this->getFormErrors($messageForm, $appConfigMessageForm);
+            }
+            
+            if(empty($errors)){
+                $orderMesasge = array(
+                    'omsg_order_id' => $postValues['orderId'],
+                    'omsg_client_id' => $order->ord_client_id,
+                    'omsg_client_person_id' => $order->ord_client_person_id,
+                    'omsg_user_id' => $userId,
+                    'omsg_message' => $postValues['omsg_message'],
+                    'omsg_date_creation' => date('Y-m-d H:i:s'),
+                );
+                $omsg_id = $melisComOrderService->saveOrderMessage($orderMesasge);
+                if($omsg_id){
+                    $success = 1;
+                    $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_order_message_save_success');
+                }
             }
         }
         $response = array(
@@ -1106,15 +1151,19 @@ class MelisComOrderController extends AbstractActionController
      */
     private function getFormErrors($form, $formConfig)
     {
-        $errors = array();
-        foreach ($form->getMessages() as $keyError => $valueError){
-            foreach ($formConfig['elements'] as $keyForm => $valueForm){
-                if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label'])){
-                    $key = $valueForm['spec']['options']['label'];
-                    $errors[$key] = $valueError;
+        $appConfigFormElements = $formConfig['elements'];
+        $errors = $form->getMessages();
+
+            foreach ($errors as $keyError => $valueError)
+            {
+                foreach ($appConfigFormElements as $keyForm => $valueForm)
+                {
+                    if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
+                    {
+                        $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                    }
                 }
             }
-        }
         return $errors;
     }
     
@@ -1155,21 +1204,5 @@ class MelisComOrderController extends AbstractActionController
     
         return $melisTool;
     
-    }
-    
-    private function colorScript($id)
-    {
-        $orderStatusTransTable = $this->getServiceLocator()->get('MelisComOrderService');
-        $c = 1;
-        $id = '$("#'.$id.'")';
-        $script  = '<script>';
-        $script .= $id.'.css("color","'. $this->layout()->status->osta_color_code.'");';
-        foreach($orderStatusTransTable->getOrderStatusList($this->getTool()->getCurrentLocaleID()) as $status){
-          $script .= $id.'.find("option:nth-child('.$c.')").css("color","'.$status->osta_color_code.'");';
-          $c++;
-        }
-
-        $script  .= '</script>';
-        return $script;
     }
 }

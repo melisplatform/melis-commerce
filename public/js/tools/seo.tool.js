@@ -1,16 +1,23 @@
 $(function(){
-	// char counter in seo description
-	$("body").on("keyup keydown", "input[name='eseo_meta_description']", { limit: 255 }, categorySeoCharCounter);
-    
     // char counter in seo title
-	$("body").on("keyup keydown", "input[name='eseo_meta_title']", { limit: 255 }, categorySeoCharCounter);
+	$("body").on("keyup keydown change", "input[name='eseo_meta_title']", { limit: 60 }, seoCharCounter);
+	
+	// char counter in seo description
+	$("body").on("keyup keydown change", "textarea[name='eseo_meta_description']", { limit: 160 }, seoCharCounter);
 });
 
+window.preSeoCharCounter = function(){
+	$("form.seoForm").each(function(){
+		var from = $(this);
+		var metaTitle = from.find("input[name='eseo_meta_title']");
+		var metaDesc = from.find("textarea[name='eseo_meta_description']");
+		metaTitle.trigger('keyup');
+		metaDesc.trigger('keyup');
+	});
+}
 
-// Category SEO Form 
 // Meta Title and Description Character Counter
-window.categorySeoCharCounter = function (event){
-	
+window.seoCharCounter = function (event){
 	var charLength = $(this).val().length;
 	var prevLabel = $(this).prev('label');
 	var limit = event.data.limit;
@@ -18,19 +25,27 @@ window.categorySeoCharCounter = function (event){
 	if( prevLabel.find('span').length ){
 		
 		if(charLength === 0){
+			prevLabel.removeClass('limit');
 			prevLabel.find('span').remove();
 		}else{
 			prevLabel.find('span').html('<i class="fa fa-text-width"></i>(' + charLength + ')');
 			
 			if( charLength > limit ){
+				prevLabel.addClass('limit');
 				prevLabel.find('span').addClass('limit');
 			}else{
+				prevLabel.removeClass('limit');
 				prevLabel.find('span').removeClass('limit');
 			}	
 		}
 	}else{
 		if(charLength !== 0){
 			prevLabel.append("<span class='text-counter-indicator'><i class='fa fa-text-width'></i>(" + charLength + ")</span>");
+			
+			if( charLength > limit ){
+				prevLabel.addClass('limit');
+				prevLabel.find('span').addClass('limit');
+			}
 		}
 	}
 }

@@ -2,12 +2,12 @@
 	return array(
         'tr_meliscommerce_clients_Clients' => 'Clients',
         // Page Title
-        'tr_meliscommerce_clients_tool_title' => 'Outil Clients',
-	    'tr_meliscommerce_clients_Client_listing' => 'Liste des Clients',
-	    'tr_meliscommerce_clients_Client' => 'Informations Client',
+        'tr_meliscommerce_clients_tool_title' => 'Outil clients',
+	    'tr_meliscommerce_clients_Client_listing' => 'Liste des clients',
+	    'tr_meliscommerce_clients_Client' => 'Informations client',
 
         // Common labels
-        'tr_meliscommerce_clients_common_btn_close' => 'Fermer',
+        'tr_meliscommerce_clients_common_btn_close' => 'Annuler',
         'tr_meliscommerce_clients_common_btn_save' => 'Sauvegarder',
         'tr_meliscommerce_clients_common_btn_update' => 'Mettre à jour',
         'tr_meliscommerce_clients_common_btn_delete' => 'Supprimer',
@@ -28,18 +28,23 @@
 	    'tr_meliscommerce_clients_common_label_new' => 'Nouveau',
 	    'tr_meliscommerce_clients_common_label_loading' => 'Chargement',
 	    'tr_meliscommerce_clients_common_label_client' => 'Client',
+
+	    //Client list widgets
+	    'tr_meliscommerce_client_list_widgets_num_client' => 'Nombre de clients',
+	    'tr_meliscommerce_client_list_widgets_month_clients' => 'Nombre de clients ce mois',
+	    'tr_meliscommerce_client_list_widgets_avg_clients' => 'Moyenne des clients par mois',
 	    
 	    // Interface Names
-	    'tr_meliscommerce_clients_list_page' => 'Liste des Clients',
-	    'tr_meliscommerce_clients_list_header' => 'En-tête Liste des Clients',
-	    'tr_meliscommerce_clients_list_content' => 'Contenu Liste des Clients',
-	    'tr_meliscommerce_clients_list_table' => 'Tableau Liste des Clients',
-	    'tr_meliscommerce_client_page' => 'Page Client',
-	    'tr_meliscommerce_client_page_header' => 'En-tête Client',
-	    'tr_meliscommerce_client_page_Content' => 'Contenu Client',
+	    'tr_meliscommerce_clients_list_page' => 'Liste des clients',
+	    'tr_meliscommerce_clients_list_header' => 'En-tête liste des clients',
+	    'tr_meliscommerce_clients_list_content' => 'Contenu liste des clients',
+	    'tr_meliscommerce_clients_list_table' => 'Tableau liste des clients',
+	    'tr_meliscommerce_client_page' => 'Page client',
+	    'tr_meliscommerce_client_page_header' => 'En-tête client',
+	    'tr_meliscommerce_client_page_Content' => 'Contenu client',
 	    
 	    // Tool Names
-	    'tr_meliscommerce_clients_list' => 'Tableau Liste des Clients',
+	    'tr_meliscommerce_clients_list' => 'Tableau ciste des clients',
 	    
 	    // Clients List Table
 	    'tr_meliscommerce_clients_table_Client_id' => 'ID',
@@ -50,19 +55,19 @@
 	    'tr_meliscommerce_clients_table_Client_last_order' => 'Dernière commande',
 	    
 	    // Buttons
-	    'tr_meliscommerce_clients_add_client' => 'Ajouter un Client',
-	    'tr_meliscommerce_clients_save_client_info' => 'Sauvegarder les Info Client',
-	    'tr_meliscommerce_clients_add_contact' => 'Ajouter un Contact',
-	    'tr_meliscommerce_clients_edit_contact' => 'Editer un Contact',
-	    'tr_meliscommerce_clients_save_contact' => 'Sauvegarder le Contact',
-	    'tr_meliscommerce_clients_add_contact_address' => 'Ajouter une Adresse',
-	    'tr_meliscommerce_clients_edit_contact_address' => 'Editer l\'Adresse',
-	    'tr_meliscommerce_clients_delete_contact_address' => 'Supprimer l\'Adresse',
-	    'tr_meliscommerce_clients_save_contact_address' => 'Sauvegarder l\'Adresse',
+	    'tr_meliscommerce_clients_add_client' => 'Ajouter un client',
+	    'tr_meliscommerce_clients_save_client_info' => 'Enregistrer le client',
+	    'tr_meliscommerce_clients_add_contact' => 'Ajouter un contact',
+	    'tr_meliscommerce_clients_edit_contact' => 'Editer un contact',
+	    'tr_meliscommerce_clients_save_contact' => 'Sauvegarder le contact',
+	    'tr_meliscommerce_clients_add_contact_address' => 'Ajouter une adresse',
+	    'tr_meliscommerce_clients_edit_contact_address' => 'Editer l\'adresse',
+	    'tr_meliscommerce_clients_delete_contact_address' => 'Supprimer l\'adresse',
+	    'tr_meliscommerce_clients_save_contact_address' => 'Sauvegarder l\'adresse',
 	    
 	    // Tabs
-	    'tr_meliscommerce_client_page_tab_main' => 'Principal',
-	    'tr_meliscommerce_client_page_tab_main_title' => 'Informations Principales',
+	    'tr_meliscommerce_client_page_tab_main' => 'Propriétés',
+	    'tr_meliscommerce_client_page_tab_main_title' => 'Propriétés',
 	    'tr_meliscommerce_client_page_tab_contact' => 'Contacts',
 	    'tr_meliscommerce_client_page_tab_contact_title' => 'Contacts',
 	    'tr_meliscommerce_client_page_tab_company' => 'Société',
@@ -74,7 +79,7 @@
 	    
 	    // Labels
 	    'tr_meliscommerce_client_Client_country' => 'Pays',
-	    'tr_meliscommerce_client_Main_contact' => 'Contact Principal',
+	    'tr_meliscommerce_client_Main_contact' => 'Contact principal',
 	    
 	    // Ajax request Get Client Contact Name
 	    'tr_meliscommerce_clients_get_contact_name' => 'Obtenir le nom du client',
@@ -95,7 +100,7 @@
 	    'tr_meliscommerce_client_Contact_password_placeholder' => '(Ne pas remplir pour conserver le mot de passe actuel)',
 	    'tr_meliscommerce_client_Contact_password_recover_key_placeholder' => '(Ne pas remplir pour conserver la clef de récupération du mot de passe actuel)',
 	    // Contact Form
-	    'tr_meliscommerce_client_Contact_main_datas' => 'Données Générales', 
+	    'tr_meliscommerce_client_Contact_main_datas' => 'Données générales', 
 	    'tr_meliscommerce_client_Contact_status' => 'Statut',
 	    'tr_meliscommerce_client_Contact_civility' => 'Civilité',
 	    'tr_meliscommerce_client_Contact_name' => 'Nom',
@@ -111,13 +116,13 @@
 	    'tr_meliscommerce_client_Contact_mobile_num' => 'Téléphone mobile',
 	    'tr_meliscommerce_client_Contact_tp_num' => 'Téléphone fixe',
 	    //Contact Form Address
-	    'tr_meliscommerce_client_Contact_address_type' => 'Type d\'Adresse',
+	    'tr_meliscommerce_client_Contact_address_type' => 'Type d\'adresse',
 	    'tr_meliscommerce_client_Contact_address_street_num' => 'Numéro de rue',
 	    'tr_meliscommerce_client_Contact_address_stairs' => 'Etage',
 	    'tr_meliscommerce_client_Contact_address_building_name' => 'Bâtiment',
 	    'tr_meliscommerce_client_Contact_address_company_name' => 'Société',
 	    'tr_meliscommerce_client_Contact_address_street_name' => 'Rue',
-	    'tr_meliscommerce_client_Contact_address_zipcode' => 'Code Postal',
+	    'tr_meliscommerce_client_Contact_address_zipcode' => 'Code postal',
 	    'tr_meliscommerce_client_Contact_address_city' => 'Ville',
 	    'tr_meliscommerce_client_Contact_address_state' => 'Etat',
 	    'tr_meliscommerce_client_Contact_address_country' => 'Pays',
@@ -149,12 +154,13 @@
 	    'tr_meliscommerce_client_Company_name' => 'Nom de la Société',
 	    'tr_meliscommerce_client_Company_id' => 'Numéro d\'immatriculation',
 	    'tr_meliscommerce_client_Company_vat_num' => 'Numéro d\'identification TVA',
+	    'tr_meliscommerce_client_Company_ccomp_group' => 'Groupe',
 	    // Addresses
-	    'tr_meliscommerce_client_add_address' => 'Ajouter une Adresse',
+	    'tr_meliscommerce_client_add_address' => 'Ajouter une adresse',
 	    // Delete Client Contact Message
-	    'tr_meliscommerce_client_delete_new_contact' => 'Supprimer le Contact',
+	    'tr_meliscommerce_client_delete_new_contact' => 'Supprimer le contact',
 	    'tr_meliscommerce_client_delete_new_contact_confirm_msg' => 'Etes-vous sûr de vouloir supprimer ce contact ?',
-	    'tr_meliscommerce_client_delete_address' => 'Supprimer l\'Adresse',
+	    'tr_meliscommerce_client_delete_address' => 'Supprimer l\'adresse',
 	    'tr_meliscommerce_client_delete_address_confirm_msg' => 'Etes-vous sûr de vouloir supprimer cette adresse ?',
 	    
 	    // Saving Messages
@@ -163,4 +169,8 @@
 	    'tr_meliscommerce_client_Contact_must_atleast_one' => 'Au moins un contact doit être saisi',
 	    'tr_meliscommerce_client_Address_must_atleast_one' => 'Au moins une adresse doit être saisie',
 	    'tr_meliscommerce_client_Contact_active_must_atleast_one' => 'Au moins un contact actif est obligatoire',
+	    
+	    // tooltip messages
+	    'tr_meliscommerce_client_tooltip_password' => 'Le mot de passe doit être d\'au moins 8 caractères et doit contenir au moins une lettre ET un chiffre.',
+	    'tr_meliscommerce_client_tooltip_password_2' => 'Confirmer le mot de passe'
 	);

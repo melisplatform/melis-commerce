@@ -64,7 +64,7 @@ class MelisComSeoController extends AbstractActionController
         
         // Getting Commerce Languages
         $ecomLangtable = $this->serviceLocator->get('MelisEcomLangTable');
-        $ecomLang = $ecomLangtable->fetchAll()->toArray();
+        $ecomLang = $ecomLangtable->langOrderByName()->toArray();
         
         // Category SEO Form
         $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');

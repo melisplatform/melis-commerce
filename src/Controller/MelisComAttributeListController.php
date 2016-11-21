@@ -109,7 +109,7 @@ class MelisComAttributeListController extends AbstractActionController
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view->melisKey = $melisKey;
         $view->tableColumns = $columns;
-        $view->getToolDataTableConfig = $this->getTool()->getDataTableConfiguration('#tableAttributeList', true);
+        $view->getToolDataTableConfig = $this->getTool()->getDataTableConfiguration('#tableAttributeList', true, null, array('order' => '[[ 0, "desc" ]]'));
         return $view;
     }
     
@@ -167,6 +167,7 @@ class MelisComAttributeListController extends AbstractActionController
         $success = 0;
         $colId = array();
         $dataCount = 0;
+        $countFiltered = 0;
         $draw = 0;
         $tableData = array();
         $langId = $this->getTool()->getCurrentLocaleID();
@@ -192,14 +193,16 @@ class MelisComAttributeListController extends AbstractActionController
             $search = $this->getRequest()->getPost('search');
             $search = $search['value'];
             
-            $attributeList = $attributeSvc->getAttributes($langId, null, null, null, $start, $length, $colOrder, $search);
-            $dataCount = count($attributeList);
+            $attributeList = $attributeSvc->getAttributes(null, null, null, null, $start, $length, $colOrder, $search);
+            $countFiltered = count($attributeList);
+            $tmp = $attributeSvc->getAttributes(null, null, null, null, null, null, null, $search);
+            $dataCount = count($tmp);
 //             echo '<pre>'; print_r($attributeList); echo '</pre>'; die();
             $c = 0;
             foreach($attributeList as $attribute){
                 $status = '<span class="text-danger"><i class="fa fa-fw fa-circle"></i></span>';
-                $visible = '';
-                $searchable = '';
+                $visible = '&nbsp;';
+                $searchable = '&nbsp;';
                 if($attribute->getAttribute()->attr_status){
                     $status = '<span class="text-success"><i class="fa fa-fw fa-circle"></i></span>';
                 }
@@ -212,6 +215,21 @@ class MelisComAttributeListController extends AbstractActionController
                     $searchable = $checked;
                 }
                 
+                if(!empty($attribute->getAttribute()->attr_trans)){
+                    $foundTrans = false;
+                    foreach($attribute->getAttribute()->attr_trans as $attrTrans){
+                        if($attrTrans->atrans_lang_id == $langId){
+                            $foundTrans = true;
+                            $atrans_name = $attrTrans->atrans_name;
+                        }
+                    }
+                    if(!$foundTrans){
+                        $atrans_name = $attribute->getAttribute()->attr_trans[0]->atrans_name;
+                    }                    
+                }else{
+                    $atrans_name = $attribute->getAttribute()->attr_reference;
+                }
+                
                 $atype_name = $attributeTypeTable->getEntryById($attribute->getAttribute()->attr_type_id)->current()->atype_name;
                 
                 $tableData[$c]['DT_RowId']          = $attribute->getId();
@@ -219,7 +237,7 @@ class MelisComAttributeListController extends AbstractActionController
                 $tableData[$c]['attr_status']       = $status;
                 $tableData[$c]['attr_visible']      = $visible;
                 $tableData[$c]['attr_searchable']   = $searchable;
-                $tableData[$c]['atrans_name']       = $attribute->getAttribute()->attr_trans[0]->atrans_name;
+                $tableData[$c]['atrans_name']       = $atrans_name;
                 $tableData[$c]['attr_reference']    = $attribute->getAttribute()->attr_reference;
                 $tableData[$c]['atype_name']        = $atype_name;
                 $c++;
@@ -228,10 +246,43 @@ class MelisComAttributeListController extends AbstractActionController
         
         return new JsonModel(array (
             'draw' => (int) $draw,
-            'recordsTotal' => $dataCount,
+            'recordsTotal' => $countFiltered,
             'recordsFiltered' =>  $dataCount,
             'data' => $tableData,
         ));
+    }
+    
+    public function deleteAttributeAction()
+    {
+        $response = array();
+        $success = false;
+        $errors  = array();
+        $data = array();
+        
+        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_attribute_delete_fail');
+        $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_attribute_list_page');
+        $this->getEventManager()->trigger('meliscommerce_attribute_delete_start', $this, array());
+        
+        $attributeSvc = $this->getServiceLocator()->get('MelisComAttributeService');
+        
+        if($this->getRequest()->isPost()){
+            $postValues = get_object_vars($this->getRequest()->getPost());
+//             echo '<pre>'; print_r($postValues); echo '</pre>'; die();
+            $success = $attributeSvc->deleteAttributeById($postValues['attributeId']);
+            if($success){
+                $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_attribute_delete_success');
+            }
+        }
+        
+        $response = array(
+            'success' => $success,
+            'textTitle' => $textTitle,
+            'textMessage' => $textMessage,
+            'errors' => $errors,
+            'chunk' => $data,
+        );
+        $this->getEventManager()->trigger('meliscommerce_attribute_delete_end', $this, $response);
+        return new JsonModel($response);
     }
     
     /**

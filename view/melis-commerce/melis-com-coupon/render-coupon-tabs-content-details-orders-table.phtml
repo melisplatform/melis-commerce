@@ -5,7 +5,26 @@
     }
     
 ?>
-<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="tab-content innerAll spacing-x2">
+<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="col-xs-12 col-md-12">
+	<style>
+   
+    <?php foreach($this->status as $status):
+     echo '.order-status-'.$status->osta_id.'{
+            border-color: '.$status->osta_color_code.' ;
+            color: '.$status->osta_color_code.';
+            border-radius: 4px;             
+            }
+            ';
+    echo '.order-status-'.$status->osta_id.':hover{
+            color : #fff;
+            background : '.$status->osta_color_code.';
+            }
+            ';
+    
+    endforeach;
+    ?>
+    
+    </style>
 	<?php 
 		/* 
 		 * This functions prepares the TABLE element in HTML. ID and class associative array attribute will be placed in table like
@@ -13,6 +32,7 @@
          */
 		$this->melisGenericTable()->setTable(array(
 		    'id' => $this->tableName,
+		    'data-couponid' => $this->couponId,
 		    'class' => 'table table-striped table-primary dt-responsive nowrap',
 		    'cellspacing' => '0',
 		    'width' => '100%'
@@ -44,7 +64,37 @@
 				<?php echo $this->getToolDataTableConfig; ?>
 				
 				$(document).on("init.dt", function(e, settings) {
+					var sToday = translations.tr_meliscore_datepicker_today;
+					var sYesterday = translations.tr_meliscore_datepicker_yesterday;
+					var sLast7Days = translations.tr_meliscore_datepicker_last_7_days;
+					var sLast30Days = translations.tr_meliscore_datepicker_last_30_days;
+					var sThisMonth = translations.tr_meliscore_datepicker_this_month;
+					var sLastMonth = translations.tr_meliscore_datepicker_last_month;
 					
+					function cb(start, end) {
+						dStartDate = start.format(melisDateFormat);
+						dEndDate   = end.format(melisDateFormat);
+						// default display upon initialization of date picker
+						//var icon = '<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>';
+						//$('#dt_bsdatepicker .dt_dateInfo').html("Select Date: " + icon + dStartDate + ' - ' + dEndDate + ' <b class="caret"></b>');
+					}
+					var rangeStringParam = {};
+					rangeStringParam[sToday] = [moment(), moment()];
+					rangeStringParam[sYesterday] = [moment().subtract(1, 'days'), moment().subtract(1, 'days')];
+					rangeStringParam[sLast7Days] = [moment().subtract(6, 'days'), moment()];
+					rangeStringParam[sLast30Days] = [moment().subtract(29, 'days'), moment()];
+					rangeStringParam[sThisMonth] = [moment().startOf('month'), moment().endOf('month')];
+					rangeStringParam[sLastMonth] = [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')];
+					
+					$("#<?= $id?> .dt_orderdatepicker").daterangepicker({
+				    	locale : {
+				    		format: melisDateFormat,
+				    		applyLabel: translations.tr_meliscore_datepicker_apply,
+				    		cancelLabel: translations.tr_meliscore_datepicker_cancel,
+				    		customRangeLabel: translations.tr_meliscore_datepicker_custom_range,
+				    	},
+				        ranges: rangeStringParam,
+				    }, cb);	
 		      	});
     		      // add event for the product title
 			});

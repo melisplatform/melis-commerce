@@ -34,10 +34,10 @@ class MelisComOrderService extends MelisComGeneralService
 	 * 
 	 * @return MelisOrder[] Array of Order objects
 	 */
-	public function getOrderList($langId = null, $clientId = null, $clientPersonId = null, 
+	public function getOrderList($orderStatusId = null, $onlyValid = null, $langId = null, $clientId = null, $clientPersonId = null, 
                                  $couponId = null, $reference = null, $dateCreationMin = null,
-                                 $dateCreationMax = null, $status = null, $start = 0, 
-	                             $limit = null, $colOrder = null, $search = '')
+                                 $dateCreationMax = null, $status = null, $start = null, 
+	                             $limit = null, $colOrder = null, $search = '', $startDate = null, $endDate = null)
 	{
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -49,11 +49,13 @@ class MelisComOrderService extends MelisComGeneralService
 	    // Service implementation start
 	    $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
 	    
-        $orderData = $melisEcomOrderTable->getOrderList($arrayParameters['clientId'], $arrayParameters['clientPersonId'], 
+        $orderData = $melisEcomOrderTable->getOrderList($arrayParameters['orderStatusId'] , $arrayParameters['onlyValid'],
+                                                       $arrayParameters['clientId'], $arrayParameters['clientPersonId'], 
                                                        $arrayParameters['couponId'], $arrayParameters['reference'],
                                                        $arrayParameters['dateCreationMin'], $arrayParameters['dateCreationMax'],
                                                        $arrayParameters['status'], $arrayParameters['start'], $arrayParameters['limit'], 
-                                                       $arrayParameters['colOrder'], $arrayParameters['search'] )->toArray();
+                                                       $arrayParameters['colOrder'], $arrayParameters['search'], 
+                                                       $arrayParameters['startDate'], $arrayParameters['endDate'] )->toArray();
 	    foreach ($orderData As $key => $val)
 	    {
 	        $melisOrder = $this->getOrderById($val['ord_id']);
@@ -457,7 +459,7 @@ class MelisComOrderService extends MelisComGeneralService
 	            $results['ord_id'] = $melisEcomOrderTable->save($arrayParameters['order'], $arrayParameters['orderId']);
 	        }
 	        catch(\Exception $e){
-	            
+	            echo $e->getMessage();
 	        }
 	    }
 // 	    var_dump($arrayParameters['basket']);die();
@@ -472,7 +474,6 @@ class MelisComOrderService extends MelisComGeneralService
     	            unset($basketData[$key]['obas_id']);
     	            $basketData[$key]['obas_order_id'] = $results['ord_id'];
     	            $results['obas_id'] = $this->saveOrderBasket($basketData[$key], $obasId);
-    	            
     	        }
 	        }
 	        $billingAddressData = $arrayParameters['billingAddress'];
@@ -483,7 +484,7 @@ class MelisComOrderService extends MelisComGeneralService
     	            unset($billingAddressData[$key]['oadd_id']);
     	            $billingAddressData[$key]['oadd_order_id'] = $results['ord_id'];
     	            $addType = 1; // Billing Id of the Address
-    	            $result['oadd_id'] = $this->saveOrderAddress($billingAddressData[$key], $addType, $oaddId);
+    	            $result['ord_billing_address'] = $this->saveOrderAddress($billingAddressData[$key], $addType, $oaddId);
     	            
     	        }
 	        }
@@ -495,7 +496,7 @@ class MelisComOrderService extends MelisComGeneralService
     	            unset($deliveryAddressData[$key]['oadd_id']);
     	            $deliveryAddressData[$key]['oadd_order_id'] = $results['ord_id'];
     	            $addType = 2; // Delivery Id of the Address
-    	            $result['oadd_id'] = $this->saveOrderAddress($deliveryAddressData[$key], $addType, $oaddId);
+    	            $result['ord_delivery_address'] = $this->saveOrderAddress($deliveryAddressData[$key], $addType, $oaddId);
     	        }
 	        }
 	        $paymentData = $arrayParameters['payment'];
@@ -517,11 +518,25 @@ class MelisComOrderService extends MelisComGeneralService
 	                $result['oship_id'] = $this->saveOrderShipping($shippingData[$key], $oship_id);
 	            }
 	        }
+	        if(!empty($arrayParameters['billingAddress'])){
+	            $orderUpdate = array(
+	                'ord_delivery_address' =>  $result['ord_delivery_address'],
+	                'ord_billing_address' =>   $result['ord_billing_address']
+	            );
+	            try
+	            {
+	                $results['ord_id'] = $melisEcomOrderTable->save($orderUpdate,  $results['ord_id']);
+	            }
+	            catch(\Exception $e){
+	            
+	            }
+	        }	        
+	        
 	    }
 	    // Service implementation end
 	    
 	    // Adding results to parameters for events treatment if needed
-	    $arrayParameters['results'] = $results;
+	    $arrayParameters['results'] = $results['ord_id'];
 	    // Sending service end event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_save_end', $arrayParameters);
 	     
@@ -640,7 +655,9 @@ class MelisComOrderService extends MelisComGeneralService
 	        $obasId = $melisEcomOrderBasketTable->save($arrayParameters['basket'], $arrayParameters['basketId']);
 	        $results = $obasId;
 	    }
-	    catch(\Exception $e){}
+	    catch(\Exception $e){
+	        echo $e->getMessage();
+	    }
 	    // Service implementation end
 	    
 	    // Adding results to parameters for events treatment if needed
@@ -842,6 +859,40 @@ class MelisComOrderService extends MelisComGeneralService
 	    // Sending service end event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_message_save_end', $arrayParameters);
 	     
+	    return $arrayParameters['results'];
+	}
+	
+	/**
+	 * This method retrieves the data used for the list widget
+	 * @param varchar $identifier accepts curMonth|avgMonth
+	 * @return float|null , float on success, otherwise null
+	 */
+	public function getWidgetOrders($identifier)
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = null;
+	    
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_widget_order_start', $arrayParameters);
+	    
+	    // Service implementation start
+	    $orderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
+	    switch($arrayParameters['identifier']){
+	        case 'curMonth':
+	            $results = $orderTable->getCurrentMonth()->count(); break;
+	        case 'avgMonth':
+	            $results = $orderTable->getAvgMonth()->current(); break;
+	        default:
+	            break;
+	    }
+	    // Service implementation end
+	    
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_widget_order_end', $arrayParameters);
+	    
 	    return $arrayParameters['results'];
 	}
 }

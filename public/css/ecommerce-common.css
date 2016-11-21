@@ -5,3 +5,31 @@
     background-color: #ECEBEB;
     border-color: #d8d8d8;
 }
+
+.commerce-toggle .panel-heading{
+	background-color: #932e2a;
+    padding: 7px;
+    height: auto;
+    padding-bottom: 10px;
+}
+
+.commerce-toggle .accordion-toggle {
+	background-color: #932e2a !important;
+}
+
+.commerce-toggle .panel-title > a {
+    color: #fff !important;
+}
+
+.commerce-toggle .accordion-toggle:before {
+    font-family: 'Glyphicons Halflings';
+    content: "\e114";
+    float: left;
+    padding: 0 10px 0px 0px !important;
+    color: #fff !important;
+	margin: 0px !important; 
+}
+
+.widget.widget-tabs>.widget-head ul li.active a i.fa-language:before {
+    color: #932E2A;
+}

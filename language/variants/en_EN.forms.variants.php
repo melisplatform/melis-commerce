@@ -10,12 +10,12 @@
        
         // stocks form
         'tr_meliscommerce_variant_stocks_quantity_label' => 'Quantity',
-        'tr_meliscommerce_variant_stocks_quantity_holder' => 'Quantity Remaining',
+        'tr_meliscommerce_variant_stocks_quantity_holder' => 'Quantity remaining',
         'tr_meliscommerce_variant_tab_stocks_fill_up' => 'Replenishment date',
         
         //
         'tr_meliscommerce_variant_prices_variant_price_digit_invalid' => 'The input must contain only digits',
-        'tr_meliscommerce_variant_prices_variant_price_digit_decimal_invalid' => 'The input must contain only digits or decimals  (%value%)',
+        'tr_meliscommerce_variant_prices_variant_price_digit_decimal_invalid' => 'The input must contain only digits or decimals, or you may need to remove the thousands separator  in <strong>%value%</strong>',
         'tr_meliscommerce_variant_prices_variant_price_digit_greater' => 'The input must be greater than 0',
         'tr_meliscommerce_variants_error_empty' => 'Value is required and can\'t be empty',
     );

@@ -44,37 +44,37 @@ return array(
                             ),
                             'attr_status' => array(
                                 'text' => 'tr_meliscommerce_attribute_list_col_status',
-                                'css' => array('width' => '10%', 'padding-right' => '0'),
+                                'css' => array('width' => '12%', 'padding-right' => '0'),
                                 'sortable' => true,
                             ),
                         
                             'attr_visible' => array(
                                 'text' => 'tr_meliscommerce_attribute_list_col_visible',
-                                'css' => array('width' => '20%', 'padding-right' => '0'),
+                                'css' => array('width' => '12%', 'padding-right' => '0'),
                                 'sortable' => true,
                             ),
                         
                             'attr_searchable' => array(
                                 'text' => 'tr_meliscommerce_attribute_list_col_searchable',
-                                'css' => array('width' => '10%', 'padding-right' => '0'),
+                                'css' => array('width' => '12%', 'padding-right' => '0'),
                                 'sortable' => true,
                             ),
                         
                             'atrans_name' => array(
                                 'text' => 'tr_meliscommerce_attribute_list_col_name',
-                                'css' => array('width' => '10%', 'padding-right' => '0'),
-                                'sortable' => true,
+                                'css' => array('width' => '14%', 'padding-right' => '0'),
+                                'sortable' => false,
                             ),
                         
                             'attr_reference' => array(
                                 'text' => 'tr_meliscommerce_attribute_list_col_reference',
-                                'css' => array('width' => '10%', 'padding-right' => '0'),
-                                'sortable' => true,
+                                'css' => array('width' => '14%', 'padding-right' => '0'),
+                                'sortable' => false,
                             ),
                             
                             'atype_name' => array(
                                 'text' => 'tr_meliscommerce_attribute_list_col_type',
-                                'css' => array('width' => '10%', 'padding-right' => '0'),
+                                'css' => array('width' => '14%', 'padding-right' => '0'),
                                 'sortable' => true,
                             ),
                         ),
@@ -134,7 +134,7 @@ return array(
                             ),
                             'value' => array(
                                 'text' => 'tr_meliscommerce_attribute_col_value',
-                                'css' => array('width' => '10%', 'padding-right' => '0'),
+                                'css' => array('width' => '60%', 'padding-right' => '0'),
                                 'sortable' => true,
                             ),
                         ),

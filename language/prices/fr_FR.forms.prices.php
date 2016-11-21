@@ -3,7 +3,7 @@
      
         //prices form
         'tr_meliscommerce_variant_prices_variant_price_label' => 'Prix TTC',
-        'tr_meliscommerce_variant_prices_variant_price_holder' => 'Prix du Variant',
+        'tr_meliscommerce_variant_prices_variant_price_holder' => 'Prix du variant',
         'tr_meliscommerce_variant_prices_variant_price_empty' => 'Valeur requise, ne peut être vide',
         'tr_meliscommerce_variant_prices_variant_price_gross_label' => 'Prix HT',
         'tr_meliscommerce_variant_prices_variant_price_gross_holder' => 'Prix TTC',

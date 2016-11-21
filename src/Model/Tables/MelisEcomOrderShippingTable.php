@@ -11,7 +11,7 @@ namespace MelisCommerce\Model\Tables;
 
 use Zend\Db\TableGateway\TableGateway;
 
-class MelisEcomOrdershippingTable extends MelisEcomGenericTable 
+class MelisEcomOrderShippingTable extends MelisEcomGenericTable 
 {
     protected $tableGateway;
     protected $idField;

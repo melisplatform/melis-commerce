@@ -12,9 +12,11 @@ return array(
                 'js' => array(
                     '/MelisCommerce/js/tools/product.tool.js',
                     '/MelisCommerce/js/tools/seo.tool.js',
+                    '/MelisCommerce/assets/select2/js/select2.min.js',
                 ),
                 'css' => array(
                     '/MelisCommerce/css/products.css',
+                    '/MelisCommerce/assets/select2/css/select2.min.css',
                 ),
             ),
             'datas' => array(
@@ -726,6 +728,7 @@ return array(
                                                                                             'module' => 'MelisCommerce',
                                                                                             'controller' => 'MelisComProduct',
                                                                                             'action' => 'render-products-page-content-tab-text-modal-form-type-text',
+                                                                                            'jscallback' => 'reInitProductTextTypeSelect();',
                                                                                         ),
                                                                                     ),
                                                                                 ),

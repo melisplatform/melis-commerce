@@ -137,6 +137,45 @@ class MelisComAttributeService extends MelisCoreGeneralService
          
         return $arrayParameters['results'];
     }
+
+    public function getAttributeText($attributeId, $langId)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = null;
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_attributestext_byid_start', $arrayParameters);
+        // Service implementation start
+        $attribute = $this->getAttributeById((int) $arrayParameters['attributeId'], (int) $arrayParameters['langId']);
+        if($attribute) {
+            $value = $attribute->getAttribute()->attr_trans;
+            if(isset($value[0])) {
+                $value = $value[0];
+                $value = trim($value->atrans_name);
+                if(empty($value)) {
+                    $value = $attribute->getAttribute()->attr_reference;
+                }
+            }
+            else {
+                $value = $attribute->getAttribute()->attr_reference;
+            }
+            // last checker
+            if(empty($value)) {
+                $value = $attribute->getAttribute()->attr_reference;
+            }
+            $results = $value;
+        }
+
+        // Service implementation end
+
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_attributestext_byid_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
     
     /**
      * This returns a list of attribue values from melis_ecom_attribute_value table
@@ -253,6 +292,406 @@ class MelisComAttributeService extends MelisCoreGeneralService
         $arrayParameters['results'] = $results;
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_attributevaluetrans_byid_end', $arrayParameters);
+         
+        return $arrayParameters['results'];
+    }
+    
+    /**
+     * This method saves the attribute and its translations values
+     * 
+     * @param array $attribute attribute reflecting the melis_ecom_attribute table
+     * @param array $attributeTrans array of attribute translations reflecting the melis_ecom_attribute_trans table
+     * @param int $attributeId The attribute id, if specified will perform an update
+     * 
+     * @return int id of the updated attribute, otherwise false
+     */
+    public function saveAttribute($attribute, $attributeTrans = null, $attributeId = null)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_attributevaluetrans_byid_start', $arrayParameters);
+        
+        // Service implementation start
+        $attributeTable = $this->getServiceLocator()->get('MelisEcomAttributeTable');
+        try {
+            $results = $attributeTable->save($arrayParameters['attribute'], $arrayParameters['attributeId']);
+            if(!empty($arrayParameters['attributeTrans'])){
+                foreach($arrayParameters['attributeTrans'] as $trans){
+                    $attributeTransId = empty($trans['atrans_id'])? null : $trans['atrans_id'];
+                    $trans['atrans_attribute_id'] = empty($trans['atrans_attribute_id'])? $results : $trans['atrans_attribute_id'];
+                    unset($trans['atrans_id']);
+                    $this->saveAttributeTrans($trans, $attributeTransId);
+                }  
+            }            
+            
+        }catch (\Exception $e){
+            echo $e->getMessage(); die();
+        }
+        // Service implementation end
+        
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_attributevaluetrans_byid_end', $arrayParameters);
+         
+        return $arrayParameters['results'];
+    }
+    
+    /**
+     * This method saves the attribute translations values
+     * 
+     * @param array $attributeTrans The attribute translations reflecting the melis_ecom_attribute_trans talbe
+     * @param int $attributeTransId The attribute trans id, if specified will perform an update
+     * 
+     * @return int id of the updated attribute trans, otherwise false
+     */
+    public function saveAttributeTrans($attributeTrans, $attributeTransId = null)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_attributevaluetrans_byid_start', $arrayParameters);
+        
+        // Service implementation start
+        $attributeTransTable = $this->getServiceLocator()->get('MelisEcomAttributeTransTable');
+        try {
+            $results = $attributeTransTable->save($arrayParameters['attributeTrans'], $arrayParameters['attributeTransId']);            
+            
+        }catch (\Exception $e){
+            echo $e->getMessage(); die();
+        }
+        // Service implementation end
+        
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_attributevaluetrans_byid_end', $arrayParameters);
+         
+        return $arrayParameters['results'];
+    }
+    
+    /**
+     * This method saves the attribute values
+     * 
+     * @param array $attributeValue the attribute value reflecting the melis_ecom_attribute_value table
+     * @param int $attributeValueId the attribute value id, if specified an update will be performed
+     * 
+     * @return int id of the inserted attribute value, otherwise false
+     */
+    public function saveAttributeValue($attributeValue, $attributeValueId = null)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_attributevaluetrans_byid_start', $arrayParameters);
+        
+        // Service implementation start
+        $attributeValueTable = $this->getServiceLocator()->get('MelisEcomAttributeValueTable');
+            try {
+                $results = $attributeValueTable->save($arrayParameters['attributeValue'], $arrayParameters['attributeValueId']);
+            }catch(\Exception $e){
+                echo $e->getMessage(); die();
+            }
+        // Service implementation end
+        
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_attributevaluetrans_byid_end', $arrayParameters);
+         
+        return $arrayParameters['results'];
+    }
+    
+    /**
+     * This method save the attribute value translations
+     * 
+     * @param array $attributeValueTrans the attribute value trans reflecting the melis_ecom_attribute_value_trans table
+     * @param int $attributeValueTransId the attribute value trans id, if specified an update will be performed
+     * 
+     * @return int id of the last insert or update, otherwise false on error
+     */
+    public function saveAttributeValueTrans($attributeValueTrans, $attributeValueTransId = null)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_attributevaluetrans_byid_start', $arrayParameters);
+        
+        // Service implementation start
+        $attributeValueTransTable = $this->getServiceLocator()->get('MelisEcomAttributeValueTransTable');
+        try {
+            $results = $attributeValueTransTable->save($arrayParameters['attributeValueTrans'], $arrayParameters['attributeValueTransId']);
+        }catch(\Exception $e){
+            echo $e->getMessage(); die();
+        }
+        // Service implementation end
+        
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_attributevaluetrans_byid_end', $arrayParameters);
+         
+        return $arrayParameters['results'];
+    }
+    
+    /**
+     * This method deletes the attribute, attribute trans, attribute values, 
+     * attributes assign to product and attribute values assign variants
+     * 
+     * @param int $attributeId, the attribute ID to be deleted
+     * @return boolean true on success, otherwise false on error
+     */
+    public function deleteAttributeById($attributeId)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_delete_attribute_start', $arrayParameters);
+        
+        // Service implementation start
+        $attributeTable = $this->getServiceLocator()->get('MelisEcomAttributeTable');
+        $attributeTransTable = $this->getServiceLocator()->get('MelisEcomAttributeTrans');
+        $productAttributeTable = $this->getServiceLocator()->get('MelisEcomProductAttributeTable');
+        $attributeValueTable = $this->getServiceLocator()->get('MelisEcomAttributeValueTable');
+       
+        try{
+            //delete attribute trans
+            foreach($attributeTransTable->getEntryByField('atrans_attribute_id', $arrayParameters['attributeId']) as $attributeTrans){
+                $results = $this->deleteAttributeTransById($attributeTrans->atrans_id);
+                if(!$results){
+                    throw new \Exception('Unable to delete attribute trans'); die();
+                }
+            }
+            
+            //delete product attribute
+            foreach($productAttributeTable->getEntryByField('patt_attribute_id', $arrayParameters['attributeId']) as $productAttribute){
+                $results = $this->deleteProductAttributeById($productAttribute->patt_id);
+                if(!$results){
+                    throw new \Exception('Unable to delete product attribute');
+                }
+            }
+            
+            //delete attribute values
+            foreach($attributeValueTable->getEntryByField('atval_attribute_id', $arrayParameters['attributeId']) as $attributeValue){                
+                $results = $this->deleteAttributeValueById($attributeValue->atval_id);
+                if(!$results){
+                    throw new \Exception('Unable to delete attribute value');
+                }
+            }
+            
+           $results = $attributeTable->deleteById($arrayParameters['attributeId']);
+            
+        }catch (\Exception $e){
+            echo $e->getMessage(); die();
+        }
+        // Service implementation end
+        
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_delete_attribute_end', $arrayParameters);
+         
+        return $arrayParameters['results'];
+    }
+    
+    /**
+     * This method deletes the attribute translations by ID
+     * 
+     * @param int $attributeTransId, the attribute trans Id to be deleted
+     * @return boolean true on success, otherwise false on error
+     */
+    public function deleteAttributeTransById($attributeTransId)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_delete_attribute_trans_start', $arrayParameters);
+        
+        // Service implementation start
+        $attributeTransTable = $this->getServiceLocator()->get('MelisEcomAttributeTrans');
+        
+        try{
+            $results = $attributeTransTable->deleteById($arrayParameters['attributeTransId']);
+        
+        }catch (\Exception $e){
+            echo $e->getMessage(); die();
+        }
+        // Service implementation end
+        
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_delete_attribute_trans_end', $arrayParameters);
+         
+        return $arrayParameters['results'];
+    }
+    
+    /**
+     * This method deletes the product attribute
+     * 
+     * @param int $productAttributeId, the product attribute table to be deleted
+     * @return boolean true on success, otherwise false on error
+     */
+    public function deleteProductAttributeById($productAttributeId)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_delete_product_attribute_start', $arrayParameters);
+        
+        // Service implementation start
+        $productAttributeTable = $this->getServiceLocator()->get('MelisEcomProductAttributeTable');
+        
+        try{
+            $results = $productAttributeTable->deleteById($arrayParameters['productAttributeId']);
+        
+        }catch (\Exception $e){
+            echo $e->getMessage(); die();
+        }
+        // Service implementation end
+        
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_delete_product_attribute_end', $arrayParameters);
+         
+        return $arrayParameters['results'];
+    }
+    
+    /**
+     * This method deletes the attribute values and its corresponding translations
+     * 
+     * @param int $attributeValueId The id to be deleted
+     * 
+     * @return boolean true on success, otherwise false
+     */
+    public function deleteAttributeValueById($attributeValueId)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_delete_attribute_value_start', $arrayParameters);
+        
+        // Service implementation start
+        $attributeValueTable = $this->getServiceLocator()->get('MelisEcomAttributeValueTable');
+        $attributeValueTransTable = $this->getServiceLocator()->get('MelisEcomAttributeValueTransTable');
+        $varriantAttributeValueTable = $this->getServiceLocator()->get('MelisEcomProductVariantAttributeValueTable');
+        
+        try {
+            
+            //delete attribute value translations
+            foreach($attributeValueTransTable->getEntryByField('av_attribute_value_id', $arrayParameters['attributeValueId']) as $trans){
+                $results = $this->deleteAttributeValueTransById($trans->avt_id);
+                if(!$results)
+                    throw new \Exception('Unable to delete attribute value trans');
+            }
+            
+            //delete variant attribute value
+            foreach($varriantAttributeValueTable->getEntryByField('vatv_attribute_value_id', $arrayParameters['attributeValueId']) as $variantAttributeValue){
+                $results = $this->deleteVariantAttributeValueById($variantAttributeValue->vatv_id);
+                if(!$results){
+                    throw new \Exception('Unable to delete attribute value');
+                }
+            }
+
+            $results = $attributeValueTable->deleteById($arrayParameters['attributeValueId']);
+        }catch(\Exception $e){
+            echo $e->getMessage(); die();
+        }
+        // Service implementation end
+        
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_delete_attribute_value_end', $arrayParameters);
+         
+        return $arrayParameters['results'];
+    }
+    
+    /**
+     * This method deletes the attribute value trans by id
+     * 
+     * @param int $attributeValueTransId the id to be deleted
+     * 
+     * @return boolean true on success, otherwise false
+     */
+    public function deleteAttributeValueTransById($attributeValueTransId)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_delete_attribute_value_trans_start', $arrayParameters);
+        
+        // Service implementation start
+        $attributeValueTransTable = $this->getServiceLocator()->get('MelisEcomAttributeValueTransTable');
+        
+        try {            
+            
+            $results = $attributeValueTransTable->deleteById($arrayParameters['attributeValueTransId']);
+            
+        }catch(\Exception $e){
+            echo $e->getMessage(); die();
+        }
+        // Service implementation end
+        
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_delete_attribute_value_trans_end', $arrayParameters);
+         
+        return $arrayParameters['results'];
+    }
+    
+    /**
+     * This method deletes the variant attribute value
+     * 
+     * @param int $variantAttributeValueId, the variant attribute value id to be deleted
+     * @return boolean true on success, otherwise false
+     */
+    public function deleteVariantAttributeValueById($variantAttributeValueId)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_delete_variant_attribute_value_start', $arrayParameters);
+        
+        // Service implementation start
+        $varriantAttributeValueTable = $this->getServiceLocator()->get('MelisEcomProductVariantAttributeValueTable');
+        
+        try {
+        
+            $results = $varriantAttributeValueTable->deleteById($arrayParameters['variantAttributeValueId']);
+        
+        }catch(\Exception $e){
+            echo $e->getMessage(); die();
+        }
+        // Service implementation end
+        
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_delete_variant_attribute_value_end', $arrayParameters);
          
         return $arrayParameters['results'];
     }

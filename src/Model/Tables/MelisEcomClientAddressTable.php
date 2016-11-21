@@ -70,6 +70,21 @@ class MelisEcomClientAddressTable extends MelisEcomGenericTable
             array('*'),$select::JOIN_LEFT);
         
         $select->where('cadd_client_id ='.$clientId);
+        $select->where('cadd_client_person IS NULL');
+        $select->where('catype_code = "BIL"');
+        
+        $resultData = $this->tableGateway->selectWith($select);
+        return $resultData;
+    }
+    
+    public function getContactBillingAddresses($contactId)
+    {
+        $select = $this->tableGateway->getSql()->select();
+        
+        $select->join('melis_ecom_client_address_type', 'melis_ecom_client_address_type.catype_id=melis_ecom_client_address.cadd_type',
+            array('*'),$select::JOIN_LEFT);
+        
+        $select->where('cadd_client_person ='.$contactId);
         $select->where('catype_code = "BIL"');
         
         $resultData = $this->tableGateway->selectWith($select);
@@ -84,6 +99,21 @@ class MelisEcomClientAddressTable extends MelisEcomGenericTable
             array('*'),$select::JOIN_LEFT);
         
         $select->where('cadd_client_id ='.$clientId);
+        $select->where('cadd_client_person IS NULL');
+        $select->where('catype_code = "DEL"');
+        
+        $resultData = $this->tableGateway->selectWith($select);
+        return $resultData;
+    }
+    
+    public function getContactDeliveryAddresses($contactId)
+    {
+        $select = $this->tableGateway->getSql()->select();
+        
+        $select->join('melis_ecom_client_address_type', 'melis_ecom_client_address_type.catype_id=melis_ecom_client_address.cadd_type',
+            array('*'),$select::JOIN_LEFT);
+        
+        $select->where('cadd_client_person ='.$contactId);
         $select->where('catype_code = "DEL"');
         
         $resultData = $this->tableGateway->selectWith($select);

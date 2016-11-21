@@ -48,4 +48,31 @@ class MelisEcomProductTextTable extends MelisEcomGenericTable
         return $resultSet;
     }
     
+    public function getProductTextLangId($productId) 
+    {
+        $select = $this->tableGateway->getSql()->select();
+        $select->columns(array('ptxt_lang_id'));
+
+        $select->where->equalTo('ptxt_prd_id', $productId);
+        
+        $select->order('ptxt_id ASC');
+        $resultSet = $this->tableGateway->selectwith($select);
+        
+        return $resultSet;
+    }
+    
+    public function getProductTextsByProductId($productId, $langId = 1) 
+    {
+        $select = $this->tableGateway->getSql()->select();
+        $select->columns(array('*'));
+
+        $select->where->equalTo('ptxt_prd_id', $productId)->and->equalTo('ptxt_lang_id', $langId);
+        
+        $select->order('ptxt_id ASC');
+        $resultSet = $this->tableGateway->selectwith($select);
+        
+        return $resultSet;
+    }
+    
+    
 }

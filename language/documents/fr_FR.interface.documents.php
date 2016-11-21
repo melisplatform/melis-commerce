@@ -14,8 +14,8 @@
 	    'tr_meliscommerce_documents_attachment' => 'Pièce-jointe',
 
         // Common labels
-        'tr_meliscommerce_documents_common_btn_close' => 'Fermer',
-        'tr_meliscommerce_documents_common_btn_save' => 'Sauvegarder',
+        'tr_meliscommerce_documents_common_btn_close' => 'Annuler',
+        'tr_meliscommerce_documents_common_btn_save' => 'Enregistrer',
         'tr_meliscommerce_documents_common_btn_update' => 'Mettre à jour',
         'tr_meliscommerce_documents_common_btn_delete' => 'Supprimer',
         'tr_meliscommerce_documents_common_btn_add' => 'Ajouter',
@@ -26,8 +26,8 @@
         'tr_meliscommerce_documents_common_label_action' => 'Action',
 
 	    // Modal
-	    'tr_meliscommerce_documents_modal_container' => 'Conteneur Modal',
-	    'tr_meliscommerce_documents_modal_form' => 'Formulaire Modal',
+	    'tr_meliscommerce_documents_modal_container' => 'Conteneur modal',
+	    'tr_meliscommerce_documents_modal_form' => 'Formulaire modal',
 	    
 	    	    
 	    'tr_meliscommerce_documents_no_file' => 'Aucune pièce-jointe',

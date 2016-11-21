@@ -30,6 +30,7 @@ return array(
                         'module' => 'MelisCommerce',
                         'controller' => 'MelisComSeo',
                         'action' => 'render-seo-plugin',
+                        'jscallback' => 'preSeoCharCounter();'
                     )
                 ),
             ),

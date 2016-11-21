@@ -11,9 +11,9 @@ namespace MelisCommerce\Service;
 
 /**
  *
- * This Service will Compute Cehckout Shipment Cost
+ * This Service will Compute Checkout Shipment Cost
  * 
- * This Serive also created for a testing
+ * This Service is created for a testing
  *
  */
 class MelisComShipmentCostService extends MelisComGeneralService
@@ -41,7 +41,7 @@ class MelisComShipmentCostService extends MelisComGeneralService
         // Static Value for Shipping Cost, for testing
         $total = 599.99; 
         // Static error
-        $errors['xx'] = 'MELIS_COMMERCE_CHECKOUT_ERROR_SHIPMENT_CANT_COMPUTE_PRODUCT';
+        //$errors['xx'] = 'MELIS_COMMERCE_CHECKOUT_ERROR_SHIPMENT_CANT_COMPUTE_PRODUCT';
         // Static values End here
         
         //  Results initialization

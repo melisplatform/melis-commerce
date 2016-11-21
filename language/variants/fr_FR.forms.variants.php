@@ -10,7 +10,7 @@
        
         // stocks form
         'tr_meliscommerce_variant_stocks_quantity_label' => 'Quantité',
-        'tr_meliscommerce_variant_stocks_quantity_holder' => 'Quantité Restante',
+        'tr_meliscommerce_variant_stocks_quantity_holder' => 'Quantité restante',
         'tr_meliscommerce_variant_tab_stocks_fill_up' => 'Date de réapprovisionnement',
 
         //

@@ -20,12 +20,30 @@ if (!empty($this->zoneconfig['conf']['id']))
         				<div class="tab-pane active" <?php echo $id ?>>
                             <div class="row">
                             	<div class="col-md-12">
+                            		
                                     <?php
                                     	$form = $this->meliscommerce_order_list_status_form;
                                     	echo $this->form()->openTag($form);
                                     	echo $this->melisFieldCollection($form);
                                     	echo $this->form()->closeTag(); 
                                     ?>
+                                    <script>
+                                    $('form[name=order-list-status] select[name=ord_status]').ready(function () {
+                                        <?php 
+                                        $c = 1;
+                                        foreach($this->status as $status):
+                                        ?>
+                                        $('form[name=order-list-status] select[name=ord_status] option:nth-child(<?= $c ?>)').css("color", "<?= $status->osta_color_code ?>");
+                                        <?php
+                                        $c++;
+                                        endforeach;
+                                        ?>
+                                        $('form[name=order-list-status] select[name=ord_status]').attr("style", $("form[name=order-list-status] select[name=ord_status] option:selected").attr("style"));
+                                    });
+                                    $('form[name=order-list-status] select[name=ord_status]').change(function () {
+                                        $('form[name=order-list-status] select[name=ord_status]').attr("style", $("form[name=order-list-status] select[name=ord_status] option:selected").attr("style"));
+                                    });
+                                    </script>
                                  	<div align="right">
                                  		<button data-dismiss="modal" class="btn btn-danger pull-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
                                  		<button class="btn btn-success" id="saveOrderStatus"><i class="fa fa-save"></i>  <?php echo $this->translate('tr_meliscommerce_orders_common_btn_save') ?></button>

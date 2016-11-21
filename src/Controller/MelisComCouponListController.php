@@ -109,7 +109,7 @@ class MelisComCouponListController extends AbstractActionController
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view->melisKey = $melisKey;
         $view->tableColumns = $columns;
-        $view->getToolDataTableConfig = $this->getTool()->getDataTableConfiguration('#tableCouponList', true);
+        $view->getToolDataTableConfig = $this->getTool()->getDataTableConfiguration('#tableCouponList', true, null, array('order' => '[[ 0, "desc" ]]'));
         return $view;
     }
     
@@ -168,9 +168,11 @@ class MelisComCouponListController extends AbstractActionController
         $colId = array();
         $dataCount = 0;
         $draw = 0;
+        $dataFiltered = 0;
         $tableData = array();
         $langId = $this->getTool()->getCurrentLocaleID();
         $couponSvc = $this->getServiceLocator()->get('MelisComCouponService');        
+        $couponOrderTable = $this->getServiceLocator()->get('MelisEcomCouponOrderTable');
         
         if($this->getRequest()->isPost()) {
             $colId = array_keys($this->getTool()->getColumns());
@@ -191,22 +193,37 @@ class MelisComCouponListController extends AbstractActionController
             
             $postValues = $this->getRequest()->getPost();
             
+            $tmp = $couponSvc->getCouponList(null, null, null, null, null, $search);
+            $dataFiltered = count($tmp);
+            
             $couponList = $couponSvc->getCouponList(null, null, $start, $length, $colOrder, $search);
             $dataCount = count($couponList);
             $c = 0;
             foreach($couponList as $coupon){
                 $status = '<span class="text-danger"><i class="fa fa-fw fa-circle"></i></span>';
                 $coupon = $coupon->getCoupon();
+                $couponClient = array();
+                $couponOrder = array();
+                
                 if($coupon->coup_status){
                     $status = '<span class="text-success"><i class="fa fa-fw fa-circle"></i></span>';
+                }
+                
+                foreach($couponOrderTable->getEntryByField('cord_coupon_id', $coupon->coup_id) as $coupOrder){
+                    $couponOrder[] = $coupOrder;
+                }
+                
+                // Identify used coupons
+                if(array_filter($couponOrder)){
+                    $tableData[$c]['DT_RowClass'] = "couponUsed";
                 }
                 
                 $tableData[$c]['DT_RowId'] = $coupon->coup_id;
                 $tableData[$c]['coup_id'] = $coupon->coup_id;
                 $tableData[$c]['coup_status'] = $status;
                 $tableData[$c]['coup_code'] = $coupon->coup_code;
-                $tableData[$c]['coup_percentage'] = $coupon->coup_percentage;
-                $tableData[$c]['coup_discount_value'] = $coupon->coup_discount_value;
+                $tableData[$c]['coup_percentage'] = !empty($coupon->coup_percentage)? $coupon->coup_percentage : '&nbsp;';
+                $tableData[$c]['coup_discount_value'] = !empty($coupon->coup_discount_value)? $coupon->coup_discount_value: '&nbsp;';
                 $tableData[$c]['coup_current_use_number'] = $coupon->coup_current_use_number;
                 $c++;
             }
@@ -216,9 +233,45 @@ class MelisComCouponListController extends AbstractActionController
         return new JsonModel(array (
             'draw' => (int) $draw,
             'recordsTotal' => $dataCount,
-            'recordsFiltered' =>  $dataCount,
+            'recordsFiltered' =>  $dataFiltered,
             'data' => $tableData,
         ));
+    }
+    
+    /**
+     * This method deletes coupons that are not assigned or unused coupons
+     * 
+     * @return \Zend\View\Model\JsonModel
+     */
+    public function deleteCouponAction()
+    {
+        $response = array();
+        $success = 0;
+        $errors  = array();
+        $data = array();
+        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_coupon_delete_fail');
+        $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_coupon_list_page_coupon');
+        
+        $couponSvc = $this->getServiceLocator()->get('MelisComCouponService');
+        if($this->getRequest()->isPost()){
+            $this->getEventManager()->trigger('meliscommerce_coupon_delete_start', $this, array());
+            $postValues = get_object_vars($this->getRequest()->getPost());
+            $couponId = $postValues['couponId'];
+            if($couponSvc->deleteCouponById($couponId)){
+                $success = 1;
+                $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_coupon_delete_success');
+            }
+        }
+        
+        $response = array(
+            'success' => $success,
+            'textTitle' => $textTitle,
+            'textMessage' => $textMessage,
+            'errors' => $errors,
+            'chunk' => $data,
+        );
+        $this->getEventManager()->trigger('meliscommerce_coupon_delete_end', $this, $response);
+        return new JsonModel($response);
     }
     
     /**

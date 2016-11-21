@@ -122,6 +122,7 @@ class MelisComDocumentController extends AbstractActionController
         if($data) {
             foreach($data->getDocument() as $doc) {
                 if((int) $doc['doc_type_id'] != 1) {
+                    $doc['doc_name'] = $this->getTool()->limitedText($doc['doc_name'], 25);
                     $files[] = $doc;
                 }
             }
@@ -241,6 +242,7 @@ class MelisComDocumentController extends AbstractActionController
                     $relationType = $postValues['docRelationType'];
                     $relationId   = (int) $postValues['relationId'];
                     $countryId = (int) $postValues['rdoc_country_id'];
+                    
     
                     $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_documents_'.$docType.'_attachments');
                     $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_save_fail_need_review');
@@ -254,6 +256,8 @@ class MelisComDocumentController extends AbstractActionController
     
                     $uploadedFile = $request->getFiles()->toArray()['doc_path'];
                     $fileName = $uploadedFile['name'];
+                    $formattedFileName = $this->getFormattedFileName($fileName);
+                    
     
                     $size = new Size(array(
                         'min'=> $minSize,
@@ -289,6 +293,8 @@ class MelisComDocumentController extends AbstractActionController
 
                     if($form->isValid()) {
                         if($this->createFolder($relationType, $relationId)) {
+                            $data = $form->getData();
+                            
                             // do saving
                             $adapter->setValidators($validator, $fileName);
                             if($docType == 'image') {
@@ -310,7 +316,9 @@ class MelisComDocumentController extends AbstractActionController
                                          
                                         // if uploaded successfully
                                         if($adapter->receive()) {
-                                            $data = $form->getData();
+                                            //$data['doc_name'] = !empty($data['doc_name']) ? $this->renameIfDuplicateName($data['doc_name']) : $this->renameIfDuplicateName($formattedFileName);
+                                            $fname = pathinfo($fileName, PATHINFO_FILENAME);
+                                            $data['doc_name'] = !empty($data['doc_name']) ? $this->renameIfDuplicateName($data['doc_name']) : $fname;
                                             $data['doc_subtype_id'] = isset($postValues['doc_subtype_id']) ? $postValues['doc_subtype_id'] : 0;
                                             $data['doc_path'] = str_replace('public/media/commerce', '/media/commerce', $savedDocFileName);
                                             $success = $this->getDocSvc()->saveDocument($relationType, $relationId, $countryId, $data, $docId);
@@ -347,7 +355,10 @@ class MelisComDocumentController extends AbstractActionController
                                          
                                         // if uploaded successfully
                                         if($adapter->receive()) {
-                                            $data = $form->getData();
+                                            if(empty($data['doc_name'])) {
+                                                unset($data['doc_name']);
+                                            }
+                                            //$data['doc_name'] = !empty($data['doc_name']) ? $this->renameIfDuplicateName($data['doc_name']) : $this->getFormattedFileName($adapter->getFileName());
                                             $data['doc_subtype_id'] = isset($postValues['doc_subtype_id']) ? $postValues['doc_subtype_id'] : 0;
                                             $data['doc_path'] = str_replace('public/media/commerce', '/media/commerce', $savedDocFileName);
                                             $success = $this->getDocSvc()->saveDocument($relationType, $relationId, $countryId, $data, $docId);
@@ -366,7 +377,9 @@ class MelisComDocumentController extends AbstractActionController
                                     }
                                 }
                                 else {
-                                    $data = $form->getData();
+                                    if(empty($data['doc_name'])) {
+                                        unset($data['doc_name']);
+                                    }
                                     $data['doc_subtype_id'] = isset($postValues['doc_subtype_id']) ? $postValues['doc_subtype_id'] : 0;
                                     $success = $this->getDocSvc()->saveDocument($relationType, $relationId, $countryId, $data, $docId);
                                     if($success) {
@@ -375,7 +388,6 @@ class MelisComDocumentController extends AbstractActionController
                                     }
                                 }
                             }
-
                         }
                         else {
                             $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_upload_path_rights_error');
@@ -755,7 +767,7 @@ class MelisComDocumentController extends AbstractActionController
     private function getCountries()
     {
         $melisEcomCountryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
-        $ecomCountries = $melisEcomCountryTable->fetchAll()->toArray();
+        $ecomCountries = $melisEcomCountryTable->getCountries()->toArray();
         return $ecomCountries;
         
     }
@@ -781,7 +793,7 @@ class MelisComDocumentController extends AbstractActionController
             $status = true;
         }
         else {
-            mkdir($path, 0777, true);
+            $status = mkdir($path, 0777, true);
             $this->createFolder($folderType, $folderId);
         }
         
@@ -838,6 +850,8 @@ class MelisComDocumentController extends AbstractActionController
         $totalFile = count($docData) ? ' (' .count($docData) . ')' : null;
         $fileDir = pathinfo($filePath, PATHINFO_DIRNAME);
         $fileName = pathinfo($filePath, PATHINFO_FILENAME) . $totalFile;
+        // replace space with underscores
+        $fileName = str_replace(' ', '_', $fileName);
         $fileExt  = pathinfo($filePath, PATHINFO_EXTENSION) ? '.' . pathinfo($filePath, PATHINFO_EXTENSION) : '';
         $newFilePathAndName = $fileDir . '/'. $fileName . $fileExt;
         
@@ -845,10 +859,32 @@ class MelisComDocumentController extends AbstractActionController
 
     }
     
+    public function renameIfDuplicateName($name) 
+    {
+//         $docTable = $this->getServiceLocator()->get('MelisEcomDocumentTable');
+//         $docData = $docTable->getEntryByFieldUsingLike('doc_name', $name)->toArray();
+        
+//         $totalNames = count($docData) ? ' (' .count($docData) . ')' : null;
+//        // $formatName = preg_replace('/\(([^)]+)\)/', '', $name);
+//         //$newName = $formatName . $totalNames;
+//         $newName = $formatName . $totalNames;
+        $newName = $name;
+        return $newName;
+    }
+    
+    public function getFormattedFileName($fileName)
+    {
+        $file = pathinfo($fileName, PATHINFO_FILENAME);
+        $fileExt = pathinfo($fileName, PATHINFO_EXTENSION);
+        $newFileName = $file;
+        
+        return $newFileName;
+    }
+    
     public function testAction()
     {
-        $test = $this->renameIfDuplicateFile('/media/commerce/product/1/21');
-        echo $test;
+        $test = 'Pants_icon_57ea5d3489096.png';
+        echo $this->renameIfDuplicateName('real deal');
         die;
     }
     

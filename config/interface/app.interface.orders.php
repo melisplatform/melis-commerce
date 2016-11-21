@@ -112,6 +112,59 @@ return array(
                                         ),
                                     ),
                                 ),
+                                'meliscommerce_order_list_widgets' => array(
+                                    'conf' => array(
+                                        'id' => 'id_meliscommerce_order_list_widgets',
+                                        'melisKey' => 'meliscommerce_order_list_widgets',
+                                        'name' => 'tr_meliscommerce_order_list_widgets',
+                                    ),
+                                    'forward' => array(
+                                        'module' => 'MelisCommerce',
+                                        'controller' => 'MelisComOrderList',
+                                        'action' => 'render-order-list-widgets',
+                                    ),
+                                    'interface' => array(
+                                        'meliscommerce_order_list_widgets_num_orders' => array(
+                                            'conf' => array(
+                                                'id' => 'id_meliscommerce_order_list_widgets_num_orders',
+                                                'melisKey' => 'meliscommerce_order_list_widgets_num_orders',
+                                                'name' => 'tr_meliscommerce_order_list_widgets_num_orders',
+                                                'width' => '4'
+                                            ),
+                                            'forward' => array(
+                                                'module' => 'MelisCommerce',
+                                                'controller' => 'MelisComOrderList',
+                                                'action' => 'render-order-list-widgets-num-orders',
+                                            ),
+                                        ),
+                                        'meliscommerce_order_list_widgets_month_orders' => array(
+                                            'conf' => array(
+                                                'id' => 'id_meliscommerce_order_list_widgets_month_orders',
+                                                'melisKey' => 'meliscommerce_order_list_widgets_month_orders',
+                                                'name' => 'tr_meliscommerce_order_list_widgets_month_orders',
+                                                'width' => '4'
+                                            ),
+                                            'forward' => array(
+                                                'module' => 'MelisCommerce',
+                                                'controller' => 'MelisComOrderList',
+                                                'action' => 'render-order-list-widgets-month-orders',
+                                            ),
+                                        ),
+                                        'meliscommerce_order_list_widgets_avg_orders' => array(
+                                            'conf' => array(
+                                                'id' => 'id_meliscommerce_order_list_widgets_avg_orders',
+                                                'melisKey' => 'meliscommerce_order_list_widgets_avg_orders',
+                                                'name' => 'tr_meliscommerce_order_list_widgets_avg_orders',
+                                                'width' => '4'
+                                            ),
+                                            'forward' => array(
+                                                'module' => 'MelisCommerce',
+                                                'controller' => 'MelisComOrderList',
+                                                'action' => 'render-order-list-widgets-avg-orders',
+                                            ),
+                                        ),
+                                    ),
+                                ),
                                 'meliscommerce_order_list_content' => array(
                                     'conf' => array(
                                         'id' => 'id_meliscommerce_order_list_content',
@@ -274,7 +327,7 @@ return array(
                                                           'melisKey' => 'meliscommerce_orders_content_tab_main',
                                                           'name' => 'tr_meliscommerce_orders_content_tab_main',
                                                           'href' => 'id_meliscommerce_orders_content_tabs_content_main',
-                                                          'icon' => 'glyphicons tags',
+                                                          'icon' => 'glyphicons tag',
                                                           'active' => 'active',
                                                       ),
                                                       'forward' => array(

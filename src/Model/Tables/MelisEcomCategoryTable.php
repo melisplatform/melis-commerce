@@ -86,7 +86,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
         $select->where('melis_ecom_category.cat_id = '.$categoryId);
         
         if (!is_null($langId)){
-            $select->where('catt_lang_id = '.$langId);
+            $select->where->equalTo('catt_lang_id', $langId)->and->equalTo('melis_ecom_lang.elang_status', 1);
         }
         
         $dataCategory = $this->tableGateway->selectWith($select);
@@ -108,7 +108,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
             array('*'), $select::JOIN_LEFT);
         $select->group('ctry_id');
         
-        $select->where('cat_id = '.$categoryId);
+        $select->where->equalTo('cat_id', $categoryId)->and->equalTo('melis_ecom_country.ctry_status', 1);
         
         $dataCategory = $this->tableGateway->selectWith($select);
         return $dataCategory;
@@ -195,7 +195,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
     public function getCategoryByFatherId($fatherId = 0){
         $select = $this->tableGateway->getSql()->select();
         
-        $select->columns(array(new \Zend\Db\Sql\Expression('cat_id As id'), 'cat_id', 'cat_status'));
+        $select->columns(array(new \Zend\Db\Sql\Expression('cat_id As id'), 'cat_id', 'cat_status', 'cat_father_cat_id'));
         
         if ($fatherId == 0){
             $select->where('cat_father_cat_id = -1');

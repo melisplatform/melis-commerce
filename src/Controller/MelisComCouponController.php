@@ -423,6 +423,15 @@ class MelisComCouponController extends AbstractActionController
     }
     
     /**
+     * renders the client list table action button delete
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderCouponContentActionDeleteAction()
+    {
+        return new ViewModel();
+    }
+    
+    /**
      * renders the client list table
      * @return \Zend\View\Model\ViewModel
      */
@@ -438,7 +447,29 @@ class MelisComCouponController extends AbstractActionController
         $view->tableColumns = $columns;
         $view->couponId = $couponId;
         $view->tableName = $tableName;
-        $view->getToolDataTableConfig = $this->getTool()->getDataTableConfiguration('#'.$tableName, true);
+        $view->getToolDataTableConfig = $this->getTool()->getDataTableConfiguration('#'.$tableName, true, null, array('order' => '[[ 0, "desc" ]]'));
+        return $view;
+    }
+    
+    /**
+     * renders the assigned coupon client list table
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderCouponTabsContentDetailsAssignedTableAction()
+    {
+        $couponId = (int) $this->params()->fromQuery('couponId', '');
+        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_coupon_assigned');
+        $columns = $melisTool->getColumns();
+        $columns['actions'] = array('text' => 'Action');
+        $view = new ViewModel();
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $tableName = $couponId.'_clientListAssigned';
+        $view->melisKey = $melisKey;
+        $view->tableColumns = $columns;
+        $view->couponId = $couponId;
+        $view->tableName = $tableName;
+        $view->getToolDataTableConfig = $melisTool->getDataTableConfiguration('#'.$tableName, true, null, array('order' => '[[ 0, "desc" ]]', "initComplete" => 'initCheckClientUsedCoupon()'));
         return $view;
     }
     
@@ -448,6 +479,12 @@ class MelisComCouponController extends AbstractActionController
      */
     public function renderCouponTabsContentDetailsOrdersTableAction()
     {
+        $status = array();
+        $orderStatusTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTable');
+        foreach($orderStatusTable->fetchAll() as $orderStatus){
+            $status[] = $orderStatus;
+        }
+        
         $couponId = (int) $this->params()->fromQuery('couponId', '');
         $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
         $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_coupon_order');
@@ -460,7 +497,8 @@ class MelisComCouponController extends AbstractActionController
         $view->tableColumns = $columns;
         $view->couponId = $couponId;
         $view->tableName = $tableName;
-        $view->getToolDataTableConfig = $melisTool->getDataTableConfiguration('#'.$tableName, true);
+        $view->status = $status;
+        $view->getToolDataTableConfig = $melisTool->getDataTableConfiguration('#'.$tableName, true, null, array('order' => '[[ 0, "desc" ]]'));
         return $view;
     }
     
@@ -472,6 +510,7 @@ class MelisComCouponController extends AbstractActionController
         $draw = 0;
         $tableData = array();
         $couponId = null;
+        $dataFiltered = 0;
         
         $status = '<span class="text-danger"><i class="fa fa-fw fa-circle"></i></span>';        
         $langId = $this->getTool()->getCurrentLocaleID();
@@ -499,21 +538,25 @@ class MelisComCouponController extends AbstractActionController
             
             $search = $this->getRequest()->getPost('search');
             $search = $search['value'];
+            $isMain = 1;
             
-            $clients = $clientTable->getCouponClientList($langId, null, null, $start, $length, $colOrder, $search);
+            $tmp = $clientTable->getCouponClientList(null, null, $isMain, null, null, null, $colOrder, $search);
+            $dataFiltered = count($tmp);
+            
+            $clients = $clientTable->getCouponClientList($langId, null, $isMain, null, $start, $length, $colOrder, $search);
             
             $c = 0;
             foreach($clients as $client){
                 $assign = '';
-                
+                $companyName = '';
                 $client = $clientSvc->getClientByIdAndClientPerson($client->cli_id);                
-//                 echo '<pre>'; print_r($client->getCompany()[0]); echo '</pre>'; die();
+
                 if($client->getClient()->cli_status){
                     $status = '<span class="text-success"><i class="fa fa-fw fa-circle"></i></span>';
                 }
                 foreach($couponClientTable->getEntryByField('ccli_coupon_id',$couponId) as $coupon){
                     if($coupon->ccli_client_id == $client->getClient()->cli_id ){
-                        $assign = '<a data-ccli_id="'.$client->getId().'" class="btn btn-success" style="cursor:default"><i class="fa fa-user" title="Given"></i></a>';
+                        $assign = '<a data-ccli_id="'.$client->getId().'" class="btn btn-success" style="cursor:default" title="'.$this->getTool()->getTranslation('tr_meliscommerce_coupon_page_tabs_assign_hover').'" ><i class="fa fa-user" ></i></a>';
                     } 
                 }
                 
@@ -522,6 +565,7 @@ class MelisComCouponController extends AbstractActionController
                         $civt_min_name = $trans->civt_min_name;
                     }
                 }
+                
                 foreach($client->getCompany() as $company){
                     $companyName = $company->ccomp_name;
                 }
@@ -542,7 +586,100 @@ class MelisComCouponController extends AbstractActionController
         return new JsonModel(array (
             'draw' => (int) $draw,
             'recordsTotal' => $dataCount,
-            'recordsFiltered' =>  $dataCount,
+            'recordsFiltered' =>  $dataFiltered,
+            'data' => $tableData,
+        ));
+    }
+    
+    public function getAssignedCouponClientDataAction()
+    {
+        $success = 0;
+        $colId = array();
+        $dataCount = 0;
+        $draw = 0;
+        $tableData = array();
+        $couponId = null;
+        $dataFiltered = 0;
+    
+        $status = '<span class="text-danger"><i class="fa fa-fw fa-circle"></i></span>';
+        $langId = $this->getTool()->getCurrentLocaleID();
+        $clientTable = $this->getServiceLocator()->get('MelisEcomClientTable');
+        $clientSvc = $this->getServiceLocator()->get('MelisComClientService');
+        $couponClientTable = $this->getServiceLocator()->get('MelisEcomCouponClientTable');
+        $couponOrderTable = $this->getServiceLocator()->get('MelisEcomCouponOrderTable');
+        
+        if($this->getRequest()->isPost()) {
+            $colId = array_keys($this->getTool()->getColumns());
+            $couponId = $this->getRequest()->getPost('couponId');
+            $sortOrder = $this->getRequest()->getPost('order');
+            $sortOrder = $sortOrder[0]['dir'];
+    
+            $selCol = $this->getRequest()->getPost('order');
+            $selCol = $colId[$selCol[0]['column']];
+            if($selCol == 'assign'){
+                $selCol = 'ccli_coupon_id';
+            }
+    
+            $colOrder = $selCol. ' ' . $sortOrder;
+    
+            $draw = (int) $this->getRequest()->getPost('draw');
+    
+            $start = (int) $this->getRequest()->getPost('start');
+            $length =  (int) $this->getRequest()->getPost('length');
+    
+            $search = $this->getRequest()->getPost('search');
+            $search = $search['value'];
+            $isMain = 1;
+    
+            $tmp = $clientTable->getCouponClientList(null, null, $isMain, $couponId, null, null, $colOrder, $search);
+            $dataFiltered = count($tmp);
+    
+            $clients = $clientTable->getCouponClientList($langId, null, $isMain, $couponId, $start, $length, $colOrder, $search);
+    
+            $c = 0;
+            foreach($clients as $client){
+                $assign = '';
+                $companyName = '';
+                $client = $clientSvc->getClientByIdAndClientPerson($client->cli_id);
+    
+                if($client->getClient()->cli_status){
+                    $status = '<span class="text-success"><i class="fa fa-fw fa-circle"></i></span>';
+                }
+                
+                $usedCoupon = $couponOrderTable->checkUsedClientCoupon($couponId, $client->getClient()->cli_id)->toArray();
+                if(count($usedCoupon) > 0){
+                    $tableData[$c]['DT_RowClass'] = "couponAssigned";
+                }
+                
+    
+                foreach($client->getPersons()[0]->civility_trans as $trans){
+                    if($trans->civt_lang_id == $langId){
+                        $civt_min_name = $trans->civt_min_name;
+                    }
+                }
+    
+                foreach($client->getCompany() as $company){
+                    $companyName = $company->ccomp_name;
+                }
+    
+                $tableData[$c]['DT_RowId']      = $client->getClient()->cli_id;
+                $tableData[$c]['DT_RowAttr']    = array('data-couponid' => $couponId);
+                $tableData[$c]['cli_id']        = $client->getClient()->cli_id;
+                $tableData[$c]['cli_status']    = $status;
+                $tableData[$c]['civt_min_name'] = $civt_min_name;
+                $tableData[$c]['cper_firstname']= $client->getPersons()[0]->cper_firstname;
+                $tableData[$c]['cper_name']     = $client->getPersons()[0]->cper_name;
+                $tableData[$c]['cper_email']    = $client->getPersons()[0]->cper_email;
+                $tableData[$c]['ccomp_name']    = $companyName;
+                $tableData[$c]['assign']        = $assign;
+                $c++;
+            }
+            $dataCount = $c;
+        }
+        return new JsonModel(array (
+            'draw' => (int) $draw,
+            'recordsTotal' => $dataCount,
+            'recordsFiltered' =>  $dataFiltered,
             'data' => $tableData,
         ));
     }
@@ -563,14 +700,18 @@ class MelisComCouponController extends AbstractActionController
         $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_coupon_page');
         $this->getEventManager()->trigger('meliscommerce_coupon_client_management_start', $this, array());
         $couponSvc = $this->getServiceLocator()->get('MelisComCouponService');
-        
+        $couponTable = $this->getServiceLocator()->get('MelisEcomCouponClientTable');
         if($this->getRequest()->isPost()){
             $postValues = get_object_vars($this->getRequest()->getPost());
 //              echo '<pre>'; print_r($postValues); echo '</pre>';die();
             if($postValues['method'] == 'add'){
                 unset($postValues['method']);
-                $result = $couponSvc->saveCouponClient($postValues);
-                
+                $check = $couponTable->checkCouponClientExist($postValues['ccli_coupon_id'], $postValues['ccli_client_id'])->current();
+                if(empty($check)){
+                    $result = $couponSvc->saveCouponClient($postValues);
+                }else{
+                    $result = true;
+                }
             }            
         }
         if($result){
@@ -584,7 +725,7 @@ class MelisComCouponController extends AbstractActionController
             'errors' => $errors,
             'chunk' => $data,
         );
-        $this->getEventManager()->trigger('meliscommerce_coupon_client_management_end', $this, array());
+        $this->getEventManager()->trigger('meliscommerce_coupon_client_management_end', $this, $response);
         return new JsonModel($response);
     }
     
@@ -596,7 +737,7 @@ class MelisComCouponController extends AbstractActionController
     {
 
         $response = array();
-        $success = false;
+        $success = 0;
         $errors  = array();
         $data = array();
         $couponId = null;
@@ -626,6 +767,13 @@ class MelisComCouponController extends AbstractActionController
                 $errors = array_merge($errors, $this->getFormErrors($generalForm, $generalFormConfig));
             }
             $coupon = $generalForm->getData();
+           
+            if(empty($postValues['couponValues'][0]['coup_percentage']) && empty($postValues['couponValues'][0]['coup_discount_value'])){
+                $title = $this->getTool()->getTranslation('tr_meliscommerce_coupon_tabs_content_values_header_title');
+                $message = $this->getTool()->getTranslation('tr_meliscommerce_coupon_empty_percentage_discount');                
+                $errors = array_merge($errors, array('values' => array('isEmpty' => $message , 'label' => $title )));
+                
+            }
             
             $valuesForm->setData($postValues['couponValues'][0]);
             if(!$valuesForm->isValid()){
@@ -634,11 +782,26 @@ class MelisComCouponController extends AbstractActionController
             $coupon = array_merge($coupon, $valuesForm->getData());
             
             $couponId = $postValues['couponId'];                       
-            
+            $coupon['coup_code'] = mb_strtoupper($this->str_without_accents($coupon['coup_code']));
             $coupon['coup_percentage'] = !empty($coupon['coup_percentage'])? $coupon['coup_percentage']:null;
-            $coupon['coup_discount_value'] = !empty($coupon['coup_discount_value'])? $coupon['coup_percentage']:null;
+            $coupon['coup_discount_value'] = !empty($coupon['coup_discount_value'])? $coupon['coup_discount_value']:null;
+            
+            $coupon['coup_max_use_number'] = is_numeric($coupon['coup_max_use_number'])? $coupon['coup_max_use_number']:null;
             $coupon['coup_date_valid_start'] = $this->getTool()->localeDateToSql($coupon['coup_date_valid_start']);
             $coupon['coup_date_valid_end'] = $this->getTool()->localeDateToSql($coupon['coup_date_valid_end']);
+            
+            $validFrom = $coupon['coup_date_valid_start'];
+            $validTo = $coupon['coup_date_valid_end'];
+            
+            // date validation if valid start and end
+            if(!empty($validFrom) && !empty($validTo)){
+                if($validTo < $validFrom){
+                    $title = $this->getTool()->getTranslation('tr_meliscommerce_coupon_date_end');
+                    $message = $this->getTool()->getTranslation('tr_meliscommerce_coupon_invalid_end_date');
+                    $errors['coup_date_valid_end'] = array('inValidDate' => $message ,'label' => $title);
+                    $success = 0;
+                }
+            }
             
             //set date created on new coupons
             if(empty($couponId)){
@@ -658,14 +821,16 @@ class MelisComCouponController extends AbstractActionController
             }
             
             if(!$errors){
+                
                 $coupon = array_merge($coupon, $postValues['switch']);
                 unset($coupon['coup_id']);
-                unset($coupon['coup_current_use_number']);
+                unset($coupon['coup_current_use_number']);                
+                
                 $result = $couponSvc->saveCoupon($coupon,$couponId);
             }
             
             if($result){
-                $success = true;
+                $success = 1;
                 $coupon = $couponSvc->getCouponById($result)->getCoupon();
                 $data['couponId'] = $result;
                 $data['coup_code'] = $coupon->coup_code;
@@ -681,6 +846,37 @@ class MelisComCouponController extends AbstractActionController
             'chunk' => $data,
         );
         $this->getEventManager()->trigger('meliscommerce_coupon_save_end', $this, $response);
+        return new JsonModel($response);
+    }
+    
+    public function deleteAssignedCouponAction()
+    {   
+        
+        $response = array();
+        $success = 0;
+        $errors  = array();
+        $data = array();
+        $this->getEventManager()->trigger('meliscommerce_coupon_remove_from_client_start', $this, array());
+        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_coupon_delete_fail_remove');
+        $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_coupon_list_page_coupon');
+        $couponClientTable = $this->getServiceLocator()->get('MelisEcomCouponClientTable');
+        
+        if($this->getRequest()->isPost()){
+            $postValues = get_object_vars($this->getRequest()->getPost());
+            if($couponClientTable->removeCouponFromClient($postValues['couponId'], $postValues['clientId'])){
+                $success = 1;
+                $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_coupon_delete_success_remove');
+            }
+        }
+        
+        $response = array(
+            'success' => $success,
+            'textTitle' => $textTitle,
+            'textMessage' => $textMessage,
+            'errors' => $errors,
+            'chunk' => $data,
+        );
+        $this->getEventManager()->trigger('meliscommerce_coupon_remove_from_client_end', $this, $response);
         return new JsonModel($response);
     }
     
@@ -722,15 +918,51 @@ class MelisComCouponController extends AbstractActionController
      */
     private function getFormErrors($form, $formConfig)
     {
-        $errors = array();
-        foreach ($form->getMessages() as $keyError => $valueError){
-            foreach ($formConfig['elements'] as $keyForm => $valueForm){
-                if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label'])){
-                    $key = $valueForm['spec']['options']['label'];
-                    $errors[$key] = $valueError;
+        $appConfigFormElements = $formConfig['elements'];
+        $errors = $form->getMessages();
+
+            foreach ($errors as $keyError => $valueError)
+            {
+                foreach ($appConfigFormElements as $keyForm => $valueForm)
+                {
+                    if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
+                    {
+                        $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                    }
                 }
             }
-        }
         return $errors;
     }
+    
+    private function str_without_accents($str, $charset='utf-8')
+    {
+        $str = htmlentities($str, ENT_NOQUOTES, $charset);
+    
+        $str = preg_replace('#&([A-za-z])(?:acute|cedil|caron|circ|grave|orn|ring|slash|th|tilde|uml);#', '\1', $str);
+        $str = preg_replace('#&([A-za-z]{2})(?:lig);#', '\1', $str); // pour les ligatures e.g. '&oelig;'
+        $str = preg_replace('#&[^;]+;#', '', $str); // supprime les autres caractères
+    
+        return $str;   // or add this : mb_strtoupper($str); for uppercase :)
+    }
+    
+
+    /**
+     * Retrieves  form errors
+     * @param object $form the form object
+     * @param object $formConfig the app config of the form
+     * @return errors[] | null
+     */
+//     private function getFormErrors($form, $formConfig)
+//     {
+//         $errors = array();
+//         foreach ($form->getMessages() as $keyError => $valueError){
+//             foreach ($formConfig['elements'] as $keyForm => $valueForm){
+//                 if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label'])){
+//                     $key = $valueForm['spec']['options']['label'];
+//                     $errors[$key] = $valueError;
+//                 }
+//             }
+//         }
+//         return $errors;
+//     }
 }

@@ -42,9 +42,15 @@ return array(
                                 'sortable' => true,
                             
                             ),
+                            'elang_status' => array(
+                                'text' => 'tr_meliscommerce_product_list_col_status',
+                                'css' => array('width' => '10%', 'padding-right' => '0'),
+                                'sortable' => true,
+
+                            ),
                             'elang_locale' => array(
                                 'text' => 'tr_meliscommerce_language_elang_locale',
-                                'css' => array('width' => '50%', 'padding-right' => '0'),
+                                'css' => array('width' => '40%', 'padding-right' => '0'),
                                 'sortable' => true,
                             
                             ),
@@ -107,6 +113,18 @@ return array(
                                 ),
                                 array(
                                     'spec' => array(
+                                        'name' => 'tmp_elang_name',
+                                        'type' => 'hidden',
+                                        'options' => array(
+                                        ),
+                                        'attributes' => array(
+                                            'id' => 'id_tmp_elang_name',
+                                            'value' => '',
+                                        ),
+                                    ),
+                                ),
+                                array(
+                                    'spec' => array(
                                         'name' => 'elang_locale',
                                         'type' => 'MelisText',
                                         'options' => array(
@@ -114,6 +132,18 @@ return array(
                                         ),
                                         'attributes' => array(
                                             'id' => 'id_lang_locale',
+                                            'value' => '',
+                                        ),
+                                    ),
+                                ),
+                                array(
+                                    'spec' => array(
+                                        'name' => 'tmp_elang_locale',
+                                        'type' => 'hidden',
+                                        'options' => array(
+                                        ),
+                                        'attributes' => array(
+                                            'id' => 'id_tmp_lang_locale',
                                             'value' => '',
                                         ),
                                     ),

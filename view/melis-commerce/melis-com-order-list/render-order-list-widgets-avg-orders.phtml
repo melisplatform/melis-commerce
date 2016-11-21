@@ -1,0 +1,22 @@
+<?php
+	$width = '12';
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = $this->zoneconfig['conf']['id'];
+    } 
+	if (!empty($this->zoneconfig['conf']['width']))
+	    $width = $this->zoneconfig['conf']['width'];
+?>
+<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="col-md-<?php echo $width ?> text-center">
+	<div class="widget widget-inverse text-center">
+		<div class="widget-head border-none">
+    		<h3 class="heading prospectHeaderWidget"><?= $this->translate('tr_meliscommerce_order_list_widgets_avg_orders'); ?></h3>
+		</div>
+		<div class="widget-body padding-none">
+			<div class="innerLR half">
+				<div class="separator bottom"></div>
+				<p class="lead"><span class="text-large text-regular"><?php echo $this->num?></span></p>
+			</div>
+		</div>
+	</div>
+</div>

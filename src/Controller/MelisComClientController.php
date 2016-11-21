@@ -473,6 +473,12 @@ class MelisComClientController extends AbstractActionController
      */
     public function renderClientPageTabOrdersAction()
     {
+        $status = array();
+        $orderStatusTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTable');
+        foreach($orderStatusTable->fetchAll() as $orderStatus){
+            $status[] = $orderStatus;
+        }
+        
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $clientId = $this->params()->fromQuery('clientId', '');
         $activateTab = $this->params()->fromQuery('activateTab');
@@ -491,8 +497,9 @@ class MelisComClientController extends AbstractActionController
         $view->melisKey = $melisKey;
         $view->clientId = $clientId;
         $view->tableColumns = $columns;
-        $view->getToolDataTableConfig = $melisTool->getDataTableConfiguration('#'.$clientId.'_tableClientOrderList', true);
+        $view->getToolDataTableConfig = $melisTool->getDataTableConfiguration('#'.$clientId.'_tableClientOrderList', true, null, array('order' => '[[ 0, "desc" ]]'));
         $view->activateTab = ($activateTab) ? 'active' : '';
+        $view->status = $status;
         return $view;
     }
     
@@ -1420,6 +1427,12 @@ class MelisComClientController extends AbstractActionController
                 $findMainContact = false;
                 foreach ($clientContacts As $key => $val)
                 {
+                    // To ensure Client contact has only one main contact
+                    if ($hasMainContact)
+                    {
+                        $val['cper_is_main_person'] = 0;
+                    }
+                    
                     // Checking if finding new Main contact is activated
                     if ($findMainContact)
                     {
@@ -1648,7 +1661,7 @@ class MelisComClientController extends AbstractActionController
                     {
                         if (!empty($clientCompanyData[$valueForm['spec']['name']]))
                         {
-                            // if other fields has has, then Company Name if flag as Mandatory/Required Field
+                            // if other fields has value, then Company Name will flag as Mandatory/Required Field
                             $companyNameRequired = true;
                         }
                     }
@@ -1663,9 +1676,9 @@ class MelisComClientController extends AbstractActionController
                             'label' => $translator->translate('tr_meliscommerce_client_Company_name'),
                             'notEmpty' => $translator->translate('tr_meliscommerce_client_Contact_input_empty')
                         );
+                        
+                        $clientCompanyData = array();
                     }
-                    
-                    $clientCompanyData = array();
                 }
             }
             else 

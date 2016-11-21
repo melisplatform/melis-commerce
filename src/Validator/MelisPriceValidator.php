@@ -33,10 +33,14 @@ class MelisPriceValidator extends IsFloat
         parent::__construct();
         
         // get the locale of the curren session
-        $sessionLocale = '';
+        $sessionLocale = 'en_US';
         $container = new Container('meliscore');
         if (!empty($container['melis-lang-locale']))
-            $sessionLocale = $container['melis-lang-locale'];
+            //$sessionLocale = $container['melis-lang-locale'];
+        
+        if($sessionLocale == 'en_EN') {
+            $sessionLocale = 'en_US';
+        }
         
         // if locale options is set then use the option, if not then use the locale that is set in the session
         $locale = isset($options['locale']) && !empty($options['locale']) ? $options['locale'] : $sessionLocale;
@@ -60,6 +64,11 @@ class MelisPriceValidator extends IsFloat
             parent::error(self::INVALID_PRICE);
             $isValid = false;
             
+        }
+        
+        if((parent::getLocale() == 'en_US' || parent::getLocale() == 'en_EN') && (strpos($value, ',') !== false)) {
+            parent::error(self::INVALID_PRICE);
+            $isValid = false;
         }
         
         return $isValid;

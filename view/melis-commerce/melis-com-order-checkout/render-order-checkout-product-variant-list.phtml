@@ -9,15 +9,26 @@
                 <span class="dtr-title"><strong><?php echo $val['label']?>: </strong><?php echo $val['var_sku']?></span>
             </div>
             <div class="float-right">
-                <span class="btn btn-default cell-val-table"><?php echo number_format($val['var_price'], 2)?></span>
-                <button class="btn btn-success orderCheckoutVariantAddBasket" data-variantid="<?php echo $val['var_id']?>"><i class="fa fa-plus"></i></button>
+                <?php if ($val['available']):?>
+                	<span class="btn btn-default cell-val-table"><?php echo $val['var_price']?></span>
+                	<button class="btn btn-success orderCheckoutVariantAddBasket" data-variantid="<?php echo $val['var_id']?>" title="<?php echo $this->translate('tr_meliscommerce_general_common_add')?>"><i class="fa fa-plus"></i></button>
+            	<?php else:?>
+            		<div class="variant-not-available">
+            			<p><?php echo $this->translate('tr_meliscommerce_order_checkout_product_not_available')?></p>
+            		</div>
+            	<?php endif;?>
             </div>  
         </div>
     <?php endforeach;?>
-    
-    <?php if (empty($this->variants)):?>
-    	<div class="me-file-cont">
-			<p>No Variant</p>
+	<?php if ($this->hasVariant):?>
+		<?php if (empty($this->variants)):?>
+			<div class="me-file-cont">
+    			<p><?php echo $this->translate('tr_meliscommerce_order_checkout_product_country_no_variant')?></p>
+    		</div>
+    	<?php endif;?>
+	<?php else:?>
+		<div class="me-file-cont">
+			<p><?php echo $this->translate('tr_meliscommerce_order_checkout_product_no_variant')?></p>
 		</div>
-    <?php endif;?>
+	<?php endif;?>
 </div>

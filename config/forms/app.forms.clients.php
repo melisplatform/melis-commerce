@@ -80,21 +80,8 @@ return array(
                             array(
                                 'spec' => array(
                                     'name' => 'cper_status',
-                                    'type' => 'Zend\Form\Element\Select',
-                                    'options' => array(
-                                        'label' => 'tr_meliscommerce_client_Contact_status',
-                                        'empty_option' => 'tr_meliscommerce_clients_common_label_choose',
-                                        'value_options' => array(
-                                            '1' => 'tr_meliscommerce_client_Contact_status_active',
-                                            '0' => 'tr_meliscommerce_client_Contact_status_inactive',
-                                        ),
-                                        'disable_inarray_validator' => true,
-                                    ),
-                                    'attributes' => array(
-                                        'id' => 'cper_status',
-                                        'value' => '',
-                                    ),
-                                ),
+                                    'type' => 'hidden',
+                                )
                             ),
                             array(
                                 'spec' => array(
@@ -178,10 +165,14 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_password',
+                                        'label_options' => array(
+                                            'disable_html_escape' => true,
+                                        )
                                     ),
                                     'attributes' => array(
                                         'id' => 'cper_password',
-                                        'Type' => 'password'
+                                        'Type' => 'password',
+                                        'autocomplete' => 'off'
                                     )
                                 )
                             ),
@@ -191,10 +182,14 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_confirm_password',
+                                        'label_options' => array(
+                                            'disable_html_escape' => true,
+                                        )
                                     ),
                                     'attributes' => array(
                                         'id' => 'cper_confirm_password',
-                                        'Type' => 'password'
+                                        'Type' => 'password',
+                                        'autocomplete' => 'off'
                                     )
                                 )
                             ),
@@ -248,24 +243,6 @@ return array(
                             ),
                         ),
                         'input_filter' => array(
-                            'cper_status' => array(
-                                'name'     => 'cper_status',
-                                'required' => true,
-                                'validators' => array(
-                                    array(
-                                        'name' => 'NotEmpty',
-                                        'options' => array(
-                                            'messages' => array(
-                                                \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_client_Contact_input_empty',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
                             'cper_civility' => array(
                                 'name'     => 'cper_civility',
                                 'required' => false,
@@ -722,11 +699,9 @@ return array(
                             array(
                                 'spec' => array(
                                     'name' => 'cadd_country',
-                                    'type' => 'EcomCountriesNoAllCountriesSelect',
+                                    'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_address_country',
-                                        'empty_option' => 'tr_meliscommerce_clients_common_label_choose',
-                                        'disable_inarray_validator' => true,
                                     ),
                                     'attributes' => array(
                                         'id' => 'cadd_country',
@@ -1078,6 +1053,18 @@ return array(
                             'cadd_country' => array(
                                 'name'     => 'cadd_country',
                                 'required' => false,
+                                'validators' => array(
+                                    array(
+                                        'name'    => 'StringLength',
+                                        'options' => array(
+                                            'encoding' => 'UTF-8',
+                                            'max'      => 50,
+                                            'messages' => array(
+                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_50',
+                                            ),
+                                        ),
+                                    )
+                                ),
                                 'filters'  => array(
                                     array('name' => 'StripTags'),
                                     array('name' => 'StringTrim'),
@@ -1202,6 +1189,18 @@ return array(
                                     )
                                 )
                             ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'ccomp_group',
+                                    'type' => 'MelisText',
+                                    'options' => array(
+                                        'label' => 'tr_meliscommerce_client_Company_ccomp_group'
+                                    ),
+                                    'attributes' => array(
+                                        'id' => 'ccomp_group',
+                                    )
+                                )
+                            ),
                         ),
                         'input_filter' => array(
                             'ccomp_name' => array(
@@ -1255,6 +1254,26 @@ return array(
                                             'max'      => 150,
                                             'messages' => array(
                                                 \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_150',
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                                'filters'  => array(
+                                    array('name' => 'StripTags'),
+                                    array('name' => 'StringTrim'),
+                                ),
+                            ),
+                            'ccomp_group' => array(
+                                'name'     => 'ccomp_group',
+                                'required' => false,
+                                'validators' => array(
+                                    array(
+                                        'name'    => 'StringLength',
+                                        'options' => array(
+                                            'encoding' => 'UTF-8',
+                                            'max'      => 100,
+                                            'messages' => array(
+                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_100',
                                             ),
                                         ),
                                     ),

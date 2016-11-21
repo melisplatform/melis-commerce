@@ -12,7 +12,7 @@
         'tr_meliscommerce_address_building' => 'Building',
         'tr_meliscommerce_address_company' => 'Company',
         'tr_meliscommerce_address_street' => 'Street name',
-        'tr_meliscommerce_address_zip' => 'Postal Code',
+        'tr_meliscommerce_address_zip' => 'Postal code',
         'tr_meliscommerce_address_city' => 'City',
         'tr_meliscommerce_address_state' => 'State',
         'tr_meliscommerce_address_country' => 'Country',

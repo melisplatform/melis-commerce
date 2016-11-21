@@ -96,7 +96,7 @@ return array(
                             ),
                             'doc_name' => array(
                                 'name' => 'doc_name',
-                                'required' => true,
+                                'required' => false,
                                 'validators' => array(
                                     array(
                                         'name' => 'NotEmpty',
@@ -257,7 +257,7 @@ return array(
                             ),
                             'doc_name' => array(
                                 'name' => 'doc_name',
-                                'required' => true,
+                                'required' => false,
                                 'validators' => array(
                                     array(
                                         'name' => 'NotEmpty',
@@ -389,7 +389,7 @@ return array(
                             ),
                             'dtype_name' => array(
                                 'name'     => 'dtype_name',
-                                'required' => true,
+                                'required' => false,
                                 'validators' => array(
                                     array(
                                         'name' => 'NotEmpty',

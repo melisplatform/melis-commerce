@@ -42,7 +42,7 @@ $(function(){
 	body.on("click", ".btnEditComLang", function() {
 		melisCoreTool.pending(".btnEditComLang");
 		var id = $(this).parent().parent().attr('id');
-		melisHelper.createModal(zoneId, melisKey, false, {langId: id},  modalUrl, function() {
+		melisHelper.createModal(zoneId, melisKey, false, {langId: id, saveType : "edit"},  modalUrl, function() {
 			melisCoreTool.done(".btnEditComLang");
 		});
 		
@@ -51,14 +51,30 @@ $(function(){
 	
 	body.on("click", "#btnComAddLang", function() {
 		melisCoreTool.pending("#btnComAddLang");
-		melisHelper.createModal(zoneId, melisKey, false, {langId: null},  modalUrl, function() {
+		melisHelper.createModal(zoneId, melisKey, false, {langId: null, saveType : "new"},  modalUrl, function() {
 			melisCoreTool.done("#btnComAddLang");
 		});
 		
 	});
 	
 	body.on("click", "#btnComSaveLang", function() {
-		var dataString = $("form#ecomlanguageform").serialize();
+		var dataString = $("form#ecomlanguageform").serializeArray();
+		saveType = $("form#ecomlanguageform").data("savetype");
+		var status = $("#elang_status").parent().hasClass("switch-on");
+		var saveStatus = 0;
+		if(status) {
+			saveStatus = 1;
+		}
+		dataString.push({
+			name : 'elang_status',
+			value: saveStatus
+		});
+		dataString.push({
+			name : 'saveType',
+			value: saveType
+		});
+
+		dataString = $.param(dataString);
 		melisCoreTool.pending("#btnComSaveLang");
 		melisCommerce.postSave('/melis/MelisCommerce/MelisComLanguage/save', dataString, function(data) {
 			if(data.success) {

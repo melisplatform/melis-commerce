@@ -11,4 +11,4 @@
     
     $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
 ?>
-<button class="btn btn-success float-right addCategory" <?php echo $id.' '.$data_melisKey; ?> ><i class="fa fa-plus"></i> <?php echo $this->translate($name)?></button>
+<button class="btn btn-success addCategory" disabled title="<?php echo $this->translate('tr_meliscommerce_categories_category_no_selected_catalog_category')?>" <?php echo $id.' '.$data_melisKey; ?> ><i class="fa fa-plus"></i> <?php echo $this->translate($name)?></button>

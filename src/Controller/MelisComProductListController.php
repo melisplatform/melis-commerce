@@ -68,7 +68,7 @@ class MelisComProductListController extends AbstractActionController
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->tableColumns = $columns;
-        $view->getToolDataTableConfig = $this->getTool()->getDataTableConfiguration('#tableProductList', true);
+        $view->getToolDataTableConfig = $this->getTool()->getDataTableConfiguration('#tableProductList', true, false, array('order' => '[[ 0, "desc" ]]'));
         
         return $view;
     }
@@ -180,8 +180,8 @@ class MelisComProductListController extends AbstractActionController
         
             $search = $this->getRequest()->getPost('search');
             $search = $search['value'];
-            
-            $prodData = $prodSvc->getProductList($this->getTool()->getCurrentLocaleID(), null, null, null, $start, $length, $search, $order[0]['dir']);
+
+            $prodData = $prodSvc->getProductList($this->getTool()->getCurrentLocaleID(), null, null, null, $start, $length, $search, $order[0]['dir'], $selColOrder);
             $checkBox = '<div class="checkbox checkbox-single margin-none" data-product-id="%s">
 							<label class="checkbox-custom">
 								<i class="fa fa-fw fa-square-o"></i>
@@ -203,8 +203,8 @@ class MelisComProductListController extends AbstractActionController
                 $tableData[$ctr]['DT_RowData'] = array('productname', $prodText);
                 $tableData[$ctr]['DT_RowId'] = $prod->getProduct()->prd_id;
                 $tableData[$ctr]['product_table_checkbox'] = sprintf($checkBox, $prod->getProduct()->prd_id);
-                $tableData[$ctr]['product_id'] = '<span data-productname="'.$prodText.'">'.$prod->getProduct()->prd_id . '</span>';
-                $tableData[$ctr]['product_status'] = $prod->getProduct()->prd_status ? $prodActive : $prodInactive;
+                $tableData[$ctr]['prd_id'] = '<span data-productname="'.$prodText.'">'.$prod->getProduct()->prd_id . '</span>';
+                $tableData[$ctr]['prd_status'] = $prod->getProduct()->prd_status ? $prodActive : $prodInactive;
                 $tableData[$ctr]['product_image'] = sprintf($prodImage, $docSvc->getDocDefaultImageFilePath('product', $prod->getProduct()->prd_id));
 
                 
@@ -285,9 +285,9 @@ class MelisComProductListController extends AbstractActionController
                 'style' => 'width:10px;',
             ),
             ' ' => array(
-                'class' => 'center',
+				'class' => 'center',
                 //'rowspan' => '2',
-                'style' => 'width:10px;',
+                'style' => 'width:50px;',
             ),
             $this->getTranslation('tr_meliscommerce_product_tooltip_col_image') => array(
                 'class' => 'center',
@@ -295,27 +295,27 @@ class MelisComProductListController extends AbstractActionController
                 'style' => 'width:100px;',
             ),
             $this->getTranslation('tr_meliscommerce_product_tooltip_col_sku') => array(
-                'class' => 'center',
+                'class' => 'text-left',
                 //'rowspan' => '2',
             ),
             
             $this->getTranslation('tr_meliscommerce_product_tooltip_col_attributes') => array(
-                'class' => 'center',
+                'class' => 'text-left',
                 //'rowspan' => '2',
             ),
 
             $this->getTranslation('tr_meliscommerce_product_tooltip_col_country') => array(
-                'class' => 'center',
+                'class' => 'text-left',
                 //'rowspan' => '2',
             ),
             $this->getTranslation('tr_meliscommerce_product_tooltip_col_price') => array(
-                'class' => 'center',
+                'class' => 'text-right',
                 //'rowspan' => '2',
                 'style' => 'width:100px;',
             ),
             
             $this->getTranslation('tr_meliscommerce_product_tooltip_col_stocks') => array(
-                'class' => 'center',
+                'class' => 'text-right',
                 //'rowspan' => '2',
                 'style' => 'width:20px;',
             ),
@@ -331,134 +331,140 @@ class MelisComProductListController extends AbstractActionController
 
         if($this->getRequest()->isPost()) {
             $productId = (int) $this->getRequest()->getPost('productId');
-            $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
-            $docSvc = $this->getServiceLocator()->get('MelisComDocumentService');
-            $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
-            $variantsData = $variantSvc->getVariantListByProductId($productId, $this->getTool()->getCurrentLocaleID());
-            $viewHelperManager = $this->getServiceLocator()->get('ViewHelperManager');
-            $toolTipTable = $viewHelperManager->get('ToolTipTable');
+            $variantId = $this->getRequest()->getPost('variantId');
+            
+           // $productId = (int) $this->params()->fromQuery('productId');
+            $variants = $this->getProductVariantsData($productId);
             $mainVarDom = '<span class="text-success"><i class="fa fa-fw fa-star"></i></span>';
             $imageDom      = '<img src="%s" width="60" class="img-rounded"/>';
             $activeDom     = '<span class="text-success"><i class="fa fa-fw fa-circle"></i></span>';
             $inactiveDom   = '<span class="text-danger"><i class="fa fa-fw fa-circle"></i></span>';
             $attributesDom = '<span class="btn btn-default cell-val-table" style="border-radius: 4px;color: #7D7B7B;">%s</span>';
-            $dataExtracted = array();
-            
-            $idx = 0;
-            $countries = '';
-            $prices = '';
-            $quantities = '';
-            $status = '';
-            foreach($variantsData as $variant) {
-                $varData = $variant->getVariant();
-                
-                // Countries, Price, Stocks, Quantity
-                $countriesValues = '';
-                $countriesData = '';
-                $quantity = 0;
-                $price = 0;
+            $viewHelperManager = $this->getServiceLocator()->get('ViewHelperManager');
+            $table = $viewHelperManager->get('ToolTipTable');
+            $langId = $this->getTool()->getCurrentLocaleID();
 
-               
-                $data = '';
-                $data .= $toolTipTable->getBody();
-                $data .= $toolTipTable->openTableRow();
-                $data .= $toolTipTable->setRowData($varData->var_id, array('class' => 'center'));
-                
-                if($varData->var_main_variant) {
-                    $data .= $toolTipTable->setRowData($mainVarDom, array('class' => 'center'));
-                }
-                else {
-                    $data .= $toolTipTable->setRowData('', array('class' => 'center'));
-                }
-                
+            if($variants) {
+                $sContent = '';
+                foreach($variants as $variant) {
+                    
+                    $sContent = '';
+                    // TBODY START
+                    $sContent .= $table->getBody();
+                    $sContent .= $table->openTableRow();
+                    
+                    // ID
+                    $sContent .= $table->setRowData($variant['id'], array('class' => 'center'));
+                    
 
-                
-                if($varData->var_status) {
-                    $status = $activeDom;
-                }
-                else {
-                    $status = $inactiveDom;
-                }
-                
-                $varImgData = sprintf($imageDom, $docSvc->getDocDefaultImageFilePath('variant', $varData->var_id));
-                $data .= $toolTipTable->setRowData($varImgData.'   ' . $status, array('class' => 'center'));
-                
-                $data .= $toolTipTable->setRowData('<h4 class="text-danger">'.$varData->var_sku.'</h4>', array('class' => 'center', 'style' => 'font-size: 14px'));
-                
-                $attributeValues = '';
-                foreach($variant->getAttributeValues() as $attributes) {
-                    foreach($attributes->atval_trans as $text) {
-                        $attributeValues .= sprintf($attributesDom, $text->avt_v_varchar);
+                    
+                    // STATUS
+                    $status = ($variant['isActive']) ? $activeDom : $inactiveDom;
+                    
+                     
+                    // MAIN VAR INDICATOR
+                    $mainDom = ($variant['isMain']) ? $mainVarDom : ' ';
+                    $sContent .= $table->setRowData($status . ' ' . $mainDom, array('class' => 'center'));
+                    
+                    // IMAGE
+                    $image = sprintf($imageDom, $variant['image']);
+                    
+                    $sContent .= $table->setRowData($image, array('class' => 'center'));
+                    
+
+                    // SKu
+                    $sku = '<h4 class="text-danger">'.$variant['sku'].'</h4>';
+                    $sContent .= $table->setRowData($sku, array('class' => 'text-left', 'style' => 'font-size: 14px'));
+                    
+                    // ATTRIBUTES
+                    $attributes = $table->setRowData('', array('class' => 'innerLR text-left'));
+                    if($variant['attributes']) {
+                        $tmpAttr = '';
+                        foreach($variant['attributes'] as $attribute) {
+                            $tmpAttr .= sprintf($attributesDom, $attribute);
+                        }
+                        $attributes = $table->setRowData($tmpAttr, array('class' => 'innerLR text-left'));
                     }
-                }
-                
-                $data .= $toolTipTable->setRowData($attributeValues, array('class' => 'innerLR center'));
-                
-                
-                // General Data
-                $generalPricesData = $variantSvc->getVariantPricesById($varData->var_id);
-                $generalVariantsData = $variantSvc->getVariantStocksById($varData->var_id);
+                    $sContent .= $attributes;
+                    
+                    
+                    // Data Per Country
+                    $sDataPerCountry = $table->setRowData('', array('class' => 'text-left')) . $table->setRowData('', array('class' => 'text-right')) . $table->setRowData('', array('class' => 'text-right'));
+                    if($variant['dataPerCountry']) {
+                        $country = '';
+                        $price = '';
+                        $stock = '';
+                        $priceNet = 0;
+                        $stockQty = 0;
+                        $genPrice = null;
+                        $warningDom = '';
+                        $endRedLabel = '';
+                        foreach($variant['dataPerCountry'] as $countryKey => $value) {
+                            if($countryKey) {
+                               if($value['price']) {
+                                   $priceNet = $value['price']['price_net'];
+                               }
+                               else {
+                                   $priceNet = '';
+                               }
+                               
+                               if($value['stock']) {
+                                   if($value['stock']['stock_quantity'] === null) {
+                                       $stockQty = null;
+                                   }
+                                   elseif($value['stock']['stock_quantity'] === 0) {
+                                       $stockQty = 0;
+                                   }
+                                   else {
+                                       $stockQty = $value['stock']['stock_quantity'];
+                                   }
+                                   
+                               }
+                               else {
+                                   $stockQty = null;
+                               }
+                               
+                               $isAllOk = false;
+                               $priceNetValidator = strpos($priceNet, ',') !== false ? explode(',', $priceNet)[0] : null;
+                               // if both price and stock is not 0, then display
+                                
+                               if(is_numeric($stockQty)) {
+                                   $isAllOk = true;
+                               }
 
-                foreach($generalPricesData as $genPriceData) {
-                    if($genPriceData) {
-                        if($genPriceData->price_country_id == 0 || is_null($genPriceData->price_country_id)) {
-                            
-                
-                            $price = $genPriceData->price_net ? $genPriceData->price_net : 0;
-                            foreach($generalVariantsData as $genVariantsData) {
-                                if($genVariantsData) {
-                                    if($genVariantsData->ctry_id == 0 || is_null($genVariantsData->ctry_id)) {
-                                        $quantity = $genVariantsData->stock_quantity ? $genVariantsData->stock_quantity : 0;
-                                    }
-                                }
-                            }
-                            if($price && $quantity) {
-                                $countries .= $this->getTool()->getTranslation('tr_meliscommerce_general_text').'<br/>';
-                                $prices .= $price.'<br/>';
-                                $quantities .= $quantity.'<br/>';
+                               
+                               if($isAllOk) {
+                                   
+                                   // label whole row with red if stock is set and it is zero
+                                   if((int) $stockQty === 0) {
+                                       $warningDom = '<i class="fa fa-warning" style="color:#a94442;font-size:12px;"></i> ';
+                                   }else {
+                                       $warningDom = '';
+                                   }
+                                   
+                                   $price .= $priceNet .'<br/>';
+                                   $country .= $countryKey  .'<br/>';
+                                   $stock .= $warningDom.$stockQty .'<br/>';
+                               }
+
                             }
                         }
+                        $sDataPerCountry = $table->setRowData($country, array('class' => 'text-left')) . $table->setRowData($price, array('class' => 'text-right')) . $table->setRowData($stock, array('class' => 'text-right'));
                     }
-                }
-                
-                // end general data
-                
-                // Data per Country
-                foreach($countryTable->fetchAll() as $ctry) {
-                    $priceData = $variantSvc->getVariantPricesById($varData->var_id, $ctry->ctry_id);
-                    if($priceData) {
-                        $priceData = $priceData[0];
-                        $price = $priceData->price_net ? $priceData->price_net : 0;
-                    }
-                
-                    $stockData = $variantSvc->getVariantStocksById($varData->var_id, $ctry->ctry_id);
-                    if($stockData) {
-                        $stockData = $stockData[0];
-                        $quantity = $stockData->stock_quantity ? $stockData->stock_quantity : 0;
-                    }
-                
-                
-                    if($price && $quantity) {
-                        $countries .= $ctry->ctry_name.'<br/>';
-                        $prices .= $price.'<br/>';
-                        $quantities .= $quantity.'<br/>';
-                    }
-                }
-                // end data per country
-                
-                $data .= $toolTipTable->setRowData($countries, array('class' => 'center')) . $toolTipTable->setRowData($prices, array('class' => 'center')) . $toolTipTable->setRowData($quantities, array('class' => 'center'));
-                
-                
-                $data .= $toolTipTable->closeTableRow();
-                
+                    
+                    $sContent .= $sDataPerCountry;
+                    
 
-                
-                $content[] = $data;
+                    $content[] = $sContent;
+                    if($variantId == $variant['id']){
+                      $vcontent[] = $sContent;  
+                    }
+                }
             }
             
-            foreach($dataExtracted as $key => $value) {
-
-            }
+        }
+        if(isset($vcontent)){
+           $content = $vcontent;
         }
        return new JsonModel(array(
            'content' => $content
@@ -466,6 +472,152 @@ class MelisComProductListController extends AbstractActionController
     }
 
     
+    public function getProductVariantsData($productId) 
+    {
+        $countriesTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+        $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
+        $countries =  $countriesTable->getCountries()->toArray();
+        $langId = $this->getTool()->getCurrentLocaleID();
+        $variantsData = $variantSvc->getVariantListByProductId($productId, $langId);
+        $docSvc = $this->getServiceLocator()->get('MelisComDocumentService');
+        $productSvc = $this->getServiceLocator()->get('MelisComProductService');
+        
+        $dataPrices = array();
+        $variants = array();
+        
+        $varCtr = 0;
+        foreach($variantsData as $variant) {
+            $varData = $variant->getVariant();
+            $varAttr = $variant->getAttributeValues();
+            $attributes = array();
+            $dataPerCountry = array();
+            $dataPricesAndStock = array();
+            // attributes
+            foreach($varAttr as $attr) {
+        
+                $valCol = 'avt_v_'.$attr->atype_column_value;
+                $value = '';
+                //check for attribute value translations
+                $foundTrans = false;
+                foreach($attr->atval_trans as $valTrans){
+                    if($valTrans->avt_lang_id == $langId){
+                        $foundTrans = true;
+                        $value = $valTrans->$valCol;
+                    }
+                }
+        
+                //if no corresponding translation get the first available trans
+                if(!$foundTrans){
+                    foreach($attr->atval_trans as $valTrans){
+                        $foundTrans = true;
+                        $value = $valTrans->$valCol;
+                        break;
+                    }
+                }
+        
+                //use the attribute value reference as name if no translation
+                if(!$foundTrans){
+                    $value = $attr->atval_reference;
+                }
+        
+                // edit value before rendering if necessary
+                switch($valCol){
+                    case 'avt_v_datetime': $value = $this->getTool()->dateFormatLocale($value); break;
+                    case 'avt_v_text':
+                    case 'avt_v_varchar' : $value = $this->getTool()->limitedText($value,50); break;
+                }
+                if($value) {
+                    $attributes[] = $value;
+                }
+            }
+        
+            // General
+            $generalPricesData = $variantSvc->getVariantPricesById($varData->var_id);
+            $generalStockData  = $variantSvc->getVariantStocksById($varData->var_id);
+            $tmpData = array();
+        
+            $dataPricesAndStock[$this->getTool()->getTranslation('tr_meliscommerce_general_text')]['price'] = array();
+            $dataPricesAndStock[$this->getTool()->getTranslation('tr_meliscommerce_general_text')]['stock'] = array();
+            $genPrice = null;
+            foreach($generalPricesData as $genPriceData) {
+                if(!$genPriceData->price_country_id) {
+                    $genPriceData->price_net = $productSvc->formatPrice($genPriceData->price_net);
+                    $genPrice = $genPriceData->price_net;
+                    $dataPricesAndStock[$this->getTool()->getTranslation('tr_meliscommerce_general_text')]['price'] = $this->getOnlyKeyOnArray('price_net', $genPriceData);
+                }
+            }
+            foreach($generalStockData as $genStockData) {
+                if(!$genStockData->stock_country_id) {
+                    $dataPricesAndStock[$this->getTool()->getTranslation('tr_meliscommerce_general_text')]['stock'] = $this->getOnlyKeyOnArray('stock_quantity', $genStockData);
+                }
+            }
+            
+            // Countries
+            $ctryCtr = 0;
+            foreach($countries as $country) {
+                $dataPricesAndStock[$country['ctry_name']]['price']['price_net'] = $genPrice;
+                $dataPricesAndStock[$country['ctry_name']]['stock']['stock_quantity'] = null;
+                foreach($variantSvc->getVariantPricesById($varData->var_id, $country['ctry_id']) as $vData) {
+                    if($vData->price_net) {
+                        $vData->price_net = $productSvc->formatPrice($vData->price_net);
+                        $dataPricesAndStock[$country['ctry_name']]['price'] = $this->getOnlyKeyOnArray('price_net', $vData);
+                    }
+                }
+                foreach($variantSvc->getVariantStocksById($varData->var_id, $country['ctry_id']) as $sData) {
+                    if(is_numeric($sData->stock_quantity)) {
+                        $dataPricesAndStock[$country['ctry_name']]['stock'] = $this->getOnlyKeyOnArray('stock_quantity', $sData);
+                    }
+                    
+                }
+                $ctryCtr++;
+                 
+            }
+            $dataPerCountry = $dataPricesAndStock;
+            $image = $docSvc->getDocDefaultImageFilePath('variant', $varData->var_id);
+            $variants[$varCtr] = array(
+                'id' =>   $varData->var_id,
+                'isMain' => (bool) $varData->var_main_variant,
+                'isActive' => (bool) $varData->var_status,
+                'image' => $image,
+                'sku' => $varData->var_sku,
+                'attributes' => $attributes,
+                'dataPerCountry' => $dataPerCountry,
+        
+            );
+            $varCtr++;
+        }
+        
+        return $variants;
+    }
+
+    private function getOnlyKeyOnArray($keyOnArray, $haystack)
+    {
+        $newArray = array();
+        if($haystack) {
+            foreach($haystack as $key => $value) {
+                if($key == $keyOnArray) {
+                    $newArray[$key] = $value;
+                }
+            }
+        }
+        else {
+            $newArray[$keyOnArray] = null;
+        }
+
+        
+        return $newArray;
+    }
     
+    public function testAction()
+    {
+        $textTable = $this->getServiceLocator()->get('MelisComProductService');
+        $data = $textTable->getProductTextByCode(13, 'TITLE');
+        
+        print '<pre>';
+        print_r($data);
+        print '</pre>';
+    
+        die;
+    }
 
 }

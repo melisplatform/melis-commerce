@@ -7,62 +7,19 @@
 ?>
 <div <?php echo $id.' '.$data_melisKey; ?>>
 	<div class="row">
-        <div class="me-hl col-xs-12 col-md-6">
-            <div class="red-box-panel">
-                <h3>Billing Address</h3>
-                <div class="red-box-panel-list">
-                    <?php
-                    	$form = $this->meliscommerce_order_checkout_billing_address_form;
-                    	$form->prepare();
-                    	echo $this->form()->openTag($form); 
-                    	echo $this->melisFieldCollection($form);
-                    	echo $this->form()->closeTag(); 
-                    ?>
-                    <div class="form-group">
-                        Or</br>
-                        <a href="#" class="btn btn-success create-new-billing-address"><i class="fa fa-plus"></i> Create New Billing Address</a>
-                    </div>
-                    <?php
-                    	$form = $this->meliscommerce_order_checkout_address_form;
-                    	$form->prepare();
-                    	echo $this->form()->openTag($form); 
-                    	echo $this->melisFieldCollection($form);
-                    	echo $this->form()->closeTag(); 
-                    ?>
-                </div>
-            </div>
-        </div>
-        <div class="me-hl col-xs-12 col-md-6">
-            <div class="red-box-panel">
-                <h3>Delivery Address</h3>
-                <div class="red-box-panel-list">
-                    <?php
-                    	$form = $this->meliscommerce_order_checkout_delivery_address_form;
-                    	$form->prepare();
-                    	echo $this->form()->openTag($form); 
-                    	echo $this->melisFieldCollection($form);
-                    	echo $this->form()->closeTag(); 
-                    ?>
-                    <div class="form-group">
-                        Or</br>
-                        <a href="#" class="btn btn-success create-new-delivery-address"> Create New Delivery Address <i class="fa fa-plus"></i></a>
-                    </div>
-                    <?php
-                    	$form = $this->meliscommerce_order_checkout_address_form;
-                    	$form->prepare();
-                    	echo $this->form()->openTag($form); 
-                    	echo $this->melisFieldCollection($form);
-                    	echo $this->form()->closeTag(); 
-                    ?>
-                </div>
-            </div>
-        </div>
+        <?php 
+        	if(!empty($this->zoneconfig['interface'])) {
+        	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+        	        echo $this->$keyConfig;
+        	    }
+        	}
+        ?>
     </div>
     <br>
     <div class="row bottom-bottons">
         <div class="me-hl col-xs-12 col-md-12">
-            <a href="#id_meliscommerce_order_checkout_choose_client_step" data-toggle="tab" class="btn btn-success prev-step"><i class="fa fa-arrow-left"></i> Back to Clients </a>
-            <a href="#id_meliscommerce_order_checkout_summary_step" data-toggle="tab" class="btn btn-success next-step float-right">Proceed to Summary <i class="fa fa-arrow-right"></i></a>
+            <button class="btn btn-success orderCheckoutPrevStep" data-tabid="#id_meliscommerce_order_checkout_choose_contact_step_nav"><i class="fa fa-arrow-left"></i> <?php echo $this->translate('tr_meliscommerce_order_checkout_common_prev')?> </button>
+            <button class="btn btn-success pull-right orderCheckoutValidateAddresses orderCheckoutNextStep" data-tabid="#id_meliscommerce_order_checkout_summary_step_nav"><?php echo $this->translate('tr_meliscommerce_order_checkout_common_next')?> <i class="fa fa-arrow-right"></i></button>
         </div>
     </div>
 </div>

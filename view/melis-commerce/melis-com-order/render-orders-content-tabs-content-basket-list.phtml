@@ -26,6 +26,13 @@
 	<script type="text/javascript">			
 		$(document).ready(function() {
 			<?php echo $this->getToolDataTableConfig; ?>
+			$(document).on('column-sizing.dt','#<?php echo $this->orderId;?>_tableOrderBasketList', function(e, settings) {					
+				if( melisCore.screenSize >= 768){
+					$('#<?php echo $this->orderId;?>_tableOrderBasketList').find("th:nth-child(8)").attr("style", "").css({"width" : "1px"}).css({"padding" : "0"});
+				} else {
+					$('#<?php echo $this->orderId;?>_tableOrderBasketList').find("th:nth-child(8)").css({"width" : "1px"});
+				}
+			});
 		});
 	</script>
 </div>	

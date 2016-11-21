@@ -12,10 +12,30 @@ $name = '';
     if (!empty($this->zoneconfig['conf']['name'])){
         $name = $this->zoneconfig['conf']['name'];
     }
+$productId = $this->productId;
 ?>
 <div class="ui-widget" <?= $id; ?> data-melisKey="<?= $this->melisKey; ?>">
 	
-	<div class="form-group attr-input-dropdown">
-		<input type="text" style="width: 180px;" placeholder="<?= $this->translate('tr_meliscommerce_products_main_tab_attributes_content_label');?>" class="form-control awesomplete dropdown-input<?= $this->productId; ?>" name="prodAttrib" id="<?= $this->productId; ?>_prodAttribInput"/><button class="btn dropdown-btn" id="attrButton<?= $this->productId; ?>"type="button"><i class="caret"></i></button>&nbsp;
-	</div><br/>
+
+    <select placeholder="<?php echo $this->translate('tr_meliscommerce_products_main_tab_attributes_content_label');?>"style="display:none" class="form-control dropdown-input<?= $this->productId; ?>" name="prodAttrib" id="<?= $this->productId; ?>_prodAttribInput">
+    <option value=""><?php echo $this->translate('tr_meliscommerce_products_main_tab_attributes_content_label'); ?></option>
+    <?php
+    foreach($this->attributes as $attribute) {
+        echo '<option value="'.$attribute['id'].'">'.$attribute['text'].'</option>';
+    }
+    ?>
+
+    </select>
+    <div class="loadAttrCont"><?php echo $this->translate('tr_meliscommerce_products_attributes_lists_loading'); ?></div>
+
+    <script>
+        $(function() {
+            var attributeLists = $('select.dropdown-input<?php echo $productId; ?>');
+            $('div.loadAttrCont').hide();
+            attributeLists.fadeIn();
+            attributeLists.select2({
+                placeholder: '<?php echo $this->translate('tr_meliscommerce_products_main_tab_attributes_content_label'); ?>',
+            });
+        });
+    </script>
 </div>	

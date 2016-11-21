@@ -40,7 +40,7 @@
                 		<?php 
                         	$form = $this->meliscommerce_seo_form;
                         	$form->setData($this->formDefaultValues);
-                        	$form->setAttribute('class', $formType.'_'.$this->typeId.'_seo_form');
+                        	$form->setAttribute('class', $formType.'_'.$this->typeId.'_seo_form seoForm');
                         	$form->setAttribute('data-langid', $val['elang_id']);
                         	$form->get('eseo_lang_id')->setValue($val['elang_id']);
                         	$form->add(array(

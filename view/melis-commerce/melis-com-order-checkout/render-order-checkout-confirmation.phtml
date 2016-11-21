@@ -5,28 +5,28 @@
     }
     $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
 ?>
-<div class="tab-pane" <?php echo $id. ' '.$data_melisKey?>>				
+<div class="tab-pane <?php echo ($this->activateTab) ? 'active' : '' ?>" <?php echo $id. ' '.$data_melisKey?> style="position: relative">				
 	<div class="row">
         <div class="me-hl col-xs-12 col-md-9">
-            <h1 class="content-heading">Confirmation</h1>
-        </div>
-        <div class="me-hl col-xs-12 col-md-3">
+            <h1 class="content-heading"><?php echo $this->translate('tr_meliscommerce_order_checkout_Confirmation')?></h1>
         </div>
     </div>
     <div class="row">
         <div class="me-hl col-xs-12 col-md-12">
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ultrices libero vel massa
-            egestas facilisis. Mauris convallis augue nec dolor dignissim vestibulum. Praesent imperdiet
-            elit posuere arcu posuere consectetur. Morbi dignissim eleifend nibh, eget tincidunt nibh
-            dignissim hendrerit. Cras iaculis congue lorem, eget gravida augue vehicula sed. Nam lorem
-            sem, consectetur ac tempus quis, consectetur ut lectus. In bibendum luctus pharetra. Morbi
-            lacinia sem sem. Phasellus quis tellus magna.</p>
+            <div class="alert alert-<?php echo $this->result['alert']?>" role="alert">
+            	<?php echo $this->result['message']?>
+            	<?php if ($this->result['alert'] == 'success'):?>
+            		<p><?php echo $this->result['refernce'] ?> </p>
+            	<?php endif;?>
+        	</div>
         </div>
     </div>
+    <?php if ($this->result['alert'] == 'info'):?>
     <br>
     <div class="row bottom-bottons">
         <div class="me-hl col-xs-12 col-md-12">
-            <a href="#id_meliscommerce_order_checkout_payment_step" data-toggle="tab" class="btn btn-success prev-step"><i class="fa fa-arrow-left"></i> Back to Payment </a>
+            <button class="btn btn-success orderCheckoutPrevStep" data-tabid="#id_meliscommerce_order_checkout_payment_step_nav"><i class="fa fa-arrow-left"></i> <?php echo $this->translate('tr_meliscommerce_order_checkout_confirmation_next_btn') ?> </button>
         </div>
     </div>
+    <?php endif;?>
 </div>

@@ -281,15 +281,67 @@ window.initImageDocuments = function() {
     });
 	filters = {};
 	
-	// ISOTOPE filter dropdown
-	$("body").on(custom_event, ".filter-key-values li a", function() {
+	// ISOTOPE filter dropdown 
+	/* Filter text change for Country */
+	$("body").on(custom_event, ".filter-div-country .filter-key-values li a", function() {
 		var value = $(this).data('text');
-		$(this).parents('.filter-dropdown').attr('data-value', value);
-		$(this).parents('.filter-key-values').prev().find('span.filter-key').text(value);
-		
+		$('.filter-div-country .filter-dropdown').attr('data-value', value);
+		$('.filter-div-country span.filter-key').text(value);		
+	});
+	/* Filter text change for File Type */
+	$("body").on(custom_event, ".filter-div-file-type .filter-key-values li a", function() {
+		var value = $(this).data('text');
+		$('.filter-div-file-type .filter-dropdown').attr('data-value', value);
+		$('.filter-div-file-type span.filter-key').text(value);		
 	});
 	
 	// Isotope sorting/filter
+    $('.documentImageFilter a').on(custom_event,function() {
+        $('.documentImageFilter .current').removeClass('current');
+        $(this).addClass('current');
+        
+        var $optionSet = $(this).parents('.documentImageFilter');
+        // change selected class
+        $optionSet.find('.selected').removeClass('selected');
+        $(this).addClass('selected');
+        var group = $optionSet.attr('data-filter-group');
+        filters[ group ] = $(this).attr('data-filter-value');
+        // convert object into array
+        var isoFilters = [];
+        for ( var prop in filters ) {
+          isoFilters.push( filters[ prop ] )
+        }
+        var selector = isoFilters.join('');
+
+        $grid = $container.isotope({
+            filter: selector,
+            animationOptions: {
+                duration: 750,
+                easing: 'linear',
+                queue: false
+            }
+        });
+        
+        // ISOTOPE Event after filter
+        $grid.on( 'arrangeComplete', function( event, filteredItems ) {
+        	// Deselect Images, to remove from the group of available/selected image uaing filter
+        	$('.viewImageDocument').attr('data-lightbox','deselected-images');
+        	$.each(filteredItems, function(){
+        		// updating data-lightbox attribute to make images available after filtering
+        		// making images as group and sliding images limited only to the group
+        		$selectedImgElem = $(this.element).find('.viewImageDocument');
+        		$selectedImgElem.attr('data-lightbox','selected-images');
+        	});
+        });
+        
+        // Lightbox Plugin Initialization after ISOTOPE Filter action
+        lightbox.option({
+    	    'resizeDuration': 200,
+    	    'wrapAround': true
+        });
+    });
+	
+	// Isotope sorting/filter Responsive
     $('.documentImageFilter a').on(custom_event,function() {
         $('.documentImageFilter .current').removeClass('current');
         $(this).addClass('current');

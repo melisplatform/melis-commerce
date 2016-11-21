@@ -399,7 +399,9 @@ class MelisComVariantController extends AbstractActionController
         $formElements = $this->serviceLocator->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $informationForm = $factory->createForm($appConfigForm);
-        
+        if(!empty($this->layout()->variantObj)){
+            $informationForm->setData((array)$this->layout()->variantObj->getVariant());
+        }
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->variantId = $this->getVariantId();
@@ -447,17 +449,88 @@ class MelisComVariantController extends AbstractActionController
         $varSvc = $this->getServiceLocator()->get('MelisComVariantService');
         $prodSvc = $this->getServiceLocator()->get('MelisComProductService');      
         $attrService = $this->getServiceLocator()->get('MelisComAttributeService');
-        $varAttrVals = $varSvc->getVariantAttributesValuesById($variantId, $this->getTool()->getCurrentLocaleID());
-
-        foreach($prodSvc->getProductAttributesById($productId, $this->getTool()->getCurrentLocaleID()) as $prodAttr){
-            $attr[] = $attrService->getAttributeById($prodAttr->patt_attribute_id, $this->getTool()->getCurrentLocaleID());
-            $p[] = $prodAttr;
+        $varAttrVals = $varSvc->getVariantAttributesValuesById($variantId);
+        $langId = $this->getTool()->getCurrentLocaleID();
+        $attributes = array();
+        foreach($prodSvc->getProductAttributesById($productId) as $prodAttr){
+            $tmp = $attrService->getAttributeById($prodAttr->patt_attribute_id);
+            $attribute = array();
+            $attrValues = array();
+           
+            //check for attribute translations
+            $foundTrans = false;
+            foreach($tmp->getAttribute()->attr_trans as $attrTrans){
+                if($attrTrans->atrans_lang_id == $langId){
+                    $foundTrans = true;
+                    $attribute['name'] = $attrTrans->atrans_name;                    
+                }
+            }
+            
+            //if no corresponding translatiion get the first available trans
+            if(!$foundTrans){
+                foreach($tmp->getAttribute()->attr_trans as $attrTrans){
+                    $foundTrans = true;
+                    $attribute['name'] = $attrTrans->atrans_name;
+                    break;
+                }
+            }
+            
+            //If no translation use the attribute reference as name
+            if(!$foundTrans){
+                $attribute['name'] = $tmp->getAttribute()->attr_reference;
+            }
+            
+            //set the attribute values
+            $attrVals = array();
+            foreach($tmp->getAttributeValues() as $attrVal){
+                // check for attribute translations
+                $value = '';
+                $id = $attrVal->atval_id;
+                $valCol = 'avt_v_'.$attrVal->atype_column_value;
+                
+                //check for attribute value translations
+                $foundTrans = false;
+                foreach($attrVal->atval_trans as $valTrans){
+                    if($valTrans->avt_lang_id == $langId){
+                        $foundTrans = true;
+                        $value = $valTrans->$valCol;
+                    }
+                }
+                
+                //if no corresponding tranlsation get the first available trans
+                if(!$foundTrans){
+                    foreach($attrVal->atval_trans as $valTrans){
+                        $foundTrans = true;
+                        $value = $valTrans->$valCol;
+                        break;
+                    }
+                }
+                
+                //use the attribute value reference as name if no translation
+                if(!$foundTrans){
+                    $value = $attrVal->atval_reference;
+                } 
+                
+                // edit value before rendering if necessary
+                switch($valCol){
+                    case 'avt_v_datetime': $value = $this->getTool()->dateFormatLocale($value); break;
+                    case 'avt_v_text':
+                    case 'avt_v_varchar' : $value = $this->getTool()->limitedText($value,50); break;
+                }                
+                
+                $attrVals[] = array('id' => $id, 'value' => $value);
+                
+            }
+            $attribute['values'] = $attrVals;
+            $attributes[] = $attribute;
         }
-
+        
+//         echo '<pre>'; print_r($varAttrVals); echo '</pre>'; die();
+        
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
-        $view->varAttrVals = $varAttrVals;
-        $view->attr = $attr;
+        $view->variantAttributes = $varAttrVals;
+        $view->attributes = $attributes;
         $view->melisKey = $melisKey;
         $view->variantId = $this->getVariantId();
         return $view;
@@ -677,7 +750,7 @@ class MelisComVariantController extends AbstractActionController
                     	</li>';
         
         $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
-        $countries = $countryTable->fetchAll();
+        $countries = $countryTable->getCountries();
         $ctyData[] = $ctyGeneral;
         foreach ($countries as $country){
             $ctyData[] = sprintf($ctyFormat, $this->getVariantId(), str_replace(' ', '', $country->ctry_name), $country->ctry_name, $country->ctry_name);
@@ -706,7 +779,7 @@ class MelisComVariantController extends AbstractActionController
         $stocksForm = $factory->createForm($appConfigForm);
         $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
         $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
-        $countries = $countryTable->fetchAll();
+        $countries = $countryTable->getCountries();
         $stockList = $variantSvc->getVariantStocksById($this->getVariantId());
         $c = 1;
         //set general stocks
@@ -880,6 +953,8 @@ class MelisComVariantController extends AbstractActionController
         $appConfigInformationForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_variants/meliscommerce_variants_information_form','meliscommerce_variants_information_form');
         $informationForm = $factory->createForm($appConfigInformationForm);
         
+        $variantTable = $this->getServiceLocator()->get('MelisEcomVariantTable');
+        
         $postValues = get_object_vars($this->getRequest()->getPost());
         
         if(!empty($postValues['variant'])){
@@ -889,6 +964,18 @@ class MelisComVariantController extends AbstractActionController
             }else{
                 $success = true;
             }
+            
+            //check if sku is unique
+            $exist = $variantTable->getEntryByField('var_sku', $postValues['variant'][0]['var_sku'])->current();
+            if($exist){
+                if($exist->var_id != $postValues['variant'][0]['var_id']){
+                    $success = false;
+                    $errorTitle   = $this->getTool()->getTranslation('tr_meliscommerce_variant_main_information_main_variant_input_label');
+                    $errorMessage = $this->getTool()->getTranslation('tr_meliscommerce_variants_page_duplicate_sku');
+                    $errors[] = array( $errorTitle => $errorMessage);
+                }
+            }
+            
             $data['variant'] = $informationForm->getData();
             $data['variant']['var_id'] = $postValues['variant'][0]['var_id'];
             $data['variant']['var_prd_id'] = (int)$postValues['variant'][0]['var_prd_id'];
@@ -987,6 +1074,13 @@ class MelisComVariantController extends AbstractActionController
     
     public function validateVariantSeoAction()
     {
+        $seoResult = array(
+            'success' => array(),
+            'errors' => array(),
+            'datas' => array(
+                'seo_data' => array(),
+            ),
+        );
         $postValues = get_object_vars($this->getRequest()->getPost());
         $melisComSeoService = $this->getServiceLocator()->get('MelisComSeoService');
         if(!empty($postValues['variant_seo'])){
@@ -1024,6 +1118,38 @@ class MelisComVariantController extends AbstractActionController
         );
         $this->getEventManager()->trigger('meliscommerce_variant_delete_end', $this, $response);
         return new JsonModel($response);
+    }
+    
+    /**
+     * This method deletes a stock entry if the country its affected to is deleted
+     * @return \Zend\View\Model\JsonModel
+     */
+    public function stockCountryDeletedAction()
+    {
+        $success = 0;
+        $errors = array();
+        $data = array();
+        $countryId = -1;
+         
+        $stockTable = $this->getServiceLocator()->get('MelisEcomVariantStockTable');
+        $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+    
+        $countryId = $this->getRequest()->getPost('id');
+    
+        //check if country is already deleted
+        $country = $countryTable->getEntryById($countryId);
+        if($country->count() === 0){
+            if(is_numeric($countryId)){
+                $stockTable->deleteByField('stock_country_id', $countryId);
+                $success = 1;
+            }
+        }
+        $results = array(
+            'success' => $success,
+            'errors' => $errors,
+            'datas' => $data,
+        );
+        return new JsonModel($results);
     }
     
     /**

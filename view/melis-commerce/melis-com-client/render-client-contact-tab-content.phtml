@@ -1,16 +1,20 @@
+<?php $form = $this->meliscommerce_clients_contact_form; ?>
 <div id="<?php echo $this->tabId ?>" class="<?php echo $this->tabId.'_client_contact' ?> tab-pane product-text-tab-content" style="border: 1px solid #eee; padding: 15px; margin-bottom: 20px">
 	<div class="me-heading bg-white border-bottom" style="margin-bottom: 15px">
 		<h3 class=""><i class="fa fa-user" aria-hidden="true"></i> <?php echo $this->translate('tr_meliscommerce_client_Contact_main_datas') ?></h3>
 	</div>
-	<div class="form-group me-action-button-cont">
-		<label for="cper_is_main_person" style="display: block"><?php echo $this->translate('tr_meliscommerce_client_Main_contact')?></label>
-        <div class="make-switch clientMainContact <?php echo $this->tabId.'-client-contact-main-switch'?>" data-clientid="<?php echo $this->clientId ?>" data-tabid="<?php echo $this->tabId ?>" data-label-icon="fa fa-arrows-h" data-on-label="<?php echo $this->translate('tr_meliscommerce_clients_common_label_yes')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_clients_common_label_no')?>">
-            <input type="checkbox" name="cper_is_main_person">
+	<div class="form-group">
+		<div class="main-contact-start">
+        	<i class="fa fa-star-o fa-2x text-danger clientMainContact"  data-clientid="<?php echo $this->clientId ?>" data-tabid="<?php echo $this->tabId ?>" aria-hidden="true" title="<?php echo $this->translate('tr_meliscommerce_client_Main_contact')?>"></i>
+        </div>
+        <div class="make-switch clientContactStatus <?php echo $this->tabId.'-client-contact-status'?>" data-clientid="<?php echo $this->clientId ?>" data-tabid="<?php echo $this->tabId ?>" data-text-label="<?php echo $this->translate('tr_meliscommerce_client_Contact_status')?>" data-on-label="<?php echo $this->translate('tr_meliscommerce_client_Contact_status_active')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_client_Contact_status_inactive')?>">
+            <input type="checkbox" name="cper_status" <?php echo ($form->get('cper_status')->getValue()) ? 'checked' : ''?>>
         </div>
 		<?php 
-    		$form = $this->meliscommerce_clients_contact_form;
     		$form->setAttribute('id', $this->tabId.'_contact_form');
     		$form->setAttribute('data-tabid', $this->tabId);
+    		$form->get('cper_password')->setLabel($form->get('cper_password')->getLabel().' <i class="fa fa-info-circle fa-lg" title="'.$this->translate('tr_meliscommerce_client_tooltip_password').'"></i>');
+    		$form->get('cper_confirm_password')->setLabel($form->get('cper_confirm_password')->getLabel().' <i class="fa fa-info-circle fa-lg" title="'.$this->translate('tr_meliscommerce_client_tooltip_password_2').'"></i>');
     		$form->prepare();
     		echo $this->form()->openTag($form);
     		echo $this->melisFieldCollection($form);
@@ -33,5 +37,5 @@
     </div>
 </div>
 <script>
-	$('.<?php echo $this->tabId.'-client-contact-main-switch'?>').bootstrapSwitch();
+	$('.<?php echo $this->tabId.'-client-contact-status'?>').bootstrapSwitch();
 </script>

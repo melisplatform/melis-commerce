@@ -445,13 +445,14 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
+        $attributes = $this->getAttributesExceptAttributesOnProductId($productId);
         $this->setProductVariables($productId);
         
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
-        $view->attributes = $this->getAttributes();
+        $view->attributes = $attributes;
         return $view;
     }
     
@@ -577,7 +578,7 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $ecomLangTable = $this->getServiceLocator()->get('MelisEcomLangTable');
-        $ecomLangData = $ecomLangTable->fetchAll();
+        $ecomLangData = $ecomLangTable->langOrderByName();
         $productId = (int) $this->params()->fromQuery('productId', '');
         
         $view = new ViewModel();
@@ -681,7 +682,7 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $ecomLangTable = $this->getServiceLocator()->get('MelisEcomLangTable');
-        $ecomLangData = $ecomLangTable->fetchAll();
+        $ecomLangData = $ecomLangTable->langOrderByName();
         
         $productId = (int) $this->params()->fromQuery('productId', '');
         $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
@@ -981,20 +982,40 @@ class MelisComProductController extends AbstractActionController
             $form->setData($postValues);
             
             if($form->isValid()) {
-            
-                $id = null;
-                $prodTextTypeData = $textTypeTable->getEntryByField('ptt_code', $postValues['ptt_code'])->current();
-                if($prodTextTypeData) {
-                    $id = $prodTextTypeData->ptt_id;
-                    $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_product_text_type_update_success');
-                }
-                else {
-                    $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_product_text_type_add_success');
-                }
-                
                 $data = $form->getData();
-                $textTypeTable->save($data, $id);
-                $success = 1;
+                $id = null;
+                $code = $data['ptt_code'];
+                $code = $this->getTool()->replaceAccents($code);
+                $code = strtoupper(trim(str_replace(' ', '', $code)));
+                $code = preg_replace('/\W/', '', $code);
+                $prodTextTypeData = $textTypeTable->getEntryByField('ptt_code', $code)->current();
+                $prodTextTypeNameData = $textTypeTable->getEntryByField('ptt_name', $data['ptt_name'])->current();
+                if($prodTextTypeData) {
+                    $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_product_text_type_add_fail');
+                    $errors = array(
+                        'ptt_code' => array(
+                            'invalidEntry' => $this->getTool()->getTranslation('tr_meliscommerce_product_text_type_add_duplicate'),
+                            'label' => $this->getTool()->getTranslation('tr_meliscommerce_product_text_type_code'),
+                        ),
+                    );
+                }
+
+                if($prodTextTypeNameData) {
+                    $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_product_text_type_add_fail');
+                    $errors = array(
+                        'ptt_name' => array(
+                            'invalidEntry' => $this->getTool()->getTranslation('tr_meliscommerce_product_text_type_add_name_duplicate'),
+                            'label' => $this->getTool()->getTranslation('tr_meliscommerce_product_text_type_name'),
+                        ),
+                    );
+                }
+
+                if(!$prodTextTypeData && !$prodTextTypeNameData) {
+                    $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_product_text_type_add_success');
+                    $data['ptt_code'] = $code;
+                    $textTypeTable->save($data);
+                    $success = 1;
+                }
             }
             else {
                 $errors = $form->getMessages();
@@ -1210,6 +1231,7 @@ class MelisComProductController extends AbstractActionController
         $prodTextTable = ($this->getServiceLocator()->get('MelisEcomProductTextTable'));
         $categorySvc = $this->getServiceLocator()->get('MelisComCategoryService');
         $melisEcomProductCategoryTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');
+        $priceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');
         
         if($this->getRequest()->isPost()) {
             
@@ -1265,14 +1287,17 @@ class MelisComProductController extends AbstractActionController
                     //}         
                 }
                 foreach($requestData['priceForm'] as $prodPrice){
-                    $countryId = (int) $prodPrice['price_country_id'];
-                    $currency = (int) $prodPrice['price_currency'];
-                    unset($prodPrice['price_country_id']);
-                    unset($prodPrice['price_currency']);
-                    $prodPrice = array_filter($prodPrice);
-                    if(!empty($prodPrice)){
-                        $prodPrice['price_country_id'] = $countryId;
-                        $prodPrice['price_currency'] = $currency;
+                   $tmp = $prodPrice;
+                   
+                    unset($tmp['price_country_id']);
+                    unset($tmp['price_currency']);
+                    unset($tmp['price_id']);
+                    unset($tmp['price_prd_id']);
+                    
+                    
+                    if(array_filter($tmp)){
+                        $prodPrice['price_country_id'] = (int) $prodPrice['price_country_id'];
+                        $prodPrice['price_currency'] = (int) $prodPrice['price_currency'];
                         $prodPriceForm->setData($prodPrice);
                         
                         if(!$prodPriceForm->isValid()){
@@ -1288,10 +1313,15 @@ class MelisComProductController extends AbstractActionController
                             }
                             array_push($errors, $prodPriceError);
                         }
-                        
-                        $priceClean[] = $prodPriceForm->getData();
+                        $prodPrice = array_map(function($item) { return is_numeric($item) ? $item: NULL; }, $prodPriceForm->getData());
+                        $priceClean[] = $prodPrice;
+                    }else{
+                        if(isset($prodPrice['price_id'])){
+                            $priceTable->deleteById($prodPrice['price_id']);
+                        }
                     }
                 }
+                
                 if(isset($requestData['attributes'])){
                     $attributes = $requestData['attributes'];
                 }
@@ -1359,15 +1389,43 @@ class MelisComProductController extends AbstractActionController
      */
     private function getAttributes()
     {
-        $attrTable = $this->getServiceLocator()->get('MelisComAttributeService');
-        $attrData = $attrTable->getAttributes($this->getTool()->getCurrentLocaleID());
+        $attrSvc = $this->getServiceLocator()->get('MelisComAttributeService');
+        $attrData = $attrSvc->getAttributes();
         $attributes = array();
-       
+        
         foreach($attrData as $attr) {
-            $attributes[] = array(
-                'id' => $attr->getId(),
-                'value' => $attr->getAttribute()->attr_trans[0]->atrans_name,
-            );
+            $attr = $attr->getAttribute();
+            if(!empty($attr->attr_trans)){
+                $found = false;
+                
+                foreach($attr->attr_trans as $trans){
+                    // check if there is a localized translation
+                    if($this->getTool()->getCurrentLocaleID() == $trans->atrans_lang_id){
+                        $found = true;
+                        $attributes[] = array(
+                            'id' => $attr->attr_id,
+                            'value' => $trans->atrans_name,
+                        );
+                    }
+                }
+                
+                // if no localized translation, get the first available translation
+                if(!$found){
+                    foreach($attr->attr_trans as $trans){
+                        $attributes[] = array(
+                            'id' => $attr->attr_id,
+                            'value' => $trans->atrans_name,
+                        );
+                        break;
+                    }
+                }
+            }else{
+               // if no translations available use the reference
+                $attributes[] = array(
+                    'id' => $attr->attr_id,
+                    'value' => $attr->attr_reference,
+                );
+            }
         }
         
         return $attributes;
@@ -1378,30 +1436,70 @@ class MelisComProductController extends AbstractActionController
         $attributes = array();
         if($this->getRequest()->isXmlHttpRequest()) {
             $productId = (int) $this->params()->fromQuery('productId');
-
+            $langId = $this->getTool()->getCurrentLocaleID();
             $prodAttrTable = $this->getServiceLocator()->get('MelisEcomProductAttributeTable');
             $attrSvc = $this->getServiceLocator()->get('MelisComAttributeService');
-            $attrData = $attrSvc->getAttributes($this->getTool()->getCurrentLocaleID());
+            $attrData = $attrSvc->getAttributes($this->getTool()->getCurrentLocaleID(), null, null, null);
             $prodAttribData = $prodAttrTable->getEntryByField('patt_product_id', $productId)->toArray();
             $tmpAttributes = array();
             $ctr = 0;
             foreach($attrData as $attr) {
-                $tmpAttributes[] = $attr->getAttribute()->attr_trans[0]->atrans_name . ' (' . $attr->getId() . ')';
-                foreach($prodAttribData as $prodAttr) {
-                    if(in_array($attr->getId(), $prodAttr)) {
-                        if(isset($tmpAttributes[$ctr]))
-                            unset($tmpAttributes[$ctr]);
+                if(isset($attr->getAttribute()->attr_trans[0])) {
+                    $tmpAttributes[] = array('id' => $attr->getId(), 'text' => $attrSvc->getAttributeText($attr->getId(), $langId));
+                    foreach($prodAttribData as $prodAttr) {
+                        if(in_array($attr->getId(), $prodAttr)) {
+                            if(isset($tmpAttributes[$ctr]))
+                                unset($tmpAttributes[$ctr]);
+                        }
                     }
+                    $ctr++;
                 }
-                $ctr++;
+            }
+
+            $attributes = array_values($tmpAttributes);
+
+        }
+
+
+        return new JsonModel($attributes);
+    }
+
+    protected function getAttributesExceptAttributesOnProductId($productId)
+    {
+        $attributes = array();
+
+            $langId = $this->getTool()->getCurrentLocaleID();
+            $prodAttrTable = $this->getServiceLocator()->get('MelisEcomProductAttributeTable');
+            $attrSvc = $this->getServiceLocator()->get('MelisComAttributeService');
+            $attrData = $attrSvc->getAttributes($langId, null, null, null);
+            $prodAttribData = $prodAttrTable->getEntryByField('patt_product_id', $productId)->toArray();
+            $tmpAttributes = array();
+            $ctr = 0;
+
+            foreach($attrData as $attr) {
+                $text = $attrSvc->getAttributeText($attr->getId(), $langId);
+                if($text) {
+                    $tmpAttributes[] = array('id' => $attr->getId(), 'text' => $text);
+                    foreach($prodAttribData as $prodAttr) {
+                        if(in_array($attr->getId(), $prodAttr)) {
+                            if(isset($tmpAttributes[$ctr]))
+                                unset($tmpAttributes[$ctr]);
+                        }
+                    }
+                    $ctr++;
+                }
             }
             
-            $attributes = array_values($tmpAttributes);
-            
-        }   
+        $attributes = array_values($tmpAttributes);
+        // Sorting Alphabetically attributes text
+        if (!empty($attributes)){
+            usort($attributes, function($a, $b){
+                return strcasecmp($a['text'], $b['text']);
+            });
+        }
         
+        return $attributes;
 
-        return new JsonModel(array('lists' => $attributes));
     }
     
     /**
@@ -1516,9 +1614,7 @@ class MelisComProductController extends AbstractActionController
         }
         $prodName = $prodSvc->getProductName($productId, $this->getTool()->getCurrentLocaleID());
         foreach($attributes as $attr){
-            foreach($attrTransTable->getAttributeTransByAtributeId( $attr->patt_attribute_id, $this->getTool()->getCurrentLocaleID()) as $attrTrans){
-                $attr->atrans_name = $attrSvc->getAttributeTransById($attrTrans->atrans_id, $this->getTool()->getCurrentLocaleID())[0]->atrans_name;;
-            }
+            $attr->atrans_name = $attrSvc->getAttributeText($attr->patt_attribute_id, $this->getTool()->getCurrentLocaleID());
             $layoutVar['prodAttributes'][] = $attr;
         }
         

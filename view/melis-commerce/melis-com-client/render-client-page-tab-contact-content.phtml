@@ -42,19 +42,29 @@
 						<div class="me-heading bg-white border-bottom" style="margin-bottom: 15px">
                 			<h3 class=""><i class="fa fa-user" aria-hidden="true"></i> <?php echo $this->translate('tr_meliscommerce_client_Contact_main_datas') ?></h3>
                 		</div>
-                		<div class="form-group me-action-button-cont">
-                			<label for="cper_is_main_person" style="display: block"><?php echo $this->translate('tr_meliscommerce_client_Main_contact')?></label>
-                            <div class="make-switch clientMainContact <?php echo $this->clientId.'-client-contact-main-switch'?>" data-clientid="<?php echo $this->clientId ?>" data-tabid="<?php echo $tabId ?>" data-label-icon="fa fa-arrows-h" data-on-label="<?php echo $this->translate('tr_meliscommerce_clients_common_label_yes')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_clients_common_label_no')?>">
-                                <input type="checkbox" name="cper_is_main_person" <?php echo ($val->cper_is_main_person) ? 'checked' : ''?>>
-                            </div>
+                		<div class="form-group">
+                			<div class="row">
+                				<div class="col-xs-6">
+                    				<div class="main-contact-start">
+                                    	<i class="fa <?php echo ($val->cper_is_main_person) ? 'fa-star' : 'fa-star-o'?> fa-2x clientMainContact"  data-clientid="<?php echo $this->clientId ?>" data-tabid="<?php echo $tabId ?>" aria-hidden="true" title="<?php echo $this->translate('tr_meliscommerce_client_Main_contact')?>"></i>
+                                    </div>
+                				</div>
+                				<div class="col-xs-6" align="right">
+                					<div class="make-switch clientContactStatus <?php echo $this->clientId.'-client-contact-status'?>" data-clientid="<?php echo $this->clientId ?>" data-tabid="<?php echo $tabId ?>" data-text-label="<?php echo $this->translate('tr_meliscommerce_client_Contact_status')?>" data-on-label="<?php echo $this->translate('tr_meliscommerce_client_Contact_status_active')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_client_Contact_status_inactive')?>">
+                                        <input type="checkbox" name="cper_status" <?php echo ($val->cper_status) ? 'checked' : ''?>>
+                                    </div>
+                				</div>
+                			</div>
                     		<?php 
-                        		$form = $this->meliscommerce_clients_contact_form;
+                        		$form = clone($this->meliscommerce_clients_contact_form);
                         		$form->bind($val);
                         		$form->setAttribute('id', $tabId.'_contact_form');
                         		$form->setAttribute('data-tabid', $tabId);
                         		$form->get('cper_password')->setValue('');
                         		$form->get('cper_password')->setAttribute('placeholder', $this->translate('tr_meliscommerce_client_Contact_password_placeholder'));
                         		$form->get('cper_confirm_password')->setAttribute('placeholder', $this->translate('tr_meliscommerce_client_Contact_password_placeholder'));
+                        		$form->get('cper_password')->setLabel($form->get('cper_password')->getLabel().' <i class="fa fa-info-circle fa-lg" title="'.$this->translate('tr_meliscommerce_client_tooltip_password').'"></i>');
+                        		$form->get('cper_confirm_password')->setLabel($form->get('cper_confirm_password')->getLabel().' <i class="fa fa-info-circle fa-lg" title="'.$this->translate('tr_meliscommerce_client_tooltip_password_2').'"></i>');
                         		$form->prepare();
                         		echo $this->form()->openTag($form);
                         		echo $this->melisFieldCollection($form);
@@ -82,7 +92,6 @@
                         						<h4 class="panel-title">
                                     				<a class="accordion-toggle collapsed" id="<?php echo 'nav_'.$contactAddressId ?>" data-toggle="collapse" data-parent="#<?php echo  $tabId.'_address' ?>" href="#<?php echo $contactAddressId.'_address_acordion' ?>">
                                     					<?php echo $pVal->cadd_address_name ?>
-                                    					
                                 					</a>
                             					</h4>
                         					</div>
@@ -118,5 +127,5 @@
 	</div>
 </div>
 <script>
-	$('.<?php echo $this->clientId.'-client-contact-main-switch'?>').bootstrapSwitch();
+	$('.<?php echo $this->clientId.'-client-contact-main-switch'?>, .<?php echo $this->clientId.'-client-contact-status'?>').bootstrapSwitch();
 </script>

@@ -11,7 +11,7 @@ namespace MelisCommerce\Service;
 
 use MelisCommerce\Entity\MelisProduct;
 use MelisCommerce\Entity\MelisAttribute;
-
+use Zend\Session\Container;
 
 /**
  *
@@ -20,6 +20,8 @@ use MelisCommerce\Entity\MelisAttribute;
  */
 class MelisComProductService extends MelisComGeneralService
 {
+    const SHORT_TEXT = 1;
+    const LONG_TEXT  = 2;
 	/**
 	 *
 	 * This method gets all products
@@ -36,7 +38,7 @@ class MelisComProductService extends MelisComGeneralService
 	 * @return MelisProduct[] Product object
 	 */
 	public function getProductList($langId = null, $categoryId = array(), $countryId = null, 
-	                               $onlyValid = null, $start = 0, $limit = null, $search = '', $order = 'ASC')
+	                               $onlyValid = null, $start = 0, $limit = null, $search = '', $order = 'ASC', $orderColumn = 'prd_id')
 	{ 
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -51,7 +53,7 @@ class MelisComProductService extends MelisComGeneralService
         $prodTable = $this->getServiceLocator()->get('MelisEcomProductTable');
 
         if($search) {
-            $productData = $prodTable->getProduct(null, $arrayParameters['onlyValid'], 0, null, $arrayParameters['order']);
+            $productData = $prodTable->getProduct(null, $arrayParameters['onlyValid'], 0, null, $arrayParameters['order'], $arrayParameters['orderColumn']);
             if($productData) {
                 foreach($productData as $prod) {
                     $tmpData[] = $this->getProductById($prod->prd_id, $arrayParameters['langId']);
@@ -67,7 +69,7 @@ class MelisComProductService extends MelisComGeneralService
             }
         }
         else {
-            $productData = $prodTable->getProduct(null, $arrayParameters['onlyValid'], $arrayParameters['start'], $arrayParameters['limit'], $arrayParameters['order']);
+            $productData = $prodTable->getProduct(null, $arrayParameters['onlyValid'], $arrayParameters['start'], $arrayParameters['limit'], $arrayParameters['order'], $arrayParameters['orderColumn']);
             if($productData) {
                 foreach($productData as $prod) {
                     // add searching statement here
@@ -271,55 +273,38 @@ class MelisComProductService extends MelisComGeneralService
 	
 	    // Service implementation start
 	    $priceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');
-	    $productPrices = $priceTable->getProductFinalPrice($arrayParameters['productId']);
-	     
-	    $generalPrices = array();
-	    $findPriceOnGeneral = true;
-	    $isCountryPriceFound = false;
-	    foreach ($productPrices As $val)
+	    $productPrice = $priceTable->getProductFinalPrice($arrayParameters['productId'], $arrayParameters['countryId'])->current();
+	    
+	    if(!empty($productPrice))
 	    {
-	        // Getting the General Price which is CountryId is 0 (Zero)
-	        if ($val->price_country_id == 0)
-	        {
-	            $generalPrices = $val;
-	        }
-	        // Checking if CountryId match to Price CountryId
-	        if ($val->price_country_id == $arrayParameters['countryId'])
+	        // Just to be sure that data on Price is in Numeric data type
+	        if (is_numeric($productPrice->price_net))
+            {
+                $results = $productPrice;
+            }
+	    }
+	     
+	    if (is_null($results))
+	    {
+	        $productPrice = $priceTable->getProductGeneralPrice($arrayParameters['productId'])->current();
+	        
+	        if (!empty($productPrice))
 	        {
 	            // Just to be sure that data on Price is in Numeric data type
-	            if (is_numeric($val->price_net))
+	            if (is_numeric($productPrice->price_net))
 	            {
-	                $results = $val;
-	                 
-	                $findPriceOnGeneral = false;
-	            }
-	            $isCountryPriceFound = true;
-	        }
-	        
-	        /**
-	         * If Gerenal price has already has a data and Variant Coutnry Price found,
-	         * loop will break and proceed to next process
-	         * In this process loop will stop after data needed are found.
-	         */
-	        if (!empty($generalPrices) && $isCountryPriceFound)
-	        {
-	            break;
-	        }
-	    }
-	
-	    // If CountryId did not match to data result, this will try to look Stocks on General Stocks
-	    if ($findPriceOnGeneral)
-	    {
-	        if (!empty($generalPrices))
-	        {
-	            // Just to be sure that data on price is in Numeric data type
-	            if (is_numeric($generalPrices->price_net))
-	            {
-	                $results = $generalPrices;
+	                // Getting the default currency
+	                $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+	                $generalCurrency = $currencyTable->getEntryByField('cur_default', 1)->current();
+	                
+	                if(!empty($generalCurrency))
+	                {
+	                    // Merging results and cast as Object
+	                    $results = (object) array_merge((array)$productPrice, (array)$generalCurrency);
+	                }
 	            }
 	        }
 	    }
-	     
 	    // Service implementation end
 	     
 	    // Adding results to parameters for events treatment if needed
@@ -376,6 +361,75 @@ class MelisComProductService extends MelisComGeneralService
 	    return $arrayParameters['results'];
 	}
 	
+	
+	/**
+	 *
+	 * This method gets the texts affected to a product
+	 *
+	 * @param int $productId Product Id to look for
+	 * @param string $typeCode If specified, only texts with this code will be taken
+	 *
+	 * @return String
+	 */
+	public function getProductTextByCode($productId, $typeCode, $langId = 1) 
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = null;
+	    
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_texts_bycode_start', $arrayParameters);
+	     
+	    // Service implementation start
+	    $prodTextTable = $this->getServiceLocator()->get('MelisEcomProductTextTable');
+	    $prodTextData = $prodTextTable->getProductTextById($arrayParameters['productId'], $arrayParameters['typeCode'], $arrayParameters['langId'])->current();
+	    $hasText = false;
+	    if($prodTextData) {
+	        $hasText = true;
+	    }
+	    else {
+	        $prodTextData = $prodTextTable->getProductTextById($arrayParameters['productId'], $arrayParameters['typeCode'])->current();
+	        if($prodTextData) {
+	            $hasText = true;
+	        }
+	    }
+	    
+	    if($hasText) {
+	        $typeId = (int) $prodTextData->ptt_field_type;
+	         
+	        if($typeId == self::SHORT_TEXT) {
+	            $results = $prodTextData->ptxt_field_short;
+	        }
+	        elseif($typeId == self::LONG_TEXT) {
+	            $results = $prodTextData->ptxt_field_long;
+	        }
+	    }
+	    
+	    // if result has empty text, then get the first data that has text
+	    if(!$results) {
+	        $prodTextData = $prodTextTable->getProductTextById($arrayParameters['productId'], $arrayParameters['typeCode']);
+	        foreach($prodTextData as $text) {
+	            $typeId = (int) $text->ptt_field_type;
+	            
+	            if($typeId == self::SHORT_TEXT && $text->ptxt_field_short) {
+	                $results = $text->ptxt_field_short;
+	            }
+	            elseif($typeId == self::LONG_TEXT && $text->ptxt_field_long) {
+	                $results = $text->ptxt_field_long;
+	            }
+	        }
+	    }
+
+	    // Service implementation end
+	    
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_texts_bycode_end', $arrayParameters);
+	     
+	    return $arrayParameters['results'];
+	}
+	
 	/**
 	 *
 	 * This method saves a product in database.
@@ -404,12 +458,23 @@ class MelisComProductService extends MelisComGeneralService
 	    $translator = $this->getServiceLocator()->get('translator');
 	    $productTable = $this->getServiceLocator()->get('MelisEcomProductTable');
 	    $categorySvc = $this->getServiceLocator()->get('MelisComCategoryService');
+	    $variantTable = $this->getServiceLocator()->get('MelisEcomVariantTable');
 	    
+	    $prodStatus = isset($arrayParameters['product']['prd_status']) ? (int) $arrayParameters['product']['prd_status'] : 0;
+	    $prodId     = isset($arrayParameters['product']['prd_id']) ? (int) $arrayParameters['product']['prd_id'] : null;    
 	    $arrayParameters['productId'] = (int) $productTable->save($arrayParameters['product'], $arrayParameters['productId']);
 	    $saveProductId = (int) $arrayParameters['productId'];
         $results['saveProduct'] = $arrayParameters['productId'];
         
+        
+        
         try {
+            // Deactivate variants that is under to this product
+            if(!$prodStatus && !is_null($prodId)) {
+                $variantTable->update(array('var_status' => 0), 'var_prd_id', $prodId);
+            }
+            
+            
             if(!empty($arrayParameters['productTexts']))
             {
                 foreach($arrayParameters['productTexts'] as $productText)
@@ -495,7 +560,7 @@ class MelisComProductService extends MelisComGeneralService
 	    $productTextTable = $this->getServiceLocator()->get('MelisEcomProductTextTable');
 	    $successFlag = true;
 	    try {
-    	    if(isset($arrayParameters['productTexts']['ptxt_lang_id'])) {
+    	    if(isset($arrayParameters['productTexts']['ptxt_lang_id']) && $arrayParameters['productTexts']['ptxt_lang_id']) {
     	        $ptxtId = empty($arrayParameters['productTexts']['ptxt_id'])? null : $arrayParameters['productTexts']['ptxt_id'];
 	            $results = (bool) $productTextTable->save($arrayParameters['productTexts'], $arrayParameters['productTextId']);
     	    }
@@ -582,26 +647,27 @@ class MelisComProductService extends MelisComGeneralService
         try {
             // if comma (,) is used for grouping the price digit, then this process forcefuly replace comma to dot so it will 
             // still be saved in the database
-            $columns = array('price_net', 'price_gross', 'price_vat_percent', 'price_vat_price', 'price_other_tax_price');
+//             $columns = array('price_net', 'price_gross', 'price_vat_percent', 'price_vat_price', 'price_other_tax_price');
 
-            for($x = 0; $x <= count($arrayParameters['prices']); $x++) {
-                foreach($columns as $column) {
-                    if(!empty(trim($arrayParameters['prices'][$column]))) {
-                        $arrayParameters['prices'][$column] = str_replace(',', '.', $arrayParameters['prices'][$column]);
-                        $arrayParameters['prices'][$column] = str_replace(' ', '', $arrayParameters['prices'][$column]);
-                    }
-                    else {
-                        $arrayParameters['prices'][$column] = 0;
-                    }
+//             for($x = 0; $x <= count($arrayParameters['prices']); $x++) {
+//                 foreach($columns as $column) {
+//                     if(!empty(trim($arrayParameters['prices'][$column]))) {
+//                         // force format to en_US so it will be accepted by MySql Decimal Data Type
+//                         //$arrayParameters['prices'][$column] = $this->formatPrice( (float) $arrayParameters['prices'][$column], 'en_US');
+//                         //$arrayParameters['prices'][$column] = number_format($arrayParameters['prices'][$column], 2, '.', '');
+//                     }
+//                     else {
+//                         $arrayParameters['prices'][$column] = 0;
+//                     }
 
-                }
-            }
+//                 }
+//             }
 
             $results = (bool) $productPriceTable->save($arrayParameters['prices'], $arrayParameters['priceId']);
             
         }catch(\Exception $e) {
             $results = false;
-            echo $e->getMessage(), '\n';
+            //echo $e->getMessage(), '\n';
         }
 	    // Service implementation end
 
@@ -630,18 +696,24 @@ class MelisComProductService extends MelisComGeneralService
 	    $priceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');
 	    $prodTextTable = $this->getServiceLocator()->get('MelisEcomProductTextTable');
 	    $prodAttrTable = $this->getServiceLocator()->get('MelisEcomProductAttributeTable');
+	    $melisComCategoryService = $this->getServiceLocator()->get('MelisComCategoryService');
 	    
 	    $productId = (int) $arrayParameters['prodId'];
 	    if($productId) {
 	        
 	        try {
 	            $prodAttrTable->deleteByField('patt_product_id', $productId);
-	            $prodCatTable->deleteByField('pcat_prd_id', $productId);
+	            //$prodCatTable->deleteByField('pcat_prd_id', $productId);
 	            $prodDocRelTable->deleteByField('rdoc_product_id', $productId);
 	            //$docTable->deleteById();
 	            $priceTable->deleteByField('price_prd_id', $productId);
 	            $prodTextTable->deleteByField('ptxt_prd_id', $productId);
 	            $prodTable->deleteByField('prd_id', $productId);
+	            
+	            $prdCategory = $prodCatTable->getEntryByField('pcat_prd_id', $productId);
+	            foreach ($prdCategory As $prd){
+	                $melisComCategoryService->deleteCategoryProduct($prd->pcat_id);
+	            }
 	            
 	            $data = $prodTable->getEntryById($productId)->current();
 	            if(!$data) {
@@ -651,9 +723,6 @@ class MelisComProductService extends MelisComGeneralService
 	            $results = false;
 	            echo $e->getMessage() . PHP_EOL;
 	        }
-
-	        
-	        
 	    }
 	    
 	    
@@ -665,6 +734,73 @@ class MelisComProductService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_delete_end', $arrayParameters);
 	     
 	    return $arrayParameters['results'];
+	}
+	
+	/**
+	 * Returns the price format depending on the locale set in the browser or in the platform session
+	 * @param unknown $price
+	 * @return string
+	 */
+	public function formatPrice($price, $overrideLocale = null)
+	{
+	    // by default, use request headers "Accept-Language"
+	    $headerAcceptLang = \Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+	    // if Accept-Language is null, then default to english US
+	    $sessionLocale = $headerAcceptLang ? $headerAcceptLang : 'en_US';
+	
+	    $container = new Container('meliscore');
+	    if (!empty($container['melis-lang-locale']) && is_null($overrideLocale)) {
+	        //$sessionLocale = $container['melis-lang-locale'];
+	    }
+	        
+        if($sessionLocale == 'en_EN') {
+            // replace en_EN to en_US, since en_EN is not defined in the browser or in Windows OS and Linux locale
+            $sessionLocale = 'en_US';
+        }
+        
+        if(!is_null($overrideLocale)) {
+            $sessionLocale = $overrideLocale;
+        }
+
+        setlocale(LC_MONETARY, $sessionLocale);
+        $locale = localeconv();
+        $curSymbol = trim($locale['currency_symbol']) ? trim($locale['currency_symbol']) : '$';
+        $curSymbolInt = trim($locale['int_curr_symbol']) ? trim($locale['int_curr_symbol']) : 'USD';
+        $decimalPoint = trim($locale['mon_decimal_point']) ? trim($locale['mon_decimal_point']) : null;
+        $thousandSeparator = trim($locale['mon_thousands_sep']) ? trim($locale['mon_thousands_sep']) : ',';
+        $fmt = new \NumberFormatter($sessionLocale, \NumberFormatter::CURRENCY );
+        $value = $fmt->formatCurrency($price, $curSymbolInt);
+        if(count($value) === 1) {
+            $value = $fmt->formatCurrency($price, $curSymbolInt);
+        }
+
+        $value = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $value); // replace special characters
+        $value = preg_replace('/[a-zA-Z$ ]/', '', $value); // replace $, [space] and alphabets in price
+
+        $newVal = $price;
+
+        if($decimalPoint) {
+            $value = explode($decimalPoint, $value);
+            if(is_array($value)) {
+                $tmpVal = str_replace($thousandSeparator, '', $value[0]);
+                $newVal = $tmpVal . $decimalPoint . $value[1];
+            }
+        }
+
+        return $newVal;
+	}
+	
+	/**
+	 * Returns true if the OS is Windows
+	 * @return boolean
+	 */
+	public function isWindows()
+	{
+	    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+	        return true;
+	    } else {
+	        return false;
+	    }
 	}
 	
 	

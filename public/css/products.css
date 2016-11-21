@@ -83,3 +83,11 @@ div.prodCatLangDropDownContainer > .filter-dropdown {
 div.melis-pdc *.btn {
 	margin-right:1px;
 }
+.awesome > ul {
+	overflow: auto; 
+	max-height: 150px; 
+}
+
+.deleteTextInput {
+	color:#323232;
+}

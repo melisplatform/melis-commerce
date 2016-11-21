@@ -1,0 +1,26 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = 'id="'.$this->zoneconfig['conf']['id'] .'"';
+    }
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<div class="me-hl col-xs-12 col-md-4" <?php echo $id.' '.$data_melisKey; ?> style="position: relative">
+    <div class="red-box-panel billing-address-panel">
+        <h3><?php echo $this->translate('tr_meliscommerce_order_checkout_address_billing')?></h3>
+        <div class="red-box-panel-list">
+            <table class="info-table" style="table-layout: fixed; width: 100%;">
+            	<?php foreach ($this->deliveryAddress As $val):?>
+            		<?php if (!empty($val['value'])):?>	
+                	<tr>
+                        <td><label><?php echo $val['label']?></label></td>
+                    	<td>
+                    		<p class="checkout-summary-add-info-value"><?php echo $val['value']?></p>
+                		</td>
+                    </tr>
+                    <?php endif;?>
+            	<?php endforeach;?>
+            </table>
+        </div>
+    </div>
+</div>

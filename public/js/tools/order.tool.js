@@ -1,4 +1,5 @@
 $(document).ready(function() {
+	
 	var body = $("body");
 	// order list - opens specific order for editing
 	body.on("click", ".orderInfo", function() {
@@ -17,9 +18,6 @@ $(document).ready(function() {
 		$(this).closest('.container-level-a').find('.add-message').slideToggle();
 	});
 	
-	body.on("click", ".addNewOrder", function(){
-		melisHelper.tabOpen(translations.tr_meliscommerce_order_new_order, 'fa fa fa-plus fa-2x', 'id_meliscommerce_order_checkout', 'meliscommerce_order_checkout');
-	});
 	// order list - refreshes the order list table
 	body.on("click", ".orderListRefresh", function(){
 		melisHelper.zoneReload("id_meliscommerce_order_list_content_table", "meliscommerce_order_list_content_table");
@@ -48,6 +46,8 @@ $(document).ready(function() {
 		var dataString = [];
 		var len;
 		var ctr = 0;
+		var statusId = $(this).closest('.container-level-a').find('.selectedStatus').data('statusid');
+		
 		forms.each(function(){
 			var pre = $(this).attr('name');
 			var data = $(this).serializeArray();
@@ -58,11 +58,16 @@ $(document).ready(function() {
 			ctr++;
 		});
 		dataString.push({name : 'orderId', value : orderId});
+		dataString.push({name: 'order[0][ord_status]', value : statusId});
+		
+		//get order status
+		var statusId = $(this).closest('.container-level-a').find('.selectedStatus').data('statusid')
+		dataString.push({name : 'order[0][ord_status]', value : statusId});
 		
 		melisCommerce.postSave(url, dataString, function(data){
 			if(data.success){
 				melisHelper.tabClose(  orderId + "_id_meliscommerce_orders_page");
-				orderTabOpen(translations.tr_meliscommerce_orders_Order+' '+data.chunk.ord_reference, data.chunk.ord_id);				
+				orderTabOpen(translations.tr_meliscommerce_orders_Order+' '+data.chunk.order.ord_reference, data.chunk.order.ord_id);				
 				melisHelper.melisOkNotification( data.textTitle, data.textMessage, '#72af46' );
 				melisHelper.zoneReload("id_meliscommerce_order_list_content_table", "meliscommerce_order_list_content_table");				
 				melisCore.flashMessenger();
@@ -72,7 +77,8 @@ $(document).ready(function() {
 					melisHelper.zoneReload(data.clientId+"_id_meliscommerce_client_page_tab_orders", "meliscommerce_client_page_tab_orders", {clientId: data.clientId, activateTab:true});
 				}
 			}else{
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');				
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisCoreTool.highlightErrors(data.success, data.errors, orderId+"_id_meliscommerce_orders_page");
 			}			
 		}, function(data){
 			console.log(data);
@@ -92,10 +98,11 @@ $(document).ready(function() {
 			if(data.success){;				
 				melisHelper.melisOkNotification( data.textTitle, data.textMessage, '#72af46' );
 				melisHelper.zoneReload( orderId+"_id_meliscommerce_orders_content_tabs_content_messages_details", "meliscommerce_orders_content_tabs_content_messages_details", { "orderId" : orderId});
-				
-				melisCore.flashMessenger();
+				console.log($data);
+//				melisCore.flashMessenger();
 			}else{
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');				
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisCoreTool.highlightErrors(data.success, data.errors, orderId+"_id_meliscommerce_orders_page");
 			}			
 		}, function(data){
 			console.log(data);
@@ -104,7 +111,7 @@ $(document).ready(function() {
 	});
 	// order list - toggles the status form modal
 	body.on("click", ".updateListStatus", function(){ 
-		var orderId = $(this).closest('tr').attr('id');
+		var orderId = $(this).data('orderid');
 		melisCoreTool.pending(this);
 		// initialation of local variable
 		zoneId = 'id_meliscommerce_order_list_content_status_form';
@@ -142,9 +149,16 @@ $(document).ready(function() {
 				if(data.clientId+"_id_meliscommerce_client_page_tab_orders".length){
 					melisHelper.zoneReload(data.clientId+"_id_meliscommerce_client_page_tab_orders", "meliscommerce_client_page_tab_orders", {clientId: data.clientId, activateTab:true});
 				}
+				
+				//reload coupon if active
+				if($('#'+activeTabId).data('pageid') == 'coupon'){
+					var couponId = activeTabId.split("_")[0];
+					melisHelper.zoneReload(couponId+"_id_meliscommerce_coupon_tabs_content_orders_details_table", "meliscommerce_coupon_tabs_content_orders_details_table", {couponId : couponId});
+				}
 				melisCore.flashMessenger();
 			}else{
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');				
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisCoreTool.highlightErrors(data.success, data.errors,"id_meliscommerce_order_list_content_status_form");
 			}			
 		}, function(data){
 			console.log(data);
@@ -157,7 +171,7 @@ $(document).ready(function() {
 		var forms = $(this).closest('#id_meliscommerce_order_modal_content_shipping_form').find('form');
 		var url = 'melis/MelisCommerce/MelisComOrder/saveOrder';
 		var ord_reference = $('#'+activeTabId+' input[name=ord_reference]').val();
-		var ord_status = $('#'+activeTabId+' select[name=ord_status] option:selected').val();
+		var ord_status = $('#'+activeTabId+' .selectedStatus').data('statusid');
 		var id = $('#'+activeTabId).attr('id');;
 		var orderId = isNaN(parseInt(id, 10)) ? '' : parseInt(id, 10);
 		var dataString = [];
@@ -188,7 +202,14 @@ $(document).ready(function() {
 				melisHelper.zoneReload(orderId+"_id_meliscommerce_orders_content_tabs_content_shipping_details", "meliscommerce_orders_content_tabs_content_shipping_details", {"orderId": orderId});
 				melisCore.flashMessenger();
 			}else{
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');				
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisCoreTool.highlightErrors(data.success, data.errors,"id_meliscommerce_order_modal_content_shipping_form");
+				$("#id_meliscommerce_order_modal_content_shipping_form .shippingDate").prev("label").css("color","#686868");
+				$.each( data.errors, function( key, error ) {
+					if( key == 'oship_date_sent'){
+						$("#id_meliscommerce_order_modal_content_shipping_form .shippingDate").prev("label").css("color","red");
+					}					
+				});
 			}			
 		}, function(data){
 			console.log(data);
@@ -197,12 +218,62 @@ $(document).ready(function() {
 		
 	});
 	
+	body.on("click", ".mainOrderStatus", function(){
+		$(this).parent().find('.mainOrderStatus').each(function(){
+			$(this).removeClass('selectedStatus');
+			var button = $(this).find('span');
+			var statusColor = button.css('border-top-color');
+			button.css('color', statusColor);
+			button.css('background','#fff');
+		})
+		$(this).addClass('selectedStatus');
+		var button = $(this).find('span');
+		var statusColor = button.css('border-top-color');
+		button.css('color', '#fff');
+		button.css('background', statusColor);
+		
+	});
+	
 	function orderTabOpen(ordername, id){
 		melisHelper.tabOpen(ordername, 'fa fa fa-cart-plus fa-2x', id+'_id_meliscommerce_orders_page', 'meliscommerce_orders_page', { orderId : id});
 	}
+	
+	$("body").on('apply.daterangepicker', ".dt_orderdatepicker", function(ev, picker) {
+		// reload table
+		var tableId = $(this).parents().eq(5).find('table').attr('id');
+		$("#"+tableId).data('dStartDate', dStartDate)
+		$("#"+tableId).data('dEndDate', dEndDate)
+		$("#"+tableId).DataTable().ajax.reload();
+	});
+	
+	$("body").on('change', '.orderFilterStatus',function(){
+		var tableId = $(this).parents().eq(6).find('table').attr('id');
+		$("#"+tableId).DataTable().ajax.reload();
+    });
 });
 // table datafunction for basket
 window.initOrderBasket = function(data, tblSettings) {
 	var orderId = activeTabId.split("_")[0];
 	data.orderId = orderId;	
-} 
+}
+
+//table order custom filter
+window.initOrderList = function(data, tblSettings){
+	
+	data.osta_id = $('#id_meliscommerce_order_list_content_table .orderFilterStatus').val();	
+	data.startDate = $("#tableOrderList").data('dStartDate');
+	data.endDate   = $("#tableOrderList").data('dEndDate');	
+	var icon = '<i class="glyphicon glyphicon-calendar fa fa-calendar"></i> ';
+	
+	if(tblSettings.iDraw > 1) {
+		dateSelectionContent = translations.tr_meliscore_datepicker_select_date  + icon + "<span class='sdate'>" + dStartDate + ' - ' + dEndDate + '</span> <b class="caret"></b>';
+		$('#tableOrderList_wrapper .dt_orderdatepicker .dt_dateInfo').html(dateSelectionContent);
+	}
+	dStartDate = ""; dEndDate = ""; //clear date when Prospects page is reloaded
+}
+
+//table order custom filter
+window.initOrderListTitle = function(){
+	$('#tableOrderList .icon-shippment').parent('th').attr('title', translations.tr_meliscommerce_order_list_col_products);
+	$('#tableOrderList .fa-usd').parent('th').attr('title', translations.tr_meliscommerce_order_list_col_price_title);	
+}

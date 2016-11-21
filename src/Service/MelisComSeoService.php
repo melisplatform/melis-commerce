@@ -113,7 +113,7 @@ class MelisComSeoService extends MelisComGeneralService
             
                 if (in_array($type, array('category', 'product', 'variant')))
                 {
-                    $seoUrl = $ecomSeotable->getSeoUrlByType($type, $val['eseo_url'])->toArray();
+                    $seoUrl = $ecomSeotable->getEntryByField('eseo_url', $val['eseo_url'])->toArray();
                     
                     if (!empty($seoUrl))
                     {

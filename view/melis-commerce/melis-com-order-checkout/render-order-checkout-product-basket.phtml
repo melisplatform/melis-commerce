@@ -7,7 +7,7 @@
 ?>
 <div class="me-hl col-xs-12 col-md-4" <?php echo $id.' '.$data_melisKey; ?>>
     <div id="basket-order-checkout" class="red-box-panel basket-panel">
-        <h3><i class="icon-shopping-basket"></i> Basket List</h3>
+        <h3><i class="icon-shopping-basket"></i> <?php echo $this->translate('tr_meliscommerce_order_checkout_variant_basket')?></h3>
         <div class="red-box-panel-list basket-panel-list">         
         	<?php foreach ($this->basket As $val):?>    
             	<div class="order-basket-list">
@@ -17,16 +17,16 @@
                     </div>
                     <div class="form-group">
                         <i class="fa fa-minus order-basket-variant-qty-btn qty-minus text-primary" data-variantid="<?php echo $val['var_id']?>"></i>
-                        <input type="text" class="form-control qty-val orderBasketVariantQty" id="<?php echo $val['var_id']?>_orderBasketVariantQty" data-variantid="<?php echo $val['var_id']?>" data-quantity="<?php echo $val['var_quantity']?>" style="width:50px" name="" id="" placeholder="" value="<?php echo $val['var_quantity']?>">
+                        <input type="text" class="form-control qty-val orderBasketVariantQty" id="<?php echo $val['var_id']?>_orderBasketVariantQty" data-variantid="<?php echo $val['var_id']?>" data-quantity="<?php echo $val['var_quantity']?>" style="width: 74px;" name="" id="" placeholder="" value="<?php echo $val['var_quantity']?>">
                         <i class="fa fa-plus order-basket-variant-qty-btn qty-plus text-primary" data-variantid="<?php echo $val['var_id']?>"></i>
-                        <strong class="order-price float-right">€ <?php echo $val['var_total']?></strong>
+                        <strong class="order-price float-right"><?php echo $val['var_total']?></strong>
                     </div>
                 </div>
         	<?php endforeach;?>   
         	
-        	<?php if ($this->total):?>
+        	<?php if (!empty($this->basket)):?>
                 <div class="form-group">
-                    <br><h4 class="float-right" style="margin: 0 10px 0 0;"><strong><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_sub_total')?>: € <?php echo number_format($this->total, 2)?></strong></h4><br>
+                    <br><h4 class="float-right" style="margin: 0 10px 0 0;"><strong><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_sub_total')?>: <?php echo $this->countryCurrencySympbol.' '.number_format($this->total, 2)?></strong></h4><br>
                 </div>
             <?php endif;?>
             
@@ -35,6 +35,12 @@
         			<p><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_empty_basket')?></p>
         		</div>
             <?php endif;?>
+        </div>
+    </div>
+    <br>
+    <div class="row bottom-bottons">
+        <div class="me-hl col-xs-12 col-md-12">
+            <button data-tabid="#id_meliscommerce_order_checkout_choose_contact_step_nav" class="pull-right btn btn-success orderCheckoutFirstStepBtn orderCheckoutNextStep" disabled title="<?php echo $this->translate('tr_meliscommerce_order_checkout_product_basket_empty')?>"><?php echo $this->translate('tr_meliscommerce_order_checkout_common_next')?> <i class="fa fa-arrow-right"></i> </button>
         </div>
     </div>
 </div>

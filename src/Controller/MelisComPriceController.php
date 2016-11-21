@@ -217,7 +217,7 @@ class MelisComPriceController extends AbstractActionController
                     	</li>';
     
         $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
-        $countries = $countryTable->fetchAll();
+        $countries = $countryTable->getCountries();
         $ctyData[] = $ctyGeneral;
         foreach ($countries as $country){
             $ctyData[] = sprintf($ctyFormat, $hrefCountry.str_replace(' ', '', $country->ctry_name), $country->ctry_name, $country->ctry_name);
@@ -268,7 +268,7 @@ class MelisComPriceController extends AbstractActionController
         $formElements = $this->serviceLocator->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $pricesForm = $factory->createForm($appConfigForm);
-        $countries = $countryTable->fetchAll();
+        $countries = $countryTable->getCountries();
         $formatOnly = array('price_net', 'price_gross', 'price_vat_percent', 'price_vat_price', 'price_other_tax_price');
         $data = array();
         $c = 1;
@@ -300,19 +300,19 @@ class MelisComPriceController extends AbstractActionController
 
         foreach ($data as $formValue){
             if(isset($formValue['price_net']))
-                $formValue['price_net'] = $this->formatPrice((float) $formValue['price_net']);
+                $formValue['price_net'] = $productSvc->formatPrice((float) $formValue['price_net']);
             
             if(isset($formValue['price_gross'])) 
-                $formValue['price_gross'] = $this->formatPrice((float) $formValue['price_gross']);
+                $formValue['price_gross'] = $productSvc->formatPrice((float) $formValue['price_gross']);
             
             if(isset($formValue['price_vat_percent']))
-                $formValue['price_vat_percent'] = $this->formatPrice((float) $formValue['price_vat_percent']);
+                $formValue['price_vat_percent'] = $productSvc->formatPrice((float) $formValue['price_vat_percent']);
             
             if(isset($formValue['price_vat_price']))
-                $formValue['price_vat_price'] = $this->formatPrice((float) $formValue['price_vat_price']);
+                $formValue['price_vat_price'] = $productSvc->formatPrice((float) $formValue['price_vat_price']);
             
             if(isset($formValue['price_other_tax_price']))
-            $formValue['price_other_tax_price'] = $this->formatPrice((float) $formValue['price_other_tax_price']);
+            $formValue['price_other_tax_price'] = $productSvc->formatPrice((float) $formValue['price_other_tax_price']);
             
             $form = clone($pricesForm);
             $form->setAttribute('id',$formId.$formValue['name']);
@@ -339,7 +339,8 @@ class MelisComPriceController extends AbstractActionController
         );
         $errors = array();
         $success = true;
-                
+        $priceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');
+        
         $factory = new \Zend\Form\Factory();
         $formElements = $this->serviceLocator->get('FormElementManager');
         $factory->setFormElementManager($formElements);
@@ -347,29 +348,34 @@ class MelisComPriceController extends AbstractActionController
         $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
         $appConfigPriceForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_prices/meliscommerce_prices_form','meliscommerce_prices_form');
         $priceForm = $factory->createForm($appConfigPriceForm);
-
+        
         $postValues = get_object_vars($this->getRequest()->getPost());
         if(!empty($postValues['priceForm'])){
             foreach($postValues['priceForm'] as $price){
-                $countryId = (int) $price['price_country_id'];
-                $currency = (int) $price['price_currency'];
-                $price = array_map(function($item) { return $item ?: NULL; }, $price);
-                unset($price['price_country_id']); // unset autofill datas
-                unset( $price['price_currency']);
-        
-                if (array_filter($price)){
-        
-                    $price['price_country_id'] = $countryId;
-                    $price['price_currency'] =  $currency;
-        
+                $tmp = $price;
+                
+                unset($tmp['price_country_id']); // unset autofill datas
+                unset($tmp['price_currency']);
+                unset($tmp['price_var_id']);
+                unset($tmp['price_id']);
+                
+                if (array_filter($tmp)){        
+                    $price['price_country_id'] = (int) $price['price_country_id'];
+                    $price['price_currency'] = (int) $price['price_currency'];
                     $priceForm->setData($price);
         
                     if(!$priceForm->isValid()){
                         $success = false;
                         $errors[] = $this->getFormErrors($priceForm, $appConfigPriceForm);
                     }
-                    $data['prices'][] = $priceForm->getData();
+                    $price = array_map(function($item) { return is_numeric($item) ? $item: NULL; }, $priceForm->getData());
+                    $data['prices'][] = $price;
+                }else{
+                    if(isset($price['price_id'])){
+                        $priceTable->deleteById($price['price_id']);
+                    }
                 }
+                
             }
         } 
         $results = array(
@@ -378,6 +384,38 @@ class MelisComPriceController extends AbstractActionController
             'datas' => $data,
         );        
         return new JsonModel($results);
+    }
+    
+   /**
+    * This method deletes the price entry if the country its affected is deleted
+    * @return \Zend\View\Model\JsonModel
+    */
+    public function priceCountryDeletedAction()
+    {
+        $success = 0;
+        $errors = array();
+        $data = array();
+        $countryId = -1;
+   
+        $priceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');
+        $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+        
+        $countryId = $this->getRequest()->getPost('id');
+        
+        //check if country is already deleted
+        $country = $countryTable->getEntryById($countryId);
+        if($country->count() === 0){            
+            if(is_numeric($countryId)){
+                $priceTable->deleteByField('price_country_id', $countryId);
+                $success = 1;
+            }            
+        }
+        $results = array(
+            'success' => $success,
+            'errors' => $errors,
+            'datas' => $data,
+        );
+        return new JsonModel($results); 
     }
     
     /**
@@ -399,75 +437,7 @@ class MelisComPriceController extends AbstractActionController
         }
         return $errors;
     }
-    
-    private function formatPrice($price)
-    {
-        /**
-         * if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-    echo 'This is a server using Windows!';
-} else {
-    echo 'This is a server not using Windows!';
-}
-         * @var string $sessionLocale
-         * http://php.net/manual/en/function.php-uname.php
-         */
-        $sessionLocale = 'en_EN';
-        $container = new Container('meliscore');
-        if (!empty($container['melis-lang-locale']))
-            $sessionLocale = $container['melis-lang-locale'];
-            
-//         if($sessionLocale == 'en_EN') {
-//             $sessionLocale = 'en_US';
-//         }
-        
-        if($this->isWindows()) {
-            //$sessionLocale = str_replace('_', '-', $sessionLocale);
-            $sessionLocale = substr($sessionLocale, 0, 2);
-        }
 
-        setlocale(LC_MONETARY, $sessionLocale);
-        $locale = localeconv();
-
-        $curSymbol = trim($locale['currency_symbol']);
-        $curSymbolInt = trim($locale['int_curr_symbol']);
-        $decimalPoint = trim($locale['mon_decimal_point']);
-        $thousandSeparator = trim($locale['mon_thousands_sep']);
-        $fmt = new \NumberFormatter($sessionLocale, \NumberFormatter::CURRENCY );
-        //$value =  money_format('%.2n', $price); // not windows compatible
-        $value = $fmt->formatCurrency($price, $curSymbolInt);
-
-        if(count($value) === 1) {
-            $value = $fmt->formatCurrency($price, $curSymbolInt);
-        }
-
-        $value = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $value); // replace special characters
-        $value = preg_replace('/[a-zA-Z$ ]/', '', $value); // replace $, [space] and alphabets in price
-        
-        $newVal = $price;
-
-        if($decimalPoint) {
-            $value = explode($decimalPoint, $value);
-            if(is_array($value)) {
-                $tmpVal = str_replace($thousandSeparator, '', $value[0]);
-                $newVal = $tmpVal . $decimalPoint . $value[1];
-            }
-        }
-        
-
-
-        return $newVal;
-    }
-    
-    public function isWindows()
-    {
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-           return true;
-        } else {
-            return false;
-        }
-    }
-    
-    
     public function testAction()
     {
 //         $amount = 9.5;
@@ -478,13 +448,14 @@ class MelisComPriceController extends AbstractActionController
         
 
 //         echo $this->formatPrice(1234567.891234567890000)."\n";
-        $currentLocal = setlocale(LC_MONETARY, 'en');
-        echo 'Current Locale: ' . $currentLocal;
-        $locale = localeconv();
-        print '<pre>';
-        print_r($locale);
-        print '</pre>';
-        
+//         $currentLocal = setlocale(LC_MONETARY, 'en');
+//         echo 'Current Locale: ' . $currentLocal;
+//         $locale = localeconv();
+//         print '<pre>';
+//         print_r($locale);
+//         print '</pre>';
+        $num = number_format('2,211.124', 2, '.', '');
+        echo $num;
         die;
     }
 

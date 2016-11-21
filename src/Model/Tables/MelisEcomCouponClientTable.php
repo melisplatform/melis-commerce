@@ -22,4 +22,25 @@ class MelisEcomCouponClientTable extends MelisEcomGenericTable
         $this->idField = 'ccli_id';
     }
     
+    public function checkCouponClientExist($couponId, $clientId)
+    {
+        $select = $this->tableGateway->getSql()->select();
+        $select->where('melis_ecom_coupon_client.ccli_coupon_id ='.$couponId);
+        $select->where('melis_ecom_coupon_client.ccli_client_id ='.$clientId);
+        
+        $resultData = $this->tableGateway->selectWith($select);
+        return $resultData;
+    }
+    
+    public function removeCouponFromClient($couponId, $clientId)
+    {
+        $delete = $this->tableGateway->getSql()->delete();
+        
+        $delete->where('melis_ecom_coupon_client.ccli_coupon_id ='.$couponId);
+        $delete->where('melis_ecom_coupon_client.ccli_client_id ='.$clientId);
+        
+        $resultData = $this->tableGateway->deleteWith($delete);
+        return $resultData;
+    }
+    
 }

@@ -7,8 +7,8 @@
 ?>
 <div class="panel-heading" style="height: initial;" <?php echo $id.' '.$data_melisKey; ?>>
 	<div class="panel-title" style="margin-top: inherit;">
-		<div class="panel-heading-buttons">
-    		<?php 
+		<div class="panel-heading-buttons pull-right" align="right">
+			<?php 
             	if(!empty($this->zoneconfig['interface'])) {
             	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
             	        echo $this->$keyConfig;
@@ -17,7 +17,7 @@
             ?>
         </div>
 		<a class="accordion-toggle" data-toggle="collapse" data-target="#categoryTreeViewPanel">
-			<h1 class="content-heading"><?php echo $this->translate('tr_meliscommerce_categories_Categories')?></h1>
+			<h1 class="content-heading"><?php echo $this->translate('tr_meliscommerce_categories_Categories_title')?></h1>
 		</a>
 	</div>
 </div>

@@ -21,7 +21,7 @@ return array(
                                         'label' => 'tr_meliscommerce_coupon_code',
                                     ),
                                     'attributes' => array(
-                                        'id' => '',
+                                        'id' => 'coup_code',
                                     ),
                                 ),
                             ),
@@ -199,7 +199,7 @@ return array(
                             ),
                             'coup_max_use_number' => array(
                                 'name'     => 'coup_max_use_number',
-                                'required' => true,
+                                'required' => false,
                                 'validators' => array(
                                     array(
                                         'name'    => '\Zend\I18n\Validator\IsInt',

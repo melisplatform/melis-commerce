@@ -22,7 +22,7 @@ class EcomCountriesNoAllCountriesSelectFactory extends MelisSelectFactory
         $serviceManager = $formElementManager->getServiceLocator();
 
         $melisEcomCountryTable = $serviceManager->get('MelisEcomCountryTable');
-        $ecomCountries = $melisEcomCountryTable->fetchAll();
+        $ecomCountries = $melisEcomCountryTable->getCountries();
 
         $translator = $serviceManager->get('translator');
         $valueoptions = array();

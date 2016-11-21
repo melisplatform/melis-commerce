@@ -95,6 +95,43 @@ return array(
                             ),
                         )
                     ),
+                    'meliscommerce_categories_date_validty_form' => array(
+                        'attributes' => array(
+                            'name' => '',
+                            'id' => '',
+                            'method' => '',
+                            'action' => '',
+                        ),
+                        'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
+                        'elements' => array(
+                            array(
+                                'spec' => array(
+                                    'name' => 'cat_date_valid_start',
+                                    'type' => 'EcomDateField',
+                                    'options' => array(
+                                        'label' => 'tr_meliscommerce_categories_category_valid_from',
+                                    ),
+                                    'attributes' => array(
+                                        'dateId' => 'categoryValidateDates',
+                                        'dateLabel' => 'tr_meliscommerce_categories_category_valid_from',
+                                    )
+                                )
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'cat_date_valid_end',
+                                    'type' => 'EcomDateField',
+                                    'options' => array(
+                                        'label' => 'tr_meliscommerce_categories_category_valid_to',
+                                    ),
+                                    'attributes' => array(
+                                        'dateId' => 'categoryValidateDates',
+                                        'dateLabel' => 'tr_meliscommerce_categories_category_valid_to',
+                                    )
+                                )
+                            ),
+                        )
+                    ),
                 ),
             ),
         ),

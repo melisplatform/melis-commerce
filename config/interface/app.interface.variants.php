@@ -140,7 +140,7 @@ return array(
                                                         'id' => 'id_meliscommerce_variant_tab_main',
                                                         'melisKey' => 'meliscommerce_variant_tab_main',
                                                         'name' => 'tr_meliscommerce_variant_tab_main',
-                                                        'icon' => 'glyphicons tags',
+                                                        'icon' => 'glyphicons tag',
                                                         'active' => 'active',
                                                         'href' => 'id_meliscommerce_variant_tab_content_main',
                                                     ),

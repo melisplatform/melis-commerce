@@ -32,6 +32,8 @@ return array(
                                     'type' => 'EcomAttributeTypeSelect',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_attribute_type',
+                                        'empty_option' => 'tr_meliscommerce_clients_common_label_choose',
+                                        'disable_inarray_validator' => true,
                                     ),
                                     'attributes' => array(
                                         'id' => '',
@@ -62,6 +64,24 @@ return array(
                                             'max'      => 45,
                                             'messages' => array(
                                                 \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_address_error_long_45',
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                                'filters'  => array(
+                                    array('name' => 'StripTags'),
+                                    array('name' => 'StringTrim'),
+                                ),
+                            ),
+                            'attr_type_id' => array(
+                                'name'     => 'attr_type_id',
+                                'required' => true,
+                                'validators' => array(
+                                    array(
+                                        'name' => 'NotEmpty',
+                                        'options' => array(
+                                            'messages' => array(
+                                                \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_coupon_input_empty',
                                             ),
                                         ),
                                     ),
@@ -192,10 +212,10 @@ return array(
                                 ),
                             ),
                         ),
-                    ),
-                    'meliscommerce_attribute_value' => array(
+                    ),                    
+                    'meliscommerce_attribute_value_avt_v_int' => array(
                         'attributes' => array(
-                            'name' => 'attributeValue',
+                            'name' => 'attributeValueTrans',
                             'id' => '',
                             'method' => 'POST',
                             'action' => '',
@@ -207,105 +227,14 @@ return array(
                                     'name' => 'avt_v_int',
                                     'type' => 'MelisText',
                                     'options' => array(
-                                        'label' => 'tr_meliscommerce_attribute_value_integer',
-                                        'label_attributes' => array(
-                                            'style' => 'display:none;',
-                                        ),
+                                        'label' => 'tr_meliscommerce_attribute_value_integer',                                        
                                     ),
                                     'attributes' => array(
                                         'id' => '',
                                         'max' => '11',
-                                        'style' => 'display:none;',
                                     ),
                                 ),
                             ),
-                            array(
-                                'spec' => array(
-                                    'name' => 'avt_v_float',
-                                    'type' => 'MelisText',
-                                    'options' => array(
-                                        'label' => 'tr_meliscommerce_attribute_value_decimal',
-                                        'label_attributes' => array(
-                                            'style' => 'display:none;',
-                                        ),
-                                    ),
-                                    'attributes' => array(
-                                        'id' => '',
-                                        'max' => '11',
-                                        'style' => 'display:none;',
-                                    )
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
-                                    'name' => 'avt_v_bool',
-                                    'type' => 'MelisText',
-                                    'options' => array(
-                                        'label' => 'tr_meliscommerce_attribute_value_boolean',
-                                        'label_attributes' => array(
-                                            'style' => 'display:none;',
-                                        ),
-                                    ),
-                                    'attributes' => array(
-                                        'id' => '',
-                                        'style' => 'display:none;',
-                                    )
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
-                                    'name' => 'avt_v_varchar',
-                                    'type' => 'MelisText',
-                                    'options' => array(
-                                        'label' => 'tr_meliscommerce_attribute_value_varchar',
-                                        'label_attributes' => array(
-                                            'style' => 'display:none;',
-                                            'label_attributes' => array(
-                                                'style' => 'display:none;',
-                                            ),
-                                        ),
-                                    ),
-                                    'attributes' => array(
-                                        'id' => '',
-                                        'max' => '255',
-                                        'style' => 'display:none;',
-                                    )
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
-                                    'name' => 'avt_v_text',
-                                    'type' => 'TextArea',
-                                    'options' => array(
-                                        'label' => 'tr_meliscommerce_attribute_value_text',
-                                        'label_attributes' => array(
-                                            'style' => 'display:none;',
-                                        ),
-                                    ),
-                                    'attributes' => array(
-                                        'id' => '',
-                                        'class' => 'form-control',
-                                        'style' => 'max-width:100%;',
-                                        'rows' => '4',
-                                        'maxlength' => 1200,
-                                        'style' => 'display:none;',
-                                    )
-                                ),
-                            ),
-//                             array(
-//                                 'spec' => array(
-//                                     'name' => 'avt_v_datetime',
-//                                     'type' => 'EcomDateField',
-//                                     'options' => array(
-//                                         'label' => 'tr_meliscommerce_attribute_value_date',
-//                                     ),
-//                                     'attributes' => array(
-//                                         'dateId' => 'valueDate',
-//                                         'dateLabel' => 'tr_meliscommerce_attribute_value_date',
-//                                         'style' => 'display:none;',
-//                                     ),
-//                                 ),
-//                             ),
                             array(
                                 'spec' => array(
                                     'name' => 'avt_id',
@@ -316,7 +245,18 @@ return array(
                                         'id' => '',
                                     ),
                                 ),
-                            ),                            
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'av_attribute_value_id',
+                                    'type' => 'hidden',
+                                    'options' => array(
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                    ),
+                                ),
+                            ),
                             array(
                                 'spec' => array(
                                     'name' => 'avt_lang_id',
@@ -348,6 +288,65 @@ return array(
                                     array('name' => 'StringTrim'),
                                 ),
                             ),
+                        ),
+                    ),
+                    'meliscommerce_attribute_value_avt_v_float' => array(
+                        'attributes' => array(
+                            'name' => 'attributeValueTrans',
+                            'id' => '',
+                            'method' => 'POST',
+                            'action' => '',
+                        ),
+                        'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
+                        'elements' => array(
+                            array(
+                                'spec' => array(
+                                    'name' => 'avt_v_float',
+                                    'type' => 'MelisText',
+                                    'options' => array(
+                                        'label' => 'tr_meliscommerce_attribute_value_decimal',
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                        'max' => '11',
+                                    )
+                                ),
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'avt_id',
+                                    'type' => 'hidden',
+                                    'options' => array(
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                    ),
+                                ),
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'av_attribute_value_id',
+                                    'type' => 'hidden',
+                                    'options' => array(
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                    ),
+                                ),
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'avt_lang_id',
+                                    'type' => 'hidden',
+                                    'options' => array(
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                    ),
+                                ),
+                            ),
+                        ),
+                        'input_filter' => array(
                             'avt_v_float' => array(
                                 'name'     => 'avt_v_float',
                                 'required' => false,
@@ -366,6 +365,122 @@ return array(
                                     array('name' => 'StringTrim'),
                                 ),
                             ),
+                        ),
+                    ),
+                    'meliscommerce_attribute_value_avt_v_bool' => array(
+                        'attributes' => array(
+                            'name' => 'attributeValueTrans',
+                            'id' => '',
+                            'method' => 'POST',
+                            'action' => '',
+                        ),
+                        'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
+                        'elements' => array(
+                            array(
+                                'spec' => array(
+                                    'name' => 'avt_v_bool',
+                                    'type' => 'MelisText',
+                                    'options' => array(
+                                        'label' => 'tr_meliscommerce_attribute_value_boolean',
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                    )
+                                ),
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'avt_id',
+                                    'type' => 'hidden',
+                                    'options' => array(
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                    ),
+                                ),
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'av_attribute_value_id',
+                                    'type' => 'hidden',
+                                    'options' => array(
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                    ),
+                                ),
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'avt_lang_id',
+                                    'type' => 'hidden',
+                                    'options' => array(
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                    ),
+                                ),
+                            ),
+                        ),
+                        'input_filter' => array(),
+                    ),
+                    'meliscommerce_attribute_value_avt_v_varchar' => array(
+                        'attributes' => array(
+                            'name' => 'attributeValueTrans',
+                            'id' => '',
+                            'method' => 'POST',
+                            'action' => '',
+                        ),
+                        'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
+                        'elements' => array(
+                            array(
+                                'spec' => array(
+                                    'name' => 'avt_v_varchar',
+                                    'type' => 'MelisText',
+                                    'options' => array(
+                                        'label' => 'tr_meliscommerce_attribute_value_varchar',
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                        'max' => '255',
+                                    )
+                                ),
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'avt_id',
+                                    'type' => 'hidden',
+                                    'options' => array(
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                    ),
+                                ),
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'av_attribute_value_id',
+                                    'type' => 'hidden',
+                                    'options' => array(
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                    ),
+                                ),
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'avt_lang_id',
+                                    'type' => 'hidden',
+                                    'options' => array(
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                    ),
+                                ),
+                            ),
+                        ),
+                        'input_filter' => array(
                             'avt_v_varchar' => array(
                                 'name'     => 'avt_v_varchar',
                                 'required' => false,
@@ -386,6 +501,68 @@ return array(
                                     array('name' => 'StringTrim'),
                                 ),
                             ),
+                        ),
+                    ),
+                    'meliscommerce_attribute_value_avt_v_text' => array(
+                        'attributes' => array(
+                            'name' => 'attributeValueTrans',
+                            'id' => '',
+                            'method' => 'POST',
+                            'action' => '',
+                        ),
+                        'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
+                        'elements' => array(
+                            array(
+                                'spec' => array(
+                                    'name' => 'avt_v_text',
+                                    'type' => 'TextArea',
+                                    'options' => array(
+                                        'label' => 'tr_meliscommerce_attribute_value_text',
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                        'class' => 'form-control',
+                                        'style' => 'max-width:100%;',
+                                        'rows' => '4',
+                                        'maxlength' => 1200,
+                                    )
+                                ),
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'avt_id',
+                                    'type' => 'hidden',
+                                    'options' => array(
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                    ),
+                                ),
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'av_attribute_value_id',
+                                    'type' => 'hidden',
+                                    'options' => array(
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                    ),
+                                ),
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'avt_lang_id',
+                                    'type' => 'hidden',
+                                    'options' => array(
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                    ),
+                                ),
+                            ),
+                        ),
+                        'input_filter' => array(
                             'avt_v_text' => array(
                                 'name'     => 'avt_v_text',
                                 'required' => false,
@@ -407,6 +584,64 @@ return array(
                                 ),
                             ),
                         ),
+                    ),
+                    'meliscommerce_attribute_value_avt_v_datetime' => array(
+                        'attributes' => array(
+                            'name' => 'attributeValueTrans',
+                            'id' => '',
+                            'method' => 'POST',
+                            'action' => '',
+                        ),
+                        'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
+                        'elements' => array(
+                            array(
+                                'spec' => array(
+                                    'name' => 'avt_v_datetime',
+                                    'type' => 'EcomDateField',
+                                    'options' => array(
+                                        'label' => 'tr_meliscommerce_attribute_value_date',
+                                    ),
+                                    'attributes' => array(
+                                        'dateId' => 'valueDate',
+                                        'dateLabel' => 'tr_meliscommerce_attribute_value_date',                                        
+                                    ),
+                                ),
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'avt_id',
+                                    'type' => 'hidden',
+                                    'options' => array(
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                    ),
+                                ),
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'av_attribute_value_id',
+                                    'type' => 'hidden',
+                                    'options' => array(
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                    ),
+                                ),
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'avt_lang_id',
+                                    'type' => 'hidden',
+                                    'options' => array(
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                    ),
+                                ),
+                            ),
+                        ),
+                        'input_filter' => array(),
                     ),
                 ),
             ),            

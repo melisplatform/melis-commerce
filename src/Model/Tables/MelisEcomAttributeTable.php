@@ -42,17 +42,19 @@ class MelisEcomAttributeTable extends MelisEcomGenericTable
         
         if (!is_null($status))
         {
-            $select->where('melis_ecom_attribute.attr_status ='.$status);
+            echo 'hey';
+            $select->where->equalTo('melis_ecom_attribute.attr_status ='.$status);
         }
         
         if (!is_null($visible))
         {
-            $select->where('melis_ecom_attribute.attr_visible ='.$visible);
+
+            $select->where->equalTo('melis_ecom_attribute.attr_visible ='.$visible);
         }
         
         if (!is_null($searchable))
         {
-            $select->where('melis_ecom_attribute.attr_searchable ='.$searchable);
+            $select->where->equalTo('melis_ecom_attribute.attr_searchable ='.$searchable);
         }
         
         if (!is_null($start))

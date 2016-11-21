@@ -58,6 +58,64 @@ class MelisComClientListController extends AbstractActionController
     }
     
     /**
+     * Render client widgets container
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderClientListWidgetsAction()
+    {
+        $view = new ViewModel();
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view->melisKey = $melisKey;
+        return $view;
+    }
+    
+    /**
+     * renders the client list page client count widget
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderClientListWidgetsNumClientsAction()
+    {
+        $clientSvc = $this->getServiceLocator()->get('MelisComClientService');
+        $clientCount = $clientSvc->getClientList();
+        $view = new ViewModel();
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view->melisKey = $melisKey;
+        $view->num = count($clientCount);
+        return $view;
+    }
+    
+    /**
+     * renders the client list page monthly clients
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderClientListWidgetsMonthClientsAction()
+    {
+        $clientSvc = $this->getServiceLocator()->get('MelisComClientService');
+        $clientCount = $clientSvc->getWidgetClients('curMonth');
+        $view = new ViewModel();
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view->melisKey = $melisKey;
+        $view->num = $clientCount;
+        return $view;
+    }
+    
+    /**
+     * renders the client list page average client count
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderClientListWidgetsAvgClientsAction()
+    {
+        $clientSvc = $this->getServiceLocator()->get('MelisComClientService');
+        $clientCount = $clientSvc->getWidgetClients('avgMonth');
+    
+        $view = new ViewModel();
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view->melisKey = $melisKey;
+        $view->num = (float) $clientCount['average'];
+        return $view;
+    }
+    
+    /**
      * Render Client List Content
      * 
      * @return \Zend\View\Model\ViewModel
@@ -89,7 +147,7 @@ class MelisComClientListController extends AbstractActionController
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->tableColumns = $columns;
-        $view->getToolDataTableConfig = $melisTool->getDataTableConfiguration();
+        $view->getToolDataTableConfig = $melisTool->getDataTableConfiguration(null, null, null, array('order' => '[[ 0, "desc" ]]'));
         return $view;
     }
     
@@ -182,9 +240,9 @@ class MelisComClientListController extends AbstractActionController
             $search = $search['value'];
             
             // Getting Client List from Client Service with filters, such as search, start, limit and order
-            $clientData = $melisComClientService->getClientList(null, null, null, null, $start, $length, $search, $sortOrder);
+            $clientData = $melisComClientService->getClientList(null, null, null, null, $start, $length, $sortOrder, $search);
             // Getting Client List from Client Service with less filters, this will return the exact number of requested result 
-            $clientDataFiltered = $melisComClientService->getClientList(null, null, null, null, null, null, $search, $sortOrder);
+            $clientDataFiltered = $melisComClientService->getClientList(null, null, null, null, null, null, $sortOrder, $search);
             
             $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
             

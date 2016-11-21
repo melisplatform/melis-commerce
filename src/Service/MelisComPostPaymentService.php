@@ -1,0 +1,87 @@
+<?php
+
+/**
+ * Melis Technology (http://www.melistechnology.com)
+ *
+ * @copyright Copyright (c) 2016 Melis Technology (http://www.melistechnology.com)
+ *
+ */
+
+namespace MelisCommerce\Service;
+
+/**
+ *
+ * This Service will process Checkout Post Payment 
+ * 
+ * This Service is created for a testing
+ *
+ */
+class MelisComPostPaymentService extends MelisComGeneralService
+{
+    public function processPostPayment($payment, $postValues)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_checkout_proccess_post_payment_start', $arrayParameters);
+        
+        // Service implementation start
+        if (!empty($arrayParameters['postValues']))
+        {
+            $payment = $arrayParameters['payment'];
+            $postValues = $arrayParameters['postValues'];
+            
+            $orderId = $postValues['order-id'];
+            // Getting Client Id
+            $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
+            $orderData = $melisEcomOrderTable->getEntryById($orderId)->current();
+            $clientId = $orderData->ord_client_id;
+            
+            $payment['clientId'] = $clientId;
+            $payment['orderId'] = $orderId;
+            
+            // Payment Details
+            $payment['payment_details'] = array(
+                'paymentType' => $postValues['payment-type-id'],
+                'transactionId' => $postValues['payment-transaction-id'],
+                'transactionReturnCode' => $postValues['payment-transaction-return-code'],
+                'transactionPricePaid' => $postValues['payment-transaction-price-paid'],
+                'transactionFullRawResponse' => $postValues['payment-transaction-raw-response'],
+                'transactionPricepaidConfirm' => $postValues['payment-transaction-price-paid-confirm'],
+                'transactionFullRawResponse' => $postValues['payment-transaction-raw-response'],
+                'transactionDateTime' => $postValues['payment-transaction-date'],
+            );
+            
+            // Shipping Total Amount
+            $total = 0;
+            // Shipping errors
+            $errors = array();
+            // Generate Error here if needed
+            /**
+             * Example :
+             * $errors = array(
+             *      'error_code' => 'xxxx',
+             *      'error_code' => 'xxxx',
+             *      'error_code' => 'xxxx',
+             * );
+             */
+            
+            if (!empty($errors))
+            {
+                $payment['errors']['payment'] = $errors;
+            }
+            else 
+            {
+                $payment['success'] = true;
+            }
+        }
+        // Service implementation end
+        
+        $arrayParameters['results'] = $payment;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_checkout_proccess_post_payment_end', $arrayParameters);
+        
+        return $arrayParameters['results'];
+    }
+}

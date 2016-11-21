@@ -1,0 +1,45 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = 'id="'.$this->zoneconfig['conf']['id'] .'"';
+    }
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<div <?php echo $id.' '.$data_melisKey; ?> style="position: relative">
+	<?php 
+		$this->melisGenericTable()->setTable(array(
+		    'id' => 'orderCheckoutContactListTbl',
+		    'class' => 'table table-striped table-primary dt-responsive nowrap',
+		    'cellspacing' => '0',
+		    'width' => '100%'
+	    ));
+		
+        $columns = array();
+        $columnStyle = array();
+        foreach($this->tableColumns as $columnText){
+            $columns[] = $columnText['text']; 
+        }
+        
+		$this->melisGenericTable()->setColumns($columns);
+		echo $this->melisGenericTable()->renderTable();
+	?>
+	<br>
+    <div class="row bottom-bottons">
+        <div class="me-hl col-xs-12 col-md-12">
+            <a class="btn btn-success orderCheckoutPrevStep" data-tabid="#id_meliscommerce_order_checkout_choose_product_step_nav"><i class="fa fa-arrow-left"></i> <?php echo $this->translate('tr_meliscommerce_order_checkout_common_prev')?> </a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+	<?php echo $this->getToolDataTableConfig; ?>
+	$(function(){
+		$(document).on('column-sizing.dt','#orderCheckoutContactListTbl', function(e, settings) {
+			$("#orderCheckoutContactListTbl thead tr").find("th:nth-child(1)").css({"width" : "1px","padding-left" : "10px","padding-right" : "10px"});
+			$("#orderCheckoutContactListTbl tbody tr").find("td:nth-child(1)").css({"width" : "1px","padding-left" : "30px","padding-right" : "10px"});
+			$("#orderCheckoutContactListTbl thead tr").find("th:nth-child(5)").css({"width" : "1px","padding-left" : "10px","padding-right" : "10px"});
+			$("#orderCheckoutContactListTbl tbody tr").find("td:nth-child(5)").css({"width" : "1px","padding-left" : "10px","padding-right" : "10px"});
+			$("#orderCheckoutContactListTbl thead tr").find("th:nth-child(7)").css({"width" : "1px","padding-left" : "10px","padding-right" : "10px"});
+			$("#orderCheckoutContactListTbl tbody tr").find("td:nth-child(7)").css({"width" : "1px","padding-left" : "10px","padding-right" : "10px"});
+		});
+	});
+</script>

@@ -5,7 +5,26 @@
     }
     $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
 ?>
-<div class="tab-pane <?php echo $this->activateTab ?>" <?php echo $id. ' '.$data_melisKey?>>				
+<div class="tab-pane <?php echo $this->activateTab ?>" <?php echo $id. ' '.$data_melisKey?>>
+	<style>
+   
+    <?php foreach($this->status as $status):
+     echo '.order-status-'.$status->osta_id.'{
+            border-color: '.$status->osta_color_code.' ;
+            color: '.$status->osta_color_code.';
+            border-radius: 4px;             
+            }
+            ';
+    echo '.order-status-'.$status->osta_id.':hover{
+            color : #fff;
+            background : '.$status->osta_color_code.';
+            }
+            ';
+    
+    endforeach;
+    ?>
+    
+    </style>				
 	<div class="melis-product-heading border-bottom" style="margin-bottom: 20px">
 		<h3><?php echo $this->translate('tr_meliscommerce_client_page_tab_orders_title')?></h3>					
 	</div>
@@ -22,15 +41,56 @@
     	$columnStyle = array();
     	foreach($this->tableColumns as $columnText){
     	    $columns[] = $columnText['text'];
-    	}
-    	
+    	}    	
     	$this->melisGenericTable()->setColumns($columns);
     	
     	echo $this->melisGenericTable()->renderTable();
 	?>
 	<script>
     	$(document).ready(function() {
-    		<?php echo $this->getToolDataTableConfig; ?>
+    		<?php echo $this->getToolDataTableConfig; ?>			
+			$(document).on('column-sizing.dt','#<?php echo $this->clientId?>_tableClientOrderList', function(e, settings) {
+				$("#<?php echo $this->clientId?>_tableClientOrderList thead tr").find("th:nth-child(1)").css({"width" : "1px","padding-left" : "10px","padding-right" : "10px"});
+				$("#<?php echo $this->clientId?>_tableClientOrderList tbody tr").find("td:nth-child(1)").css({"width" : "1px","padding-left" : "10px","padding-right" : "10px"});
+				$("#<?php echo $this->clientId?>_tableClientOrderList thead tr").find("th:nth-child(4)").css({"width" : "1px","padding-left" : "10px","padding-right" : "10px"});
+				$("#<?php echo $this->clientId?>_tableClientOrderList tbody tr").find("td:nth-child(4)").css({"width" : "1px","padding-left" : "10px","padding-right" : "10px"});
+				$("#<?php echo $this->clientId?>_tableClientOrderList thead tr").find("th:nth-child(9)").css({"width" : "1px","padding-left" : "10px","padding-right" : "10px"});
+					
+			});
+			
+			$(document).on("init.dt", function(e, settings) {
+				var sToday = translations.tr_meliscore_datepicker_today;
+				var sYesterday = translations.tr_meliscore_datepicker_yesterday;
+				var sLast7Days = translations.tr_meliscore_datepicker_last_7_days;
+				var sLast30Days = translations.tr_meliscore_datepicker_last_30_days;
+				var sThisMonth = translations.tr_meliscore_datepicker_this_month;
+				var sLastMonth = translations.tr_meliscore_datepicker_last_month;
+				
+				function cb(start, end) {
+					dStartDate = start.format(melisDateFormat);
+					dEndDate   = end.format(melisDateFormat);
+					// default display upon initialization of date picker
+					//var icon = '<i class="glyphicon glyphicon-calendar fa fa-calendar"></i>';
+					//$('#dt_bsdatepicker .dt_dateInfo').html("Select Date: " + icon + dStartDate + ' - ' + dEndDate + ' <b class="caret"></b>');
+				}
+				var rangeStringParam = {};
+				rangeStringParam[sToday] = [moment(), moment()];
+				rangeStringParam[sYesterday] = [moment().subtract(1, 'days'), moment().subtract(1, 'days')];
+				rangeStringParam[sLast7Days] = [moment().subtract(6, 'days'), moment()];
+				rangeStringParam[sLast30Days] = [moment().subtract(29, 'days'), moment()];
+				rangeStringParam[sThisMonth] = [moment().startOf('month'), moment().endOf('month')];
+				rangeStringParam[sLastMonth] = [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')];
+				
+				$(".dt_orderdatepicker").daterangepicker({
+			    	locale : {
+			    		format: melisDateFormat,
+			    		applyLabel: translations.tr_meliscore_datepicker_apply,
+			    		cancelLabel: translations.tr_meliscore_datepicker_cancel,
+			    		customRangeLabel: translations.tr_meliscore_datepicker_custom_range,
+			    	},
+			        ranges: rangeStringParam,
+			    }, cb);			
+			});
 		});
 	</script>
 </div>

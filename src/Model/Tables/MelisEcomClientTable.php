@@ -23,31 +23,47 @@ class MelisEcomClientTable extends MelisEcomGenericTable
     }
     
     public function getClientList($countryId = null, $dateCreationMin = null, $dateCreationMax = null, 
-	                              $onlyValid = null, $start = 0, $limit = null, $order = 'ASC')
+	                              $onlyValid = null, $start = 0, $limit = null, $order = array(), $search = null)
     {
         $select = $this->tableGateway->getSql()->select();
+        $select->quantifier('DISTINCT');
+        $select->join('melis_ecom_client_person', 'melis_ecom_client_person.cper_client_id=melis_ecom_client.cli_id',
+            array(),$select::JOIN_LEFT);
+        $select->join('melis_ecom_client_company', 'melis_ecom_client_company.ccomp_client_id=melis_ecom_client.cli_id',
+            array(),$select::JOIN_LEFT);
         
         if (!is_null($countryId)){
-            $select->where('cli_country_id ='.$countryId);
+            $select->where('melis_ecom_client.cli_country_id ='.$countryId);
         }
         
         if (!is_null($dateCreationMin)){
-            $select->where('cli_date_creation >='.$dateCreationMin);
+            $select->where('melis_ecom_client.cli_date_creation >='.$dateCreationMin);
         }
         
         if (!is_null($dateCreationMax)){
-            $select->where('cli_date_creation <='.$dateCreationMax);
+            $select->where('melis_ecom_client.cli_date_creation <='.$dateCreationMax);
         }
         
         if (!is_null($onlyValid)&&in_array($onlyValid, array('0','1'))){
             $select->where('cli_status ='.$onlyValid);
         }
         
-//         if (!is_null($limit)&&is_numeric($limit)){
-//             $select->limit((int)$limit);
-//         }
+        if(!is_null($search)){
+            $search = '%'.$search.'%';
+            $select->where->NEST->like('cli_id', $search)
+            ->or->like('melis_ecom_client_person.cper_name', $search)
+            ->or->like('melis_ecom_client_person.cper_firstname', $search)
+            ->or->like('melis_ecom_client_company.ccomp_name', $search);
+        }
         
-//         $select->offset((int)$start);
+        if (!is_null($start) && is_numeric($start))
+        {
+            $select->offset((int)$start);
+        }
+        
+        if (!is_null($limit) && is_numeric($limit) && $limit != -1){
+            $select->limit((int)$limit);
+        }
         
         $select->order(array('cli_id' => $order));
         
@@ -68,7 +84,7 @@ class MelisEcomClientTable extends MelisEcomGenericTable
         return $resultData;
     }
     
-    public function getCouponClientList($langId = null, $onlyValid = null, $couponId = null, $start = 0, $limit = null, $order = 'cli_id ASC', $search = null)
+    public function getCouponClientList($langId = null, $onlyValid = null, $isMain = null, $couponId = null, $start = 0, $limit = null, $order = 'cli_id ASC', $search = null)
     {
         $select = $this->tableGateway->getSql()->select();
         $select->quantifier('DISTINCT');
@@ -104,6 +120,11 @@ class MelisEcomClientTable extends MelisEcomGenericTable
             $select->where('cli_status ='.$onlyValid);
         }
         
+        if (!is_null($isMain))
+        {
+            $select->where('melis_ecom_client_person.cper_is_main_person ='.$isMain);
+        }
+        
         if (!is_null($start))
         {
             $select->offset($start);
@@ -116,6 +137,24 @@ class MelisEcomClientTable extends MelisEcomGenericTable
     
         $select->order($order);
         $resultData = $this->tableGateway->selectWith($select);
+        return $resultData;
+    }
+    
+    public function getCurrentMonth()
+    {
+        $select = $this->tableGateway->getSql()->select();
+        $select->where('YEAR(cli_date_creation) = YEAR(CURRENT_DATE())');
+        $select->where('MONTH(cli_date_creation) = MONTH(CURRENT_DATE())');
+    
+        $resultData = $this->tableGateway->selectWith($select);
+        return $resultData;
+    }
+    
+    public function getAvgMonth()
+    {
+        $sql = 'SELECT AVG(`monthly`) AS average FROM (SELECT COUNT(*) as `monthly` from melis_ecom_client group by YEAR(`cli_date_creation`), MONTH(`cli_date_creation`)) AS average';
+        $resultData = $this->tableGateway->getAdapter()->driver->getConnection()->execute($sql);
+    
         return $resultData;
     }
 }

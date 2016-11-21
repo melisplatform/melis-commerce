@@ -14,7 +14,7 @@
 			<div class="widget widget-tabs widget-tabs-double widget-tabs-responsive margin-none border-none">
                 <div class="widget-head">
                 	<ul class="nav nav-tabs">
-                		<li class="active"><a href="#<?php echo $this->zoneconfig['conf']['id'] ?>" class="glyphicons comments" data-toggle="tab" aria-expanded="true"><i></i> <?php echo $this->title ?></a></li>
+                		<li class="active"><a href="#<?php echo $this->zoneconfig['conf']['id'] ?>" style="color:#000;" class="" data-toggle="tab" aria-expanded="true"><span class="text-danger">&nbsp;<i class="text-danger fa fa-language" style="color:#fff"></i>&nbsp;&nbsp;<?php echo $this->title ?>&nbsp;&nbsp;</span></a></li>
             		</ul>
         		</div>
         		<div class="widget-body innerAll inner-2x">
@@ -22,13 +22,32 @@
         				<div class="tab-pane active" id="<?php echo $id ?>">
                         <?php 
                             $form = $this->form;
+                            $form->setAttribute('data-savetype', $this->saveType);
                             $form->prepare();
                             $form->setData($this->data);
+							$langStatus = '';
+							if(isset($this->data['elang_status'])) {
+								$langStatus = (int) $this->data['elang_status'] ? 'checked="checked"' : '';
+							}
+                            if($this->data) {
+                                $form->get('tmp_elang_name')->setValue($this->data['elang_name']);
+                                $form->get('tmp_elang_locale')->setValue($this->data['elang_locale']);
+                            }
                             echo $this->form()->openTag($form);
+						?>
+						<div class="pull-right">
+							<div <?= $id; ?> class="make-switch" data-on-label="<?php echo $this->translate('tr_meliscommerce_products_page_content_tab_main_header_switch_online')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_products_page_content_tab_main_header_switch_offline')?>" data-text-label="<?php echo $this->translate('tr_meliscommerce_categories_common_label_status')?>">
+								<input type="checkbox" name="elang_status" id="elang_status" <?php echo $langStatus; ?>>
+							</div>
+						</div><div class="clearfix"></div>
+						<?php
                             echo $this->melisFieldCollection($form);
                             echo $this->form()->closeTag();
                         ?>
-                        <button class="btn btn-success pull-right" id="btnComSaveLang"><i class="fa fa-save"></i> <?= $this->translate('tr_meliscommerce_general_common_save'); ?></button>
+                        <div align="right">
+                     		<button data-dismiss="modal" class="btn btn-danger pull-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
+                     		<button class="btn btn-success" id="btnComSaveLang"><i class="fa fa-save"></i>  <?php echo $this->translate('tr_meliscommerce_orders_common_btn_save') ?></button>
+                     	</div>
                         <div class="clearfix"></div>
                         </div>
                     </div>

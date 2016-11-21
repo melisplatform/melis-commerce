@@ -112,6 +112,7 @@ return array(
 			                                    'module' => 'MelisCommerce',
 			                                    'controller' => 'MelisComLanguage',
 			                                    'action' => 'render-language-list-page-modal-form',
+                                                'jscallback' => 'initProductSwitch();'
 			                                ),
 			                            )
 			                        )

@@ -18,7 +18,7 @@ composer.json:
         },
         "repositories": [
             {
-                "type": "vcs",
+                "type": "git",
                 "url": "https://github.com/melisplatform/melis-commerce"
             }
         ]

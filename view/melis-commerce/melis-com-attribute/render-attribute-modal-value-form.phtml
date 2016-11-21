@@ -21,17 +21,43 @@
         				<div class="tab-pane active" id="<?php echo $id ?>">
                             <div class="row">
                             	<div class="col-md-12">
-                                    <?php 
-                                        $forms = $this->forms;
-                                        for($c = 0; $c< count($this->langs); $c++):
-                                            echo '<h4>'.$this->langs[$c]->elang_name.'</h4>';
-                                            echo $this->form()->openTag($forms[$c]);
-                                            echo $this->melisFieldCollection($forms[$c]);
-                                            echo $this->form()->closeTag();
-                                              
-                                        endfor;
-                                     
+                                    <?php
+                                        echo '<h4>'.$this->translate('tr_meliscommerce_attribute_label_all').'</h4>';
+                                        echo $this->form()->openTag($this->fillAllForm);
+                                        echo $this->melisFieldCollection($this->fillAllForm);
+                                        echo $this->form()->closeTag();
                                     ?>
+                                    <br>
+                                    <div class="panel panel-default commerce-toggle product-create-text">
+                                    	<div class="panel-heading">
+                                    		<h4 class="panel-title">
+                                    			<a class="accordion-toggle collapsed" id="" data-toggle="collapse" href="#fill_<?= $this->zoneconfig['conf']['id']?>"><?= $this->translate('tr_meliscommerce_attribute_value_modal_each_language')?></a>
+                                			</h4>
+                                        </div>
+                                    	<div class="panel-collapse collapse" id="fill_<?= $this->zoneconfig['conf']['id']?>">                                		
+                                    		<div class="panel-body">
+                                          		<div class="innerAll spacing-x2">
+                                		     		<?php
+                                            		$forms = $this->forms;                                		
+                                            		for($c = 0; $c< count($this->langs); $c++):
+                                            		
+                                            		echo '<h4>'.$this->langs[$c]->elang_name.'</h4>';
+                                            		echo $this->form()->openTag($forms[$c]);
+                                            		echo $this->melisFieldCollection($forms[$c]);
+                                            		echo $this->form()->closeTag();
+                                            		
+                                            		endfor;
+                                            		?>
+                                          		</div>
+                                          	</div>                                		
+                                    	</div>
+                                	</div>
+                                	<br>
+                                	<br>
+                                    <?= $this->datePickerInit;?>
+                                 	<style>
+                                    .datepicker{z-index:1151 !important;}
+                                    </style>
                                     <br>
                                  	<div align="right">
                                  		<button data-dismiss="modal" class="btn btn-danger pull-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
