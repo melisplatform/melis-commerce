@@ -22,7 +22,7 @@ return array(
     'tr_meliscommerce_products_main_tab_files_header' => 'File attachments',
     'tr_meliscommerce_products_main_tab_files_header_attach' => 'Attach file',
     'tr_meliscommerce_products_main_tab_attributes_content' => 'Add attribute',
-    'tr_meliscommerce_products_main_tab_attributes_content_label' => 'Select attribute',
+    'tr_meliscommerce_products_main_tab_attributes_content_label' => 'Add attribute',
     'tr_meliscommerce_products_main_tab_images_header' => 'Product images',
     'tr_meliscommerce_products_main_tab_images_header_add' => 'Add image',
     'tr_meliscommerce_products_main_tab_images_filter_search_type_values' => 'Type',

@@ -25,12 +25,31 @@
         	<?php endforeach;?>   
         	
         	<?php if (!empty($this->basket)):?>
-                <div class="form-group">
-                    <br><h4 class="float-right" style="margin: 0 10px 0 0;"><strong><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_sub_total')?>: <?php echo $this->countryCurrencySympbol.' '.number_format($this->total, 2)?></strong></h4><br>
-                </div>
-            <?php endif;?>
-            
-            <?php if (empty($this->basket)):?>
+        		<div class="row">
+        			<div class="col-xs-7">
+                        <div class="input-group">
+                          	<input type="text" class="form-control" placeholder="<?php echo $this->translate('tr_meliscommerce_order_checkout_variant_coupon_code')?>" id="orderCheckoutCouponCode" value="<?php echo $this->couponCode ?>">
+                          	<span class="input-group-btn">
+                            	<button class="btn btn-default" id="orderCheckoutValidateCoupon"><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_validate_coupon')?></button>
+                          	</span>
+                        </div>
+                        <?php if (!empty($this->couponErr)):?>
+                        	<div class="alert alert-danger" style="margin-top: 5px; padding: 7px; border-radius: 0px"><?php echo $this->couponErr?><br></div>
+                        <?php endif;?>
+        			</div>
+        			<div class="col-xs-5" align="right">
+        				<div class="form-group">
+                            <h4><strong><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_sub_total')?>: <?php echo $this->countryCurrencySympbol.' '.number_format($this->subTotal, 2)?></strong></h4>
+                        </div>
+                        <div class="form-group">
+                        	<h4><strong><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_discount')?>: <?php echo $this->countryCurrencySympbol.' '.number_format($this->totalDiscount, 2)?></strong></h4>
+        				</div>
+        				<div class="form-group">
+                            <h4><strong><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_total')?>: <?php echo $this->countryCurrencySympbol.' '.number_format($this->total, 2)?></strong></h4><br>
+                        </div>
+        			</div>
+        		</div>
+            <?php else:?>
                 <div class="me-file-cont">
         			<p><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_empty_basket')?></p>
         		</div>

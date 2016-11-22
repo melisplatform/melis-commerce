@@ -24,22 +24,22 @@ class MelisComProductController extends AbstractActionController
 
     public function renderProductsPageAction()
     {
-       
-    	$melisKey = $this->params()->fromRoute('melisKey', '');
-    	$productId = (int) $this->params()->fromQuery('productId', '');
 
-    	$this->setProductVariables($productId);
-    	
-    	$container = new Container('meliscommerce');
-    	$container['documents'] = array('docRelationType' => 'product', 'docRelationId' => $productId);
-    	
-    	$view = new ViewModel();
-    	$view->melisKey = $melisKey;
-    	$view->productId = $productId;
-    	return $view;
-    	
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $productId = (int) $this->params()->fromQuery('productId', '');
+
+        $this->setProductVariables($productId);
+
+        $container = new Container('meliscommerce');
+        $container['documents'] = array('docRelationType' => 'product', 'docRelationId' => $productId);
+
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        $view->productId = $productId;
+        return $view;
+
     }
-    
+
     /**
      * products page header container
      * @return \Zend\View\Model\ViewModel
@@ -48,13 +48,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * products page header Left container
      * @return \Zend\View\Model\ViewModel
@@ -63,13 +63,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * products page header Right container
      * @return \Zend\View\Model\ViewModel
@@ -78,13 +78,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * products page header title
      * @return \Zend\View\Model\ViewModel
@@ -93,13 +93,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * Render product save button in header
      * @return \Zend\View\Model\ViewModel
@@ -108,13 +108,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * Render product save button in header
      * @return \Zend\View\Model\ViewModel
@@ -123,29 +123,29 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * renders the product content container
      * @return \Zend\View\Model\ViewModel
      */
     public function renderProductsPageContentAction()
     {
-       
+
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * renders the product page tabs container
      * @return \Zend\View\Model\ViewModel
@@ -154,13 +154,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * renders the product page generic tab head
      * @return \Zend\View\Model\ViewModel
@@ -169,13 +169,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * redners the product page tab container
      * @return \Zend\View\Model\ViewModel
@@ -184,13 +184,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * renders the product page tab main container
      * @return \Zend\View\Model\ViewModel
@@ -199,13 +199,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * renders the product page tab main header
      * @return \Zend\View\Model\ViewModel
@@ -220,7 +220,7 @@ class MelisComProductController extends AbstractActionController
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * renders the product page tab main left container
      * @return \Zend\View\Model\ViewModel
@@ -229,12 +229,12 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         return $view;
     }
-    
+
     /**
      * renders the product page tab main right container
      * @return \Zend\View\Model\ViewModel
@@ -243,13 +243,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * renders the product page tab main header
      * @return \Zend\View\Model\ViewModel
@@ -258,13 +258,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * renders the product page tab main header switch
      * @return \Zend\View\Model\ViewModel
@@ -273,13 +273,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * renders the product page tab main content container
      * @return \Zend\View\Model\ViewModel
@@ -288,14 +288,14 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
-    
+
+
     /**
      * renders the product page tab left content container
      * @return \Zend\View\Model\ViewModel
@@ -304,13 +304,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * renders  product tab main categories container
      * @return \Zend\View\Model\ViewModel
@@ -319,13 +319,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * renders product tab main categories header
      * @return \Zend\View\Model\ViewModel
@@ -334,13 +334,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * renders product tab main categories header see all button
      * @return \Zend\View\Model\ViewModel
@@ -349,10 +349,10 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $langTable = $this->getServiceLocator()->get('MelisEcomLangTable');
         $langData = $langTable->fetchAll()->toArray();
-        
+
         $currentLangName = 'English';
         $locale = 'en_EN';
         $container = new Container('meliscore');
@@ -360,14 +360,14 @@ class MelisComProductController extends AbstractActionController
             $melisEcomLangTable = $this->getServiceLocator()->get('MelisEcomLangTable');
             $locale = $container['melis-lang-locale'];
             $currentLangData = $melisEcomLangTable->getEntryByField('elang_locale', $locale);
-            
+
             $currentLangName = '';
             $currentLang = $currentLangData->current();
             if (!empty($currentLang)){
                 $currentLangName = $currentLang->elang_name;
             }
         }
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
@@ -376,7 +376,7 @@ class MelisComProductController extends AbstractActionController
         $view->currentLangLocale = $locale;
         return $view;
     }
-    
+
     /**
      * redners product tab main categories content container
      * @return \Zend\View\Model\ViewModel
@@ -385,13 +385,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * renders the product tab main categories list
      * @return \Zend\View\Model\ViewModel
@@ -400,7 +400,7 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
@@ -415,13 +415,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * renders the products main tab files list
      * @return \Zend\View\Model\ViewModel
@@ -430,17 +430,17 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
-   /**
-    * renders the products main tab attributes content
-    * @return \Zend\View\Model\ViewModel
-    */
+
+    /**
+     * renders the products main tab attributes content
+     * @return \Zend\View\Model\ViewModel
+     */
     public function renderProductsMainTabAttributesAddAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -448,25 +448,25 @@ class MelisComProductController extends AbstractActionController
 
         $attributes = $this->getAttributesExceptAttributesOnProductId($productId);
         $this->setProductVariables($productId);
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         $view->attributes = $attributes;
         return $view;
     }
-    
+
     public function renderProductsMainTabAttributesContentAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-    
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     public function renderHeaderAddAttributeButtonAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -477,9 +477,9 @@ class MelisComProductController extends AbstractActionController
         $view->productId = $productId;
         return $view;
     }
-    
-    
-    
+
+
+
     /**
      * renders the product tab images gallery
      * @return \Zend\View\Model\ViewModel
@@ -488,13 +488,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * renders the product tab text select text button
      * @return \Zend\View\Model\ViewModel
@@ -503,13 +503,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * redners the product tab text select language button
      * @return \Zend\View\Model\ViewModel
@@ -518,13 +518,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * renders the product page content tab text container
      * @return \Zend\View\Model\ViewModel
@@ -533,13 +533,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * renders the product page content tab left container
      * @return \Zend\View\Model\ViewModel
@@ -548,29 +548,29 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * renders the tab text content container for languages
      * @return \Zend\View\Model\ViewModel
-     */           
+     */
     public function renderProductsPageContentTabTextLanguagesContainerAction()
-    {   
+    {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
-        
+
         return $view;
     }
-    
+
     /**
      * renders the tab text content container for each language
      */
@@ -580,14 +580,14 @@ class MelisComProductController extends AbstractActionController
         $ecomLangTable = $this->getServiceLocator()->get('MelisEcomLangTable');
         $ecomLangData = $ecomLangTable->langOrderByName();
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         $view->lang = $ecomLangData;
         return $view;
     }
-    
+
     /**
      * renders the tab text content right container
      * @return \Zend\View\Model\ViewModel
@@ -596,13 +596,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * renders the product tab text language text field container
      * @return \Zend\View\Model\ViewModel
@@ -611,13 +611,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
 //         $view->melisKey = $melisKey;
 //         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * renders the product tab text modal form container
      * @return \Zend\View\Model\ViewModel
@@ -633,47 +633,47 @@ class MelisComProductController extends AbstractActionController
 
         return $view;
     }
-    
+
     public function renderProductsPageContentTabTextModalFormTextAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
         $factory = new \Zend\Form\Factory();
         $formElements = $this->serviceLocator->get('FormElementManager');
         $appTextForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_products/meliscommerce_product_text_form','meliscommerce_product_text_form');
-        
+
         $factory->setFormElementManager($formElements);
         $productTextForm = $factory->createForm($appTextForm);
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         $view->productTextForm = $productTextForm;
         return $view;
     }
-    
+
     public function renderProductsPageContentTabTextModalFormTypeTextAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
         $factory = new \Zend\Form\Factory();
         $formElements = $this->serviceLocator->get('FormElementManager');
         $appTextTypeForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_products/meliscommerce_product_text_type_form','meliscommerce_product_text_type_form');
-        
+
         $factory->setFormElementManager($formElements);
         $productTextTypeForm = $factory->createForm($appTextTypeForm);
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         $view->productTextTypeForm = $productTextTypeForm;
         return $view;
     }
-    
+
     /**
      * renders the products page content tab text content laungauge text fields
      * @return \Zend\View\Model\ViewModel
@@ -683,7 +683,7 @@ class MelisComProductController extends AbstractActionController
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $ecomLangTable = $this->getServiceLocator()->get('MelisEcomLangTable');
         $ecomLangData = $ecomLangTable->langOrderByName();
-        
+
         $productId = (int) $this->params()->fromQuery('productId', '');
         $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_products/meliscommerce_product_text_form','meliscommerce_product_text_form');
@@ -691,9 +691,9 @@ class MelisComProductController extends AbstractActionController
         $formElements = $this->serviceLocator->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $productTextForm = $factory->createForm($appConfigForm);
-        
+
         $this->setProductVariables($productId);
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->lang = $ecomLangData;
@@ -701,7 +701,7 @@ class MelisComProductController extends AbstractActionController
         $view->productTextForm = $productTextForm;
         return $view;
     }
-    
+
     /**
      * renders the product page content Tab price header add country button
      * @return \Zend\View\Model\ViewModel
@@ -710,13 +710,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * renders the products page tab text left container
      * @return \Zend\View\Model\ViewModel
@@ -725,28 +725,28 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
-   /**
-    * renders the product tab price country list container
-    * @return \Zend\View\Model\ViewModel
-    */
+
+    /**
+     * renders the product tab price country list container
+     * @return \Zend\View\Model\ViewModel
+     */
     public function renderProductsTabPriceCountryListContainerAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * renders the product tab price country list
      * @return \Zend\View\Model\ViewModel
@@ -755,7 +755,7 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $ctyGeneral =   '<li class="">
                     		<a class="clearfix" data-toggle="tab" href="#'.$productId.'_productprice-General" data-country="General" aria-expanded="true"><span>General</span>
                     			<i class="fa fa-globe"></i>
@@ -766,22 +766,22 @@ class MelisComProductController extends AbstractActionController
                     			<i class="fa fa-times"></i>
                     		</a>
                     	</li>';
-        
+
         $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
         $countries = $countryTable->fetchAll();
         $ctyData[] = $ctyGeneral;
         foreach ($countries as $country){
             $ctyData[] = sprintf($ctyFormat, $productId, str_replace(' ', '', $country->ctry_name),$country->ctry_name,$country->ctry_name);
         }
-        
-        
+
+
         $view = new ViewModel();
         $view->countries = $ctyData;
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * renders the products page tab text right container
      * @return \Zend\View\Model\ViewModel
@@ -790,13 +790,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * renders the products variants tab add variant button
      * @return \Zend\View\Model\ViewModel
@@ -805,13 +805,13 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * renders the products variants tab add variant button
      * @return \Zend\View\Model\ViewModel
@@ -820,25 +820,25 @@ class MelisComProductController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-    
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     public function renderProductsPageContentPriceFormAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_products/melisecommerce_products_price_form','melisecommerce_products_price_form');
         $factory = new \Zend\Form\Factory();
         $formElements = $this->serviceLocator->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $priceForm = $factory->createForm($appConfigForm);
-        
+
         $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
         $countries = $countryTable->fetchAll();
         $productSvc= $this->getServiceLocator()->get('MelisComProductService');
@@ -849,13 +849,13 @@ class MelisComProductController extends AbstractActionController
         $data[0]['ctry_name'] = 'General';
         $data[0]['ctry_id'] = 'a0';
         $data[0]['ctry_currency_id'] = 'a0';
-        
+
         foreach($priceList as $price){
             if($price->price_country_id == 0){
                 $data[0] = array_merge($data[0], (array)$price);
             }
         }
-        
+
         //set country price
         foreach($countries as $country){
             $data[$c] = (array)$country;
@@ -874,31 +874,31 @@ class MelisComProductController extends AbstractActionController
         $view->priceForm = $priceForm;
         return $view;
     }
-    
+
     public function renderProductsPageProductReferenceFormAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_products/meliscommerce_products_reference_form','meliscommerce_products_reference_form');
         $factory = new \Zend\Form\Factory();
         $formElements = $this->serviceLocator->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $referenceForm = $factory->createForm($appConfigForm);
-    
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         $view->referenceForm = $referenceForm;
         return $view;
     }
-    
+
     public function renderProductsFormTextEmptyAction()
     {
         $typeId = (int) $this->params()->fromRoute('textTypeId', '');
         $text = $this->params()->fromRoute('text', '');
-        
+
         $typeTable = $this->getServiceLocator()->get('MelisEcomProductTextTypeTable');
         $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_products/meliscommerce_product_text_form','meliscommerce_product_text_form');
@@ -914,7 +914,7 @@ class MelisComProductController extends AbstractActionController
         $view->text = $text;
         return $view;
     }
-    
+
     public function getEmptyProductTextFormAction()
     {
         $typeId = (int) $this->params()->fromQuery('textTypeId', '');
@@ -924,38 +924,38 @@ class MelisComProductController extends AbstractActionController
         $module = 'MelisCommerce';
         $controller = 'MelisComProduct';
         $actionView = 'renderProductsFormTextEmpty';
-        
+
         $viewModel = new ViewModel();
         $viewModel = $forward->dispatch($module.'\\Controller\\'.$controller, array_merge(array('action' => $actionView), array('textTypeId' => $typeId, 'text' => $text)));
-        
+
         $renderer = $this->serviceLocator->get('Zend\View\Renderer\RendererInterface');
         $html = new \Zend\Mime\Part($renderer->render($viewModel));
-        
+
         $content = $html->getContent();
-        
+
         // replace single quote with duoble quote
         $content = (str_replace('\'', '"', $content));
 
         return new JsonModel(array(
-           'content' => $content 
+            'content' => $content
         ));
     }
-    
+
     public function renderProductsInfoContainerAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
         return $view;
     }
-    
+
     /**
      * EVENTS
      */
-    
+
     /**
      * Adds new product text type in `melis_ecom_product_text_type` table
      * @return \Zend\View\Model\JsonModel
@@ -969,18 +969,18 @@ class MelisComProductController extends AbstractActionController
         $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_products_text_type');
         $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_product_text_type_update_fail');
         if($this->getRequest()->isPost()) {
-            
+
             $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
             $factory = new \Zend\Form\Factory();
             $formElements = $this->serviceLocator->get('FormElementManager');
             $appTextTypeForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_products/meliscommerce_product_text_type_form','meliscommerce_product_text_type_form');
-            
+
             $factory->setFormElementManager($formElements);
             $form = $factory->createForm($appTextTypeForm);
-            
+
             $postValues = get_object_vars($this->getRequest()->getPost());
             $form->setData($postValues);
-            
+
             if($form->isValid()) {
                 $data = $form->getData();
                 $id = null;
@@ -1020,12 +1020,12 @@ class MelisComProductController extends AbstractActionController
             else {
                 $errors = $form->getMessages();
             }
-            
-             // front-end error display
+
+            // front-end error display
             $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
             $appConfigForm = $melisMelisCoreConfig->getItem('meliscommerce/forms/meliscommerce_products/meliscommerce_product_text_type_form');
             $appConfigForm = $appConfigForm['elements'];
-            
+
             foreach ($errors as $keyError => $valueError)
             {
                 foreach ($appConfigForm as $keyForm => $valueForm)
@@ -1036,19 +1036,19 @@ class MelisComProductController extends AbstractActionController
                 }
             }
         }
-        
+
         $response = array(
             'success' => $success,
             'textTitle' => $textTitle,
             'textMessage' => $textMessage,
             'errors' => $errors,
         );
-        
+
         $this->getEventManager()->trigger('meliscommerce_product_add_text_type_end', $this, $response);
-    
+
         return new JsonModel($response);
     }
-    
+
     /**
      * Populates table `melis_ecom_product_text` with the text and the product ID
      * @return \Zend\View\Model\JsonModel
@@ -1063,43 +1063,43 @@ class MelisComProductController extends AbstractActionController
         $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_products_text_type');
         $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_product_text_type_update_fail');
         if($this->getRequest()->isPost()) {
-        
+
             $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
             $factory = new \Zend\Form\Factory();
             $formElements = $this->serviceLocator->get('FormElementManager');
             $appTextForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_products/meliscommerce_product_text_form','meliscommerce_product_text_form');
-        
+
             $factory->setFormElementManager($formElements);
             $form = $factory->createForm($appTextForm);
-        
+
             $postValues = get_object_vars($this->getRequest()->getPost());
             $form->setData($postValues);
-        
+
             if($form->isValid()) {
-        
+
                 $langData = $ecomLangTable->fetchAll();
                 $data = $form->getData();
                 foreach($langData as $lang) {
-                    
+
                     $textTypeTable->save(array(
                         'ptxt_prd_id' => $postValues['ptxt_prd_id'],
                         'ptxt_lang_id' => $lang->elang_id,
                         'ptxt_type' => $postValues['ptxt_type']
                     ));
                 }
-                
+
                 $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_product_text_type_update_success');
                 $success = 1;
             }
             else {
                 $errors = $form->getMessages();
             }
-        
+
             // front-end error display
             $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
             $appConfigForm = $melisMelisCoreConfig->getItem('meliscommerce/forms/meliscommerce_products/meliscommerce_product_text_form');
             $appConfigForm = $appConfigForm['elements'];
-        
+
             foreach ($errors as $keyError => $valueError)
             {
                 foreach ($appConfigForm as $keyForm => $valueForm)
@@ -1117,10 +1117,10 @@ class MelisComProductController extends AbstractActionController
             'errors' => $errors,
         );
         $this->getEventManager()->trigger('meliscommerce_product_add_text_save_end', $this, $response);
-        
+
         return new JsonModel($response);
     }
-    
+
     /**
      * This function handles all the saving process in Melis Commerce Products
      * @return \Zend\View\Model\JsonModel
@@ -1128,7 +1128,7 @@ class MelisComProductController extends AbstractActionController
     public function saveProductAction()
     {
         $data = get_object_vars($this->getRequest()->getPost());
-        
+
         $success = 0;
         $errors = array();
         $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_products_Products');
@@ -1139,30 +1139,30 @@ class MelisComProductController extends AbstractActionController
         if($this->getRequest()->isPost()) {
 
             $data = get_object_vars($this->getRequest()->getPost());
-            
+
             $productId = $data['product'][0]['prd_id'] ? (int) $data['product'][0]['prd_id'] : null;
             $prodName = $data['product'][0]['prd_reference'];
             $mergeProdData = array(
                 'prd_date_edit' => date('Y-m-d H:i:s'),
-                'prd_user_id_edit' => $this->getTool()->getCurrentUserId(),             
+                'prd_user_id_edit' => $this->getTool()->getCurrentUserId(),
             );
-            
+
             if(!$productId) {
                 $mergeProdData = array(
                     'prd_date_creation' => date('Y-m-d H:i:s'),
                     'prd_user_id_creation' => $this->getTool()->getCurrentUserId(),
                 );
             }
-            
+
             $data['product'][0] = array_merge($data['product'][0], $mergeProdData);
 
             $this->getEventManager()->trigger('meliscommerce_product_save_start', $this, array('data' => $data));
-            
+
             $container = new Container('meliscommerce');
             $success = 0;
             $errors = array();
             $data = array();
-             
+
             if (!empty($container['product-tmp-data']))
             {
                 if (!empty($container['product-tmp-data']['success']))
@@ -1172,7 +1172,7 @@ class MelisComProductController extends AbstractActionController
                 if (!empty($container['product-tmp-data']['datas']))
                     $data = $container['product-tmp-data']['datas'];
             }
-            
+
             unset($container['product-tmp-data']);
             if($data) {
                 $productId = $data['productId'];
@@ -1183,21 +1183,21 @@ class MelisComProductController extends AbstractActionController
                 $prodName = $this->getProductSvc()->getProductName($productId, $this->getTool()->getCurrentLocaleID());
             }
         }
-        
+
         $response = array(
             'success' => $success,
             'textTitle' => $textTitle,
             'textMessage' => $textMessage,
             'errors' => $errors,
             'chunk' => array('productId' => $productId, 'isNew' => $isNew, 'prodName' => $prodName),
-            
+
         );
-        
+
         $this->getEventManager()->trigger('meliscommerce_product_save_end', $this, $response);
-        
+
         return new JsonModel($response);
     }
-    
+
     /**
      * Handles the saving of data in Melis Commerce Table `melis_ecom_product`
      */
@@ -1213,7 +1213,7 @@ class MelisComProductController extends AbstractActionController
         $attributes = array();
         $categories = array();
         $seo = array();
-        
+
         $factory = new \Zend\Form\Factory();
         $formElements = $this->serviceLocator->get('FormElementManager');
         $factory->setFormElementManager($formElements);
@@ -1232,13 +1232,13 @@ class MelisComProductController extends AbstractActionController
         $categorySvc = $this->getServiceLocator()->get('MelisComCategoryService');
         $melisEcomProductCategoryTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');
         $priceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');
-        
+
         if($this->getRequest()->isPost()) {
-            
+
             if($requestData) {
-                
+
                 foreach($requestData['product'] as $product){
-                    $prodRefForm->setData($product);                
+                    $prodRefForm->setData($product);
                     if(!$prodRefForm->isValid()) {
                         $prodError = $prodRefForm->getMessages();
                         foreach ($prodError as $keyError => $valueError)
@@ -1248,25 +1248,26 @@ class MelisComProductController extends AbstractActionController
                                 if ($valueForm['spec']['name'] == $keyError &&
                                     !empty($valueForm['spec']['options']['label']))
                                     $prodError[$keyError]['label'] = $valueForm['spec']['options']['label'];
-                                    $prodError[$keyError]['isEmpty'] = $valueError['isEmpty'];
+                                $prodError[$keyError]['isEmpty'] = $valueError['isEmpty'];
                             }
-                        }    
+                        }
                         array_push($errors, $prodError);
                     }
                     $prodClean = $product;
-                    
+
                 }
-                
+
                 foreach($requestData['productTextForm'] as $prodText){
-                    $ptxt_type = $prodText['ptxt_type'];
-                    $ptxt_lang_id = (int) $prodText['ptxt_lang_id'];
-                    $ptt_id = $prodText['ptt_id'];
-                    $ptt_code = $prodText['ptt_code'];
-                    $ptt_name = $prodText['ptt_name'];
-                    unset($prodText['ptxt_type']);
-                    unset($prodText['ptxt_lang_id']);
-                    $prodText = array_filter($prodText);
-                    //if(!empty($prodText)){
+                    if(isset($prodText['ptxt_type'])) {
+                        $ptxt_type = $prodText['ptxt_type'];
+                        $ptxt_lang_id = (int) $prodText['ptxt_lang_id'];
+                        $ptt_id = $prodText['ptt_id'];
+                        $ptt_code = $prodText['ptt_code'];
+                        $ptt_name = $prodText['ptt_name'];
+                        unset($prodText['ptxt_type']);
+                        unset($prodText['ptxt_lang_id']);
+                        $prodText = array_filter($prodText);
+                        //if(!empty($prodText)){
                         $prodText['ptxt_lang_id'] = $ptxt_lang_id;
                         $prodText['ptxt_type'] = $ptxt_type;
                         $prodTextForm->setData($prodText);
@@ -1284,22 +1285,23 @@ class MelisComProductController extends AbstractActionController
                         unset($prodText['ptt_id']);
                         $textClean[] = $prodText;
 
-                    //}         
+                        //}
+                    }
                 }
                 foreach($requestData['priceForm'] as $prodPrice){
-                   $tmp = $prodPrice;
-                   
+                    $tmp = $prodPrice;
+
                     unset($tmp['price_country_id']);
                     unset($tmp['price_currency']);
                     unset($tmp['price_id']);
                     unset($tmp['price_prd_id']);
-                    
-                    
+
+
                     if(array_filter($tmp)){
                         $prodPrice['price_country_id'] = (int) $prodPrice['price_country_id'];
                         $prodPrice['price_currency'] = (int) $prodPrice['price_currency'];
                         $prodPriceForm->setData($prodPrice);
-                        
+
                         if(!$prodPriceForm->isValid()){
                             $prodPriceError = $prodPriceForm->getMessages();
                             foreach ($prodPriceError as $keyError => $valueError)
@@ -1321,18 +1323,18 @@ class MelisComProductController extends AbstractActionController
                         }
                     }
                 }
-                
+
                 if(isset($requestData['attributes'])){
                     $attributes = $requestData['attributes'];
                 }
                 if(isset($requestData['categories'])){
                     $categories = $requestData['categories'];
                 }
-                
+
                 // Get Product SEO
                 $melisComSeoService = $this->getServiceLocator()->get('MelisComSeoService');
                 $seoResult = $melisComSeoService->validateSEOData('product', $requestData['product_seo']);
-                
+
                 $seoSuccess =  $seoResult['success'];
                 $seoErrors = $seoResult['errors']['seo_errors'];
                 $seo = $seoResult['datas']['seo_data'];
@@ -1367,7 +1369,7 @@ class MelisComProductController extends AbstractActionController
         return new JsonModel($results);
     }
 
-    
+
     /**
      * Returns all the attributes from @private getAttributes function
      * @return \Zend\View\Model\JsonModel
@@ -1375,14 +1377,14 @@ class MelisComProductController extends AbstractActionController
     public function getAttributesAction()
     {
         $attributes = array();
-        
+
         if($this->getRequest()->isXmlHttpRequest()) {
             $attributes = $this->getAttributes();
         }
-        
+
         return new JsonModel(array('source' => $attributes));
     }
-    
+
     /**
      * Returns all the data from Melis Attribute Service
      * @return array
@@ -1392,12 +1394,12 @@ class MelisComProductController extends AbstractActionController
         $attrSvc = $this->getServiceLocator()->get('MelisComAttributeService');
         $attrData = $attrSvc->getAttributes();
         $attributes = array();
-        
+
         foreach($attrData as $attr) {
             $attr = $attr->getAttribute();
             if(!empty($attr->attr_trans)){
                 $found = false;
-                
+
                 foreach($attr->attr_trans as $trans){
                     // check if there is a localized translation
                     if($this->getTool()->getCurrentLocaleID() == $trans->atrans_lang_id){
@@ -1408,7 +1410,7 @@ class MelisComProductController extends AbstractActionController
                         );
                     }
                 }
-                
+
                 // if no localized translation, get the first available translation
                 if(!$found){
                     foreach($attr->attr_trans as $trans){
@@ -1420,17 +1422,17 @@ class MelisComProductController extends AbstractActionController
                     }
                 }
             }else{
-               // if no translations available use the reference
+                // if no translations available use the reference
                 $attributes[] = array(
                     'id' => $attr->attr_id,
                     'value' => $attr->attr_reference,
                 );
             }
         }
-        
+
         return $attributes;
     }
-    
+
     public function getAttributesExceptAttributesOnProductIdAction()
     {
         $attributes = array();
@@ -1468,28 +1470,28 @@ class MelisComProductController extends AbstractActionController
     {
         $attributes = array();
 
-            $langId = $this->getTool()->getCurrentLocaleID();
-            $prodAttrTable = $this->getServiceLocator()->get('MelisEcomProductAttributeTable');
-            $attrSvc = $this->getServiceLocator()->get('MelisComAttributeService');
-            $attrData = $attrSvc->getAttributes($langId, null, null, null);
-            $prodAttribData = $prodAttrTable->getEntryByField('patt_product_id', $productId)->toArray();
-            $tmpAttributes = array();
-            $ctr = 0;
+        $langId = $this->getTool()->getCurrentLocaleID();
+        $prodAttrTable = $this->getServiceLocator()->get('MelisEcomProductAttributeTable');
+        $attrSvc = $this->getServiceLocator()->get('MelisComAttributeService');
+        $attrData = $attrSvc->getAttributes($langId, null, null, null);
+        $prodAttribData = $prodAttrTable->getEntryByField('patt_product_id', $productId)->toArray();
+        $tmpAttributes = array();
+        $ctr = 0;
 
-            foreach($attrData as $attr) {
-                $text = $attrSvc->getAttributeText($attr->getId(), $langId);
-                if($text) {
-                    $tmpAttributes[] = array('id' => $attr->getId(), 'text' => $text);
-                    foreach($prodAttribData as $prodAttr) {
-                        if(in_array($attr->getId(), $prodAttr)) {
-                            if(isset($tmpAttributes[$ctr]))
-                                unset($tmpAttributes[$ctr]);
-                        }
+        foreach($attrData as $attr) {
+            $text = $attrSvc->getAttributeText($attr->getId(), $langId);
+            if($text) {
+                $tmpAttributes[] = array('id' => $attr->getId(), 'text' => $text);
+                foreach($prodAttribData as $prodAttr) {
+                    if(in_array($attr->getId(), $prodAttr)) {
+                        if(isset($tmpAttributes[$ctr]))
+                            unset($tmpAttributes[$ctr]);
                     }
-                    $ctr++;
                 }
+                $ctr++;
             }
-            
+        }
+
         $attributes = array_values($tmpAttributes);
         // Sorting Alphabetically attributes text
         if (!empty($attributes)){
@@ -1497,11 +1499,11 @@ class MelisComProductController extends AbstractActionController
                 return strcasecmp($a['text'], $b['text']);
             });
         }
-        
+
         return $attributes;
 
     }
-    
+
     /**
      * Returns the Tool Service Class
      * @return MelisCoreTool
@@ -1510,11 +1512,11 @@ class MelisComProductController extends AbstractActionController
     {
         $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
         $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_products_list');
-    
+
         return $melisTool;
-    
+
     }
-    
+
 
     /**
      * Returns the Product Service, instead of redeclaring in a function multiple times.
@@ -1523,10 +1525,10 @@ class MelisComProductController extends AbstractActionController
     private function getProductSvc()
     {
         $productSvc = $this->getServiceLocator()->get('MelisComProductService');
-    
+
         return $productSvc;
     }
-    
+
     private function getProduct($productId, $langId = null, $countryId = null)
     {
         if(is_int($productId) && $productId) {
@@ -1536,12 +1538,12 @@ class MelisComProductController extends AbstractActionController
                 return $prodData;
             }
         }
-    
+
         return null;
     }
-    
+
     /**
-     * Sets the layout variables, that will be used throughout all view files 
+     * Sets the layout variables, that will be used throughout all view files
      * that is under on this Controller
      * @param int $productId
      */
@@ -1561,46 +1563,46 @@ class MelisComProductController extends AbstractActionController
         $prodName = '';
         $texts = '';
         $layoutVar = array();
-    
+
         if($product) {
             $categories = $product->getCategories();
             $texts = $product->getTexts();
             $attributes = $product->getAttributes();
             $layoutVar['product'] = $product->getProduct();
         }
-    
+
         if($categories) {
             foreach($categories as  $prodObjectVal) {
                 if($prodObjectVal->pcat_cat_id) {
                     $prodCatData = $categorySvc->getCategoryById((int) $prodObjectVal->pcat_cat_id, $this->getTool()->getCurrentLocaleID());
                     //if($prodCatData) {
-                        $prodCatTrans = $prodCatData->getTranslations();
-                        //if($prodCatTrans) {
-                            $categoryText[] = array(
-                                'pcat_id' => $prodObjectVal->pcat_id,
-                                'pcat_cat_id' => $prodCatData->getId(),
-                                'catt_name' => $categorySvc->getCategoryNameById($prodCatData->getId(), $this->getTool()->getCurrentLocaleID()),
-                                'pcat_order' => $prodObjectVal->pcat_order
-                            );
-                        //}
+                    $prodCatTrans = $prodCatData->getTranslations();
+                    //if($prodCatTrans) {
+                    $categoryText[] = array(
+                        'pcat_id' => $prodObjectVal->pcat_id,
+                        'pcat_cat_id' => $prodCatData->getId(),
+                        'catt_name' => $categorySvc->getCategoryNameById($prodCatData->getId(), $this->getTool()->getCurrentLocaleID()),
+                        'pcat_order' => $prodObjectVal->pcat_order
+                    );
+                    //}
                     //}
                 }
             }
             $layoutVar['prodCategories'] = $categoryText;
         }
-    
+
         $prodText = $prodSvc->getProductTextsById($productId);
         if(empty($prodText)){
             // set default title prodtext field
             foreach($prodTextTypeTable->fetchAll()->toArray() as $textType){
                 if($textType['ptt_name'] == 'Title'){
-                    foreach($ecomLangTable->fetchAll()->toArray() as $lang){ 
+                    foreach($ecomLangTable->fetchAll()->toArray() as $lang){
                         $textType['ptxt_lang_id'] = $lang['elang_id'];
                         $prodText[] = (object) $textType;
                     }
                 }
             }
-            
+
         }
         $comLangTable = $this->getServiceLocator()->get('MelisEcomLangTable');
         $ctrText = 0;
@@ -1617,7 +1619,7 @@ class MelisComProductController extends AbstractActionController
             $attr->atrans_name = $attrSvc->getAttributeText($attr->patt_attribute_id, $this->getTool()->getCurrentLocaleID());
             $layoutVar['prodAttributes'][] = $attr;
         }
-        
+
 
         $this->layout()->setVariables(array_merge(array(
             'productId' => $productId,
@@ -1625,7 +1627,7 @@ class MelisComProductController extends AbstractActionController
             'prodName' => $prodName,
         ), $layoutVar));
     }
-    
+
     public function getProductTextAction()
     {
         $data= array();
@@ -1642,10 +1644,10 @@ class MelisComProductController extends AbstractActionController
             'errors' => $errors,
             'datas' => $data,
         );
-        
+
         return new JsonModel($results);
     }
-    
+
     public function deleteAction()
     {
         $success = 0;
@@ -1653,7 +1655,7 @@ class MelisComProductController extends AbstractActionController
         $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_product_remove_fail');
         $request = $this->getRequest();
         if($request->isPost()) {
-            
+
             $this->getEventManager()->trigger('meliscommerce_product_delete_start', $this, $this->getRequest()->getPost());
             $productId = (int) $this->getRequest()->getPost('productId');
             $success = $this->getProductSvc()->deleteProductById($productId);
@@ -1666,16 +1668,16 @@ class MelisComProductController extends AbstractActionController
             'textTitle' => $textTitle,
             'textMessage' => $textMessage
         );
-        
+
         $this->getEventManager()->trigger('meliscommerce_product_delete_end', $this, $response);
-        
+
         return new JsonModel($response);
     }
-    
+
     public function getProductTextTypeAction()
     {
         $type = null;
-        
+
         if($this->getRequest()->isXmlHttpRequest()) {
             $id = (int) $this->getRequest()->getQuery('id');
             $prodTextTypeTable = $this->getServiceLocator()->get('MelisEcomProductTextTypeTable');
@@ -1683,29 +1685,29 @@ class MelisComProductController extends AbstractActionController
             if($prodTextTypeData) {
                 $type = $prodTextTypeData->ptt_field_type;
             }
-            
+
         }
-        
+
         return new JsonModel(array('type' => $type));
     }
-    
+
     public function getProductCategoryLastOrderNumAction()
     {
         $order = null;
         if($this->getRequest()->isXmlHttpRequest()) {
-            
+
             $catId = (int) $this->params()->fromQuery('catId');
             $prodId = (int) $this->params()->fromQuery('prodId');
             $prodCatTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');
-            
-            
-            $prodCatData1 = $prodCatTable->getEntryByField('pcat_prd_id', $prodId); 
+
+
+            $prodCatData1 = $prodCatTable->getEntryByField('pcat_prd_id', $prodId);
             foreach($prodCatData1 as $data) {
                 if(($data->pcat_prd_id == $prodId) && ($data->pcat_cat_id == $catId)) {
                     $order = (int) $data->pcat_order;
                 }
             }
-            
+
             if(!$order) {
                 $prodCatData = $prodCatTable->getCategoryProductsByCategoryId($catId)->toArray();
                 if($prodCatData) {
@@ -1714,23 +1716,23 @@ class MelisComProductController extends AbstractActionController
                     }
                 }
                 else {
-                    // if not data available, then return 1 
+                    // if not data available, then return 1
                     $order = 1;
                 }
             }
         }
-        
+
         return new JsonModel(array(
             'order' => $order
         ));
     }
-    
-    
+
+
     private function cmp($a, $b)
     {
         return strcmp($a->ptt_id, $b->ptt_id);
     }
-    
+
     public function testAction()
     {
         $categorySvc = $this->getServiceLocator()->get('MelisComCategoryService');

@@ -11,11 +11,12 @@ return array(
     'tr_MELIS_COMMERCE_CHECKOUT_ERROR_BASKET_VARIANT_QUANTITY_NOT_SET' => 'Product quantity not set',
     
     // Price
-    'tr_MELIS_COMMERCE_CHECKOUT_ERROR_PRODUCT_PRICE_IS_ZERO' => 'Variant total amount is 0 (zero)',
+    'tr_MELIS_COMMERCE_CHECKOUT_ERROR_PRODUCT_PRICE_IS_ZERO' => 'Variant total Amount is 0 (Zero)',
     'tr_MELIS_COMMERCE_CHECKOUT_ERROR_PRODUCT_PRICE_NOT_SET' => 'Variant price is not set',
     
     //Addresses
     'tr_MELIS_COMMERCE_CHECKOUT_ERROR_ADDRESS_NOT_ACCEPTED' => 'Address not accepted',
     
     'tr_MELIS_COMMERCE_CHECKOUT_ERROR_SHIPMENT_CANT_COMPUTE_PRODUCT' => 'Shipment price can\'t be computed for product',
+    
 );

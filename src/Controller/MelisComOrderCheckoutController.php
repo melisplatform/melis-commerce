@@ -1314,10 +1314,12 @@ class MelisComOrderCheckoutController extends AbstractActionController
      */
     public function renderOrderCheckoutSummaryBasketAction()
     {
+        $translator = $this->getServiceLocator()->get('translator');
         $container = new Container('meliscommerce');
         $clientId = (!empty($container['checkout']['clientId'])) ? $container['checkout']['clientId'] : null;
         $clientKey = (!empty($container['checkout']['clientKey'])) ? $container['checkout']['clientKey'] : null;
         
+        $melisComOrderCheckoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
         $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
         
         $action = $this->params()->fromQuery('action');
@@ -1346,43 +1348,85 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $melisComProductService = $this->getServiceLocator()->get('MelisComProductService');
         
         $basket = array();
+        $subTotal = 0;
+        $totalDiscount = 0;
         $total = 0;
         
         $container = new Container('meliscommerce');
         $countryId = $container['checkout']['countryId'];
         
-        if (!is_null($basketData))
-        {
-            foreach ($basketData As $val)
-            {
-                $variantId = $val->getVariantId();
-                $variant = $val->getVariant();
-                $quantity = $val->getQuantity();
-                $productId = $variant->getVariant()->var_prd_id;
-                $varSku = $variant->getVariant()->var_sku;
+        $clientOrderCost = $melisComOrderCheckoutService->computeAllCosts($clientId);
         
-                // Getting the Variant price from Variant Service
-                $varPrice = $melisComVariantService->getVariantFinalPrice($variantId, $countryId);
+        if (isset($clientOrderCost['costs']['order']))
+        {
+            $clientOrder = $clientOrderCost['costs']['order'];
+            
+            if (isset($clientOrder['details']))
+            {
+                $clientOrderVariant =  $clientOrder['details'];
                 
-                if (is_null($varPrice))
+                if (!empty($clientOrderVariant))
                 {
-                    // if Vairant Price is null this will try to get from Product Price
-                    $varPrice = $melisComProductService->getProductFinalPrice($productId, $countryId);
+                    foreach ($clientOrderVariant As $key => $val)
+                    {
+                        $variantId = $key;
+                        $variant = $melisComVariantService->getVariantById($variantId);
+                        $productId = $variant->getVariant()->var_prd_id;
+                        $varSku = $variant->getVariant()->var_sku;
+                        
+                        // Getting the Variant price from Variant Service
+                        $varPrice = $melisComVariantService->getVariantFinalPrice($variantId, $countryId);
+                        
+                        if (is_null($varPrice))
+                        {
+                            // if Vairant Price is null this will try to get from Product Price
+                            $varPrice = $melisComProductService->getProductFinalPrice($productId, $countryId);
+                        }
+                        
+                        $quantity = $val['quantity'];
+                        
+                        $variantTotal = $quantity * $varPrice->price_net;
+                        $data = array(
+                            'var_id' => $variantId,
+                            'var_sku' => $varSku,
+                            'var_quantity' => $quantity,
+                            'var_price' => $varPrice->cur_symbol.' '.number_format($varPrice->price_net, 2),
+                            'product_name' => $melisComProductService->getProductName($productId, $langId),
+                            'var_total' => $varPrice->cur_symbol.' '.number_format($variantTotal, 2)
+                        );
+                        
+                        array_push($basket, $data);
+                    }
                 }
-                
-                $variantTotal = $quantity * $varPrice->price_net;
-                $data = array(
-                    'var_id' => $variantId,
-                    'var_sku' => $varSku,
-                    'var_quantity' => $quantity,
-                    'var_price' => $varPrice->cur_symbol.' '.number_format($varPrice->price_net, 2),
-                    'product_name' => $melisComProductService->getProductName($productId, $langId),
-                    'var_total' => $varPrice->cur_symbol.' '.number_format($variantTotal, 2)
-                );
-                
-                // Adding the total amount 
-                $total += $variantTotal;
-                array_push($basket, $data);
+            }
+            
+            if (isset($clientOrder['totalWithoutCoupon']))
+            {
+                $subTotal = $clientOrder['totalWithoutCoupon'];
+            }
+            
+            if (isset($clientOrder['total']))
+            {
+                $total = $clientOrder['total'];
+            }
+            
+            if ($subTotal != 0 && $total != 0)
+            {
+                $totalDiscount =  $subTotal - $total;
+            }
+        }
+        
+        $couponCode = $this->params()->fromQuery('couponCode');
+        $couponErr = '';
+        
+        if (!empty($couponCode) && !is_null($clientId))
+        {
+            $couponSrv = $this->getServiceLocator()->get('MelisComCouponService');
+            $coupon = $couponSrv->validateCoupon($couponCode, $clientId);
+            
+            if(!$coupon['success'])
+            {
+                $couponErr = $translator->translate('tr_'.$coupon['error']);
             }
         }
         
@@ -1398,7 +1442,12 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
         $view->melisKey = $melisKey;
+        $view->clientOrderCost = $clientOrderCost;
+        $view->couponCode = $couponCode;
+        $view->couponErr = $couponErr;
         $view->basket = $basket;
+        $view->subTotal = $subTotal;
+        $view->totalDiscount = $totalDiscount;
         $view->total = $total;
         $view->countryCurrencySympbol = $countryCurrencySympbol;
         return $view;
@@ -1554,6 +1603,28 @@ class MelisComOrderCheckoutController extends AbstractActionController
             $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
             $basketData = $melisComBasketService->getBasket($clientId);
             
+            $couponSrv = $this->getServiceLocator()->get('MelisComCouponService');
+            $couponCode = $this->params()->fromQuery('couponCode');
+            
+            $totalDiscount = 0;
+            $couponErr = '';
+            $couponData = array();
+            if (!empty($couponCode) && !is_null($clientId))
+            {
+                $coupon = $couponSrv->validateCoupon($couponCode, $clientId);
+                if($coupon['success'])
+                {
+                    $couponData = $coupon['coupon'];
+                }
+                else
+                {
+                    $errors['couponError'] = array(
+                        'label' => 'Coupon',
+                        'couponError' => $translator->translate('tr_'.$coupon['error'])
+                    );
+                }
+            }
+            
             if (!is_null($basketData))
             {
                 if (!empty($container['checkout']['clientId']))
@@ -1582,7 +1653,6 @@ class MelisComOrderCheckoutController extends AbstractActionController
                                         );
                                     break;
                                     case 'basket':
-                                        
                                         foreach ($val As $bKey => $bVal)
                                         {
                                             if (!empty($bVal['error']))
@@ -1633,7 +1703,30 @@ class MelisComOrderCheckoutController extends AbstractActionController
                     
                     if (empty($errors))
                     {
-                        $success = 1;
+                        $couponFlag = true;
+                        if (!empty($couponData) && !is_null($clientId))
+                        {
+                            // Use Add Coupon to client
+                            $coupon = $couponSrv->useCoupon($couponData->coup_code, $clientId);
+                            if ($coupon['success'])
+                            {
+                                $container['checkout']['couponId'] = $coupon['couponId'];
+                            }
+                            else
+                            {
+                                $errors['couponError'] = array(
+                                    'label' => 'Coupon',
+                                    'couponError' => $translator->translate('tr_'.$coupon['error'])
+                                );
+                                
+                                $couponFlag = false;
+                            }
+                        }
+                        
+                        if ($couponFlag)
+                        {
+                            $success = 1;
+                        }
                     }
                 }
             }

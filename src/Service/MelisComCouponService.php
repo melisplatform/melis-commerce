@@ -191,4 +191,179 @@ class MelisComCouponService extends MelisCoreGeneralService
         return $arrayParameters['results'];
     }
     
+    /**
+     * This method will validate Coupon
+     * @param String $code, code of the Coupon
+     * @param Int $clientId, Client Id
+     * 
+     *  Return value structure:
+     *      array(
+     *          'success' => true/false
+     *          'coupon' => array()
+     *          'error' => 'ERROR_CODE' // MELIS_COMMERCE_COUPON_NOT_AVAILABLE
+     *      )
+     * @return Array
+     */
+    public function validateCoupon($code, $clientId)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array(
+            'success' => false,
+            'coupon' => array(),
+        );
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_coupon_check_validity_start', $arrayParameters);
+        
+        // Service implementation start
+        $couponTable = $this->getServiceLocator()->get('MelisEcomCouponTable');
+        
+        $coupon = $couponTable->getEntryByField('coup_code', $arrayParameters['code'])->current();
+        
+        if (!empty($coupon))
+        {
+            // Check coupon status
+            if ($coupon->coup_status == 1)
+            {
+                
+                // Check coupon date validity
+                $dateValid = false;
+                $currentDate = strtotime(date('Y-m-d H:i:s'));
+                $validStart = ($coupon->coup_date_valid_start) ? strtotime($coupon->coup_date_valid_start) : null;
+                $validEnd = ($coupon->coup_date_valid_end) ? strtotime($coupon->coup_date_valid_end) : null;
+                if (!is_null($validStart)&& is_null($validEnd))
+                {
+                    if ($validStart <= $currentDate)
+                    {
+                        $dateValid = true;
+                    }
+                }
+                elseif (is_null($coupon->coup_date_valid_start)&& !is_null($coupon->coup_date_valid_end))
+                {
+                    if ($validEnd >= $currentDate)
+                    {
+                        $dateValid = true;
+                    }
+                }
+                elseif (!is_null($coupon->coup_date_valid_start)&& !is_null($coupon->coup_date_valid_end))
+                {
+                    if ($validStart <= $currentDate && $validEnd >= $currentDate)
+                    {
+                        $dateValid = true;
+                    }
+                }
+                
+                if ($dateValid)
+                {
+                    // Checking if coupon still available base on number of used
+                    if ($coupon->coup_current_use_number < $coupon->coup_max_use_number)
+                    {
+                        // Check coupon if already assign to clientId
+                        $couponClientTable = $this->getServiceLocator()->get('MelisEcomCouponClientTable');
+                        $clientCoupon = $couponClientTable->checkCouponClientExist($coupon->coup_id, $arrayParameters['clientId'])->current();
+                        
+                        if (empty($clientCoupon))
+                        {
+                            // Result success
+                            $results['success'] = true;
+                            // Assign coupon data as result
+                            $results['coupon'] = $coupon;
+                        }
+                        else
+                        {
+                            // Client has already used the coupon code
+                            $results['error'] = 'MELIS_COMMERCE_COUPON_CLIENT_ALREADY_USED';
+                        }
+                    }
+                    else
+                    {
+                        // Number of coupon used had reach the Limit use
+                        $results['error'] = 'MELIS_COMMERCE_COUPON_REACHED_LIMIT';
+                    }
+                }
+                else 
+                {
+                    // Coupon date validity is not match to the current date, otherwise coupon is not yet started or coupon was expired
+                    $results['error'] = 'MELIS_COMMERCE_COUPON_DATE_VALIDITY_INVALID';
+                }
+            }
+            else 
+            {   
+                // Coupon is deactivated/Coupon status is not Active status
+                $results['error'] = 'MELIS_COMMERCE_COUPON_NOT_ACTIVE';
+            }
+        }
+        else 
+        {
+            // Coupon not found from database/Coupon is not existing
+            $results['error'] = 'MELIS_COMMERCE_COUPON_NOT_FOUND';
+        }
+        
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_coupon_check_validity_end', $arrayParameters);
+        
+        return $arrayParameters['results'];
+    }
+    
+    /**
+     * This method will add a Coupon to Client
+     * 
+     * @param String $code, Coupon code
+     * @param Int $clientId, Client id
+     * 
+     * Return value structure:
+     *      array(
+     *          'success' => true/false
+     *          'couponId' => xx,
+     *          'coupon' => array()
+     *          'error' => 'ERROR_CODE' // MELIS_COMMERCE_COUPON_NOT_AVAILABLE
+     *      )
+     * 
+     * @return Array
+     */
+    public function useCoupon($code, $clientId)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_coupon_use_start', $arrayParameters);
+        
+        // Service implementation start
+        $couponTable = $this->getServiceLocator()->get('MelisEcomCouponTable');
+        
+        $results = $this->validateCoupon($arrayParameters['code'], $arrayParameters['clientId']);
+        
+        if ($results['success'])
+        {
+            $coupon = $results['coupon'];
+            $couponTable = $this->getServiceLocator()->get('MelisEcomCouponTable');
+            
+            $data = array(
+                'coup_current_use_number' => $coupon->coup_current_use_number + 1
+            );
+            
+            $results['couponId'] = $couponTable->save($data, $coupon->coup_id);
+            
+            $couponClientTable = $this->getServiceLocator()->get('MelisEcomCouponClientTable');
+            
+            $data = array(
+                'ccli_coupon_id' => $coupon->coup_id,
+                'ccli_client_id' => $arrayParameters['clientId']
+            );
+            
+            $couponClientTable->save($data);
+        }
+        
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_coupon_use_end', $arrayParameters);
+        
+        return $arrayParameters['results'];
+    }
+    
 }

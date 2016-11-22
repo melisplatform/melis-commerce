@@ -93,7 +93,7 @@ return array(
                         'target' => '#clientList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComCoupon/getCouponClientData',
                         'dataFunction' => 'initCouponClient',
-                        'ajaxCallback' => '',
+                        'ajaxCallback' => 'initCouponClientTable()',
                         'filters' => array(
                             'left' => array(
                                 'coupon-table-filter-limit' => array(

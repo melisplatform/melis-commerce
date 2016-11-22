@@ -579,6 +579,7 @@ class MelisComCouponController extends AbstractActionController
                 $tableData[$c]['cper_email']    = $client->getPersons()[0]->cper_email;
                 $tableData[$c]['ccomp_name']    = $companyName;
                 $tableData[$c]['assign']        = $assign;
+                $tableData[$c]['DT_RowClass']   = (!empty($assign)) ? 'couponNoAddButton' : '';
                 $c++;
             }
             $dataCount = $c;

@@ -294,6 +294,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
      *      'clientId' => xx,
      *      'costs' => array(
      *          'order' => array(
+     *              'totalWithoutCoupon' => xx,
      *              'total' => xx,
      *              'details' => array(
      *                  'variantId1' => array('unit_price' => xx, 'quantity' => xx, 'total_price' => xx),
@@ -325,6 +326,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             'clientId' => $arrayParameters['clientId'],
             'costs' => array(
                 'order' => array(
+                    'totalWithoutCoupon' => 0,
                     'total' => 0,
                 ),
             ),
@@ -348,60 +350,35 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         // Total Amount of the Basket
         $totalCost = 0;
         
-        foreach ($clientBasket As $val)
+        if (!is_null($clientBasket))
         {
-            $variantId = $val->getVariantId();
-            $variant = $val->getVariant();
-            $variantQty = $val->getQuantity();
-            $productId = $variant->getVariant()->var_prd_id;
-            
-            $varianTotalAmount = 0;
-            if (!empty($variant))
+            foreach ($clientBasket As $val)
             {
-                // Variant Service that will return Variant final Price
-                $variantPrice = $melisComVariantService->getVariantFinalPrice($variantId, $clientCountryId);
-
-                if (is_null($variantPrice))
-                {
-                    $variantPrice = $melisComProductService->getProductFinalPrice($productId, $clientCountryId);
-                }
+                $variantId = $val->getVariantId();
+                $variant = $val->getVariant();
+                $variantQty = $val->getQuantity();
+                $productId = $variant->getVariant()->var_prd_id;
                 
-                // Check if Variant final price has result
-                if (!is_null($variantPrice))
+                $varianTotalAmount = 0;
+                if (!empty($variant))
                 {
-                    $varianTotalAmount = $variantPrice->price_net * $variantQty;
-                    if ($varianTotalAmount > 0)
+                    // Variant Service that will return Variant final Price
+                    $variantPrice = $melisComVariantService->getVariantFinalPrice($variantId, $clientCountryId);
+    
+                    if (is_null($variantPrice))
                     {
-                        $variantDetails[$variantId] = array(
-                            'unit_price' => $variantPrice->price_net, 
-                            'quantity' => $variantQty, 
-                            'total_price' => $varianTotalAmount
-                        );
-                        $totalCost += $varianTotalAmount;
+                        $variantPrice = $melisComProductService->getProductFinalPrice($productId, $clientCountryId);
                     }
-                    else
-                    {
-                        // KO : Variant total Amount is 0 (Zero)
-                        $errors[$variantId] = 'MELIS_COMMERCE_CHECKOUT_ERROR_PRODUCT_PRICE_IS_ZERO';
-                    }
-                }
-                else 
-                {
-                    /**
-                     * If the Variant Final price not set, this will try to look price in product info
-                     * and use as Variant price
-                     */
                     
-                    // Product Service that will return Product final Price
-                    $productPrice = $melisComProductService->getProductFinalPrice($productId , $clientCountryId);
-                    if (!is_null($productPrice))
+                    // Check if Variant final price has result
+                    if (!is_null($variantPrice))
                     {
-                        $varianTotalAmount = $productPrice->price_net * $variantQty;
+                        $varianTotalAmount = $variantPrice->price_net * $variantQty;
                         if ($varianTotalAmount > 0)
                         {
                             $variantDetails[$variantId] = array(
-                                'unit_price' => $productPrice->price_net,
-                                'quantity' => $variantQty,
+                                'unit_price' => $variantPrice->price_net, 
+                                'quantity' => $variantQty, 
                                 'total_price' => $varianTotalAmount
                             );
                             $totalCost += $varianTotalAmount;
@@ -414,18 +391,48 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                     }
                     else 
                     {
-                        // KO : Variant price is not set
-                        $errors[$variantId] = 'MELIS_COMMERCE_CHECKOUT_ERROR_PRODUCT_PRICE_NOT_SET';
+                        /**
+                         * If the Variant Final price not set, this will try to look price in product info
+                         * and use as Variant price
+                         */
+                        
+                        // Product Service that will return Product final Price
+                        $productPrice = $melisComProductService->getProductFinalPrice($productId , $clientCountryId);
+                        if (!is_null($productPrice))
+                        {
+                            $varianTotalAmount = $productPrice->price_net * $variantQty;
+                            if ($varianTotalAmount > 0)
+                            {
+                                $variantDetails[$variantId] = array(
+                                    'unit_price' => $productPrice->price_net,
+                                    'quantity' => $variantQty,
+                                    'total_price' => $varianTotalAmount
+                                );
+                                $totalCost += $varianTotalAmount;
+                            }
+                            else
+                            {
+                                // KO : Variant total Amount is 0 (Zero)
+                                $errors[$variantId] = 'MELIS_COMMERCE_CHECKOUT_ERROR_PRODUCT_PRICE_IS_ZERO';
+                            }
+                        }
+                        else 
+                        {
+                            // KO : Variant price is not set
+                            $errors[$variantId] = 'MELIS_COMMERCE_CHECKOUT_ERROR_PRODUCT_PRICE_NOT_SET';
+                        }
                     }
                 }
-            }
-            else 
-            {
-                // KO : Variant not exist
-                $errors[$variantId] = 'MELIS_COMMERCE_CHECKOUT_ERROR_PRODUCT_NOT_EXISTING';
+                else 
+                {
+                    // KO : Variant not exist
+                    $errors[$variantId] = 'MELIS_COMMERCE_CHECKOUT_ERROR_PRODUCT_NOT_EXISTING';
+                }
             }
         }
         
+        // as default value totalWithoutCoupon is equal to the total of order cost
+        $results['costs']['order']['totalWithoutCoupon'] = $totalCost;
         $results['costs']['order']['total'] = $totalCost;
         
         if (!empty($variantDetails))

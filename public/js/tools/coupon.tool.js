@@ -228,6 +228,10 @@ window.initCouponClient = function(data, tblSettings) {
 	data.couponId = couponId;	
 }
 
+window.initCouponClientTable = function() {
+	$('.couponNoAddButton .addCouponToClient').remove();
+}
+
 window.initCouponOrder = function(data, tblSettings) {
 	var couponId = $("#" + tblSettings.sTableId ).data("couponid");
 	data.couponId = couponId;

@@ -110,14 +110,14 @@
 	    'tr_meliscommerce_categories_err_category_save_success' => 'Category successfully Saved', // FORM
 	    'tr_meliscommerce_categories_err_category_save_unable' => 'Unable to save Category, Please try again',
 	    'tr_meliscommerce_categories_err_category_name_empty' => 'Category Name is Requered',
-	    'tr_meliscommerce_categories_err_category_name_required_atleast_one' => 'Category Name cannot be empty, must enter atleast one in any language',
+	    'tr_meliscommerce_categories_err_category_name_required_atleast_one' => 'The category name cannot be empty, please enter at least one in any language',
 	    'tr_meliscommerce_categories_err_category_description_empty' => 'Category Description is Requered',
 	    
 	    // Form Catgory Validation Messages
 	    'tr_meliscommerce_categories_err_catalog_save_success' => 'Catalog successfully saved', // FORM
 	    'tr_meliscommerce_categories_err_catalog_save_unable' => 'Unable to save catalog, please try again',
 	    'tr_meliscommerce_categories_err_catalog_name_empty' => 'Catalog name is requered',
-	    'tr_meliscommerce_categories_err_catalog_name_required_atleast_one' => 'Catalog name cannot be empty, must enter atleast one in any language',
+	    'tr_meliscommerce_categories_err_catalog_name_required_atleast_one' => 'The catalog name cannot be empty, please enter at least one in any language',
 	    'tr_meliscommerce_categories_err_catalog_description_empty' => 'Category description is requered',
 
 	    // Category deletion messages

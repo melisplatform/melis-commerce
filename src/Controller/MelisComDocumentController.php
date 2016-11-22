@@ -18,36 +18,36 @@ use Zend\File\Transfer\Adapter\Http;
 use Zend\Session\Container;
 class MelisComDocumentController extends AbstractActionController
 {
-    
+
     protected $formType;
     protected $relationTypes = array('category', 'product', 'variant');
     protected $docTypes = array('file', 'image');
-    
+
     public function renderDocumentImagePluginAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $docRelationData = $this->getDocumentSessionValue();
         $relationId = $docRelationData['docRelationId'];
-        
-        
+
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->relationId = $relationId;
 
         return $view;
     }
-    
+
     public function renderDocumentImageListsAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $qDocRelationType = $this->params()->fromQuery('docRelationType');
         $qDocRelationId   = $this->params()->fromQuery('docRelationId');
-        
+
         $docRelationData = $this->getDocumentSessionValue();
         $data  = array();
         $images = array();
         $docRelationType = null;
         $docRelationId   = null;
-        
+
         if($docRelationData['docRelationType'] && $docRelationData['docRelationId']) {
             $docRelationType = $docRelationData['docRelationType'];
             $docRelationId   = $docRelationData['docRelationId'];
@@ -56,24 +56,27 @@ class MelisComDocumentController extends AbstractActionController
             $docRelationType = $qDocRelationType;
             $docRelationId   = $qDocRelationId;
         }
-        
-        $data = $this->getDocSvc()->getDocumentsByRelationAndTypes($docRelationType, $docRelationId, 'IMG');
-        $ctryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
-        $countryName = null;
-        if($data) {
-            foreach($data->getDocument() as $doc) {
-                $countryData = $ctryTable->getEntryById($doc['rdoc_country_id'])->current();
-                if($countryData) {
-                    $countryName = $countryData->ctry_name;
+
+        if($docRelationId) {
+            $data = $this->getDocSvc()->getDocumentsByRelationAndTypes($docRelationType, $docRelationId, 'IMG');
+            if($data) {
+                $ctryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+                $countryName = null;
+                if($data->getDocument()) {
+                    foreach($data->getDocument() as $doc) {
+                        $countryData = $ctryTable->getEntryById($doc['rdoc_country_id'])->current();
+                        if($countryData) {
+                            $countryName = $countryData->ctry_name;
+                        }
+
+                        if($doc['rdoc_country_id'] == '-1') {
+                            $countryName = $this->getTool()->getTranslation('tr_meliscommerce_documents_action_all_countries');
+                        }
+                        $images[] = array_merge($doc, array('country_name' => $countryName));
+                    }
                 }
-        
-                if($doc['rdoc_country_id'] == '-1') {
-                    $countryName = $this->getTool()->getTranslation('tr_meliscommerce_documents_action_all_countries');
-                }
-                $images[] = array_merge($doc, array('country_name' => $countryName));
             }
         }
-        
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->country = $this->getCountries();
@@ -83,32 +86,32 @@ class MelisComDocumentController extends AbstractActionController
         $view->docRelationId = $docRelationData['docRelationId'];
         return $view;
     }
-    
+
     public function renderDocumentFilePluginAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $docRelationData = $this->getDocumentSessionValue();
         $relationId = $docRelationData['docRelationId'];
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->relationId = $relationId;
-        
+
         return $view;
     }
-    
+
     public function renderDocumentFileListsAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $zoneConfig = $this->params()->fromRoute('zoneconfig', '');
         $qDocRelationType = $this->params()->fromQuery('docRelationType');
         $qDocRelationId   = $this->params()->fromQuery('docRelationId');
-        
+
         $docRelationData = $this->getDocumentSessionValue();
         $data  = array();
         $files = array();
-        
+
         $docRelationType = null;
         $docRelationId   = null;
-        
+
         if($docRelationData['docRelationType'] && $docRelationData['docRelationId']) {
             $docRelationType = $docRelationData['docRelationType'];
             $docRelationId   = $docRelationData['docRelationId'];
@@ -117,7 +120,7 @@ class MelisComDocumentController extends AbstractActionController
             $docRelationType = $qDocRelationType;
             $docRelationId   = $qDocRelationId;
         }
-        
+
         $data = $this->getDocSvc()->getDocumentsByRelation($docRelationType, $docRelationId);
         if($data) {
             foreach($data->getDocument() as $doc) {
@@ -133,8 +136,8 @@ class MelisComDocumentController extends AbstractActionController
         $view->files = $files;
         return $view;
     }
-    
-    
+
+
     public function renderDocumentGenericModalContainerAction(){
         $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id', ''));
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -144,7 +147,7 @@ class MelisComDocumentController extends AbstractActionController
         $view->id = $id;
         return $view;
     }
-    
+
     public function renderDocumentGenericModalFormAction(){
         $typeUpload = $this->params()->fromQuery('typeUpload');
         $relationId = $this->params()->fromQuery('docRelationId');
@@ -159,7 +162,7 @@ class MelisComDocumentController extends AbstractActionController
         $title = 'tr_meliscommerce_documents_attachment';
         $formUpload = 'meliscommerce_documents_file_upload_form';
         $fileTitle = 'tr_meliscommerce_documents_main_information_upload_file_select';
-        
+
         if($typeUpload=='image'){
             $title = 'tr_meliscommerce_documents_add_image_button';
             $formUpload = 'meliscommerce_documents_image_upload_form';
@@ -171,13 +174,13 @@ class MelisComDocumentController extends AbstractActionController
                 $docImageData = array_merge($docRelData, $document);
             }
         }
-        
+
         if($typeUpload == 'file') {
             if($docId) {
                 $docFileData = $this->getDocSvc()->getDocumentById($docId);
                 $docRelData = (array)$this->getDocSvc()->getDocumentRelationByDocumentId($docId);
                 $document = $docFileData->getDocument();
-                
+
                 $fileData = array_merge($docRelData, $document);
             }
         }
@@ -189,11 +192,11 @@ class MelisComDocumentController extends AbstractActionController
         $formElements = $this->serviceLocator->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $propertyForm = $factory->createForm($appConfigForm);
-        
-        // Image Type Form 
+
+        // Image Type Form
         $imageTypeFormConfig = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_documents/meliscommerce_documents_image_type_form','meliscommerce_documents_image_type_form');
         $imageTypeForm = $factory->createForm($imageTypeFormConfig);
-        
+
         $melisKey = $this->params()->fromRoute('melisKey', '');
 
         $view = new ViewModel();
@@ -210,10 +213,10 @@ class MelisComDocumentController extends AbstractActionController
         $view->docFileData = $fileData;
         $view->saveType = $saveType;
         $view->setVariable('meliscommerce_documents_image_type_form', $imageTypeForm);
-        
+
         return $view;
     }
-    
+
     /**
      * EVENTS
      */
@@ -229,12 +232,12 @@ class MelisComDocumentController extends AbstractActionController
         $docType = '';
         $melisCoreConfig = $this->getServiceLocator()->get('MelisCoreConfig');
         if($request->isPost()) {
-    
+
             $this->getEventManager()->trigger('meliscommerce_document_update_'.$docType.'_start', $this, $request->getPost());
-            
+
             $postValues = get_object_vars($request->getPost());
-    
-    
+
+
             if(in_array($postValues['docType'], $this->docTypes)) {
                 if(in_array($postValues['docRelationType'], $this->relationTypes)) {
                     $docType   = $postValues['docType'];
@@ -242,23 +245,23 @@ class MelisComDocumentController extends AbstractActionController
                     $relationType = $postValues['docRelationType'];
                     $relationId   = (int) $postValues['relationId'];
                     $countryId = (int) $postValues['rdoc_country_id'];
-                    
-    
+
+
                     $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_documents_'.$docType.'_attachments');
                     $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_save_fail_need_review');
-    
+
                     $comMediaDir = 'public/media/commerce/'.$relationType.'/'.$relationId.'/';
                     $comMediaPublicPath = '/media/commerce/'.$relationType.'/'.$relationId.'/';
-    
+
                     $confDocUpload = $melisCoreConfig->getItem('meliscommerce/conf/documents');
                     $minSize = $confDocUpload['minUploadSize'];
                     $maxSize = $confDocUpload['maxUploadSize'];
-    
+
                     $uploadedFile = $request->getFiles()->toArray()['doc_path'];
                     $fileName = $uploadedFile['name'];
                     $formattedFileName = $this->getFormattedFileName($fileName);
-                    
-    
+
+
                     $size = new Size(array(
                         'min'=> $minSize,
                         'max' => $maxSize,
@@ -268,7 +271,7 @@ class MelisComDocumentController extends AbstractActionController
                             'fileSizeNotFound' => $this->getTool()->getTranslation('tr_meliscommerce_documents_upload_file_does_not_exists'),
                         )
                     ));
-    
+
                     $imageValidator = new IsImage(array(
                         'messages' => array(
                             'fileIsImageFalseType' => $this->getTool()->getTranslation('tr_meliscommerce_documents_upload_image_fileIsImageFalseType'),
@@ -276,17 +279,17 @@ class MelisComDocumentController extends AbstractActionController
                             'fileIsImageNotReadable' => $this->getTool()->getTranslation('tr_meliscommerce_documents_upload_image_fileIsImageNotReadable'),
                         ),
                     ));
-    
+
                     // if docType is file
                     $validator = array($size);
-    
+
                     // if docType is image
                     if($docType == 'image') {
                         $validator = array($size, $imageValidator);
                     }
-    
+
                     $adapter = new Http();
-    
+
                     // validate if form is valid
                     $form = $this->getDocForm($docType);
                     $form->setData($postValues);
@@ -294,7 +297,7 @@ class MelisComDocumentController extends AbstractActionController
                     if($form->isValid()) {
                         if($this->createFolder($relationType, $relationId)) {
                             $data = $form->getData();
-                            
+
                             // do saving
                             $adapter->setValidators($validator, $fileName);
                             if($docType == 'image') {
@@ -313,7 +316,7 @@ class MelisComDocumentController extends AbstractActionController
                                             'target' => $savedDocFileName,
                                             'overwrite' => true,
                                         ));
-                                         
+
                                         // if uploaded successfully
                                         if($adapter->receive()) {
                                             //$data['doc_name'] = !empty($data['doc_name']) ? $this->renameIfDuplicateName($data['doc_name']) : $this->renameIfDuplicateName($formattedFileName);
@@ -352,7 +355,7 @@ class MelisComDocumentController extends AbstractActionController
                                             'target' => $savedDocFileName,
                                             'overwrite' => true,
                                         ));
-                                         
+
                                         // if uploaded successfully
                                         if($adapter->receive()) {
                                             if(empty($data['doc_name'])) {
@@ -396,12 +399,12 @@ class MelisComDocumentController extends AbstractActionController
                     else {
                         $errors = $form->getMessages();
                     }
-    
+
                 }
 
                 $appConfigForm = $melisCoreConfig->getItem('meliscommerce/forms/meliscommerce_documents/'.$this->formString($postValues['docType']));
                 $appConfigForm = $appConfigForm['elements'];
-    
+
                 foreach ($errors as $keyError => $valueError)
                 {
                     foreach ($appConfigForm as $keyForm => $valueForm)
@@ -411,10 +414,10 @@ class MelisComDocumentController extends AbstractActionController
                             $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
                     }
                 }
-                	
+
             }
         }
-    
+
         $response = array(
             'success' => $success,
             'type' => $docType,
@@ -422,17 +425,17 @@ class MelisComDocumentController extends AbstractActionController
             'textTitle' => $textTitle,
             'textMessage' => $textMessage
         );
-    
+
         $this->getEventManager()->trigger('meliscommerce_document_save_'.$docType.'_end', $this, $response);
-    
+
         return new JsonModel($response);
     }
-        
+
     public function getDocFilesAction()
     {
         $success = 0;
         $files = array();
-        
+
         if($this->getRequest()->isPost()) {
             $relation = $this->getRequest()->getPost('relation');
             $uniqueId = (int) $this->getRequest()->getPost('id');
@@ -446,16 +449,16 @@ class MelisComDocumentController extends AbstractActionController
                     }
                     $success = 1;
                 }
-                
+
             }
         }
-        
+
         return new JsonModel(array(
             'success' => $success,
             'files' => $files
         ));
     }
-    
+
     public function getDocImagesAction()
     {
         $success = 0;
@@ -476,7 +479,7 @@ class MelisComDocumentController extends AbstractActionController
                         if($countryData) {
                             $countryName = $countryData->ctry_name;
                         }
-                        
+
                         if($doc['rdoc_country_id'] == '-1') {
                             $countryName = $this->getTool()->getTranslation('tr_meliscommerce_documents_action_all_countries');
                         }
@@ -486,43 +489,43 @@ class MelisComDocumentController extends AbstractActionController
                 }
             }
         }
-        
+
         return new JsonModel(array(
             'success' => $success,
             'images' => $files,
         ));
     }
-    
+
     public function setUniqueIdAction()
     {
         $id = null;
-        
+
         if($this->getRequest()->isPost()) {
             $id = $this->getRequest()->getPost('id');
             $container = new Container('meliscommerce');
             $container->uniqueId = $id;
         }
-        
+
         return new JsonModel(array(
             'id' => $id
         ));
     }
-    
+
     public function getUniqueIdAction()
     {
         $id = 1;
-        
+
         if($this->getRequest()->isXmlHttpRequest()) {
             $id = $this->getUniqueId();
         }
-        
+
         return new JsonModel(array(
             'id' => $id
         ));
     }
-    
 
-    
+
+
     public function deleteAction()
     {
         $success = 0;
@@ -538,9 +541,9 @@ class MelisComDocumentController extends AbstractActionController
             $formType = in_array($this->getRequest()->getPost('formType'), $this->relationTypes) ? $this->getRequest()->getPost('formType') : 'undefined';
             $docTable = $this->getServiceLocator()->get('MelisEcomDocumentTable');
             $docRelTable = $this->getServiceLocator()->get('MelisEcomDocRelationsTable');
-            
-            
-            if(in_array($type, $this->docTypes)) { 
+
+
+            if(in_array($type, $this->docTypes)) {
                 // check if the path exists
                 $fileUploadPath = 'public/media/commerce/'.$formType.'/'.$uniqueId.'/';
                 if(file_exists($fileUploadPath)) {
@@ -566,13 +569,13 @@ class MelisComDocumentController extends AbstractActionController
                     $success = 1;
                     $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_delete_'.$type.'_success');
                 }
-                
+
                 else {
                     $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_upload_path_not_exists');
                 }
             }
         }
-        
+
         $response = array(
             'success' => $success,
             'textTitle' => $textTitle,
@@ -581,47 +584,47 @@ class MelisComDocumentController extends AbstractActionController
         $this->getEventManager()->trigger('meliscommerce_document_delete_end', $this, $response);
         return new JsonModel($response);
     }
-    
-    public function addImageTypeAction() 
+
+    public function addImageTypeAction()
     {
         $success = 0;
         $errors = array();
         $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_documents_image_type_add');
         $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_image_type_add_failed');;
         $request = $this->getRequest();
-        
+
         if($request->isPost()) {
             $this->getEventManager()->trigger('meliscommerce_document_add_image_type_start', $this, $request->getPost());
-            
+
             $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
             $factory = new \Zend\Form\Factory();
             $formElements = $this->serviceLocator->get('FormElementManager');
             $appTextTypeForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_documents/meliscommerce_documents_image_type_form','meliscommerce_documents_image_type_form');
-            
+
             $factory->setFormElementManager($formElements);
             $form = $factory->createForm($appTextTypeForm);
-            
+
             $postValues = get_object_vars($this->getRequest()->getPost());
             $form->setData($postValues);
-            
+
             if($form->isValid()) {
                 $docService = $this->getServiceLocator()->get('MelisComDocumentService');
                 $data = $form->getData();
                 $data['dtype_parent_id'] = 1; // IMG
-                $success = $docService->saveDocumentType($data['dtype_code'], $data['dtype_name'], $data['dtype_parent_id']);
+                $success = (int) $docService->saveDocumentType($data['dtype_code'], $data['dtype_name'], $data['dtype_parent_id']);
                 if($success) {
                     $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_image_type_add_success');
                 }
-                
+
             }
             else {
                 $errors = $form->getMessages();
             }
-            
-             // front-end error display
+
+            // front-end error display
             $appConfigForm = $melisMelisCoreConfig->getItem('meliscommerce/forms/meliscommerce_documents/meliscommerce_documents_image_type_form');
             $appConfigForm = $appConfigForm['elements'];
-            
+
             foreach ($errors as $keyError => $valueError)
             {
                 foreach ($appConfigForm as $keyForm => $valueForm)
@@ -631,21 +634,21 @@ class MelisComDocumentController extends AbstractActionController
                         $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
                 }
             }
-            
+
         }
-        
-        
+
+
         $response = array(
             'success' => (int) $success,
             'textTitle' => $textTitle,
             'textMessage' => $textMessage,
             'errors' => $errors
         );
-        
+
         $this->getEventManager()->trigger('meliscommerce_document_add_image_type_end', $this, $response);
         return new JsonModel($response);
     }
-    
+
     public function addFileTypeAction()
     {
         $success = 0;
@@ -653,39 +656,39 @@ class MelisComDocumentController extends AbstractActionController
         $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_documents_file_add_banner_title');
         $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_File_type_add_failed');;
         $request = $this->getRequest();
-        
+
         if($request->isPost()) {
             $this->getEventManager()->trigger('meliscommerce_document_add_file_type_start', $this, $request->getPost());
-        
+
             $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
             $factory = new \Zend\Form\Factory();
             $formElements = $this->serviceLocator->get('FormElementManager');
             $appTextTypeForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_documents/meliscommerce_documents_image_type_form','meliscommerce_documents_image_type_form');
-        
+
             $factory->setFormElementManager($formElements);
             $form = $factory->createForm($appTextTypeForm);
-        
+
             $postValues = get_object_vars($this->getRequest()->getPost());
             $form->setData($postValues);
-        
+
             if($form->isValid()) {
                 $docService = $this->getServiceLocator()->get('MelisComDocumentService');
                 $data = $form->getData();
-                $data['dtype_parent_id'] = null; 
+                $data['dtype_parent_id'] = null;
                 $success = $docService->saveDocumentType($data['dtype_code'], $data['dtype_name'], $data['dtype_parent_id']);
                 if($success) {
                     $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_file_type_add_success');
                 }
-        
+
             }
             else {
                 $errors = $form->getMessages();
             }
-        
+
             // front-end error display
             $appConfigForm = $melisMelisCoreConfig->getItem('meliscommerce/forms/meliscommerce_documents/meliscommerce_documents_image_type_form');
             $appConfigForm = $appConfigForm['elements'];
-        
+
             foreach ($errors as $keyError => $valueError)
             {
                 foreach ($appConfigForm as $keyForm => $valueForm)
@@ -695,43 +698,43 @@ class MelisComDocumentController extends AbstractActionController
                         $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
                 }
             }
-        
+
         }
-        
+
         $response = array(
             'success' => (int) $success,
             'textTitle' => $textTitle,
             'textMessage' => $textMessage,
             'errors' => $errors
         );
-        
+
         $this->getEventManager()->trigger('meliscommerce_document_add_file_type_end', $this, $response);
         return new JsonModel($response);
     }
-    
+
     private function getTool()
     {
         $melisCoreTool = $this->getServiceLocator()->get('MelisCoreTool');
-        
+
         return $melisCoreTool;
-        
+
     }
-    
-    public function getDocSvc() 
+
+    public function getDocSvc()
     {
         $docService = $this->getServiceLocator()->get('MelisComDocumentService');
         return $docService;
     }
-    
-    private function formatBytes($bytes) { 
+
+    private function formatBytes($bytes) {
         $size = $bytes;
         $units = array( 'B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
         $power = $size > 0 ? floor(log($size, 1024)) : 0;
         return round(number_format($size / pow(1024, $power), 2, '.', ',')) . ' ' . $units[$power];
-    } 
-    
-    
-    
+    }
+
+
+
     private function getUniqueId()
     {
         $container = new Container('meliscommerce');
@@ -749,43 +752,43 @@ class MelisComDocumentController extends AbstractActionController
         $formElements = $this->serviceLocator->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $form = $factory->createForm($appConfigForm);
-        
+
         return $form;
     }
-    
+
     private function formString($type) {
         switch($type) {
             case 'file' :
                 return 'meliscommerce_documents_file_upload_form';
-            break;
-            case 'image' : 
+                break;
+            case 'image' :
                 return 'meliscommerce_documents_image_upload_form';
-            break;
+                break;
         }
     }
-    
+
     private function getCountries()
     {
         $melisEcomCountryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
         $ecomCountries = $melisEcomCountryTable->getCountries()->toArray();
         return $ecomCountries;
-        
+
     }
-    
+
     private function getImageTypes()
     {
         $docTypeSvc = $this->getServiceLocator()->get('MelisComDocumentService');
         $ecomImageType = $docTypeSvc->getDocumentTypes(1);
         return $ecomImageType;
     }
-    
+
     /**
      * Creates a folder inside "public/media/commerce" with full permission (for now)
      * @param String $folderType, enum: category, product, variant
      * @param int $folderId
      * @return bool
      */
-    private function createFolder($folderType, $folderId) 
+    private function createFolder($folderType, $folderId)
     {
         $status = false;
         $path = 'public/media/commerce/'.$folderType.'/'.$folderId;
@@ -796,10 +799,10 @@ class MelisComDocumentController extends AbstractActionController
             $status = mkdir($path, 0777, true);
             $this->createFolder($folderType, $folderId);
         }
-        
+
         return $status;
     }
-        
+
     /**
      * Returns the permission numeric mode
      * @param string $path
@@ -807,7 +810,7 @@ class MelisComDocumentController extends AbstractActionController
      * @param number $mode
      * @return \MelisCommerce\Controller\Json|boolean
      */
-    private function getPermission($path, $changePermission = false, $mode = 0777) 
+    private function getPermission($path, $changePermission = false, $mode = 0777)
     {
         $permission = substr(sprintf('%o', fileperms($path)), -4);
         if($changePermission) {
@@ -817,7 +820,7 @@ class MelisComDocumentController extends AbstractActionController
         }
         return $permission;
     }
-    
+
     /**
      * Changes the file permission
      * @param String $path
@@ -829,20 +832,20 @@ class MelisComDocumentController extends AbstractActionController
         $results = array();
         $success = false;
         if(file_exists($path)) {
-    
+
             if(!is_writable($path))
                 chmod($path, $mode);
-    
+
             if(!is_readable($path))
                 chmod($path, $mode);
-    
+
             if(is_readable($path) && is_writable($path))
                 $success = true;
         }
-    
+
         return $success;
     }
-    
+
     public function renameIfDuplicateFile($filePath)
     {
         $docTable = $this->getServiceLocator()->get('MelisEcomDocumentTable');
@@ -854,16 +857,16 @@ class MelisComDocumentController extends AbstractActionController
         $fileName = str_replace(' ', '_', $fileName);
         $fileExt  = pathinfo($filePath, PATHINFO_EXTENSION) ? '.' . pathinfo($filePath, PATHINFO_EXTENSION) : '';
         $newFilePathAndName = $fileDir . '/'. $fileName . $fileExt;
-        
+
         return $newFilePathAndName;
 
     }
-    
-    public function renameIfDuplicateName($name) 
+
+    public function renameIfDuplicateName($name)
     {
 //         $docTable = $this->getServiceLocator()->get('MelisEcomDocumentTable');
 //         $docData = $docTable->getEntryByFieldUsingLike('doc_name', $name)->toArray();
-        
+
 //         $totalNames = count($docData) ? ' (' .count($docData) . ')' : null;
 //        // $formatName = preg_replace('/\(([^)]+)\)/', '', $name);
 //         //$newName = $formatName . $totalNames;
@@ -871,23 +874,23 @@ class MelisComDocumentController extends AbstractActionController
         $newName = $name;
         return $newName;
     }
-    
+
     public function getFormattedFileName($fileName)
     {
         $file = pathinfo($fileName, PATHINFO_FILENAME);
         $fileExt = pathinfo($fileName, PATHINFO_EXTENSION);
         $newFileName = $file;
-        
+
         return $newFileName;
     }
-    
+
     public function testAction()
     {
         $test = 'Pants_icon_57ea5d3489096.png';
         echo $this->renameIfDuplicateName('real deal');
         die;
     }
-    
+
     public function sessionsAction()
     {
         $container = new Container('meliscommerce');
@@ -895,32 +898,32 @@ class MelisComDocumentController extends AbstractActionController
         print '<pre>';
         print_r($container->getArrayCopy());
         print '</pre>';
-        
+
         echo $this->getDocumentSessionValue()['docRelationType'];
         die;
     }
-    
+
     public function clearSessionAction()
     {
         $container = new Container('meliscommerce');
         $container->getManager()->destroy();
-    
+
         die;
     }
-    
+
     private function getDocumentSessionValue()
     {
         $container = new Container('meliscommerce');
         if($container) {
             return $container['documents'];
         }
-        
+
         return array('documents' => array(
-           'docRelationType' => null,
-           'docRelationId' => null
+            'docRelationType' => null,
+            'docRelationId' => null
         ));
     }
-    
- 
+
+
 
 }

@@ -40,6 +40,7 @@ use MelisCommerce\Listener\MelisCommerceSEOLanguageDeletedListener;
 use MelisCommerce\Listener\MelisCommerceProductTextLanguageAddListener;
 use MelisCommerce\Listener\MelisCommerceProductTextLanguageDeleteListener;
 use MelisCommerce\Listener\MelisCommerceDocumentCountryDeletedListener;
+use MelisCommerce\Listener\MelisCommerceCheckoutCouponListener;
 
 class Module
 {
@@ -94,6 +95,7 @@ class Module
             $eventManager->attach(new MelisCommerceProductTextLanguageAddListener());
             $eventManager->attach(new MelisCommerceProductTextLanguageDeleteListener());
             $eventManager->attach(new MelisCommerceDocumentCountryDeletedListener());
+            $eventManager->attach(new MelisCommerceCheckoutCouponListener());
             
         }
         else
