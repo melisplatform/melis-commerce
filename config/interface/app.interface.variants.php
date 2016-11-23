@@ -197,6 +197,11 @@ return array(
                                                         'action' => 'render-variant-tab',
                                                     ),
                                                 ),
+                                                'meliscommerce_variant_tab_assoc_var' => array(
+                                                    'conf' => array(
+                                                        'type' => 'meliscommerce/interface/meliscommerce_avar_tab',
+                                                    ),
+                                                ),
                                             ),
                                         ),
                                         'meliscommerce_variant_tab_contents_container' => array(
@@ -519,6 +524,11 @@ return array(
                                                     'conf' => array(
                                                         'type' => 'meliscommerce/interface/meliscommerce_prices_tab_content',
                                                     ),                                                    
+                                                ),
+                                                'meliscommerce_variant_tab_content_avar' => array(
+                                                    'conf' => array(
+                                                        'type' => 'meliscommerce/interface/meliscommerce_avar_tab_content',
+                                                    ),
                                                 ),
                                                 // end of price tab content.
                                                 'meliscommerce_variant_tab_content_stocks' => array(

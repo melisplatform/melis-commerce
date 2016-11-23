@@ -163,6 +163,7 @@ class Module
     	        include __DIR__ . '/../config/interface/app.interface.attributes.php',
     	        include __DIR__ . '/../config/interface/app.interface.language.php',
     	        include __DIR__ . '/../config/interface/app.interface.country.php',
+                include __DIR__ . '/../config/interface/app.interface.assoc-var.php',
     	    
     			include __DIR__ . '/../config/forms/app.forms.general.php',
     	        include __DIR__ . '/../config/forms/app.forms.documents.php',
@@ -239,6 +240,7 @@ class Module
             $translator->addTranslationFile('phparray', __DIR__ . '/../language/attributes/' . $locale . '.interface.attributes.php');
             $translator->addTranslationFile('phparray', __DIR__ . '/../language/language/' . $locale . '.interface.language.php');
             $translator->addTranslationFile('phparray', __DIR__ . '/../language/country/' . $locale . '.interface.country.php');
+            $translator->addTranslationFile('phparray', __DIR__ . '/../language/assoc-var/' . $locale . '.interface.assoc-var.php');
     
             $translator->addTranslationFile('phparray', __DIR__ . '/../language/general/' . $locale . '.forms.general.php');
             $translator->addTranslationFile('phparray', __DIR__ . '/../language/categories/' . $locale . '.forms.categories.php');
@@ -255,6 +257,7 @@ class Module
             $translator->addTranslationFile('phparray', __DIR__ . '/../language/attributes/' . $locale . '.forms.attributes.php');
             $translator->addTranslationFile('phparray', __DIR__ . '/../language/language/' . $locale . '.forms.language.php');
             $translator->addTranslationFile('phparray', __DIR__ . '/../language/country/' . $locale . '.forms.country.php');
+            $translator->addTranslationFile('phparray', __DIR__ . '/../language/assoc-var/' . $locale . '.interface.assoc-var.php');
         }
     }
 

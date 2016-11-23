@@ -142,6 +142,8 @@ return array(
             'MelisEcomOrderShippingTable' => 'MelisCommerce\Model\Tables\MelisEcomOrderShippingTable',
             'MelisEcomOrderBasketTable' => 'MelisCommerce\Model\Tables\MelisEcomOrderBasketTable',
             'MelisEcomCurrencyTable' => 'MelisCommerce\Model\Tables\MelisEcomCurrencyTable',
+            'MelisEcomAssocVariantTable'      => 'MelisCommerce\Model\Tables\MelisEcomAssocVariantTable',
+            'MelisEcomAssocVariantTypeTable'  => 'MelisCommerce\Model\Tables\MelisEcomAssocVariantTypeTable',
             
         ),
         'factories' => array(
@@ -168,6 +170,8 @@ return array(
             'MelisCommerce\Model\Tables\MelisEcomAttributeTypeTable'         => 'MelisCommerce\Model\Tables\Factory\MelisEcomAttributeTypeTableFactory',
             'MelisCommerce\Model\Tables\MelisEcomAttributeValueTable'        => 'MelisCommerce\Model\Tables\Factory\MelisEcomAttributeValueTableFactory',
             'MelisCommerce\Model\Tables\MelisEcomAttributeValueTransTable'   => 'MelisCommerce\Model\Tables\Factory\MelisEcomAttributeValueTransTableFactory',
+            'MelisCommerce\Model\Tables\MelisEcomAssocVariantTable'          => 'MelisCommerce\Model\Tables\Factory\MelisEcomAssocVariantTableFactory',
+            'MelisCommerce\Model\Tables\MelisEcomAssocVariantTypeTable'      => 'MelisCommerce\Model\Tables\Factory\MelisEcomAssocVariantTypeTableFactory',
             'MelisCommerce\Model\Tables\MelisEcomBasketAnonymousTable'       => 'MelisCommerce\Model\Tables\Factory\MelisEcomBasketAnonymousTableFactory',
             'MelisCommerce\Model\Tables\MelisEcomBasketPersistentTable'      => 'MelisCommerce\Model\Tables\Factory\MelisEcomBasketPersistentTableFactory',
             'MelisCommerce\Model\Tables\MelisEcomCategoryTable'              => 'MelisCommerce\Model\Tables\Factory\MelisEcomCategoryTableFactory',
@@ -241,6 +245,7 @@ return array(
             'MelisCommerce\Controller\MelisComCountry' => 'MelisCommerce\Controller\MelisComCountryController',
             'MelisCommerce\Controller\Tester' => 'MelisCommerce\Controller\TesterController',
             'MelisCommerce\Controller\Diagnostic' => 'MelisCommerce\Controller\DiagnosticController',
+            'MelisCommerce\Controller\MelisComAssociateVariant' => 'MelisCommerce\Controller\MelisComAssociateVariantController',
         ),
     ),
     'form_elements' => array(
