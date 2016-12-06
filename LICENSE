@@ -1,103 +1,363 @@
 Copyright (C) 2016  Melis Technology
 
-Open Software License v. 3.0 (OSL-3.0)
-This Open Software License (the "License") applies to any original work of authorship (the "Original Work") 
-whose owner (the "Licensor") has placed the following licensing notice adjacent to the copyright notice for the Original Work:
-Licensed under the Open Software License version 3.0
+MELIS TECHNLOGY PREMIUM VERSIONS END USER LICENSE AGREEMENT (EULA)
+This End-User License Agreement (this « Agreement ») is a legal contract between Licensee, as either an individual or a single 
+business entity (« the Licensee »), and Melis Technology SAS and its affiliates (« Melis Technology » or « Melis »). 
+MELIS PREMIUM VERSION OR MELIS TECHNOLOGY PREMIUM VERSION OR MELIS PREMIUM SOFTWARE MEANS ANY OF THE 3 FOLLOWING VERSIONS : 
+MELIS PLATFORM SMALL BUSINESS EDITION, MELIS PLATFORM PROFESSIONAL EDITION, MELIS PLATFORM ENTERPRISE EDITION.
+READ THE TERMS AND CONDITIONS OF THIS AGREEMENT CAREFULLY BEFORE DOWNLOADING OR INSTALLING MELIS PREMIUM VERSION (« THE SOFTWARE »).
+BY CLICKING “I ACCEPT” OR DOWNLOADING, INSTALLING OR USING MELIS PREMIUM SOFTWARE (« THE SOFTWARE ») OR BY ENTERING INTO AN ORDER WHICH 
+REFERENCES AND PROVIDES SOURCE INFORMATION NECESSARY FOR ACCESSING AND REVIEWING THIS AGREEMENT LICENSEE ACKNOWLEDGES THAT LICENSEE IS AN 
+AUTHORIZED REPRESENTATIVE OF LICENSEE’S ORGANIZATION AND HAVE READ AND UNDERSTAND THIS AGREEMENT AND THAT LICENSEE ACCEPTS AND AGREE TO 
+BE BOUND BY THE TERMS AND CONDITIONS CONTAINED HEREIN.
+IF LICENSEE IS NOT WILLING TO BE BOUND BY THE TERMS OF THIS AGREEMENT, LICENSEE SHOULD TERMINATE THE DOWNLOAD OR INSTALLATION PROCESS, 
+AND REFRAIN FROM ACCESSING OR USING THE SOFTWARE. ALONG WITH MELIS PREMIUM VERSIONS SUPPORT SERVICES AGREEMENT, THIS AGREEMENT, INCLUDING 
+ANY ORDERS, REPRESENTS THE ENTIRE AGREEMENT BETWEEN LICENSEE AND MELIS CONCERNING THE SOFTWARE, AND THIS AGREEMENT SUPERCEDES AND REPLACES 
+ANY PRIOR REPRESENTATION OR PROPOSAL, ORAL OR WRITTEN, INCLUDING ANY ONLINE (CLICK-THROUGH) AGREEMENT WHICH LICENSEE MAY HAVE ACCEPTED IN 
+CONJUNCTION WITH THE DOWNLOADING OF THE SOFTWARE, AND ALL OTHER COMMUNICATIONS BETWEEN THE PARTIES RELATING TO THE SUBJECT MATTER HEREOF, 
+OR UNDERSTANDING LICENSEE MAY HAVE HAD WITH MELIS RELATING TO THE SOFTWARE UNLESS LICENSEE HAVE ENTERED INTO A SEPARATE WRITTEN AGREEMENT 
+SIGNED BY MELIS THAT EXPRESSLY AMENDS THIS AGREEMENT. 
+THE SOFTWARE IS FURTHER DEFINED IN AN ORDER DOCUMENT (AN « ORDER »), ENTERED INTO BETWEEN LICENSEE AND MELIS OR LICENSEE AND A MELIS 
+RESELLER, WHICH SETS FORTH COMMERCIAL TERMS APPLICABLE TO LICENSEE’S PURCHASE OF THE SOFTWARE. 
 
-1) Grant of Copyright License. Licensor grants You a worldwide, royalty-free, non-exclusive, 
-sublicensable license, for the duration of the copyright, to do the following:
-	a) to reproduce the Original Work in copies, either alone or as part of a collective work;
-	b) to translate, adapt, alter, transform, modify, or arrange the Original Work, thereby creating derivative works 
-	("Derivative Works") based upon the Original Work;
-	c) to distribute or communicate copies of the Original Work and Derivative Works to the public, with the proviso 
-	that copies of Original Work or Derivative Works that You distribute or communicate shall be licensed under this Open Software License;
-	d) to perform the Original Work publicly; and
-	e) to display the Original Work publicly.
+1. Definitions
 
-2) Grant of Patent License. Licensor grants You a worldwide, royalty-free, non-exclusive, sublicensable license, under patent claims owned 
-or controlled by the Licensor that are embodied in the Original Work as furnished by the Licensor, for the duration of the patents, to make, 
-use, sell, offer for sale, have made, and import the Original Work and Derivative Works.
+1.1. Designated Server. 
+"Designated Server" shall mean the Server specified in a Melis or Melis Reseller Order Form with respect to a particular Software license. 
+Such Server may be that of a third- party under nondisclosure obligations that will host the Software for the benefit of Licensee.
 
-3) Grant of Source Code License. The term "Source Code" means the preferred form of the Original Work for making modifications to it and all 
-available documentation describing how to modify the Original Work. Licensor agrees to provide a machine-readable copy of the Source Code of 
-the Original Work along with each copy of the Original Work that Licensor distributes. Licensor reserves the right to satisfy this obligation 
-by placing a machine-readable copy of the Source Code in an information repository reasonably calculated to permit inexpensive and convenient 
-access by You for as long as Licensor continues to distribute the Original Work.
 
-4) Exclusions From License Grant. Neither the names of Licensor, nor the names of any contributors to the Original Work, nor any of their 
-trademarks or service marks, may be used to endorse or promote products derived from this Original Work without express prior permission of the 
-Licensor. Except as expressly stated herein, nothing in this License grants any license to Licensor's trademarks, copyrights, patents, trade 
-secrets or any other intellectual property. No patent license is granted to make, use, sell, offer for sale, have made, or import embodiments 
-of any patent claims other than the licensed claims defined in Section 2. No license is granted to the trademarks of Licensor even if such marks 
-are included in the Original Work. Nothing in this License shall be interpreted to prohibit Licensor from licensing under terms different from 
-this License any Original Work that Licensor otherwise would have a right to license.
+1.2. Server. 
+"Server" means each physical or virtual server from which a single instance of the Software is accessed and used either for production 
+purposes ("Production Server Instance") or for non-production purposes, such as development, testing, training and other non-operational 
+business transactions ("Non-Production Server Instance"). For example, if one server contains two (2) instances of the Software, i.e., one 
+Production Server Instance and one Non-Production Server Instance, then a Server license is required for each of such instances; development 
+in-house and by third-party consultants requires licenses for two Non-Production Server Instances.
 
-5) External Deployment. The term "External Deployment" means the use, distribution, or communication of the Original Work or Derivative Works in 
-any way such that the Original Work or Derivative Works may be used by anyone other than You, whether those works are distributed or communicated 
-to those persons or made available as an application intended for use over a network. As an express condition for the grants of license hereunder, 
-You must treat any External Deployment by You of the Original Work or a Derivative Work as a distribution under section 1(c).
+1.3. Proprietary Material. 
+"Proprietary Material" means the Software, related documentation, and all parts, copies and modifications thereof, and any other information, 
+in whatever form, received by Licensee hereunder, provided, however, such information shall not be deemed Proprietary Material if it (i) is 
+or becomes a part of the public domain through no act or omission of Licensee; or (ii) was in Licensee's lawful possession prior to the 
+disclosure and had not been obtained by Licensee from Melis; or (iii) is lawfully disclosed to Licensee by a third party without restriction 
+on disclosure.
 
-6) Attribution Rights. You must retain, in the Source Code of any Derivative Works that You create, all copyright, patent, or trademark notices 
-from the Source Code of the Original Work, as well as any notices of licensing and any descriptive text identified therein as an "Attribution 
-Notice." You must cause the Source Code for any Derivative Works that You create to carry a prominent Attribution Notice reasonably calculated to 
-inform recipients that You have modified the Original Work.
+1.4. Software. 
+"Software" means Melis's Development Platform software solution known as the Melis™ Premium versions, all subject to licensee’s payent of 
+applicable fees, provided solely in source code, including associated technical documentation, and all Updates thereof furnished to Licensee 
+as part of Support Services. Except as otherwise specified herein, the term Software includes certain open source software programs described 
+in Section 4.3. "Software" does not include any Modifications.
 
-7) Warranty of Provenance and Disclaimer of Warranty. Licensor warrants that the copyright in and to the Original Work and the patent rights 
-granted herein by Licensor are owned by the Licensor or are sublicensed to You under the terms of this License with the permission of the 
-contributor(s) of those copyrights and patent rights. Except as expressly stated in the immediately preceding sentence, the Original Work is 
-provided under this License on an "AS IS" BASIS and WITHOUT WARRANTY, either express or implied, including, without limitation, the warranties of 
-non-infringement, merchantability or fitness for a particular purpose. THE ENTIRE RISK AS TO THE QUALITY OF THE ORIGINAL WORK IS WITH YOU. 
-This DISCLAIMER OF WARRANTY constitutes an essential part of this License. No license to the Original Work is granted by this License except 
-under this disclaimer.
+1.5. Modifications. 
+"Modifications" means any code developed by Licensee or any third party, including without limitation, configuration, integrations, 
+implementations, or localizations to the external layer of the core, baseline Software product. The term "Modifications" excludes Updates.
 
-8) Limitation of Liability. Under no circumstances and under no legal theory, whether in tort (including negligence), contract, or otherwise, 
-shall the Licensor be liable to anyone for any indirect, special, incidental, or consequential damages of any character arising as a result of 
-this License or the use of the Original Work including, without limitation, damages for loss of goodwill, work stoppage, computer failure or 
-malfunction, or any and all other commercial damages or losses. This limitation of liability shall not apply to the extent applicable law 
-prohibits such limitation.
+1.4 Updates. 
+"Updates" means all published revisions and corrections to the printed documentation and corrections and new releases of the Software which 
+are generally made available to Melis's supported customers at no additional cost or for media and handling charges only. Updates shall not 
+include any options or future products which Melis sells separately.
 
-9) Acceptance and Termination. If, at any time, You expressly assented to this License, that assent indicates your clear and irrevocable 
-acceptance of this License and all of its terms and conditions. If You distribute or communicate copies of the Original Work or a Derivative 
-Work, You must make a reasonable effort under the circumstances to obtain the express assent of recipients to the terms of this License. This 
-License conditions your rights to undertake the activities listed in Section 1, including your right to create Derivative Works based upon the 
-Original Work, and doing so without honoring these terms and conditions is prohibited by copyright law and international treaty. Nothing in this 
-License is intended to affect copyright exceptions and limitations (including "fair use" or "fair dealing"). This License shall terminate 
-immediately and You may no longer exercise any of the rights granted to You by this License upon your failure to honor the conditions in Section 1(c).
 
-10) Termination for Patent Action. This License shall terminate automatically and You may no longer exercise any of the rights granted to You 
-by this License as of the date You commence an action, including a cross-claim or counterclaim, against Licensor or any licensee alleging that the 
-Original Work infringes a patent. This termination provision shall not apply for an action alleging patent infringement by combinations of the 
-Original Work with other 
-software or hardware.
+2. LICENSE
 
-11) Jurisdiction, Venue and Governing Law. Any action or suit relating to this License may be brought only in the courts of a jurisdiction wherein 
-the Licensor resides or in which Licensor conducts its primary business, and under the laws of that jurisdiction excluding its conflict-of-law 
-provisions. The application of the United Nations Convention on Contracts for the International Sale of Goods is expressly excluded. Any use of the 
-Original Work outside the scope of this License or after its termination shall be subject to the requirements and penalties of copyright or patent 
-law in the appropriate jurisdiction. This section shall survive the termination of this License.
+2.1. Grant of License. 
+Subject to Licensee's payment of the applicable fees and to Licensee's compliance with other terms and conditions of this Agreement, Melis 
+grants Licensee a non exclusive, non-transferable, non-assignable, non-sublicensable, license to copy the Software for the purpose of 
+installing and using it on a machine-readable, object code form only (« the computer »), and solely for internal purposes, in accordance with 
+the Software's technical documentation (« the documentation ») and solely during the periods and on the maximum number of Designated Servers 
+specified in one or more applicable Melis or Melis-authorized reseller ordering schedules (the « Melis Order Form ») executed with Licensee. 
+For the purpose of this agreement, the “Software” includes any updates, enhancements, modifications, revisions, or additions to the Software 
+made available to Licensee by Melis. Notwithstanding the foregoing, Melis shall be under no obligation to provide any updates, enhancements, 
+modifications, revisions, or additions to the Software.
+Melis shall provide to Licensee an initial copy of the Software, including the associated technical documentation, for use by Licensee in 
+accordance with this Agreement
 
-12) Attorneys' Fees. In any action to enforce the terms of this License or seeking damages relating thereto, the prevailing party shall be entitled 
-to recover its costs and expenses, including, without limitation, reasonable attorneys' fees and costs incurred in connection with such action, 
-including any appeal of such action. This section shall survive the termination of this License.
+2.2 Scope of Use and term of Licensee’s license. 
+Licensee may use the Software for the number of computers (virtual or physical) owned, leased, or otherwise controlled by Licensee, at rates 
+specified for metered usage, as specified in an Order. An Order may also specify other applicable license scope definitions. The term of 
+Licensee’s license is as set forth in the Order. 
+If the Order does not state a scope of license, then the scope of license for the Software shall be for a single computer or shall be metered 
+at the applicable rate.
+If the Order does not state a term, then the term of the license shall be for a period of one (1) year from the earlier of Licensee’s download 
+or installation of the Software. The term of Licensee’s license is renewable on terms set forth in the Order or otherwise as agreed by Melis.
+Licensee shall implement reasonable controls to ensure that it does not exceed the maximum number of licensed Servers of the Software.
+In the event that Licensee's actual number of Servers of a particular Software license exceeds the licensed number of Designated Servers on 
+such license, Licensee shall promptly provide Melis with written notice and pay Melis the fees required to license such additional Server(s) 
+in accordance with the commercial terms set out in the Melis Order Form or Melis reseller Order Form.
+Melis reserves the right to audit Licensee's use of the Software during normal business hours, upon reasonable notice,  to verify compliance 
+with the commercial terms, the terms of this agreement and to include means within the Software to limit Licensee's use of the Software to the 
+licensed number of Servers.
+Melis reserves the right to gather data on license key usage including license key numbers, server IP addresses, domain counts and other 
+information deemed relevant, to ensure that our products are being used in accordance with the terms of this Agreement. 
 
-13) Miscellaneous. If any provision of this License is held to be unenforceable, such provision shall be reformed only to the extent necessary to 
-make it enforceable.
+2.3. Zend Server distribution. 
+Melis Technology premium versions embed Zend Server product from Zend Technologies Ltd and Melis is authorized to distribute the entire Zend 
+Server products combined with Melis products, provided (i) Licensee does not make any modifications to Zend Server (ii) licensee does not 
+modify or remove any proprietary rights notices or markings, (iv) Licensee does not transfer Melis or Zend Server license keys, (iv) Licensee 
+does not use Zend Server products and keys to run any other software than Melis products, (v) Licensee complies with Zend Technologies Ltd 
+End User License Agreement available on Zend Website https://www.zend.com/topics/License-EULA.
+If Zend Server license key expires and is not renewed, Zend Server will continue to operate with only reduced functionality. This reduced 
+functionality version licensed on a perpetual basis, without charge, subject to compliance with the terms of this agreement. 
 
-14) Definition of "You" in This License. "You" throughout this License, whether in upper or lower case, means an individual or a legal entity 
-exercising rights under, and complying with all of the terms of, this License. For legal entities, "You" includes any entity that controls, is 
-controlled by, or is under common control with you. For purposes of this definition, "control" means (i) the power, direct or indirect, to cause the 
-direction or management of such entity, whether by contract or otherwise, or (ii) ownership of fifty percent (50%) or more of the outstanding shares, 
-or (iii) beneficial ownership of such entity.
+2.4. Confidentiality. 
+Licensee shall permit only authorized users, who possess rightfully obtained license keys, to use the Software or to view the Documentation. 
+Except as expressly authorized by this Agreement, Licensee shall not make available the Software, Documentation, or any license key to any 
+third party. Licensee will use Licensee’s best efforts to cooperate with and assist Melis in identifying and preventing any unauthorized use, 
+copying, or disclosure of the Software, Documentation, or any portion thereof.
 
-15) Right to Use. You may use the Original Work in all ways not otherwise restricted or conditioned by this License or by law, and Licensor promises 
-not to interfere with or be responsible for such uses by You.
+2.5. Backup. 
+Licensee is authorized to use the Software on a single substitute or backup Server on a temporary basis without charge any time a Designated 
+Server is inoperative due to a malfunction beyond the control of Licensee. Licensee may transfer the Software on a permanent basis to a 
+single replacement Server without charge. Licensee agrees to provide Melis with written notice, including the Server type and operating 
+system, of any such transfer to a backup or replacement Server within ten (10) days thereafter.
 
-16) Modification of This License. This License is Copyright ï¿½ 2005 Lawrence Rosen. Permission is granted to copy, distribute, or communicate this 
-License without modification. Nothing in this License permits You to modify this License as applied to the Original Work or to Derivative Works. 
-However, You may modify the text of this License and copy, distribute or communicate your modified version (the "Modified License") and apply it to 
-other original works of authorship subject to the following conditions: (i) You may not indicate in any way that your Modified License is the "Open 
-Software License" or "OSL" and you may not use those names in the name of your Modified License; (ii) You must replace the notice specified in the first 
-paragraph above with the notice "Licensed under <insert your license name here>" or with a notice of your own that is not confusingly similar to the 
-notice in this License; and (iii) You may not claim that your original works are open source software unless your Modified License has been approved by 
-Open Source Initiative (OSI) and You comply with its license review and certification process.
+2.6. Fees on open source version. 
+Licensee acknowledges that portions of the Software are also freely available to the public under Melis's open source version of the Software, 
+known as Melis Platform Community Edition, subject to certain conditions, with limited warranties and other limited assurances, and without 
+service or support. As an express condition for the license granted hereunder, Licensee agrees that any use during the term of this Agreement 
+of such open source versions of the Software, whether in a Production Server Instance or a Non-Production Server Instance, shall be deemed 
+use of the Software for purposes of the calculation of fees payable under the Agreement.
+
+2.7. Derivative works. 
+Melis also grants Licensee the right to modify and create derivative works of the Software. Licensee may contribute the rights in any of 
+those derivative works back to Melis. Licensee may contact Melis for more information regarding contributions of derivative works rights to 
+Melis. 
+Regardless of whether Licensee contributes such derivative works rights to Melis, Licensee hereby grants Melis a perpetual and irrevocable 
+(irrespective of the expiration or termination of this Agreement), nonexclusive, transferable, worldwide, and royalty-free license to 
+reproduce, create derivative works of, distribute, perform, and display any derivative works of the Software developed by or for Licensee, 
+and to use, make, have made, sell, offer to sell, import, export, and otherwise exploit any product based on any such derivative works.
+
+2.8. License Violations and Remedies. 
+Exceedances use that has not been promptly pay in accordance with the commercial terms to Melis or Melis reseller by the licensee or any 
+unauthorized use shall be considered by Melis to be a violation of this Agreement. Melis reserves the right to charge the then-current list 
+price of unauthorized Software or Zend Server license keys or to exercise remedies available at equity or law. 
+
+2.9. License Automatic Update and Expiration. 
+Licensee license may include an expiration date that can result in the termination of the license. For limited-term licenses, Licensee’s 
+periodic payment must be processed prior to the expiration date in order for the license updates to be performed. It is Licensee’s 
+responsibility to contact Melis regarding any potential expiration that Licensee deems inappropriate. Melis shall not be liable for any 
+damages or costs incurred in connection with the expired licenses. 
+
+2.10. Illegal usage. 
+If Licenses’s Zend Server license key is stolen, or if Licensee suspects any improper or illegal usage of Licensee’s download or Zend Server 
+license key outside of Licensee’s control Licensee should promptly notify Melis of such occurrence. A replacement of Zend Server license 
+will be issued to Licensee and the suspect license will be allowed to expire.
+
+
+3. LICENSE EXCLUSION, ASSIGMENT AND RESTRICTIONS
+
+3.1. License use. 
+Except as expressly authorized herein, Licensee shall not:
+a/ use or deploy the Software on any Server in excess of the number of Designated Servers specified in the applicable Melis or Melis 
+Reseller Order Form;
+b/ sublicense, distribute, rent, lease, disclose, market or offer remote computing services, networking, batch processing or transfer of, the 
+Software or the Documentation or License Keys as granted by this agreement to any third party, or permit any person or entity to have access 
+to the Software by means of a time sharing, networking, batch processing, remote computing services or service bureau without prior written 
+consent of Melis. 
+
+3.2 Assignment. 
+Licensee may not assign licensee’s rights under this Agreement and any attempted assignment shall be void and of no effect. Melis may assign 
+its rights and obligations under this Agreement.
+
+3.3 Restrictions about third party products embed into Melis. 
+Licensee may not reverse engineer, decompile, disassemble, or otherwise translate the source parts of the Software or any license keys Licensee 
+has obtained. Licensee may not modify or adapt this source parts of the Software or any license keys that Licensee has obtained in any way. 
+
+3.4. Copy of the third party products embed into Melis and provided with the Software. 
+Licensee may make one copy of the third party products and documentation, and any license keys that Licensee has obtained, solely for backup 
+or archival purposes. Any such copies of the third party products and documentation, or license keys shall include any copyright or other 
+proprietary notices that were included on such materials when Licensee first received them. Except as authorized in this Section, no copies 
+of the third party products and Documentation, or license keys, or any portions thereof, may be made or distributed by Licensee or any person 
+under licensee’s authority or control. 
+
+3.5. Export Restrictions
+THIS AGREEMENT IS EXPRESSLY MADE SUBJECT TO ANY LAWS, REGULATIONS, ORDERS, OR OTHER RESTRICTIONS ON THE EXPORT, REEXPORT OR IMPORT OF THE 
+SOFTWARE OR DOCUMENTATION ABOUT SUCH SOFTWARE WHICH MAY BE IMPOSED FROM TIME TO TIME BY THE GOVERNMENTS OF EUROPEAN UNION STATES OR ANY OTHER 
+GOVERNMENT. 
+LICENSEE SHALL NOT EXPORT, REEXPORT OR IMPORT THE SOFTWARE, DOCUMENTATION, OR INFORMATION ABOUT THE SOFTWARE OR DOCUMENTATION WITHOUT THE 
+WRITTEN CONSENT OF MELIS AND COMPLIANCE WITH SUCH LAWS, REGULATIONS, ORDERS, OR OTHER RESTRICTIONS. 
+
+3.6. United States Government Restricted Rights.
+If the Software is acquired by or on behalf of a unit or agency of the U.S. Government, the US Government agrees that such Product is 
+"commercial computer software" or "commercial computer software documentation" and that, absent a written agreement to the contrary, the US 
+Government's rights with respect thereto are limited by the terms of this Agreement, pursuant to applicable FAR and/or DFARS and successor 
+regulations.
+
+
+4. PROPRIETARY RIGHTS TO SOFTWARE AND TRADEMARKS
+
+4.1. Proprietary Rights to Software and Documentation. 
+Licensee acknowledges that the Software and the Documentation are proprietary to Melis, and the Software and Documentation are protected under 
+French copyright law and international treaties. Licensee further acknowledges and agrees that, as between Licensee and Melis, Melis owns and 
+shall continue to own all right, title, and interest in and to the Software and Documentation, including associated intellectual property 
+rights under copyright, trade secret, patent, or trademark laws. 
+This Agreement does not grant Licensee any ownership interest in or to the Software or the Documentation, but only a limited right of use that 
+is revocable in accordance with the terms of this Agreement. 
+Melis or its third party providers retains title to all portions of the Software or Documentation and other Proprietary Materials and any 
+copies thereof. 
+The Proprietary Materials contain valuable proprietary information, and Licensee shall not disclose them to anyone other than those of its 
+employees or consultants under written nondisclosure obligations at least as restrictive as those contained in this Agreement, having a need 
+to know for purposes consistent with this Agreement. Licensee shall be responsible for the compliance of such employees or consultants. 
+Licensee shall affix, to each full or partial copy of the Software or Documentation made by Licensee, all copyright and proprietary information 
+notices as were affixed to the original. The obligations set forth in this Section shall survive termination of this Agreement.
+
+4.2. Proprietary Rights to Trademarks. 
+Any and all trademarks or service marks that Melis uses in connection with the Software or with services rendered by Melis are marks owned by 
+Melis or Third Party providers. 
+This Agreement does not grant Licensee any right, license, Melis trademark, trade name or service mark or interest in such marks, and Licensee 
+shall not assert any right, license, or interest in such marks or any words or designs that are confusingly similar to such marks.
+
+4.3. Third Party License Terms. 
+Licensee acknowledges that the Software includes certain open source or proprietary softwares which are governed by the applicable license terms 
+thereof. A list of such open source and proprietary software, as amended from time to time, including the links applicable to such open source 
+and proprietary softwares are specified in the product softwares bundled within the Software, and the Software is subject to the provisions of 
+such license agreements, and in the event of any contradiction between the provisions of this Agreement and the provisions of such applicable 
+license agreement, the provisions of the applicable open source or proprietary license agreement shall prevail solely with respect to such open 
+source or proprietary software products.
+
+
+5. PATENT AND INDEMNIFICATIONS
+
+Subject to the limitations in Section 8, for such time as Licensee is entitled to receive Support Services (as defined into Melis Technology 
+Support Agreement), Melis shall defend and indemnify Licensee for damages and reasonable costs finally incurred in any suit or claim brought 
+against Licensee allegating that the Software (which, for the purposes of this Section 5, means the Software as delivered by Melis, excluding 
+the open source or proprietary software programs described in Section 4.3) as permitted in this Agreement directly infringes such third party's 
+patent or copyright, trade secret or similar right, provided that Licensee complies with the requirements of this Section. 
+
+Licensee will (a) provide Melis prompt written notice of any claim that the Software infringes any intellectual property rights, (b) provide 
+Melis with all information and assistance requested of it with respect to any such claim, and (c) offer Melis sole and complete authority to 
+defend and/or settle any and all such claims.
+
+In the event that a court holds that the Software, or if Melis believes a court may hold that the Software, infringes the intellectual property 
+rights of any third party, Melis may (but is not obligated to), in its sole discretion, do any of the following: (i) obtain for Licensee at 
+Melis expenses the right to continue using the Software, (ii) substitute substantially equivalent non-infringing software, (iii) modify the 
+Software so that it becomes non-infringing while providing substantially equivalent performance or, (iv) accept return of the Software, 
+terminate this Agreement, and refund Licensee an amount equal to the license fees paid to Melis multiplied by the percentage of the term of the 
+license for the Software that Licensee did not enjoy due to the early termination by Melis.
+
+Melis shall have no liability or obligation under this Agreement to the extent the alleged infringement is based on (i) a modification or 
+derivative work of the Software developed by anyone other than Melis; (ii), a combination of the Software with any product or service not 
+provided by Melis; (iii) use of the Software with one or more Servers not listed in a Melis or Melis Reseller Order Form; (iv) use of the 
+Software other than in accordance with this Agreement or the documentation; (v) indirect or willful infringement; or (vi) any open source or 
+proprietary code, as described in Section 4.3; (vii) licensee failure to incorporate or implement modifications directed by Melis; (viii) use 
+of the software in a manner inconsistent with the Documentation; Software provided for evaluation or trial use or marked as beta or early 
+access. Licensee will, at its own expense, indemnify and hold Melis, and its subsidiaries and Resellers, and all officers, directors, and 
+employees thereof, harmless from and against any and all claims, actions, liabilities, losses, damages, judgments, grants, costs, and expenses, 
+including reasonable attorneys’ fees, arising out of any use of the Software by Licensee, any party related to Licensee, or any party acting 
+upon Licensee’s authorization in a manner that is not expressly authorized by this Agreement. Licensee indemnification does not include claims of 
+infringement that are covered by Melis’s indemnification above. 
+This Section 5 states Melis's entire liability and Licensee's exclusive remedy for any infringement related to Licensee use of the Software.
+
+
+6. FEES AND PAYMENT TERMS
+
+The Software will be available to Licensee for use upon licensee’s signature of a Melis or a Melis reseller order form and the receipt of a 
+copy of the software or an authorization or a link to download the software and a license key for Zend Server product. The license fees paid by 
+Licensee are paid in consideration of the license granted under this Agreement. Licensee shall, in addition to license fees, pay all applicable 
+sales, use, transfer, or other taxes and all duties, whether national, state, or local, however designated, that are levied or imposed by reason 
+of licensee’s purchase and use of the Software. 
+Licensee agrees to the fees and payment terms that are described in each Melis or Melis Reseller Order Form executed by Licensee.
+
+
+7. WARRANTY
+
+Melis warrants for a single period of thirty (30) days from Licensee’s receipt of the Software commencing upon Melis’s electronic delivery of 
+the Software to Licensee that the Software, as delivered, will materially conform to the Documentation. This warranty covers only problems that 
+are reproducible and verifiable and does not cover software, or other items or any services provided by any persons other than Melis. Maintenance 
+and support, if any, are governed by a separate agreement. Software, which has been abused, misused, damaged, modified, or subjected to 
+unauthorized use or installation, used in a manner inconsistent with the Documentation or used with components not authorized by Melis, shall 
+void this warranty. Melis’s sole liability (and Licensee’s sole and exclusive remedy) for any breach of this warranty shall be, in Melis’s sole 
+discretion, to use commercially reasonable efforts to provide Licensee with an error-correction or workaround which corrects the reported 
+non-conformity, or if Melis, in its sole discretion, determines such remedies to be impracticable within a reasonable period of time, to provide 
+a refund of the fees paid for the Software. This limited warranty does not apply for any Software provided for evaluation or trial use or marked 
+as beta or early access. EXCEPT AS SET FORTH ABOVE IN THIS SECTION, THE SOFTWARE AND DOCUMENTATION ARE LICENSED “AS IS,” AND MELIS DISCLAIMS ANY 
+AND ALL OTHER WARRANTIES, WHETHER EXPRESS OR IMPLIED, OR ARISING BY CUSTOM OR TRADE USAGE, INCLUDING, WITHOUT LIMITATION, ANY IMPLIED WARRANTIES 
+OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE OR NON-INFRINGEMENT, TO THE EXTENT AUTHORIZED BY LAW. WITHOUT LIMITATION OF THE FOREGOING, 
+MELIS EXPRESSLY DOES NOT WARRANT THAT THE SOFTWARE WILL MEET LICENSEE’S REQUIREMENTS OR THAT OPERATION OF THE SOFTWARE WILL BE UNINTERRUPTED OR 
+ERROR FREE. LICENSEE ASSUMES RESPONSIBILITY FOR SELECTING THE SOFTWARE TO ACHIEVE LICENSEE’S INTENDED RESULTS, AND FOR THE RESULTS OBTAINED FROM 
+LICENSEE’S USE OF THE SOFTWARE. LICENSEE SHALL BEAR THE ENTIRE RISK AS TO THE QUALITY AND THE PERFORMANCE OF THE SOFTWARE. 
+MELIS'S EXPRESS WARRANTIES SHALL NOT BE ENLARGED, DIMINISHED OR AFFECTED BY, AND NO OBLIGATION OR LIABILITY SHALL ARISE OUT OF, MELIS RENDERING 
+TECHNICAL OR OTHER ADVICE OR SERVICE IN CONNECTION WITH THE SOFTWARE.
+WARNING: The Software is not designed or intended for use in on-line control of equipment in hazardous environments such as the operation of 
+nuclear facilities, aircraft, air traffic, aircraft navigation or aircraft communications, or in the design, construction, operation or maintenance 
+of any nuclear facility, or in the operation or maintenance of any direct life support system. Melis disclaims any express or implied warranty of 
+fitness for such uses and shall not be liable for any costs, liabilities or damages resulting from the use of the Software in such an environment. 
+Licensee agrees that Licensee will not use or license the Software for such purposes. 
+
+
+8. LIMITATION OF LIABILITY
+IN NO EVENT WILL MELIS BE LIABLE FOR ANY CONSEQUENTIAL, INCIDENTAL OR INDIRECT DAMAGES, INCLUDING, WITHOUT LIMITATION, ANY LOSS OF DATA, OR LOSS 
+OF ACTUAL OR ANTICIPATED PROFITS, OR LOSS OF CONTRACTS, OR LOSS OF THE USE OF MONEY, OR LOSS OF BUSINESS, OR LOSS OF OPPORTUNITIES, OR LOSS OF 
+GOODWILL, OR LOSS OF REPUTATION, OR LOSS OF DAMAGE TO OR CORRUPTION OF DATA, OR LOST SAVINGS, ARISING OUT OF USE OF OR INABILITY TO USE THE 
+SOFTWARE OR DOCUMENTATION, OR ANY BREACH OR FAILURE OF EXPRESS OR IMPLIED WARRANTY CONDITIONS OR OTHER TERM, BREACH OF CONTRACT, MISREPRESENTATION, 
+NEGLIGENCE, OTHER LIABILITY IN TORT, FAILURE OF ANY REMEDY TO ACHIEVE ITS ESSENTIAL PURPOSE, OR OTHERWISE, EVEN IF MELIS HAS BEEN ADVISED OF THE 
+POSSIBILITY OF SUCH DAMAGES. 
+NOTWITHSTANDING THE FORM (E.G., CONTRACT, TORT, OR OTHERWISE) IN WHICH ANY LEGAL OR EQUITABLE ACTION MAY BE BROUGHT, IN NO EVENT (INCLUDING WITH 
+RESPECT TO OBLIGATIONS ARISING UNDER SECTION 4) WILL MELIS OR ITS SUPPLIERS BE LIABLE FOR DAMAGES, EXPENSES, COSTS, LIABILITIES, SUITS, CLAIMS, 
+RESTITUTION OR LOSSES, THAT EXCEED, IN THE AGGREGATE, THE AMOUNT OF FEES PAID BY LICENSEE TO MELIS FOR THE SOFTWARE LICENSE WITHIN THE PERIOD OF 
+TWELVE (12) MONTHS PRIOR TO ANY CLAIM ARISING. 
+
+
+9. TERMS AND TERMINATION
+
+This Agreement is effective upon licensee’s acceptance of the Agreement, or upon Licensee’s downloading, installing, accessing, or using the 
+Software, even if Licensee has not expressly accepted this Agreement. This Agreement shall continue in effect until terminated.
+This Agreement will terminate automatically if (i) Licensee fails to comply with any of the limitations or other requirements described herein, 
+(ii) Licensee is licensing the Software on a limited term basis, and fail to pay the applicable license fees or renewal license fees, (iii) 
+either party fails to perform any other material obligation under this Agreement and such failure remains uncured for more than thirty (30) days 
+after receipt of written notice thereof. If such an event occurs, the non-defaulting party, in addition to any other rights available to it under 
+the law, may notice by written the termination of this Agreement and all licenses granted hereunder to the defaulting party. 
+Melis shall have the right to interrupt Licensee use of the Software. Licensee may terminate this Agreement at any time by: (i) providing written 
+notice of Licensee’s decision to terminate the Agreement to Melis and (ii) either returning the Software, Documentation, all copies thereof, and 
+all license keys that Licensee has obtained to Melis or destroying all such materials and providing written verification of such destruction to 
+Melis. 
+Melis may terminate this License Agreement if Licensee breaches any term of the Agreement by giving Licensee written notice of Licensee’s breach 
+and Melis’s decision to terminate the Agreement. 
+Upon termination of this Agreement or the license Software or expiration of the license term as specified in the Melis or Melis Reseller Order 
+Form, Licensee shall certify in writing within thirty (30) days to Melis that Licensee has ceased use of any and all Proprietary Materials and 
+agree to either return to Melis the Software, Documentation, all copies thereof, and all license keys that Licensee has obtained, or to destroy 
+all such materials and provide written verification of such destruction to Melis.
+
+
+10. CUSTOMER REFERENCES
+
+Licensee hereby grants Melis the right to display Licensee's logos as part of Melis's customer lists and other related marketing materials. The 
+parties shall cooperate to undertake mutually-agreed joint marketing activities.
+
+
+11. GENERAL TERMS 
+
+11.1. Governing Law. 
+This Agreement is made in and shall be governed by and interpreted in accordance with the laws of France, without regard to the conflicts of law 
+rules thereof. Any claim or dispute arising in connection with this Agreement shall be resolved in the applicable courts situated within Paris. 
+To the maximum extent permitted by law, Licensee hereby consents to the jurisdiction and venue of such courts and waive any objections to the 
+jurisdiction or venue of such courts. 
+
+11.2. No Waiver; Amendments. 
+The failure of either party to enforce any rights granted hereunder or to take action against the other party in the event of any breach 
+hereunder shall not be deemed a waiver by that party as to subsequent enforcement of rights or subsequent actions in the event of future breaches. 
+Amendments to the Agreement shall only be effective if in writing and signed by all parties. 
+
+11.3. Severability. 
+If any term or provision of this Agreement is declared void or unenforceable in a particular situation, by any judicial or administrative 
+authority, this declaration shall not affect the validity of enforceability of the remaining terms and provisions hereof or the validity or 
+enforceability of the offending term or provision in any other situation. 
+
+11.4. Survival. 
+Any provisions of this Agreement that, in order to fulfill the purposes of such provisions, need to survive the termination or expiration of 
+this Agreement, shall be deemed to survive for as long as necessary to fulfill such purposes. 
+
+11.5. Headings. 
+The Section headings contained in this Agreement are incorporated for reference purposes only and shall not affect the meaning or interpretation 
+of this Agreement
+
+11.6 modification. 
+This Agreement may be amended only by a written document executed by a duly authorized representative of each of the parties. The parties agree 
+to receive electronic documents and accept electronic signatures (information attached or logically associated with such document and clicked or 
+otherwise adopted with an intent to sign) including in counterparts which shall be valid substitutes for paper-based documents and signatures, 
+and the legal validity of a transaction will not be denied on the ground that it is not in writing.
+
+11.7. Notices. 
+All notices shall be in writing and sent by mail to the address indicated on the Melis Order Form or email to the CEO or to the VP Sales. Notices 
+to Melis shall be sent to the CEO or to the VP Sales.
+
+Version 2016-12-05
