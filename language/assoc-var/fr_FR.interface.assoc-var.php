@@ -1,7 +1,7 @@
 <?php
 return array(
-    'tr_meliscommerce_avar_title' => 'Associate Variant',
-    'tr_meliscommerce_avar_title_tab' => 'Associate Variant Tab',
-    'tr_meliscommerce_avar_content_header' => 'Associate Variant Header',
-    'tr_meliscommerce_avar_content_title' => 'Associate Variant Content',
+    'tr_meliscommerce_avar_title' => 'Associer le variant',
+    'tr_meliscommerce_avar_title_tab' => 'Associer le variant yab',
+    'tr_meliscommerce_avar_content_header' => 'Associer le variant header',
+    'tr_meliscommerce_avar_content_title' => 'Associer le variant content',
 );

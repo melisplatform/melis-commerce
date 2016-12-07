@@ -3,8 +3,49 @@ $(function(){
 	var zoneId = "id_meliscommerce_language_list_page_content_modal_form";
 	var melisKey = 'meliscommerce_language_list_page_content_modal_form';
 	var modalUrl = '/melis/MelisCommerce/MelisComLanguage/renderLanguageListPageModalContainer';
-	
-	
+
+
+	$(document).on("submit", "form#ecomlanguageform", function(e) {
+		saveType = $(this).data("savetype");
+		var formData = new FormData($(this)[0]);
+		var status = $("#elang_status").parent().hasClass("switch-on");
+		var saveStatus = 0;
+		if(status) {
+			saveStatus = 1;
+		}
+
+		formData.append("elang_status", saveStatus);
+		formData.append("saveType", saveType);
+
+		melisCoreTool.pending("#btnComSaveLang");
+		$.ajax({
+			type : 'POST',
+			url  : '/melis/MelisCommerce/MelisComLanguage/save',
+			data : formData,
+			processData : false,
+			cache       : false,
+			contentType : false,
+			dataType    : 'json',
+		}).done(function(data) {
+			if(data.success) {
+				$("div.modal").modal("hide");
+				$("#" + activeTabId + " .melis-refreshTable").trigger("click");
+				melisHelper.melisOkNotification(data.textTitle, data.textMessage, '#72af46');
+			}
+			else {
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisCoreTool.highlightErrors(data.success, data.errors, "id_meliscommerce_language_list_page_content_modal_form form#ecomlanguageform");
+			}
+			melisCore.flashMessenger();
+			melisCoreTool.done("#btnComSaveLang");
+		}).error(function(xhr) {
+			console.log(xhr);
+			melisCoreTool.done("#btnComSaveLang");
+		});
+		e.preventDefault();
+	});
+
+
 	body.on("click", ".btnEcomLangDelete", function() {
 		var id = $(this).parent().parent().attr('id');
 		melisCoreTool.pending(".btnEcomLangDelete");
@@ -57,41 +98,7 @@ $(function(){
 		
 	});
 	
-	body.on("click", "#btnComSaveLang", function() {
-		var dataString = $("form#ecomlanguageform").serializeArray();
-		saveType = $("form#ecomlanguageform").data("savetype");
-		var status = $("#elang_status").parent().hasClass("switch-on");
-		var saveStatus = 0;
-		if(status) {
-			saveStatus = 1;
-		}
-		dataString.push({
-			name : 'elang_status',
-			value: saveStatus
-		});
-		dataString.push({
-			name : 'saveType',
-			value: saveType
-		});
 
-		dataString = $.param(dataString);
-		melisCoreTool.pending("#btnComSaveLang");
-		melisCommerce.postSave('/melis/MelisCommerce/MelisComLanguage/save', dataString, function(data) {
-			if(data.success) {
-				$("div.modal").modal("hide");
-				$("#" + activeTabId + " .melis-refreshTable").trigger("click");
-				melisHelper.melisOkNotification(data.textTitle, data.textMessage, '#72af46');
-			}
-			else {
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
-				melisCoreTool.highlightErrors(data.success, data.errors, "id_meliscommerce_language_list_page_content_modal_form form#ecomlanguageform");
-			}
-			melisCore.flashMessenger();
-			melisCoreTool.done("#btnComSaveLang");
-		}, function() {
-			melisCoreTool.done("#btnComSaveLang");
-		});
-	});
 	
 	
 });

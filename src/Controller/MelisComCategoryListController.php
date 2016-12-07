@@ -126,11 +126,13 @@ class MelisComCategoryListController extends AbstractActionController
         $locale = $container['melis-lang-locale'];
         
         $currentLangData = $melisEcomLangTable->getEntryByField('elang_locale',$locale);
-        
+        $currentLangImg = '<i class="fa fa-language"></i>';
         $currentLangName = '';
         $currentLang = $currentLangData->current();
         if (!empty($currentLang)){
             $currentLangName = $currentLang->elang_name;
+            $imageData = $currentLang->elang_flag ? '<img src="data:image/jpeg;base64,'. ($currentLang->elang_flag) .'" class="imgDisplay" width="24" height="24"/>' : '<i class="fa fa-language"></i>';
+            $currentLangImg  = $imageData;
         }
         
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -139,6 +141,7 @@ class MelisComCategoryListController extends AbstractActionController
         $view->ecomLang = $ecomLangData;
         $view->currentLangLocale = $locale;
         $view->currentLangName = $currentLangName;
+        $view->currentLangImg  = $currentLangImg;
         return $view;
     }
     

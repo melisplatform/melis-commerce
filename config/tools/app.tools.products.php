@@ -86,6 +86,11 @@ return array(
                         ),
                         'searchables' => array(),
                         'actionButtons' => array(
+                            'duplicate' => array(
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComPrdVarDuplication',
+                                'action' => 'render-duplicate-variant-button',
+                            ),
                             'edit' => array(
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComVariantList',
@@ -196,6 +201,11 @@ return array(
                         
                         'searchables' => array(),
                         'actionButtons' => array(
+                            'duplicate' => array(
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComPrdVarDuplication',
+                                'action' => 'render-duplicate-product-button',
+                            ),
                             'edit' => array(
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComProductList',

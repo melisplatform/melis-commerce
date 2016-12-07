@@ -41,6 +41,7 @@ use MelisCommerce\Listener\MelisCommerceProductTextLanguageAddListener;
 use MelisCommerce\Listener\MelisCommerceProductTextLanguageDeleteListener;
 use MelisCommerce\Listener\MelisCommerceDocumentCountryDeletedListener;
 use MelisCommerce\Listener\MelisCommerceCheckoutCouponListener;
+use MelisCommerce\Listener\MelisCommercePrdVarDuplicationListener;
 
 class Module
 {
@@ -96,6 +97,7 @@ class Module
             $eventManager->attach(new MelisCommerceProductTextLanguageDeleteListener());
             $eventManager->attach(new MelisCommerceDocumentCountryDeletedListener());
             $eventManager->attach(new MelisCommerceCheckoutCouponListener());
+            $eventManager->attach(new MelisCommercePrdVarDuplicationListener());
             
         }
         else
@@ -164,6 +166,7 @@ class Module
     	        include __DIR__ . '/../config/interface/app.interface.language.php',
     	        include __DIR__ . '/../config/interface/app.interface.country.php',
                 include __DIR__ . '/../config/interface/app.interface.assoc-var.php',
+                include __DIR__ . '/../config/interface/app.interface.duplications.php',
     	    
     			include __DIR__ . '/../config/forms/app.forms.general.php',
     	        include __DIR__ . '/../config/forms/app.forms.documents.php',
@@ -178,6 +181,7 @@ class Module
     	        include __DIR__ . '/../config/forms/app.forms.checkout.php',
     	        include __DIR__ . '/../config/forms/app.forms.currency.php',
     	        include __DIR__ . '/../config/forms/app.forms.attributes.php',
+    	        include __DIR__ . '/../config/forms/app.forms.duplications.php',
     	    
     			include __DIR__ . '/../config/tools/app.tools.general.php',
     	        include __DIR__ . '/../config/tools/app.tools.documents.php',
@@ -194,6 +198,7 @@ class Module
     	        include __DIR__ . '/../config/tools/app.tools.attributes.php',
     	        include __DIR__ . '/../config/tools/app.tools.language.php',
     	        include __DIR__ . '/../config/tools/app.tools.country.php',
+                include __DIR__ . '/../config/tools/app.tools.assoc_var.php',
     	);
     	
     	foreach ($configFiles as $file) {
@@ -241,6 +246,7 @@ class Module
             $translator->addTranslationFile('phparray', __DIR__ . '/../language/language/' . $locale . '.interface.language.php');
             $translator->addTranslationFile('phparray', __DIR__ . '/../language/country/' . $locale . '.interface.country.php');
             $translator->addTranslationFile('phparray', __DIR__ . '/../language/assoc-var/' . $locale . '.interface.assoc-var.php');
+            $translator->addTranslationFile('phparray', __DIR__ . '/../language/duplication/' . $locale . '.interface.duplication.php');
     
             $translator->addTranslationFile('phparray', __DIR__ . '/../language/general/' . $locale . '.forms.general.php');
             $translator->addTranslationFile('phparray', __DIR__ . '/../language/categories/' . $locale . '.forms.categories.php');
@@ -257,7 +263,8 @@ class Module
             $translator->addTranslationFile('phparray', __DIR__ . '/../language/attributes/' . $locale . '.forms.attributes.php');
             $translator->addTranslationFile('phparray', __DIR__ . '/../language/language/' . $locale . '.forms.language.php');
             $translator->addTranslationFile('phparray', __DIR__ . '/../language/country/' . $locale . '.forms.country.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/assoc-var/' . $locale . '.interface.assoc-var.php');
+            $translator->addTranslationFile('phparray', __DIR__ . '/../language/assoc-var/' . $locale . '.forms.assoc-var.php');
+            $translator->addTranslationFile('phparray', __DIR__ . '/../language/duplication/' . $locale . '.forms.duplication.php');
         }
     }
 

@@ -70,6 +70,8 @@ return array(
                                     ),
                                     'attributes' => array(
                                         'id' => 'catt_description',
+                                        'class' => 'form-control',
+                                        'rows' => 10
                                     )
                                 )
                             ),

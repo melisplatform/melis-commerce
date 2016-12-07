@@ -45,6 +45,13 @@
 	    'tr_meliscommerce_attribute_value_text' => 'Text',
 	    'tr_meliscommerce_attribute_value_date' => 'Date',
 	    
+	    // labels
+	    'tr_meliscommerce_attribute_value' => 'Attribute value',
+	    
+	    // Form Validation Messages
+	    'tr_meliscommerce_attribute_save_failed' => 'Unable to save attribute',
+	    'tr_meliscommerce_attribute_value_save_failed' => 'Unable to save attribute value',
+	    
 	    //flash message
 	    'tr_meliscommerce_attribute_save_success' => 'The attribute has been successfully save',
 	    'tr_meliscommerce_attribute_delete_title' => 'Delete attribute',

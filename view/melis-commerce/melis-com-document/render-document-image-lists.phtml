@@ -16,13 +16,18 @@
         		</a>
         		<ul class="documentImageFilter dropdown-menu filter-key-values" data-filter-group="country">
         			<li>
-        				<a data-filter-value=".image" data-text='<?= $this->translate('tr_meliscommerce_documents_filter_all_option'); ?>'><?= $this->translate('tr_meliscommerce_documents_filter_all_option'); ?></a>
+        				<a data-filter-value=".image" data-text='<?= $this->translate('tr_meliscommerce_documents_filter_all_option'); ?>'><?= $this->translate('tr_meliscommerce_documents_filter_all_option'); ?><span class="pull-right"><i class="fa fa-globe"></i></span></a>
         			</li>
         			<?php 
         			foreach($this->country as $country):
         			?>
         			<li>
-        				<a data-filter-value=".<?= $country['ctry_id']; ?>" data-text='<?= $country['ctry_name']; ?>'><?= $country['ctry_name']; ?></a>
+						<?php
+						$imageData = $country['ctry_flag'];
+						$image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay pull-right" width="24" height="24"/>' : '<i class="fa fa-globe"></i>';
+						?>
+
+        				<a data-filter-value=".<?= $country['ctry_id']; ?>" data-text='<?= $country['ctry_name']; ?>'><?= $country['ctry_name']; ?><span class="pull-right"><?php echo $image; ?></span></a>
         			</li>
         			<?php endforeach; ?>
         		</ul>

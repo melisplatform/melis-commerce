@@ -745,7 +745,7 @@ class MelisComVariantController extends AbstractActionController
                     	</li>';
         $ctyFormat =    '<li class="">
                     		<a class="clearfix" data-toggle="tab" href="#%s_stock-%s" data-country="%s" aria-expanded="true"><span>%s</span>
-                     			
+                     			<span class="pull-right">%s</span>
                     		</a>
                     	</li>';
         
@@ -753,7 +753,9 @@ class MelisComVariantController extends AbstractActionController
         $countries = $countryTable->getCountries();
         $ctyData[] = $ctyGeneral;
         foreach ($countries as $country){
-            $ctyData[] = sprintf($ctyFormat, $this->getVariantId(), str_replace(' ', '', $country->ctry_name), $country->ctry_name, $country->ctry_name);
+            $imageData = $country->ctry_flag;
+            $image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay pull-right"/>' : '<i class="fa fa-globe"></i>';
+            $ctyData[] = sprintf($ctyFormat, $this->getVariantId(), str_replace(' ', '', $country->ctry_name), $country->ctry_name, $country->ctry_name, $image);
         }
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
@@ -912,21 +914,21 @@ class MelisComVariantController extends AbstractActionController
                     $stockTable->deleteById($stock_id);
                 }
             }
-            $id = $variantSvc->saveVariant($data['variant'], $data['prices'], $data['stocks'], $data['varAttr'], $data['seo_data'], $variantId);
+            $var_id = $variantSvc->saveVariant($data['variant'], $data['prices'], $data['stocks'], $data['varAttr'], $data['seo_data'], $variantId);
 
-            if($id['var_id']){
+            if($var_id){
                 $success = true;
                 if($data['variant']['var_main_variant']){
             
                     // un assigned main variant
                     foreach($variantSvc->getVariantListByProductId($data['variant']['var_prd_id']) as $prodVar){
-                        if($prodVar->getId() != $id['var_id']){
+                        if($prodVar->getId() != $var_id){
                             $variant = ['var_main_variant' => '0'];
                             $variantSvc->saveVariant($variant, null, null, null, array(),$prodVar->getId());
                         }
                     }
                 }
-                $data['var_id'] = $id['var_id'];
+                $data['var_id'] = $var_id;
             }             
         }
         

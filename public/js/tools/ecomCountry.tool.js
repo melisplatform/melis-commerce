@@ -19,44 +19,6 @@ $(function() {
 		});
 		
 	});
-	
-	// body.on("click", "#btnComSaveCountrysssss", function() {
-	// 	var dataString = $("form#ecomCountryform").serializeArray();
-	// 	saveType = $("form#ecomCountryform").data("savetype");
-    //
-	// 	var status = $("#ctry_status").parent().hasClass("switch-on");
-	// 	var saveStatus = 0;
-	// 	if(status) {
-	// 		saveStatus = 1;
-	// 	}
-	// 	dataString.push({
-	// 		name : 'ctry_status',
-	// 		value: saveStatus
-	// 	});
-	// 	dataString.push({
-	// 		name : 'saveType',
-	// 		value: saveType
-	// 	});
-    //
-	// 	dataString = $.param(dataString);
-	//
-	// 	melisCoreTool.pending("#btnComSaveCountry");
-	// 	melisCommerce.postSave('/melis/MelisCommerce/MelisComCountry/save', dataString, function(data) {
-	// 		if(data.success) {
-	// 			$("div.modal").modal("hide");
-	// 			$("#" + activeTabId + " .melis-refreshTable").trigger("click");
-	// 			melisHelper.melisOkNotification(data.textTitle, data.textMessage, '#72af46');
-	// 		}
-	// 		else {
-	// 			melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
-	// 			melisCoreTool.highlightErrors(data.success, data.errors, "id_meliscommerce_country_list_page_content_modal_form form#ecomCountryform");
-	// 		}
-	// 		melisCore.flashMessenger();
-	// 		melisCoreTool.done("#btnComSaveCountry");
-	// 	}, function() {
-	// 		melisCoreTool.done("#btnComSaveCountry");
-	// 	});
-	// });
 
 	$(document).on("submit", "form#ecomCountryform", function(e) {
 		saveType = $(this).data("savetype");

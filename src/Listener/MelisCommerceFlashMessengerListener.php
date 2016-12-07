@@ -51,6 +51,7 @@ class MelisCommerceFlashMessengerListener extends MelisCoreGeneralListener imple
         	    'meliscommerce_country_end',
         	    'meliscommerce_country_delete_end',
         	    'meliscommerce_attribute_save_end',
+        	    'meliscommerce_attribute_delete_end',
         	    'meliscommerce_order_message_save_end',
         	    'meliscommerce_coupon_delete_end',
         	    'meliscommerce_currency_save_end',
@@ -59,6 +60,9 @@ class MelisCommerceFlashMessengerListener extends MelisCoreGeneralListener imple
         	    'meliscommerce_coupon_client_management_end',
         	    'meliscommerce_category_product_remove_end',
         	    'meliscommerce_currency_set_default_end',
+                'meliscommerce_assoc_var_remove_assoc_end',
+                'meliscommerce_assoc_var_assoc_end',
+        	    'meliscommerce_duplicate_variant_end',
         	),
         	function($e){
 

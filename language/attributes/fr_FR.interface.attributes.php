@@ -45,6 +45,13 @@
 	    'tr_meliscommerce_attribute_value_text' => 'Text',
 	    'tr_meliscommerce_attribute_value_date' => 'Date',
 	    
+	    // labels
+	    'tr_meliscommerce_attribute_value' => 'Valeur d\'attribut',
+	     
+	    // Form Validation Messages
+	    'tr_meliscommerce_attribute_save_failed' => 'Impossible de sauvagarder l\'attribut',
+	    'tr_meliscommerce_attribute_value_save_failed' => 'Impossible de sauvagarder la valeur de l\'attribut',
+	    
 	    //flash message
 	    'tr_meliscommerce_attribute_save_success' => 'L\'attribut a été sauvegardé avec succès',
 	    'tr_meliscommerce_attribute_delete_title' => 'Supprimer l\'attribut',

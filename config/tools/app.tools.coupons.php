@@ -126,20 +126,9 @@ return array(
                                 'css' => array('width' => '1%', 'padding-right' => '0'),
                                 'sortable' => true,
                             ),
-                            'cli_status' => array(
-                                'text' => 'tr_meliscommerce_coupon_page_table_col_status',
-                                'css' => array('width' => '1%', 'padding-right' => '0'),
-                                'sortable' => true,
-                            ),
                             
                             'assign' => array(
                                 'text' => 'tr_meliscommerce_coupon_page_table_col_assigned',
-                                'css' => array('width' => '1%', 'padding-right' => '0'),
-                                'sortable' => true,
-                            ),
-                        
-                            'civt_min_name' => array(
-                                'text' => 'tr_meliscommerce_coupon_page_table_col_civility',
                                 'css' => array('width' => '1%', 'padding-right' => '0'),
                                 'sortable' => true,
                             ),
@@ -186,7 +175,7 @@ return array(
                         'ajaxCallback' => 'initCheckClientUsedCoupon()',
                         'filters' => array(
                             'left' => array(
-                                'coupon-table-filter-limit' => array(
+                                'coupon-table-filter-limit-assigned' => array(
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComCoupon',
                                     'action' => 'render-coupon-content-filter-limit'
@@ -194,7 +183,7 @@ return array(
                             ),
                 
                             'center' => array(
-                                'order-table-filter-search' => array(
+                                'order-table-filter-search-assigned' => array(
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComCoupon',
                                     'action' => 'render-coupon-content-filter-search'
@@ -202,7 +191,7 @@ return array(
                             ),
                 
                             'right' => array(
-                                'coupon-table-filter-refresh' => array(
+                                'coupon-table-filter-refresh-assigned' => array(
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComCoupon',
                                     'action' => 'render-coupon-content-filter-refresh'
@@ -216,24 +205,6 @@ return array(
                                 'css' => array('width' => '10%', 'padding-right' => '0'),
                                 'sortable' => true,
                             ),
-                            'cli_status' => array(
-                                'text' => 'tr_meliscommerce_coupon_page_table_col_status',
-                                'css' => array('width' => '10%', 'padding-right' => '0'),
-                                'sortable' => true,
-                            ),
-                
-//                             'assign' => array(
-//                                 'text' => 'tr_meliscommerce_coupon_page_table_col_assigned',
-//                                 'css' => array('width' => '1%', 'padding-right' => '0'),
-//                                 'sortable' => true,
-//                             ),
-                
-                            'civt_min_name' => array(
-                                'text' => 'tr_meliscommerce_coupon_page_table_col_civility',
-                                'css' => array('width' => '10%', 'padding-right' => '0'),
-                                'sortable' => true,
-                            ),
-                
                             'cper_firstname' => array(
                                 'text' => 'tr_meliscommerce_coupon_page_table_col_name_first',
                                 'css' => array('width' => '15%', 'padding-right' => '0'),
@@ -276,12 +247,12 @@ return array(
                         'ajaxCallback' => '',
                         'filters' => array(
                             'left' => array(
-                                'order-list-table-filter-limit' => array(
+                                'order-list-table-filter-limit-order' => array(
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComOrderList',
                                     'action' => 'render-order-list-content-filter-limit'
                                 ),
-                                'order-list-table-filter-date' => array(
+                                'order-list-table-filter-date-order' => array(
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComOrderList',
                                     'action' => 'render-order-list-content-filter-date'
@@ -289,12 +260,12 @@ return array(
                             ),
                 
                             'center' => array(
-                                'order-list-table-filter-search' => array(
+                                'order-list-table-filter-search-order' => array(
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComOrderList',
                                     'action' => 'render-order-list-content-filter-search'
                                 ),
-                                'order-list-table-filter-bulk' => array(
+                                'order-list-table-filter-bulk-order' => array(
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComOrderList',
                                     'action' => 'render-order-list-content-filter-bulk'
@@ -302,7 +273,7 @@ return array(
                             ),
                 
                             'right' => array(                                                            
-                                'order-list-table-filter-refresh' => array(
+                                'order-list-table-filter-refresh-order' => array(
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComOrderList',
                                     'action' => 'render-order-list-content-filter-refresh'

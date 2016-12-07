@@ -14,7 +14,7 @@ $imageData = '';
 			<div class="widget widget-tabs widget-tabs-double widget-tabs-responsive margin-none border-none">
                 <div class="widget-head">
                 	<ul class="nav nav-tabs">
-                		<li class="active"><a href="#<?php echo $this->zoneconfig['conf']['id'] ?>" class="glyphicons globe" data-toggle="tab" aria-expanded="true"><i></i> <?php echo $this->title ?></a></li>
+                		<li class="active"><a href="#<?php echo $this->zoneconfig['conf']['id'] ?>" class="glyphicons <?php echo ($this->id) ? 'pencil' : 'plus'?>" data-toggle="tab" aria-expanded="true"><i></i> <?php echo $this->title ?></a></li>
             		</ul>
         		</div>
         		<div class="widget-body innerAll inner-2x">
@@ -41,7 +41,7 @@ $imageData = '';
 							}
 							?>
 
-							<img src="<?php echo $imageData; ?>" class="" id="imgCountryFlag" style="border:none"/>
+							<img src="<?php echo $imageData; ?>" class="imgFlag" id="imgCountryFlag" style="border:none"/>
 						</div>
 						<div class="pull-right">
 							<div <?= $id; ?> class="make-switch" data-on-label="<?php echo $this->translate('tr_meliscommerce_products_page_content_tab_main_header_switch_online')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_products_page_content_tab_main_header_switch_offline')?>" data-text-label="<?php echo $this->translate('tr_meliscommerce_categories_common_label_status')?>">

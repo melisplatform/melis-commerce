@@ -14,6 +14,7 @@ if($this->typeData) {
         $form->get('ptxt_field_long')
         ->setAttribute('class', 'product-text-mce')
         ->setAttribute("data-display", "true")
+        ->setAttribute("data-productid", $this->productId)
         ->setLabel($del.'</label><label>'.$this->typeData->ptt_name . ' (' . $this->typeData->ptt_name . ')');
         $form->get('ptxt_field_short')->setAttribute('style', 'display:none')->setAttribute("data-display", "false")->setLabel('');
     }

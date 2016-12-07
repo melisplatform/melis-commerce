@@ -14,7 +14,7 @@
 			<div class="widget widget-tabs widget-tabs-double widget-tabs-responsive margin-none border-none">
                 <div class="widget-head">
                 	<ul class="nav nav-tabs">
-                		<li class="active"><a href="#<?php echo $this->zoneconfig['conf']['id'] ?>" class="glyphicons euro" data-toggle="tab" aria-expanded="true"><i></i> <?php echo $this->title ?></a></li>
+                		<li class="active"><a href="#<?php echo $this->zoneconfig['conf']['id'] ?>" class="glyphicons <?php echo ($this->id) ? 'pencil' : 'plus'?>" data-toggle="tab" aria-expanded="true"><i></i> <?php echo $this->title ?></a></li>
             		</ul>
         		</div>
         		<div class="widget-body innerAll inner-2x">
@@ -47,7 +47,6 @@
                      		<button data-dismiss="modal" class="btn btn-danger pull-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
                      		<button class="btn btn-success" id="btnComSaveCurrency"><i class="fa fa-save"></i>  <?php echo $this->translate('tr_meliscommerce_orders_common_btn_save') ?></button>
                      	</div>
-                        
                         <div class="clearfix"></div>
                         </div>
                     </div>

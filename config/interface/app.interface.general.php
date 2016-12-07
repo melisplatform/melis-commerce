@@ -34,7 +34,6 @@ return array(
                     '/MelisCommerce/assets/common/bootstrap-datetimepicker.min.js',
                     '/MelisCommerce/assets/common/bootstrap3-typeahead.min.js',
                     '/MelisCommerce/assets/common/awesomplete.min.js',
-                    '/MelisCommerce/assets/tinyMCE/jquery.tinymce.min.js',
                 ),
                 
                 'css' => array(

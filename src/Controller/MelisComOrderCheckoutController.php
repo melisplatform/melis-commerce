@@ -1409,26 +1409,10 @@ class MelisComOrderCheckoutController extends AbstractActionController
             {
                 $total = $clientOrder['total'];
             }
-            
-            if ($subTotal != 0 && $total != 0)
-            {
-                $totalDiscount =  $subTotal - $total;
-            }
         }
         
         $couponCode = $this->params()->fromQuery('couponCode');
         $couponErr = '';
-        
-        if (!empty($couponCode) && !is_null($clientId))
-        {
-            $couponSrv = $this->getServiceLocator()->get('MelisComCouponService');
-            $coupon = $couponSrv->validateCoupon($couponCode, $clientId);
-            
-            if(!$coupon['success'])
-            {
-                $couponErr = $translator->translate('tr_'.$coupon['error']);
-            }
-        }
         
         // Getting the Country currency, depend on country selected during step 1
         $melisEcomCountryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
@@ -1437,6 +1421,33 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $countryCurrencySympbol = '';
         if (!empty($countryCurrency)){
             $countryCurrencySympbol = $countryCurrency->cur_symbol;
+        }
+        
+        $discountInfo = '';
+        if (!empty($couponCode) && !is_null($clientId))
+        {
+            $couponSrv = $this->getServiceLocator()->get('MelisComCouponService');
+            $coupon = $couponSrv->validateCoupon($couponCode, $clientId);
+            
+            if($coupon['success'])
+            {
+                $couponData = $coupon['coupon'];
+                
+                if (!empty($couponData->coup_percentage))
+                {
+                    $totalDiscount = ($couponData->coup_percentage / 100) * $subTotal;
+                    $discountInfo = $couponData->coup_percentage.'%';
+                }
+                elseif (!empty($couponData->coup_discount_value))
+                {
+                    $totalDiscount = $couponData->coup_discount_value;
+                    $discountInfo = $countryCurrencySympbol.' '.number_format($couponData->coup_discount_value, 2);
+                }
+            }
+            else
+            {
+                $couponErr = $translator->translate('tr_'.$coupon['error']);
+            }
         }
         
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -1448,6 +1459,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $view->basket = $basket;
         $view->subTotal = $subTotal;
         $view->totalDiscount = $totalDiscount;
+        $view->discountInfo = $discountInfo;
         $view->total = $total;
         $view->countryCurrencySympbol = $countryCurrencySympbol;
         return $view;
@@ -1703,30 +1715,12 @@ class MelisComOrderCheckoutController extends AbstractActionController
                     
                     if (empty($errors))
                     {
-                        $couponFlag = true;
-                        if (!empty($couponData) && !is_null($clientId))
+                        if (!empty($couponData))
                         {
-                            // Use Add Coupon to client
-                            $coupon = $couponSrv->useCoupon($couponData->coup_code, $clientId);
-                            if ($coupon['success'])
-                            {
-                                $container['checkout']['couponId'] = $coupon['couponId'];
-                            }
-                            else
-                            {
-                                $errors['couponError'] = array(
-                                    'label' => 'Coupon',
-                                    'couponError' => $translator->translate('tr_'.$coupon['error'])
-                                );
-                                
-                                $couponFlag = false;
-                            }
+                            $container['checkout']['couponId'] = $couponData->coup_id;
                         }
                         
-                        if ($couponFlag)
-                        {
-                            $success = 1;
-                        }
+                        $success = 1;
                     }
                 }
             }
@@ -1814,11 +1808,25 @@ class MelisComOrderCheckoutController extends AbstractActionController
             $totalCost = $order['costs']['total'];
         }
         
+        $couponId = null;
+        if (!empty($container['checkout']['couponId']))
+        {
+            $couponId = $container['checkout']['couponId'];
+        }
+        
+        $param = array(
+            'countryId' => $container['checkout']['countryId'],
+            'orderId' => $orderId,
+            'couponId' => $couponId,
+            'totalCost' => $totalCost,
+        );
+        
+        $urlParam = http_build_query($param);
+        
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
         $view->melisKey = $melisKey;
-        $view->orderId = $orderId;
-        $view->totalCost = $totalCost;
+        $view->urlParam = $urlParam;
         return $view;
     }
     
@@ -1830,12 +1838,20 @@ class MelisComOrderCheckoutController extends AbstractActionController
      */
     public function renderOrderCheckoutPaymentIframeAction()
     {
-        $orderId = $this->params()->fromQuery('orderId');
-        $totalCost = $this->params()->fromQuery('totalCost');
         $melisKey = $this->params()->fromRoute('melisKey', '');
+        
+        // Url data from iFrame src
+        $countryId = $this->params()->fromQuery('countryId');
+        $orderId = $this->params()->fromQuery('orderId');
+        $couponId = $this->params()->fromQuery('couponId');
+        $totalCost = $this->params()->fromQuery('totalCost');
+        
         $view = new ViewModel();
         $view->melisKey = $melisKey;
+        
+        $view->countryId = $countryId;
         $view->orderId = $orderId;
+        $view->couponId = $couponId;
         $view->totalCost = $totalCost;
         $view->retrunCode = substr(str_shuffle(str_repeat("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 10)), 0, 10);
         return $view;

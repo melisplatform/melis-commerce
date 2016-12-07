@@ -134,6 +134,8 @@ class MelisEcomClientTable extends MelisEcomGenericTable
         {
             $select->limit($limit);
         }
+        
+        $select->where('melis_ecom_client.cli_status = 1');
     
         $select->order($order);
         $resultData = $this->tableGateway->selectWith($select);

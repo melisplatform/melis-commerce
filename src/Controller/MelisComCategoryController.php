@@ -407,15 +407,10 @@ class MelisComCategoryController extends AbstractActionController
         $tableOption = array(
             'rowReorder' => array(
                 'dataSrc' => 'pcat_order',
-                'selector' => 'td:nth-child(2)',
+                'selector' => 'td:nth-child(1)',
             ),
             'serverSide' => 'false',
             'paging' => 'false',
-            'columnDefs' => array(
-                'className' => 'control',
-                'targets' => '0',
-                'orderable' => 'false'
-            ),
             'responsive' => array(
                 'details' => array(
                     'type' => 'column'
@@ -1085,30 +1080,6 @@ class MelisComCategoryController extends AbstractActionController
     }
 
     /**
-     * Render Category Product List Table Search input
-     *
-     * @return \Zend\View\Model\ViewModel
-     */
-    public function renderCategoryProductListFilterSerachAction(){
-        $melisKey = $this->params()->fromRoute('melisKey', '');
-        $view = new ViewModel();
-        $view->melisKey = $melisKey;
-        return $view;
-    }
-
-    /**
-     * Render Category Product List Table Limit
-     *
-     * @return \Zend\View\Model\ViewModel
-     */
-    public function renderCategoryProductListLimitAction(){
-        $melisKey = $this->params()->fromRoute('melisKey', '');
-        $view = new ViewModel();
-        $view->melisKey = $melisKey;
-        return $view;
-    }
-
-    /**
      * Render Category Product List Export button
      *
      * @return \Zend\View\Model\ViewModel
@@ -1213,7 +1184,6 @@ class MelisComCategoryController extends AbstractActionController
                 // Table row Datas
 
                 $categoryProduct['DT_RowClass'] = 'is-draggable';
-                $categoryProduct['DT_RowClass'] = 'is-draggable';
 
                 $product = $val->getProduct();
                 // Getting Date creation
@@ -1228,7 +1198,7 @@ class MelisComCategoryController extends AbstractActionController
 
                 // Getting Product Name
                 $productStr = $productService->getProductName($productId, $langId);
-                $categoryProduct['prd_id'] = '<span class="product-id" data-productname="'.$productStr.'">'.$productId.'</span>';
+                $categoryProduct['prd_id'] = $productId;
 
                 // Getting Product Order
                 $productCategories = $val->getCategories();

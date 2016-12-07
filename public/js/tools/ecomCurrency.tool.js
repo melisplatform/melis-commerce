@@ -117,8 +117,6 @@ $(function() {
 });
 
 window.reInitTableEcomCurrency = function(){
-	$('.defaultEcomCurrency').each(function(){
-		$('#'+$(this).attr('id')+' .btnComCurrencyDelete').remove();
-		$('#'+$(this).attr('id')+' .btnComCurrencyMakeDefault').remove();
-	});
+	$('tr.defaultEcomCurrency').find(".btnComCurrencyDelete").remove();
+	$('tr.defaultEcomCurrency').find(".btnComCurrencyMakeDefault").remove();
 }

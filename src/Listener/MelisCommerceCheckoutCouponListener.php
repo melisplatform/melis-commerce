@@ -41,21 +41,13 @@ class MelisCommerceCheckoutCouponListener extends MelisCoreGeneralListener imple
         		if ($params['results']['success'])
         		{
         		    $clientId = $params['results']['clientId'];
-        		    $sm->get('MelisComPostPaymentService');
         		    
-        		    $couponId = null;
+        		    $coupon = array();
         		    
-        		    // Checking first if couponCode from Url $_GET[] data has a value
+        		    // Checking first if couponId from Url $_GET[] data has a value
         		    if (!empty($getValues['couponCode']))
         		    {
-        		        $couponCode = $getValues['couponCode'];
-        		        $coupon = $couponSrv->validateCoupon($couponCode, $clientId);
-        		        
-        		        if($coupon['success'])
-        		        {
-        		            $couponData = $coupon['coupon'];
-        		            $couponId = $couponData->coup_id;
-        		        }
+        		        $coupon = $couponTable->getEntryByField('coup_code', $getValues['couponCode'])->current();
         		    }
         		    else
         		    {
@@ -64,52 +56,45 @@ class MelisCommerceCheckoutCouponListener extends MelisCoreGeneralListener imple
         		        if(!empty($container['checkout']['couponId']))
         		        {
         		            $couponId = $container['checkout']['couponId'];
+        		            $couponEntity = $couponSrv->getCouponById($couponId);
+        		            $coupon = $couponEntity->getCoupon();
         		        }
         		    }
         		    
-        		    if (!is_null($couponId))
-        		    {
-        		        // Retrieving Coupon Data from database
-        		        $couponData = $couponTable->getEntryById($couponId)->current();
-        		        
-        		        if (!empty($couponData))
-        		        {
-        		            $couponCode = $couponData->coup_code;
-        		            
-        		            $couponSrv = $sm->get('MelisComCouponService');
-        		            
-        		            $coupon = $couponSrv->validateCoupon($couponCode, $clientId);
-        		            if($coupon['success'])
-        		            {
-        		                $subTotal = $params['results']['costs']['order']['total'];
-        		                
-        		                $couponData = $coupon['coupon'];
-        		                $totalDiscount = 0;
-        		                // Checking first if coupon percentage has value,
-        		                // Percentage is first priority to be use in discounting the total amount of order cost
-        		                // else this will try to use the fixed value for discount computations
-        		                if ($subTotal > 0)
-        		                {
-        		                    if (!empty($couponData->coup_percentage))
-        		                    {
-        		                        $totalDiscount = ($couponData->coup_percentage / 100) * $subTotal;
-        		                    }
-        		                    elseif (!empty($couponData->coup_discount_value))
-        		                    {
-        		                        $totalDiscount = $couponData->coup_discount_value;
-        		                    }
-        		                    
-        		                    $params['results']['costs']['order']['totalWithoutCoupon'] = $subTotal;
-        		                    
-        		                    // Do nothing if totalDiscount is less than Zero
-        		                    if ($totalDiscount > 0)
-        		                    {
-        		                        $params['results']['costs']['order']['total'] = $subTotal - $totalDiscount;
-        		                    }
-        		                }
-        		            }
-        		        }
-        		    }
+    		        if (!empty($coupon))
+    		        {
+    		            $couponCode = $coupon->coup_code;
+    		            $validitedCoupon = $couponSrv->validateCoupon($couponCode, $clientId);
+    		            
+    		            if($validitedCoupon['success'])
+    		            {
+    		                $subTotal = $params['results']['costs']['order']['total'];
+    		                $totalDiscount = 0;
+    		                
+    		                // Checking first if coupon percentage has value,
+    		                // Percentage is first priority to be use in discounting the total amount of order cost
+    		                // else this will try to use the fixed value for discount computations
+    		                if ($subTotal > 0)
+    		                {
+    		                    if (!empty($coupon->coup_percentage))
+    		                    {
+    		                        $totalDiscount = ($coupon->coup_percentage / 100) * $subTotal;
+    		                    }
+    		                    elseif (!empty($coupon->coup_discount_value))
+    		                    {
+    		                        $totalDiscount = $coupon->coup_discount_value;
+    		                    }
+    		                    
+    		                    $params['results']['costs']['order']['totalWithoutCoupon'] = $subTotal;
+    		                    
+    		                    // Do nothing if totalDiscount is less than Zero
+    		                    if ($totalDiscount > 0)
+    		                    {
+    		                        $params['results']['costs']['order']['total'] = $subTotal - $totalDiscount;
+    		                    }
+    		                }
+    		            }
+    		        }
         		}
         	},
         	

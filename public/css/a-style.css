@@ -115,6 +115,9 @@ a {
 	height: 20px;
 	padding: 18px 0;
 }
+.meliscommerce-order-checkout-product-list-countries .pays {
+	margin: 0 7px;
+}
 
 /* filter searchbar ----------*/
 .filter-searchbar{
@@ -183,10 +186,6 @@ a {
 }
 .fb-right .btn-default:last-child{
 	margin-right: 0;
-}
-.add-product{
-	margin-left: 15px;
-	border-radius: 3px;
 }
 .attribute-area {
 	padding: 10px 0 0;
@@ -293,9 +292,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child:before {
 .me-table>caption+thead>tr:first-child>td, .me-table>caption+thead>tr:first-child>th, .me-table>colgroup+thead>tr:first-child>td, .me-table>colgroup+thead>tr:first-child>th, .me-table>thead:first-child>tr:first-child>td, .me-table>thead:first-child>tr:first-child>th {
 	padding-left:0;
 }
-#categoryProductListTbl td:nth-child(2) {
-	cursor: move;
-}
+
 .order-list-table-filter-limit {
 	padding: 0 10px 5px 0;
 	float: left;
@@ -361,10 +358,6 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child:before {
 	margin: 5px 5px 0;
 }
 /* Action Buttons */
-html a.btn {
-	/* border-radius: 0; */
-	/* text-align: left; */
-}
 html a.btn-danger {
 	color: #d9534f;  
 	background-color: #ffffff;
@@ -388,15 +381,6 @@ html a.btn-success {
 .me-table.dataTable thead>tr>th.sorting_asc, .me-table.dataTable thead>tr>th.sorting_desc, .me-table.dataTable thead>tr>th.sorting, .me-table.dataTable thead>tr>td.sorting_asc, .me-table.dataTable thead>tr>td.sorting_desc, .me-table.dataTable thead>tr>td.sorting {
 	padding-right: 0;
 }
-#categoryProductListTbl tbody tr td:first-child {
-	color: rgba(0,0,0,0);
-	padding : 10px;
-	width : 1px;
-}
-#categoryProductListTbl tbody tr.child td:first-child {
-	color : rgba(124,124,124,1);
-}
-
 /* Info Table  */
 .info-table {
 	overflow-x:auto;
@@ -415,17 +399,18 @@ html a.btn-success {
 .info-table td:first-child {
 	width: 20%;
 }
+
 /* product -------------------------------------------------------------------- */
 .content-cont .widget.widget-tabs-double-2>.widget-head ul li{
 	min-width: 90px;
-	/* height: 70px; */
+	height: 70px;
 }
 button.refresh-attribute-lists {
     margin-top: 1px;
 }
 .content-cont .widget.widget-tabs-double-2>.widget-head ul li a{
     border-radius: 0;
-    border: none;
+	border: none;
     margin: 0;
 	box-shadow: none;
 	padding: 5px 15px 0px;
@@ -441,6 +426,9 @@ button.refresh-attribute-lists {
 
 .content-cont .widget.widget-tabs-double-2{
     border-bottom: medium none;
+}
+.content-cont .widget.widget-tabs-double-2>.widget-head ul li:hover{
+	border-bottom: 1px solid #e5e5e5;
 }
 .content-cont .widget.widget-tabs-double-2>.widget-head ul li a:hover{
     background:#fff;
@@ -535,7 +523,7 @@ textarea {
 	color: #C3C0C0;
 }
 .melis-pdc{
-	padding-top: 25px;
+	/*padding-top: 25px;*/
 }
 .pdc-heading{
 	padding-bottom: 30px;
@@ -838,6 +826,11 @@ textarea {
 .content-cont .panel-title > a {
 	color: #111;
 }
+
+/* TABS */
+.content-cont .nav-tabs.product-text-tab li:hover {
+	border-bottom: 1px solid #e5e5e5;
+}
 .content-cont .product-text-tab li.active:hover a{
 	background: #932E2A;
 	border-color: transparent;
@@ -848,10 +841,11 @@ textarea {
 .content-cont .nav-tabs.product-text-tab li a:hover{
 	color: #fff;
 	background: #932E2A;
-	border: none;
+	border-bottom: 1px solid #e5e5e5;
 	font-weight: normal;
 	text-decoration: none;
 	border-color: #eee;
+
 }
 .content-cont .product-text-tab li.active span,
 .content-cont .product-text-tab li.active i,
@@ -869,6 +863,7 @@ textarea {
 	text-shadow: none;
 	box-shadow: none;
 	border: none;
+	max-height: 36px;
 }
 .content-cont .product-text-tab li a i{
 	float: right;
@@ -887,7 +882,12 @@ textarea {
 .content-cont .widget.widget-tabs-double-2>.widget-head ul li.active {
 	height: 71px;
 }
-
+.content-cont .widget.widget-tabs-double-2>.widget-head ul li a {
+	height: 69px;
+}
+.content-cont .product-text-tab.nav-tabs > li:hover {
+	/* border-bottom: 1px solid #e5e5e5!important; */
+}
 /* MODAL  */
 .me-commerce .modal-contet-cont{
 	padding: 25px;
@@ -1126,8 +1126,21 @@ textarea {
 	-webkit-animation:fading 10s infinite;
 	animation:fading 10s infinite;	
 }
-
-
+/* Category filter */
+.dropdown-menu > li > a {
+	display: inline-block;
+	width: 100%;
+	padding: 0 10px;
+}
+.dropdown-menu > li > a span:first-child {
+	float: left;
+}
+.dropdown-menu > li > a span {
+	line-height: 30px;
+}
+.dropdown-menu > li {
+	height: 30px;
+}
 /**** Isotope Filtering ------------------------------------------------------------------------------- ****/
 .isotope-item {
   z-index: 2;
@@ -1274,7 +1287,7 @@ textarea {
 	}
 	.widget-tabs .nav-tabs > li.active > a.glyphicons {
 		border-bottom: 1px solid #e5e5e5;
-	}
+	}	
 	.widget-tabs .nav-tabs > li > a.glyphicons {
 		border-bottom: 1px solid #e5e5e5;
 	}
@@ -1376,4 +1389,9 @@ textarea {
 		float: left;
 		margin: 0;
 	}
+}
+
+span .fa-globe{
+	width:24px;
+	height:24px;
 }

@@ -6,7 +6,7 @@
 	if (!empty($this->zoneconfig['conf']['id']))
 		$id = $this->zoneconfig['conf']['id'];
 	$data_melisKey = $this->melisKey;
-
+$imageData = '';
 ?>
 <div class="modal-content" id="<?= $id; ?>" data-melisKey="<?= $data_melisKey; ?>">
 	<div class="modal-body padding-none">
@@ -14,7 +14,7 @@
 			<div class="widget widget-tabs widget-tabs-double widget-tabs-responsive margin-none border-none">
                 <div class="widget-head">
                 	<ul class="nav nav-tabs">
-                		<li class="active"><a href="#<?php echo $this->zoneconfig['conf']['id'] ?>" style="color:#000;" class="" data-toggle="tab" aria-expanded="true"><span class="text-danger">&nbsp;<i class="text-danger fa fa-language" style="color:#fff"></i>&nbsp;&nbsp;<?php echo $this->title ?>&nbsp;&nbsp;</span></a></li>
+                		<li class="active"><a href="#<?php echo $this->zoneconfig['conf']['id'] ?>" class="glyphicons <?php echo ($this->id) ? 'pencil' : 'plus'?>" data-toggle="tab" aria-expanded="true"><i></i> <?php echo $this->title ?></a></li>
             		</ul>
         		</div>
         		<div class="widget-body innerAll inner-2x">
@@ -35,6 +35,15 @@
                             }
                             echo $this->form()->openTag($form);
 						?>
+						<div class="pull-left">
+							<?php
+							if(isset($this->data['elang_flag'])) {
+								$imageData = 'data:image/jpeg;base64,'.$this->data['elang_flag'];
+							}
+							?>
+
+							<img src="<?php echo $imageData; ?>" class="imgFlag" id="imgLangFlag" style="border:none"/>
+						</div>
 						<div class="pull-right">
 							<div <?= $id; ?> class="make-switch" data-on-label="<?php echo $this->translate('tr_meliscommerce_products_page_content_tab_main_header_switch_online')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_products_page_content_tab_main_header_switch_offline')?>" data-text-label="<?php echo $this->translate('tr_meliscommerce_categories_common_label_status')?>">
 								<input type="checkbox" name="elang_status" id="elang_status" <?php echo $langStatus; ?>>
@@ -42,14 +51,19 @@
 						</div><div class="clearfix"></div>
 						<?php
                             echo $this->melisFieldCollection($form);
-                            echo $this->form()->closeTag();
                         ?>
                         <div align="right">
                      		<button data-dismiss="modal" class="btn btn-danger pull-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
-                     		<button class="btn btn-success" id="btnComSaveLang"><i class="fa fa-save"></i>  <?php echo $this->translate('tr_meliscommerce_orders_common_btn_save') ?></button>
+                     		<button type="submit" class="btn btn-success" id="btnComSaveLang"><i class="fa fa-save"></i>  <?php echo $this->translate('tr_meliscommerce_orders_common_btn_save') ?></button>
                      	</div>
+						<?php echo $this->form()->closeTag(); ?>
                         <div class="clearfix"></div>
                         </div>
+						<script type="text/javascript">
+							$(function() {
+								$(":file").filestyle({buttonBefore: true, input: true, buttonText: ' <?php echo $this->translate('tr_meliscommerce_country_ctry_flag_choose')?>'});
+							});
+						</script>
                     </div>
                 </div>
             </div>

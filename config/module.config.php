@@ -163,6 +163,7 @@ return array(
             'MelisComSeoService'           => 'MelisCommerce\Service\Factory\MelisComSeoServiceFactory',
             'MelisComShipmentCostService'  => 'MelisCommerce\Service\Factory\MelisComShipmentCostServiceFactory',
             'MelisComVariantService'       => 'MelisCommerce\Service\Factory\MelisComVariantServiceFactory',
+            'MelisComDuplicationService'   => 'MelisCommerce\Service\Factory\MelisComDuplicationServiceFactory',
             
             //db tables
             'MelisCommerce\Model\Tables\MelisEcomAttributeTable'             => 'MelisCommerce\Model\Tables\Factory\MelisEcomAttributeTableFactory',
@@ -246,6 +247,7 @@ return array(
             'MelisCommerce\Controller\Tester' => 'MelisCommerce\Controller\TesterController',
             'MelisCommerce\Controller\Diagnostic' => 'MelisCommerce\Controller\DiagnosticController',
             'MelisCommerce\Controller\MelisComAssociateVariant' => 'MelisCommerce\Controller\MelisComAssociateVariantController',
+            'MelisCommerce\Controller\MelisComPrdVarDuplication' => 'MelisCommerce\Controller\MelisComPrdVarDuplicationController',
         ),
     ),
     'form_elements' => array(

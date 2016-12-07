@@ -1,4 +1,4 @@
-<button data-toggle="modal" data-target="#<?= $this->productId; ?>_editCategoryModal" class="btn btn-success add-product" title="<?php echo $this->translate('tr_meliscommerce_products_main_tab_categories_all');?>">
+<button data-toggle="modal" data-target="#<?= $this->productId; ?>_editCategoryModal" class="btn btn-success" title="<?php echo $this->translate('tr_meliscommerce_products_main_tab_categories_all');?>">
 	<i class="fa fa-eye" style="padding-right:10px;"></i>
 	<?= $this->translate('tr_meliscommerce_products_main_tab_categories_all');?>
 </button>
@@ -26,11 +26,18 @@
                     			<span class="caret"></span>
                     		</a>
                     		<ul class="dropdown-menu product-category-tree-view-lang">
+							<?php if($this->langData) { ?>
                     		<?php foreach($this->langData as $lang): ?>
                     			<li>
-                    				<a data-locale="<?= $lang['elang_locale']; ?>"><?= $lang['elang_name']; ?></a>
+									<?php
+									$imageData = $lang->elang_flag;
+									$image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay pull-right" width="24" height="24"/>' : '<i class="fa fa-globe"></i>';
+									?>
+                    				<a data-locale="<?= $lang->elang_locale; ?>"><?= $lang->elang_name; ?><span class="pull-right"><?php echo $image; ?></span></a>
                     			</li>
-                			<?php endforeach; ?>
+                			<?php endforeach;
+							}
+							?>
                     		</ul>
                     	</div>
     				</div>

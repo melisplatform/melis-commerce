@@ -2,9 +2,6 @@
 a.save_product{
 	margin-right:8px;
 }
-btn.add-product, a.add-product{
-    margin-right: 1px;
-}
 span.attribute-buttons * {
     margin-top: -1px;
 }

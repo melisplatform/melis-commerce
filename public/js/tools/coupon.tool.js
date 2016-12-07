@@ -249,12 +249,13 @@ window.initCouponOrder = function(data, tblSettings) {
 }
 
 window.drawCouponClient = function() {
-	console.log('tesadsa');
+	
 }
 
 window.initCheckUsedCoupon = function(){
 	var btnDelete = $('#tableCouponList tr.couponUsed td').find(".couponDelete");
 	btnDelete.remove();
+	$('.couponListNoDeleteButton .couponDelete').remove();
 }
 
 window.initCheckClientUsedCoupon = function(tblSettings){

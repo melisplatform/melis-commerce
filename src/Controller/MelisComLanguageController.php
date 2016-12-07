@@ -198,17 +198,18 @@ class MelisComLanguageController extends AbstractActionController
                 // apply text limits
                 foreach($tableData[$ctr] as $vKey => $vValue)
                 {
-                    $tableData[$ctr][$vKey] = $this->getTool()->limitedText($vValue);
+                    if($vKey != "elang_flag") {
+                        $tableData[$ctr][$vKey] = $this->getTool()->limitedText($vValue);
+                    }
                 }
-        
-                // manually modify value of the desired row
-                // no specific row to be modified
-        
-        
+
                 // add DataTable RowID, this will be added in the <tr> tags in each rows
+                $imageData = $tableData[$ctr]['elang_flag'];
+                $image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay"/>' : '<i class="fa fa-globe"></i>';
                 $tableData[$ctr]['DT_RowId'] = $tableData[$ctr]['elang_id'];
                 $status = (int) $tableData[$ctr]['elang_status'];
                 $tableData[$ctr]['elang_status'] = $status ? $activeDom : $inactiveDom;
+                $tableData[$ctr]['elang_flag'] = $image;
             }
         
         }
@@ -261,12 +262,20 @@ class MelisComLanguageController extends AbstractActionController
                 $tmpName = $data['tmp_elang_name'];
                 $tmpLocale = $data['tmp_elang_locale'];
                 $saveType = $postData['saveType'];
-
+                $uploadedImage = $this->params()->fromFiles('elang_flag');
+                $imageFile = !empty($uploadedImage['tmp_name']) ? $uploadedImage['tmp_name'] : null;
                 unset($data['tmp_elang_name']);
                 unset($data['tmp_elang_locale']);
                 unset($data['saveType']);
                 unset($data['elang_id']);
                 $data['elang_status'] = (int) $postData['elang_status'];
+                if($imageFile) {
+                    $uploadedImgFileContent = file_get_contents($uploadedImage['tmp_name']);
+                    $data['elang_flag'] = base64_encode($uploadedImgFileContent);
+                }
+                else {
+                    unset($data['elang_flag']);
+                }
                 // for adding a new language
                 if($isLocaleExists && $saveType == 'new') {
                     $hasErrorFlag = true;

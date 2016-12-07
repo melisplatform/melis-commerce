@@ -51,6 +51,8 @@ class MelisComPostPaymentService extends MelisComGeneralService
                 'transactionPricepaidConfirm' => $postValues['payment-transaction-price-paid-confirm'],
                 'transactionFullRawResponse' => $postValues['payment-transaction-raw-response'],
                 'transactionDateTime' => $postValues['payment-transaction-date'],
+                'transactionCountryId' => $postValues['payment-transaction-country-id'],
+                'transactionCouponId' => $postValues['payment-transaction-coupon-id'],
             );
             
             // Shipping Total Amount

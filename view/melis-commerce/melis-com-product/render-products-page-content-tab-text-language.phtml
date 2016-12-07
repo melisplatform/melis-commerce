@@ -17,7 +17,7 @@ $ctr = 0;
 <?php 
 foreach($this->lang as $lang):
 
-$href = $this->layout()->productId . '_id_meliscommerce_products_page_content_tab_text_language_list_field_'.$lang->elang_name;
+$href = $this->layout()->productId . '_id_meliscommerce_products_page_content_tab_text_language_list_field_'.$lang->elang_locale;
 if($ctr>0){
     $active = '';
 }
@@ -25,7 +25,11 @@ if($ctr>0){
 
 <li class="<?= $active ?>" id="languageList">
 	<a class="clearfix" data-toggle="tab" href="#<?php echo $href;?>" aria-expanded="true">
-		&nbsp;<span class="fa fa-language"></span>
+        <?php
+        $imageData = $lang->elang_flag;
+        $image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay pull-right"/>' : '<i class="fa fa-globe"></i>';
+        ?>
+		&nbsp;<span class="pull-right"><?php echo $image; ?></span>
 		<span><?php echo $lang->elang_name;?></span>
 	</a>
 </li>

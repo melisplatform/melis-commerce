@@ -83,4 +83,16 @@ class MelisEcomDocumentTable extends MelisEcomGenericTable
         return $resultSet;
     }
     
+    public function getDocumentsByParentTypeId($docRelation, $docRelationId)
+    {
+        $select = $this->tableGateway->getSql()->select();
+        
+        $select->join('melis_ecom_doc_relations', 'melis_ecom_doc_relations.rdoc_doc_id = melis_ecom_document.doc_id', array('*'), $select::JOIN_LEFT);
+        
+        $select->where('melis_ecom_doc_relations.rdoc_'.$docRelation.'_id ='.$docRelationId);
+                
+        $resultSet = $this->tableGateway->selectwith($select);
+        
+        return $resultSet;
+    }
 }

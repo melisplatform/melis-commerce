@@ -14,7 +14,7 @@ $del = '<label class="pull-right"><a data-text-identifier="%s"><i class="deleteT
 
 ?>
 <?php foreach($this->lang as $lang) {
-    $href = $this->layout()->productId . '_id_meliscommerce_products_page_content_tab_text_language_list_field_'.$lang->elang_name;
+    $href = $this->layout()->productId . '_id_meliscommerce_products_page_content_tab_text_language_list_field_'.$lang->elang_locale;
     if($ctr>0){
         $active = '';
     }
@@ -44,8 +44,9 @@ $del = '<label class="pull-right"><a data-text-identifier="%s"><i class="deleteT
     		      }
     		      if((int) $prodText->ptt_field_type == 2){
     		          $form->get('ptxt_field_long')
-    		          ->setAttribute('class', 'product-text-mce pull-left')
+    		          ->setAttribute('class', 'product-text-mce pull-left form-control')
     		          ->setAttribute("data-display", "true")
+    		          ->setAttribute("data-productid", $this->productId)
                       ->setLabel(sprintf($del, $prodText->ptt_name).'</label><label>'.$prodText->ptt_name . ' (' . $prodText->ptt_code . ')');
     		          $form->get('ptxt_field_short')->setAttribute('style', 'display:none')->setLabel('');
     		      }
@@ -63,7 +64,7 @@ $del = '<label class="pull-right"><a data-text-identifier="%s"><i class="deleteT
 <?php $ctr++; }?>
 
 <script type="text/javascript">
-initProductTextTinyMce();
+	initProductTextTinyMce(<?php echo $this->productId?>);
 </script>
 
 

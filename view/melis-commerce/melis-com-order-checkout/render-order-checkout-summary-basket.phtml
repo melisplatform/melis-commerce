@@ -43,9 +43,14 @@
                         </div>
                         <div class="form-group">
                         	<h4><strong><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_discount')?>: <?php echo $this->countryCurrencySympbol.' '.number_format($this->totalDiscount, 2)?></strong></h4>
+        					<?php if (!empty($this->discountInfo)):?>
+        						<p><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_coupon_value')?>: <?php echo $this->discountInfo?></p>
+        					<?php endif;?>
         				</div>
         				<div class="form-group">
-                            <h4><strong><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_total')?>: <?php echo $this->countryCurrencySympbol.' '.number_format($this->total, 2)?></strong></h4><br>
+                            <h4>
+                            	<strong><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_total')?>: <?php echo $this->countryCurrencySympbol.' '.number_format($this->total, 2)?></strong>
+                        	</h4>
                         </div>
         			</div>
         		</div>

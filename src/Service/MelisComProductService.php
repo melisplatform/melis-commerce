@@ -466,8 +466,6 @@ class MelisComProductService extends MelisComGeneralService
 	    $saveProductId = (int) $arrayParameters['productId'];
         $results['saveProduct'] = $arrayParameters['productId'];
         
-        
-        
         try {
             // Deactivate variants that is under to this product
             if(!$prodStatus && !is_null($prodId)) {
@@ -479,12 +477,9 @@ class MelisComProductService extends MelisComGeneralService
             {
                 foreach($arrayParameters['productTexts'] as $productText)
                 {
-
                         $prodTextId = isset($productText['ptxt_id']) ? $productText['ptxt_id'] : null;
                         $productText['ptxt_prd_id'] = $saveProductId;
                         $this->saveProductTexts(array_merge($productText, array('ptxt_prd_id' => $saveProductId)), $prodTextId);
-
-                    
                 }
             }
             
@@ -492,7 +487,8 @@ class MelisComProductService extends MelisComGeneralService
             {
                 foreach($arrayParameters['attributes'] as $attribute)
                 {
-                    $this->saveProductAttributes(array_merge($attribute, array('patt_product_id' => $saveProductId)), $attribute['patt_id']);
+                    $patt_id = isset($attribute['patt_id']) ? $attribute['patt_id'] : null;
+                    $this->saveProductAttributes(array_merge($attribute, array('patt_product_id' => $saveProductId)), $patt_id);
                 }
             }
             
@@ -500,7 +496,8 @@ class MelisComProductService extends MelisComGeneralService
             {
                 foreach($arrayParameters['categories'] as $category)
                 {
-                    $categorySvc->addCategoryProduct(array_merge($category, array('pcat_prd_id' => $arrayParameters['productId'])), (int) $category['pcat_id']);  
+                    $pcat_id = isset($category['pcat_id']) ? $category['pcat_id'] : null;
+                    $categorySvc->addCategoryProduct(array_merge($category, array('pcat_prd_id' => $arrayParameters['productId'])), (int) $pcat_id);  
                 }
             }
             
@@ -508,22 +505,24 @@ class MelisComProductService extends MelisComGeneralService
             {
                 foreach($arrayParameters['prices'] as $price)
                 {
-                   $this->saveProductPrices(array_merge($price, array('price_prd_id' => $saveProductId)), (int) $price['price_id']);
+                    $price_id = isset($price['price_id']) ? $price['price_id'] : null;
+                    $this->saveProductPrices(array_merge($price, array('price_prd_id' => $saveProductId)), (int) $price_id);
                 }
             }
             
             // SEO Service
-            $productSeo = $arrayParameters['seo'];
-            $melisComSeoService = $this->getServiceLocator()->get('MelisComSeoService');
-            $result = $melisComSeoService->saveSeoDataAction('product', $arrayParameters['productId'], $productSeo);
+            if (!empty($arrayParameters['seo']))
+            {
+                $productSeo = $arrayParameters['seo'];
+                $melisComSeoService = $this->getServiceLocator()->get('MelisComSeoService');
+                $result = $melisComSeoService->saveSeoDataAction('product', $arrayParameters['productId'], $productSeo);
+            }
             
         }catch(\Exception $e) {
             $saveProductId = null;
         }
-
-
 	    // Service implementation end
-
+	    
         // Adding results to parameters for events treatment if needed
 	    $arrayParameters['results'] = $saveProductId;	    
 	    // Sending service end event

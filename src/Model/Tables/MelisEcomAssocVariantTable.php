@@ -22,4 +22,19 @@ class MelisEcomAssocVariantTable extends MelisEcomGenericTable
         $this->idField = 'avar_id';
     }
 
+    public function getVariantAssociationData($varOne, $varTwo)
+    {
+        $select = $this->tableGateway->getSql()->select();
+        $varOne = (int) $varOne;
+        $varTwo = (int) $varTwo;
+
+        $select->columns(array('*'));
+
+        $select->where->nest->equalTo('avar_one', $varOne)->and->equalTo('avar_two', $varTwo)->unnest
+        ->or->nest->equalTo('avar_one', $varTwo)->and->equalTo('avar_two', $varOne)->unnest;
+        $resultData = $this->tableGateway->selectWith($select);
+        return $resultData;
+
+
+    }
 }

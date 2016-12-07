@@ -426,6 +426,8 @@ $(function(){
     	var zoneId = "id_meliscommerce_order_checkout_confirmation_step";
 		var melisKey = "meliscommerce_order_checkout_confirmation_step";
 		melisHelper.zoneReload(zoneId, melisKey, {activateTab : true});
+		
+		melisHelper.zoneReload('id_meliscommerce_order_list_content_table', 'meliscommerce_order_list_content_table');
     });
     
     $('body').on('change', '#orderCheckoutCouponCode', function () {

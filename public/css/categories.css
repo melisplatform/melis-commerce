@@ -120,7 +120,6 @@
 }
 
 .is-draggable td:first-of-type{
-	background-color: #eee;
     cursor: move;
 }
 

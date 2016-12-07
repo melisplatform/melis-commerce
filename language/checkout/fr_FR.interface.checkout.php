@@ -63,6 +63,7 @@
 	    'tr_meliscommerce_order_checkout_variant_next_button' => 'Procéder aux Contacts',
 	    'tr_meliscommerce_order_checkout_variant_sub_total' => 'Sous Total',
 	    'tr_meliscommerce_order_checkout_variant_discount' => 'Réduction',
+	    'tr_meliscommerce_order_checkout_variant_coupon_value' => 'Valeur du coupon',
 	    'tr_meliscommerce_order_checkout_variant_total' => 'Total',
 	    'tr_meliscommerce_order_checkout_variant_coupon_code' => 'Code du coupon',
 	    'tr_meliscommerce_order_checkout_variant_validate_coupon' => 'Valider',

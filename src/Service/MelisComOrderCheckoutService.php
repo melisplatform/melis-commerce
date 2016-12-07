@@ -453,6 +453,11 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         $arrayParameters['results'] = $results;
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_checkout_order_computation_end', $arrayParameters);
+        
+        if ($arrayParameters['results']['costs']['order']['total'] < 0)
+        {
+            $arrayParameters['results']['costs']['order']['total'] = 0;
+        }
     
         return $arrayParameters['results'];
     }
@@ -531,7 +536,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         }
         
         // Now update the full total price
-        $arrayParameters['results']['costs']['total'] = $totalCost;
+        $arrayParameters['results']['costs']['total'] = ($totalCost > 0) ? $totalCost : 0;
         
         return $arrayParameters['results'];
     }
@@ -595,7 +600,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         else
             $costsValidity = false;
         
-        $orderReferenceCode = $this->genderOrderRefernceCode();
+        $orderReferenceCode = $this->generateOrderRefernceCode();
         
         $melisComOrderService = $this->getServiceLocator()->get('MelisComOrderService');
         
@@ -834,8 +839,6 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                 'transactionReturnCode' => '',
                 'transactionPricePaid' => 0,
                 'transactionFullRawResponse' => '',
-                'transactionPricepaidConfirm' => '',
-                'transactionFullRawResponse' => '',
                 'transactionDateTime' => ''
             ),
             'errors' => array(
@@ -855,7 +858,8 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             // one last check: full price must be equal to price paid, if not save order with error status
             // else proceed with finalizing order: orderPayment, and update status to new order on order table
             
-            $order = $this->computeAllCosts($arrayParameters['results']['clientId']);
+            $clientId = $arrayParameters['results']['clientId'];
+            $order = $this->computeAllCosts($clientId);
             
             $totalCost = $order['costs']['total'];
             
@@ -888,6 +892,14 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                 'opay_date_payment' => date('Y-m-d H:i:s'),
             );
             
+            $clientCountryId = $paymentData['transactionCountryId'];
+            $clientCouponId = $paymentData['transactionCouponId'];
+            
+            // Unset data not requried to return as results
+            unset($arrayParameters['results']['payment_details']['transactionPricepaidConfirm']);
+            unset($arrayParameters['results']['payment_details']['transactionCountryId']);
+            unset($arrayParameters['results']['payment_details']['transactionCouponId']);
+            
             $melisEcomOrderPaymentTable = $this->getServiceLocator()->get('MelisEcomOrderPaymentTable');
             $melisEcomOrderPaymentTable->save($payment);
             
@@ -900,9 +912,6 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             
             $melisComVariantService = $this->getServiceLocator()->get('MelisComVariantService');
             $melisEcomVariantStockTable = $this->getServiceLocator()->get('MelisEcomVariantStockTable');
-            
-            $container = new Container('meliscommerce');
-            $clientCountryId = $container['checkout']['countryId'];
             
             foreach ($clientBasket As $val)
             {
@@ -921,6 +930,20 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                 }
             }
             
+            // Use Coupon id to Client Order
+            if (!empty($clientCouponId))
+            {
+                // Getting Coupon details from Coupon Service
+                $couponSrv = $this->getServiceLocator()->get('MelisComCouponService');
+                $couponEntity = $couponSrv->getCouponById($clientCouponId);
+                $coupon = $couponEntity->getCoupon();
+                
+                if (!empty($coupon))
+                {
+                    $couponCode = $coupon->coup_code;
+                    $coupon = $couponSrv->useCoupon($couponCode, $clientId, $orderId);
+                }
+            }
             
             // Empty Client Basket
             $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
@@ -930,7 +953,13 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         return $arrayParameters['results'];
     }
     
-    public function genderOrderRefernceCode()
+    /**
+     * This method will generate Preference Code for Order Preference
+     * this will aslo validate reference code if the event modefied the pre-generated reference code
+     * 
+     * @return Array
+     */
+    public function generateOrderRefernceCode()
     {
         $result = array(
             'success' => true,
@@ -949,6 +978,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         
         $arrayParameters = $this->sendEvent('meliscommerce_service_checkout_generate_order_reference_code_end', $arrayParameters);
         
+        // Checking if Referece code is available
         $order = $melisEcomOrderTable->getEntryByField('ord_reference', $arrayParameters['results']['code'])->current();
         
         if (!empty($order))

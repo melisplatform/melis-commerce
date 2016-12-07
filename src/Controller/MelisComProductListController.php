@@ -441,9 +441,9 @@ class MelisComProductListController extends AbstractActionController
                                    }else {
                                        $warningDom = '';
                                    }
-                                   
+                                   $image = !empty($value['flag']) ? '<img src="data:image/jpeg;base64,'. ($value['flag']) .'" class="" width="16" height="16"/>' : '<i class="fa fa-globe"></i>';
                                    $price .= $priceNet .'<br/>';
-                                   $country .= $countryKey  .'<br/>';
+                                   $country .= $image.' '.$countryKey  .'<br/>';
                                    $stock .= $warningDom.$stockQty .'<br/>';
                                }
 
@@ -555,6 +555,7 @@ class MelisComProductListController extends AbstractActionController
             // Countries
             $ctryCtr = 0;
             foreach($countries as $country) {
+                $dataPricesAndStock[$country['ctry_name']]['flag'] = $country['ctry_flag'];
                 $dataPricesAndStock[$country['ctry_name']]['price']['price_net'] = $genPrice;
                 $dataPricesAndStock[$country['ctry_name']]['stock']['stock_quantity'] = null;
                 foreach($variantSvc->getVariantPricesById($varData->var_id, $country['ctry_id']) as $vData) {

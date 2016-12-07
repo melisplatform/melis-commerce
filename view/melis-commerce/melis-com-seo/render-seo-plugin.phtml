@@ -22,6 +22,11 @@
             		<?php foreach ($this->ecomLang As $val):?>
                 		<li class="">
                 			<a class="clearfix" data-toggle="tab" href="#<?php echo $val['elang_locale'].'_'.$this->typeId.'_'.$formType.'_seo'?>" aria-expanded="true">
+								<?php
+								$imageData = $val['elang_flag'];
+								$image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay pull-right"/>' : '<i class="fa fa-globe"></i>';
+								?>
+								<span class="pull-right"><?php echo $image; ?></span>
                 				<span><?php echo $val['elang_name'] ?></span>
                 			</a>
                 		</li>

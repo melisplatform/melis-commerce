@@ -379,6 +379,7 @@ class MelisComVariantService extends MelisComGeneralService
 	    
 	    return $arrayParameters['results'];
 	}
+
 	
 	/**
 	 *
@@ -497,7 +498,7 @@ class MelisComVariantService extends MelisComGeneralService
 	{
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
-	    $results = array();
+	    $results = null;
 	    	    
 	    // Sending service start event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_variant_save_start', $arrayParameters);
@@ -508,38 +509,38 @@ class MelisComVariantService extends MelisComGeneralService
         
         try{
             $successFlag = true;
-            $results['var_id'] = (int) $variantTable->save($arrayParameters['variant'], $arrayParameters['variantId']);
+            $variantId = (int) $variantTable->save($arrayParameters['variant'], $arrayParameters['variantId']);
         }catch(\Exception $e){
             $successFlag = false;
             echo 'Caught exception: ',  $e->getMessage(), "\n";
         }
         
-        if(!empty($results)){
+        if($variantId){
             
             if(!empty($arrayParameters['prices'])){
                 foreach($arrayParameters['prices'] as $price){
-                    $price['price_var_id'] = $results['var_id'];
+                    $price['price_var_id'] = $variantId;
                     $priceId = (!empty($price['price_id']) ? $price['price_id'] : null);
                     unset($price['price_id']);
-                    $results['price_id'] = $this->saveVariantPrices($price, $priceId);
+                    $this->saveVariantPrices($price, $priceId);
                 }             
             }
             
             if(!empty($arrayParameters['stocks'])){
                 foreach($arrayParameters['stocks'] as $stock){   
-                    $stock['stock_var_id'] = $results['var_id'];
+                    $stock['stock_var_id'] = $variantId;
                     $stockId = (!empty($stock['stock_id']) ? $stock['stock_id'] : null);
                     unset($stock['stock_id']);
-                    $results['stock_id'] = $this->saveVariantStocks($stock, $stockId);
+                    $this->saveVariantStocks($stock, $stockId);
                 }
             }
             
             if(!empty($arrayParameters['attributeValues'])){               
                 foreach($arrayParameters['attributeValues'] as $attributeValue){                    
-                    $attributeValue['vatv_variant_id'] = $results['var_id'];
+                    $attributeValue['vatv_variant_id'] = $variantId;
                     $attributeValueId = (!empty($attributeValue['vatv_id']) ? $attributeValue['vatv_id'] : null);                    
                     unset($attributeValue['vatv_id']);
-                    $results['vavt_id'] = $this->saveVariantAttributesValues($attributeValue, $attributeValueId);
+                    $this->saveVariantAttributesValues($attributeValue, $attributeValueId);
                 }
             }  
                 
@@ -547,8 +548,10 @@ class MelisComVariantService extends MelisComGeneralService
             if(!empty($arrayParameters['seo'])){
                 $variantSeo = $arrayParameters['seo'];
                 $melisComSeoService = $this->getServiceLocator()->get('MelisComSeoService');
-                $result = $melisComSeoService->saveSeoDataAction('variant', $results['var_id'], $variantSeo);
+                $melisComSeoService->saveSeoDataAction('variant', $variantId, $variantSeo);
             }
+            
+            $results = $variantId;
         }
 	    // Service implementation end
 

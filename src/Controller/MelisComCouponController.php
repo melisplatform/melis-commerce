@@ -512,7 +512,6 @@ class MelisComCouponController extends AbstractActionController
         $couponId = null;
         $dataFiltered = 0;
         
-        $status = '<span class="text-danger"><i class="fa fa-fw fa-circle"></i></span>';        
         $langId = $this->getTool()->getCurrentLocaleID();
         $clientTable = $this->getServiceLocator()->get('MelisEcomClientTable');
         $clientSvc = $this->getServiceLocator()->get('MelisComClientService');
@@ -547,23 +546,15 @@ class MelisComCouponController extends AbstractActionController
             
             $c = 0;
             foreach($clients as $client){
+                
                 $assign = '';
                 $companyName = '';
                 $client = $clientSvc->getClientByIdAndClientPerson($client->cli_id);                
 
-                if($client->getClient()->cli_status){
-                    $status = '<span class="text-success"><i class="fa fa-fw fa-circle"></i></span>';
-                }
                 foreach($couponClientTable->getEntryByField('ccli_coupon_id',$couponId) as $coupon){
                     if($coupon->ccli_client_id == $client->getClient()->cli_id ){
                         $assign = '<a data-ccli_id="'.$client->getId().'" class="btn btn-success" style="cursor:default" title="'.$this->getTool()->getTranslation('tr_meliscommerce_coupon_page_tabs_assign_hover').'" ><i class="fa fa-user" ></i></a>';
                     } 
-                }
-                
-                foreach($client->getPersons()[0]->civility_trans as $trans){
-                    if($trans->civt_lang_id == $langId){
-                        $civt_min_name = $trans->civt_min_name;
-                    }
                 }
                 
                 foreach($client->getCompany() as $company){
@@ -572,8 +563,6 @@ class MelisComCouponController extends AbstractActionController
                 
                 $tableData[$c]['DT_RowId']      = $client->getClient()->cli_id;
                 $tableData[$c]['cli_id']        = $client->getClient()->cli_id;
-                $tableData[$c]['cli_status']    = $status;
-                $tableData[$c]['civt_min_name'] = $civt_min_name;
                 $tableData[$c]['cper_firstname']= $client->getPersons()[0]->cper_firstname;
                 $tableData[$c]['cper_name']     = $client->getPersons()[0]->cper_name;
                 $tableData[$c]['cper_email']    = $client->getPersons()[0]->cper_email;
@@ -602,7 +591,6 @@ class MelisComCouponController extends AbstractActionController
         $couponId = null;
         $dataFiltered = 0;
     
-        $status = '<span class="text-danger"><i class="fa fa-fw fa-circle"></i></span>';
         $langId = $this->getTool()->getCurrentLocaleID();
         $clientTable = $this->getServiceLocator()->get('MelisEcomClientTable');
         $clientSvc = $this->getServiceLocator()->get('MelisComClientService');
@@ -643,21 +631,12 @@ class MelisComCouponController extends AbstractActionController
                 $companyName = '';
                 $client = $clientSvc->getClientByIdAndClientPerson($client->cli_id);
     
-                if($client->getClient()->cli_status){
-                    $status = '<span class="text-success"><i class="fa fa-fw fa-circle"></i></span>';
-                }
                 
                 $usedCoupon = $couponOrderTable->checkUsedClientCoupon($couponId, $client->getClient()->cli_id)->toArray();
                 if(count($usedCoupon) > 0){
                     $tableData[$c]['DT_RowClass'] = "couponAssigned";
                 }
                 
-    
-                foreach($client->getPersons()[0]->civility_trans as $trans){
-                    if($trans->civt_lang_id == $langId){
-                        $civt_min_name = $trans->civt_min_name;
-                    }
-                }
     
                 foreach($client->getCompany() as $company){
                     $companyName = $company->ccomp_name;
@@ -666,8 +645,6 @@ class MelisComCouponController extends AbstractActionController
                 $tableData[$c]['DT_RowId']      = $client->getClient()->cli_id;
                 $tableData[$c]['DT_RowAttr']    = array('data-couponid' => $couponId);
                 $tableData[$c]['cli_id']        = $client->getClient()->cli_id;
-                $tableData[$c]['cli_status']    = $status;
-                $tableData[$c]['civt_min_name'] = $civt_min_name;
                 $tableData[$c]['cper_firstname']= $client->getPersons()[0]->cper_firstname;
                 $tableData[$c]['cper_name']     = $client->getPersons()[0]->cper_name;
                 $tableData[$c]['cper_email']    = $client->getPersons()[0]->cper_email;

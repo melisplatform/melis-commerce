@@ -661,7 +661,12 @@ class MelisComAttributeController extends AbstractActionController
         
         //form used for filling all values
         $fillAllForm = clone($attributeValueForm);
-        
+        if ($attributeValueId){
+            $data = array(
+                'av_attribute_value_id' => $attributeValueId
+            );
+            $fillAllForm->setData($data);
+        }
         foreach($langTable->langOrderByName() as $lang){
             
             $form = clone($attributeValueForm);
@@ -698,6 +703,7 @@ class MelisComAttributeController extends AbstractActionController
         $view->fillAllForm = $fillAllForm;
         $view->langs = $langs;
         $view->datePickerInit = $datepickerInit;
+        $view->attributeValueId = $attributeValueId;
         return $view;
         
     }
@@ -714,8 +720,8 @@ class MelisComAttributeController extends AbstractActionController
         $data = array();
         $attributeValues = array();
         $filledUp = 0;
-        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_coupon_save_fail');
-        $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_attribute_page');
+        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_attribute_value_save_failed');
+        $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_attribute_value');
         $this->getEventManager()->trigger('meliscommerce_attribute_value_save_start', $this, array());
 
         $attributeSvc = $this->getServiceLocator()->get('MelisComAttributeService');
@@ -747,7 +753,7 @@ class MelisComAttributeController extends AbstractActionController
             unset($postValues['attributeValueTrans'][0]);            
             
             //check if fill all form is filled up
-            if(array_filter($allFormValue)){
+            if(!empty($allFormValue[$atype_column_value])){
                 //check if each language form is filled up
                 foreach($postValues['attributeValueTrans'] as $valueTrans){                    
                     $data[] = $valueTrans;
@@ -797,25 +803,31 @@ class MelisComAttributeController extends AbstractActionController
                 }
             }            
             
-            if(empty($data)){
-                $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_attribute_value_save_empty');
+            if(empty($data) && empty($errors)){
+                $errors['attr_value_empty'] = array(
+                    'label' => $this->getTool()->getTranslation('tr_meliscommerce_attribute_value'),
+                    'formEmpty' => $this->getTool()->getTranslation('tr_meliscommerce_attribute_value_save_empty')
+                );
             }
             
             if(empty($errors) && !empty($data)){
                 //attribute value id checking
                 $atval_id = null;
                 foreach($data as $trans){
-                    $atval_id = !empty($trans['av_attribute_value_id'])? $trans['av_attribute_value_id'] : $atval_id;
+                    if (!empty($trans['av_attribute_value_id'])){
+                        $atval_id = $trans['av_attribute_value_id'];
+                        break;
+                    }
                 }
+                
                 // if no attribute value id, create attribute value
                 if(empty($atval_id)){
                     $attributeValue = array(
                         'atval_attribute_id' => $attributeId,
                         'atval_type_id' => $attribute->attr_type_id,
                     );                
-                    $atval_id = $attributeSvc->saveAttributeValue($attributeValue);                     
+                    $atval_id = $attributeSvc->saveAttributeValue($attributeValue); 
                 }
-                
                 
                 //the insert or update of attribute value trans happens here
                 foreach($data as $trans){         
@@ -826,7 +838,6 @@ class MelisComAttributeController extends AbstractActionController
                     if(isset($trans['avt_v_datetime'])){
                         $trans['avt_v_datetime'] = $this->getTool()->localeDateToSql($trans['avt_v_datetime']);
                     }
-                    
                     $attributeValueTransId = $attributeSvc->saveAttributeValueTrans($trans, $avt_id);                         
                 }
                 $success = 1;
@@ -887,7 +898,7 @@ class MelisComAttributeController extends AbstractActionController
         $errors  = array();
         $data = array();
         
-        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_order_page_save_fail');
+        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_attribute_save_failed');
         $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_attribute_page');
         
         $container = new Container('meliscommerce');

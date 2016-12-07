@@ -12,15 +12,17 @@
       	<form class="form-horizontal" role="form" id="paymentForm" action="/melis/MelisCommerce/MelisComOrderCheckout/renderOrderCheckoutPaymentDone" method="post">
       		
       		<input type="hidden"name="order-id" value="<?php echo $this->orderId?>">
-      		<!-- Static values, assume this Values are generated form API application -->
-      		<input type="hidden"name="payment-type-id" value="1">
-      		<input type="hidden"name="payment-type-value" value="VISA">
-      		<input type="hidden"name="payment-transaction-price-paid" value="<?php echo $this->totalCost?>">
-      		<input type="hidden"name="payment-transaction-price-paid-confirm" value="<?php echo $this->totalCost?>">
-      		<input type="hidden"name="payment-transaction-id" value="<?php echo 'VISA-'.$this->retrunCode?>">
-      		<input type="hidden"name="payment-transaction-return-code" value="<?php echo $this->retrunCode?>">
-      		<input type="hidden"name="payment-transaction-raw-response" value="<?php echo 'Visa confirms'?>">
-      		<input type="hidden"name="payment-transaction-date" value="<?php echo date('Y-m-d-H:i:s')?>">
+      		<!-- Static values, assume this Values are generated form Commerce application and API application -->
+      		<input type="hidden" name="payment-type-id" value="1">
+      		<input type="hidden" name="payment-type-value" value="VISA">
+      		<input type="hidden" name="payment-transaction-country-id" value="<?php echo $this->countryId?>">
+      		<input type="hidden" name="payment-transaction-coupon-id" value="<?php echo $this->couponId?>">
+      		<input type="hidden" name="payment-transaction-price-paid" value="<?php echo $this->totalCost?>">
+      		<input type="hidden" name="payment-transaction-price-paid-confirm" value="<?php echo $this->totalCost?>">
+      		<input type="hidden" name="payment-transaction-id" value="<?php echo 'VISA-'.$this->retrunCode?>">
+      		<input type="hidden" name="payment-transaction-return-code" value="<?php echo $this->retrunCode?>">
+      		<input type="hidden" name="payment-transaction-raw-response" value="<?php echo 'Visa confirms'?>">
+      		<input type="hidden" name="payment-transaction-date" value="<?php echo date('Y-m-d-H:i:s')?>">
       		
           	<legend>Payment API</legend>
           		<div class="form-group">

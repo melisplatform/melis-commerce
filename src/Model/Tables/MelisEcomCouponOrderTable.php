@@ -36,7 +36,6 @@ class MelisEcomCouponOrderTable extends MelisEcomGenericTable
         }        
         
         $resultData = $this->tableGateway->selectWith($select);
-//         echo $select->getSqlString(); die();
         return $resultData;
     }
     

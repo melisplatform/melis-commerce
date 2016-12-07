@@ -94,7 +94,7 @@
 	    'tr_meliscommerce_categories_category_status' => 'Statut de la catégorie',
 
 	    // Form Action
-	    'tr_meliscommerce_categories_category_save' => 'Enregistrer catégorie',
+	    'tr_meliscommerce_categories_category_save' => 'Enregistrer la catégorie',
 	    'tr_meliscommerce_categories_catalog_save' => 'Enregistrer le catalogue',
 	    'tr_meliscommerce_categories_category_delete' => 'Supprimer la catégorie',
 	    'tr_meliscommerce_categories_catalog_delete' => 'Supprimer le catalogue',

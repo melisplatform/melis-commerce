@@ -12,7 +12,7 @@
 			<div class="widget widget-tabs widget-tabs-double widget-tabs-responsive margin-none border-none">
                 <div class="widget-head">
                 	<ul class="nav nav-tabs">
-                		<li class="active"><a href="#<?php echo $this->zoneconfig['conf']['id'] ?>" class="glyphicons list" data-toggle="tab" aria-expanded="true"><i></i> 
+                		<li class="active"><a href="#<?php echo $this->zoneconfig['conf']['id'] ?>" class="glyphicons <?php echo ($this->attributeValueId) ? 'pencil' : 'plus'?>" data-toggle="tab" aria-expanded="true"><i></i> 
                 		<?= $this->zoneconfig['conf']['name'] ?></a></li>
             		</ul>
         		</div>
@@ -40,8 +40,9 @@
                                 		     		<?php
                                             		$forms = $this->forms;                                		
                                             		for($c = 0; $c< count($this->langs); $c++):
-                                            		
-                                            		echo '<h4>'.$this->langs[$c]->elang_name.'</h4>';
+														$imageData = $this->langs[$c]->elang_flag;
+														$image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay"/>' : '<i class="fa fa-globe"></i>';
+                                            		echo '<h4>'.$image.' ' .$this->langs[$c]->elang_name.'</h4>';
                                             		echo $this->form()->openTag($forms[$c]);
                                             		echo $this->melisFieldCollection($forms[$c]);
                                             		echo $this->form()->closeTag();
@@ -52,8 +53,6 @@
                                           	</div>                                		
                                     	</div>
                                 	</div>
-                                	<br>
-                                	<br>
                                     <?= $this->datePickerInit;?>
                                  	<style>
                                     .datepicker{z-index:1151 !important;}

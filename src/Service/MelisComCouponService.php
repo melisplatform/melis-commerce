@@ -239,47 +239,69 @@ class MelisComCouponService extends MelisCoreGeneralService
                         $dateValid = true;
                     }
                 }
-                elseif (is_null($coupon->coup_date_valid_start)&& !is_null($coupon->coup_date_valid_end))
+                elseif (is_null($validStart)&& !is_null($validEnd))
                 {
                     if ($validEnd >= $currentDate)
                     {
                         $dateValid = true;
                     }
                 }
-                elseif (!is_null($coupon->coup_date_valid_start)&& !is_null($coupon->coup_date_valid_end))
+                elseif (!is_null($validStart)&& !is_null($validEnd))
                 {
                     if ($validStart <= $currentDate && $validEnd >= $currentDate)
                     {
                         $dateValid = true;
                     }
                 }
+                else
+                {
+                    // Else date are empty
+                    $dateValid = true;
+                }
                 
                 if ($dateValid)
                 {
-                    // Checking if coupon still available base on number of used
-                    if ($coupon->coup_current_use_number < $coupon->coup_max_use_number)
+                    // Check coupon if already use by the clientId
+                    $melisEcomCouponOrderTable = $this->getServiceLocator()->get('MelisEcomCouponOrderTable');
+                    $clientOrderCoupon = $melisEcomCouponOrderTable->checkUsedClientCoupon($coupon->coup_id, $arrayParameters['clientId'])->current();
+                    
+                    if (empty($clientOrderCoupon))
                     {
-                        // Check coupon if already assign to clientId
-                        $couponClientTable = $this->getServiceLocator()->get('MelisEcomCouponClientTable');
-                        $clientCoupon = $couponClientTable->checkCouponClientExist($coupon->coup_id, $arrayParameters['clientId'])->current();
-                        
-                        if (empty($clientCoupon))
+                        //check coupon type if assigned type
+                        if ($coupon->coup_type == '1')
                         {
-                            // Result success
-                            $results['success'] = true;
-                            // Assign coupon data as result
-                            $results['coupon'] = $coupon;
+                            // Checking if Client is assigned to this couponId
+                            $melisEcomCouponClientTable = $this->getServiceLocator()->get('MelisEcomCouponClientTable');
+                            $couponClient = $melisEcomCouponClientTable->checkCouponClientExist($coupon->coup_id, $arrayParameters['clientId'])->current();
+                            
+                            if (empty($couponClient))
+                            {
+                                // Coupon is not assigned to the selected client
+                                $results['error'] = 'MELIS_COMMERCE_COUPON_CLIENT_NOT_ASSIGN';
+                            }
                         }
-                        else
+                        
+                        if (empty($results['error']))
                         {
-                            // Client has already used the coupon code
-                            $results['error'] = 'MELIS_COMMERCE_COUPON_CLIENT_ALREADY_USED';
+                            // Checking if coupon still available base on number of used
+                            if ($coupon->coup_current_use_number < $coupon->coup_max_use_number)
+                            {
+                                // Result success
+                                $results['success'] = true;
+                                // Assign coupon data as result
+                                $results['coupon'] = $coupon;
+                            }
+                            else
+                            {
+                                // Number of coupon used had reached the Limit
+                                $results['error'] = 'MELIS_COMMERCE_COUPON_REACHED_LIMIT';
+                            }
                         }
                     }
                     else
                     {
-                        // Number of coupon used had reach the Limit use
-                        $results['error'] = 'MELIS_COMMERCE_COUPON_REACHED_LIMIT';
+                        // Client has already used the coupon code
+                        $results['error'] = 'MELIS_COMMERCE_COUPON_CLIENT_ALREADY_USED';
                     }
                 }
                 else 
@@ -324,7 +346,7 @@ class MelisComCouponService extends MelisCoreGeneralService
      * 
      * @return Array
      */
-    public function useCoupon($code, $clientId)
+    public function useCoupon($code, $clientId, $orderId)
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -348,14 +370,14 @@ class MelisComCouponService extends MelisCoreGeneralService
             
             $results['couponId'] = $couponTable->save($data, $coupon->coup_id);
             
-            $couponClientTable = $this->getServiceLocator()->get('MelisEcomCouponClientTable');
+            $melisEcomCouponOrderTable = $this->getServiceLocator()->get('MelisEcomCouponOrderTable');
             
             $data = array(
-                'ccli_coupon_id' => $coupon->coup_id,
-                'ccli_client_id' => $arrayParameters['clientId']
+                'cord_coupon_id' => $coupon->coup_id,
+                'cord_order_id' => $arrayParameters['orderId']
             );
             
-            $couponClientTable->save($data);
+            $melisEcomCouponOrderTable->save($data);
         }
         
         // Adding results to parameters for events treatment if needed

@@ -1,0 +1,108 @@
+<?php
+	$name = '';
+	$id = '';
+	if (!empty($this->zoneconfig['conf']['name']))
+		$name = $this->zoneconfig['conf']['name'];
+	if (!empty($this->zoneconfig['conf']['id']))
+		$id = ' id="' . $this->zoneconfig['conf']['id'] . '"';
+	$data_melisKey = $this->melisKey;
+?>
+<div class="modal-content">
+	<div class="modal-body padding-none">
+		<div class="wizard">
+			<div class="widget widget-tabs widget-tabs-double widget-tabs-responsive margin-none border-none">
+                <div class="widget-head">
+                	<ul class="nav nav-tabs">
+                		<li class="active"><a href="#<?php echo $id ?>" class="glyphicons more_items" data-toggle="tab" aria-expanded="true"><i></i> <?php echo $this->translate('tr_meliscommerce_duplication_Duplicate_product') ?></a></li>
+            		</ul>
+        		</div>
+        		<div class="widget-body innerAll inner-2x">
+        			<div class="tab-content">
+        				<div class="tab-pane active" <?php echo $id ?>>
+                            <div class="row">
+                            	<div class="col-md-12">
+                                    <p class="duplication-note"><?php echo $this->translate('tr_meliscommerce_duplication_product_note')?></p>
+                                    <table class="duplication-table">
+                                    	<tr>
+                                    		<td>
+                                    			<label class="duplicate-table-label"><?php echo $this->translate('tr_meliscommerce_duplication_Duplicate_images')?></label>
+                                    		</td>
+                                    		<td>
+                                        		<div class="make-switch modalDuplicateOptions" data-label-icon="fa fa-arrows-h" data-on-label="<?php echo $this->translate('tr_meliscommerce_duplication_common_yes')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_duplication_common_no')?>">
+                                                    <input type="checkbox" id="duplicate_images" checked>
+                                                </div>
+                                    		</td>
+                                    	</tr>
+                                    	<tr>
+                                    		<td>
+                                    			<label class="duplicate-table-label"><?php echo $this->translate('tr_meliscommerce_duplication_Duplicate_documents')?></label>
+                                    		</td>
+                                    		<td>
+                                    			<div class="make-switch modalDuplicateOptions" data-label-icon="fa fa-arrows-h" data-on-label="<?php echo $this->translate('tr_meliscommerce_duplication_common_yes')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_duplication_common_no')?>">
+                                                    <input type="checkbox" id="duplicate_documents" checked>
+                                                </div>
+                                    		</td>
+                                    	</tr>
+                                    	<tr>
+                                    		<td>
+                                    			<label class="duplicate-table-label"><?php echo $this->translate('tr_meliscommerce_duplication_Put_online')?></label>
+                                    		</td>
+                                    		<td>
+                                        		<div class="make-switch modalDuplicateOptions" data-label-icon="fa fa-arrows-h" data-on-label="<?php echo $this->translate('tr_meliscommerce_duplication_common_yes')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_duplication_common_no')?>">
+                                                    <input type="checkbox" id="put_online">
+                                                </div>
+                                    		</td>
+                                    	</tr>
+                                    	<?php if($this->prdVariants->count()):?>
+                                        	<tr>
+                                        		<td></td>
+                                        		<td style="padding-top: 18px;">
+                                            		<label class="duplicate-table-label"><?php echo $this->translate('tr_meliscommerce_duplication_Var_sku')?></label>
+                                        		</td>
+                                        		<td align="center">
+                                        			<i class="fa fa-star fa-lg" aria-hidden="true" title="<?php echo $this->translate('tr_meliscommerce_duplication_Main_variant')?>"></i>
+                                        		</td>
+                                        	</tr>
+                                    	<?php endif;?>
+                                    	<?php foreach ($this->prdVariants As $key => $val):?>
+                                        	<tr>
+                                        		<td>
+                                        			<label class="duplicate-table-label" id="<?php echo $val->var_id.'_var_sku_label'?>"><?php echo $this->translate('tr_meliscommerce_duplication_Var_sku').' ('.$val->var_sku.')' ?></label>
+                                        		</td>
+                                        		<td>
+                                            		<?php 
+                                                        $form = clone($this->meliscommerce_duplications_sku_form);
+                                                        $form->prepare();
+                                                        $form->get('var_sku')->setLabel('');
+                                                        $form->get('var_id')->setValue($val->var_id);
+                                                        echo $this->form()->openTag($form);
+                                                        echo $this->melisFieldCollection($form);
+                                                        echo $this->form()->closeTag();
+                                                    ?>
+                                        		</td>
+                                        		<td class="main-variant-radio" align="center">
+                                        			<?php if($val->var_main_variant):?>
+                                        			<i class="fa fa-dot-circle-o fa-lg text-success" data-variantid="<?php echo $val->var_id?>"></i>
+                                        			<?php else:?>
+                                        			<i class="fa fa-circle-o fa-lg" data-variantid="<?php echo $val->var_id?>"></i>
+                                        			<?php endif;?>
+                                        		</td>
+                                        	</tr>
+                                    	<?php endforeach;?>
+                                    </table>
+                                 	<div align="right">
+                                 		<button data-dismiss="modal" class="btn btn-danger pull-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_duplication_common_close')?></button>
+                                 		<button class="btn btn-success" id="melisComStartDuplicateProduct" data-productid="<?php echo $this->productId?>"><i class="fa fa-clone"></i>  <?php echo $this->translate('tr_meliscommerce_duplication_common_duplicate') ?></button>
+                                 	</div>
+                            	</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+	$('.modalDuplicateOptions').bootstrapSwitch();
+</script>

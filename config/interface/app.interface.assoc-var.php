@@ -8,7 +8,9 @@ return array(
                 'rightsDisplay' => 'none',                
             ),
             'ressources' => array(
-                'js' => array(),
+                'js' => array(
+                    '/MelisCommerce/js/tools/ecomAssocVar.js',
+                ),
                 'css' => array(),
             ),
             'datas' => array(),

@@ -351,7 +351,14 @@ class MelisComProductController extends AbstractActionController
         $productId = (int) $this->params()->fromQuery('productId', '');
 
         $langTable = $this->getServiceLocator()->get('MelisEcomLangTable');
-        $langData = $langTable->fetchAll()->toArray();
+        $langData = $langTable->langOrderByName();
+        $recLangData = array();
+        foreach($langData as $data) {
+            if($data->elang_status) {
+                $recLangData[] = $data;
+            }
+        }
+
 
         $currentLangName = 'English';
         $locale = 'en_EN';
@@ -371,7 +378,7 @@ class MelisComProductController extends AbstractActionController
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
-        $view->langData = $langData;
+        $view->langData = $recLangData;
         $view->currentLangName = $currentLangName;
         $view->currentLangLocale = $locale;
         return $view;

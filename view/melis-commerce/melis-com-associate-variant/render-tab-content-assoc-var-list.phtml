@@ -1,6 +1,52 @@
-<pre>
-    <?php
-    print_r($this->data);
+<?php
+$id = '';
+if (!empty($this->zoneconfig['conf']['id']))
+    $id = ' id="'. $this->prefixId . '_' .$this->zoneconfig['conf']['id'] . '"';
+$data_melisKey = $this->melisKey;
+?>
 
-    ?>
-</pre>
+<div <?= $id; ?> data-melisKey="<?= $data_melisKey; ?>">
+    <div class="spacing-x2">
+
+        <?php
+        /*
+         * This functions prepares the TABLE element in HTML. ID and class associative array attribute will be placed in table like
+         * <table id="tableToolProspect" class="table table-bordered table-condensed table-striped table-primary table-vertical-center checkboxs js-table-sortable">
+         */
+        $this->melisGenericTable()->setTable(array(
+            'id' => 'tableAssocVariantList1_'.$this->prefixId,
+            'class' => 'tableAssocVariantList1 table table-striped table-primary dt-responsive nowrap',
+            'cellspacing' => '0',
+            'width' => '100%'
+        ));
+        /**
+         * This process retrieves the value inside the View Model that is being generated from app.tools.php `columns` attribute
+         *  @reference please see app.tools.php
+         */
+
+        $columns = array();
+        $columnStyle = array();
+
+        foreach($this->tableColumns as $colName => $columnText)
+        {
+            $columns[] = $columnText['text'];
+        }
+
+        // this process inserts all the array columns into the table.
+        // the 'center' value indicates where your column texts are positioned.
+        $this->melisGenericTable()->setColumns($columns);
+
+        echo $this->melisGenericTable()->renderTable();
+        ?>
+        <!-- // END TABLE -->
+
+
+        <script type="text/javascript">
+            // this script cannot be separated to this file since all table configuration and initialization are done here
+            // render table to DataTable plugin
+            $(document).ready(function() {
+                <?php echo$this->getToolDataTableConfig; ?>
+            });
+        </script>
+    </div>
+</div>

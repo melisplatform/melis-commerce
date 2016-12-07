@@ -76,19 +76,58 @@ window.populateAttribList = function(data) {
 }
 
 
-window.initProductTextTinyMce = function() {
-	$(".notifTinyMcePreloaInfo").fadeIn("slow");
-	$.getScript('/MelisCommerce/assets/tinyMCE/tinymce_init.js', function() {
-        reInitProductTextTypeSelect();
-	});
+window.initProductTextTinyMce = function(productId) {
+	if($("#"+productId+"_id_meliscommerce_products_page textarea.product-text-mce[data-display='true']").length){
+		// Show Alert message for Initializing TinyMCE
+		$("#" + productId + "_id_meliscommerce_products_page .notifTinyMcePreloaInfo").fadeIn("slow");
+	
+		// Remove first some specific attributes so we can initialize tinyMCE
+		// successfully, since tinyMCE doesn't accept any extra attributes while initializing
+		$("#" + productId + "_id_meliscommerce_products_page textarea[data-display='true']").removeAttr("name");
+		$("#" + productId + "_id_meliscommerce_products_page textarea.product-text-mce[data-display='true']").removeAttr("style");
+		$("#" + productId + "_id_meliscommerce_products_page textarea[data-display='true']").removeAttr("id");
+	
+		// Custom TinyMCE option/configuration
+		var option = {
+			mode : "none",
+			height : "400px",
+			init_instance_callback  : 'productTextTinyMCECallback',
+			plugins : [
+				'advlist autolink lists link image charmap print preview anchor',
+				'searchreplace visualblocks code fullscreen',
+				'insertdatetime media table contextmenu paste template',
+				'textcolor',
+			],
+			toolbar : 'undo redo | styleselect | bold italic | link image |  alignleft aligncenter alignright alignjustify | forecolor backcolor | code',
+		}
+		
+		//Initialize TinyMCE editor
+		melisTinyMCE.createTinyMCE("tool", "#"+productId+"_id_meliscommerce_products_page textarea.product-text-mce[data-display='true']", option);
+		
+		// Re-init Product Text Type selection
+		reInitProductTextTypeSelect(productId);
+	}
 }
+
+window.productTextTinyMCECallback = function(editor){
+	// instead of doing a callback on tinyMCE, we put it here so it would not cause any error on initialization
+	$("#"+editor.id).attr("name", "ptxt_field_long");
+	$("#"+editor.id).parents("div.form-group").attr("data-tinymce", "true");
+	
+	var productId = $("#"+editor.id).data("productid");
+	// hide again the extra textarea that are not supposed to be exposed
+	$("#" + productId + "_id_meliscommerce_products_page textarea[data-display='false']").css("display", "none");
+	// Removing Alert message for Initializing TinyMCE
+	$("#" + productId + "_id_meliscommerce_products_page .notifTinyMcePreloaInfo").fadeOut("slow");
+}
+
 window.allLoaded = function() {
 	melisCommerce.enableAllTabs();
 }
-window.reInitProductTextTypeSelect = function() {
+window.reInitProductTextTypeSelect = function(productId) {
     // Remove items that are already existing in the product text
     var productTexts = [];
-    var formTextForms = $("#" + activeTabId + " .product-text-forms > .custom-field-type");
+    var formTextForms = $("#" + productId + "_id_meliscommerce_products_page .product-text-forms > .custom-field-type");
     $.each(formTextForms, function(i, v){
         $.each($(v).find("input#ptt_id"), function(x, y) {
             productTexts.push($(y).val());
@@ -102,8 +141,6 @@ window.reInitProductTextTypeSelect = function() {
 $(document).ready(function() {
 
 	var body = $("body");
-
-
 
 	$('body').on("click",".productTextForm .deleteTextInput", function(){
 		var text = $(this).parent().attr("data-text-identifier");
@@ -150,6 +187,7 @@ $(document).ready(function() {
 	});
 	
 	body.on("click", "#addProdTextType", function() {
+		var productId = $(this).data("productid");
 		var dataString = $("form#productTextTypeForm").serialize();
 		melisCoreTool.pending("#addProdTextType");
 		$.ajax({
@@ -164,7 +202,7 @@ $(document).ready(function() {
 				melisHelper.zoneReload(melisCommerce.getCurrentProductId()+"_id_meliscommerce_products_page_content_tab_product_text_modal_form", "meliscommerce_products_page_content_tab_product_text_modal_form",  {productId : melisCommerce.getCurrentProductId()});
 				melisHelper.zoneReload(melisCommerce.getCurrentProductId()+"_id_meliscommerce_products_page_content_tab_product_text_modal_form_product_type_text", "meliscommerce_products_page_content_tab_product_text_modal_form_product_type_text",  {productId : melisCommerce.getCurrentProductId()});
 				setTimeout(function() {
-					reInitProductTextTypeSelect();
+					reInitProductTextTypeSelect(productId);
 				}, 1000);
 			}
 			else {
@@ -180,9 +218,10 @@ $(document).ready(function() {
 	});
 	
 	body.on('click', '.btnAddText', function(){
-		var textSelect = $("#" + activeTabId + " .btnAddText").parent().find("select#ptxt_type")
+		var productId = $(this).data("productid");
+		var textSelect = $("#" + productId + "_id_meliscommerce_products_page .btnAddText").parent().find("select#ptxt_type")
 		typeId = textSelect.val();
-		var typeText = textSelect = $("#" + activeTabId + " .btnAddText").parent().find("select#ptxt_type option:selected").text();
+		var typeText = $("#" + productId + "_id_meliscommerce_products_page .btnAddText").parent().find("select#ptxt_type option:selected").text();
 		melisCoreTool.pending(this);
 		$.ajax({
 			type: "GET",
@@ -190,19 +229,18 @@ $(document).ready(function() {
 			dataType : "json",
 			encode		: true
 		}).success(function(data) {
-			var formTextForms = $("#" + activeTabId + " .product-text-forms > .custom-field-type");
+			var formTextForms = $("#" + productId + "_id_meliscommerce_products_page .product-text-forms > .custom-field-type");
 			$.each(formTextForms, function(i, v){
 				var langId =  $(v).data("lang-id");
-				var totalLangLength = $("#" + activeTabId + " .product-text-tab li#languageList").length;
-				if($("#" + activeTabId + " .productTextForm a[data-text='"+typeText+"']").length < totalLangLength) {
+				var totalLangLength = $("#" + productId + "_id_meliscommerce_products_page .product-text-tab li#languageList").length;
+				if($("#" + productId + "_id_meliscommerce_products_page .productTextForm a[data-text='"+typeText+"']").length < totalLangLength) {
 					$(v).find(".custom-field-type-area").append(data.content).data("text-lang-id", langId);
 					$(v).find("form[name='productTextForm']").attr("data-text-lang-id", langId);
 					$(v).find("form[name='productTextForm'] input#ptxt_lang_id").val(langId);
-					initProductTextTinyMce();
+					initProductTextTinyMce(productId);
 					$("div[data-modalname='genericProductTextModal']").modal('hide');
 					$("div[data-class='addTextFieldNotif']").html("").attr("class", "");
-				}
-				else {
+				}else{
 					melisCoreTool.alertDanger("div[data-class='addTextFieldNotif']", "", translations.tr_meliscommerce_product_text_add_exists);
 				}
 			}); 

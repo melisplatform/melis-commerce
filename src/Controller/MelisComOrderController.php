@@ -715,7 +715,7 @@ class MelisComOrderController extends AbstractActionController
                 $role = 'Admin';
                 $name = $user->usr_lastname.' '.$user->usr_firstname;
                 $email = $user->usr_email;
-                $image = 'data:image/jpeg;base64,'. base64_encode($user->usr_image);                
+                $image = ($user->usr_image) ? 'data:image/jpeg;base64,'. base64_encode($user->usr_image) : $image;                
             }
             $message = array(
                 'day' => date("d" ,strtotime($orderMessage->omsg_date_creation)),

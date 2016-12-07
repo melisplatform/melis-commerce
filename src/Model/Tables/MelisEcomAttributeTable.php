@@ -42,7 +42,6 @@ class MelisEcomAttributeTable extends MelisEcomGenericTable
         
         if (!is_null($status))
         {
-            echo 'hey';
             $select->where->equalTo('melis_ecom_attribute.attr_status ='.$status);
         }
         

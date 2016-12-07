@@ -84,6 +84,9 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_seo_Url_redirect',
+                                        'label_options' => array(
+                                            'disable_html_escape' => true,
+                                        ),
                                     ),
                                     'attributes' => array(
                                         'id' => 'eseo_url_redirect',
@@ -96,6 +99,9 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_seo_Url_301',
+                                        'label_options' => array(
+                                            'disable_html_escape' => true,
+                                        ),
                                     ),
                                     'attributes' => array(
                                         'id' => 'eseo_url_301',

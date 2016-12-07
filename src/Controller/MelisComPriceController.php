@@ -212,7 +212,7 @@ class MelisComPriceController extends AbstractActionController
                     	</li>';
         $ctyFormat =    '<li class="">
                     		<a class="clearfix" data-toggle="tab" href="#%s" data-country="%s" aria-expanded="true"><span>%s</span>
-            
+                                <span class="pull-right">%s</span>
                     		</a>
                     	</li>';
     
@@ -220,7 +220,10 @@ class MelisComPriceController extends AbstractActionController
         $countries = $countryTable->getCountries();
         $ctyData[] = $ctyGeneral;
         foreach ($countries as $country){
-            $ctyData[] = sprintf($ctyFormat, $hrefCountry.str_replace(' ', '', $country->ctry_name), $country->ctry_name, $country->ctry_name);
+
+            $imageData = $country->ctry_flag;
+            $image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay pull-right"/>' : '<i class="fa fa-globe"></i>';
+            $ctyData[] = sprintf($ctyFormat, $hrefCountry.str_replace(' ', '', $country->ctry_name), $country->ctry_name, $country->ctry_name, $image);
         }
         $view = new ViewModel();
         $view->countries = $ctyData;

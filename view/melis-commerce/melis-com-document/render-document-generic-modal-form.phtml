@@ -7,7 +7,7 @@
 		$id = $this->zoneconfig['conf']['id'];
 	$data_melisKey = $this->melisKey;
 	$file = '';
-	$icon = $this->docType == 'image' ? 'picture' : 'file';
+	$icon = $this->docId ? 'pencil' : 'plus';
 ?>
 <div class="modal-content" id="<?= $id; ?>" data-melisKey="<?= $data_melisKey; ?>">
 	<div class="modal-body padding-none">

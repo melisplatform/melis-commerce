@@ -15,6 +15,7 @@ class MelisEcomVariantTable extends MelisEcomGenericTable
 {
     protected $tableGateway;
     protected $idField;
+    protected $_currentVarDataCount;
     
     public function __construct(TableGateway $tableGateway)
     {
@@ -114,6 +115,102 @@ class MelisEcomVariantTable extends MelisEcomGenericTable
         $resultSet = $this->tableGateway->selectwith($select);
         
         return $resultSet;
+    }
+
+    public function getAssocVariantsList($searchValue = null, $start = 0, $limit = null, $column = null, $order = 'ASC')
+    {
+        $select = $this->tableGateway->getSql()->select();
+        $select->quantifier('DISTINCT');
+
+        $select->join('melis_ecom_assoc_variant', 'melis_ecom_assoc_variant.avar_one = melis_ecom_variant.var_id',
+            array('avar_id_1' => 'avar_id', 'avar_one_1' => 'avar_one', 'avar_two_1' => 'avar_two', 'avar_type_id_1' => 'avar_type_id'), $select::JOIN_LEFT)
+            ->join(array('assoc_variant_two' => 'melis_ecom_assoc_variant'), 'assoc_variant_two.avar_two = melis_ecom_variant.var_id',
+                array('avar_id_2' => 'avar_id', 'avar_one_2' => 'avar_one', 'avar_two_2' => 'avar_two', 'avar_type_id_2' => 'avar_type_id'), $select::JOIN_LEFT);
+
+
+        if(!is_null($searchValue)) {
+            $search = '%'.$searchValue.'%';
+            $select->where->like('melis_ecom_variant.var_id', $search)
+                ->or->like('melis_ecom_variant.var_sku', $search);
+        }
+
+        if (!is_null($column)) {
+            $select->order($column . ' ' . $order);
+        }
+
+        $getCount = $this->tableGateway->selectWith($select);
+        $this->setVarCurrentDataCount((int) $getCount->count());
+
+        if(!is_null($limit)) {
+            $select->limit( (int) $limit);
+        }
+
+        if(!is_null($start)) {
+            $select->offset( (int) $start);
+        }
+
+        $select->group('melis_ecom_variant.var_id');
+
+
+        //echo $this->getRawSql($select);
+
+        $resultData = $this->tableGateway->selectWith($select);
+
+        return $resultData;
+    }
+
+    public function getAssocVariantsListById($varId = null, $searchValue = null, $start = 0, $limit = null, $column = null, $order = 'ASC')
+    {
+        $select = $this->tableGateway->getSql()->select();
+        $select->quantifier('DISTINCT');
+
+        $select->join('melis_ecom_assoc_variant', 'melis_ecom_assoc_variant.avar_one = melis_ecom_variant.var_id',
+                array('avar_id_1' => 'avar_id', 'avar_one_1' => 'avar_one', 'avar_two_1' => 'avar_two', 'avar_type_id_1' => 'avar_type_id'), $select::JOIN_LEFT)
+            ->join(array('assoc_variant_two' => 'melis_ecom_assoc_variant'), 'assoc_variant_two.avar_two = melis_ecom_variant.var_id',
+                array('avar_id_2' => 'avar_id', 'avar_one_2' => 'avar_one', 'avar_two_2' => 'avar_two', 'avar_type_id_2' => 'avar_type_id'), $select::JOIN_LEFT);
+
+
+        $select->where
+                ->nest->equalTo('melis_ecom_assoc_variant.avar_one', (int) $varId)->or->equalTo('melis_ecom_assoc_variant.avar_two', (int) $varId)->unnest
+                ->or
+                ->nest->equalTo('assoc_variant_two.avar_one', (int) $varId)->or->equalTo('assoc_variant_two.avar_two', (int) $varId)->unnest;
+
+        if(!is_null($searchValue)) {
+            $search = '%'.$searchValue.'%';
+            $select->where->and->nest->like('melis_ecom_variant.var_id', $search)->or->like('melis_ecom_variant.var_sku', $search)->unnest;
+        }
+
+        if (!is_null($column)) {
+            $select->order($column . ' ' . $order);
+        }
+
+        $getCount = $this->tableGateway->selectWith($select);
+        $this->setVarCurrentDataCount((int) $getCount->count());
+
+        if(!is_null($limit)) {
+            $select->limit( (int) $limit);
+        }
+
+        if(!is_null($start)) {
+            $select->offset( (int) $start);
+        }
+
+        $select->group('melis_ecom_variant.var_id');
+
+
+        $resultData = $this->tableGateway->selectWith($select);
+
+        return $resultData;
+    }
+
+    public function getVarTotalFiltered()
+    {
+        return $this->_currentVarDataCount;
+    }
+
+    protected function setVarCurrentDataCount($dataCount)
+    {
+        $this->_currentVarDataCount = $dataCount;
     }
    
 }

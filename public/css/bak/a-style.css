@@ -151,11 +151,6 @@ a {
 .fb-right .btn-default:last-child{
 	margin-right: 0;
 }
-.add-product{
-	margin-left: 15px;
-	border-radius: 3px;
-}
-
 /* table products */
 .product-add-variant th {
 	padding: 5px 10px;

@@ -1,6 +1,6 @@
 var pUniqueId = [];
   
-$(document).ready(function(){
+$(function(){
 	var $body = $('body');
 	
 	/* #### FIX DataTable issue in Tab #### */
@@ -10,10 +10,16 @@ $(document).ready(function(){
 	$body.on("init.dt", function(e, settings) {
 		$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
 	});	
-	$body.on("mouseenter click", '.tab-pane.active', function(e, settings) {		
+	$body.on("mouseenter", '.tab-pane.active', function(e, settings) {		
+		$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
+	});
+	$body.on("click", '.tab-pane.active', function(e, settings) {		
 		$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
 	});
 	
+});
+$(window).on("resize",function(){
+	$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
 });
 
 var melisCommerce = (function(window) {

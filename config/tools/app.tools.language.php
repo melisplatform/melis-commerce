@@ -42,6 +42,12 @@ return array(
                                 'sortable' => true,
                             
                             ),
+                            'elang_flag' => array(
+                                'text' => 'tr_meliscommerce_country_ctry_flag',
+                                'css' => array('width' => '10%', 'padding-right' => '0'),
+                                'sortable' => true,
+
+                            ),
                             'elang_status' => array(
                                 'text' => 'tr_meliscommerce_product_list_col_status',
                                 'css' => array('width' => '10%', 'padding-right' => '0'),
@@ -56,7 +62,7 @@ return array(
                             ),
                             'elang_name' => array(
                                 'text' => 'tr_meliscommerce_language_elang_name',
-                                'css' => array('width' => '50%', 'padding-right' => '0'),
+                                'css' => array('width' => '40%', 'padding-right' => '0'),
                                 'sortable' => true,
                             
                             ),
@@ -100,6 +106,23 @@ return array(
                                 ),
                                 array(
                                     'spec' => array(
+                                        'name' => 'elang_flag',
+                                        'type' => 'file',
+                                        'options' => array(
+                                            //'label' => 'tr_meliscommerce_country_ctry_flag',
+                                        ),
+                                        'attributes' => array(
+                                            'id' => 'id_elang_flag',
+                                            'value' => '',
+                                            'placeholder' => 'tr_meliscommerce_country_ctry_flag_choose',
+                                            'data-buttonText' => 'Select Flag',
+                                            'class' => 'filestyle',
+                                            'onchange' => 'imagePreview("#imgLangFlag", this);',
+                                        ),
+                                    ),
+                                ),
+                                array(
+                                    'spec' => array(
                                         'name' => 'elang_name',
                                         'type' => 'MelisText',
                                         'options' => array(
@@ -111,6 +134,7 @@ return array(
                                         ),
                                     ),
                                 ),
+
                                 array(
                                     'spec' => array(
                                         'name' => 'tmp_elang_name',

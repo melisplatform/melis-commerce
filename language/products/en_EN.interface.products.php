@@ -56,7 +56,7 @@ return array(
     'tr_meliscommerce_product_tooltip_col_image' => 'IMAGE',
     'tr_meliscommerce_product_tooltip_col_status' => 'STATUS',
     'tr_meliscommerce_product_tooltip_col_attributes' => 'ATTRIBUTES',
-    'tr_meliscommerce_product_tooltip_col_sku' => 'PRODUCT SKU',
+    'tr_meliscommerce_product_tooltip_col_sku' => 'SKU',
     'tr_meliscommerce_product_tooltip_col_country' => 'COUNTRY',
     'tr_meliscommerce_product_tooltip_col_price' => 'PRICE',
     'tr_meliscommerce_product_tooltip_col_stocks' => 'STOCKS',

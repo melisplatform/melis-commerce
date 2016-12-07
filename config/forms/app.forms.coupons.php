@@ -199,13 +199,21 @@ return array(
                             ),
                             'coup_max_use_number' => array(
                                 'name'     => 'coup_max_use_number',
-                                'required' => false,
+                                'required' => true,
                                 'validators' => array(
                                     array(
                                         'name'    => '\Zend\I18n\Validator\IsInt',
                                         'options' => array(
                                             'messages'=> array(
                                                 \Zend\I18n\Validator\IsInt::NOT_INT   => 'tr_meliscommerce_coupon_input_invalid_digit',
+                                            ),
+                                        ),
+                                    ),
+                                    array(
+                                        'name' => 'NotEmpty',
+                                        'options' => array(
+                                            'messages' => array(
+                                                \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_coupon_input_empty',
                                             ),
                                         ),
                                     ),
