@@ -88,3 +88,8 @@ div.melis-pdc *.btn {
 .deleteTextInput {
 	color:#323232;
 }
+
+.table.dataTable tbody td.dtActionCls div {
+	float: right;
+	width: 125px;
+}

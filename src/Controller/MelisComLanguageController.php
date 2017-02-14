@@ -227,6 +227,8 @@ class MelisComLanguageController extends AbstractActionController
     {
         $success = 0;
         $errors  = array();
+        $langId = null;
+        $logTypeCode = '';
         $textTitle = 'tr_meliscommerce_language_add';
         $textMessage = 'tr_meliscommerce_language_add_failed';
         $form = $this->getTool()->getForm('meliscommerce_language_form');
@@ -248,8 +250,12 @@ class MelisComLanguageController extends AbstractActionController
             $postData = get_object_vars($this->getRequest()->getPost());
             $this->getEventManager()->trigger('meliscommerce_language_save_start', $this, $postData);
             if($postData['elang_id']) {
+                $langId = $postData['elang_id'];
                 $textTitle = 'tr_meliscommerce_language_edit';
                 $textMessage = 'tr_meliscommerce_language_edit_failed';
+                $logTypeCode = 'ECOM_LANGUAGE_UPDATE';
+            }else{
+                $logTypeCode = 'ECOM_LANGUAGE_ADD';
             }
             
             $isLocaleExists = $langTable->getEntryByField('elang_locale', $postData['elang_locale'])->current();
@@ -307,6 +313,7 @@ class MelisComLanguageController extends AbstractActionController
                     else {
                         $savedLangId = $langTable->save($data);
                         if($savedLangId) {
+                            $langId = $savedLangId;
                             $success = 1;
                             $textMessage = 'tr_meliscommerce_language_add_success';
                         }
@@ -335,12 +342,13 @@ class MelisComLanguageController extends AbstractActionController
         $response = array(
             'success' => $success,
             'errors' => $errors,
-            'textMessage' => $this->getTool()->getTranslation($textMessage),
-            'textTitle' => $this->getTool()->getTranslation($textTitle),
+            'textMessage' => $textMessage,
+            'textTitle' => $textTitle,
             'langId' => $savedLangId,
         );
         
-        $this->getEventManager()->trigger('meliscommerce_language_save_end', $this, $response);
+        $this->getEventManager()->trigger('meliscommerce_language_save_end', 
+            $this, array_merge($response, array('typeCode' => $logTypeCode, 'itemId' => $langId)));
         
         return new JsonModel($response);
     }
@@ -372,11 +380,13 @@ class MelisComLanguageController extends AbstractActionController
         }
         
         $response = array(
-            'textTitle' => $this->getTool()->getTranslation('tr_meliscommerce_language_delete'),
-            'textMessage' => $this->getTool()->getTranslation($textMessage),
+            'textTitle' => 'tr_meliscommerce_language_delete',
+            'textMessage' => $textMessage,
             'success' => $success,
         );
-        $this->getEventManager()->trigger('meliscommerce_language_delete_end', $this, array_merge($response, array('langId' => $id)));
+        
+        $this->getEventManager()->trigger('meliscommerce_language_delete_end', 
+            $this, array_merge($response, array('typeCode' => 'ECOM_LANGUAGE_DELETE', 'itemId' => $id, 'langId' => $id)));
         
         return new JsonModel($response);
     }

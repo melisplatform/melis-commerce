@@ -117,21 +117,21 @@ class MelisEcomVariantTable extends MelisEcomGenericTable
         return $resultSet;
     }
 
-    public function getAssocVariantsList($searchValue = null, $start = 0, $limit = null, $column = null, $order = 'ASC')
+    public function getAssocVariantsList($variantId = null, $searchValue = null, $start = 0, $limit = null, $column = null, $order = 'ASC')
     {
         $select = $this->tableGateway->getSql()->select();
         $select->quantifier('DISTINCT');
-
-        $select->join('melis_ecom_assoc_variant', 'melis_ecom_assoc_variant.avar_one = melis_ecom_variant.var_id',
-            array('avar_id_1' => 'avar_id', 'avar_one_1' => 'avar_one', 'avar_two_1' => 'avar_two', 'avar_type_id_1' => 'avar_type_id'), $select::JOIN_LEFT)
-            ->join(array('assoc_variant_two' => 'melis_ecom_assoc_variant'), 'assoc_variant_two.avar_two = melis_ecom_variant.var_id',
-                array('avar_id_2' => 'avar_id', 'avar_one_2' => 'avar_one', 'avar_two_2' => 'avar_two', 'avar_type_id_2' => 'avar_type_id'), $select::JOIN_LEFT);
+        
+        $select->join('melis_ecom_product_text', 'melis_ecom_product_text.ptxt_prd_id = melis_ecom_variant.var_prd_id', array(), $select::JOIN_LEFT)
+                ->join('melis_ecom_product', 'melis_ecom_product.prd_id = melis_ecom_variant.var_prd_id', array(), $select::JOIN_LEFT);
 
 
         if(!is_null($searchValue)) {
             $search = '%'.$searchValue.'%';
             $select->where->like('melis_ecom_variant.var_id', $search)
-                ->or->like('melis_ecom_variant.var_sku', $search);
+                ->or->like('melis_ecom_variant.var_sku', $search)
+                ->or->like('melis_ecom_product_text.ptxt_field_short', $search)
+                ->or->like('melis_ecom_product.prd_reference', $search);
         }
 
         if (!is_null($column)) {
@@ -167,7 +167,9 @@ class MelisEcomVariantTable extends MelisEcomGenericTable
         $select->join('melis_ecom_assoc_variant', 'melis_ecom_assoc_variant.avar_one = melis_ecom_variant.var_id',
                 array('avar_id_1' => 'avar_id', 'avar_one_1' => 'avar_one', 'avar_two_1' => 'avar_two', 'avar_type_id_1' => 'avar_type_id'), $select::JOIN_LEFT)
             ->join(array('assoc_variant_two' => 'melis_ecom_assoc_variant'), 'assoc_variant_two.avar_two = melis_ecom_variant.var_id',
-                array('avar_id_2' => 'avar_id', 'avar_one_2' => 'avar_one', 'avar_two_2' => 'avar_two', 'avar_type_id_2' => 'avar_type_id'), $select::JOIN_LEFT);
+                array('avar_id_2' => 'avar_id', 'avar_one_2' => 'avar_one', 'avar_two_2' => 'avar_two', 'avar_type_id_2' => 'avar_type_id'), $select::JOIN_LEFT)
+            ->join('melis_ecom_product_text', 'melis_ecom_product_text.ptxt_prd_id = melis_ecom_variant.var_prd_id', array(), $select::JOIN_LEFT)
+            ->join('melis_ecom_product', 'melis_ecom_product.prd_id = melis_ecom_variant.var_prd_id', array(), $select::JOIN_LEFT);
 
 
         $select->where
@@ -177,7 +179,10 @@ class MelisEcomVariantTable extends MelisEcomGenericTable
 
         if(!is_null($searchValue)) {
             $search = '%'.$searchValue.'%';
-            $select->where->and->nest->like('melis_ecom_variant.var_id', $search)->or->like('melis_ecom_variant.var_sku', $search)->unnest;
+            $select->where->and->nest->like('melis_ecom_variant.var_id', $search)->or->like('melis_ecom_variant.var_sku', $search)
+                                    ->or->like('melis_ecom_product_text.ptxt_field_short', $search)
+                                    ->or->like('melis_ecom_product.prd_reference', $search)
+                                    ->unnest;
         }
 
         if (!is_null($column)) {
@@ -197,7 +202,7 @@ class MelisEcomVariantTable extends MelisEcomGenericTable
 
         $select->group('melis_ecom_variant.var_id');
 
-
+// 
         $resultData = $this->tableGateway->selectWith($select);
 
         return $resultData;

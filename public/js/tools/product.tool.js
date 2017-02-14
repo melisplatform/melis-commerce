@@ -3,48 +3,92 @@ window.initProductSwitch = function() {
 	allLoaded();
 }
  
-window.initTreeCat = function(){
+window.initProductCategoryList = function(productId, langLocale = melisLangId){
 	
-	$("body").on("click", "#productCategory", function(evt){
-		$("#categoryTreeView ul li div").removeClass("jstree-wholerow-clicked");
-		evt.stopPropagation();
-		evt.preventDefault();
-	});
-
-	
-	$("#"+melisCommerce.getCurrentProductId()+"_productCategory")
-	    .jstree({
-		"types" : {
-			"default" : {
-				"icon" : "fa fa-circle text-success",
-			}
-		},
-	    "core" : {
-	    	//"multiple": true,
-	        "check_callback": true,
-	        "animation" : 500,
-	        "themes": {
-                "name": "proton",
-                "responsive": false
-            },
-            "dblclick_toggle" : false,
-	        "data" : {
-	        	"cache" : true,
-	            "url" : "/melis/MelisCommerce/MelisComCategoryList/getCategoryTreeView?langlocale="+$("#" + melisCommerce.getCurrentProductId() + "_productCategory").data('langlocale'),
-	        },
-	    },
-        "checkbox": {
-            three_state: false,
-            whole_node : false,
-            tie_selection : false,
-        },
-	    "plugins": [
-            "search",
-	        "changed", // Plugins for Change and Click Event
-	        "types", // Plugins for Customizing the Nodes
-	        "checkbox",
-        ]
-    });
+	if($("#"+productId+"_productCategoryList").length){
+		
+		var target = $("#"+productId+"_productCategoryList");
+		
+		if(langLocale !== melisLangId){
+			target.data('langlocale', langLocale);
+		}
+		
+		target.jstree('destroy');
+		
+		var dataString = new Array;
+		
+		dataString.push({
+			name : 'productId',
+			value : productId
+		});
+		
+		dataString.push({
+			name : 'idAndNameOnly',
+			value : true
+		});
+		
+		dataString.push({
+			name : 'langlocale',
+			value : target.data('langlocale')
+		});
+		
+		var categoriesChecked = new Array;
+		$("div#"+productId+"_product_category_area > span.prod-cat-values").each(function(){
+			categoriesChecked.push($(this).data('pcat-cat-id'))
+		});
+		
+		if(categoriesChecked.length){
+			dataString.push({
+				name : 'categoriesChecked',
+				value : categoriesChecked
+			});
+		}
+		
+		dataString = $.param(dataString);
+		
+		target
+		.on('loading.jstree', function (e, data) {
+			melisCommerce.pendingZoneStart("productCategorySearchZone");
+		})
+		.on('loaded.jstree', function (e, data) {
+			melisCommerce.pendingZoneDone("productCategorySearchZone");
+		})
+		.jstree({
+			"types" : {
+				"default" : {
+					"icon" : "fa fa-circle text-success",
+				},
+				"selected": {
+	                "select_node": false
+	            }
+			},
+		    "core" : {
+		    	//"multiple": true,
+		        "check_callback": true,
+		        "animation" : 500,
+		        "themes": {
+		            "name": "proton",
+		            "responsive": false
+		        },
+		        "dblclick_toggle" : false,
+		        "data" : {
+		        	"cache" : true,
+		            "url" : "/melis/MelisCommerce/MelisComCategoryList/getCategoryTreeView?"+dataString,
+		        },
+		    },
+		    "checkbox": {
+		        three_state: false,
+		        whole_node : false,
+		        tie_selection : false,
+		    },
+		    "plugins": [
+		        "search",
+		        "changed", // Plugins for Change and Click Event
+		        "types", // Plugins for Customizing the Nodes
+		        "checkbox",
+		    ]
+		});
+	}
 }
 
 window.initAttribute = function(data) {
@@ -56,20 +100,6 @@ window.initAttribute = function(data) {
 }
 
 window.populateAttribList = function(data) {
-	// $.get('/melis/MelisCommerce/MelisComProduct/getAttributesExceptAttributesOnProductId?productId=' + melisCommerce.getCurrentProductId(), function(data) {
-	// 	var attributeLists = $('div#'+activeTabId+' select.dropdown-input'+melisCommerce.getCurrentProductId());
-	// 	if ($(attributeLists).data('select2')) {
-	// 		attributeLists.select2('data', null);
-	// 	}
-    //
-	// 	attributeLists.select2({
-	// 		data: data,
-	// 		placeholder: translations.tr_meliscommerce_products_main_tab_attributes_content_label,
-	// 	});
-	// 	$('div#'+activeTabId+' div.loadAttrCont').hide();
-	// 	attributeLists.fadeIn();
-    //
-	// });
 	if($("#"+activeTabId).length === 1) {
 		melisCommerce.enableAllTabs();
 	}
@@ -77,46 +107,44 @@ window.populateAttribList = function(data) {
 
 
 window.initProductTextTinyMce = function(productId) {
-	if($("#"+productId+"_id_meliscommerce_products_page textarea.product-text-mce[data-display='true']").length){
-		// Show Alert message for Initializing TinyMCE
-		$("#" + productId + "_id_meliscommerce_products_page .notifTinyMcePreloaInfo").fadeIn("slow");
+	var targetEditor = "#"+productId+"_id_meliscommerce_products_page textarea.product-text-mce[data-display='true']:not([id])";
 	
-		// Remove first some specific attributes so we can initialize tinyMCE
-		// successfully, since tinyMCE doesn't accept any extra attributes while initializing
-		$("#" + productId + "_id_meliscommerce_products_page textarea[data-display='true']").removeAttr("name");
-		$("#" + productId + "_id_meliscommerce_products_page textarea.product-text-mce[data-display='true']").removeAttr("style");
-		$("#" + productId + "_id_meliscommerce_products_page textarea[data-display='true']").removeAttr("id");
-	
-		// Custom TinyMCE option/configuration
-		var option = {
-			mode : "none",
-			height : "400px",
-			init_instance_callback  : 'productTextTinyMCECallback',
-			plugins : [
-				'advlist autolink lists link image charmap print preview anchor',
-				'searchreplace visualblocks code fullscreen',
-				'insertdatetime media table contextmenu paste template',
-				'textcolor',
-			],
-			toolbar : 'undo redo | styleselect | bold italic | link image |  alignleft aligncenter alignright alignjustify | forecolor backcolor | code',
-		}
-		
-		//Initialize TinyMCE editor
-		melisTinyMCE.createTinyMCE("tool", "#"+productId+"_id_meliscommerce_products_page textarea.product-text-mce[data-display='true']", option);
+	if($(targetEditor).length){
+		$(targetEditor).each(function(index, value){
+			var form = $(this);
+			
+			var random = Math.random().toString(36).substr(2, 9);
+			var targetSelector = random+"_"+productId+"_"+value.name;
+			
+			form.attr("id", targetSelector);
+			
+			var option = {
+				mode : "none",
+				height : "400px",
+				init_instance_callback  : productTextTinyMCECallback(form, productId),
+				plugins : [
+					'advlist autolink lists link image charmap print preview anchor',
+					'searchreplace visualblocks code fullscreen',
+					'insertdatetime media table contextmenu paste template',
+					'textcolor',
+				],
+				toolbar : 'undo redo | styleselect | bold italic | link image |  alignleft aligncenter alignright alignjustify | forecolor backcolor | code',
+			}
+			
+			//Initialize TinyMCE editor
+			melisTinyMCE.createTinyMCE("tool", "#"+targetSelector, option);
+		});
 		
 		// Re-init Product Text Type selection
 		reInitProductTextTypeSelect(productId);
+	}else{
+		$("#" + productId + "_id_meliscommerce_products_page .notifTinyMcePreloaInfo").fadeOut("slow");
 	}
 }
 
-window.productTextTinyMCECallback = function(editor){
-	// instead of doing a callback on tinyMCE, we put it here so it would not cause any error on initialization
-	$("#"+editor.id).attr("name", "ptxt_field_long");
+window.productTextTinyMCECallback = function(editor, productId){
 	$("#"+editor.id).parents("div.form-group").attr("data-tinymce", "true");
 	
-	var productId = $("#"+editor.id).data("productid");
-	// hide again the extra textarea that are not supposed to be exposed
-	$("#" + productId + "_id_meliscommerce_products_page textarea[data-display='false']").css("display", "none");
 	// Removing Alert message for Initializing TinyMCE
 	$("#" + productId + "_id_meliscommerce_products_page .notifTinyMcePreloaInfo").fadeOut("slow");
 }
@@ -141,6 +169,75 @@ window.reInitProductTextTypeSelect = function(productId) {
 $(document).ready(function() {
 
 	var body = $("body");
+	
+	$body.on("click", ".productCategoryList", function(){
+		var btn = $(this);
+		var productId = btn.data("productid");
+		
+		btn.attr("disabled", true);
+		
+		zoneId = 'id_meliscommerce_products_main_tab_categories_modal';
+		melisKey = 'meliscommerce_products_main_tab_categories_modal';
+		modalUrl = '/melis/MelisCommerce/MelisComProduct/renderProductModal';
+		// requesitng to create modal and display after
+		melisHelper.createModal(zoneId, melisKey, false, {productId: productId}, modalUrl, function(){
+			btn.attr("disabled", false);
+		});
+	});
+	
+	body.on("click", ".addProductCategory", function() {
+		var btn = $(this);
+		var productId = btn.data("productid");
+		
+		var checkedCategories = new Array;
+		$.each($("#"+productId+"_productCategoryList").jstree().get_checked(true), function(){
+			checkedCategories.push(parseInt(this.id));
+		});
+		
+		var uncheckedCategories = new Array;
+		var addedCategories = new Array;
+		$("#"+productId+"_product_category_area span[data-pcat-cat-id]").each(function(){
+			var prdCatId = parseInt($(this).data("pcat-cat-id"));
+			if(checkedCategories.indexOf(prdCatId) !== -1){
+				addedCategories.push(prdCatId);
+			}else{
+				uncheckedCategories.push(prdCatId);
+				$("span.prod-cat-values[data-pcat-cat-id='"+prdCatId+"']").remove();
+			}
+		});
+		
+		$.each($("#"+productId+"_productCategoryList").jstree().get_checked(true), function(){	
+			var catId = parseInt(this.id);
+			if(uncheckedCategories.indexOf(catId) === -1){
+				if(addedCategories.indexOf(catId) === -1){
+					var catText = this.text.split(" - ")[1];
+					$.get( "melis/MelisCommerce/MelisComProduct/getProductCategoryLastOrderNum", {catId : catId, prodId : productId}, function( data ) {
+						$("#"+productId+"_product_category_area").append(
+								'<span class="prod-cat-values" data-pcat-id="'+data.id+'" data-pcat-cat-id="'+catId+'" data-pcat-order="'+data.order+'">' +
+								'<span class="ab-attr">' + catText +'<i class="prdDelCat fa fa-times"></i></span>' +
+								'</span>');
+					});
+				}
+			}
+		});
+		
+		if(checkedCategories.length){
+			$("p#"+productId+"_no_categories").hide();
+		}else{
+			$("p#"+productId+"_no_categories").show();
+		}
+		
+		$("#id_meliscommerce_products_main_tab_categories_modal_container").modal("hide");
+	}); 
+	
+	body.on("click", ".product-category-tree-view-lang li a", function() {
+		var langText = $(this).text();
+		var langLocale = $(this).data('locale');
+		var productId = $('.productCategoryLangDropdown').data('productid');
+		
+		$('.productCategoryLangDropdown span.filter-key').text(langText);
+		initProductCategoryList(productId, langLocale);
+	});
 
 	$('body').on("click",".productTextForm .deleteTextInput", function(){
 		var text = $(this).parent().attr("data-text-identifier");
@@ -174,8 +271,9 @@ $(document).ready(function() {
 	});
 	
 	body.on("click", ".btnProductListEdit", function() {
-		var productId   = $(this).parent().parent().attr('id');
-		var productName = $(this).parent().parent().find("td span").data("productname");
+		var productId   = $(this).parents("tr").attr('id');
+		var productName = $(this).parents("tr").find("td span").data("productname");
+		
 		melisCommerce.disableAllTabs();
 		melisCommerce.openProductPage(productId, productName);
 		melisCommerce.setUniqueId(productId);
@@ -206,7 +304,7 @@ $(document).ready(function() {
 				}, 1000);
 			}
 			else {
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
 				melisCoreTool.highlightErrors(data.success, data.errors, "productTextTypeForm");
 			}
 			melisCore.flashMessenger();
@@ -230,6 +328,10 @@ $(document).ready(function() {
 			encode		: true
 		}).success(function(data) {
 			var formTextForms = $("#" + productId + "_id_meliscommerce_products_page .product-text-forms > .custom-field-type");
+			if(formTextForms.length){
+				$("#" + productId + "_id_meliscommerce_products_page .notifTinyMcePreloaInfo").fadeIn("slow");
+			}
+			
 			$.each(formTextForms, function(i, v){
 				var langId =  $(v).data("lang-id");
 				var totalLangLength = $("#" + productId + "_id_meliscommerce_products_page .product-text-tab li#languageList").length;
@@ -324,12 +426,12 @@ $(document).ready(function() {
 			if(data.success) {
 				melisCommerce.closeCurrentProductPage();
 				melisCommerce.openProductPage(data.chunk.productId, data.chunk.prodName);
-				melisHelper.melisOkNotification( data.textTitle, data.textMessage, '#72af46' );
+				melisHelper.melisOkNotification( data.textTitle, data.textMessage );
 				melisHelper.zoneReload("id_meliscommerce_product_list_content", "meliscommerce_product_list_content");
 				melisCommerce.setUniqueId(data.chunk.productId);
 			}
 			else {
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
 				melisCoreTool.highlightErrors(data.success, data.errors, activeTabId + " form");
 			}
 			
@@ -366,7 +468,6 @@ $(document).ready(function() {
 						tmpOptionItems[ctr] = {id : $(v).val(), value : $(v).html()};
 						ctr++;
 					}
-
 				});
 				selTextEl.remove();
 				selAttrValCont.html("").attr("title", "");
@@ -428,31 +529,41 @@ $(document).ready(function() {
 	});
 
 	body.on("keyup", "#productCategorySearch", function(e){ 
+		var prdId = $(this).data("productid");
 		var searchString = $(this).val();
-		$("#"+melisCommerce.getCurrentProductId()+"_productCategory").jstree('search', searchString);
+		$("#"+prdId+"_productCategoryList").jstree('search', searchString);
 	});
 	
-	body.on("click", ".btnProdSaveCategory", function() {
-        var checkedIds = []; 
-        var textProd = "";
-        checkedIds = $("#"+melisCommerce.getCurrentProductId()+"_productCategory").jstree().get_checked(true); 
-        var prodCat = [];
-        $.each(checkedIds, function(i, v){
-        	textProd = v.text.split(" - ");
-        	if($("#"+melisCommerce.getCurrentProductId()+"_product_category_area").find("span[data-pcat-cat-id='"+v.id+"']").length === 0) {
-            	$("#"+melisCommerce.getCurrentProductId()+"_product_category_area").append(
-        			'<span class="prod-cat-values" data-pcat-cat-id="'+v.id+'">' +
-                        '<span class="ab-attr">' + textProd[1] +'<i class="prdDelCat fa fa-times"></i></span>' +
-                    '</span>'
-                );
-            	$.get( "melis/MelisCommerce/MelisComProduct/getProductCategoryLastOrderNum", {catId : v.id, prodId : melisCommerce.getCurrentProductId()}, function( data ) {
-            		$("#"+melisCommerce.getCurrentProductId()+"_product_category_area").find("span[data-pcat-cat-id='"+v.id+"']").attr("data-pcat-order", data.order); 
-    			});
-        		$("#" + melisCommerce.getCurrentProductId()  + "_deleted_product_category_area span[data-pcat-cat-id='"+v.id+"']").remove(); 
-        		$("p#" + melisCommerce.getCurrentProductId()+"_no_categories").hide();
-        	}
-        });
-	}); 
+	// Clear Input Search
+	body.on("click", "#clearPrdCatSearchInputBtn", function(e){ 
+		var prdId = $(this).data("productid");
+		categoryOpeningItemFlag = false;
+		var prdCatTree = $("#"+prdId+"_productCategoryList");
+		$("#productCategorySearch").val("");
+		prdCatTree.jstree('search', '');
+	});
+	
+	// Toggle Buttons for Category Tree View
+	body.on("click", "#expandPrdCatTreeViewBtn", function(e){ 
+		var prdId = $(this).data("productid");
+		var prdCatTree = $("#"+prdId+"_productCategoryList");
+		prdCatTree.jstree("open_all");
+	});
+	
+	body.on("click", "#collapsePrdCatTreeViewBtn", function(e){ 
+		var prdId = $(this).data("productid");
+		var prdCatTree = $("#"+prdId+"_productCategoryList");
+		prdCatTree.jstree("close_all");
+	});
+	
+	// Refrech Category Tree View
+	body.on("click", "#refreshPrdCatTreeView", function(e){ 
+		var prdId = $(this).data("productid");
+		var prdCatTree = $("#"+prdId+"_productCategoryList");
+		prdCatTree.jstree(true).refresh("forget_state", true);
+		prdCatTree.jstree('search', '');
+		$("#productCategorySearch").val("");
+	});
 	
 	body.on("click", ".btnProductListDelete", function() {
 		
@@ -475,7 +586,7 @@ $(document).ready(function() {
 	 				$("#" + activeTabId + " .melis-refreshTable").trigger("click");
 	 				melisHelper.tabClose(productId+ "_id_meliscommerce_products_page");
 	 				melisCore.flashMessenger();
-	 				melisHelper.melisOkNotification( data.textTitle, data.textMessage, '#72af46' );
+	 				melisHelper.melisOkNotification( data.textTitle, data.textMessage );
 	 			}
     	     });
 		});
@@ -485,16 +596,6 @@ $(document).ready(function() {
 	body.on("click", ".toggleformCreateTextTypeContainer", function() {
 		$("div.formCreateTextTypeContainer").slideToggle();
 	});
-	
-	body.on("click", ".product-category-tree-view-lang li a", function() {
-		var langText = $(this).text();
-		var langLocale = $(this).data('locale');
-		$('.productCategoryLangDropdown span.filter-key').text(langText);
-		$("#" + melisCommerce.getCurrentProductId() + "_productCategory").data('langlocale',langLocale);
-		$("#" + melisCommerce.getCurrentProductId() + "_productCategory").jstree('destroy');
-		initTreeCat();
-	});
-	
 	
     $("body").on("mouseenter mouseout", ".toolTipHoverEvent", function(e) {
 		var productId = $(this).data("productid");

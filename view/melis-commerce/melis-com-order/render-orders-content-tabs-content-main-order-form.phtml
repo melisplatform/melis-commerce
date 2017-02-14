@@ -17,12 +17,13 @@
 ?>
 <script>
 $('#<?= $this->orderId?>_id_meliscommerce_orders_content_tabs_content_main_details_sub_content .mainOrderStatus').each(function(){
-	if($(this).data('statusid') == <?= $this->currStatus?>){
-		var button = $(this).find('span');
+	var button = $(this).find('span');
+	if($(this).data('statusid') == <?= $this->currStatus?>){		
 		var statusColor = button.css('border-top-color');
 		button.css('color', '#fff');
-		button.css('background', statusColor);
+		button.css('background', statusColor);		
 	}
+	button.css('margin-bottom', '5px');
 });
 
 $('form[name=order] select[name=ord_status]').ready(function () {

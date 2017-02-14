@@ -72,7 +72,7 @@ return array(
     'tr_meliscommerce_products_text_tab_ptxt_short_field' => 'Titre du produit ici',
 
     // Product Attribute
-    'tr_meliscommerce_products_page_attributes_refresh_list' => 'Rafraîchir la liste',
+    'tr_meliscommerce_products_page_attributes_refresh_list' => 'Actualiser',
     'tr_meliscommerce_products_page_attributes_remove_success' => 'Attribut supprimé avec succès',
     'tr_meliscommerce_products_page_attributes_remove_fail' => 'Impossible de supprimer l\'attribut',
     'tr_meliscommerce_products_page_attributes_note' => '***Note: Si la liste déroulante ne fonctionne pas, essayez d\'écrire quelque chose et appuyez sur "← backspace" sur votre clavier.',

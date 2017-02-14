@@ -28,10 +28,8 @@ class MelisEcomVariantStockTable extends MelisEcomGenericTable
         $select->columns(array('*'));
         $clause = array();
         
-        $select->join('melis_ecom_country','melis_ecom_country.ctry_id = melis_ecom_variant_stock.stock_country_id', array('*'), $select::JOIN_LEFT);
-        
         if(!is_null($countryId))
-            $clause['melis_ecom_country.ctry_id'] = (int) $countryId;        
+            $clause['stock_country_id'] = (int) $countryId;        
         
         $clause['melis_ecom_variant_stock.stock_var_id'] = (int) $variantId;
         
@@ -40,7 +38,7 @@ class MelisEcomVariantStockTable extends MelisEcomGenericTable
         }
         
         $resultSet = $this->tableGateway->selectwith($select);
-        
+
         return $resultSet;
     }
 }

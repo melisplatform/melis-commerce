@@ -10,8 +10,8 @@ $(function() {
 
 
     $("body").on("click", ".btnAssocVAssign", function() {
-        var varId = $(this).parent().parent().attr('id');
-        var assignToVarId = activeTabId.split("_")[0];
+        var varId = $(this).closest('tr').attr('id');
+        var assignToVarId = $(this).closest('.container-level-a').attr('id').replace(/[^0-9]/g,'');
         melisCoreTool.pending(".btnAssocVarAssign");
         melisCommerce.disableAllTabs();
         $.ajax({
@@ -25,11 +25,10 @@ $(function() {
             if(data.success) {
                 melisHelper.zoneReload(assignToVarId+"_id_meliscommerce_avar_tab_assoc_vars_list", "meliscommerce_avar_tab_assoc_vars_list", {variantId : assignToVarId});
                 melisHelper.zoneReload(assignToVarId+"_id_meliscommerce_avar_tab_var_lists", "meliscommerce_avar_tab_var_lists", {variantId : assignToVarId});
-
-                melisHelper.melisOkNotification(data.textTitle, data.textMessage, '#72af46');
+                melisHelper.melisOkNotification(data.textTitle, data.textMessage );
             }
             else {
-                melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+                melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors );
             }
             melisCoreTool.done(".btnAssocVarAssign");
             melisCommerce.enableAllTabs();
@@ -40,8 +39,8 @@ $(function() {
     });
 
     $("body").on("click", ".removeAssoc", function() {
-        var varId = $(this).parent().parent().attr('id');
-        var tabVariantId = activeTabId.split("_")[0];
+        var varId = $(this).closest('tr').attr('id');
+        var tabVariantId = $(this).closest('.container-level-a').attr('id').replace(/[^0-9]/g,'');
         melisCoreTool.pending(".removeAssociation");
         melisCommerce.disableAllTabs();
         $.ajax({
@@ -55,12 +54,12 @@ $(function() {
             if(data.success) {
                 melisHelper.zoneReload(tabVariantId+"_id_meliscommerce_avar_tab_assoc_vars_list", "meliscommerce_avar_tab_assoc_vars_list", {variantId : tabVariantId});
                 melisHelper.zoneReload(tabVariantId+"_id_meliscommerce_avar_tab_var_lists", "meliscommerce_avar_tab_var_lists", {variantId : tabVariantId});
-
-                melisHelper.melisOkNotification(data.textTitle, data.textMessage, '#72af46');
+                melisHelper.melisOkNotification(data.textTitle, data.textMessage);
             }
             else {
-                melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+                melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
             }
+            
             melisCoreTool.done(".removeAssociation");
             melisCore.flashMessenger();
             melisCommerce.enableAllTabs();
@@ -71,12 +70,12 @@ $(function() {
 
 
     $("body").on("click", ".refreshVarList", function() {
-        var varId = activeTabId.split("_")[0];
+        var varId = $(this).closest('.container-level-a').attr('id').replace(/[^0-9]/g,'');
         melisHelper.zoneReload(varId+"_id_meliscommerce_avar_tab_var_lists", "meliscommerce_avar_tab_var_lists", {variantId : varId});
     });
 
     $("body").on("click", ".refreshAssocVarList", function() {
-        var varId = activeTabId.split("_")[0];
+        var varId =$(this).closest('.container-level-a').attr('id').replace(/[^0-9]/g,'');
         melisHelper.zoneReload(varId+"_id_meliscommerce_avar_tab_assoc_vars_list", "meliscommerce_avar_tab_assoc_vars_list", {variantId : varId});
     });
 
@@ -84,7 +83,7 @@ $(function() {
         var productId = $(this).parents("tr").children().eq(2).find("span").data().prodId;
         var sku = $(this).parents("tr").children().eq(3).find("span").data().sku;
         melisCommerce.disableAllTabs();
-        var variantId = $(this).parent().parent().attr('id');
+        var variantId = $(this).closest('tr').attr('id');
         melisHelper.tabOpen(sku, 'icon-tag-2', variantId+'_id_meliscommerce_variants_page', 'meliscommerce_variants_page', { variantId : variantId, productId : productId});
         melisCommerce.enableAllTabs();
     });
@@ -93,7 +92,7 @@ $(function() {
         var productId = $(this).parents("tr").children().eq(3).find("span").data().prodId;
         var sku = $(this).parents("tr").children().eq(4).find("span").data().sku;
         melisCommerce.disableAllTabs();
-        var variantId = $(this).parent().parent().attr('id');
+        var variantId = $(this).closest('tr').attr('id');
         melisHelper.tabOpen(sku, 'icon-tag-2', variantId+'_id_meliscommerce_variants_page', 'meliscommerce_variants_page', { variantId : variantId, productId : productId});
         melisCommerce.enableAllTabs();
     });

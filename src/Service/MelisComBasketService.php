@@ -582,8 +582,9 @@ class MelisComBasketService extends MelisComGeneralService
                     'bper_date_added' => $val['bano_date_added']
                 );
                 
-                //Checking if Variant Id exist on Persistent basket
-                $persistentData = $melisEcomBasketPersistentTable->getEntryByField('bper_variant_id', $val['bano_variant_id'])->current();
+                // checking if the variantId already exists in the basket
+                $persistent = $melisEcomBasketPersistentTable->getbasketPersistentByClientIdAndVariantId($val['bano_variant_id'], $arrayParameters['clientId']);
+                $persistentData = $persistent->current();
                 if (!empty($persistentData))
                 {
                     // Add Quantity both baskets and Update Persistent

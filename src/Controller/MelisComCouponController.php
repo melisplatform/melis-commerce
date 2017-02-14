@@ -335,8 +335,8 @@ class MelisComCouponController extends AbstractActionController
         $couponForm = $factory->createForm($appConfigForm);
         if(isset($this->layout()->coupon)){
             $coupon = $this->layout()->coupon;
-            $coupon->coup_date_valid_start = $this->getTool()->dateFormatLocale($coupon->coup_date_valid_start);
-            $coupon->coup_date_valid_end = $this->getTool()->dateFormatLocale($coupon->coup_date_valid_end);
+            $coupon->coup_date_valid_start = (string) $coupon->coup_date_valid_start != '1990-01-01 00:00:00' ? $this->getTool()->dateFormatLocale($coupon->coup_date_valid_start) : null;
+            $coupon->coup_date_valid_end = (string) $coupon->coup_date_valid_end != '1990-01-01 00:00:00' ? $this->getTool()->dateFormatLocale($coupon->coup_date_valid_end) : null;
             $couponForm->setData((array)$coupon);
             if($coupon->coup_type){
                 $type = 'checked';
@@ -679,11 +679,12 @@ class MelisComCouponController extends AbstractActionController
         $this->getEventManager()->trigger('meliscommerce_coupon_client_management_start', $this, array());
         $couponSvc = $this->getServiceLocator()->get('MelisComCouponService');
         $couponTable = $this->getServiceLocator()->get('MelisEcomCouponClientTable');
+        
         if($this->getRequest()->isPost()){
             $postValues = get_object_vars($this->getRequest()->getPost());
-//              echo '<pre>'; print_r($postValues); echo '</pre>';die();
             if($postValues['method'] == 'add'){
                 unset($postValues['method']);
+                $couponId = $postValues['ccli_coupon_id'];
                 $check = $couponTable->checkCouponClientExist($postValues['ccli_coupon_id'], $postValues['ccli_client_id'])->current();
                 if(empty($check)){
                     $result = $couponSvc->saveCouponClient($postValues);
@@ -692,10 +693,12 @@ class MelisComCouponController extends AbstractActionController
                 }
             }            
         }
+        
         if($result){
             $success = 1;
             $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_coupon_save_success');
         }
+        
         $response = array(
             'success' => $success,
             'textTitle' => $textTitle,
@@ -703,7 +706,9 @@ class MelisComCouponController extends AbstractActionController
             'errors' => $errors,
             'chunk' => $data,
         );
-        $this->getEventManager()->trigger('meliscommerce_coupon_client_management_end', $this, $response);
+        
+        $this->getEventManager()->trigger('meliscommerce_coupon_client_management_end', 
+            $this, array_merge($response, array('typeCode' => 'ECOM_COUPON_ASSIGN', 'itemId' => $couponId)));
         return new JsonModel($response);
     }
     
@@ -721,6 +726,7 @@ class MelisComCouponController extends AbstractActionController
         $couponId = null;
         $exist = false;
         $result = false;
+        $logTypeCode = '';
         $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_coupon_save_fail');
         $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_coupon_page');        
         $couponSvc = $this->getServiceLocator()->get('MelisComCouponService');
@@ -739,6 +745,12 @@ class MelisComCouponController extends AbstractActionController
         
         if($this->getRequest()->isPost()){
             $postValues = get_object_vars($this->getRequest()->getPost()); 
+            
+            if (!empty($postValues['couponId'])){
+                $logTypeCode = 'ECOM_COUPON_UPDATE';
+            }else{
+                $logTypeCode = 'ECOM_COUPON_ADD';
+            }
             
             $generalForm->setData($postValues['coupon'][0]);
             if(!$generalForm->isValid()){
@@ -808,6 +820,7 @@ class MelisComCouponController extends AbstractActionController
             }
             
             if($result){
+                $couponId = $result;
                 $success = 1;
                 $coupon = $couponSvc->getCouponById($result)->getCoupon();
                 $data['couponId'] = $result;
@@ -823,27 +836,31 @@ class MelisComCouponController extends AbstractActionController
             'errors' => $errors,
             'chunk' => $data,
         );
-        $this->getEventManager()->trigger('meliscommerce_coupon_save_end', $this, $response);
+        
+        $this->getEventManager()->trigger('meliscommerce_coupon_save_end', 
+            $this, array_merge($response, array('typeCode' => $logTypeCode, 'itemId' => $couponId)));
+        
         return new JsonModel($response);
     }
     
     public function deleteAssignedCouponAction()
     {   
-        
         $response = array();
         $success = 0;
         $errors  = array();
         $data = array();
+        $couponId = null;
         $this->getEventManager()->trigger('meliscommerce_coupon_remove_from_client_start', $this, array());
-        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_coupon_delete_fail_remove');
-        $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_coupon_list_page_coupon');
+        $textMessage = 'tr_meliscommerce_coupon_delete_fail_remove';
+        $textTitle = 'tr_meliscommerce_coupon_list_page_coupon';
         $couponClientTable = $this->getServiceLocator()->get('MelisEcomCouponClientTable');
         
         if($this->getRequest()->isPost()){
             $postValues = get_object_vars($this->getRequest()->getPost());
-            if($couponClientTable->removeCouponFromClient($postValues['couponId'], $postValues['clientId'])){
+            $couponId = $postValues['couponId'];
+            if($couponClientTable->removeCouponFromClient($couponId, $postValues['clientId'])){
                 $success = 1;
-                $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_coupon_delete_success_remove');
+                $textMessage = 'tr_meliscommerce_coupon_delete_success_remove';
             }
         }
         
@@ -854,7 +871,10 @@ class MelisComCouponController extends AbstractActionController
             'errors' => $errors,
             'chunk' => $data,
         );
-        $this->getEventManager()->trigger('meliscommerce_coupon_remove_from_client_end', $this, $response);
+        
+        $this->getEventManager()->trigger('meliscommerce_coupon_remove_from_client_end', 
+            $this, array_merge($response, array('typeCode' => 'ECOM_COUPON_ASSIGN_REMOVE', 'itemId' => $couponId)));
+        
         return new JsonModel($response);
     }
     

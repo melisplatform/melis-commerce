@@ -49,8 +49,8 @@
 	    'tr_meliscommerce_attribute_value' => 'Valeur d\'attribut',
 	     
 	    // Form Validation Messages
-	    'tr_meliscommerce_attribute_save_failed' => 'Impossible de sauvagarder l\'attribut',
-	    'tr_meliscommerce_attribute_value_save_failed' => 'Impossible de sauvagarder la valeur de l\'attribut',
+	    'tr_meliscommerce_attribute_save_failed' => 'Impossible de sauvegarder l\'attribut',
+	    'tr_meliscommerce_attribute_value_save_failed' => 'Impossible de sauvegarder la valeur de l\'attribut',
 	    
 	    //flash message
 	    'tr_meliscommerce_attribute_save_success' => 'L\'attribut a été sauvegardé avec succès',

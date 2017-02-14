@@ -48,7 +48,7 @@
 	    
 	    //order basket list table
 	    'tr_meliscommerce_order_basket_list_sku' => 'SKU',
-	    'tr_meliscommerce_order_basket_list_qty' => 'QTY', // quantity abreviation
+	    'tr_meliscommerce_order_basket_list_qty' => 'QTE', // quantity abreviation
 	    'tr_meliscommerce_order_basket_list_tax' => 'Prix TTC',
 	    'tr_meliscommerce_order_basket_list_name' => 'Produit', // Name of product
 	    'tr_meliscommerce_order_basket_list_category' => 'Catégorie(s)',
@@ -75,4 +75,9 @@
 	    
 	    //services errors
 	    'tr_meliscommerce_order_save_order_failed' => 'Failed to update',
+	    
+	    'tr_meliscommerce_order_save_status_canceled_confirm' => 'Changer le statut en annulée annulera définitivement la commande, son statut ne pourra plus être modifié. Etes-vous sûre de vouloir annuler la commande ?',
+	    'tr_meliscommerce_order_common_label_yes' => 'Oui',
+	    'tr_meliscommerce_order_common_label_no' => 'Non',
+	    
 	);

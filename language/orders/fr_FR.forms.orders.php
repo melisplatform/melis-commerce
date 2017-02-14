@@ -1,7 +1,7 @@
 <?php
     return array(
         'tr_meliscommerce_orders_status' => 'Statut',
-        'tr_meliscommerce_orders_code' => 'Code de la commande',
+        'tr_meliscommerce_orders_code' => 'Référence de la commande',
         'tr_meliscommerce_orders_select' => 'Statut de la commande',
         'tr_meliscommerce_orders_tracking_code' => 'Numéro de suivi',
         'tr_meliscommerce_orders_tracking_details' => 'Détails de l\'expédition',

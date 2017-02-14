@@ -17,7 +17,7 @@ return array(
     'tr_meliscommerce_currency_symbol_long' => 'Symbole de la devise trop long, il doit être de moins de 5 caractères',
     
     'tr_meliscommerce_currency_form_add' => 'Ajouter une devise',
-    'tr_meliscommerce_currency_form_new' => 'Nouvelle Devise',
+    'tr_meliscommerce_currency_form_new' => 'Nouvelle devise',
     'tr_meliscommerce_currency_form_edit' => 'Editer la devise',
     
     'tr_meliscommerce_currency_form_add_success' => 'La nouvelle devise a été ajoutée avec succès',

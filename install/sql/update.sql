@@ -67,6 +67,7 @@ ALTER TABLE `melis_ecom_lang` ADD `elang_status` BOOLEAN NULL AFTER `elang_name`
 UPDATE `melisv2`.`melis_ecom_lang` SET `elang_status` = '1'
 
 ALTER TABLE `melis_ecom_currency` ADD `cur_default` BOOLEAN NULL DEFAULT FALSE COMMENT 'Default currency' AFTER `cur_id`;
+UPDATE `melisv2`.`melis_ecom_currency` SET `cur_default` = '1' WHERE `melis_ecom_currency`.`cur_id` = 1;
 
 UPDATE `melisv2`.`melis_ecom_order_status_trans` SET `ostt_status_name` = 'Non finalisée' WHERE `melis_ecom_order_status_trans`.`ostt_id` = 12;
 
@@ -75,3 +76,5 @@ ALTER TABLE `melis_ecom_country` CHANGE `ctry_flag` `ctry_flag` LONGTEXT CHARACT
 
 ALTER TABLE `melis_ecom_assoc_variant` CHANGE `avar_to` `avar_one` INT(11) NOT NULL, CHANGE `avar_from` `avar_two` INT(11) NOT NULL;
 ALTER TABLE `melis_ecom_lang` ADD `elang_flag` LONGTEXT NULL AFTER `elang_status`;
+
+ALTER TABLE `melis_ecom_order` ADD `ord_country_id` INT NOT NULL COMMENT 'Country where the checkout based' AFTER `ord_status`;

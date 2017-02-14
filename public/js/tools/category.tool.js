@@ -131,7 +131,7 @@ $(function(){
 			    }, 1000); 
 				
 				melisCore.flashMessenger();
-				melisHelper.melisOkNotification(data.textTitle, data.textMessage, '#72af46');
+				melisHelper.melisOkNotification(data.textTitle, data.textMessage);
 				
 				var catTree = $('#categoryTreeView').jstree(true);
 				// Get Current Url of the category Tree view
@@ -202,7 +202,7 @@ $(function(){
 	    		// Highlighting the node
 	    		$("#categoryTreeView #"+selectedNode+" div").first().addClass("jstree-wholerow-clicked");
 			}else{
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors );
 			}
 			
 			melisCore.flashMessenger();
@@ -378,7 +378,7 @@ $(function(){
  					alert( translations.tr_meliscore_error_message );
  				}
  				melisCore.flashMessenger();
-				melisHelper.melisOkNotification(data.textTitle, data.textMessage, '#72af46');
+				melisHelper.melisOkNotification(data.textTitle, data.textMessage);
  			}).fail(function(){
  				alert( translations.tr_meliscore_error_message );
  			});
@@ -387,9 +387,9 @@ $(function(){
 	
 	// Category Products View Button
 	$("body").on("click", ".categoryProductsView", function(){
-		var productId   = $(this).parents("tr").find(".product-id").text();
+		var productId   = $(this).closest("tr").data("productid");
 		//var productName = $(this).parents("tr").find(".toolTipHoverEvent").text();
-		var productName = $(this).parent().parent().find("td span").data("productname");
+		var productName = $(this).closest("tr").data("productname");
 		melisCommerce.openProductPage(productId, productName);
 		melisCommerce.setUniqueId(productId);
 	});
@@ -468,17 +468,6 @@ window.enableDisableAddCategoryBtn = function(action){
 	}
 }
 
-window.pendingZoneStart = function(zoneId){
-	$("#"+zoneId).append('<div id="loader" class="overlay-loader"><img class="loader-icon spinning-cog" src="/MelisCore/assets/images/cog12.svg" data-cog="cog12"></div>');
-}
-
-window.pendingZoneDone = function(zoneId){
-	$("#"+zoneId+" .loader-icon").removeClass("spinning-cog").addClass("shrinking-cog");
-	setTimeout(function() {
-		$("#"+zoneId+" #loader").remove();
-	},500);
-}
-
 window.initCategoryTreeView = function(){
 	
 	$("body").on("click", "#categoryTreeView", function(evt){
@@ -495,10 +484,10 @@ window.initCategoryTreeView = function(){
 			enableDisableAddCategoryBtn('disable');
 		})
 		.on('loading.jstree', function (e, data) {
-			pendingZoneStart("meliscommerce_categories_list_search_input");
+			melisCommerce.pendingZoneStart("meliscommerce_categories_list_search_input");
 		})
 		.on('loaded.jstree', function (e, data) {
-        	pendingZoneDone("meliscommerce_categories_list_search_input");
+			melisCommerce.pendingZoneDone("meliscommerce_categories_list_search_input");
 		})
 		.on('open_node.jstree', function (e, data) {
 			
@@ -580,11 +569,6 @@ window.initCategoryTreeView = function(){
 			});
 	    })
 	    .jstree({
-//		"types" : {
-//			"default" : {
-//				"icon" : "fa fa-circle text-success",
-//			}
-//		},
 		"contextmenu" : {
 		    "items" : function (node) {
 		        return {
@@ -679,9 +663,9 @@ window.initCategoryTreeView = function(){
 			        	            	}
 			        	            	
 			        	            	melisCore.flashMessenger();
-			        					melisHelper.melisOkNotification(data.textTitle, data.textMessage, '#72af46');
+			        					melisHelper.melisOkNotification(data.textTitle, data.textMessage);
 			        				}else{
-			        					melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+			        					melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
 			        				}
 			        			}).fail(function(){
 			        				alert( translations.tr_meliscore_error_message );
@@ -723,7 +707,6 @@ window.initCategoryTreeView = function(){
 	        "dnd", // Plugins for Drag and Drop
 	        "search", // Plugins for Search of the Node(s) of the Tree View
 	        "types", // Plugins for Customizing the Nodes
-	        //"wholerow", // Plugins for Node to be appear in block level makes selection easier
         ]
     });
 	
@@ -791,9 +774,7 @@ window.initCategoryProducts = function(data, tblSettings) {
 				alert( translations.tr_meliscore_error_message );
 			});
 		}
-		
 	});
-	
 }
 
 window.initCategoryProductsImgs = function(){

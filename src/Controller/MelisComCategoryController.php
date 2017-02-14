@@ -266,8 +266,10 @@ class MelisComCategoryController extends AbstractActionController
             $categoryData = $melisComCategoryService->getCategoryById($catId);
             $category = $categoryData->getCategory();
 
-            $validFrom = ($category->cat_date_valid_start) ? strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($category->cat_date_valid_start)) : null;
-            $validTo = ($category->cat_date_valid_end) ? strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($category->cat_date_valid_end)) : null;
+            $validFrom = ((string) $category->cat_date_valid_start != '0000-00-00 00:00:00') ?
+                strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($category->cat_date_valid_start)) : null;
+            $validTo = ((string) $category->cat_date_valid_end  != '0000-00-00 00:00:00') ?
+                strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($category->cat_date_valid_end)) : null;
 
             if (!is_null($validFrom))
             {
@@ -275,10 +277,11 @@ class MelisComCategoryController extends AbstractActionController
                 $validFrom = $validFrom[0];
             }
 
+
             if (!is_null($validTo))
             {
                 $validTo = explode(' ', $validTo);
-                $validTo = $validTo[0];
+                $validTo = (string) $validTo[0] == '01/01/1970' ? '' : $validTo[0];
             }
 
             $category->cat_date_valid_start = (!is_null($validFrom)) ? $validFrom : null;
@@ -441,12 +444,14 @@ class MelisComCategoryController extends AbstractActionController
         $request = $this->getRequest();
 
         // Default Values
+        $catId = null;
         $success = 0;
         $errors  = array();
         $textTitle = '';
         $textMessage = '';
         $cat_id = 0;
         $catParents = '';
+        $logTypeCode = '';
 
         if($request->isPost()) {
 
@@ -477,36 +482,40 @@ class MelisComCategoryController extends AbstractActionController
 
             $postValues = get_object_vars($request->getPost());
 
-            $catId = $postValues['cat_id'];
-            
             if ($postValues['cat_father_cat_id'] == '-1'){
                 $type = 'catalog';
             }else{
                 $type = 'category';
             }
             
-            $textTitle = $translator->translate('tr_meliscommerce_categories_'.$type.'_save');
-
+            $catId = $postValues['cat_id'];
+            if (!empty($postValues['cat_id'])){
+                $logTypeCode = 'ECOM_'.strtoupper($type).'_UPDATE';
+            }else{
+                $logTypeCode = 'ECOM_'.strtoupper($type).'_ADD';
+            }
+            
+            $textTitle = 'tr_meliscommerce_categories_'.$type.'_save';
+            
             if (empty($errors)){
                 $melisComCategoryService = $this->getServiceLocator()->get('MelisComCategoryService');
-                $results = $melisComCategoryService->saveCategory($catData, $catTransData, $catCountriesData, $categorySEO, $catId);
-
-                if (!is_null($results))
+                $catId = $melisComCategoryService->saveCategory($catData, $catTransData, $catCountriesData, $categorySEO, $catId);
+                
+                if (!is_null($catId))
                 {
-                    $cat_id = $results;
-                    $textMessage = $translator->translate('tr_meliscommerce_categories_err_'.$type.'_save_success');
+                    $cat_id = $catId;
+                    $textMessage = 'tr_meliscommerce_categories_err_'.$type.'_save_success';
                     $success = 1;
                 }
                 else
                 {
-                    $textMessage = $translator->translate('tr_meliscore_error_message');
+                    $textMessage = 'tr_meliscore_error_message';
                 }
-
             }else{
-                $textMessage = $translator->translate('tr_meliscommerce_categories_err_'.$type.'_save_unable');
+                $textMessage = 'tr_meliscommerce_categories_err_'.$type.'_save_unable';
             }
         }
-
+        
         $response = array(
             'success' => $success,
             'textTitle' => $textTitle,
@@ -515,9 +524,8 @@ class MelisComCategoryController extends AbstractActionController
             'cat_id' => $cat_id
         );
 
-        if ($success){
-            $this->getEventManager()->trigger('meliscommerce_category_save_end', $this, $response);
-        }
+        $this->getEventManager()->trigger('meliscommerce_category_save_end', 
+            $this, array_merge($response, array('typeCode' => $logTypeCode, 'itemId' => $catId)));
 
         return new JsonModel($response);
     }
@@ -639,35 +647,7 @@ class MelisComCategoryController extends AbstractActionController
                     }
                 }
             }
-
-//             if (!empty($validFrom))
-//             {
-//                 if ((bool)strtotime($validFrom))
-//                 {
-//                     if ($validFrom < date('Y/m/d'))
-//                     {
-//                         $errors['cat_date_valid_start'] = array(
-//                             'label' => $translator->translate('tr_meliscommerce_categories_category_valid_from'),
-//                             'highinvalidDate' => $translator->translate('tr_meliscommerce_categories_category_valid_from_must_equal_high_current_date')
-//                         );
-//                     }
-//                 }
-//             }
-
-//             if (!empty($validTo))
-//             {
-//                 if ((bool)strtotime($validTo))
-//                 {
-//                     if ( $validTo < date('Y/m/d'))
-//                     {
-//                         $errors['cat_date_valid_end'] = array(
-//                             'label' => $translator->translate('tr_meliscommerce_categories_category_valid_to'),
-//                             'highinvalidDate' => $translator->translate('tr_meliscommerce_categories_category_valid_to_must_equal_high_current_date')
-//                         );
-//                     }
-//                 }
-//             }
-
+            
             if (!empty($validFrom && $validTo))
             {
                 if ((bool)strtotime($validFrom) && (bool)strtotime($validTo))
@@ -903,10 +883,12 @@ class MelisComCategoryController extends AbstractActionController
 
         $request = $this->getRequest();
         // Default Values
+        $catId = null;
         $errors = array();
         $status  = 0;
         $textTitle = '';
         $textMessage = '';
+        $logTypeCode = '';
 
         if($request->isPost()) {
             $postValues = get_object_vars($request->getPost());
@@ -918,8 +900,10 @@ class MelisComCategoryController extends AbstractActionController
             }else{
                 $type = 'category';
             }
+            // Log Type Code
+            $logTypeCode = 'ECOM_'.strtoupper($type).'_DELETE';
             
-            $textTitle = $translator->translate('tr_meliscommerce_categories_'.$type.'_delete');
+            $textTitle = 'tr_meliscommerce_categories_'.$type.'_delete';
 
             // Getting Category Details
             $melisComCategoryService = $this->getServiceLocator()->get('MelisComCategoryService');
@@ -954,10 +938,10 @@ class MelisComCategoryController extends AbstractActionController
                 $melisEcomCountryCategoryTable = $this->getServiceLocator()->get('MelisEcomCountryCategoryTable');
                 $melisEcomCountryCategoryTable->deleteByField('ccat_category_id', $catId);
 
-                $textMessage = $translator->translate('tr_meliscommerce_categories_'.$type.'_delete_success');
+                $textMessage = 'tr_meliscommerce_categories_'.$type.'_delete_success';
                 $status = 1;
             }else{
-                $textMessage = $translator->translate('tr_meliscommerce_categories_err_'.$type.'_unable_delete');
+                $textMessage = 'tr_meliscommerce_categories_err_'.$type.'_unable_delete';
                 $errors['category'] = array(
                     'label' => $translator->translate('tr_meliscommerce_categories_common_label_'.$type),
                     'deleteUnabled' => $translator->translate('tr_meliscommerce_categories_err_'.$type.'_delete_has_children'),
@@ -973,7 +957,8 @@ class MelisComCategoryController extends AbstractActionController
         );
 
         if ($status){
-            $this->getEventManager()->trigger('meliscommerce_category_delete_end', $this, $response);
+            $this->getEventManager()->trigger('meliscommerce_category_delete_end', 
+                $this, array_merge($response, array('typeCode' => $logTypeCode, 'itemId' => $catId)));
         }
 
         return new JsonModel($response);
@@ -1031,10 +1016,12 @@ class MelisComCategoryController extends AbstractActionController
 
         $request = $this->getRequest();
         // Default Values
+        $pcatId = null;
         $errors = array();
         $status  = 0;
-        $textTitle = $translator->translate('tr_meliscommerce_categories_category_products_removed');
+        $textTitle = 'tr_meliscommerce_categories_category_products_removed';
         $textMessage = '';
+        $logTypeCode = '';
 
         if($request->isPost())
         {
@@ -1049,19 +1036,21 @@ class MelisComCategoryController extends AbstractActionController
             }else{
                 $type = 'category';
             }
+            // Log Type Code
+            $logTypeCode = 'ECOM_'.strtoupper($type).'_REMOVE_PRODUCT';
             
-            $textTitle = $translator->translate('tr_meliscommerce_categories_'.$type.'_products_removed');
+            $textTitle = 'tr_meliscommerce_categories_'.$type.'_products_removed';
 
             $result = $melisComCategoryService->deleteCategoryProduct($pcatId);
 
             if ($result)
             {
                 $status = 1;
-                $textMessage = $translator->translate('tr_meliscommerce_categories_'.$type.'_products_removed_success');
+                $textMessage = 'tr_meliscommerce_categories_'.$type.'_products_removed_success';
             }
             else
             {
-                $textMessage = $translator->translate('tr_meliscore_error_message');
+                $textMessage = 'tr_meliscore_error_message';
             }
         }
 
@@ -1073,7 +1062,8 @@ class MelisComCategoryController extends AbstractActionController
         );
         
         if ($status){
-            $this->getEventManager()->trigger('meliscommerce_category_product_remove_end', $this, $response);
+            $this->getEventManager()->trigger('meliscommerce_category_product_remove_end', 
+                $this, array_merge($response, array('typeCode' => $logTypeCode, 'itemId' => $pcatId)));
         }
         
         return new JsonModel($response);
@@ -1205,11 +1195,13 @@ class MelisComCategoryController extends AbstractActionController
 
                 foreach ($productCategories As $cval){
                     if ($cval->pcat_cat_id == $catId){
-                        $categoryProduct['pcat_order'] = $cval->pcat_order;
-                        $categoryProduct['DT_RowId'] = $cval->pcat_id;
-                    }
-                }
 
+                        $categoryProduct['DT_RowId'] = $cval->pcat_id;
+                        $categoryProduct['DT_RowAttr'] = array('data-productid' => $productId, 'data-productname' => $productStr);
+                    }
+
+                }
+                $categoryProduct['pcat_order'] = $cval->pcat_order;
                 // GET PRODUCT IMAGE
                 $categoryProduct['prd_img'] = sprintf($prodImage, $docSvc->getDocDefaultImageFilePath('product', $productId));
 

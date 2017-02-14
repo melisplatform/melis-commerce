@@ -62,7 +62,7 @@ class MelisComProductListController extends AbstractActionController
         $columns = $this->getTool()->getColumns();
         $columns['action'] =  array(
             'text' => $this->getTranslation('tr_meliscommerce_product_list_col_action'), 
-            'css' => array('width' => '10%')
+            'css' => array('width' => '30%')
         );
         
         $view = new ViewModel();

@@ -93,9 +93,15 @@ class MelisComOrderController extends AbstractActionController
      */
     public function renderOrdersHeaderRightContainerSaveAction()
     {
+        $orderStatus = '';
+        if(!empty($this->layout()->order)){
+            $orderStatus = $this->layout()->order->ord_status;
+        }
+        
         $view = new ViewModel();
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view->melisKey = $melisKey;
+        $view->orderStatus = $orderStatus;
         return $view;
     }
     
@@ -342,12 +348,17 @@ class MelisComOrderController extends AbstractActionController
      */
     public function renderOrdersContentTabsContentMainOrderFormAction()
     {
+        $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        
+        $confOrder = $melisCoreConfig->getItem('meliscommerce/conf/orderStatus');
         $statusAttrib = array();
         $status = array();
         $statusButtons = '';
         $currStatus = '';
-        $button = '<a href="#" class="mainOrderStatus %s" data-statusid="%s" style="text-decoration:none">
-				        <span class="btn order-status-%s">%s</span>
+        $disabled = '';
+        $class = 'mainOrderStatus';
+        $button = '<a href="#" class="%s" data-statusid="%s" style="text-decoration:none">
+				        <span %s class="btn order-status-%s">%s</span>
 				   </a>';
         
         if(isset($this->layout()->order)){
@@ -358,19 +369,29 @@ class MelisComOrderController extends AbstractActionController
         $langId = $this->getTool()->getCurrentLocaleID();
         foreach($orderSvc->getOrderStatusList($langId) as $orderStatus){
             $status[] = $orderStatus;
+            $disabled = '';
+            $class = 'mainOrderStatus';
             
-            if($currStatus == $orderStatus->osta_id){
-                $statusButtons .= sprintf($button, 'selectedStatus', $orderStatus->osta_id, $orderStatus->osta_id, $orderStatus->ostt_status_name);
+            if($currStatus == $confOrder['cancelled']){
+                $disabled = 'disabled';
+                $class = '';
             }
             
-            if(($orderStatus->osta_id != -1 && $orderStatus->osta_id != 6) && $orderStatus->osta_id != $currStatus){
+            if($currStatus == $orderStatus->osta_id){
+                $class = 'mainOrderStatus selectedStatus';
+                $statusButtons .= sprintf($button, $class, $orderStatus->osta_id, $disabled, $orderStatus->osta_id, $orderStatus->ostt_status_name);
+            }
+            
+            if(($orderStatus->osta_id != $confOrder['temporary'] && $orderStatus->osta_id != $confOrder['errorPayment']) 
+                && $orderStatus->osta_id != $currStatus){
                 
-                $statusButtons .= sprintf($button, '', $orderStatus->osta_id, $orderStatus->osta_id, $orderStatus->ostt_status_name);
-            }            
+                $statusButtons .= sprintf($button, $class, $orderStatus->osta_id, $disabled, $orderStatus->osta_id, $orderStatus->ostt_status_name);
+            }
+            
         }
         
         $infoForm = 'meliscommerce_order_information_form';
-        $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+       
         $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_orders/'.$infoForm,$infoForm);
         
         $factory = new \Zend\Form\Factory();
@@ -680,10 +701,19 @@ class MelisComOrderController extends AbstractActionController
     }
     
     /**
-     * renders the order list content table filter refresh
+     * renders the order content table filter refresh
      * @return \Zend\View\Model\ViewModel
      */
     public function renderOrderContentFilterRefreshAction()
+    {
+        return new ViewModel();
+    }
+    
+    /**
+     * renders the order content action info
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderOrderContentActionInfoAction()
     {
         return new ViewModel();
     }
@@ -699,7 +729,7 @@ class MelisComOrderController extends AbstractActionController
         $clientSvc  = $this->getServiceLocator()->get('MelisComClientService');
         $this->setOrderVariables($orderId);
         $userTable = $this->getServiceLocator()->get('MelisCoreTableUser');
-//         $rolesTable = $this->getServiceLocator()->get('MelisCoreTableUserRole');
+
         $image = '';
         foreach($this->layout()->messages as $orderMessage){
             foreach($clientSvc->getClientByIdAndClientPerson($orderMessage->omsg_client_id, $orderMessage->omsg_client_person_id)->getPersons() as $clientPerson){
@@ -711,11 +741,16 @@ class MelisComOrderController extends AbstractActionController
             $image = 'data:image/jpeg;base64,/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAAA8AAD/4QMOaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjUtYzAyMSA3OS4xNTU3NzIsIDIwMTQvMDEvMTMtMTk6NDQ6MDAgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjdGMTg1NkM4Q0EyQjExRTVBMDVGRTA3NDczNUZDNEZCIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjdGMTg1NkM3Q0EyQjExRTVBMDVGRTA3NDczNUZDNEZCIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIEltYWdlUmVhZHkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0iNkE1QjI0NzYyRjREN0Y0NzdGNUIyRDJBNzlCMDVGMDciIHN0UmVmOmRvY3VtZW50SUQ9IjZBNUIyNDc2MkY0RDdGNDc3RjVCMkQyQTc5QjA1RjA3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+/+4ADkFkb2JlAGTAAAAAAf/bAIQABgQEBAUEBgUFBgkGBQYJCwgGBggLDAoKCwoKDBAMDAwMDAwQDA4PEA8ODBMTFBQTExwbGxscHx8fHx8fHx8fHwEHBwcNDA0YEBAYGhURFRofHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8f/8AAEQgAMgAyAwERAAIRAQMRAf/EAGwAAQACAwEBAAAAAAAAAAAAAAAFBgIDBAEIAQEAAAAAAAAAAAAAAAAAAAAAEAABAwIEAwcDBQAAAAAAAAABAAIDEQQhMRIFoTITQWFxkUIjBlGB0VJTFBUWEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwD6pQEEVcb/AAseWwRmWmGutG/bOqDCP5CK+7AQ3tLDXgQEErDNHNG2SN2pjhUEIM0BAQcm6ue3bpy00Omle4mh4IKygIJv465/SnaeQPBb4kYoJZAQEHJu3U/r5tAqaYgCp01x4IKygIJr491OnPUe3qGk0zNMcfJBLoCAgIKvuNoba7cz0Pq+M9xOX2KDRHG+WRsTOd50trlUoLXbwtggjhbiGNDa/WiDYgICDXPcwQM1zPDB35nwCCt7hefy7kyAFrGjSwHOmdT4oNEUjopWSt5mODhXLBBZrTcba6aNDqSeqN2Dh+UHSgIK/d73cyktg9mPsdm8/hBHuLnOLnEucc3ONT5lB4gIFOGSDstt1vYCBr6sY9D8fJ2aCR/0Ft+0/lr2c36c+KCCQEBAQEBAQf/Z';
             if(!is_null($orderMessage->omsg_user_id)){
                 $user = $userTable->getEntryById($orderMessage->omsg_user_id)->current();
-//                 $roleData = $rolesTable->getEntryById($user->usr_role_id)->current();
+
                 $role = 'Admin';
-                $name = $user->usr_lastname.' '.$user->usr_firstname;
-                $email = $user->usr_email;
-                $image = ($user->usr_image) ? 'data:image/jpeg;base64,'. base64_encode($user->usr_image) : $image;                
+                $name = 'ID ('.$orderMessage->omsg_user_id.')';
+                $email = '';
+
+                if(!empty($user)){
+                    $name = $user->usr_lastname.' '.$user->usr_firstname;
+                    $email = $user->usr_email;
+                    $image = ($user->usr_image) ? 'data:image/jpeg;base64,'. base64_encode($user->usr_image) : $image;
+                }                                
             }
             $message = array(
                 'day' => date("d" ,strtotime($orderMessage->omsg_date_creation)),
@@ -794,11 +829,14 @@ class MelisComOrderController extends AbstractActionController
         $melisTool = $this->getTool();
         $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
         $docService = $this->getServiceLocator()->get('MelisComDocumentService');
-        $productTable = $this->getServiceLocator()->get('MelisEcomProductTable');
+        $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
+        $prodSvc = $this->getServiceLocator()->get('MelisComProductService');
+        
         $colId = array();
         $dataCount = 0;
         $draw = 0;
         $tableData = array();
+        $prodId = null;
         $image      = '<img src="%s" width="60" height="60" class="img-rounded img-responsive"/>';
         $categoryDom    = '<span class="cell-val-table" style="margin:0 2px 4px 0;display:inline-block;padding: 3px 10px;background: #ECEBEB;border-radius: 4px;color: #7D7B7B;">%s</span>';
         
@@ -826,10 +864,12 @@ class MelisComOrderController extends AbstractActionController
             foreach($basketList as $basket){
                 $imageSrc = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAgAAZABkAAD/7AARRHVja3kAAQAEAAAAPAAA/+EDLWh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8APD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS41LWMwMTQgNzkuMTUxNDgxLCAyMDEzLzAzLzEzLTEyOjA5OjE1ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozRkNFMzU3RDg2QUYxMUU1OEM4OENCQkI2QTc0MTkwRSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozRkNFMzU3Qzg2QUYxMUU1OEM4OENCQkI2QTc0MTkwRSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M2IChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MDEwNzlDODNCQThDMTFFMjg5NTlFMDAzODgzMjZDMkIiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MDEwNzlDODRCQThDMTFFMjg5NTlFMDAzODgzMjZDMkIiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7/7gAOQWRvYmUAZMAAAAAB/9sAhAAGBAQEBQQGBQUGCQYFBgkLCAYGCAsMCgoL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mhNky5fTkBYwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/9k=';    
                 $category = '';
-                $prod = $productTable->getProductByName($basket->obas_product_name, $this->getTool()->getCurrentLocaleID())->current();
+                $var = $variantSvc->getProductByVariantId($basket->obas_variant_id, $this->getTool()->getCurrentLocaleID());
                 
-                if($prod){
-                    $imageSrc = $docService->getDocDefaultImageFilePath('product', $prod->prd_id);
+                if($var){
+                    $prod = $prodSvc->getProductById($var->getVariant()->var_prd_id, $this->getTool()->getCurrentLocaleID());                    
+                    $imageSrc = $docService->getDocDefaultImageFilePath('product', $prod->getId());
+                    $prodId = $prod->getId();
                 }
                 if(!empty($basket->obas_variant_id)){
                     $imageSrc = $docService->getDocDefaultImageFilePath('variant', $basket->obas_variant_id);
@@ -840,7 +880,7 @@ class MelisComOrderController extends AbstractActionController
                 }
                 
                 $tableData[]= array(                    
-                    'obas_id' => $basket->obas_id,
+                    'obas_id' => $basket->obas_id,                    
                     'obas_sku' => $basket->obas_sku,
                     'image' => sprintf($image, $imageSrc),
                     'obas_quantity' => $basket->obas_quantity,
@@ -848,6 +888,7 @@ class MelisComOrderController extends AbstractActionController
                     'obas_product_name' => $basket->obas_product_name,
                     'obas_category_name' => $category,
                     'DT_RowId' => $basket->obas_id,
+                    'DT_RowAttr' => array('data-variantid' => $basket->obas_variant_id, 'data-productid' => $prodId, 'data-sku' => $basket->obas_sku),                    
                 );
             }
         
@@ -869,8 +910,9 @@ class MelisComOrderController extends AbstractActionController
         $data = array();
         $orderId = null;
         $clientId = null;
-        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_order_page_save_fail');
-        $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_order_page');   
+        $textMessage = 'tr_meliscommerce_order_page_save_fail';
+        $textTitle = 'tr_meliscommerce_order_page';   
+        
         $container = new Container('meliscommerce');
         unset($container['order-valid-data']);
         //get services        
@@ -882,7 +924,7 @@ class MelisComOrderController extends AbstractActionController
             if (!empty($container['order-valid-data'])){
                 if (!empty($container['order-valid-data']['success'])){
                     $success = $container['order-valid-data']['success'];
-                    $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_order_page_save_success');
+                    $textMessage = 'tr_meliscommerce_order_page_save_success';
                     
                     // Getting Order Client details
                     $postValues = get_object_vars($this->getRequest()->getPost());
@@ -908,17 +950,25 @@ class MelisComOrderController extends AbstractActionController
             'clientId' => $clientId,
         );
         
-        $this->getEventManager()->trigger('meliscommerce_order_save_end', $this, $response);
+        $this->getEventManager()->trigger('meliscommerce_order_save_end', 
+            $this, array_merge($response, array('typeCode' => 'ECOM_ORDER_UPDATE', 'itemId' => $orderId)));
+        
         return new JsonModel($response);
     }
     
     public function saveOrderDataAction()
     {
-        
+        $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
+        $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
+        $variantStockTbl = $this->getServiceLocator()->get('MelisEcomVariantStockTable');
+        $melisCoreConfig = $this->getServiceLocator()->get('MelisCoreConfig');
+        $confOrder = $melisCoreConfig->getItem('meliscommerce/conf/orderStatus');
         $success = false;
         $errors = array();
         $data = array();
         $container = new Container('meliscommerce');
+        $postValues = get_object_vars($this->getRequest()->getPost());
+        
         if (!empty($container['order-valid-data'])){
             if (!empty($container['order-valid-data']['success'])){
                 $success = $container['order-valid-data']['success'];
@@ -930,13 +980,13 @@ class MelisComOrderController extends AbstractActionController
                 $formData = $container['order-valid-data']['datas'];
         }
         unset($container['order-valid-data']);
-//         echo '<pre>'; print_r($formData); echo '</pre>'; die();
+
         if(!$errors && !empty($formData)){
             $formData['baskets'] = array();
             $formData['payment'] = array();
             // no data for baskets and payment yet
             $orderId =  isset($formData['order']['ord_id']) ? $formData['order']['ord_id'] : null;
-            $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
+            
             unset($formData['order']['ord_id']);
             $reference = $formData['order']['ord_reference'];
             $result = $orderSvc->saveOrder($formData['order'], $formData['baskets'], $formData['billing'],
@@ -945,6 +995,27 @@ class MelisComOrderController extends AbstractActionController
             if($result){
                 $success = true;
                 $data['ord_reference'] = $reference;
+                
+                //if status was cancelled replenish stocks
+                if($formData['order']['ord_status'] == $confOrder['cancelled'] && $postValues['lastStatus'] != $confOrder['cancelled']){
+                    $orderEntity = $orderSvc->getOrderById($orderId);
+                    $order = $orderEntity->getOrder();
+                    $basket = $orderEntity->getBasket();
+                    
+                    foreach($basket as $item){
+                        $tmp = array();
+                    
+                        $variantStock = $variantStockTbl->getStocksByVariantId($item->obas_variant_id, $order->ord_country_id)->current();
+                        if(!empty($variantStock)){
+                            $tmp['stock_quantity'] = $item->obas_quantity + $variantStock->stock_quantity;
+                            $variantSvc->saveVariantStocks($tmp, $variantStock->stock_id);
+                        }else{
+                            $variantStock = $variantStockTbl->getStocksByVariantId($item->obas_variant_id, 0)->current();
+                            $tmp['stock_quantity'] = $item->obas_quantity + $variantStock->stock_quantity;
+                            $variantSvc->saveVariantStocks($tmp, $variantStock->stock_id);
+                        }
+                    }
+                }
             }
         }        
         
@@ -973,7 +1044,7 @@ class MelisComOrderController extends AbstractActionController
         $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
         $appConfigOrderForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_orders/meliscommerce_order_information_form','meliscommerce_order_information_form');
         $postValues = get_object_vars($this->getRequest()->getPost());
-//         echo '<pre>'; print_r($postValues['order']); echo '</pre>'; die();
+
         // form validations
         if(!empty($postValues['order'])){
             foreach($postValues['order'] as $order){
@@ -1093,6 +1164,7 @@ class MelisComOrderController extends AbstractActionController
         $errors  = array();
         $data = array();
         $orderId = null;
+        $orderMsgId = null;
         $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_order_message_save_fail');
         $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_order_page');
         $this->getEventManager()->trigger('meliscommerce_order_message_save_start', $this, array());
@@ -1123,13 +1195,14 @@ class MelisComOrderController extends AbstractActionController
                     'omsg_message' => $postValues['omsg_message'],
                     'omsg_date_creation' => date('Y-m-d H:i:s'),
                 );
-                $omsg_id = $melisComOrderService->saveOrderMessage($orderMesasge);
-                if($omsg_id){
+                $orderMsgId = $melisComOrderService->saveOrderMessage($orderMesasge);
+                if($orderMsgId){
                     $success = 1;
                     $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_order_message_save_success');
                 }
             }
         }
+        
         $response = array(
             'success' => $success,
             'textTitle' => $textTitle,
@@ -1138,7 +1211,9 @@ class MelisComOrderController extends AbstractActionController
             'chunk' => $data,
         );
         
-        $this->getEventManager()->trigger('meliscommerce_order_message_save_end', $this, $response);
+        $this->getEventManager()->trigger('meliscommerce_order_message_save_end', 
+            $this, array_merge($response, array('typeCode' => 'ECOM_ORDER_MESSAGE_ADD', 'itemId' => $orderMsgId)));
+        
         return new JsonModel($response);
         
     }
@@ -1154,16 +1229,17 @@ class MelisComOrderController extends AbstractActionController
         $appConfigFormElements = $formConfig['elements'];
         $errors = $form->getMessages();
 
-            foreach ($errors as $keyError => $valueError)
+        foreach ($errors as $keyError => $valueError)
+        {
+            foreach ($appConfigFormElements as $keyForm => $valueForm)
             {
-                foreach ($appConfigFormElements as $keyForm => $valueForm)
+                if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
                 {
-                    if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
-                    {
-                        $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
-                    }
+                    $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
                 }
             }
+        }
+        
         return $errors;
     }
     
@@ -1187,7 +1263,6 @@ class MelisComOrderController extends AbstractActionController
         $layoutVar['payment']   = $resultData->getPayment();
         $layoutVar['shipping']  = $resultData->getShipping();
         $layoutVar['messages']  = $resultData->getMessages();
-//         echo '<pre>'; print_r($layoutVar['person']); echo '</pre>asdasd'; die();
         $this->layout()->setVariables( array_merge( array(
             'orderId' => $orderId,
         ), $layoutVar));
@@ -1203,6 +1278,5 @@ class MelisComOrderController extends AbstractActionController
         $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_order_basket_list');
     
         return $melisTool;
-    
     }
 }

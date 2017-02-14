@@ -39,7 +39,7 @@ class MelisComShipmentCostService extends MelisComGeneralService
          */
         
         // Static Value for Shipping Cost, for testing
-        $total = 599.99; 
+        $total = 0; 
         // Static error
         //$errors['xx'] = 'MELIS_COMMERCE_CHECKOUT_ERROR_SHIPMENT_CANT_COMPUTE_PRODUCT';
         // Static values End here

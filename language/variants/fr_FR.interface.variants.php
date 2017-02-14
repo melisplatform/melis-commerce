@@ -17,6 +17,7 @@
 	    'tr_meliscommerce_variant_main_files_header' => 'Pièces jointes',
 	    'tr_meliscommerce_variant_main_files_header_add' => 'Ajouter un fichier',
 	    'tr_meliscommerce_variant_main_attributes_header' => 'Attributs',
+	    'tr_meliscommerce_variant_main_attributes_col' => 'Attribut(s)',
 	    'tr_meliscommerce_variant_main_image_filter_country' => 'Produit',
 	    'tr_meliscommerce_variant_main_images_header' => 'Images du product',
 	    'tr_meliscommerce_variant_main_images_header_add' => 'Ajouter une image',

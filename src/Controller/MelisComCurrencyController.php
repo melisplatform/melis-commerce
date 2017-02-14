@@ -219,6 +219,8 @@ class MelisComCurrencyController extends AbstractActionController
     {
         $success = 0;
         $errors  = array();
+        $curId = null;
+        $logTypeCode = '';
         $textTitle = 'tr_meliscommerce_currency_form_new';
         $textMessage = 'tr_meliscommerce_currency_form_add_fail';
         $form = $this->getTool()->getForm('meliscommerce_currency_form');
@@ -235,6 +237,9 @@ class MelisComCurrencyController extends AbstractActionController
             if($postData['cur_id']) {
                 $textTitle = 'tr_meliscommerce_currency_form_edit';
                 $textMessage = 'tr_meliscommerce_currency_form_edit_fail';
+                $logTypeCode = 'ECOM_COURENCY_UPDATE';
+            }else{
+                $logTypeCode = 'ECOM_COURENCY_ADD';
             }
     
             $tmpCode = $postData['tmp_cur_code'];
@@ -269,11 +274,13 @@ class MelisComCurrencyController extends AbstractActionController
                     $errors = $isExistsError;
                 }
     
-                if(!$hasErrorFlag) {
+                if(!$hasErrorFlag){
                     unset($data['cur_id']);
-                    if($currencyTable->save($data, $curId)) {
+                    $tmpCurId = $curId;
+                    $curId = $currencyTable->save($data, $curId);
+                    if($curId) {
                         $success = 1;
-                        if($curId) {
+                        if($tmpCurId) {
                             $textMessage = 'tr_meliscommerce_currency_form_edit_success'; 
                         }
                         else {
@@ -281,8 +288,6 @@ class MelisComCurrencyController extends AbstractActionController
                         }
                     }
                 }
-    
-    
             }
             else {
                 $errors = $form->getMessages();
@@ -306,23 +311,23 @@ class MelisComCurrencyController extends AbstractActionController
         $response = array(
             'success' => $success,
             'errors' => $errors,
-            'textMessage' => $this->getTool()->getTranslation($textMessage),
-            'textTitle' => $this->getTool()->getTranslation($textTitle),
+            'textMessage' => $textMessage,
+            'textTitle' => $textTitle,
         );
     
-        $this->getEventManager()->trigger('meliscommerce_currency_save_end', $this, $response);
+        $this->getEventManager()->trigger('meliscommerce_currency_save_end', 
+            $this, array_merge($response, array('typeCode' => $logTypeCode, 'itemId' => $curId)));
     
         return new JsonModel($response);
     }
     
     public function deleteAction()
     {
-        $response = array();
-        $this->getEventManager()->trigger('meliscommerce_currency_delete_start', $this, $response);
+        $this->getEventManager()->trigger('meliscommerce_currency_delete_start', $this, array());
         $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
         $textMessage = 'tr_meliscommerce_currency_delete_failed';
     
-        $id = 0;
+        $id = null;
         $success = 0;
     
         if($this->getRequest()->isPost())
@@ -341,22 +346,24 @@ class MelisComCurrencyController extends AbstractActionController
         }
     
         $response = array(
-            'textTitle' => $this->getTool()->getTranslation('tr_meliscommerce_currency_delete_currency'),
-            'textMessage' => $this->getTool()->getTranslation($textMessage),
+            'textTitle' => 'tr_meliscommerce_currency_delete_currency',
+            'textMessage' => $textMessage,
             'success' => $success
         );
-        $this->getEventManager()->trigger('meliscommerce_currency_delete_end', $this, array_merge($response, array('currencyId' => $id)));
+        
+        $this->getEventManager()->trigger('meliscommerce_currency_delete_end', 
+            $this, array_merge($response, array('typeCode' => 'ECOM_COURENCY_DELETE', 'itemId' => $id, 'currencyId' => $id)));
     
         return new JsonModel($response);
     }
     
-    public function setDefaultCurrencyAction(){
-        $response = array();
-        $this->getEventManager()->trigger('meliscommerce_currency_set_default_start', $this, $response);
+    public function setDefaultCurrencyAction()
+    {
+        $this->getEventManager()->trigger('meliscommerce_currency_set_default_start', $this, array());
         $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
         $textMessage = 'tr_meliscommerce_currency_set_default_failed';
         
-        $id = 0;
+        $id = null;
         $success = 0;
         
         if($this->getRequest()->isPost())
@@ -379,11 +386,13 @@ class MelisComCurrencyController extends AbstractActionController
         }
         
         $response = array(
-            'textTitle' => $this->getTool()->getTranslation('tr_meliscommerce_currency_set_default'),
-            'textMessage' => $this->getTool()->getTranslation($textMessage),
+            'textTitle' => 'tr_meliscommerce_currency_set_default',
+            'textMessage' => $textMessage,
             'success' => $success
         );
-        $this->getEventManager()->trigger('meliscommerce_currency_set_default_end', $this, array_merge($response, array('currencyId' => $id)));
+        
+        $this->getEventManager()->trigger('meliscommerce_currency_set_default_end', 
+            $this, array_merge($response, array('typeCode' => 'ECOM_COURENCY_SET_DEFAULT', 'itemId' => $id, 'currencyId' => $id)));
         
         return new JsonModel($response);
     }

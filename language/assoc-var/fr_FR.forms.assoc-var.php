@@ -2,7 +2,7 @@
 return array(
     'tr_meliscommerce_assoc_var_col_id' => 'ID',
     'tr_meliscommerce_assoc_var_col_status' => 'Statut',
-    'tr_meliscommerce_assoc_var_col_assigned' => 'Assigné',
+    'tr_meliscommerce_assoc_var_col_assigned' => 'Associé',
     'tr_meliscommerce_assoc_var_col_attributes' => 'Attributs',
     'tr_meliscommerce_assoc_var_col_sku' => 'SKU',
     'tr_meliscommerce_assoc_var_col_action' => 'Action',

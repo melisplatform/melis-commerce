@@ -862,7 +862,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
             $contactData = $melisEcomClientPersonTable->getEntryById($postValues['contactId']);
             $contact = $contactData->current();
             
-            // Cehckout session decleration for contact details
+            // Checkout session initialization for contact details
             $container = new Container('meliscommerce');
             $container['checkout']['contactId'] = $contact->cper_id;
             $container['checkout']['clientId'] = $contact->cper_client_id;
@@ -872,7 +872,9 @@ class MelisComOrderCheckoutController extends AbstractActionController
     
             $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
             // After selecting contact this will clear the current Basket and create new entry for client basket
+            // This process will avoid merging the old basket to the current basket
             $melisComBasketService->emptyPersistentBasket($clientId);
+            // Preparing the client Basket, which is added to Persistent basket
             $melisComBasketService->getBasket($clientId, $clientKey);
     
             $success = 1;
@@ -1214,6 +1216,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
                             foreach ($error as $keyError => $valueError)
                             {
                                 // Preparing form Id en-order to locate the error occured
+                                // This process is for multiple form
                                 $error[$keyError]['form'][] = $key.'AddressOrderCheckoutForm';
                             }
                             $errors = array_merge_recursive($errors, $error);
@@ -1264,6 +1267,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
                         {
                             foreach ($validatedAddresses['addresses'] As $key => $val)
                             {
+                                // checking if the entry is existing in db, else this will save to selected contact addresses
                                 if (empty($val['address']['cadd_id']))
                                 {
                                     $val['address']['cadd_client_id'] = $container['checkout']['clientId'];
@@ -1599,10 +1603,11 @@ class MelisComOrderCheckoutController extends AbstractActionController
         // Default Values
         $success = 0;
         $errors  = array();
-        $textTitle = $translator->translate('tr_meliscommerce_order_checkout_variant_basket');
-        $textMessage = '';
+        $textTitle = 'tr_meliscommerce_order_checkout_variant_basket';
+        $textMessage = 'tr_meliscommerce_order_checkout_save_unable';
         $cat_id = 0;
         $catParents = '';
+        $orderId = null;
         
         if($request->isPost())
         {
@@ -1616,7 +1621,8 @@ class MelisComOrderCheckoutController extends AbstractActionController
             $basketData = $melisComBasketService->getBasket($clientId);
             
             $couponSrv = $this->getServiceLocator()->get('MelisComCouponService');
-            $couponCode = $this->params()->fromQuery('couponCode');
+            
+            $couponCode = $request->getPost('couponCode');
             
             $totalDiscount = 0;
             $couponErr = '';
@@ -1637,106 +1643,124 @@ class MelisComOrderCheckoutController extends AbstractActionController
                 }
             }
             
-            if (!is_null($basketData))
+            if (empty($errors))
             {
-                if (!empty($container['checkout']['clientId']))
+                if (!is_null($basketData))
                 {
-                    // Getting Current Langauge ID
-                    $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
-                    $langId = $melisTool->getCurrentLocaleID();
-                    
-                    $varSvc = $this->getServiceLocator()->get('MelisComVariantService');
-                    
-                    $melisComOrderCheckoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
-                    $clientBasket = $melisComOrderCheckoutService->checkoutStep1_prePayment($clientId);
-                    
-                    if ($clientBasket['success'] != true)
+                    if (!empty($container['checkout']['clientId']))
                     {
-                        if (!empty($clientBasket['errors']))
+                        // Getting Current Langauge ID
+                        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+                        $langId = $melisTool->getCurrentLocaleID();
+                        
+                        $varSvc = $this->getServiceLocator()->get('MelisComVariantService');
+                        
+                        $melisComOrderCheckoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
+                        $clientBasket = $melisComOrderCheckoutService->checkoutStep1_prePayment($clientId);
+                        
+                        if ($clientBasket['success'] != true)
                         {
-                            foreach ($clientBasket['errors'] As $key => $val)
+                            if (!empty($clientBasket['errors']))
                             {
-                                switch ($key)
+                                foreach ($clientBasket['errors'] As $key => $val)
                                 {
-                                    case 'order':
-                                        $errors['order'] = array(
-                                            'label' => 'Order Reference',
-                                            $key.'_exist' => $val,
-                                        );
-                                    break;
-                                    case 'basket':
-                                        foreach ($val As $bKey => $bVal)
-                                        {
-                                            if (!empty($bVal['error']))
+                                    switch ($key)
+                                    {
+                                        case 'order':
+                                            $errors['order'] = array(
+                                                'label' => 'Order Reference',
+                                                $key.'_exist' => $val,
+                                            );
+                                        break;
+                                        case 'basket':
+                                            foreach ($val As $bKey => $bVal)
                                             {
-                                                
-                                                $variantData = $bVal[$bKey]->getVariant();
-                                                $variant = $variantData->getVariant();
-                                                $productName = $variant->var_sku;
-                                                
-                                                $errors[$bKey.'_basket'] = array(
-                                                    'label' => $productName,
-                                                    $bKey.'_err_msg' => $translator->translate($bVal['error'])
-                                                );
-                                            }
-                                        }
-                                    break;
-                                    case 'costs':
-                                        foreach ($val As $bKey => $bVal)
-                                        {
-                                            if (in_array($bKey, array('order', 'shipment')))
-                                            {
-                                                if (!empty($bVal['errors']))
+                                                if (!empty($bVal['error']))
                                                 {
-                                                    foreach ($bVal['errors'] As $cKey => $cVal)
+                                                    
+                                                    $variantData = $bVal[$bKey]->getVariant();
+                                                    $variant = $variantData->getVariant();
+                                                    $productName = $variant->var_sku;
+                                                    
+                                                    $errors[$bKey.'_basket'] = array(
+                                                        'label' => $productName,
+                                                        $bKey.'_err_msg' => $translator->translate($bVal['error'])
+                                                    );
+                                                }
+                                            }
+                                        break;
+                                        case 'costs':
+                                            foreach ($val As $bKey => $bVal)
+                                            {
+                                                if (in_array($bKey, array('order', 'shipment')))
+                                                {
+                                                    if (!empty($bVal['errors']))
                                                     {
-                                                        $variantData = $varSvc->getVariantById($cKey);
-                                                        
-                                                        $productName = 'Unkown variant Id('.$cKey.')';
-                                                        if (!empty($variantData))
+                                                        foreach ($bVal['errors'] As $cKey => $cVal)
                                                         {
-                                                            $variant = $variantData->getVariant();
-                                                            $productName = $variant->var_sku;
+                                                            $variantData = $varSvc->getVariantById($cKey);
+                                                            
+                                                            $productName = 'Unkown variant Id('.$cKey.')';
+                                                            if (!empty($variantData))
+                                                            {
+                                                                $variant = $variantData->getVariant();
+                                                                $productName = $variant->var_sku;
+                                                            }
+                                                            
+                                                            $errors[$bKey.'_costs'] = array(
+                                                                'label' => $productName,
+                                                                $cKey.'_err_msg' => $translator->translate('tr_'.$cVal)
+                                                            );
                                                         }
-                                                        
-                                                        $errors[$bKey.'_costs'] = array(
-                                                            'label' => $productName,
-                                                            $cKey.'_err_msg' => $translator->translate('tr_'.$cVal)
-                                                        );
                                                     }
                                                 }
                                             }
-                                        }
-                                    break;
+                                        break;
+                                    }
                                 }
                             }
                         }
-                    }
-                    
-                    if (empty($errors))
-                    {
-                        if (!empty($couponData))
+                        else 
                         {
-                            $container['checkout']['couponId'] = $couponData->coup_id;
+                            $orderId = $clientBasket['orderId'];
                         }
                         
-                        $success = 1;
+                        if (empty($errors))
+                        {
+                            if (!empty($couponData))
+                            {
+                                $container['checkout']['couponId'] = $couponData->coup_id;
+                            }
+                            
+                            $success = 1;
+                            
+                            $textMessage = 'tr_meliscommerce_order_checkout_save_success';
+                        }
                     }
                 }
-            }
-            else
-            {
-                $textMessage = $translator->translate('tr_meliscommerce_order_checkout_variant_empty_basket_error');
+                else
+                {
+                    $textMessage = 'tr_meliscommerce_order_checkout_variant_empty_basket_error';
+                }
             }
         }
         
         $response = array(
             'success' => $success,
-            'textTitle' => $textTitle,
-            'textMessage' => $textMessage,
+            'textTitle' => ($textTitle != 'tr_meliscommerce_order_checkout_save_success') ? $textTitle : '', // Just to be sure the message for log will not show to checkout interface as response
+            'textMessage' => ($textMessage == 'tr_meliscommerce_order_checkout_save_success') ? $textMessage : '',
             'errors' => $errors,
         );
-         
+        
+        $logData = array_merge($response, array(
+            'textTitle' => 'tr_meliscommerce_order_checkout_add_order',
+            'textMessage' => $textMessage,
+            'typeCode' => 'ECOM_CHECKOUT_ORDER_ADD',
+            'itemId' => $orderId
+        ));
+        
+        $this->getEventManager()->trigger('meliscommerce_checkout_order_add', $this, $logData);
+        
         return new JsonModel($response);
     }
     

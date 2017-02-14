@@ -78,7 +78,7 @@ return array(
                                 'sortable' => true,
                             ),
                             'var_attributes' => array(
-                                'text' => 'tr_meliscommerce_variant_main_attributes_header',
+                                'text' => 'tr_meliscommerce_variant_main_attributes_col',
                                 'css' => array('width' => '40%', 'padding-right' => '0'),
                                 'sortable' => false,
                             ),

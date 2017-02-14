@@ -32,6 +32,7 @@
 	    'tr_meliscommerce_categories_common_label_export' => 'Exporter',
 	    'tr_meliscommerce_categories_common_label_catalog' => 'Catalogue',
 	    'tr_meliscommerce_categories_common_label_saving' => 'Saving...', // <<<<<<<<<<<<<<<<<<<<<<<<
+	    'tr_meliscommerce_categories_common_label_remove' => 'Retirer',
 	    
 	    'tr_meliscommerce_categories_page' => 'Page catégories',
 	    'tr_meliscommerce_categories_list' => 'Liste des catégories',

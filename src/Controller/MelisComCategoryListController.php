@@ -156,6 +156,15 @@ class MelisComCategoryListController extends AbstractActionController
         $selected = $this->params()->fromQuery('selected');
         $openStateParent = $this->params()->fromQuery('openStateParent');
         
+        $idAndNameOnly = $this->params()->fromQuery('idAndNameOnly');
+        $categoriesChecked = $this->params()->fromQuery('categoriesChecked');
+        
+        
+        $categoryChecked = array();
+        if (!empty($categoriesChecked)){
+            $categoryChecked = explode(',', $categoriesChecked);
+        }
+        
         if (!empty($openStateParent)){
             $openStateParent = explode(',', $openStateParent);
         }
@@ -170,7 +179,7 @@ class MelisComCategoryListController extends AbstractActionController
         $categoryListData = $melisComCategoryService->getCategoryTreeview(null, $currentLang->elang_id);
         
         // Category Tree View Preparation
-        $categoryList = $this->prepareCategoryDataForTreeView($categoryListData, $selected, $openStateParent);
+        $categoryList = $this->prepareCategoryDataForTreeView($categoryListData, $selected, $openStateParent, $idAndNameOnly, $categoryChecked);
         
         return new JsonModel($categoryList);
     }
@@ -185,17 +194,24 @@ class MelisComCategoryListController extends AbstractActionController
      * 
      * @return int Array[]
      */
-    public function prepareCategoryDataForTreeView($categoryList, $selected = false, $openedStateParent = array()){
+    public function prepareCategoryDataForTreeView($categoryList, $selected = false, $openedStateParent = array(), $idAndNameOnly = false, $categoryChecked = array()){
         
         $translator = $this->getServiceLocator()->get('translator');
         
         $melisEcomProductCategoryTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');
         foreach ($categoryList As $key => $val){
             
-            $numProducts = '<span title="'.$translator->translate('tr_meliscommerce_categories_list_tree_view_product_num').'">(%s)</span>';
+            $numProducts = ($idAndNameOnly) ? '' : ' <span title="'.$translator->translate('tr_meliscommerce_categories_list_tree_view_product_num').'">(%s)</span>';
             $numProducts = sprintf($numProducts, $melisEcomProductCategoryTable->getTotalData('pcat_cat_id', $val['cat_id']));
             
             $categoryList[$key]['id'] = $val['cat_id'];
+            
+            $checked = false;
+            if (!empty($categoryChecked)){
+                if (in_array($val['cat_id'], $categoryChecked)){
+                    $checked = true;
+                }
+            }
             
             // Setting the Status of Category
             if ($val['cat_status']){
@@ -211,11 +227,9 @@ class MelisComCategoryListController extends AbstractActionController
                 $categoryList[$key]['type'] = 'catalog';
                 $categoryList[$key]['text'] = $itemIcon.' <b>'.$val['cat_id'].' - '.$categoryList[$key]['text'].' '.$numProducts.'</b>';
             }else{
-                $categoryList[$key]['text'] = $val['cat_id'].' - '.$categoryList[$key]['text'].' '.$numProducts;
+                $categoryList[$key]['text'] = $val['cat_id'].' - '.$categoryList[$key]['text'].$numProducts;
             }
             unset($categoryList[$key]['cat_father_cat_id']);
-            
-            
             
             $selectedState = false;
             if (!is_null($selected)){
@@ -235,11 +249,12 @@ class MelisComCategoryListController extends AbstractActionController
             
             $categoryList[$key]['state'] = array(
                 'opened' => $openState,
-                'selected' =>  $selectedState
+                'selected' =>  $selectedState,
+                'checked' =>  $checked,
             );
             
             if (!empty($val['children'])){
-                $categoryList[$key]['children'] = $this->prepareCategoryDataForTreeView($categoryList[$key]['children'], $selected, $openedStateParent);
+                $categoryList[$key]['children'] = $this->prepareCategoryDataForTreeView($categoryList[$key]['children'], $selected, $openedStateParent, $idAndNameOnly, $categoryChecked);
             }
             
         }

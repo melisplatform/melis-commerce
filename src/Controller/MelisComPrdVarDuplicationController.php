@@ -138,8 +138,9 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
     {
         $translator = $this->serviceLocator->get('translator');
         
+        $varId = null;
         $success = 0;
-        $textTitle = $translator->translate('tr_meliscommerce_duplication_Duplicate_variant');
+        $textTitle = 'tr_meliscommerce_duplication_Duplicate_variant';
         $textMessage = '';
         $errors = array();
         $datas = array();
@@ -148,6 +149,20 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
         if ($request->isPost())
         {
             $postValues = get_object_vars($request->getPost());
+            
+            // Getting the variant Id from postvalue array
+            if (!empty($postValues['variantSku']))
+            {
+                if (is_array($postValues['variantSku']))
+                {
+                    foreach ($postValues['variantSku'] As $key => $val)
+                    {
+                        // Once varaint array get the first value, this will break the loop to exit
+                        $varId = $key;
+                        break;
+                    }
+                }
+            }
             
             // Client Saving Listener
             $this->getEventManager()->trigger('meliscommerce_duplicate_variant_start', $this, $request);
@@ -183,22 +198,22 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
                     
                     if (!is_null($varId))
                     {
-                        $textMessage = $translator->translate('tr_meliscommerce_duplication_variant_success');
+                        $textMessage = 'tr_meliscommerce_duplication_variant_success';
                         $success  = 1;
                     }
                     else 
                     {
-                        $textMessage = $translator->translate('tr_meliscore_error_message');
+                        $textMessage = 'tr_meliscore_error_message';
                     }
                 }
                 else 
                 {
-                    $textMessage = $translator->translate('tr_meliscore_error_message');
+                    $textMessage = 'tr_meliscore_error_message';
                 }
             }
             else 
             {
-                $textMessage = $translator->translate('tr_meliscommerce_duplication_variant_unable');
+                $textMessage = 'tr_meliscommerce_duplication_variant_unable';
             }
         }
         
@@ -209,9 +224,8 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
             'errors' => $errors,
         );
         
-        if ($success){
-            $this->getEventManager()->trigger('meliscommerce_duplicate_variant_end', $this, $response);
-        }
+        $this->getEventManager()->trigger('meliscommerce_duplicate_variant_end', 
+            $this, array_merge($response, array('typeCode' => 'ECOM_VARIANT_DUPLICATE', 'itemId' => $varId)));
         
         return new JsonModel($response);
     }
@@ -225,8 +239,9 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
     {
         $translator = $this->serviceLocator->get('translator');
         
+        $prdId = null;
         $success = 0;
-        $textTitle = $translator->translate('tr_meliscommerce_duplication_Duplicate_product');
+        $textTitle = 'tr_meliscommerce_duplication_Duplicate_product';
         $textMessage = '';
         $errors = array();
         $datas = array();
@@ -235,6 +250,8 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
         if ($request->isPost())
         {
             $postValues = get_object_vars($request->getPost());
+            
+            $prdId = $postValues['product_id'];
             
             // Client Saving Listener
             $this->getEventManager()->trigger('meliscommerce_duplicate_product_start', $this, $request);
@@ -276,28 +293,28 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
                         
                         if (!is_null($varId))
                         {
-                            $textMessage = $translator->translate('tr_meliscommerce_duplication_product_success');
+                            $textMessage = 'tr_meliscommerce_duplication_product_success';
                             $success  = 1;
                         }
                         else 
                         {
-                            $textMessage = $translator->translate('tr_meliscore_error_message');
+                            $textMessage = 'tr_meliscore_error_message';
                         }
                     }
                     else 
                     {
-                        $textMessage = $translator->translate('tr_meliscommerce_duplication_product_success');
+                        $textMessage = 'tr_meliscommerce_duplication_product_success';
                         $success  = 1;
                     }
                 }
                 else 
                 {
-                    $textMessage = $translator->translate('tr_meliscore_error_message');
+                    $textMessage = 'tr_meliscore_error_message';
                 }
             }
             else 
             {
-                $textMessage = $translator->translate('tr_meliscommerce_duplication_product_unable');
+                $textMessage = 'tr_meliscommerce_duplication_product_unable';
             }
         }
         
@@ -308,9 +325,8 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
             'errors' => $errors,
         );
         
-        if ($success){
-            $this->getEventManager()->trigger('meliscommerce_duplicate_variant_end', $this, $response);
-        }
+        $this->getEventManager()->trigger('meliscommerce_duplicate_variant_end', 
+            $this, array_merge($response, array('typeCode' => 'ECOM_PRODUCT_DUPLICATE', 'itemId' => $prdId)));
         
         return new JsonModel($response);
     }

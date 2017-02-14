@@ -4,8 +4,8 @@ $(document).ready(function() {
 	var body = $("body");
 	
 	body.on("click", ".editvariant", function(){
-		var variantId   = $(this).parent().parent().attr('id');
-		var variantName = $(this).parent().parent().find("td a").data("variantname");
+		var variantId   = $(this).closest('tr').attr('id');
+		var variantName = $(this).closest('tr').find("td a").data("variantname");
 		var productId   = $(this).closest('.container-level-a').attr('id').replace(/[^0-9]/g,'');
 		var prodTabId   = productId+"_id_meliscommerce_products_page";
 		melisCommerce.disableAllTabs();
@@ -64,11 +64,11 @@ $(document).ready(function() {
 			function(){
 				melisCommerce.postSave(url, dataString, function(data){
 					if(data.success){				
-						melisHelper.melisOkNotification( data.textTitle, data.textMessage, '#72af46' );
+						melisHelper.melisOkNotification( data.textTitle, data.textMessage );
 						melisHelper.zoneReload(melisCommerce.getCurrentProductId()+"_id_meliscommerce_products_page_content_tab_variant_content_container", "meliscommerce_products_page_content_tab_variant_content_container", {productId : melisCommerce.getCurrentProductId()});
 						melisHelper.tabClose(  variantId + "_id_meliscommerce_variants_page");
 					}else{
-						melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');				
+						melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);				
 					}		
 					melisCore.flashMessenger();	
 				}, function(data){
@@ -124,19 +124,19 @@ $(document).ready(function() {
 			})
 		});
 		
-		
 		melisCommerce.postSave(url, dataString, function(data){
 			if(data.success){
 				melisHelper.tabClose(  fixVarId + "id_meliscommerce_variants_page");
 				melisHelper.tabOpen(data.chunk.varSku, 'icon-tag-2', data.chunk.variantId+'_id_meliscommerce_variants_page', 'meliscommerce_variants_page', { variantId : data.chunk.variantId, productId : prodId});
-				melisHelper.melisOkNotification( data.textTitle, data.textMessage, '#72af46' );
+				melisHelper.melisOkNotification( data.textTitle, data.textMessage );
 				melisHelper.zoneReload(prodId+"_id_meliscommerce_products_page_content_tab_variant_content_container", "meliscommerce_products_page_content_tab_variant_content_container", {productId : prodId});
 				melisCommerce.setUniqueId(data.chunk.variantId);
 				melisCore.flashMessenger();
 			}else{
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');				
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);				
 			}	
 			melisCoreTool.done(".save-variant");
+			melisCore.flashMessenger();
 		}, function(data){
 			console.log(data);
 		});

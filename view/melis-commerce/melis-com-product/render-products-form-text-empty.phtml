@@ -8,7 +8,7 @@ if($this->typeData) {
     if((int) $this->typeData->ptt_field_type == 1){
         //$a =  ($prodText->ptt_name == 'Title') ? $prodText->ptt_name : $del.$prodText->ptt_name;
         $form->get('ptxt_field_short')->setAttribute('style', 'display:block')->setLabel($this->typeData->ptt_name  . ' (' . $this->typeData->ptt_code . ')</label>'.$del);
-        $form->get('ptxt_field_long')->setAttribute('style', 'display:none')->setLabel('');
+        //$form->get('ptxt_field_long')->setAttribute('style', 'display:none')->setLabel('');
     }
     if((int) $this->typeData->ptt_field_type == 2){
         $form->get('ptxt_field_long')

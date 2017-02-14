@@ -55,7 +55,7 @@ $(function(){
 	        	var melisKey = "meliscommerce_order_checkout_content";
 				melisHelper.zoneReload(zoneId, melisKey);
 			}else{
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
 			}
 		}).fail(function(){
 			alert( translations.tr_meliscore_error_message );
@@ -84,9 +84,9 @@ $(function(){
 				var zoneId = "id_meliscommerce_order_checkout_product_bakset";
 	        	var melisKey = "meliscommerce_order_checkout_product_bakset";
 				melisHelper.zoneReload(zoneId, melisKey);
-				melisHelper.melisOkNotification(data.textTitle, data.textMessage, '#72af46');
+				melisHelper.melisOkNotification(data.textTitle, data.textMessage);
 			}else{
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
 			}
 		}).fail(function(){
 			alert( translations.tr_meliscore_error_message );
@@ -162,7 +162,7 @@ $(function(){
 			if(data.success) {
 				$($(".orderCheckoutFirstStepBtn").data("tabid")).tab("show");
 			}else{
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
 			}
 			$(".orderCheckoutFirstStepBtn").button("reset");
 		}).fail(function(){
@@ -227,7 +227,7 @@ $(function(){
 				}, 300);
 				
 			}else{
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
 			}
 			btn.attr('disabled', false);
 		}).fail(function(){
@@ -319,8 +319,8 @@ $(function(){
 				melisHelper.zoneReload('id_meliscommerce_order_checkout_summary_delivery_address','meliscommerce_order_checkout_summary_delivery_address');
 				
 			}else{
-				melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
-				highlightErrors(data.success, data.errors,  activeTabId+" form");
+				melisHelper.melisMultiKoNotification(data.textTitle, data.textMessage, data.errors);
+				melisHelper.highlightMultiErrors(data.success, data.errors,  activeTabId+" form");
 			}
 			btn.attr('disabled', false);
 		}).fail(function(){
@@ -395,11 +395,17 @@ $(function(){
     $('body').on('click', '.orderCheckoutConfirmSummary', function () {
     	var btn = $(this);
     	var nxtTabid = $(this).data("tabid");
-    	var couponCode = $("#orderCheckoutCouponCode").val();
+    	
+    	var dataString = new Array;
+    	dataString.push({
+    		name : 'couponCode',
+    		value : ($("#orderCheckoutCouponCode").length) ? $("#orderCheckoutCouponCode").val() : ''
+    	});
     	
     	$.ajax({
 	        type        : "POST", 
-	        url         : "/melis/MelisCommerce/MelisComOrderCheckout/confirmOrderCheckoutSummary?couponCode="+couponCode,
+	        url         : "/melis/MelisCommerce/MelisComOrderCheckout/confirmOrderCheckoutSummary",
+	        data		: dataString,
 	        dataType    : "json",
 	        encode		: true
 		}).done(function(data) {
@@ -409,7 +415,7 @@ $(function(){
 				melisHelper.zoneReload("id_meliscommerce_order_checkout_payment_step_content", "meliscommerce_order_checkout_payment_step_content");
 				
 			}else{
-				melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisHelper.melisMultiKoNotification(data.textTitle, data.textMessage, data.errors);
 			}
 			btn.attr('disabled', false);
 		}).fail(function(){
@@ -477,73 +483,6 @@ window.updateVariantbasket = function(action, variantId, variantQty){
 	var zoneId = "id_meliscommerce_order_checkout_product_bakset";
 	var melisKey = "meliscommerce_order_checkout_product_bakset";
 	melisHelper.zoneReload(zoneId, melisKey, {action: action, variantId : variantId, variantQty : variantQty});
-}
-
-// Highliting errors from the Form field
-window.highlightErrors = function(success, errors, divContainer){
-	
-	// if all form fields are error color them red
-	if(success === 0){
-		
-		if(divContainer !== ''){
-			$("#" + divContainer + " .form-group label").css("color","#686868");
-		}
-		
-		$.each( errors, function( key, error ) { 
-			
-			if("form" in error){
-				$.each(this.form, function( fkey, fvalue ){
-					$("#" + fvalue + " .form-control[name='"+key +"']").prev("label").css("color","red");
-				});
-			}else{
-				if(divContainer !== ''){
-					$("#" + divContainer + " .form-control[name='"+key +"']").prev("label").css("color","red");
-				}
-			}
-		});
-	}
-	// remove red color for correctly inputted fields
-	else{
-		$("#" + divContainer + " .form-group label").css("color","#686868");
-	}
-}
-
-// Pop-up dialog for errors after validation
-window.melisKoNotification = function(title, message, errors, closeByButtonOnly){
-	
-	( closeByButtonOnly !== 'closeByButtonOnly' ) ? closeByButtonOnly = 'overlay-hideonclick' : closeByButtonOnly = '';
-
-	var errorTexts = '<h3>'+ title +'</h3>';
-		errorTexts +='<h4>'+ message +'</h4>';
-		$.each( errors, function( key, error ) {
-			if(key !== 'label'){
-				errorTexts += '<p class="modal-error-cont"><b>'+ (( errors[key]['label'] == undefined ) ? ((errors['label']== undefined) ? key : errors['label'] ) : errors[key]['label'] )+ ': </b>  ';
-				// catch error level of object
-				try {
-					$.each( error, function( key, value ) {
-						if(key !== 'label' && key !== 'form'){
-							
-							$errMsg = '';
-							if(value instanceof Object){
-								$errMsg = value[0];
-							}else{
-								$errMsg = value;
-							}
-							errorTexts += '<span><i class="fa fa-circle"></i>'+ $errMsg + '</span>';
-						}
-					});
-				} catch(Tryerror) {
-					if(key !== 'label' && key !== 'form'){
-						 errorTexts +=  '<span><i class="fa fa-circle"></i>'+ error + '</span>';
-					} 
-				}	
-				errorTexts += '</p>';
-			}
-		});
-		
-	var div = "<div class='melis-modaloverlay "+ closeByButtonOnly +"'></div>";
-	div += "<div class='melis-modal-cont KOnotif'>  <div class='modal-content'>"+ errorTexts +" <span class='btn btn-block btn-primary'>"+ translations.tr_meliscore_notification_modal_Close +"</span></div> </div>";
-	$body.append(div);
 }
 
 window.initCheckoutSelectContactTable = function(){

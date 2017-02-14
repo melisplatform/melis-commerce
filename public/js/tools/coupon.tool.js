@@ -1,6 +1,12 @@
 $(document).ready(function() {
 	var body = $("body");
 	
+	$body.on("click", ".orderPaymentCouponLink", function(){
+		var couponId   = $(this).data('couponid');
+		var couponName   = $(this).data('couponname');
+		couponTabOpen(couponName, couponId);
+	});
+	
 	// coupon list - refreshes the order list table
 	body.on("click", ".couponListRefresh", function(){
 		melisHelper.zoneReload("id_meliscommerce_coupon_list_content_table", "meliscommerce_coupon_list_content_table");
@@ -53,15 +59,13 @@ $(document).ready(function() {
  		dataString.push({ name: 'ccli_coupon_id', value : couponId});
  		melisCommerce.postSave(url, dataString, function(data){
 			if(data.success){
-				
-				melisHelper.melisOkNotification( data.textTitle, data.textMessage, '#72af46' );
+				melisHelper.melisOkNotification( data.textTitle, data.textMessage );
 				melisHelper.zoneReload(couponId+"_id_meliscommerce_coupon_tabs_content_assign_details", "meliscommerce_coupon_tabs_content_assign_details", { couponId : couponId });;
 				melisHelper.zoneReload(couponId+"_id_meliscommerce_coupon_tabs_content_assigned_details_table", "meliscommerce_coupon_tabs_content_assigned_details_table", { couponId : couponId });
-				melisCore.flashMessenger();
-				
 			}else{
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');				
-			}			
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);				
+			}	
+			melisCore.flashMessenger();
 		}, function(data){
 			console.log(data);
 		});
@@ -108,12 +112,11 @@ $(document).ready(function() {
 			if(data.success){
 				melisHelper.tabClose(  couponId + "_id_meliscommerce_coupon_page");
 				couponTabOpen(translations.tr_meliscommerce_coupon_page+' '+data.chunk.coup_code, data.chunk.couponId);				
-				melisHelper.melisOkNotification( data.textTitle, data.textMessage, '#72af46' );
+				melisHelper.melisOkNotification( data.textTitle, data.textMessage );
 				melisHelper.zoneReload("id_meliscommerce_coupon_list_content_table", "meliscommerce_coupon_list_content_table");				
-				melisCore.flashMessenger();				
 			}else{
 				
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
 				melisCoreTool.highlightErrors(data.success, data.errors, couponId+"_id_meliscommerce_coupon_page");
 				$(".couponEnd").prev("label").css("color","#686868");
 				$.each( data.errors, function( key, error ) {
@@ -125,7 +128,8 @@ $(document).ready(function() {
 						$("#" + couponId+"_id_meliscommerce_coupon_page" + " .form-control[name='coup_discount_value']").prev("label").css("color","red");
 					}
 				});
-			}			
+			}	
+			melisCore.flashMessenger();	
 		}, function(data){
 			console.log(data);
 		});
@@ -160,19 +164,18 @@ $(document).ready(function() {
 			translations.tr_meliscommerce_coupon_list_page_coupon, 
 			translations.tr_meliscommerce_coupon_delete_confirm,
 			function(){
-				melisCommerce.postSave(url, dataString, function(data){
-					if(data.success){				
-						melisHelper.melisOkNotification( data.textTitle, data.textMessage, '#72af46' );
-						melisHelper.zoneReload("id_meliscommerce_coupon_list_content_table", "meliscommerce_coupon_list_content_table");
-						melisHelper.tabClose(  couponId + "_id_meliscommerce_coupon_page");
-					}else{
-						melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');				
-					}		
-					melisCore.flashMessenger();	
-				}, function(data){
-					console.log(data);
-				})
-			
+			melisCommerce.postSave(url, dataString, function(data){
+				if(data.success){				
+					melisHelper.melisOkNotification( data.textTitle, data.textMessage );
+					melisHelper.zoneReload("id_meliscommerce_coupon_list_content_table", "meliscommerce_coupon_list_content_table");
+					melisHelper.tabClose(  couponId + "_id_meliscommerce_coupon_page");
+				}else{
+					melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);				
+				}		
+				melisCore.flashMessenger();	
+			}, function(data){
+				console.log(data);
+			})
 		});
 		
 		melisCoreTool.done(this);
@@ -200,20 +203,18 @@ $(document).ready(function() {
 			translations.tr_meliscommerce_coupon_list_page_coupon, 
 			translations.tr_meliscommerce_coupon_delete_confirm_remove,
 			function(){
-				melisCommerce.postSave(url, dataString, function(data){
-					if(data.success){				
-						melisHelper.melisOkNotification( data.textTitle, data.textMessage, '#72af46' );
-						melisHelper.zoneReload(couponId+"_id_meliscommerce_coupon_tabs_content_assign_details", "meliscommerce_coupon_tabs_content_assign_details", { couponId : couponId });;
-						melisHelper.zoneReload(couponId+"_id_meliscommerce_coupon_tabs_content_assigned_details_table", "meliscommerce_coupon_tabs_content_assigned_details_table", { couponId : couponId });
-						
-					}else{
-						melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');				
-					}		
-					melisCore.flashMessenger();	
-				}, function(data){
-					console.log(data);
-				})
-			
+			melisCommerce.postSave(url, dataString, function(data){
+				if(data.success){				
+					melisHelper.melisOkNotification( data.textTitle, data.textMessage );
+					melisHelper.zoneReload(couponId+"_id_meliscommerce_coupon_tabs_content_assign_details", "meliscommerce_coupon_tabs_content_assign_details", { couponId : couponId });;
+					melisHelper.zoneReload(couponId+"_id_meliscommerce_coupon_tabs_content_assigned_details_table", "meliscommerce_coupon_tabs_content_assigned_details_table", { couponId : couponId });
+				}else{
+					melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);				
+				}		
+				melisCore.flashMessenger();
+			}, function(data){
+				console.log(data);
+			})
 		});
 		$('#'+couponId+"_id_meliscommerce_coupon_tabs_content_assign_details").addClass('active');
 		melisCoreTool.done(this);

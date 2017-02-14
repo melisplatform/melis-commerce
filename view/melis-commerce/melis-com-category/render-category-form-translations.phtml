@@ -21,11 +21,13 @@
                 		<li class="">
                 			<a class="clearfix" data-toggle="tab" href="#<?php echo $val['elang_locale'].'_categoryInfo' ?>" aria-expanded="false">
 								<?php
-								$imageData = $val['elang_flag'];
-								$image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay pull-right"/>' : '<i class="fa fa-globe"></i>';
-
-								?>
-								<span class="pull-right"><?php echo $image; ?></span>
+								    $imageData = $val['elang_flag'];
+                                    if(!empty($imageData)){
+                                        echo '<span class="pull-right"><img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay pull-right"/></span>';
+                                    }else{
+                                        echo '<i class="fa fa-globe"></i>';
+                                    }								
+                                ?>
                 				<span><?php echo $val['elang_name']?></span>
                 			</a>
                 		</li>

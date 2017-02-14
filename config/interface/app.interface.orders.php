@@ -7,15 +7,24 @@ return array(
                 'id' => '',
                 'name' => 'tr_meliscommerce_orders_Orders',
                 'rightsDisplay' => 'none',
+                'orderStatus' => array(
+                    'new' => 1,
+                    'onHold' => 2,
+                    'shipped' => 3,
+                    'delivered' => 4,
+                    'cancelled' => 5,
+                    'errorPayment' => 6,
+                    'temporary' => -1
+                ),
             ),
             'ressources' => array(
                 'js' => array(
                     '/MelisCommerce/js/tools/order.tool.js',
-                    '/MelisCommerce/js/tools/order.steps.js',
                 ),
                 'css' => array(
-					'/MelisCommerce/css/order-steps.css', 
-					'/MelisCommerce/css/a-style.css', 
+                    '/MelisCommerce/css/a-style.css', 
+                    '/MelisCommerce/css/orders.css', 
+// 					'/MelisCommerce/css/order-steps.css', 
                 ),
             ),
             'datas' => array(

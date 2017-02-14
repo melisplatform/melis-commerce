@@ -2,12 +2,12 @@
 return array(
     'tr_meliscommerce_assoc_var_col_id' => 'ID',
     'tr_meliscommerce_assoc_var_col_status' => 'Status',
-    'tr_meliscommerce_assoc_var_col_assigned' => 'Assigned',
+    'tr_meliscommerce_assoc_var_col_assigned' => 'Associated',
     'tr_meliscommerce_assoc_var_col_attributes' => 'Attributes',
     'tr_meliscommerce_assoc_var_col_sku' => 'SKU',
     'tr_meliscommerce_assoc_var_col_action' => 'Action',
     'tr_meliscommerce_assoc_var_col_action_assign' => 'Assign',
-    'tr_meliscommerce_assoc_var_product_name' => 'Product Name',
+    'tr_meliscommerce_assoc_var_product_name' => 'Product name',
     'tr_meliscommerce_assoc_var_view' => 'View',
 
     'tr_meliscommerce_assoc_var_assoc_title' => 'Associate variant',

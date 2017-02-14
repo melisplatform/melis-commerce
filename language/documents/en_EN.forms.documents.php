@@ -27,17 +27,17 @@ return array(
     
     // Delete Message Confimation
     'tr_meliscommerce_documents_delete_file_title' => 'Delete file',
-    'tr_meliscommerce_documents_delete_file_msg_confirm' => 'Are you sure you want to remove this file?',
+    'tr_meliscommerce_documents_delete_file_msg_confirm' => 'Are you sure you want to delete this file?',
     'tr_meliscommerce_documents_delete_image_title' => 'Delete image',
-    'tr_meliscommerce_documents_delete_image_msg_confirm' => 'Are you sure you want to remove this image?',
-    'tr_meliscommerce_documents_delete_file_success' => 'File has been successfully removed',
-    'tr_meliscommerce_documents_delete_image_success' => 'Image has been successfully removed',
-    'tr_meliscommerce_documents_delete_file_fail' => 'Unable to remove file, please try again later.',
-    'tr_meliscommerce_documents_delete_image_fail' => 'Unable to remove image, please try again later.',
-    'tr_meliscommerce_documents_delete_file_rights_issue' => 'Unable to remove file, please check your rights',
-    'tr_meliscommerce_documents_delete_image_rights_issue' => 'Unable to remove image, please check your rights',
-    'tr_meliscommerce_documents_delete_file_not_exists' => 'Unable to remove, file does not exists',
-    'tr_meliscommerce_documents_delete_image_not_exists' => 'Unable to remove, image does not exists',
+    'tr_meliscommerce_documents_delete_image_msg_confirm' => 'Are you sure you want to delete this image?',
+    'tr_meliscommerce_documents_delete_file_success' => 'File has been successfully deleted',
+    'tr_meliscommerce_documents_delete_image_success' => 'Image has been successfully deleted',
+    'tr_meliscommerce_documents_delete_file_fail' => 'Unable to delete file, please try again later',
+    'tr_meliscommerce_documents_delete_image_fail' => 'Unable to delete image, please try again later',
+    'tr_meliscommerce_documents_delete_file_rights_issue' => 'Unable to delete file, please check your rights',
+    'tr_meliscommerce_documents_delete_image_rights_issue' => 'Unable to delete image, please check your rights',
+    'tr_meliscommerce_documents_delete_file_not_exists' => 'Unable to delete, file does not exists',
+    'tr_meliscommerce_documents_delete_image_not_exists' => 'Unable to delete, image does not exists',
     
     // Validations
     'tr_meliscommerce_documents_form_file_type_empty' => 'Please select a file to upload',
@@ -77,12 +77,12 @@ return array(
     'tr_meliscommerce_documents_upload_doc_name_long' => 'Name too long, it should not be greater than 255 characters',
     
     // for Edting an Image
-    'tr_meliscommerce_documents_update_image_title' => 'Edit Image',
+    'tr_meliscommerce_documents_update_image_title' => 'Edit image',
     'tr_meliscommerce_documents_update_successful' => 'Image has been updated successfully',
     'tr_meliscommerce_docuemts_update_failed' => 'Unable to update image, please try again later',
     
     // for Editing a File
-    'tr_meliscommerce_documents_update_file_title' => 'Edit File',
+    'tr_meliscommerce_documents_update_file_title' => 'Edit file',
     'tr_meliscommerce_documents_update_file_successful' => 'File has been updated successfully',
     'tr_meliscommerce_docuemts_update_file_failed' => 'Unable to update file, please try again later',
     

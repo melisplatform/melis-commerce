@@ -176,14 +176,14 @@ class MelisComAssociateVariantController extends AbstractActionController
 
             $start = $this->getRequest()->getPost('start');
             $length =  $this->getRequest()->getPost('length');
-
+            $length = ($length>0) ? $length : null;
             $search = $this->getRequest()->getPost('search');
             $search = $search['value'] ? $search['value'] : null;
 
             $dataCount =  $variantsTable->getTotalData();
 
-            $getData = $variantsTable->getAssocVariantsList($search, $start, $length, $selCol, $sortOrder);
-
+            $getData = $variantsTable->getAssocVariantsList($variantId, $search, $start, $length, $selCol, $sortOrder);
+            
             foreach($getData->toArray() as $key => $value) {
                 if( (int) $value['var_id'] !== $variantId) {
                     $tableData[] = $value;
@@ -206,12 +206,16 @@ class MelisComAssociateVariantController extends AbstractActionController
                 $varAttrText = '';
                 $tableData[$ctr]['DT_RowId'] = $tableData[$ctr]['var_id'];
 
-                if((isset($tableData[$ctr]['avar_id_1']) && !empty($tableData[$ctr]['avar_id_1'])) ||
-                    (isset($tableData[$ctr]['avar_id_2']) && !empty($tableData[$ctr]['avar_id_2']))
-                ) {
+//                 if((isset($tableData[$ctr]['avar_id_1']) && !empty($tableData[$ctr]['avar_id_1'])) ||
+//                     (isset($tableData[$ctr]['avar_id_2']) && !empty($tableData[$ctr]['avar_id_2']))
+//                 ) {
+//                     $assigned = '<span class="text-success"><i class="fa fa-check"></i></span>';
+//                 }
+                
+                if($this->checkAssociation($variantId,$tableData[$ctr]['var_id'] )){
                     $assigned = '<span class="text-success"><i class="fa fa-check"></i></span>';
                 }
-
+                
                 $varTextData = $this->getVarAttributeText((int) $tableData[$ctr]['var_id']);
                 if($varTextData) {
                     foreach($varTextData as $vText) {
@@ -241,7 +245,7 @@ class MelisComAssociateVariantController extends AbstractActionController
 
     public function getAssocVariantListAction()
     {
-        $variantsTable = $this->getServiceLocator()->get('MelisEcomVariantTable');
+        $variantsTable = $this->getServiceLocator()->get('MelisEcomAssocVariantTable');
 
         $colId = array();
         $dataCount = 0;
@@ -263,13 +267,13 @@ class MelisComAssociateVariantController extends AbstractActionController
 
             $start = $this->getRequest()->getPost('start');
             $length =  $this->getRequest()->getPost('length');
-
+            $length = ($length>0) ? $length : null;
             $search = $this->getRequest()->getPost('search');
             $search = $search['value'] ? $search['value'] : null;
 
-            $dataCount =  $variantsTable->getTotalData();
-
-            $getData = $variantsTable->getAssocVariantsListById($variantId, $search, $start, $length, $selCol, $sortOrder);
+            $dataCount =  $variantsTable->getVariantAssociationById($variantId)->count();
+            
+            $getData = $variantsTable->getVariantAssociationById($variantId, $search, $start, $length, $selCol, $sortOrder);
             if($getData) {
                 foreach($getData->toArray() as $key => $value) {
                     if( (int) $value['var_id'] !== $variantId) {
@@ -318,13 +322,14 @@ class MelisComAssociateVariantController extends AbstractActionController
         return new JsonModel(array(
             'draw' => (int) $draw,
             'recordsTotal' => $dataCount,
-            'recordsFiltered' => $variantsTable->getVarTotalFiltered(),
+            'recordsFiltered' => $getData->count(),
             'data' => $tableData,
         ));
     }
 
     public function assignVariantAction()
     {
+        $variantAssId = null;
         $success = 0;
         $textTitle = 'tr_meliscommerce_assoc_var_assoc_title';
         $textMessage = 'tr_meliscommerce_assoc_var_assoc_ko';
@@ -339,15 +344,18 @@ class MelisComAssociateVariantController extends AbstractActionController
             $assocVarTable = $this->getServiceLocator()->get('MelisEcomAssocVariantTable');
             $isAssociated = $assocVarTable->getVariantAssociationData($assignTo, $assignedVar)->current();
             if(empty($isAssociated)) {
-                $success = $assocVarTable->save(array(
-                    'avar_one' =>  $assignTo, 'avar_two' => $assignedVar, 'avar_type_id' => 1
+                $variantAssId = $assocVarTable->save(array(
+                    'avar_one' =>  $assignTo, 
+                    'avar_two' => $assignedVar, 
+                    'avar_type_id' => 1
                 ));
+                
+                $success = 1;
             }
             else {
                 $textMessage = 'tr_meliscommerce_assoc_var_assoc_duplicate';
             }
-
-
+            
             if($success) {
                 $success = 1;
                 $textMessage = 'tr_meliscommerce_assoc_var_assoc_ok';
@@ -356,16 +364,20 @@ class MelisComAssociateVariantController extends AbstractActionController
 
         $response = array(
             'success' => $success,
-            'textTitle' => $this->getTool2()->getTranslation($textTitle),
-            'textMessage' => $this->getTool2()->getTranslation($textMessage),
+            'textTitle' => $textTitle,
+            'textMessage' => $textMessage,
             'errors' => $errors
         );
-        $this->getEventManager()->trigger('meliscommerce_assoc_var_assoc_end', $this, $response);
+        
+        $this->getEventManager()->trigger('meliscommerce_assoc_var_assoc_end', 
+            $this, array_merge($response, array('typeCode' => 'ECOM_VARIANT_ASSOCIATE', 'itemId' => $variantAssId)));
+        
         return new JsonModel($response);
     }
 
     public function removeAssociationAction()
     {
+        $variantAssId = null;
         $success = 0;
         $textTitle = 'tr_meliscommerce_assoc_var_remove_title';
         $textMessage = 'tr_meliscommerce_assoc_var_remove_ko';
@@ -381,23 +393,23 @@ class MelisComAssociateVariantController extends AbstractActionController
 
             $data = $assocVarTable->getVariantAssociationData($variantId, $assignedVar)->current();
             if($data) {
-                $success = (int) $assocVarTable->deleteById($data->avar_id);
-                if($success) {
+                $variantAssId = $assocVarTable->deleteById($data->avar_id);
+                if($variantAssId) {
                     $success = 1;
                     $textMessage = 'tr_meliscommerce_assoc_var_remove_ok';
                 }
-
             }
         }
 
         $response = array(
             'success' => $success,
-            'textTitle' => $this->getTool1()->getTranslation($textTitle),
-            'textMessage' => $this->getTool1()->getTranslation($textMessage),
+            'textTitle' => $textTitle,
+            'textMessage' => $textMessage,
             'errors' => $errors
         );
 
-        $this->getEventManager()->trigger('meliscommerce_assoc_var_remove_assoc_end', $this, $response);
+        $this->getEventManager()->trigger('meliscommerce_assoc_var_remove_assoc_end', 
+            $this, array_merge($response, array('typeCode' => 'ECOM_VARIANT_ASSOCIATE_REMOVE', 'itemId' => $variantAssId)));
 
         return new JsonModel($response);
     }
@@ -466,6 +478,12 @@ class MelisComAssociateVariantController extends AbstractActionController
         }
 
         return null;
+    }
+    
+    public function checkAssociation($var_one, $var_two )
+    {
+        $variantAssocTable = $this->getServiceLocator()->get('MelisEcomAssocVariantTable');
+        return $variantAssocTable->getVariantAssociationData($var_one, $var_two)->toArray();
     }
 
 

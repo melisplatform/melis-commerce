@@ -14,10 +14,12 @@ a {
 
 .dt_orderdatepicker {
     cursor: pointer;
-    border: 1px solid #CECBCB;
-    /* padding: 10px 5px; */
+    border: 1px solid rgba(206, 203, 203, 0.52);
+    padding: 2px 5px 1px;
     border-radius: 3px;
-    padding: 8px 8px 10px;
+    background: #fff;
+    margin-right: 5px;
+    margin-left: 5px;
 }
 
 /* melis commerce heading */
@@ -58,7 +60,7 @@ a {
 }
 
 .filter-bar {
-	line-height: 0;
+	/*line-height: 0;*/
 }
 
 /* filter bar left */
@@ -113,12 +115,12 @@ a {
 	display: inline-block;
 	position: relative;
 	height: 20px;
-	padding: 18px 0;
+	padding: 0px;
 }
 .meliscommerce-order-checkout-product-list-countries .pays {
 	margin: 0 7px;
 }
-
+ 
 /* filter searchbar ----------*/
 .filter-searchbar{
 	width: 70%;
@@ -829,7 +831,7 @@ textarea {
 
 /* TABS */
 .content-cont .nav-tabs.product-text-tab li:hover {
-	border-bottom: 1px solid #e5e5e5;
+	/*border-bottom: 1px solid #e5e5e5; 8*/
 }
 .content-cont .product-text-tab li.active:hover a{
 	background: #932E2A;
@@ -841,7 +843,7 @@ textarea {
 .content-cont .nav-tabs.product-text-tab li a:hover{
 	color: #fff;
 	background: #932E2A;
-	border-bottom: 1px solid #e5e5e5;
+	/*border-bottom: 1px solid #e5e5e5;*/
 	font-weight: normal;
 	text-decoration: none;
 	border-color: #eee;

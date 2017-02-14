@@ -739,13 +739,13 @@ class MelisComVariantController extends AbstractActionController
     {
         
         $ctyGeneral =   '<li class="">
-                    		<a class="clearfix" data-toggle="tab" href="#'.$this->getVariantId().'_stock-General" data-country="General" aria-expanded="true"><span>General</span>
+                    		<a data-toggle="tab" href="#'.$this->getVariantId().'_stock-General" data-country="General" aria-expanded="true"><span>General</span>
                     			<i class="fa fa-globe"></i>
                     		</a>
                     	</li>';
         $ctyFormat =    '<li class="">
-                    		<a class="clearfix" data-toggle="tab" href="#%s_stock-%s" data-country="%s" aria-expanded="true"><span>%s</span>
-                     			<span class="pull-right">%s</span>
+                    		<a data-toggle="tab" href="#%s_stock-%s" data-country="%s" aria-expanded="true"><span>%s</span>
+                     			%s
                     		</a>
                     	</li>';
         
@@ -754,7 +754,7 @@ class MelisComVariantController extends AbstractActionController
         $ctyData[] = $ctyGeneral;
         foreach ($countries as $country){
             $imageData = $country->ctry_flag;
-            $image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay pull-right"/>' : '<i class="fa fa-globe"></i>';
+            $image = !empty($imageData) ? '<span class="pull-right"><img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay pull-right"/></span>' : '<i class="fa fa-globe"></i>';
             $ctyData[] = sprintf($ctyFormat, $this->getVariantId(), str_replace(' ', '', $country->ctry_name), $country->ctry_name, $country->ctry_name, $image);
         }
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -785,9 +785,17 @@ class MelisComVariantController extends AbstractActionController
         $stockList = $variantSvc->getVariantStocksById($this->getVariantId());
         $c = 1;
         //set general stocks
+        $emptyDate = '0000-00-00 00:00:00';
         foreach($stockList as $stock){
             if($stock->stock_country_id == 0){
-                $stock->stock_next_fill_up = $this->getTool()->dateFormatLocale($stock->stock_next_fill_up);
+                $checkDate = (string) $stock->stock_next_fill_up;
+                if($checkDate != $emptyDate) {
+                    $stock->stock_next_fill_up = $this->getTool()->dateFormatLocale($stock->stock_next_fill_up);
+                }
+                else {
+                    $stock->stock_next_fill_up = null;
+                }
+
                 $data[0] = (array)$stock;
             }
         }
@@ -797,7 +805,14 @@ class MelisComVariantController extends AbstractActionController
         foreach($countries as $country){            
             foreach($stockList as $stock){
                 if($stock->stock_country_id == $country->ctry_id){
-                    $stock->stock_next_fill_up = $this->getTool()->dateFormatLocale($stock->stock_next_fill_up);
+                    $checkDate = (string) $stock->stock_next_fill_up;
+                    if($checkDate != $emptyDate) {
+                        $stock->stock_next_fill_up = $this->getTool()->dateFormatLocale($stock->stock_next_fill_up);
+                    }
+                    else {
+                        $stock->stock_next_fill_up = null;
+                    }
+
                     $data[$c] = (array)$stock;                    
                 }
             }
@@ -826,10 +841,11 @@ class MelisComVariantController extends AbstractActionController
         $success = false;
         $data = array();
         $errors  = array();
-        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_variants_page_save_fail');
-        $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_variants_page');
-        $variantId = '';
+        $textMessage = 'tr_meliscommerce_variants_page_save_fail';
+        $textTitle = 'tr_meliscommerce_variants_page';
+        $variantId = null;
         $varSku = '';
+        $logTypeCode = '';
         $container = new Container('meliscommerce');
         unset($container['variant-tmp-data']);
         //get services
@@ -842,12 +858,20 @@ class MelisComVariantController extends AbstractActionController
             {
                 if (!empty($container['variant-tmp-data']['success'])){
                     $success = $container['variant-tmp-data']['success'];
-                    $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_variants_page_save_success');
                 }
                 if (!empty($container['variant-tmp-data']['errors']))
                     $errors = $container['variant-tmp-data']['errors'];
                 if (!empty($container['variant-tmp-data']['datas']))
                     $data = $container['variant-tmp-data']['datas'];
+            }
+            
+            $postVlaues = $this->getRequest()->getPost();
+            
+            if (!empty($postVlaues['variantId'])){
+                $logTypeCode = 'ECOM_VARIANT_UPDATE';
+                $variantId= $postVlaues['variantId'];
+            }else{
+                $logTypeCode = 'ECOM_VARIANT_ADD';
             }
             
             unset($container['variant-tmp-data']);
@@ -857,8 +881,10 @@ class MelisComVariantController extends AbstractActionController
                 if($variant){
                     $varSku = $variant->var_sku;
                 }
+                $textMessage = 'tr_meliscommerce_variants_page_save_success';
             }                     
         }
+        
         $response = array(
             'success' => $success,
             'textTitle' => $textTitle,
@@ -866,7 +892,10 @@ class MelisComVariantController extends AbstractActionController
             'errors' => $errors,
             'chunk' => array('variantId' => $variantId,'varSku' => $varSku),
         );
-        $this->getEventManager()->trigger('meliscommerce_variant_save_end', $this, $response);
+        
+        $this->getEventManager()->trigger('meliscommerce_variant_save_end', 
+            $this, array_merge($response, array('typeCode' => $logTypeCode, 'itemId' => $variantId)));
+        
         return new JsonModel($response);
     }
     
@@ -1094,20 +1123,23 @@ class MelisComVariantController extends AbstractActionController
     
     public function deleteVariantAction()
     {   
+        $variantId = null;
         $response = array();
         $success = 0;
         $errors  = array();
-        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_variants_delete_fail');
-        $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_variants_page');
+        $textMessage = 'tr_meliscommerce_variants_delete_fail';
+        $textTitle = 'tr_meliscommerce_variants_page';
         
         $varSvc = $this->getServiceLocator()->get('MelisComVariantService');
         if($this->getRequest()->isPost()){
             $postValues = get_object_vars($this->getRequest()->getPost());
-           
+            
+            $variantId = $postValues['var_id'];
+            
             $this->getEventManager()->trigger('meliscommerce_variant_delete_start', $this, array());
-            $success = $varSvc->deleteVariantById($postValues['var_id']);           
+            $success = $varSvc->deleteVariantById($variantId);           
             if($success){
-                $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_variants_delete_success');
+                $textMessage = 'tr_meliscommerce_variants_delete_success';
                 $success = 1;
             }          
         } 
@@ -1118,7 +1150,10 @@ class MelisComVariantController extends AbstractActionController
             'textMessage' => $textMessage,
             'errors' => $errors,
         );
-        $this->getEventManager()->trigger('meliscommerce_variant_delete_end', $this, $response);
+        
+        $this->getEventManager()->trigger('meliscommerce_variant_delete_end', 
+            $this, array_merge($response, array('typeCode' => 'ECOM_VARIANT_DELETE', 'itemId' => $variantId)));
+        
         return new JsonModel($response);
     }
     

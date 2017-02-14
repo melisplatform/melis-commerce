@@ -3,8 +3,7 @@ $(function(){
 	var zoneId = "id_meliscommerce_language_list_page_content_modal_form";
 	var melisKey = 'meliscommerce_language_list_page_content_modal_form';
 	var modalUrl = '/melis/MelisCommerce/MelisComLanguage/renderLanguageListPageModalContainer';
-
-
+	
 	$(document).on("submit", "form#ecomlanguageform", function(e) {
 		saveType = $(this).data("savetype");
 		var formData = new FormData($(this)[0]);
@@ -30,10 +29,10 @@ $(function(){
 			if(data.success) {
 				$("div.modal").modal("hide");
 				$("#" + activeTabId + " .melis-refreshTable").trigger("click");
-				melisHelper.melisOkNotification(data.textTitle, data.textMessage, '#72af46');
+				melisHelper.melisOkNotification(data.textTitle, data.textMessage);
 			}
 			else {
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
 				melisCoreTool.highlightErrors(data.success, data.errors, "id_meliscommerce_language_list_page_content_modal_form form#ecomlanguageform");
 			}
 			melisCore.flashMessenger();
@@ -47,7 +46,7 @@ $(function(){
 
 
 	body.on("click", ".btnEcomLangDelete", function() {
-		var id = $(this).parent().parent().attr('id');
+		var id = $(this).parents("tr").attr("id");
 		melisCoreTool.pending(".btnEcomLangDelete");
 		melisCoreTool.confirm(
 			translations.tr_meliscore_common_yes, 
@@ -65,11 +64,10 @@ $(function(){
 	    	    	 	melisCoreTool.pending(".btnEcomLangDelete");
 		    	    	if(data.success) {
 		    	    		$("#" + activeTabId + " .melis-refreshTable").trigger("click");
-		    	    		melisHelper.melisOkNotification(data.textTitle, data.textMessage, '#72af46');
-		    	    		
+		    	    		melisHelper.melisOkNotification(data.textTitle, data.textMessage);
 		    	    	}
 		    	    	else {
-		    	    		melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+		    	    		melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
 		    	    	}
 		    	    	melisCoreTool.done(".btnEcomLangDelete");
 		    	    	melisCore.flashMessenger();
@@ -82,13 +80,12 @@ $(function(){
 	
 	body.on("click", ".btnEditComLang", function() {
 		melisCoreTool.pending(".btnEditComLang");
-		var id = $(this).parent().parent().attr('id');
+		var id = $(this).parents("tr").attr("id");
 		melisHelper.createModal(zoneId, melisKey, false, {langId: id, saveType : "edit"},  modalUrl, function() {
 			melisCoreTool.done(".btnEditComLang");
 		});
 		
 	});
-	
 	
 	body.on("click", "#btnComAddLang", function() {
 		melisCoreTool.pending("#btnComAddLang");
@@ -97,8 +94,4 @@ $(function(){
 		});
 		
 	});
-	
-
-	
-	
 });

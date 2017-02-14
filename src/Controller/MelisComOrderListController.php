@@ -319,6 +319,9 @@ class MelisComOrderListController extends AbstractActionController
         $clientCompanyTable = $this->getServiceLocator()->get('MelisEcomClientCompanyTable');
         $clientPersonTable = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
         $civilityTransTable = $this->getServiceLocator()->get('MelisEcomCivilityTransTable');
+        $melisCoreConfig = $this->getServiceLocator()->get('MelisCoreConfig');
+        
+        $confOrder = $melisCoreConfig->getItem('meliscommerce/conf/orderStatus');
         $colId = array();
         $dataCount = 0;
         $dataFilter = 0;
@@ -333,13 +336,11 @@ class MelisComOrderListController extends AbstractActionController
 						</label>
 					</div>';
         
-        $status = '<a data-toggle="modal" href="#id_meliscommerce_order_list_modal_container" class="updateListStatus" data-orderid="%s">
-				        <span class="btn order-status-%s">%s</span>
+        $status = '<a data-toggle="modal" href="#id_meliscommerce_order_list_modal_container" %s data-orderid="%s">
+				        <span %s class="btn order-status-%s">%s</span>
 				   </a>';
         
         
-//         $postValues = get_object_vars($this->getRequest()->getPost());
-//         echo '<pre>'; print_r($postValues); echo '</pre>'; die();
         if($this->getRequest()->isPost()) {
             $colId = array_keys($this->getTool()->getColumns());
             
@@ -380,7 +381,7 @@ class MelisComOrderListController extends AbstractActionController
             $orderData = $melisComOrderService->getOrderList($osta_id, $onlyValid, $langId, $clientId, null, $couponId, null, null, null, null, $start, $length, $colOrder, $search, $startDate, $endDate);
             $dataCount = count($orderData);
             $c = 0;
-//             echo '<pre>'; print_r($orderData); echo '</pre>'; die();
+
             foreach($orderData as $order){
                 $price = 0;
                 $products = 0;
@@ -389,6 +390,8 @@ class MelisComOrderListController extends AbstractActionController
                 $civt_min_name = '';
                 $cper_firstname = '';
                 $cper_name = '';
+                $disabled = '';
+                $class = 'class="updateListStatus"';
                 
                 $orderStatus = $melisComOrderService->getOrderStatusByOrderId($order->getId(), $langId)[0];
                 
@@ -417,13 +420,19 @@ class MelisComOrderListController extends AbstractActionController
                     $cper_firstname = $client->cper_firstname;
                     $cper_name = $client->cper_name;
                 }
+                
+                if($order->getOrder()->ord_status == $confOrder['cancelled']){
+                    $disabled = 'disabled';
+                    $class = '';
+                }
+               
                 $tableData[$c]['DT_RowId'] = $order->getId();
                 $tableData[$c]['order_table_checkbox'] = sprintf($checkBox, $order->getId());                
                 $tableData[$c]['ord_id'] = $order->getId();
                 $tableData[$c]['ord_reference'] = $order->getOrder()->ord_reference;
-                $tableData[$c]['ord_status'] = sprintf($status, $order->getId(), $orderStatus->osta_id, $orderStatus->ostt_status_name);
-                $tableData[$c]['products'] = $products;
-                $tableData[$c]['price'] = $price;
+                $tableData[$c]['ord_status'] = sprintf($status, $class, $order->getId(), $disabled, $orderStatus->osta_id, $orderStatus->ostt_status_name);
+                $tableData[$c]['products'] = number_format($products, 0);
+                $tableData[$c]['price'] = number_format($price, 2);
                 $tableData[$c]['ccomp_name'] = $company;
                 $tableData[$c]['civt_min_name'] = $civt_min_name;
                 $tableData[$c]['cper_firstname'] = $cper_firstname;
@@ -450,9 +459,16 @@ class MelisComOrderListController extends AbstractActionController
         $errors  = array();
         $data = array();
         $clientId = null;
-        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_order_page_save_fail');
-        $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_order_page');
+        $orderId = null;
+        $textMessage = 'tr_meliscommerce_order_page_save_fail';
+        $textTitle = 'tr_meliscommerce_order_page';
         $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
+        $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
+        $variantStockTbl = $this->getServiceLocator()->get('MelisEcomVariantStockTable');
+        $melisCoreConfig = $this->getServiceLocator()->get('MelisCoreConfig');
+        
+        $confOrder = $melisCoreConfig->getItem('meliscommerce/conf/orderStatus');
+        
         if($this->getRequest()->isPost()){
             $this->getEventManager()->trigger('meliscommerce_order_status_save_start', $this, array());
             $postValues = get_object_vars($this->getRequest()->getPost());
@@ -460,9 +476,29 @@ class MelisComOrderListController extends AbstractActionController
             unset($postValues['ord_id']);
             $data = $orderSvc->saveOrder($postValues, null, null, null, null, null, $orderId);
             
-            if(!empty($data)){
-                $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_order_page_save_success');
+            //if status is cancelled
+            if($postValues['ord_status'] == $confOrder['cancelled']){
+                $orderEntity = $orderSvc->getOrderById($orderId);
+                $order = $orderEntity->getOrder();
+                $basket = $orderEntity->getBasket();   
                 
+                foreach($basket as $item){
+                    $tmp = array();
+                    
+                    $variantStock = $variantStockTbl->getStocksByVariantId($item->obas_variant_id, $order->ord_country_id)->current();
+                    if(!empty($variantStock)){                        
+                        $tmp['stock_quantity'] = $item->obas_quantity + $variantStock->stock_quantity;                        
+                        $variantSvc->saveVariantStocks($tmp, $variantStock->stock_id);
+                    }else{
+                        $variantStock = $variantStockTbl->getStocksByVariantId($item->obas_variant_id, 0)->current();                        
+                        $tmp['stock_quantity'] = $item->obas_quantity + $variantStock->stock_quantity;
+                        $variantSvc->saveVariantStocks($tmp, $variantStock->stock_id);
+                    }                   
+                }
+            }
+            
+            if(!empty($data)){
+                $textMessage = 'tr_meliscommerce_order_page_save_success';
                 // Getting Order Client details
                 $clientData = $orderSvc->getOrderById($orderId);
                 $client = $clientData->getClient();
@@ -479,31 +515,11 @@ class MelisComOrderListController extends AbstractActionController
             'chunk' => $data,
             'clientId' => $clientId
         );
-        $this->getEventManager()->trigger('meliscommerce_order_status_save_end', $this, $response);
+        
+        $this->getEventManager()->trigger('meliscommerce_order_status_save_end', 
+            $this, array_merge($response, array('typeCode' => 'ECOM_ORDER_STATUS_UPDATE', 'itemId' => $orderId)));
+        
         return new JsonModel($response);
-    }
-    
-    public function testAction()
-    {
-       
-        $status = array();
-        $orderStatusTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTable');
-        $result = $orderStatusTable->fetchAll();
-        $c = 1;
-
-
-        foreach($result as $orderStatus){
-//             echo '<pre>';
-//             print_r($orderStatus);
-//             echo '</pre>';die();
-            echo 'select[name=ord_status] option:nth-child('.$c.'){
-                  color: '.$status->osta_color_code.';
-                  }'.PHP_EOL;
-            $c++;
-        }
-
-        die();
-
     }
     
     /**
@@ -516,7 +532,5 @@ class MelisComOrderListController extends AbstractActionController
         $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_order_list');
     
         return $melisTool;
-    
     }
-   
 }

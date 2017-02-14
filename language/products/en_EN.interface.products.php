@@ -72,7 +72,7 @@ return array(
     
     // Product Attribute
     'tr_meliscommerce_products_main_tab_attributes_container' => 'Attributes',
-    'tr_meliscommerce_products_page_attributes_refresh_list' => 'Refresh List',
+    'tr_meliscommerce_products_page_attributes_refresh_list' => 'Refresh',
     'tr_meliscommerce_products_page_attributes_remove_success' => 'Successfully removed attribute',
     'tr_meliscommerce_products_page_attributes_remove_fail' => 'Unable to remove attribute',
     'tr_meliscommerce_products_page_attributes_note' => '***Note: If dropdown does not work, try typing anything and press <strong>"&larr;</strong> backspace" on your keyboard.',

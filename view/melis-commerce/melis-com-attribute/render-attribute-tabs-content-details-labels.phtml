@@ -16,10 +16,12 @@
                 			<a class="clearfix" data-toggle="tab" href="#<?= $lang->elang_locale.$id ?>" aria-expanded="true">
 								<?php
 								$imageData = $lang->elang_flag;
-								$image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay pull-right"/>' : '<i class="fa fa-globe"></i>';
-
-								?>
-								<span class="pull-right"><?php echo $image; ?></span>
+                                if(!empty($imageData)){
+                                    echo '<span class="pull-right"><img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay pull-right"/></span>';
+                                }else{
+                                    echo '<i class="fa fa-globe"></i>';
+                                }
+								?>								
                 				<span><?= $lang->elang_name ?></span>
                 			</a>
                 		</li>                		

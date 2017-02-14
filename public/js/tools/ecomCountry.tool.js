@@ -13,7 +13,7 @@ $(function() {
 	
 	body.on("click", ".btnEditComCountry", function() {
 		melisCoreTool.pending(".btnEditComCountry");
-		var id = $(this).parent().parent().attr('id');
+		var id = $(this).parents("tr").attr("id");
 		melisHelper.createModal(zoneId, melisKey, false, {ctryId: id, saveType : "edit"},  modalUrl, function() {
 			melisCoreTool.done(".btnEditComCountry");
 		});
@@ -45,23 +45,22 @@ $(function() {
 			if(data.success) {
 				$("div.modal").modal("hide");
 				$("#" + activeTabId + " .melis-refreshTable").trigger("click");
-				melisHelper.melisOkNotification(data.textTitle, data.textMessage, '#72af46');
+				melisHelper.melisOkNotification(data.textTitle, data.textMessage);
 			}
 			else {
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
 				melisCoreTool.highlightErrors(data.success, data.errors, "id_meliscommerce_country_list_page_content_modal_form form#ecomCountryform");
 			}
 			melisCore.flashMessenger();
 			melisCoreTool.done("#btnComSaveCountry");
 		}).error(function(xhr) {
-			console.log(xhr);
 			melisCoreTool.done("#btnComSaveCountry");
 		});
 		e.preventDefault();
 	});
 	
 	body.on("click", ".btnComCountryDelete", function() {
-		var id = $(this).parent().parent().attr('id');
+		var id = $(this).parents("tr").attr("id");
 		melisCoreTool.pending(".btnComCountryDelete");
 		melisCoreTool.confirm(
 			translations.tr_meliscore_common_yes, 
@@ -75,24 +74,21 @@ $(function() {
 	    	        data		: {id : id},
 	    	        dataType    : 'json',
 	    	        encode		: true,
-	    	     }).success(function(data){
-	    	    	 	melisCoreTool.pending(".btnComCountryDelete");
-		    	    	if(data.success) {
-		    	    		$("#" + activeTabId + " .melis-refreshTable").trigger("click");
-		    	    		melisHelper.melisOkNotification(data.textTitle, data.textMessage, '#72af46');
-		    	    		
-		    	    	}
-		    	    	else {
-		    	    		melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
-		    	    	}
-		    	    	melisCoreTool.done(".btnComCountryDelete");
-		    	    	melisCore.flashMessenger();
-	    	     }).error(function(){
-	    	    	 alert( translations.tr_meliscore_error_message );
-	    	     });
+	    	    }).success(function(data){
+    	    	 	melisCoreTool.pending(".btnComCountryDelete");
+	    	    	if(data.success) {
+	    	    		$("#" + activeTabId + " .melis-refreshTable").trigger("click");
+	    	    		melisHelper.melisOkNotification(data.textTitle, data.textMessage);
+	    	    	}
+	    	    	else {
+	    	    		melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
+	    	    	}
+	    	    	melisCoreTool.done(".btnComCountryDelete");
+	    	    	melisCore.flashMessenger();
+	    	    }).error(function(){
+	    	    	alert( translations.tr_meliscore_error_message );
+	    	    });
 		});
 		melisCoreTool.done(".btnComCountryDelete");
 	});
-	
-	
 });

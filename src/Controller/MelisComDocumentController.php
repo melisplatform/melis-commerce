@@ -223,6 +223,7 @@ class MelisComDocumentController extends AbstractActionController
 
     public function saveDocumentAction()
     {
+        $documentId = null;
         $success = 0;
         $responseData = array();
         $errors = array();
@@ -230,6 +231,7 @@ class MelisComDocumentController extends AbstractActionController
         $textTitle = '';
         $request = $this->getRequest();
         $docType = '';
+        $logTypeCode = '';
         $melisCoreConfig = $this->getServiceLocator()->get('MelisCoreConfig');
         if($request->isPost()) {
 
@@ -237,6 +239,12 @@ class MelisComDocumentController extends AbstractActionController
 
             $postValues = get_object_vars($request->getPost());
 
+            $logTypeCode = 'ECOM_'.strtoupper($postValues['docRelationType']).'_'.strtoupper($postValues['docType']);
+            if (!empty($postValues['doc_id'])){
+                $logTypeCode .= '_UPDATE';
+            }else{
+                $logTypeCode .= '_ADD';
+            }
 
             if(in_array($postValues['docType'], $this->docTypes)) {
                 if(in_array($postValues['docRelationType'], $this->relationTypes)) {
@@ -246,9 +254,8 @@ class MelisComDocumentController extends AbstractActionController
                     $relationId   = (int) $postValues['relationId'];
                     $countryId = (int) $postValues['rdoc_country_id'];
 
-
-                    $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_documents_'.$docType.'_attachments');
-                    $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_save_fail_need_review');
+                    $textTitle = 'tr_meliscommerce_documents_'.$docType.'_attachments';
+                    $textMessage = 'tr_meliscommerce_documents_save_fail_need_review';
 
                     $comMediaDir = 'public/media/commerce/'.$relationType.'/'.$relationId.'/';
                     $comMediaPublicPath = '/media/commerce/'.$relationType.'/'.$relationId.'/';
@@ -324,13 +331,14 @@ class MelisComDocumentController extends AbstractActionController
                                             $data['doc_name'] = !empty($data['doc_name']) ? $this->renameIfDuplicateName($data['doc_name']) : $fname;
                                             $data['doc_subtype_id'] = isset($postValues['doc_subtype_id']) ? $postValues['doc_subtype_id'] : 0;
                                             $data['doc_path'] = str_replace('public/media/commerce', '/media/commerce', $savedDocFileName);
-                                            $success = $this->getDocSvc()->saveDocument($relationType, $relationId, $countryId, $data, $docId);
-                                            if($success) {
-                                                $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_'.$docType.'_save_success');
+                                            $documentId = $this->getDocSvc()->saveDocument($relationType, $relationId, $countryId, $data, $docId);
+                                            if($documentId) {
+                                                $textMessage = 'tr_meliscommerce_documents_'.$docType.'_save_success';
+                                                $success = 1;
                                             }
                                         }
                                         else {
-                                            $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_upload_fail_file');
+                                            $textMessage = 'tr_meliscommerce_documents_upload_fail_file';
                                         }
                                     }
                                     else {
@@ -340,7 +348,7 @@ class MelisComDocumentController extends AbstractActionController
                                     }
                                 }
                                 else {
-                                    $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_form_'.$docType.'_type_empty');
+                                    $textMessage = 'tr_meliscommerce_documents_form_'.$docType.'_type_empty';
                                 }
 
                             }
@@ -364,13 +372,14 @@ class MelisComDocumentController extends AbstractActionController
                                             //$data['doc_name'] = !empty($data['doc_name']) ? $this->renameIfDuplicateName($data['doc_name']) : $this->getFormattedFileName($adapter->getFileName());
                                             $data['doc_subtype_id'] = isset($postValues['doc_subtype_id']) ? $postValues['doc_subtype_id'] : 0;
                                             $data['doc_path'] = str_replace('public/media/commerce', '/media/commerce', $savedDocFileName);
-                                            $success = $this->getDocSvc()->saveDocument($relationType, $relationId, $countryId, $data, $docId);
-                                            if($success) {
-                                                $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_'.$docType.'_save_success');
+                                            $documentId = $this->getDocSvc()->saveDocument($relationType, $relationId, $countryId, $data, $docId);
+                                            if($documentId) {
+                                                $textMessage = 'tr_meliscommerce_documents_'.$docType.'_save_success';
+                                                $success = 1;
                                             }
                                         }
                                         else {
-                                            $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_upload_fail_file');
+                                            $textMessage = 'tr_meliscommerce_documents_upload_fail_file';
                                         }
                                     }
                                     else {
@@ -384,16 +393,16 @@ class MelisComDocumentController extends AbstractActionController
                                         unset($data['doc_name']);
                                     }
                                     $data['doc_subtype_id'] = isset($postValues['doc_subtype_id']) ? $postValues['doc_subtype_id'] : 0;
-                                    $success = $this->getDocSvc()->saveDocument($relationType, $relationId, $countryId, $data, $docId);
-                                    if($success) {
-                                        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_'.$docType.'_update_success');
+                                    $documentId = $this->getDocSvc()->saveDocument($relationType, $relationId, $countryId, $data, $docId);
+                                    if($documentId) {
+                                        $textMessage = 'tr_meliscommerce_documents_'.$docType.'_update_success';
                                         $success = 1;
                                     }
                                 }
                             }
                         }
                         else {
-                            $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_upload_path_rights_error');
+                            $textMessage = 'tr_meliscommerce_documents_upload_path_rights_error';
                         }
                     }
                     else {
@@ -426,7 +435,8 @@ class MelisComDocumentController extends AbstractActionController
             'textMessage' => $textMessage
         );
 
-        $this->getEventManager()->trigger('meliscommerce_document_save_'.$docType.'_end', $this, $response);
+        $this->getEventManager()->trigger('meliscommerce_document_save_'.$docType.'_end',
+            $this, array_merge($response, array('typeCode' => $logTypeCode, 'itemId' => $documentId)));
 
         return new JsonModel($response);
     }
@@ -528,9 +538,10 @@ class MelisComDocumentController extends AbstractActionController
 
     public function deleteAction()
     {
+        $id = null;
         $success = 0;
-        $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_documents_Documents');
-        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_delete_file_fail');
+        $textTitle = 'tr_meliscommerce_documents_Documents';
+        $textMessage = 'tr_meliscommerce_documents_delete_file_fail';
 
 
         if($this->getRequest()->isPost()) {
@@ -558,7 +569,7 @@ class MelisComDocumentController extends AbstractActionController
                         }
                     }
                     else {
-                        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_delete_'.$type.'_rights_issue');
+                        $textMessage = 'tr_meliscommerce_documents_delete_'.$type.'_rights_issue';
                     }
                 }
 
@@ -567,11 +578,10 @@ class MelisComDocumentController extends AbstractActionController
                 $data = $docTable->getEntryById($id)->current();
                 if(!$data) {
                     $success = 1;
-                    $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_delete_'.$type.'_success');
+                    $textMessage = 'tr_meliscommerce_documents_delete_'.$type.'_success';
                 }
-
                 else {
-                    $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_upload_path_not_exists');
+                    $textMessage = 'tr_meliscommerce_documents_upload_path_not_exists';
                 }
             }
         }
@@ -581,16 +591,20 @@ class MelisComDocumentController extends AbstractActionController
             'textTitle' => $textTitle,
             'textMessage' => $textMessage
         );
-        $this->getEventManager()->trigger('meliscommerce_document_delete_end', $this, $response);
+        
+        $this->getEventManager()->trigger('meliscommerce_document_delete_end', 
+            $this, array_merge($response, array('typeCode' => 'ECOM_'.strtoupper($formType).'_'.strtoupper($type).'_DELETE', 'itemId' => $id)));
+        
         return new JsonModel($response);
     }
 
     public function addImageTypeAction()
     {
+        $docTypeId = null;
         $success = 0;
         $errors = array();
-        $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_documents_image_type_add');
-        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_image_type_add_failed');;
+        $textTitle = 'tr_meliscommerce_documents_image_type_add';
+        $textMessage = 'tr_meliscommerce_documents_image_type_add_failed';
         $request = $this->getRequest();
 
         if($request->isPost()) {
@@ -611,11 +625,11 @@ class MelisComDocumentController extends AbstractActionController
                 $docService = $this->getServiceLocator()->get('MelisComDocumentService');
                 $data = $form->getData();
                 $data['dtype_parent_id'] = 1; // IMG
-                $success = (int) $docService->saveDocumentType($data['dtype_code'], $data['dtype_name'], $data['dtype_parent_id']);
-                if($success) {
-                    $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_image_type_add_success');
+                $docTypeId = $docService->saveDocumentType($data['dtype_code'], $data['dtype_name'], $data['dtype_parent_id']);
+                if($docTypeId) {
+                    $textMessage = 'tr_meliscommerce_documents_image_type_add_success';
+                    $success = 1;
                 }
-
             }
             else {
                 $errors = $form->getMessages();
@@ -634,27 +648,28 @@ class MelisComDocumentController extends AbstractActionController
                         $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
                 }
             }
-
         }
 
-
         $response = array(
-            'success' => (int) $success,
+            'success' => $success,
             'textTitle' => $textTitle,
             'textMessage' => $textMessage,
             'errors' => $errors
         );
 
-        $this->getEventManager()->trigger('meliscommerce_document_add_image_type_end', $this, $response);
+        $this->getEventManager()->trigger('meliscommerce_document_add_image_type_end',  
+            $this, array_merge($response, array('typeCode' => 'ECOM_DOCUMENT_IMAGE_TYPE_ADD', 'itemId' => $docTypeId)));
+        
         return new JsonModel($response);
     }
 
     public function addFileTypeAction()
     {
+        $docTypeId = null;
         $success = 0;
         $errors = array();
-        $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_documents_file_add_banner_title');
-        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_File_type_add_failed');;
+        $textTitle = 'tr_meliscommerce_documents_file_add_banner_title';
+        $textMessage = 'tr_meliscommerce_documents_File_type_add_failed';
         $request = $this->getRequest();
 
         if($request->isPost()) {
@@ -675,11 +690,11 @@ class MelisComDocumentController extends AbstractActionController
                 $docService = $this->getServiceLocator()->get('MelisComDocumentService');
                 $data = $form->getData();
                 $data['dtype_parent_id'] = null;
-                $success = $docService->saveDocumentType($data['dtype_code'], $data['dtype_name'], $data['dtype_parent_id']);
-                if($success) {
-                    $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_file_type_add_success');
+                $docTypeId = $docService->saveDocumentType($data['dtype_code'], $data['dtype_name'], $data['dtype_parent_id']);
+                if($docTypeId) {
+                    $textMessage = 'tr_meliscommerce_documents_file_type_add_success';
+                    $success = 1;
                 }
-
             }
             else {
                 $errors = $form->getMessages();
@@ -698,17 +713,17 @@ class MelisComDocumentController extends AbstractActionController
                         $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
                 }
             }
-
         }
 
         $response = array(
-            'success' => (int) $success,
+            'success' => $success,
             'textTitle' => $textTitle,
             'textMessage' => $textMessage,
             'errors' => $errors
         );
 
-        $this->getEventManager()->trigger('meliscommerce_document_add_file_type_end', $this, $response);
+        $this->getEventManager()->trigger('meliscommerce_document_add_file_type_end',  
+            $this, array_merge($response, array('typeCode' => 'ECOM_DOCUMENT_FILE_TYPE_ADD', 'itemId' => $docTypeId)));
         return new JsonModel($response);
     }
 

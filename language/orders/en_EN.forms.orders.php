@@ -1,7 +1,7 @@
 <?php
     return array(
         'tr_meliscommerce_orders_status' => 'Status',
-        'tr_meliscommerce_orders_code' => 'Order code',
+        'tr_meliscommerce_orders_code' => 'Order reference',
         'tr_meliscommerce_orders_select' => 'Order status',
         'tr_meliscommerce_orders_tracking_code' => 'Tracking code',
         'tr_meliscommerce_orders_tracking_details' => 'Shipping details',

@@ -46,7 +46,7 @@ if (!empty($this->zoneconfig['conf']['id']))
                                     </script>
                                  	<div align="right">
                                  		<button data-dismiss="modal" class="btn btn-danger pull-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
-                                 		<button class="btn btn-success" id="saveOrderStatus"><i class="fa fa-save"></i>  <?php echo $this->translate('tr_meliscommerce_orders_common_btn_save') ?></button>
+                                 		<button class="btn btn-success" id="saveOrderStatus" data-reference="<?= $this->order->ord_reference?>" ><i class="fa fa-save"></i>  <?php echo $this->translate('tr_meliscommerce_orders_common_btn_save') ?></button>
                                  	</div>                                 	
                             	</div>
                             </div>

@@ -201,7 +201,7 @@ $(function(){
 				melisHelper.melisOkNotification( data.textTitle, data.textMessage, '#72af46' );
 				melisHelper.zoneReload("id_meliscommerce_product_list_container", "meliscommerce_product_list_container");
 			}else{
-				melisSKUKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisSKUKoNotification(data.textTitle, data.textMessage, data.errors);
 			}
 			
 			highlightSKUErrors(data.success, data.errors);
@@ -213,12 +213,12 @@ $(function(){
 	});
 });
 
-function melisSKUKoNotification(title, message, errors, closeByButtonOnly){
+function melisSKUKoNotification(title, message, errors, closeByButtonOnly = 'closeByButtonOnly'){
 	
 	( closeByButtonOnly !== 'closeByButtonOnly' ) ? closeByButtonOnly = 'overlay-hideonclick' : closeByButtonOnly = '';
 
-	var errorTexts = '<h3>'+ title +'</h3>';
-	errorTexts +='<h4>'+ message +'</h4>';
+	var errorTexts = '<h3>'+ melisHelper.melisTranslator(title) +'</h3>';
+	errorTexts +='<h4>'+ melisHelper.melisTranslator(message) +'</h4>';
 	
 	$.each( errors, function( key, error ) {
 		if(key !== 'label'){

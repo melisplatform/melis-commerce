@@ -63,6 +63,11 @@ class MelisCommerceFlashMessengerListener extends MelisCoreGeneralListener imple
                 'meliscommerce_assoc_var_remove_assoc_end',
                 'meliscommerce_assoc_var_assoc_end',
         	    'meliscommerce_duplicate_variant_end',
+        	    'meliscommerce_attribute_value_save_end',
+        	    'meliscommerce_attribute_value_delete_end',
+        	    'meliscommerce_country_save_end',
+        	    'meliscommerce_language_save_end',
+        	    'meliscommerce_checkout_order_add',
         	),
         	function($e){
 

@@ -47,10 +47,10 @@ $(function(){
 					});
 				}
 				melisCommerce.setUniqueId(melisCommerce.getUniqueId());
-				melisHelper.melisOkNotification(data.textTitle, data.textMessage, '#72af46');
+				melisHelper.melisOkNotification(data.textTitle, data.textMessage);
 			}
 			else {
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
 				melisCoreTool.highlightErrors(data.success, data.errors, relationId+"_"+relationType+"_"+"frmDocUpload");
 				$("div.progressContent").addClass("hidden");
 			}
@@ -140,10 +140,10 @@ $(function(){
 							melisHelper.zoneReload(activeTabId+" #id_meliscommerce_documents_image_lists", "meliscommerce_documents_image_lists", {docRelationType : docRelationType, docRelationId : docRelationId});
 						}
 						melisCore.flashMessenger();
-						melisHelper.melisOkNotification(data.textTitle, data.textMessage, '#72af46');
+						melisHelper.melisOkNotification(data.textTitle, data.textMessage);
 					}
 					else {
-						melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+						melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
 					}
 					melisCoreTool.done(".btn");
 				}).error(function(){
@@ -178,7 +178,7 @@ $(function(){
 		melisCommerce.postSave('melis/MelisCommerce/MelisComDocument/addImageType', dataString, function(data) {
 			if(data.success) {
 				melisHelper.zoneReload("id_meliscommerce_documents_modal_form", "meliscommerce_documents_modal_form", {typeUpload : "image", saveType : saveType, docRelationId : relationId, docRelationType :relationType});
-				melisHelper.melisOkNotification(data.textTitle, data.textMessage, '#72af46');
+				melisHelper.melisOkNotification(data.textTitle, data.textMessage);
 
 				// put back all the info
 				setTimeout(function() {
@@ -191,7 +191,7 @@ $(function(){
 
 			}
 			else {
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
 			}
 			melisCore.flashMessenger();
 		})
@@ -208,7 +208,7 @@ $(function(){
 		melisCommerce.postSave('melis/MelisCommerce/MelisComDocument/addFileType', dataString, function(data) {
 			if(data.success) {
 				melisHelper.zoneReload("id_meliscommerce_documents_modal_form", "meliscommerce_documents_modal_form", {typeUpload : "file", saveType : saveType, docRelationId : relationId, docRelationType :relationType});
-				melisHelper.melisOkNotification(data.textTitle, data.textMessage, '#72af46');
+				melisHelper.melisOkNotification(data.textTitle, data.textMessage);
 
 				// put back all the info
 				setTimeout(function() {
@@ -220,7 +220,7 @@ $(function(){
 
 			}
 			else {
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
 			}
 			melisCore.flashMessenger();
 		})

@@ -3,7 +3,7 @@
         'tr_meliscommerce_categories_Categories' => 'Catalogs',
 	    'tr_meliscommerce_categories_Categories_title' => 'Catalogs / Categories',
         // Tool Title
-        'tr_meliscommerce_categories_tool_title' => 'Category Tool',
+        'tr_meliscommerce_categories_tool_title' => 'Category tool',
 
         // Common labels
         'tr_meliscommerce_categories_common_btn_close' => 'Close',
@@ -32,6 +32,7 @@
 	    'tr_meliscommerce_categories_common_label_catalog' => 'Catalog',
 	    'tr_meliscommerce_categories_common_label_export' => 'Export',
 	    'tr_meliscommerce_categories_common_label_saving' => 'Saving...',
+	    'tr_meliscommerce_categories_common_label_remove' => 'Remove',
 	    
 	    'tr_meliscommerce_categories_page' => 'Categories page',
 	    'tr_meliscommerce_categories_list' => 'Categories list',
@@ -111,7 +112,7 @@
 	    'tr_meliscommerce_categories_err_category_save_unable' => 'Unable to save Category, Please try again',
 	    'tr_meliscommerce_categories_err_category_name_empty' => 'Category Name is Requered',
 	    'tr_meliscommerce_categories_err_category_name_required_atleast_one' => 'The category name cannot be empty, please enter at least one in any language',
-	    'tr_meliscommerce_categories_err_category_description_empty' => 'Category Description is Requered',
+	    'tr_meliscommerce_categories_err_category_description_empty' => 'Category description is Requered',
 	    
 	    // Form Catgory Validation Messages
 	    'tr_meliscommerce_categories_err_catalog_save_success' => 'Catalog successfully saved', // FORM

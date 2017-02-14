@@ -4,7 +4,7 @@
         // Page Title
         'tr_meliscommerce_clients_tool_title' => 'Client tool',
 	    'tr_meliscommerce_clients_Client_listing' => 'Client list',
-	    'tr_meliscommerce_clients_Client' => 'Client Info',
+	    'tr_meliscommerce_clients_Client' => 'Client info',
 
         // Common labels
         'tr_meliscommerce_clients_common_btn_close' => 'Cancel',
@@ -130,7 +130,7 @@
 	    'tr_meliscommerce_client_Contact_address_phone_landline' => 'Landline number',
 	    'tr_meliscommerce_client_Contact_address_additional_information' => 'Additional',
 	    // Validation and Messages
-	    'tr_meliscommerce_client_Contact_unable_to_add' => 'Unable to Add Contact, please try again',
+	    'tr_meliscommerce_client_Contact_unable_to_add' => 'Unable to add contact, please try again',
 	    'tr_meliscommerce_client_Contact_input_empty' => 'The input is required and can\'t be empty',
 	    'tr_meliscommerce_client_Contact_invalid_status' => 'The input is required and can\'t be empty',
 	    'tr_meliscommerce_client_Contact_confirm_password_not_match' => 'Confirm password does not match',

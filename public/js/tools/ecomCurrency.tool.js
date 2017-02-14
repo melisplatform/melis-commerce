@@ -13,7 +13,7 @@ $(function() {
 	
 	body.on("click", ".btnEditComCurrency", function() {
 		melisCoreTool.pending(".btnEditComCurrency");
-		var id = $(this).parent().parent().attr('id');
+		var id = $(this).parents("tr").attr("id");
 		melisHelper.createModal(zoneId, melisKey, false, {curId: id, saveType : "edit"},  modalUrl, function() {
 			melisCoreTool.done(".btnEditComCurrency");
 		});
@@ -44,10 +44,10 @@ $(function() {
 			if(data.success) {
 				$("div.modal").modal("hide");
 				$("#" + activeTabId + " .melis-refreshTable").trigger("click");
-				melisHelper.melisOkNotification(data.textTitle, data.textMessage, '#72af46');
+				melisHelper.melisOkNotification(data.textTitle, data.textMessage);
 			}
 			else {
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
 				melisCoreTool.highlightErrors(data.success, data.errors, "id_meliscommerce_currency_content_modal_form form#ecomCurrencyForm");
 			}
 			melisCore.flashMessenger();
@@ -58,7 +58,7 @@ $(function() {
 	});
 	
 	body.on("click", ".btnComCurrencyDelete", function() {
-		var id = $(this).parent().parent().attr('id');
+		var id = $(this).parents("tr").attr("id");
 		melisCoreTool.pending(".btnComCountryDelete");
 		melisCoreTool.confirm(
 			translations.tr_meliscore_common_yes, 
@@ -76,11 +76,10 @@ $(function() {
 	    	    	 	melisCoreTool.pending(".btnComCurrencyDelete");
 		    	    	if(data.success) {
 		    	    		$("#" + activeTabId + " .melis-refreshTable").trigger("click");
-		    	    		melisHelper.melisOkNotification(data.textTitle, data.textMessage, '#72af46');
-		    	    		
+		    	    		melisHelper.melisOkNotification(data.textTitle, data.textMessage);
 		    	    	}
 		    	    	else {
-		    	    		melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+		    	    		melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
 		    	    	}
 		    	    	melisCoreTool.done(".btnComCurrencyDelete");
 		    	    	melisCore.flashMessenger();
@@ -92,7 +91,7 @@ $(function() {
 	});
 	
 	body.on("click", ".btnComCurrencyMakeDefault", function(){
-		var id = $(this).parent().parent().attr('id');
+		var id = $(this).parents("tr").attr("id");
 		melisCoreTool.pending(".btnComCurrencyMakeDefault");
 		$.ajax({
 	        type        : 'POST', 
@@ -103,9 +102,9 @@ $(function() {
 	    }).success(function(data){
     	    	if(data.success) {
     	    		$("#" + activeTabId + " .melis-refreshTable").trigger("click");
-    	    		melisHelper.melisOkNotification(data.textTitle, data.textMessage, '#72af46');
+    	    		melisHelper.melisOkNotification(data.textTitle, data.textMessage);
     	    	}else{
-    	    		melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+    	    		melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
     	    	}
     	    	melisCoreTool.done(".btnComCurrencyMakeDefault");
     	    	melisCore.flashMessenger();

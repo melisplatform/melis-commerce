@@ -28,7 +28,7 @@ $(function(){
 			if(data.success){
 				melisHelper.tabOpen(data.clientContactName, "fa fa-user", clientId+"_id_meliscommerce_client_page", "meliscommerce_client_page", {clientId:clientId});
 			}else{
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
 			}
 			
 		}).fail(function(){
@@ -85,14 +85,12 @@ $(function(){
 				$('#nav_'+data.clientContactDom.tabId).tab('show');
 				$("#id_meliscommerce_client_modal_contact_form_container").modal("hide");
 			}else{
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
 				melisCoreTool.highlightErrors(data.success, data.errors, "melisCommerceClientContactFormModal");
 			}
 			
 		}).fail(function(){
-			
 			$("#saveClientContact").button("reset");
-			
 			alert( translations.tr_meliscore_error_message);
 		});
 	});
@@ -149,14 +147,12 @@ $(function(){
 				$('#nav_'+data.clientContactAddressDom.contactAddressId).click();
 				$("#id_meliscommerce_client_modal_contact_address_form_container").modal("hide");
 			}else{
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
 				melisCoreTool.highlightErrors(data.success, data.errors, "melisCommerceClientContactAddressFormModal");
 			}
 			
 		}).fail(function(){
-			
 			$("#saveClientContactAddress").button("reset");
-			
 			alert( translations.tr_meliscore_error_message);
 		});
 	});
@@ -206,14 +202,12 @@ $(function(){
 				$("#nav_add_"+data.clientAddressDom.addressId).tab("show");
 				$("#id_meliscommerce_client_modal_address_form_container").modal("hide");
 			}else{
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
 				melisCoreTool.highlightErrors(data.success, data.errors, "melisCommerceClientAddressFormModal");
 			}
 			
 		}).fail(function(){
-			
 			$("#saveClientAddress").button("reset");
-			
 			alert( translations.tr_meliscore_error_message);
 		});
 	});
@@ -423,14 +417,12 @@ $(function(){
 			
 			if(data.success){
 				melisHelper.tabClose(clientId+"_id_meliscommerce_client_page");
-				melisHelper.melisOkNotification(data.textTitle, data.textMessage, '#72af46');
+				melisHelper.melisOkNotification(data.textTitle, data.textMessage);
 				melisHelper.tabOpen(data.clientContactName, "fa fa-user", data.clientId+"_id_meliscommerce_client_page", "meliscommerce_client_page", {clientId:data.clientId});
 				melisHelper.zoneReload('id_meliscommerce_clients_list_content', 'meliscommerce_clients_list_content');
 			}else{
-//				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
-				melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
-//				melisCoreTool.highlightErrors(data.success, data.errors, "");
-				highlightErrors(data.success, data.errors,  activeTabId+" form");
+				melisClientKoNotification(data.textTitle, data.textMessage, data.errors);
+				clientHighlightErrors(data.success, data.errors,  activeTabId+" form");
 			}
 			
 			melisCore.flashMessenger();
@@ -452,7 +444,7 @@ $(function(){
 	});
 });
 
-window.highlightErrors = function(success, errors, divContainer){
+window.clientHighlightErrors = function(success, errors, divContainer){
 	
 //	console.log(errors);
 	// if all form fields are error color them red
@@ -481,12 +473,13 @@ window.highlightErrors = function(success, errors, divContainer){
 	}
 }
 
-function melisKoNotification(title, message, errors, closeByButtonOnly){
+function melisClientKoNotification(title, message, errors, closeByButtonOnly = 'closeByButtonOnly'){
 	
 	( closeByButtonOnly !== 'closeByButtonOnly' ) ? closeByButtonOnly = 'overlay-hideonclick' : closeByButtonOnly = '';
-
-	var errorTexts = '<h3>'+ title +'</h3>';
-		errorTexts +='<h4>'+ message +'</h4>';
+	
+	var errorTexts = '<h3>'+ melisHelper.melisTranslator(title) +'</h3>';
+		errorTexts +='<h4>'+ melisHelper.melisTranslator(message) +'</h4>';
+		
 		$.each( errors, function( key, error ) {
 			if(key !== 'label'){
 				errorTexts += '<p class="modal-error-cont"><b>'+ (( errors[key]['label'] == undefined ) ? ((errors['label']== undefined) ? key : errors['label'] ) : errors[key]['label'] )+ ': </b>  ';

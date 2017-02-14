@@ -456,8 +456,23 @@ return array(
                                                                                                     'module' => 'MelisCommerce',
                                                                                                     'controller' => 'MelisComProduct',
                                                                                                     'action' => 'render-products-main-tab-categories-header-all',
-                                                                                                    'jscallback' => 'initTreeCat();',
+                                                                                                    'jscallback' => '',
                                                                                                 ),
+                                                                                                'interface' => array(
+                                                                                                    'meliscommerce_products_main_tab_categories_modal' => array(
+                                                                                                        'conf' => array(
+                                                                                                            'id' => 'id_meliscommerce_products_main_tab_categories_modal',
+                                                                                                            'melisKey' => 'meliscommerce_products_main_tab_categories_modal',
+                                                                                                            'name' => 'tr_meliscommerce_products_main_tab_categories_modal',
+                                                                                                        ),
+                                                                                                        'forward' => array(
+                                                                                                            'module' => 'MelisCommerce',
+                                                                                                            'controller' => 'MelisComProduct',
+                                                                                                            'action' => 'render-products-main-tab-categories-modal',
+                                                                                                            'jscallback' => '',
+                                                                                                        ),
+                                                                                                    ),
+                                                                                                )
                                                                                             ),  
                                                                                          ),
                                                                                      ),

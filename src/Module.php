@@ -123,23 +123,25 @@ class Module
     
     public function updateRoutesFrontBack(ModuleEvent $e)
     {
-        $uri = $_SERVER['REQUEST_URI'];
-        $uri1 = '';
-        $tabUri = explode('/', $uri);
-        if (!empty($tabUri[1]))
-            $uri1 = $tabUri[1];
-        
-        if ($uri1 != 'melis')
-        {
-            // No need of BO routes if we're in front
-            $configListener = $e->getConfigListener();
-            $config         = $configListener->getMergedConfig(false);
+        if(!empty($_SERVER['REQUEST_URI'])){
+            $uri = $_SERVER['REQUEST_URI'];
+            $uri1 = '';
+            $tabUri = explode('/', $uri);
+            if (!empty($tabUri[1]))
+                $uri1 = $tabUri[1];
             
-            unset($config['router']['routes']['melis-backoffice']);
+                if ($uri1 != 'melis')
+                {
+                    // No need of BO routes if we're in front
+                    $configListener = $e->getConfigListener();
+                    $config         = $configListener->getMergedConfig(false);
             
-            // Pass the changed configuration back to the listener:
-            $configListener->setMergedConfig($config);
-        }
+                    unset($config['router']['routes']['melis-backoffice']);
+            
+                    // Pass the changed configuration back to the listener:
+                    $configListener->setMergedConfig($config);
+                } 
+        }        
         
     }
 
@@ -228,43 +230,49 @@ class Module
         $container = new Container('meliscore');
         $locale = $container['melis-lang-locale'];
         if(!empty($locale)) 
-        {
-            // Load files
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/general/' . $locale . '.interface.general.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/categories/' . $locale . '.interface.categories.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/products/' . $locale . '.interface.products.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/variants/' . $locale . '.interface.variants.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/documents/' . $locale . '.interface.documents.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/clients/' . $locale . '.interface.clients.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/orders/' . $locale . '.interface.orders.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/prices/' . $locale . '.interface.prices.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/seo/' . $locale . '.interface.seo.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/coupons/' . $locale . '.interface.coupons.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/checkout/' . $locale . '.interface.checkout.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/currency/' . $locale . '.interface.currency.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/attributes/' . $locale . '.interface.attributes.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/language/' . $locale . '.interface.language.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/country/' . $locale . '.interface.country.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/assoc-var/' . $locale . '.interface.assoc-var.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/duplication/' . $locale . '.interface.duplication.php');
-    
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/general/' . $locale . '.forms.general.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/categories/' . $locale . '.forms.categories.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/products/' . $locale . '.forms.products.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/variants/' . $locale . '.forms.variants.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/documents/' . $locale . '.forms.documents.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/clients/' . $locale . '.forms.clients.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/orders/' . $locale . '.forms.orders.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/prices/' . $locale . '.forms.prices.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/seo/' . $locale . '.forms.seo.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/coupons/' . $locale . '.forms.coupons.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/checkout/' . $locale . '.forms.checkout.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/currency/' . $locale . '.forms.currency.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/attributes/' . $locale . '.forms.attributes.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/language/' . $locale . '.forms.language.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/country/' . $locale . '.forms.country.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/assoc-var/' . $locale . '.forms.assoc-var.php');
-            $translator->addTranslationFile('phparray', __DIR__ . '/../language/duplication/' . $locale . '.forms.duplication.php');
+        {   
+            // Commerce sub modules langauge config
+            // used to identify the folder and file name: 
+            // Translation path:            module/MelisModuleConfig/languages/MelisCommerce/[locale].interface.[module].php'
+            // Default translation path :   __DIR__ . '/../language/[module]/en_EN.interface.[module].php';
+            $commerceSubModules = array(
+                'general',
+                'categories',
+                'products',
+                'variants',
+                'documents',
+                'clients',
+                'orders',
+                'prices',
+                'seo',
+                'coupons',
+                'checkout',
+                'currency',
+                'attributes',
+                'language',
+                'country',
+                'assoc-var',
+                'duplication',
+            );
+            
+            // Load translation files
+            foreach($commerceSubModules as $subModule){
+                
+                // interface translation
+                // checks for existing interface tranlation, else uses the default
+                $interfaceTransPath = 'module/MelisModuleConfig/languages/MelisCommerce/' . $locale . '.interface.'.$subModule.'.php';
+                $default =  __DIR__ . '/../language/'.$subModule.'/en_EN.interface.'.$subModule.'.php';
+                $transPath = (file_exists($interfaceTransPath))? $interfaceTransPath : $default;
+                $translator->addTranslationFile('phparray', $transPath);
+                
+                // forms translation
+                // checks for existing forms tranlation, else uses the default
+                $formsTransPath = 'module/MelisModuleConfig/languages/MelisCommerce/' . $locale . '.forms.'.$subModule.'.php';
+                $default = __DIR__ . '/../language/'.$subModule.'/en_EN.forms.'.$subModule.'.php';
+                $transPath = (file_exists($formsTransPath))? $formsTransPath : $default;
+                $translator->addTranslationFile('phparray', $transPath);
+                
+            }
         }
     }
 

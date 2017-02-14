@@ -56,13 +56,15 @@ if (!empty($this->zoneconfig['conf']['id']))
 			// this script cannot be separated to this file since all table configuration and initialization are done here
 			// render table to DataTable plugin
 			$(document).ready(function() {	
+
 				<?php echo $this->getToolDataTableConfig; ?>
 				$(document).on('column-sizing.dt','#tableProductList', function(e, settings) {
 					$("#tableProductList thead tr").find("th:nth-child(6)").css({"width" : "58px"});
 					$("#tableProductList thead tr").find("th:nth-child(1)").css({"width" : "1px"});								
 					$("#tableProductList thead tr").find("th:nth-child(2)").css({"width" : "1px"});					
-					$("#tableProductList .qtipTable thead tr").find("th:nth-child(2)").css({"width" : "62px"});					
+					$("#tableProductList .qtipTable thead tr").find("th:nth-child(2)").css({"width" : "62px"});
 				});
+
 				$($.fn.dataTable.tables(true)).DataTable().columns.adjust();				
 			});
 			</script>

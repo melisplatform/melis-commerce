@@ -423,48 +423,52 @@ class MelisComDuplicationService extends MelisCoreGeneralService
                 
                 if ($duplicateFlag)
                 {
-                    /**
-                     * Checking if the Directory of the file is existing
-                     * else this will try to create new Directory with the permission of 0777
-                     */
-                    $newDir = 'public/media/commerce/'.$arrayParameters['docRelation'].'/'.$arrayParameters['newDocRelationId'].'/';
-                    if(!is_dir($newDir))
+                    // Checking if the file path is existing
+                    if (file_exists ($docPath))
                     {
-                        mkdir($newDir, 0777, true);
-                    }
-                    
-                    // Just to be sure that the target Directory is exsting, else do nothing
-                    if (is_dir($newDir))
-                    {
-                        // Replacing the Id of the directory folder name to new Created id
-                        $newDocPath = str_replace($arrayParameters['docRelationId'], $arrayParameters['newDocRelationId'], $val->doc_path);
-                        
                         /**
-                         * copy is a PHP function that will copy a file path 
-                         * into the traget directory, this will return True if the action is success
+                         * Checking if the Directory of the file is existing
+                         * else this will try to create new Directory with the permission of 0777
                          */
-                        if (copy($docPath, 'public'.$newDocPath))
+                        $newDir = 'public/media/commerce/'.$arrayParameters['docRelation'].'/'.$arrayParameters['newDocRelationId'].'/';
+                        if(!is_dir($newDir))
                         {
+                            mkdir($newDir, 0777, true);
+                        }
+                        
+                        // Just to be sure that the target Directory is exsting, else do nothing
+                        if (is_dir($newDir))
+                        {
+                            // Replacing the Id of the directory folder name to new Created id
+                            $newDocPath = str_replace($arrayParameters['docRelationId'], $arrayParameters['newDocRelationId'], $val->doc_path);
+                            
                             /**
-                             * If the copy of images/files is success
-                             * this will create a new entry for document of new added product
+                             * copy is a PHP function that will copy a file path 
+                             * into the traget directory, this will return True if the action is success
                              */
-                            $doc = array(
-                                'doc_name' => $val->doc_name,
-                                'doc_path' => $newDocPath,
-                                'doc_type_id' => $val->doc_type_id,
-                                'doc_subtype_id' => $val->doc_subtype_id
-                            );
-                            $docId = $docTable->save($doc);
-                            
-                            $relDoc = array(
-                                'rdoc_'.$arrayParameters['docRelation'].'_id' => $arrayParameters['newDocRelationId'],
-                                'rdoc_doc_id' => $docId,
-                                'rdoc_country_id' => $val->rdoc_country_id
-                            );
-                            $docRelTable->save($relDoc);
-                            
-                            $result = true;
+                            if (copy($docPath, 'public'.$newDocPath))
+                            {
+                                /**
+                                 * If the copy of images/files is success
+                                 * this will create a new entry for document of new added product
+                                 */
+                                $doc = array(
+                                    'doc_name' => $val->doc_name,
+                                    'doc_path' => $newDocPath,
+                                    'doc_type_id' => $val->doc_type_id,
+                                    'doc_subtype_id' => $val->doc_subtype_id
+                                );
+                                $docId = $docTable->save($doc);
+                                
+                                $relDoc = array(
+                                    'rdoc_'.$arrayParameters['docRelation'].'_id' => $arrayParameters['newDocRelationId'],
+                                    'rdoc_doc_id' => $docId,
+                                    'rdoc_country_id' => $val->rdoc_country_id
+                                );
+                                $docRelTable->save($relDoc);
+                                
+                                $result = true;
+                            }
                         }
                     }
                 }

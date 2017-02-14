@@ -79,7 +79,7 @@ return array(
                             ),
                             'price' => array(
                                 'text' => '<i class="fa fa-usd fa-lg"></i>',
-                                'css' => array('width' => '5%', 'padding-right' => '0'),
+                                'css' => array('width' => '10%', 'padding-right' => '0'),
                                 'sortable' => true,
                             ),
 //                             'ccomp_name' => array(
@@ -87,11 +87,11 @@ return array(
 //                                 'css' => array('width' => '15%', 'padding-right' => '0'),
 //                                 'sortable' => false,
 //                             ),
-                            'civt_min_name' => array(
-                                'text' => 'tr_meliscommerce_order_list_col_civility',
-                                'css' => array('width' => '10%', 'padding-right' => '0'),
-                                'sortable' => false,
-                            ),
+//                             'civt_min_name' => array(
+//                                 'text' => 'tr_meliscommerce_order_list_col_civility',
+//                                 'css' => array('width' => '10%', 'padding-right' => '0'),
+//                                 'sortable' => false,
+//                             ),
                             'cper_firstname' => array(
                                 'text' => 'tr_meliscommerce_order_list_col_firstname',
                                 'css' => array('width' => '15%', 'padding-right' => '0'),
@@ -125,7 +125,7 @@ return array(
                         'target' => '#tableOrderBasketList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComOrder/getBasketData',
                         'dataFunction' => 'initOrderBasket',
-                        'ajaxCallback' => '',                        
+                        'ajaxCallback' => 'hideBasketButton()',                        
                         'filters' => array(
                             'left' => array(
                                 'order-basket-list-table-filter-limit' => array(
@@ -197,11 +197,11 @@ return array(
                              
                         ),
                         'actionButtons' => array(
-//                             'info' => array(
-//                                 'module' => 'MelisCommerce',
-//                                 'controller' => 'MelisComOrderList',
-//                                 'action' => 'render-order-list-content-action-info'
-//                             ),
+                            'info' => array(
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComOrder',
+                                'action' => 'render-order-content-action-info'
+                            ),
                         ),
                     ),                   
                 ),

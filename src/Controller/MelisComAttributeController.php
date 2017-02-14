@@ -720,8 +720,10 @@ class MelisComAttributeController extends AbstractActionController
         $data = array();
         $attributeValues = array();
         $filledUp = 0;
-        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_attribute_value_save_failed');
-        $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_attribute_value');
+        $atval_id = null;
+        $logTypeCode = '';
+        $textMessage = 'tr_meliscommerce_attribute_value_save_failed';
+        $textTitle = 'tr_meliscommerce_attribute_value';
         $this->getEventManager()->trigger('meliscommerce_attribute_value_save_start', $this, array());
 
         $attributeSvc = $this->getServiceLocator()->get('MelisComAttributeService');
@@ -731,6 +733,7 @@ class MelisComAttributeController extends AbstractActionController
         if($this->getRequest()->isPost()){
             $postValues = get_object_vars($this->getRequest()->getPost());
             $attributeId = $postValues['attributeId'];
+            
             $attribute = $attributeSvc->getAttributeById($attributeId)->getAttribute();
             
             $this->setAttributeVariables($attributeId);
@@ -820,6 +823,13 @@ class MelisComAttributeController extends AbstractActionController
                     }
                 }
                 
+                // Log Type Code
+                if ($atval_id){
+                    $logTypeCode = 'ECOM_ATTRIBUTE_VALUE_UPDATE';
+                }else{
+                    $logTypeCode = 'ECOM_ATTRIBUTE_VALUE_ADD';
+                }
+                
                 // if no attribute value id, create attribute value
                 if(empty($atval_id)){
                     $attributeValue = array(
@@ -841,9 +851,10 @@ class MelisComAttributeController extends AbstractActionController
                     $attributeValueTransId = $attributeSvc->saveAttributeValueTrans($trans, $avt_id);                         
                 }
                 $success = 1;
-                $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_attribute_value_save_success');
+                $textMessage = 'tr_meliscommerce_attribute_value_save_success';
             }
         }
+        
         $response = array(
             'success' => $success,
             'textTitle' => $textTitle,
@@ -851,7 +862,10 @@ class MelisComAttributeController extends AbstractActionController
             'errors' => $errors,
             'chunk' => $data,
         );
-        $this->getEventManager()->trigger('meliscommerce_attribute_value_save_end', $this, $response);
+        
+        $this->getEventManager()->trigger('meliscommerce_attribute_value_save_end', 
+            $this, array_merge($response, array('typeCode' => $logTypeCode, 'itemId' => $atval_id)));
+        
         return new JsonModel($response);
     }
     
@@ -865,18 +879,19 @@ class MelisComAttributeController extends AbstractActionController
         $success = false;
         $errors  = array();
         $data = array();
-        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_attribute_value_delete_fail');
-        $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_attribute_page');
+        $attributeValueId = null;
+        $textMessage = 'tr_meliscommerce_attribute_value_delete_fail';
+        $textTitle = 'tr_meliscommerce_attribute_page';
         $this->getEventManager()->trigger('meliscommerce_attribute_value_delete_start', $this, array());
         
         $attributeSvc = $this->getServiceLocator()->get('MelisComAttributeService');
         
         if($this->getRequest()->isPost()){
             $postValues = get_object_vars($this->getRequest()->getPost());
-
-            $success = $attributeSvc->deleteAttributeValueById($postValues['attributeValueId']);
+            $attributeValueId = $postValues['attributeValueId'];
+            $success = $attributeSvc->deleteAttributeValueById($attributeValueId);
             if($success){
-                $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_attribute_value_delete_success');
+                $textMessage = 'tr_meliscommerce_attribute_value_delete_success';
             }
         }
         
@@ -887,7 +902,10 @@ class MelisComAttributeController extends AbstractActionController
             'errors' => $errors,
             'chunk' => $data,
         );
-        $this->getEventManager()->trigger('meliscommerce_attribute_value_delete_end', $this, $response);
+        
+        $this->getEventManager()->trigger('meliscommerce_attribute_value_delete_end', 
+            $this, array_merge($response, array('typeCode' => 'ECOM_ATTRIBUTE_VALUE_DELETE', 'itemId' => $attributeValueId)));
+        
         return new JsonModel($response);
     }
     
@@ -897,6 +915,8 @@ class MelisComAttributeController extends AbstractActionController
         $success = 0;
         $errors  = array();
         $data = array();
+        $attributeId = null;
+        $logTypeCode = '';
         
         $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_attribute_save_failed');
         $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_attribute_page');
@@ -906,6 +926,16 @@ class MelisComAttributeController extends AbstractActionController
         
         if($this->getRequest()->isPost()){
             $this->getEventManager()->trigger('meliscommerce_attribute_save_start', $this, array());
+            
+            $postValues = get_object_vars($this->getRequest()->getPost());
+            
+            
+            if (!empty($postValues['attributeId'])){
+                $logTypeCode = 'ECOM_ATTRIBUTE_UPDATE';
+                $attributeId = $postValues['attributeId'];
+            }else{
+                $logTypeCode = 'ECOM_ATTRIBUTE_ADD';
+            }
             
             if (!empty($container['attribute-valid-data']))
             {
@@ -920,18 +950,28 @@ class MelisComAttributeController extends AbstractActionController
                 
                 unset($container['attribute-valid-data']);
                 if($success){
-                   $this->setAttributeVariables($data['attributeId']);
-                   if(!empty($this->layout()->attribute->attr_trans)){
-                       $data['tabName'] = $this->layout()->attribute->attr_trans[0]->atrans_name;
-                   }else{
-                       $data['tabName'] = $this->layout()->attribute->attr_reference;
-                   }
-                   
+                    
+                    $attributeId = $data['attributeId'];
+                    $this->setAttributeVariables($attributeId);
+                    
+                    if(!empty($this->layout()->attribute->attr_trans)){
+                        $found = false;
+                        foreach($this->layout()->attribute->attr_trans as $trans){
+                            if($this->getTool()->getCurrentLocaleID() == $trans->atrans_lang_id){
+                                $data['tabName'] = $trans->atrans_name;
+                                $found = true;
+                            }
+                        }
+                        
+                        if(!$found){
+                            $data['tabName'] = $this->layout()->attribute->attr_trans[0]->atrans_name;
+                        }
+                    }else{
+                        $data['tabName'] = $this->layout()->attribute->attr_reference;
+                    }
                 }
-                
             }
         }
-        
         
         $response = array(
             'success' => $success,
@@ -940,7 +980,10 @@ class MelisComAttributeController extends AbstractActionController
             'errors' => $errors,
             'chunk' => $data,
         );
-        $this->getEventManager()->trigger('meliscommerce_attribute_save_end', $this, $response);
+        
+        
+        $this->getEventManager()->trigger('meliscommerce_attribute_save_end', 
+            $this, array_merge($response, array('typeCode' => $logTypeCode, 'itemId' => $attributeId)));
         return new JsonModel($response);
     }
     
@@ -1012,6 +1055,7 @@ class MelisComAttributeController extends AbstractActionController
                 }
                 $tmp = $attributeTrans;
                 unset($tmp['atrans_lang_id']);
+                unset($tmp['atrans_id']);
                 if(array_filter($tmp)){
                     $data['attributeTrans'][] = $attributeTransForm->getData();
                 }                
@@ -1030,6 +1074,7 @@ class MelisComAttributeController extends AbstractActionController
         $success = 0;
         $errors = array();
         $data = array();
+        $postValues = get_object_vars($this->getRequest()->getPost());
         
         $attributeSvc = $this->getServiceLocator()->get('MelisComAttributeService');
         
@@ -1048,7 +1093,7 @@ class MelisComAttributeController extends AbstractActionController
         
         if(empty($formData['attribute']['attr_reference'])){
             if(!empty($formData['attributeTrans'])){
-                $formData['attribute']['attr_reference'] = $formData['attributeTrans'][0]['atrans_name'];
+                //$formData['attribute']['attr_reference'] = $formData['attributeTrans'][0]['atrans_name'];
             }else{
                 $title = $this->getTool()->getTranslation('tr_meliscommerce_attribute_reference');
                 $message = $this->getTool()->getTranslation('tr_meliscommerce_address_error_empty');
@@ -1060,6 +1105,17 @@ class MelisComAttributeController extends AbstractActionController
         if(!$errors && !empty($formData)){
             $attributeId = $formData['attribute']['attr_id'];
             unset($formData['attribute']['attr_id']);
+            if(!empty($postValues['attributeTrans'])){
+                foreach($postValues['attributeTrans'] as $attributeTrans){                  
+                    $tmp = $attributeTrans;
+                    unset($tmp['atrans_lang_id']);
+                    unset($tmp['atrans_id']);
+                    // Deletion if label and description are empty
+                    if(!array_filter($tmp)){
+                        $attributeSvc->deleteAttributeTransById($attributeTrans['atrans_id']);
+                    }
+                }
+            }
             $data['attributeId'] = $attributeSvc->saveAttribute($formData['attribute'], $formData['attributeTrans'], $attributeId);
             
             if(!empty($data)){

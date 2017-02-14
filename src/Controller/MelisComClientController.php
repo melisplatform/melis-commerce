@@ -1212,14 +1212,13 @@ class MelisComClientController extends AbstractActionController
      */
     public function saveClientAction()
     {
-        $translator = $this->serviceLocator->get('translator');
-        
         $success = 0;
-        $textTitle = $translator->translate('tr_meliscommerce_clients_common_label_client');
+        $textTitle = 'tr_meliscommerce_clients_common_label_client';
         $textMessage = '';
         $errors = array();
-        $clientIdRes = null;
+        $clientId = null;
         $clientContactName = '';
+        $logTypeCode = '';
         $request = $this->getRequest();
         
         if($request->isPost())
@@ -1254,19 +1253,28 @@ class MelisComClientController extends AbstractActionController
             // Getting Data from Post in array form
             $postValues = get_object_vars($request->getPost());
             $clientId = $postValues['clientId'];
+            
+            if (!empty($postValues['clientId']))
+            {
+                $logTypeCode = 'ECOM_CLIENT_UPDATE';
+            }
+            else
+            {
+                $logTypeCode = 'ECOM_CLIENT_ADD';
+            }
              
             // Cehcking if error occured during validation of submitted datas
             if (empty($errors)){
                 // Saving Client data using Client Servive
                 $melisComClientService = $this->getServiceLocator()->get('MelisComClientService');
-                $clientIdRes = $melisComClientService->saveClient($clientData, $contactsData, $addressesData, $companyData, $clientId);
+                $clientId = $melisComClientService->saveClient($clientData, $contactsData, $addressesData, $companyData, $clientId);
                 // Checking if Saving of datas is success if the return is not null
                 // return should be the Client Id
-                if (!is_null($clientIdRes))
+                if (!is_null($clientId))
                 {
-                    $textMessage = $translator->translate('tr_meliscommerce_client_save_success');
+                    $textMessage = 'tr_meliscommerce_client_save_success';
                     // Getting Client Data
-                    $client = $melisComClientService->getClientByIdAndClientPerson($clientIdRes);
+                    $client = $melisComClientService->getClientByIdAndClientPerson($clientId);
                     $clientPerson = $client->getPersons();
                     
                     if (!empty($clientPerson))
@@ -1283,11 +1291,10 @@ class MelisComClientController extends AbstractActionController
                 }
                 else
                 {
-                    $textMessage = $translator->translate('tr_meliscore_error_message');
+                    $textMessage = 'tr_meliscore_error_message';
                 }
-                
             }else{
-                $textMessage = $translator->translate('tr_meliscommerce_client_unable_to_save');
+                $textMessage = 'tr_meliscommerce_client_unable_to_save';
             }
         }
         
@@ -1296,13 +1303,12 @@ class MelisComClientController extends AbstractActionController
             'textTitle' => $textTitle,
             'textMessage' => $textMessage,
             'errors' => $errors,
-            'clientId' => $clientIdRes,
+            'clientId' => $clientId,
             'clientContactName' => $clientContactName
         );
         
-        if ($success){
-            $this->getEventManager()->trigger('meliscommerce_category_save_end', $this, $response);
-        }
+        $this->getEventManager()->trigger('meliscommerce_category_save_end', 
+            $this, array_merge($response, array('typeCode' => $logTypeCode, 'itemId' => $clientId)));
         
         return new JsonModel($response);
     }

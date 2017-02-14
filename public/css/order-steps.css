@@ -87,7 +87,25 @@ tr.last-tr td {
 	pointer-events: none;
 }
 
+
+/* Show and Date Box */
+.filter-bar .row .fb-dt-left > div {
+	display: inline-block;
+	margin: 6px 6px 6px 0;
+}
+.filter-bar .row .fb-dt-left .order-list-table-filter-limit-order {
+	display: inline-block;
+	float: left;
+}
+
+.filter-bar .row .fb-dt-left .order-list-table-filter-limit-order .dataTables_length {
+	display: block;
+}
+
+ 
 /* Responsive */
+
+
 @media (max-width: 436px) {
 	.me-heading .bottom-bottons .btn.btn-success {
 		float: none;
@@ -96,10 +114,19 @@ tr.last-tr td {
 		text-align: center;
 		margin: 10px 0 0;
 	}
-	.dataTables_length {
-		display: none;
-	}
 	.order-variant .cell-val-table {
 		display: none;
 	}	
+}
+
+@media (min-width: 1200px) {
+	.filter-bar .row .fb-dt-left .order-list-table-filter-limit-order {
+		display: inline-block;
+	}
+	.filter-bar .row .fb-dt-left .order-list-table-filter-date-order {
+		display: inline-block;
+    	top: 2px;
+
+	}
+
 }

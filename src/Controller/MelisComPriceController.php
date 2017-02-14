@@ -206,13 +206,13 @@ class MelisComPriceController extends AbstractActionController
             $hrefCountry = $variantId.'_variant_price_';
         }
         $ctyGeneral =   '<li class="">
-                    		<a class="clearfix" data-toggle="tab" href="#'.$hrefGeneral.'" data-country="General" aria-expanded="true"><span>General</span>
+                    		<a data-toggle="tab" href="#'.$hrefGeneral.'" data-country="General" aria-expanded="true"><span>General</span>
                     			<i class="fa fa-globe"></i>
                     		</a>
                     	</li>';
         $ctyFormat =    '<li class="">
-                    		<a class="clearfix" data-toggle="tab" href="#%s" data-country="%s" aria-expanded="true"><span>%s</span>
-                                <span class="pull-right">%s</span>
+                    		<a data-toggle="tab" href="#%s" data-country="%s" aria-expanded="true"><span>%s</span>
+                                %s
                     		</a>
                     	</li>';
     
@@ -222,7 +222,7 @@ class MelisComPriceController extends AbstractActionController
         foreach ($countries as $country){
 
             $imageData = $country->ctry_flag;
-            $image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay pull-right"/>' : '<i class="fa fa-globe"></i>';
+            $image = !empty($imageData) ? '<span class="pull-right"><img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay pull-right"/></span>' : '<i class="fa fa-globe"></i>';
             $ctyData[] = sprintf($ctyFormat, $hrefCountry.str_replace(' ', '', $country->ctry_name), $country->ctry_name, $country->ctry_name, $image);
         }
         $view = new ViewModel();

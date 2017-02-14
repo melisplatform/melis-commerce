@@ -2,10 +2,10 @@
 return array(
     'tr_meliscommerce_country_ctry_id' => 'ID', 
     'tr_meliscommerce_country_ctry_name' => 'Nom',
-    'tr_meliscommerce_country_ctry_flag' => 'Flag',
+    'tr_meliscommerce_country_ctry_flag' => 'Drapeau',
     'tr_meliscommerce_country_ctry_currency_id' => 'Devise',
     'tr_meliscommerce_country_ctry_select_empty' => 'Choisir la devise',
-    'tr_meliscommerce_country_ctry_flag_choose' => 'Choose flag icon',
+    'tr_meliscommerce_country_ctry_flag_choose' => 'Choisir l&#39;icône du drapeau',
     
     'tr_meliscommerce_country_add_country' => 'Ajouter un pays',
     'tr_meliscommerce_CountrY_edit_country' => 'Editer un pays',

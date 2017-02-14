@@ -23,6 +23,18 @@ $(window).on("resize",function(){
 });
 
 var melisCommerce = (function(window) {
+	
+	function pendingZoneStart(zoneId){
+		$("#"+zoneId).append('<div id="loader" class="overlay-loader"><img class="loader-icon spinning-cog" src="/MelisCore/assets/images/cog12.svg" data-cog="cog12"></div>');
+	}
+
+	function pendingZoneDone(zoneId){
+		$("#"+zoneId+" .loader-icon").removeClass("spinning-cog").addClass("shrinking-cog");
+		setTimeout(function() {
+			$("#"+zoneId+" #loader").remove();
+		},500);
+	}
+	
 	function initTooltipTable() {
 		$(".tooltipTable").each(function() {
 			$(this).qtip({
@@ -248,6 +260,8 @@ var melisCommerce = (function(window) {
 	
 
 	return {
+		pendingZoneStart : pendingZoneStart,
+		pendingZoneDone : pendingZoneDone,
 		initTooltipTable: initTooltipTable,
 		initTooltipVarTable: initTooltipVarTable,
 		initCommerceTable : initCommerceTable,

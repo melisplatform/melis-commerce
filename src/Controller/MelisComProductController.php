@@ -350,6 +350,21 @@ class MelisComProductController extends AbstractActionController
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
 
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        $view->productId = $productId;
+        return $view;
+    }
+    
+    /**
+     * Render Category list in modal
+     * 
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderProductsMainTabCategoriesModalAction(){
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $productId = (int) $this->params()->fromQuery('productId', '');
+        
         $langTable = $this->getServiceLocator()->get('MelisEcomLangTable');
         $langData = $langTable->langOrderByName();
         $recLangData = array();
@@ -358,8 +373,7 @@ class MelisComProductController extends AbstractActionController
                 $recLangData[] = $data;
             }
         }
-
-
+        
         $currentLangName = 'English';
         $locale = 'en_EN';
         $container = new Container('meliscore');
@@ -367,14 +381,14 @@ class MelisComProductController extends AbstractActionController
             $melisEcomLangTable = $this->getServiceLocator()->get('MelisEcomLangTable');
             $locale = $container['melis-lang-locale'];
             $currentLangData = $melisEcomLangTable->getEntryByField('elang_locale', $locale);
-
+        
             $currentLangName = '';
             $currentLang = $currentLangData->current();
             if (!empty($currentLang)){
                 $currentLangName = $currentLang->elang_name;
             }
         }
-
+        
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->productId = $productId;
@@ -969,12 +983,13 @@ class MelisComProductController extends AbstractActionController
      */
     public function addProductTextTypeAction()
     {
+        $prdTextTypeId = null;
         $success = 0;
         $translator = $this->getServiceLocator()->get('translator');
         $textTypeTable = $this->getServiceLocator()->get('MelisEcomProductTextTypeTable');
         $errors = array();
-        $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_products_text_type');
-        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_product_text_type_update_fail');
+        $textTitle = 'tr_meliscommerce_products_text_type';
+        $textMessage = 'tr_meliscommerce_product_text_type_update_fail';
         if($this->getRequest()->isPost()) {
 
             $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
@@ -998,7 +1013,7 @@ class MelisComProductController extends AbstractActionController
                 $prodTextTypeData = $textTypeTable->getEntryByField('ptt_code', $code)->current();
                 $prodTextTypeNameData = $textTypeTable->getEntryByField('ptt_name', $data['ptt_name'])->current();
                 if($prodTextTypeData) {
-                    $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_product_text_type_add_fail');
+                    $textMessage = 'tr_meliscommerce_product_text_type_add_fail';
                     $errors = array(
                         'ptt_code' => array(
                             'invalidEntry' => $this->getTool()->getTranslation('tr_meliscommerce_product_text_type_add_duplicate'),
@@ -1008,7 +1023,7 @@ class MelisComProductController extends AbstractActionController
                 }
 
                 if($prodTextTypeNameData) {
-                    $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_product_text_type_add_fail');
+                    $textMessage = 'tr_meliscommerce_product_text_type_add_fail';
                     $errors = array(
                         'ptt_name' => array(
                             'invalidEntry' => $this->getTool()->getTranslation('tr_meliscommerce_product_text_type_add_name_duplicate'),
@@ -1018,9 +1033,9 @@ class MelisComProductController extends AbstractActionController
                 }
 
                 if(!$prodTextTypeData && !$prodTextTypeNameData) {
-                    $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_product_text_type_add_success');
+                    $textMessage = 'tr_meliscommerce_product_text_type_add_success';
                     $data['ptt_code'] = $code;
-                    $textTypeTable->save($data);
+                    $prdTextTypeId = $textTypeTable->save($data);
                     $success = 1;
                 }
             }
@@ -1051,7 +1066,8 @@ class MelisComProductController extends AbstractActionController
             'errors' => $errors,
         );
 
-        $this->getEventManager()->trigger('meliscommerce_product_add_text_type_end', $this, $response);
+        $this->getEventManager()->trigger('meliscommerce_product_add_text_type_end', 
+            $this, array_merge($response, array('typeCode' => 'ECOM_PRODUCT_TEXT_TYPE_ADD', 'itemId' => $prdTextTypeId)));
 
         return new JsonModel($response);
     }
@@ -1062,13 +1078,14 @@ class MelisComProductController extends AbstractActionController
      */
     public function addProductTextAction()
     {
+        $productId = null;
         $success = 0;
         $translator = $this->getServiceLocator()->get('translator');
         $textTypeTable = $this->getServiceLocator()->get('MelisEcomProductTextTable');
         $ecomLangTable = $this->getServiceLocator()->get('MelisEcomLang');
         $errors = array();
-        $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_products_text_type');
-        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_product_text_type_update_fail');
+        $textTitle = 'tr_meliscommerce_products_text_type';
+        $textMessage = 'tr_meliscommerce_product_text_type_update_fail';
         if($this->getRequest()->isPost()) {
 
             $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
@@ -1080,6 +1097,9 @@ class MelisComProductController extends AbstractActionController
             $form = $factory->createForm($appTextForm);
 
             $postValues = get_object_vars($this->getRequest()->getPost());
+            
+            $productId = $postValues['ptxt_prd_id'];
+            
             $form->setData($postValues);
 
             if($form->isValid()) {
@@ -1095,7 +1115,7 @@ class MelisComProductController extends AbstractActionController
                     ));
                 }
 
-                $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_product_text_type_update_success');
+                $textMessage = 'tr_meliscommerce_product_text_type_update_success';
                 $success = 1;
             }
             else {
@@ -1117,13 +1137,16 @@ class MelisComProductController extends AbstractActionController
                 }
             }
         }
+        
         $response = array(
             'success' => $success,
             'textTitle' => $textTitle,
             'textMessage' => $textMessage,
             'errors' => $errors,
         );
-        $this->getEventManager()->trigger('meliscommerce_product_add_text_save_end', $this, $response);
+        
+        $this->getEventManager()->trigger('meliscommerce_product_add_text_save_end', 
+            $this, array_merge($response, array('typeCode' => 'ECOM_PRODUCT_TEXT_ADD', 'itemId' => $productId)));
 
         return new JsonModel($response);
     }
@@ -1143,11 +1166,21 @@ class MelisComProductController extends AbstractActionController
         $productId = 0;
         $isNew = false;
         $prodName = '';
+        $logTypeCode = '';
+        
         if($this->getRequest()->isPost()) {
 
             $data = get_object_vars($this->getRequest()->getPost());
 
             $productId = $data['product'][0]['prd_id'] ? (int) $data['product'][0]['prd_id'] : null;
+            
+            if ($productId){
+                $logTypeCode = 'ECOM_PRODUCT_UPDATE';
+            }else{
+                $logTypeCode = 'ECOM_PRODUCT_ADD';
+            }
+                
+            
             $prodName = $data['product'][0]['prd_reference'];
             $mergeProdData = array(
                 'prd_date_edit' => date('Y-m-d H:i:s'),
@@ -1197,10 +1230,10 @@ class MelisComProductController extends AbstractActionController
             'textMessage' => $textMessage,
             'errors' => $errors,
             'chunk' => array('productId' => $productId, 'isNew' => $isNew, 'prodName' => $prodName),
-
         );
 
-        $this->getEventManager()->trigger('meliscommerce_product_save_end', $this, $response);
+        $this->getEventManager()->trigger('meliscommerce_product_save_end', 
+            $this, array_merge($response, array('typeCode' => $logTypeCode, 'itemId' => $productId)));
 
         return new JsonModel($response);
     }
@@ -1657,9 +1690,10 @@ class MelisComProductController extends AbstractActionController
 
     public function deleteAction()
     {
+        $productId = null;
         $success = 0;
-        $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_products_Products');
-        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_product_remove_fail');
+        $textTitle = 'tr_meliscommerce_products_Products';
+        $textMessage = 'tr_meliscommerce_product_remove_fail';
         $request = $this->getRequest();
         if($request->isPost()) {
 
@@ -1667,16 +1701,18 @@ class MelisComProductController extends AbstractActionController
             $productId = (int) $this->getRequest()->getPost('productId');
             $success = $this->getProductSvc()->deleteProductById($productId);
             if($success) {
-                $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_product_remove_success');
+                $textMessage = 'tr_meliscommerce_product_remove_success';
             }
         }
+        
         $response = array(
             'success' => $success,
             'textTitle' => $textTitle,
             'textMessage' => $textMessage
         );
 
-        $this->getEventManager()->trigger('meliscommerce_product_delete_end', $this, $response);
+        $this->getEventManager()->trigger('meliscommerce_product_delete_end', 
+            $this, array_merge($response, array('typeCode' => 'ECOM_PRODUCT_DELETE', 'itemId' => $productId)));
 
         return new JsonModel($response);
     }
@@ -1700,6 +1736,7 @@ class MelisComProductController extends AbstractActionController
 
     public function getProductCategoryLastOrderNumAction()
     {
+        $id = "";
         $order = null;
         if($this->getRequest()->isXmlHttpRequest()) {
 
@@ -1711,6 +1748,7 @@ class MelisComProductController extends AbstractActionController
             $prodCatData1 = $prodCatTable->getEntryByField('pcat_prd_id', $prodId);
             foreach($prodCatData1 as $data) {
                 if(($data->pcat_prd_id == $prodId) && ($data->pcat_cat_id == $catId)) {
+                    $id = (int) $data->pcat_id;
                     $order = (int) $data->pcat_order;
                 }
             }
@@ -1730,6 +1768,7 @@ class MelisComProductController extends AbstractActionController
         }
 
         return new JsonModel(array(
+            'id' => $id,
             'order' => $order
         ));
     }
@@ -1740,11 +1779,22 @@ class MelisComProductController extends AbstractActionController
         return strcmp($a->ptt_id, $b->ptt_id);
     }
 
-    public function testAction()
+    
+    /**
+     * Product Page modal container
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderProductModalAction()
     {
-        $categorySvc = $this->getServiceLocator()->get('MelisComCategoryService');
-        $categorySvc->reorderProductCategory(77);
-        die;
+        $id = $this->params()->fromQuery('id');
+        $melisKey = $this->params()->fromQuery('melisKey');
+    
+        $view = new ViewModel();
+        $view->setTerminal(false);
+        $view->id = $id;
+        $view->melisKey = $melisKey;
+        return $view;
     }
 
 }

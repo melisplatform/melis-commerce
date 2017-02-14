@@ -80,18 +80,6 @@ return array(
                                     ),                                    
                                 ),
                             ),
-//                             array(
-//                                 'spec' => array(
-//                                     'name' => 'ord_status',
-//                                     'type' => 'EcomOrderStatusSelect',
-//                                     'options' => array(
-//                                         'label' => 'tr_meliscommerce_orders_status',
-//                                     ),
-//                                     'attributes' => array(
-//                                         'id' => '',
-//                                     ),
-//                                 ),
-//                             ),
                             array(
                                 'spec' => array(
                                     'name' => 'ord_reference',
@@ -118,24 +106,6 @@ return array(
                                     array('name' => 'StringTrim'),
                                 ),
                             ),
-//                             'ord_status' => array(
-//                                 'name'     => 'ord_status',
-//                                 'required' => true,
-//                                 'validators' => array(
-//                                     array(
-//                                         'name'    => '\Zend\I18n\Validator\IsInt',
-//                                         'options' => array(
-//                                             'messages'=> array(
-//                                                 \Zend\I18n\Validator\IsInt::NOT_INT   => 'tr_meliscommerce_orders_invalid_status',
-//                                             ),
-//                                         ),
-//                                     ),
-//                                 ),
-//                                 'filters'  => array(
-//                                     array('name' => 'StripTags'),
-//                                     array('name' => 'StringTrim'),
-//                                 ),
-//                             ),
                             'ord_reference' => array(
                                 'name'     => 'ord_reference',
                                 'required' => true,
@@ -685,21 +655,12 @@ return array(
                                         ),
                                     ),
                                     array(
-                                        'name'    => '\Zend\I18n\Validator\IsInt',
+                                        'name'    => 'regex', false,
                                         'options' => array(
-                                            'messages'=> array(
-                                                \Zend\I18n\Validator\IsInt::NOT_INT   => 'tr_meliscommerce_orders_invalid_number',
-                                            ),
+                                            'pattern' => '/^([0-9\(\)\/\+ \-]*)$/',
+                                            'messages'=> array(\Zend\Validator\Regex::NOT_MATCH => 'tr_meliscommerce_orders_invalid_number'),
                                         ),
-                                    ),
-//                                     array(
-//                                         'name'    => '\Zend\I18n\Validator\PostCode',
-//                                         'options' => array(
-//                                             'messages'=> array(
-//                                                 \Zend\I18n\Validator\PostCode::INVALID => 'atay',
-//                                             ),
-//                                         ),
-//                                     ),
+                                    ),                                    
                                 ),
                                 'filters'  => array(
                                     array('name' => 'StripTags'),
@@ -747,14 +708,6 @@ return array(
                                             'messages'=> array(\Zend\Validator\Regex::NOT_MATCH => 'tr_meliscommerce_orders_invalid_phone'),
                                         ),
                                     ),
-//                                     array(
-//                                         'name'    => '\Zend\I18n\Validator\PhoneNumber',
-//                                         'options' => array(
-//                                             'messages'=> array(
-//                                                 \Zend\I18n\Validator\PhoneNumber::NO_MATCH   => 'tr_meliscommerce_orders_invalid_phone',
-//                                             ),
-//                                         ),
-//                                     ),
                                 ),
                                 'filters'  => array(
                                     array('name' => 'StripTags'),
@@ -782,14 +735,6 @@ return array(
                                             'messages'=> array(\Zend\Validator\Regex::NOT_MATCH => 'tr_meliscommerce_orders_invalid_phone'),
                                         ),
                                     ),
-//                                     array(
-//                                         'name'    => '\Zend\I18n\Validator\PhoneNumber',
-//                                         'options' => array(
-//                                             'messages'=> array(
-//                                                 \Zend\I18n\Validator\PhoneNumber::NO_MATCH   => 'tr_meliscommerce_orders_invalid_phone',
-//                                             ),
-//                                         ),
-//                                     ),
                                 ),
                                 'filters'  => array(
                                     array('name' => 'StripTags'),

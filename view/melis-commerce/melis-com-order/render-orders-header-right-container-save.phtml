@@ -4,4 +4,4 @@
         $name = $this->zoneconfig['conf']['name'];
     } 
 ?>
-<a data-melisKey="<?= $this->melisKey; ?>" class="btn btn-success saveOrder" title="Save Order"><i class="fa fa-save" style="padding-right:10px;"></i><?= $name; ?></a>
+<a data-orderstatus="<?= $this->orderStatus ?>" data-melisKey="<?= $this->melisKey; ?>" class="btn btn-success saveOrder" title="Save Order"><i class="fa fa-save" style="padding-right:10px;"></i><?= $name; ?></a>

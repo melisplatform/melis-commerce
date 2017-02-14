@@ -231,7 +231,7 @@ return array(
                                     ),
                                     'attributes' => array(
                                         'id' => '',
-                                        'max' => '11',
+                                        'maxlength' => '9',
                                     ),
                                 ),
                             ),
@@ -282,10 +282,19 @@ return array(
                                             ),
                                         ),
                                     ),
+                                    array(
+                                        'name'    => 'StringLength',
+                                        'options' => array(
+                                            'encoding' => 'UTF-8',
+                                            'max'      => 10,
+                                            'messages' => array(
+                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_address_error_long_10',
+                                            ),
+                                        ),
+                                    ),
                                 ),
                                 'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
+                                   
                                 ),
                             ),
                         ),
@@ -361,8 +370,7 @@ return array(
                                     ),
                                 ),
                                 'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
+                                    
                                 ),
                             ),
                         ),

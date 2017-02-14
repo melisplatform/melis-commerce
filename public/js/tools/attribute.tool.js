@@ -85,17 +85,15 @@ $(document).ready(function() {
 			function(){
 				melisCommerce.postSave(url, dataString, function(data){
 					if(data.success){				
-						melisHelper.melisOkNotification( data.textTitle, data.textMessage, '#72af46' );
+						melisHelper.melisOkNotification( data.textTitle, data.textMessage );
 						melisHelper.zoneReload(attributeId+"_id_meliscommerce_attributes_tabs_content_values_details_table", "meliscommerce_attributes_tabs_content_values_details_table", {attributeId: attributeId});
-						
 					}else{
-						melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');				
+						melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);				
 					}		
 					melisCore.flashMessenger();	
 				}, function(data){
 					console.log(data);
 				})
-			
 		});
 		
 		melisCoreTool.done(this);
@@ -125,14 +123,14 @@ $(document).ready(function() {
 		melisCoreTool.pending(this);
 		melisCommerce.postSave(url, dataString, function(data){
 			if(data.success){;				
-				melisHelper.melisOkNotification( data.textTitle, data.textMessage, '#72af46' );
+				melisHelper.melisOkNotification( data.textTitle, data.textMessage );
 				melisHelper.zoneReload(attributeId+"_id_meliscommerce_attributes_tabs_content_values_details_table", "meliscommerce_attributes_tabs_content_values_details_table", {attributeId: attributeId});
-				melisCore.flashMessenger();
 				$("#id_meliscommerce_attribute_value_modal_value_form_container").modal("hide");
 			}else{
 				melisCoreTool.highlightErrors(data.success, data.errors, attributeId+"_id_meliscommerce_attribute_value_modal_value_form");
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');				
-			}			
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);				
+			}	
+			melisCore.flashMessenger();
 		}, function(data){
 			console.log(data);
 		});
@@ -184,18 +182,15 @@ $(document).ready(function() {
 		
 		melisCommerce.postSave(url, dataString, function(data){
 			if(data.success){;				
-				melisHelper.melisOkNotification( data.textTitle, data.textMessage, '#72af46' );
+				melisHelper.melisOkNotification( data.textTitle, data.textMessage );
 				melisHelper.tabClose(  attributeId + "_id_meliscommerce_attribute_page");
 				attributeTabOpen(translations.tr_meliscommerce_attribute_page+' '+data.chunk.tabName, data.chunk.attributeId);
 				melisHelper.zoneReload("id_meliscommerce_attribute_list_content_table", "meliscommerce_attribute_list_content_table");
-				melisCore.flashMessenger();
 			}else{
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors, 'closeByButtonOnly');
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
 				melisCoreTool.highlightErrors(data.success, data.errors, attributeId+"_id_meliscommerce_attribute_page");
-				console.log(data.success);
-				console.log(data.errors);
-				console.log(attributeId+"_id_meliscommerce_coupon_page");
-			}			
+			}	
+			melisCore.flashMessenger();
 		}, function(data){
 			console.log(data);
 		});

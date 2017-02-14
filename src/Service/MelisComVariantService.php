@@ -368,7 +368,10 @@ class MelisComVariantService extends MelisComGeneralService
         
         $varAttrs = $varAttrTable->getEntryByField('vatv_variant_id', $arrayParameters['variantId']);
         foreach($varAttrs as $varAttr){
-            $attribueValues[] = $attrService->getAttributeValuesById($varAttr->vatv_attribute_value_id, $arrayParameters['langId'])[0];
+            $tmp =  $attrService->getAttributeValuesById($varAttr->vatv_attribute_value_id, $arrayParameters['langId']);
+            foreach($tmp as $attrVal){
+                $attribueValues[] = $attrVal;
+            }
         }
         // Service implementation end
 

@@ -8,56 +8,55 @@
     $collapsed = '';
 ?>
 <div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="tab-pane active custom-field-type">
-	<?php 
-	foreach($this->payments as $payment):	   
-	?>
-	<a class="btn btn-primary form-control a-accordion <?= $collapsed?>" data-toggle="collapse" href="#<?= $payment->opay_id.'_'.$this->melisKey?>" aria-expanded="false" aria-controls="payment1">
-		<span><?= $this->translate('tr_meliscommerce_orders_content_tab_paymnet'). ' ' .$payment->payment_type->opty_name?></span>
-		<span style="float:right"><?= $payment->opay_date_payment?></span>
-	</a>
-	<div class="<?= $collapse?>" id="<?= $payment->opay_id.'_'.$this->melisKey?>">
-		<table class="info-table">
-			<tr>
-				<td><label><?= $this->translate('tr_meliscommerce_order_payment_paid')?></label></td>
-				<td><?= $payment->cur_symbol.' '.$payment->opay_transac_price_paid_confirm ?></td>
-			</tr>
-			<tr>
-				<td><label><?= $this->translate('tr_meliscommerce_order_payment_price')?></label></td>
-				<td><?= $payment->cur_symbol.' '.$payment->opay_price_total ?></td>
-			</tr>
-			<tr>
-				<td><label><?= $this->translate('tr_meliscommerce_order_payment_shipment')?></label></td>
-				<td><?= $payment->cur_symbol.' '.$payment->opay_price_shipping ?></td>
-			</tr>
-			<tr>
-				<td><label><?= $this->translate('tr_meliscommerce_order_payment_type')?></label></td>
-				<td><?= $payment->payment_type->opty_name ?></td>
-			</tr>
-			<tr>
-				<td><label><?= $this->translate('tr_meliscommerce_order_payment_validation')?></label></td>
-				<td><?= $payment->opay_transac_id ?></td>
-			</tr>
-			<tr>
-				<td><label><?= $this->translate('tr_meliscommerce_order_payment_date')?></label></td>
-				<td><?= $payment->opay_date_payment?></td>
-			</tr>
-			<tr>
-				<td><label><?= $this->translate('tr_meliscommerce_order_payment_coupon')?></label></td>
-				<td>
-					<?php 
-					foreach($payment->coupons as $coupon){
-					    echo $coupon->coup_code . ' ';
-					}
-					?>
-				</td>
-			</tr>
-		</table>
-	</div>
-	<br>
+	<?php foreach($this->payments as $payment):?>
+    	<a class="btn btn-primary form-control a-accordion <?= $collapsed?>" data-toggle="collapse" href="#<?= $payment->opay_id.'_'.$this->melisKey?>" aria-expanded="false" aria-controls="payment1">
+    		<span><?= $this->translate('tr_meliscommerce_orders_content_tab_paymnet'). ' ' .$payment->payment_type->opty_name?></span>
+    		<span style="float:right"><?= $payment->opay_date_payment?></span>
+    	</a>
+    	<div class="<?= $collapse?>" id="<?= $payment->opay_id.'_'.$this->melisKey?>">
+    		<table class="info-table">
+    			<tr>
+    				<td><label><?= $this->translate('tr_meliscommerce_order_payment_paid')?></label></td>
+    				<td><?= $payment->cur_symbol.' '.$payment->opay_transac_price_paid_confirm ?></td>
+    			</tr>
+    			<tr>
+    				<td><label><?= $this->translate('tr_meliscommerce_order_payment_price')?></label></td>
+    				<td><?= $payment->cur_symbol.' '.$payment->opay_price_order ?></td>
+    			</tr>
+    			<tr>
+    				<td><label><?= $this->translate('tr_meliscommerce_order_payment_shipment')?></label></td>
+    				<td><?= $payment->cur_symbol.' '.$payment->opay_price_shipping ?></td>
+    			</tr>
+    			<tr>
+    				<td><label><?= $this->translate('tr_meliscommerce_order_payment_type')?></label></td>
+    				<td><?= $payment->payment_type->opty_name ?></td>
+    			</tr>
+    			<tr>
+    				<td><label><?= $this->translate('tr_meliscommerce_order_payment_validation')?></label></td>
+    				<td><?= $payment->opay_transac_id ?></td>
+    			</tr>
+    			<tr>
+    				<td><label><?= $this->translate('tr_meliscommerce_order_payment_date')?></label></td>
+    				<td><?= $payment->opay_date_payment?></td>
+    			</tr>
+    			<tr>
+    				<td><label><?= $this->translate('tr_meliscommerce_order_payment_coupon')?></label></td>
+    				<td>
+    					<?php 
+    					    $labelContainer = '<span class="orderPaymentCouponLink" data-couponid="%s"  data-couponname="%s">%s (%s)</span>';
+        					foreach($payment->coupons as $coupon){
+        					    echo sprintf($labelContainer, $coupon->coup_id, $coupon->coup_code, $coupon->coup_code, ($coupon->coup_percentage) ? $coupon->coup_percentage.'%' : number_format($coupon->coup_discount_value, 2));
+        					}
+    					?>
+    				</td>
+    			</tr>
+    		</table>
+    	</div>
+    	<br>
 	<?php
-	$collapse = 'collapse';
-	$collapsed = 'collapsed';
-	$c++;
-	endforeach;
+    	$collapse = 'collapse';
+    	$collapsed = 'collapsed';
+    	$c++;
+    	endforeach;
 	?>
 </div>

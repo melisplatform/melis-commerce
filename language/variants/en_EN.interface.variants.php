@@ -17,6 +17,7 @@
 	    'tr_meliscommerce_variant_main_files_header' => 'File attachments',
 	    'tr_meliscommerce_variant_main_files_header_add' => 'Attach file',
 	    'tr_meliscommerce_variant_main_attributes_header' => 'Attributes',
+	    'tr_meliscommerce_variant_main_attributes_col' => 'Attribute(s)',
 	    'tr_meliscommerce_variant_main_image_filter_country' => 'Country',
 	    'tr_meliscommerce_variant_main_images_header' => 'Product images',
 	    'tr_meliscommerce_variant_main_images_header_add' => 'Add image',

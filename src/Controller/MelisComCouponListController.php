@@ -250,8 +250,9 @@ class MelisComCouponListController extends AbstractActionController
         $success = 0;
         $errors  = array();
         $data = array();
-        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_coupon_delete_fail');
-        $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_coupon_list_page_coupon');
+        $couponId = null;
+        $textMessage = 'tr_meliscommerce_coupon_delete_fail';
+        $textTitle = 'tr_meliscommerce_coupon_list_page_coupon';
         
         $couponSvc = $this->getServiceLocator()->get('MelisComCouponService');
         if($this->getRequest()->isPost()){
@@ -260,7 +261,7 @@ class MelisComCouponListController extends AbstractActionController
             $couponId = $postValues['couponId'];
             if($couponSvc->deleteCouponById($couponId)){
                 $success = 1;
-                $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_coupon_delete_success');
+                $textMessage = 'tr_meliscommerce_coupon_delete_success';
             }
         }
         
@@ -271,7 +272,10 @@ class MelisComCouponListController extends AbstractActionController
             'errors' => $errors,
             'chunk' => $data,
         );
-        $this->getEventManager()->trigger('meliscommerce_coupon_delete_end', $this, $response);
+        
+        $this->getEventManager()->trigger('meliscommerce_coupon_delete_end', 
+            $this, array_merge($response, array('typeCode' => 'ECOM_COUPON_DELETE', 'itemId' => $couponId)));
+        
         return new JsonModel($response);
     }
     

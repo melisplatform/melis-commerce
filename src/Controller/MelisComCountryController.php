@@ -251,6 +251,8 @@ class MelisComCountryController extends AbstractActionController
     {
         $success = 0;
         $errors  = array();
+        $ctryId = null;
+        $logTypeCode = '';
         $textTitle = 'tr_meliscommerce_country_new_country';
         $textMessage = 'tr_meliscommerce_country_add_failed';
         $form = $this->getTool()->getForm('meliscommerce_country_form');
@@ -267,6 +269,10 @@ class MelisComCountryController extends AbstractActionController
             if($postData['ctry_id']) {
                 $textTitle = 'tr_meliscommerce_CountrY_edit_country';
                 $textMessage = 'tr_meliscommerce_country_edit_failed';
+                $logTypeCode = 'ECOM_COUNTRY_UPDATE';
+                $ctryId = $postData['ctry_id'];
+            }else{
+                $logTypeCode = 'ECOM_COUNTRY_ADD';
             }
             
             $tmpName = $postData['tmp_ctry_name'];
@@ -278,7 +284,6 @@ class MelisComCountryController extends AbstractActionController
             $form->setData($postData);
             if($form->isValid()) {
                 $data = $form->getData();
-
                 $ctryId = $data['ctry_id'];
                 // unset data
                 unset($data['tmp_ctry_name']);
@@ -313,12 +318,13 @@ class MelisComCountryController extends AbstractActionController
                 }
                 
                 if(!$hasErrorFlag) {
-                    if($countryTable->save($data, $ctryId)) {
+                    $tempCtryId = $ctryId;
+                    $ctryId = $countryTable->save($data, $ctryId);
+                    if($ctryId) {
                         $success = 1;
-                        if($ctryId) {
+                        if($tempCtryId) {
                             $textMessage = 'tr_meliscommerce_country_edit_success';
-                        }
-                        else {
+                        } else {
                             $textMessage = 'tr_meliscommerce_country_add_success';
                         }
                     }
@@ -348,11 +354,12 @@ class MelisComCountryController extends AbstractActionController
         $response = array(
             'success' => $success,
             'errors' => $errors,
-            'textMessage' => $this->getTool()->getTranslation($textMessage),
-            'textTitle' => $this->getTool()->getTranslation($textTitle),
+            'textMessage' => $textMessage,
+            'textTitle' => $textTitle,
         );
         
-        $this->getEventManager()->trigger('meliscommerce_country_save_end', $this, $response);
+        $this->getEventManager()->trigger('meliscommerce_country_save_end', 
+            $this, array_merge($response, array('typeCode' => $logTypeCode, 'itemId' => $ctryId)));
         
         return new JsonModel($response);
     }
@@ -364,7 +371,7 @@ class MelisComCountryController extends AbstractActionController
         $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
         $textMessage = 'tr_meliscommerce_country_delete_failed';
         
-        $id = 0;
+        $id = null;
         $success = 0;
         
         if($this->getRequest()->isPost())
@@ -383,11 +390,13 @@ class MelisComCountryController extends AbstractActionController
         }
         
         $response = array(
-            'textTitle' => $this->getTool()->getTranslation('tr_meliscommerce_country_delete_country'),
-            'textMessage' => $this->getTool()->getTranslation($textMessage),
+            'textTitle' => 'tr_meliscommerce_country_delete_country',
+            'textMessage' => $textMessage,
             'success' => $success
         );
-        $this->getEventManager()->trigger('meliscommerce_country_delete_end', $this, array_merge($response, array('countryId' => $id)));
+        
+        $this->getEventManager()->trigger('meliscommerce_country_delete_end', 
+            $this, array_merge($response, array('typeCode' => 'ECOM_COUTNRY_DELETE', 'itemId' => $id, 'countryId' => $id)));
         
         return new JsonModel($response);
     }

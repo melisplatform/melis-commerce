@@ -75,4 +75,9 @@
 	    
 	    //services errors
 	    'tr_meliscommerce_order_save_order_failed' => 'Failed to update',
+	    
+	    'tr_meliscommerce_order_save_status_canceled_confirm' => 'Changing the status to canceled will definitely cancel the order, its status will not be editable afterwards. Are you sure you want to cancel the order ?',
+	    'tr_meliscommerce_order_common_label_yes' => 'Yes',
+	    'tr_meliscommerce_order_common_label_no' => 'No',
+	    
 	);

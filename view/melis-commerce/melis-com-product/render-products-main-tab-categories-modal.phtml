@@ -1,0 +1,107 @@
+<?php
+	$name = '';
+	$id = '';
+	if (!empty($this->zoneconfig['conf']['name']))
+		$name = $this->zoneconfig['conf']['name'];
+	if (!empty($this->zoneconfig['conf']['id']))
+		$id = ' id="' . $this->zoneconfig['conf']['id'] . '"';
+	$data_melisKey = $this->melisKey;
+		
+?>
+<div class="modal-content">
+	<div class="modal-body padding-none">
+		<div class="wizard">
+			<div class="widget widget-tabs widget-tabs-double widget-tabs-responsive margin-none border-none">
+                <div class="widget-head">
+                	<ul class="nav nav-tabs">
+                		<li class="active"><a href="#<?php echo $this->zoneconfig['conf']['id'] ?>" class="glyphicons tags" data-toggle="tab" aria-expanded="true"><i></i> <?php echo $this->translate('tr_meliscommerce_categories_list') ?></a></li>
+            		</ul>
+        		</div>
+        		<div class="widget-body innerAll inner-2x">
+        			<div class="tab-content">
+        				<div class="tab-pane active" <?php echo $id ?>>
+                            <div class="row">
+                            	<div class="col-md-12" id="productCategorySearchZone">
+                            		<div class="form-group">
+                                    	<input type="text" class="form-control" name="productCategorySearch" id="productCategorySearch" data-productid="<?= $this->productId; ?>" placeholder="<?= $this->translate('tr_meliscommerce_categories_list_tree_view_search_input'); ?>">
+                                	</div>
+                                	<div class="row">
+                                		<div class="col-xs-6 col-md-6 col-lg-3">
+                                			<button class="btn btn-success btn-block margin-bottom-10" id="clearPrdCatSearchInputBtn" data-productid="<?= $this->productId; ?>" title="<?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_clear')?>">
+                                				<i class="fa fa-eraser"></i> 
+                                				<span><?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_clear')?></span>
+                                			</button>
+                                		</div>
+                                		<div class="col-xs-6 col-md-6 col-lg-3 margin-bottom-10">
+                                			<button class="btn btn-success btn-block margin-bottom-10" id="collapsePrdCatTreeViewBtn" data-productid="<?= $this->productId; ?>" title="<?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_collapse_all')?>">
+                                				<i class="fa fa-compress fa-flip-horizontal"></i> 
+                                				<span><?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_collapse_all')?></span>
+                                			</button>
+                                		</div>
+                                		<div class="col-xs-6 col-md-6 col-lg-3">
+                                			<button class="btn btn-success btn-block margin-bottom-10" id="expandPrdCatTreeViewBtn" data-productid="<?= $this->productId; ?>" title="<?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_expand_all')?>">
+                                				<i class="fa fa-expand fa-flip-horizontal"></i> 
+                                				<span><?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_expand_all')?></span>
+                                			</button>
+                                		</div>
+                                		<div class="col-xs-6 col-md-6 col-lg-3">
+                                			<button class="btn btn-success btn-block margin-bottom-10" id="refreshPrdCatTreeView" data-productid="<?= $this->productId; ?>" title="<?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_refresh')?>">
+                                				<i class="fa fa-refresh"></i> 
+                                				<span><?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_refresh')?></span>
+                                			</button>
+                                		</div>
+                                	</div>
+                            	</div>
+                            	<div class="col-md-12">
+                            		<div class="row">
+                        				<div class="col-md-6">
+                        					<br>
+                                    		<div class="prodCatLangDropDownContainer">
+                                            	<div class="filter-dropdown clearfix productCategoryLangDropdown" data-productid="<?= $this->productId; ?>">
+                                            		<a href="#" class="dropdown-toggle category-list-lang-dropdown" data-toggle="dropdown">
+                                            			<i class="fa fa-language"></i>
+                                            			<span class="filter-key"><?= $this->currentLangName; ?></span>
+                                            			<span class="caret"></span>
+                                            		</a>
+                                            		<ul class="dropdown-menu product-category-tree-view-lang">
+                        							<?php 
+                        							    if($this->langData): 
+                        							        foreach($this->langData as $lang): ?>
+                                                    			<li>
+                                									<?php
+                                									$imageData = $lang->elang_flag;
+                                									$image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay pull-right" width="24" height="24"/>' : '<i class="fa fa-globe"></i>';
+                                									?>
+                                                    				<a data-locale="<?= $lang->elang_locale; ?>"><?= $lang->elang_name; ?><span class="pull-right"><?php echo $image; ?></span></a>
+                                                    			</li>
+                                        			<?php 
+                                            			    endforeach;
+                            							endif;
+                        							?>
+                                            		</ul>
+                                            	</div>
+                            				</div>
+                        				</div>
+                        				<div class="col-md-6"></div>
+                    				</div>
+                            	</div>
+                            	<div class="col-md-12">
+                            		<div id="<?= $this->productId; ?>_productCategoryList" class="productCategoryView" data-langlocale="<?php echo $this->currentLangLocale ?>"></div>
+                            	</div>
+                            	<div class="col-md-12">
+                                 	<div align="right">
+                                 		<button data-dismiss="modal" class="btn btn-danger pull-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_general_common_cancel')?></button>
+                                 		<button class="btn btn-success addProductCategory" data-productid="<?= $this->productId; ?>"><i class="fa fa-plus"></i> <?php echo $this->translate('tr_meliscommerce_general_common_add'); ?></button>
+                                 	</div>
+                            	</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+	initProductCategoryList(<?= $this->productId; ?>);
+</script>

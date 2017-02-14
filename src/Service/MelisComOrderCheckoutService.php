@@ -659,6 +659,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                 'ord_client_id' => $container['checkout']['clientId'],
                 'ord_client_person_id' => $contactId,
                 'ord_status' => '-1',
+                'ord_country_id' => $clientCountryId,
                 'ord_reference' => $orderReferenceCode['code'],
                 'ord_billing_address' => -1,
                 'ord_delivery_address' => -1,
@@ -749,6 +750,8 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             // Unset Checkout Addresses on Container
             unset($container['checkout']['addresses']);
             
+            // Adding Order Id to result
+            $results['orderId'] = $orderId;
             
             $results['success'] = true;
         }

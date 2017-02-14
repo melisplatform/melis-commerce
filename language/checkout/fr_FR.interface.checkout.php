@@ -1,7 +1,7 @@
 <?php 
 	return array(
 	    'tr_meliscommerce_order_checkout_title' => 'Nouvelle Commande',
-	    'tr_meliscommerce_order_checkout_add_order' => 'Ajouter Commande',
+	    'tr_meliscommerce_order_checkout_add_order' => 'Créer une commande',
 	    
 	    // Common Labels
 	    'tr_meliscommerce_order_checkout_common_action' => 'Action',
@@ -90,4 +90,6 @@
 	    'tr_meliscommerce_order_checkout_confirmation_price_not_equal' => 'Oops... Le montant payé ne correspond pas au montant de la commande.',
 	    'tr_meliscommerce_order_checkout_confirmation_reference' => 'La référence de la commande est:',
 	    
+	    'tr_meliscommerce_order_checkout_save_success' => 'La commande a été sauvegardée avec succès',
+	    'tr_meliscommerce_order_checkout_save_unable' => 'Impossible de sauvegarder La commande, veuillez réessayer',
 	);
