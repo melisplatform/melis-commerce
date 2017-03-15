@@ -1,0 +1,17 @@
+<?php if ($this->message):?>
+	<h2><?php echo $this->message?></h2>
+<?php endif;?>
+<?php 
+    $form = $this->deliveryAddress;
+    $form->add(array(
+        'name' => 'submit',
+        'attributes' => array(
+            'type' => 'submit',
+            'value' => 'Save',
+        ),
+    ));
+    $form->prepare();
+    echo $this->form()->openTag($form);
+    echo $this->formCollection($form);
+    echo $this->form()->closeTag();
+?>

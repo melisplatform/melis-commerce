@@ -1,0 +1,11 @@
+<?php $ctr = 1;?>
+
+<?php foreach ($this->checkoutSteps As $key => $val):?>
+	<a class="btn btn-primary <?php echo $val['isActive'] ? 'active' : ''?>" href="#<?php //echo $val['link'] ?>">
+		<span><?php echo $ctr++?></span>. <?php echo $val['label']?>
+	</a>
+<?php endforeach;?>
+
+<!-- Checkout content start -->
+<?php echo $this->checkout ?>
+<!-- end of Checkout content -->

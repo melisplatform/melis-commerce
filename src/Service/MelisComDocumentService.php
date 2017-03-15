@@ -146,51 +146,28 @@ class MelisComDocumentService extends MelisComGeneralService
 	 *
 	 * @return MelisEcomDocument|null Document object
 	 */
-	public function getDocumentsByRelationAndTypes($docRelation, $relationId, $typeCode1, $typeCode2 = null)
+	public function getDocumentsByRelationAndTypes($docRelation, $relationId, $typeCode1 = null, $typeCode2 = array())
 	{
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
 	    $results = array();
-	    	    
+	
 	    // Sending service start event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_document_byrelation_types_start', $arrayParameters);
-	    
+	     
 	    // Service implementation start
-        $docTable = $this->getServiceLocator()->get('MelisEcomDocumentTable');
-        $docRelTable = $this->getServiceLocator()->get('MelisEcomDocRelationsTable');
-        $docType = $this->getServiceLocator()->get('MelisEcomDocTypeTable');
-        $entDoc = new MelisDocument();
-        $docTypeData = $docType->getEntryByField('dtype_code', $typeCode1)->current();
-        $typeCodeId = null;
-        $typeCodeId2 = null;
-        $documents = array();
-        if($docTypeData) {
-            $typeCodeId = $docTypeData->dtype_id;
-            if($typeCode2) {
-                $docTypeData = $docType->getEntryByField('dtype_code', $typeCode2)->current();
-                if($docTypeData) {
-                    $typeCodeId2 = $docTypeData->dtype_id;;
-                }
-            }
-        }
-        
-        if($typeCodeId) {
-            $docData = $docTable->getDocumentRelationsAndDocSubType($arrayParameters['docRelation'], $arrayParameters['relationId'], $typeCodeId, $typeCodeId2)->toArray();
-            foreach($docData as $doc) {
-                $documents[] = $doc;
-            }
-            
-            $entDoc->setDocument($documents);
-        }
-
-        $results = $entDoc;
+	    $docTable = $this->getServiceLocator()->get('MelisEcomDocumentTable');
+	    $documents = $docTable->getDocumentsByRelationsAndTypes($arrayParameters['docRelation'], $arrayParameters['relationId'], $arrayParameters['typeCode1'], $arrayParameters['typeCode2']);
+	    foreach($documents as $document){
+	        $results[] = $document;
+	    }
 	    // Service implementation end
-
-        // Adding results to parameters for events treatment if needed
-	    $arrayParameters['results'] = $results;	    
+	
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
 	    // Sending service end event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_document_byrelation_types_end', $arrayParameters);
-	    
+	     
 	    return $arrayParameters['results'];
 	}
 	
@@ -209,12 +186,12 @@ class MelisComDocumentService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_document_get_doc_default_image_start', $arrayParameters);
 	     
 	    // Service implementation start
-        $data = $this->getDocumentsByRelationAndTypes($arrayParameters['docRelation'], $arrayParameters['relationId'], 'IMG', 'DEFAULT');
+        $data = $this->getDocumentsByRelationAndTypes($arrayParameters['docRelation'], $arrayParameters['relationId'], 'IMG', array('DEFAULT'));
         $defaultImageData = '';
 
-        if($data && $data->getDocument()) {
-            $imgData = $data->getDocument()[0];
-            $imagePath = $imgData['doc_path'];
+        if($data) {
+            $imgData = $data[0];
+            $imagePath = $imgData->doc_path;
             if(file_exists(HTTP_ROOT.$imagePath)) {
                 $protocol = strtolower(explode($_SERVER['SERVER_PROTOCOL'], 'HTTP')[0]).'://';
                 $defaultImageData = $protocol.$_SERVER['SERVER_NAME'].$imagePath;
@@ -224,17 +201,14 @@ class MelisComDocumentService extends MelisComGeneralService
         if(empty($defaultImageData)) {
             // if there is no default image is set, then will use the first data
             // on this product
-            $data = $this->getDocumentsByRelation($docRelation, $relationId);
+            $data = $this->getDocumentsByRelationAndTypes($docRelation, $relationId);
 
-            if(!empty($data) && $data->getDocument()) {
-                $data = $data->getDocument();
-                if($data) {
-                    $imgData = $data[0];
-                    $imagePath = $imgData['doc_path'];
-                    if(file_exists(HTTP_ROOT.$imagePath)) {
-                        $protocol = strtolower(explode($_SERVER['SERVER_PROTOCOL'], 'HTTP')[0]).'://';
-                        $defaultImageData = $protocol.$_SERVER['SERVER_NAME'].$imagePath;
-                    }
+            if(!empty($data)) {               
+                $imgData = $data[0];
+                $imagePath = $imgData->doc_path;
+                if(file_exists(HTTP_ROOT.$imagePath)) {
+                    $protocol = strtolower(explode($_SERVER['SERVER_PROTOCOL'], 'HTTP')[0]).'://';
+                    $defaultImageData = $protocol.$_SERVER['SERVER_NAME'].$imagePath;
                 }
             }
 

@@ -18,6 +18,18 @@ use Zend\Session\Container;
  */
 class MelisComOrderCheckoutService extends MelisComGeneralService
 {
+    public $siteId;
+    
+    public function setSiteId($siteId)
+    {
+        $this->siteId = $siteId;
+    }
+    
+    public function getSiteId()
+    {
+        return $this->siteId;
+    }
+    
     /**
      * This service will check the validity of a client's basket
      * 
@@ -65,7 +77,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         $clientBasket = $melisComBasketService->getBasket($arrayParameters['clientId']);
         
         $container = new Container('meliscommerce');
-        $clientCountryId = $container['checkout']['countryId'];
+        $clientCountryId = $container['checkout'][$this->siteId]['countryId'];
         
         // Validation results handler
         $okVariant = array();
@@ -110,7 +122,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                         // Variant Quantity is not enough of Basket demand
                         // KO : Variant Quantity not enough
                         $koVariant[$variantId] = array(
-                            'error' => 'tr_MELIS_COMMERCE_CHECKOUT_ERROR_BASKET_QUANTITY',
+                            'error' => 'MELIS_COMMERCE_CHECKOUT_ERROR_BASKET_QUANTITY',
                             $variantId => $val,
                         );
                     }
@@ -196,7 +208,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_checkout_address_validation_start', $arrayParameters);
         
         $results = array(
-            'success' => false,
+            'success' => true,
             'addresses' => array(
                 'delivery' => array(
                     'success' => true,
@@ -218,9 +230,9 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         {
             // Saving addresses in session for later use
             $container = new Container('meliscommerce');
-            if (empty($container['checkout']))
-                $container['checkout'] = array();
-            $container['checkout']['addresses'] = $arrayParameters['results']['addresses'];
+            if (empty($container['checkout'][$this->siteId]))
+                $container['checkout'][$this->siteId] = array();
+            $container['checkout'][$this->siteId]['addresses'] = $arrayParameters['results'];
         }
         
         return $arrayParameters['results'];
@@ -339,9 +351,6 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
         $clientBasket = $melisComBasketService->getBasket($arrayParameters['clientId']);
         
-        $container = new Container('meliscommerce');
-        $clientCountryId = $container['checkout']['countryId'];
-        
         // computation of variants based on price_net and quantity
         
         $variantDetails = array();
@@ -352,6 +361,9 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         
         if (!is_null($clientBasket))
         {
+            $container = new Container('meliscommerce');
+            $clientCountryId = $container['checkout'][$this->siteId]['countryId'];
+            
             foreach ($clientBasket As $val)
             {
                 $variantId = $val->getVariantId();
@@ -590,7 +602,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
 
         $addressesValidity = false;
         $container = new Container('meliscommerce');
-        if (!empty($container['checkout']['addresses']))
+        if (!empty($container['checkout'][$this->siteId]['addresses']))
             $addressesValidity = true;
             
         $costsResults = $this->computeAllCosts($arrayParameters['clientId']); 
@@ -617,9 +629,9 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
              */ 
             
             $container = new Container('meliscommerce');
-            $clientCountryId = $container['checkout']['countryId'];
+            $clientCountryId = $container['checkout'][$this->siteId]['countryId'];
             
-            $billingAdd = $container['checkout']['addresses']['addresses']['billing']['address'];
+            $billingAdd = $container['checkout'][$this->siteId]['addresses']['addresses']['billing']['address'];
             
             unset($billingAdd['cadd_client_id']);
             unset($billingAdd['cadd_client_person']);
@@ -635,7 +647,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             $billingAddress[] = $billingAdd;
             
             
-            $deliveryAdd = $container['checkout']['addresses']['addresses']['delivery']['address'];
+            $deliveryAdd = $container['checkout'][$this->siteId]['addresses']['addresses']['delivery']['address'];
             
             unset($deliveryAdd['cadd_client_id']);
             unset($deliveryAdd['cadd_client_person']);
@@ -651,12 +663,12 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             $deliveryAddress[] = $deliveryAdd;
             
             $melisEcomClientPersonTable = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
-            $clientMainPerson = $melisEcomClientPersonTable->getClientMainPersonByClientId($container['checkout']['clientId'])->current();
+            $clientMainPerson = $melisEcomClientPersonTable->getClientMainPersonByClientId($container['checkout'][$this->siteId]['clientId'])->current();
             
-            $contactId = $container['checkout']['contactId'];
+            $contactId = $container['checkout'][$this->siteId]['contactId'];
             
             $order = array(
-                'ord_client_id' => $container['checkout']['clientId'],
+                'ord_client_id' => $container['checkout'][$this->siteId]['clientId'],
                 'ord_client_person_id' => $contactId,
                 'ord_status' => '-1',
                 'ord_country_id' => $clientCountryId,
@@ -666,16 +678,16 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                 'ord_date_creation' => date('Y-m-d H:i:s')
             );
             
-            // Getting Current Langauge ID
-            $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
-            $langId = $melisTool->getCurrentLocaleID();
+            // Getting Current Langauge ID from Melis Plugin langid
+            $containerPlugin = new Container('melisplugins');
+            $langId = $containerPlugin['melis-plugins-lang-id'];
             
             $melisComProductService = $this->getServiceLocator()->get('MelisComProductService');
             $melisComVariantService = $this->getServiceLocator()->get('MelisComVariantService');
             $melisComCategoryService = $this->getServiceLocator()->get('MelisComCategoryService');
             $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
             
-            $clientBasket = $melisComBasketService->getBasket($container['checkout']['clientId']);
+            $clientBasket = $melisComBasketService->getBasket($container['checkout'][$this->siteId]['clientId']);
             
             $basket = array();
             foreach ($clientBasket As $key => $val)
@@ -745,10 +757,10 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             $orderId = $melisComOrderService->saveOrder($order, $basket, $billingAddress, $deliveryAddress);
             
             // Set Order Id to Session
-            $container['checkout']['orderId'] = $orderId;
+            $container['checkout'][$this->siteId]['orderId'] = $orderId;
             
             // Unset Checkout Addresses on Container
-            unset($container['checkout']['addresses']);
+            unset($container['checkout'][$this->siteId]['addresses']);
             
             // Adding Order Id to result
             $results['orderId'] = $orderId;

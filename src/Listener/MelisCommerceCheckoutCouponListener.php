@@ -31,7 +31,6 @@ class MelisCommerceCheckoutCouponListener extends MelisCoreGeneralListener imple
         		$sm = $e->getTarget()->getServiceLocator();
         		$couponTable = $sm->get('MelisEcomCouponTable');
         		$couponSrv = $sm->get('MelisComCouponService');
-        		$melisCoreDispatchService = $sm->get('MelisCoreDispatch');
         		$params = $e->getParams();
         		
         		// Getting $_GET[] parameters for CouponCode
@@ -52,10 +51,13 @@ class MelisCommerceCheckoutCouponListener extends MelisCoreGeneralListener imple
         		    else
         		    {
         		        // If there is no data from $_GET[], this will try to use coupon data from Session
+        		        $melisComOrderCheckoutService = $sm->get('MelisComOrderCheckoutService');
+        		        $siteId = $melisComOrderCheckoutService->getSiteId();
         		        $container = new Container('meliscommerce');
-        		        if(!empty($container['checkout']['couponId']))
+        		        
+        		        if(!empty($container['checkout'][$siteId]['couponId']))
         		        {
-        		            $couponId = $container['checkout']['couponId'];
+        		            $couponId = $container['checkout'][$siteId]['couponId'];
         		            $couponEntity = $couponSrv->getCouponById($couponId);
         		            $coupon = $couponEntity->getCoupon();
         		        }

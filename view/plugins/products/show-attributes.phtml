@@ -1,0 +1,19 @@
+<?php
+
+foreach($this->attributes as $attribute){
+    echo '<br>';
+    echo $attribute->getAttribute()->attr_trans[0]->atrans_name;
+    echo "<select>";
+
+    foreach($attribute->getAttributeValues() as $value){
+
+        $column = 'avt_v_'.$value->atype_column_value;
+        echo "<option>";
+        echo $value->atval_trans[0]->$column;
+        echo "</option>";
+
+    }
+
+    echo "</select>";
+}
+?>

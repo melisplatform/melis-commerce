@@ -1306,26 +1306,30 @@ class MelisComProductController extends AbstractActionController
                         $ptt_name = $prodText['ptt_name'];
                         unset($prodText['ptxt_type']);
                         unset($prodText['ptxt_lang_id']);
-                        $prodText = array_filter($prodText);
-                        //if(!empty($prodText)){
-                        $prodText['ptxt_lang_id'] = $ptxt_lang_id;
-                        $prodText['ptxt_type'] = $ptxt_type;
-                        $prodTextForm->setData($prodText);
-                        if($prodTextForm->isValid()){
-                            $prodText = $prodTextForm->getData();
-                            if(empty($ptt_id)){
-                                $textType = [
-                                    'ptt_code' => $ptt_code,
-                                    'ptt_name' => $ptt_name,
-                                ];
-                            }
-                        }
                         unset($prodText['ptt_code']);
                         unset($prodText['ptt_name']);
                         unset($prodText['ptt_id']);
-                        $textClean[] = $prodText;
-
-                        //}
+                        $prodText = array_filter($prodText);
+                        
+                        if(!empty($prodText)){
+                            $prodText['ptxt_lang_id'] = $ptxt_lang_id;
+                            $prodText['ptxt_type'] = $ptxt_type;
+                            $prodTextForm->setData($prodText);
+                            if($prodTextForm->isValid()){
+                                $prodText = $prodTextForm->getData();
+                                if(empty($ptt_id)){
+                                    $textType = [
+                                        'ptt_code' => $ptt_code,
+                                        'ptt_name' => $ptt_name,
+                                    ];
+                                }
+                            }
+                            unset($prodText['ptt_code']);
+                            unset($prodText['ptt_name']);
+                            unset($prodText['ptt_id']);
+                            $textClean[] = $prodText;
+                        }
+                        
                     }
                 }
                 foreach($requestData['priceForm'] as $prodPrice){
@@ -1395,7 +1399,7 @@ class MelisComProductController extends AbstractActionController
                     $categorySvc->deleteCategoryProduct($delCat['pcat_id']);
                 }
             }
-
+            
             $success = $prodSvc->saveProduct($product, $textClean, $attributes, $categories, $priceClean, $seo, (int) $product['prd_id']);
 
             $data['productId'] = (int) $success;

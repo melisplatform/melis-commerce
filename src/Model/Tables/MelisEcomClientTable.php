@@ -77,8 +77,7 @@ class MelisEcomClientTable extends MelisEcomGenericTable
         
         $select->join('melis_ecom_client_person', 'melis_ecom_client_person.cper_client_id=melis_ecom_client.cli_id',
                         array(),$select::JOIN_LEFT);
-        $select->where('cper_email ="'.$personEmail.'"');
-        $select->where('cper_password ="'.$personPassword.'"');
+        $select->where(array('cper_email' => $personEmail,'melis_ecom_client_person.cper_password' => $personPassword));
         
         $resultData = $this->tableGateway->selectWith($select);
         return $resultData;

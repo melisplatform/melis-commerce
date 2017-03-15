@@ -1,0 +1,24 @@
+<div>
+	<?php 
+	
+    	$product = $this->product;
+    	$variants = $this->product_variants;
+//     	echo '<pre>'; print_r($product); echo '</pre>'; die();
+        foreach($product->getTexts() as $prodText){
+                echo "<p>$prodText->ptxt_field_short</p>";
+                echo "<p>$prodText->ptxt_field_long</p>";
+        }
+        
+       // images defualt display
+       foreach($product->getDocuments() as $document){
+    	   // check if document type is image and default
+    	    if($document->doc_type_id == 1){
+    	       echo '<img src="'.$document->doc_path.'" height="300" width="300"/>';
+    	    }
+    	    
+        }
+        echo $this->attributes_view;
+        echo $this->add_to_cart_view;
+    ?>
+</div>
+           

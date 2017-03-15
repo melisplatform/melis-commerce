@@ -10,6 +10,7 @@
 namespace MelisCommerce\Service;
 
 use MelisCommerce\Entity\MelisClientPerson;
+use Zend\Crypt\Key\Derivation\Pbkdf2;
 use Zend\Crypt\BlockCipher;
 use Zend\Crypt\Symmetric\Mcrypt;
 /**
@@ -355,6 +356,74 @@ class MelisComClientService extends MelisComGeneralService
 	    return $arrayParameters['results'];
 	}
 	
+	/**
+	 * Returns the specific address of the client person by providing the address ID
+	 * @param $addrId
+	 * @return mixed
+	 */
+	public function getClientPersonAddressByAddressId($personId, $addrId)
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = array();
+	
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_person_address_by_address_id_start', $arrayParameters);
+	
+	    // Service implementation start
+	    
+	    $addrTable = $this->getServiceLocator()->get('MelisEcomClientAddressTable');
+	    $address  = $addrTable->getClientPersonAddressByAddressId($arrayParameters['personId'], $arrayParameters['addrId']);
+	    if (!empty($address))
+	    {
+	        $results = $address;
+	    }
+	    // Service implementation end
+	
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_person_address_by_address_id_end', $arrayParameters);
+	
+	    return $arrayParameters['results'];
+	}
+
+    /**
+     * Returns the specific address of the client by providing the address ID
+     * @param $addrId
+     * @return mixed
+     */
+	public function getClientAddressByAddressId($addrId)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_client_address_by_address_id_start', $arrayParameters);
+
+        // Service implementation start
+        $doNotInclude    = array('cadd_creation_date', 'cadd_civility',
+            'cadd_client_id', 'cadd_client_person', 'cadd_type', 'cadd_name', 'cadd_firstname',
+            'cadd_middle_name');
+        $addrTable = $this->getServiceLocator()->get('MelisEcomClientAddressTable');
+        $address  = $addrTable->getEntryById($addrId)->current();
+        if($address) {
+            foreach($doNotInclude as $column) {
+                unset($address->$column);
+            }
+        }
+        $results = $address;
+        // Service implementation end
+
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_client_address_by_address_id_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
+	
 	public function getAddressTransByAddressTypeIdAndLangId($addTypeId, $langId = null)
 	{
 	    // Event parameters prepare
@@ -554,7 +623,7 @@ class MelisComClientService extends MelisComGeneralService
 	
 	    // Service implementation start
 	    $melisEcomClientTable = $this->getServiceLocator()->get('MelisEcomClientTable');
-	    $client = $melisEcomClientTable->getClientByEmailAndPassword($arrayParameters['personEmail'], $arrayParameters['personPassword'])->current();
+	    $client = $melisEcomClientTable->getClientByEmailAndPassword($arrayParameters['personEmail'], $this->crypt($arrayParameters['personPassword']))->current();
 	    
 	    if (!empty($client))
 	    {
@@ -610,6 +679,10 @@ class MelisComClientService extends MelisComGeneralService
             {
                 $arrayParameters['client']['cli_date_creation'] = date('Y-m-d H:i:s');
             }
+            else 
+            {
+                $arrayParameters['client']['cli_date_edit'] = date('Y-m-d H:i:s');
+            }
             $clntId = $melisEcomClientTable->save($arrayParameters['client'], $arrayParameters['clientId']);
 	    }
 	    catch (\Exception $e)
@@ -625,8 +698,11 @@ class MelisComClientService extends MelisComGeneralService
 	        $personsData = $arrayParameters['persons'];
 	        foreach ($personsData As $key => $val)
 	        {
-	            $cperId = $val['cper_id'] ? $val['cper_id'] : null;
-	            unset($val['cper_id']);
+	            $cperId = (!empty($val['cper_id'])) ? $val['cper_id'] : null;
+	            if (!isset($val['cper_id']))
+	            {
+	                unset($val['cper_id']);
+	            }
 	            $val['cper_client_id'] = $clntId;
 	            
 	            $personAddress = array();
@@ -719,6 +795,11 @@ class MelisComClientService extends MelisComGeneralService
             {
                 $arrayParameters['person']['cper_date_creation'] = date('Y-m-d H:i:s');
             }
+            else 
+            {
+                $arrayParameters['person']['cper_date_edit'] = date('Y-m-d H:i:s');
+            }
+            
             $arrayParameters['person']['cper_is_main_person'] = (!empty($arrayParameters['person']['cper_is_main_person'])) ? $arrayParameters['person']['cper_is_main_person'] : 0;
             $arrayParameters['person']['cper_civility'] = (!empty($arrayParameters['person']['cper_civility'])) ? $arrayParameters['person']['cper_civility'] : 0;
             
@@ -736,39 +817,66 @@ class MelisComClientService extends MelisComGeneralService
             }
             
             $arrayParameters['person']['cper_email'] = mb_strtolower($arrayParameters['person']['cper_email']);
-            
-            $perId = $melisEcomClientPersonTable->save($arrayParameters['person'], $arrayParameters['personId']);
-            
-            $clientPersonAddData = $arrayParameters['clientPersonAddresses'];
-            foreach ($clientPersonAddData As $key => $val)
-            {
-                $val['cadd_client_id'] = $clientId;
-                $val['cadd_client_person'] = $perId;
-                $caddId = $val['cadd_id'] ? $val['cadd_id'] : null;
-                unset($val['cadd_id']);
 
-                if (is_null($caddId))
-                {
-                    $val['cadd_creation_date'] = date('Y-m-d H:i:s');
-                }
-                
-                $val['cadd_civility'] = (!empty($val['cadd_civility'])) ? $val['cadd_civility'] : 0;
-                
-                $val['cadd_name'] = mb_strtoupper($val['cadd_name']);
-                $val['cadd_firstname'] = ucwords(mb_strtolower($val['cadd_firstname']));
-                if (!empty($val['cadd_middle_name']))
-                {
-                    $val['cadd_middle_name'] = ucwords(mb_strtolower($val['cadd_middle_name']));
-                }
-                
-                $melisEcomClientAddressTable->save($val, $caddId);
+            $email       = $arrayParameters['person']['cper_email'];
+            $emailData   = $melisEcomClientPersonTable->getEntryByField('cper_email', $email)->current();
+            $perId       = null;
+            $isResetPass = isset($arrayParameters['person']['reset_pass_flag']) ? (int) $arrayParameters['person']['reset_pass_flag'] : 0;
+            $allowSave   = false;
+
+            if(!$emailData && !$isResetPass) {
+                // used for registration and account updates
+                $allowSave = true;
             }
-            
+            else {
+                if($isResetPass) {
+                    // use for password reset
+                    $allowSave = true;
+                    // remove reset_pass_flag in the array
+                    unset($arrayParameters['person']['reset_pass_flag']);
+                }
+                else {
+                    throw new \Exception('Error: Email address already exist');
+                }
+            }
+
+
+
+            if($allowSave) {
+                $perId = $melisEcomClientPersonTable->save($arrayParameters['person'], $arrayParameters['personId']);
+
+                $clientPersonAddData = $arrayParameters['clientPersonAddresses'];
+                foreach ($clientPersonAddData As $key => $val)
+                {
+                    $val['cadd_client_id'] = $clientId;
+                    $val['cadd_client_person'] = $perId;
+                    $caddId = $val['cadd_id'] ? $val['cadd_id'] : null;
+                    unset($val['cadd_id']);
+
+                    if (is_null($caddId))
+                    {
+                        $val['cadd_creation_date'] = date('Y-m-d H:i:s');
+                    }
+
+                    $val['cadd_civility'] = (!empty($val['cadd_civility'])) ? $val['cadd_civility'] : 0;
+
+                    $val['cadd_name'] = mb_strtoupper($val['cadd_name']);
+                    $val['cadd_firstname'] = ucwords(mb_strtolower($val['cadd_firstname']));
+                    if (!empty($val['cadd_middle_name']))
+                    {
+                        $val['cadd_middle_name'] = ucwords(mb_strtolower($val['cadd_middle_name']));
+                    }
+
+                    $melisEcomClientAddressTable->save($val, $caddId);
+                }
+            }
+
             $results = $perId;
+
         }
         catch (\Exception $e)
         {
-            
+            echo $e->getMessage();
         }
         
 	    // Service implementation end
@@ -782,13 +890,12 @@ class MelisComClientService extends MelisComGeneralService
 	}
 	
 	/**
-	 * Encryption and Decryption of passwords for melis
+	 * Encryption of passwords for melis commerce
 	 *
-	 * @param String $data, String to encrypted/decrypted
-	 * @param string $type, ecrypt/decrypt
+	 * @param String $data, String to encrypted
 	 * @return string
 	 */
-	protected function crypt($data, $type = 'encrypt')
+	public function crypt($str)
 	{
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -798,29 +905,16 @@ class MelisComClientService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_passwordcryptdecrypt_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $melisConfig = $this->getServiceLocator()->get('MelisCoreConfig');
-	    $datas = $melisConfig->getItemPerPlatform('meliscommerce/datas');
+	    $melisConfig = $this->getServiceLocator()->get('config');
+	    $datasAccount = $melisConfig['plugins']['meliscommerce']['datas']['default']['accounts'];
 	
-	    $hashMethod = $datas['accounts']['hash_method'];
-	    $salt = $datas['accounts']['salt'];
-	    // hash password
-	    $bEncryptor = new BlockCipher(new Mcrypt(array(
-	        'algo' => 'aes',
-	        'mode' => 'cfb',
-	        'hash' => $hashMethod
-	    )));
-	    $bEncryptor->setKey($salt);
-	   
-	    $value = null;
+	    $hashMethod = $datasAccount['hash_method'];
+	    $salt = $datasAccount['salt'];
+	    $length = $datasAccount['length'];
 	    
-	    if($arrayParameters['type'] == 'encrypt')
-	    {
-	        $value = $bEncryptor->encrypt($arrayParameters['data']);
-	    }
-	    elseif($arrayParameters['type'] == 'decrypt')
-	    {
-	        $value = $bEncryptor->decrypt($arrayParameters['data']);
-	    }
+	    $value  = Pbkdf2::calc($hashMethod, $arrayParameters['str'], $salt, 100, $length);
+	    // Decoding to UTF-8 format to make supported on varchar type in mysql
+	    $value = utf8_decode($value);
 	    // Service implementation end
 	    
 	    // Adding results to parameters for events treatment if needed
@@ -828,6 +922,41 @@ class MelisComClientService extends MelisComGeneralService
 	    // Sending service end event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_passwordcryptdecrypt_end', $arrayParameters);
 	    
+	    return $arrayParameters['results'];
+	}
+	
+	public function generatePsswordRecoveryKey()
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = null;
+	     
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_generate_password_recovery_key_start', $arrayParameters);
+	    
+	    // Service implementation start
+	    $melisConfig = $this->getServiceLocator()->get('config');
+	    $datasAccount = $melisConfig['plugins']['meliscommerce']['datas']['default']['accounts'];
+	    
+	    $hashMethod = $datasAccount['hash_method'];
+	    $salt = $datasAccount['salt'];
+	    // hash password
+	    $bEncryptor = new BlockCipher(new Mcrypt(array(
+	        'algo' => 'aes',
+	        'mode' => 'cfb',
+	        'hash' => $hashMethod
+	    )));
+	    $bEncryptor->setKey($salt);
+	    
+        $value = $bEncryptor->encrypt(date('YmdHisu'));
+	    // Replacing "+ & /" to "- & _" so this will supported by the platform
+        $base64url = strtr($value, '+/', '-_');
+        
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $base64url;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_generate_password_recovery_key_end', $arrayParameters);
+	     
 	    return $arrayParameters['results'];
 	}
 	
@@ -859,7 +988,10 @@ class MelisComClientService extends MelisComGeneralService
                 $arrayParameters['address']['cadd_creation_date'] = date('Y-m-d H:i:s');
             }
             
-            $arrayParameters['address']['cadd_client_person'] = null;
+            if (empty($arrayParameters['address']['cadd_client_person']))
+            {
+                $arrayParameters['address']['cadd_client_person'] = null;
+            }
             
             $arrayParameters['address']['cadd_civility'] = (!empty($arrayParameters['address']['cadd_civility'])) ? $arrayParameters['address']['cadd_civility'] : 0;
            
@@ -869,13 +1001,16 @@ class MelisComClientService extends MelisComGeneralService
             {
                 $arrayParameters['address']['cadd_middle_name'] = ucwords(mb_strtolower($arrayParameters['address']['cadd_middle_name']));
             }
+
+            // remove address when adding or updating
+            unset($arrayParameters['address']['cadd_id']);
             
-            $caddId = $melisEcomClientAddressTable->save($arrayParameters['address'], $arrayParameters['addressId']);
+            $caddId = $melisEcomClientAddressTable->save($arrayParameters['address'], (int) $arrayParameters['addressId']);
             $results = $caddId;
         }
         catch (\Exception $e)
         {
-            
+            //echo $e->getMessage();
         }
 	    // Service implementation end
 	
@@ -1128,6 +1263,31 @@ class MelisComClientService extends MelisComGeneralService
 	
 	    return $arrayParameters['results'];
 	}
+
+	public function deleteClientAddressByAddressId($addrId)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_client_address_delete_by_address_id_start', $arrayParameters);
+
+        // Service implementation start
+        $melisComAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
+
+        $addrTable   = $this->getServiceLocator()->get('MelisEcomClientAddressTable');
+        $addrData    = $addrTable->deleteById($addrId);
+        $results     = 1;
+        // Service implementation end
+
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_client_address_delete_by_address_id_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
 	
 	/**
 	 * This method retrieves the data used for the list widget

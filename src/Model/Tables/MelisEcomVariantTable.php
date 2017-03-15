@@ -10,6 +10,7 @@
 namespace MelisCommerce\Model\Tables;
 
 use Zend\Db\TableGateway\TableGateway;
+use Zend\Db\Sql\Predicate\Expression;
 
 class MelisEcomVariantTable extends MelisEcomGenericTable 
 {
@@ -21,6 +22,42 @@ class MelisEcomVariantTable extends MelisEcomGenericTable
     {
         parent::__construct($tableGateway);
         $this->idField = 'var_id';
+    }
+    
+    public function getVariantCommonAttr($productId, $attrId, $attrVal = null)
+    {
+        $select = $this->tableGateway->getSql()->select();
+        $select->columns(array('*'));
+        
+        $select->join('melis_ecom_variant_attribute_value', 'melis_ecom_variant_attribute_value.vatv_variant_id = melis_ecom_variant.var_id', array(('*')), $select::JOIN_LEFT);
+        
+        $select->where('melis_ecom_variant.var_prd_id ='.$productId);
+        
+        if (!empty($attrVal))
+        {
+            $select->where('melis_ecom_variant_attribute_value.vatv_attribute_value_id ='.$attrVal);
+        }
+        
+        $resultSet = $this->tableGateway->selectwith($select);
+        return $resultSet;
+        
+    }
+    
+    public function getVariantsAttrGroupByAttr($variants)
+    {
+        $select = $this->tableGateway->getSql()->select();
+        
+        $select->columns(array());
+        
+        $select->join('melis_ecom_variant_attribute_value', 'melis_ecom_variant_attribute_value.vatv_variant_id = melis_ecom_variant.var_id', array('*'), $select::JOIN_LEFT);
+        $select->join('melis_ecom_attribute_value', 'melis_ecom_attribute_value.atval_id = melis_ecom_variant_attribute_value.vatv_attribute_value_id', array(), $select::JOIN_LEFT);
+        $select->join('melis_ecom_attribute', 'melis_ecom_attribute.attr_id = melis_ecom_attribute_value.atval_attribute_id', array('attr_id'), $select::JOIN_LEFT);
+        
+        $select->group('vatv_attribute_value_id');
+        $select->where->in('melis_ecom_variant_attribute_value.vatv_variant_id', $variants);
+        
+        $resultData = $this->tableGateway->selectWith($select);
+        return $resultData;
     }
     
     public function getVariants($variantId, $onlyValid = null, $isMain = null,$start = 0, $limit = null)
@@ -57,18 +94,19 @@ class MelisEcomVariantTable extends MelisEcomGenericTable
     public function getMainVariantById($productId, $langId = null)
     {
         $select = $this->tableGateway->getSql()->select();
+        $select->quantifier('DISTINCT');
         $select->columns(array('*'));
         $clause = array();
         
-        $select ->join('melis_ecom_variant_attribute_value', 'melis_ecom_variant_attribute_value.vatv_variant_id = melis_ecom_variant.var_id', array('*'), $select::JOIN_LEFT)     
-                ->join('melis_ecom_attribute_value', 'melis_ecom_attribute_value.atval_id = melis_ecom_variant_attribute_value.vatv_attribute_value_id', array('*'), $select::JOIN_LEFT)
-                ->join('melis_ecom_attribute_trans', 'melis_ecom_attribute_trans.atrans_attribute_id = melis_ecom_attribute_value.atval_attribute_id', array('*'), $select::JOIN_LEFT);
+        $select ->join('melis_ecom_variant_attribute_value', 'melis_ecom_variant_attribute_value.vatv_variant_id = melis_ecom_variant.var_id', array(), $select::JOIN_LEFT)     
+                ->join('melis_ecom_attribute_value', 'melis_ecom_attribute_value.atval_id = melis_ecom_variant_attribute_value.vatv_attribute_value_id', array(), $select::JOIN_LEFT)
+                ->join('melis_ecom_attribute_value_trans', 'melis_ecom_attribute_value_trans.av_attribute_value_id = melis_ecom_attribute_value.atval_id', array(), $select::JOIN_LEFT);
     
-        if(!is_null($productId))
-            $clause['melis_ecom_variant.var_prd_id'] = (int) $productId;
+       
+        $clause['melis_ecom_variant.var_prd_id'] = (int) $productId;
                 
         if(!is_null($langId))
-            $clause['melis_ecom_attribute_trans.atrans_lang_id'] = (int) $langId;
+            $clause['melis_ecom_attribute_value_trans.avt_lang_id'] = (int) $langId;
         
         $clause['melis_ecom_variant.var_main_variant'] = 1;
         
@@ -110,8 +148,6 @@ class MelisEcomVariantTable extends MelisEcomGenericTable
         if($clause){
             $select->where($clause);
         }
-//         $sql = $select->getSqlString();
-//         echo $sql;die();
         $resultSet = $this->tableGateway->selectwith($select);
         
         return $resultSet;
@@ -207,7 +243,34 @@ class MelisEcomVariantTable extends MelisEcomGenericTable
 
         return $resultData;
     }
-
+    
+    public function getAssocVariantsByProductId($productId)
+    {
+        
+        $select = $this->tableGateway->getSql()->select();
+        $select->columns(array());
+        $select->quantifier('DISTINCT');
+        
+        $select->join('melis_ecom_assoc_variant', 'melis_ecom_assoc_variant.avar_one = melis_ecom_variant.var_id', array('var_id' => 'avar_two'), $select::JOIN_LEFT);
+        $select->where->equalTo('melis_ecom_variant.var_prd_id', $productId);
+        
+        return $this->tableGateway->selectWith($select);
+    }
+    
+    public function getProductAssoc($productId)
+    {
+        
+        $select = $this->tableGateway->getSql()->select();
+        $select->columns(array());
+        $select->quantifier('DISTINCT'); 
+        $select->join('melis_ecom_assoc_variant', 'melis_ecom_assoc_variant.avar_one = melis_ecom_variant.var_id', array())
+        ->join(array('assoc_variant' => 'melis_ecom_variant'), 'assoc_variant.var_id = melis_ecom_assoc_variant.avar_two', array(), $select::JOIN_LEFT)
+        ->join(array('assoc_product' => 'melis_ecom_product'), 'assoc_product.prd_id = assoc_variant.var_prd_id', array('assoc_prd_id' => 'prd_id'), $select::JOIN_LEFT);
+        $select->where->equalTo('melis_ecom_variant.var_prd_id', $productId);
+        
+        return $this->tableGateway->selectWith($select);
+    }
+    
     public function getVarTotalFiltered()
     {
         return $this->_currentVarDataCount;

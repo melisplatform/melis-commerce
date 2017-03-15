@@ -19,15 +19,21 @@ class MelisComOrderCheckoutController extends AbstractActionController
 {
     const PLUGIN_INDEX = 'meliscommerce';
     const TOOL_KEY = '';
+    const SITE_ID = -1;
     
     /**
      * Render Order Checkout page
      * @return \Zend\View\Model\ViewModel
      */
     public function renderOrderCheckoutPageAction(){
-        // Usetting checkout from the session
         $container = new Container('meliscommerce');
-        unset($container['checkout']);
+        if (!isset($container['checkout']))
+        {
+            $container['checkout'] = array();
+        }
+        // Default BO Checkout Site ID
+        $container['checkout'][self::SITE_ID] = array();
+        $container['checkout'][self::SITE_ID]['countryId'] = null;
         
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
@@ -115,17 +121,16 @@ class MelisComOrderCheckoutController extends AbstractActionController
             $countryId = $data['countryId'];
             $container = new Container('meliscommerce');
             // check if the clientKey is set no checkout session
-            if (!empty($container['checkout']['clientKey']))
+            if (!empty($container['checkout'][self::SITE_ID]['clientKey']))
             {
                 // cleaning the Client basket after selecting country
                 $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
-                $melisComBasketService->emptyAnonymousBasket($container['checkout']['clientKey']);
+                $melisComBasketService->emptyAnonymousBasket($container['checkout'][self::SITE_ID]['clientKey']);
             }
             // Set Country id to checkout countryId
             // CountryId will be the base data for collecting details from the Products and variants
             // In this case Country Id is representing the country where the Front Site is accessible to a particular country
-            $container['checkout'] = array();
-            $container['checkout']['countryId'] = $countryId;
+            $container['checkout'][self::SITE_ID]['countryId'] = $countryId;
                 
             $success = 1;
         }
@@ -170,7 +175,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
     {
         
         $container = new Container('meliscommerce');
-        $clientKey = (!empty($container['checkout']['clientKey'])) ? $container['checkout']['clientKey'] : null;
+        $clientKey = (!empty($container['checkout'][self::SITE_ID]['clientKey'])) ? $container['checkout'][self::SITE_ID]['clientKey'] : null;
         
         $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
         
@@ -206,7 +211,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $langId = $melisTool->getCurrentLocaleID();
         
         $container = new Container('meliscommerce');
-        $countryId = $container['checkout']['countryId'];
+        $countryId = $container['checkout'][self::SITE_ID]['countryId'];
         
         $melisComVariantService = $this->getServiceLocator()->get('MelisComVariantService');
         $melisComProductService = $this->getServiceLocator()->get('MelisComProductService');
@@ -280,7 +285,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
         if($this->getRequest()->isPost()) {
             
             $container = new Container('meliscommerce');
-            if (!empty($container['checkout']['countryId']))
+            if (!empty($container['checkout'][self::SITE_ID]['countryId']))
             {
                 // Getting Current Langauge ID
                 $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
@@ -347,9 +352,9 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $hasVariant = false;
         $variants = array();
         $container = new Container('meliscommerce');
-        if (!empty($container['checkout']['countryId']))
+        if (!empty($container['checkout'][self::SITE_ID]['countryId']))
         {
-            $countryId = $container['checkout']['countryId'];
+            $countryId = $container['checkout'][self::SITE_ID]['countryId'];
             
             $translator = $this->getServiceLocator()->get('translator');
             
@@ -452,15 +457,15 @@ class MelisComOrderCheckoutController extends AbstractActionController
             
             // Checking if ClientKey is exist on checkout session
             $container = new Container('meliscommerce');
-            if (!empty($container['checkout']['clientKey']))
+            if (!empty($container['checkout'][self::SITE_ID]['clientKey']))
             {
-                $clientKey = $container['checkout']['clientKey'];
+                $clientKey = $container['checkout'][self::SITE_ID]['clientKey'];
             }
             else 
             {
                 // Generating clientKey
                 $clientKey = md5(uniqid(date('YmdHis')));
-                $container['checkout']['clientKey'] = $clientKey;
+                $container['checkout'][self::SITE_ID]['clientKey'] = $clientKey;
             }
             
             // Add Variant to Client Basket
@@ -506,7 +511,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
         {
             $container = new Container('meliscommerce');
             
-            $clientKey = (!empty($container['checkout']['clientKey'])) ? $container['checkout']['clientKey'] : null;
+            $clientKey = (!empty($container['checkout'][self::SITE_ID]['clientKey'])) ? $container['checkout'][self::SITE_ID]['clientKey'] : null;
             
             $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
             
@@ -549,9 +554,9 @@ class MelisComOrderCheckoutController extends AbstractActionController
         
         $selectedCountry = '';
         $container = new Container('meliscommerce');
-        if (!empty($container['checkout']['countryId']))
+        if (!empty($container['checkout'][self::SITE_ID]['countryId']))
         {
-            $selectedCountry = $container['checkout']['countryId'];
+            $selectedCountry = $container['checkout'][self::SITE_ID]['countryId'];
         }
             
         $selectContainer = '%s %s';
@@ -864,11 +869,11 @@ class MelisComOrderCheckoutController extends AbstractActionController
             
             // Checkout session initialization for contact details
             $container = new Container('meliscommerce');
-            $container['checkout']['contactId'] = $contact->cper_id;
-            $container['checkout']['clientId'] = $contact->cper_client_id;
+            $container['checkout'][self::SITE_ID]['contactId'] = $contact->cper_id;
+            $container['checkout'][self::SITE_ID]['clientId'] = $contact->cper_client_id;
     
-            $clientId = $container['checkout']['clientId'];
-            $clientKey = (!empty($container['checkout']['clientKey'])) ? $container['checkout']['clientKey'] : null;
+            $clientId = $container['checkout'][self::SITE_ID]['clientId'];
+            $clientKey = (!empty($container['checkout'][self::SITE_ID]['clientKey'])) ? $container['checkout'][self::SITE_ID]['clientKey'] : null;
     
             $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
             // After selecting contact this will clear the current Basket and create new entry for client basket
@@ -940,6 +945,9 @@ class MelisComOrderCheckoutController extends AbstractActionController
      */
     public function renderOrderCheckoutBillingAddressAction()
     {
+        $melisComOrderCheckoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
+        $melisComOrderCheckoutService->setSiteId(self::SITE_ID);
+        
         $container = new Container('meliscommerce');
         $emptyBillingAddress = $this->params()->fromQuery('emptyBillingAddress');
         
@@ -948,7 +956,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
         if ($emptyBillingAddress)
         {
             // Unsetting stored address for billing
-            unset($container['checkout']['addresses']['addresses']['billing']);
+            unset($container['checkout'][self::SITE_ID]['addresses']['addresses']['billing']);
             // Set flag to visible address form on rendered view
             $hideAddressForm = false;
         }
@@ -957,15 +965,15 @@ class MelisComOrderCheckoutController extends AbstractActionController
         // This process will remain the selected address on address selection
         $checkoutBillingAddressId = null;
         $checkoutBillingAddress = array();
-        if (!empty($container['checkout']['addresses']))
+        if (!empty($container['checkout'][self::SITE_ID]['addresses']))
         {
-            if (!empty($container['checkout']['addresses']['addresses']['billing']['address']))
+            if (!empty($container['checkout'][self::SITE_ID]['addresses']['addresses']['billing']['address']))
             {
-                $checkoutBillingAddress = $container['checkout']['addresses']['addresses']['billing']['address'];
+                $checkoutBillingAddress = $container['checkout'][self::SITE_ID]['addresses']['addresses']['billing']['address'];
                 
                 if (!empty($checkoutBillingAddress['cadd_client_id']))
                 {
-                    if ($container['checkout']['clientId'] == $checkoutBillingAddress['cadd_client_id'])
+                    if ($container['checkout'][self::SITE_ID]['clientId'] == $checkoutBillingAddress['cadd_client_id'])
                     {
                         $checkoutBillingAddressId = $checkoutBillingAddress['cadd_id'];
                     }
@@ -1040,6 +1048,9 @@ class MelisComOrderCheckoutController extends AbstractActionController
      */
     public function renderOrderCheckoutDeliveryAddressAction()
     {
+        $melisComOrderCheckoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
+        $melisComOrderCheckoutService->setSiteId(self::SITE_ID);
+        
         $container = new Container('meliscommerce');
         $emptyDeliveryAddress = $this->params()->fromQuery('emptyDeliveryAddress');
         
@@ -1048,7 +1059,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
         if ($emptyDeliveryAddress)
         {
             // Unsetting stored address for delivery
-            unset($container['checkout']['addresses']['addresses']['delivery']);
+            unset($container['checkout'][self::SITE_ID]['addresses']['addresses']['delivery']);
             // Set flag to visible address form on rendered view
             $hideAddressForm = false;
         }
@@ -1059,15 +1070,15 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $checkoutDeliveryAddress = array();
         $container = new Container('meliscommerce');
         
-        if (!empty($container['checkout']['addresses']))
+        if (!empty($container['checkout'][self::SITE_ID]['addresses']))
         {
-            if (!empty($container['checkout']['addresses']['addresses']['delivery']['address']))
+            if (!empty($container['checkout'][self::SITE_ID]['addresses']['addresses']['delivery']['address']))
             {
-                $checkoutDeliveryAddress = $container['checkout']['addresses']['addresses']['delivery']['address'];
+                $checkoutDeliveryAddress = $container['checkout'][self::SITE_ID]['addresses']['addresses']['delivery']['address'];
                 
                 if (!empty($checkoutDeliveryAddress['cadd_client_id']))
                 {
-                    if ($container['checkout']['clientId'] == $checkoutDeliveryAddress['cadd_client_id'])
+                    if ($container['checkout'][self::SITE_ID]['clientId'] == $checkoutDeliveryAddress['cadd_client_id'])
                     {
                         $checkoutDeliveryAddressId = $checkoutDeliveryAddress['cadd_id'];
                     }
@@ -1244,6 +1255,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
                     {
                         // Validating addresses using Checkout service
                         $melisComOrderCheckoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
+                        $melisComOrderCheckoutService->setSiteId(self::SITE_ID);
                         $validatedAddresses = $melisComOrderCheckoutService->validateAddresses($clientAddresses['delivery'], $clientAddresses['billing']);
                         
                         if ($validatedAddresses['success'] != true)
@@ -1263,15 +1275,15 @@ class MelisComOrderCheckoutController extends AbstractActionController
                             }
                         }
                         
-                        if (empty($errors))
+                        if ($validatedAddresses['success'] == true)
                         {
                             foreach ($validatedAddresses['addresses'] As $key => $val)
                             {
                                 // checking if the entry is existing in db, else this will save to selected contact addresses
                                 if (empty($val['address']['cadd_id']))
                                 {
-                                    $val['address']['cadd_client_id'] = $container['checkout']['clientId'];
-                                    $val['address']['cadd_client_person'] = $container['checkout']['contactId'];
+                                    $val['address']['cadd_client_id'] = $container['checkout'][self::SITE_ID]['clientId'];
+                                    $val['address']['cadd_client_person'] = $container['checkout'][self::SITE_ID]['contactId'];
                                     $val['address']['cadd_creation_date'] = date('Y-m-d H:i:s');
                                     $val['address']['cadd_civility'] = (int) $val['address']['cadd_civility'];
                                     
@@ -1281,7 +1293,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
                                 }
                             }
                             
-                            $container['checkout']['addresses'] = $validatedAddresses;
+                            $container['checkout'][self::SITE_ID]['addresses'] = $validatedAddresses;
                             $success = 1;
                         }
                     }
@@ -1320,8 +1332,8 @@ class MelisComOrderCheckoutController extends AbstractActionController
     {
         $translator = $this->getServiceLocator()->get('translator');
         $container = new Container('meliscommerce');
-        $clientId = (!empty($container['checkout']['clientId'])) ? $container['checkout']['clientId'] : null;
-        $clientKey = (!empty($container['checkout']['clientKey'])) ? $container['checkout']['clientKey'] : null;
+        $clientId = (!empty($container['checkout'][self::SITE_ID]['clientId'])) ? $container['checkout'][self::SITE_ID]['clientId'] : null;
+        $clientKey = (!empty($container['checkout'][self::SITE_ID]['clientKey'])) ? $container['checkout'][self::SITE_ID]['clientKey'] : null;
         
         $melisComOrderCheckoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
         $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
@@ -1357,8 +1369,8 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $total = 0;
         
         $container = new Container('meliscommerce');
-        $countryId = $container['checkout']['countryId'];
-        
+        $countryId = $container['checkout'][self::SITE_ID]['countryId'];
+        $melisComOrderCheckoutService->setSiteId(self::SITE_ID);
         $clientOrderCost = $melisComOrderCheckoutService->computeAllCosts($clientId);
         
         if (isset($clientOrderCost['costs']['order']))
@@ -1489,7 +1501,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $container = new Container('meliscommerce');
         $deliveryAddress = array();
         
-        if (!empty($container['checkout']['addresses']))
+        if (!empty($container['checkout'][self::SITE_ID]['addresses']))
         {
             foreach ($appConfigFormElements As $val)
             {
@@ -1497,7 +1509,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
                 {
                     if ($val['spec']['name'] == 'cadd_civility')
                     {
-                        $civility = $container['checkout']['addresses']['addresses']['billing']['address'][$val['spec']['name']];
+                        $civility = $container['checkout'][self::SITE_ID]['addresses']['addresses']['billing']['address'][$val['spec']['name']];
                         
                         $civilityData = $melisEcomCivilityTransTable->getCivilityTransByCivilityId($civility, $langId)->current();
                         
@@ -1513,7 +1525,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
                     {
                         $data = array(
                             'label' => $val['spec']['options']['label'],
-                            'value' => $container['checkout']['addresses']['addresses']['billing']['address'][$val['spec']['name']]
+                            'value' => $container['checkout'][self::SITE_ID]['addresses']['addresses']['billing']['address'][$val['spec']['name']]
                         );
                     }
             
@@ -1549,7 +1561,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $container = new Container('meliscommerce');
         $deliveryAddress = array();
         
-        if (!empty($container['checkout']['addresses']))
+        if (!empty($container['checkout'][self::SITE_ID]['addresses']))
         {
             foreach ($appConfigFormElements As $val)
             {
@@ -1557,7 +1569,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
                 {
                     if ($val['spec']['name'] == 'cadd_civility')
                     {
-                        $civility = $container['checkout']['addresses']['addresses']['delivery']['address'][$val['spec']['name']];
+                        $civility = $container['checkout'][self::SITE_ID]['addresses']['addresses']['delivery']['address'][$val['spec']['name']];
                         
                         $civilityData = $melisEcomCivilityTransTable->getCivilityTransByCivilityId($civility, $langId)->current();
                         
@@ -1573,7 +1585,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
                     {
                         $data = array(
                             'label' => $val['spec']['options']['label'],
-                            'value' => $container['checkout']['addresses']['addresses']['delivery']['address'][$val['spec']['name']]
+                            'value' => $container['checkout'][self::SITE_ID]['addresses']['addresses']['delivery']['address'][$val['spec']['name']]
                         );
                     }
                     
@@ -1612,7 +1624,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
         if($request->isPost())
         {
             $container = new Container('meliscommerce');
-            $clientId = $container['checkout']['clientId'];
+            $clientId = $container['checkout'][self::SITE_ID]['clientId'];
             
             // Retrieving Client basket, 
             // In this process variant quatity, variant amount and other details about checkout will validate
@@ -1647,7 +1659,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
             {
                 if (!is_null($basketData))
                 {
-                    if (!empty($container['checkout']['clientId']))
+                    if (!empty($container['checkout'][self::SITE_ID]['clientId']))
                     {
                         // Getting Current Langauge ID
                         $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
@@ -1656,6 +1668,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
                         $varSvc = $this->getServiceLocator()->get('MelisComVariantService');
                         
                         $melisComOrderCheckoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
+                        $melisComOrderCheckoutService->setSiteId(self::SITE_ID);
                         $clientBasket = $melisComOrderCheckoutService->checkoutStep1_prePayment($clientId);
                         
                         if ($clientBasket['success'] != true)
@@ -1729,7 +1742,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
                         {
                             if (!empty($couponData))
                             {
-                                $container['checkout']['couponId'] = $couponData->coup_id;
+                                $container['checkout'][self::SITE_ID]['couponId'] = $couponData->coup_id;
                             }
                             
                             $success = 1;
@@ -1822,24 +1835,25 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $totalCost = 0;
         
         $container = new Container('meliscommerce');
-        if (!empty($container['checkout']['orderId']))
+        if (!empty($container['checkout'][self::SITE_ID]['orderId']))
         {
-            $orderId = $container['checkout']['orderId'];
+            $orderId = $container['checkout'][self::SITE_ID]['orderId'];
             
             // Retrieving the Checkout total cost
             $melisComOrderCheckoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
-            $order = $melisComOrderCheckoutService->computeAllCosts($container['checkout']['clientId']);
+            $melisComOrderCheckoutService->setSiteId(self::SITE_ID);
+            $order = $melisComOrderCheckoutService->computeAllCosts($container['checkout'][self::SITE_ID]['clientId']);
             $totalCost = $order['costs']['total'];
         }
         
         $couponId = null;
-        if (!empty($container['checkout']['couponId']))
+        if (!empty($container['checkout'][self::SITE_ID]['couponId']))
         {
-            $couponId = $container['checkout']['couponId'];
+            $couponId = $container['checkout'][self::SITE_ID]['couponId'];
         }
         
         $param = array(
-            'countryId' => $container['checkout']['countryId'],
+            'countryId' => $container['checkout'][self::SITE_ID]['countryId'],
             'orderId' => $orderId,
             'couponId' => $couponId,
             'totalCost' => $totalCost,
@@ -1890,6 +1904,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
     public function renderOrderCheckoutPaymentDoneAction()
     {
         $melisComOrderCheckoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
+        $melisComOrderCheckoutService->setSiteId(self::SITE_ID);
         $melisComOrderCheckoutService->checkoutStep2_postPayment();
         
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -1912,10 +1927,10 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $result = array();
         
         $container = new Container('meliscommerce');
-        if (!empty($container['checkout']['orderId']))
+        if (!empty($container['checkout'][self::SITE_ID]['orderId']))
         {
             // Retrieving order details
-            $orderid = $container['checkout']['orderId'];
+            $orderid = $container['checkout'][self::SITE_ID]['orderId'];
             $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
             $order = $melisEcomOrderTable->getEntryById($orderid)->current();
             

@@ -92,4 +92,15 @@
 	    
 	    'tr_meliscommerce_order_checkout_save_success' => 'Order has been saved succussfully',
 	    'tr_meliscommerce_order_checkout_save_unable' => 'Unable to save order, please try again',
+	    
+	    // Plugins
+	    
+	    'tr_meliscommerce_add_to_cart_variant_id_empty' => 'Variant id cannot be empty',
+	    'tr_meliscommerce_add_to_cart_variant_country_empty' => 'Variant country cannot be empty',
+	    'tr_meliscommerce_add_to_cart_quantity' => 'Quantity',
+	    'tr_meliscommerce_add_to_cart_variant_quantity_invalid' => 'Quantity must be numeric',
+	    'tr_meliscommerce_add_to_cart_variant_quantity_empty' => 'Quantity cannot be empty',
+	    
+	    'tr_meliscommerce_client_checkout_delivery_address_empty' => 'Delivery address cannont be empty',
+	    'tr_meliscommerce_client_checkout_billing_address_empty' => 'Billing address cannont be empty'
 	);

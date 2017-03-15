@@ -97,4 +97,19 @@ class MelisEcomAttributeTable extends MelisEcomGenericTable
         return $resultSet;
     }
     
+    public function getUsedAttributeByProduct($productId, $langId = null)
+    {
+        $select = $this->tableGateway->getSql()->select();
+        $select->quantifier('DISTINCT');
+        
+        $select->join('melis_ecom_attribute_value', 'melis_ecom_attribute_value.atval_attribute_id = melis_ecom_attribute.attr_id', array(), $select::JOIN_LEFT)
+        ->join('melis_ecom_variant_attribute_value', 'melis_ecom_variant_attribute_value.vatv_attribute_value_id = melis_ecom_attribute_value.atval_id', array(), $select::JOIN_LEFT)
+        ->join('melis_ecom_variant', 'melis_ecom_variant.var_id = melis_ecom_variant_attribute_value.vatv_variant_id', array(), $select::JOIN_LEFT);
+    
+        $select->where->equalTo('melis_ecom_variant.var_prd_id', $productId);
+        $resultData = $this->tableGateway->selectWith($select);
+    
+        return $resultData;
+    }
+    
 }

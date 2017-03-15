@@ -21,6 +21,11 @@ return array(
                     'accounts' => array(
                         'hash_method' => 'sha256',
                         'salt' => 'salt_#{3xamPle;',
+                        'length' => 25,
+                    ),
+                    'session' => array(
+                        'default_ttl' => 86400, // 1 day, TTL (in seconds) for the session cookie expiry
+                        'remember_me_ttl' => 1209600, // 14 days, TTL (in seconds) for the session cookie expiry
                     ),
                 )
             ),

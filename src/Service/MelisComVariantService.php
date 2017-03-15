@@ -71,10 +71,13 @@ class MelisComVariantService extends MelisComGeneralService
 	 *
 	 * @param int $variantId Variant Id to look for
 	 * @param int $langId If specified, translations of attribute values will be limited to that lang
+	 * @param int $countryId Country id, variant stocks and prices will be filtered if specified
+	 * @param string $docType Key identifier for filtering variant documents, filters are 'IMG' or 'FILE'
+	 * @param array @docSubType key identified for filtering document sub type, filters are array('DEFAULT','SMALL','LARGE','MEDIUM')
 	 *
 	 * @return MelisVariant|null Variant object
 	 */
-	public function getVariantById($variantId, $langId = null, $countryId = null)
+	public function getVariantById($variantId, $langId = null, $countryId = null, $docType = null, $docSubType = array())
 	{
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -99,7 +102,7 @@ class MelisComVariantService extends MelisComGeneralService
 	           $entVariant->setAttributeValues($this->getVariantAttributesValuesById($arrayParameters['variantId'], $arrayParameters['langId']));
 	           $entVariant->setStocks($this->getVariantStocksById($arrayParameters['variantId']), $arrayParameters['countryId']);
 	           $entVariant->setPrices($this->getVariantPricesById($arrayParameters['variantId']), $arrayParameters['countryId']);
-	           $entVariant->setDocuments($docService->getDocumentsByRelation('variant', $arrayParameters['variantId']));
+	           $entVariant->setDocuments($docService->getDocumentsByRelationAndTypes('variant', $arrayParameters['variantId'], $arrayParameters['docType'], $arrayParameters['docSubType']));
 	           $data = $entVariant;
 	       }
 	    }	    
@@ -159,30 +162,25 @@ class MelisComVariantService extends MelisComGeneralService
 	 *
 	 * @param int $productId Product id to look for
 	 * @param int $langId If specified, translations of attribute values will be limited to that lang
+	 * @param int $countryId If specified, stocks will be limited to the country provided
 	 *
 	 * @return MelisVariant|null Variant object
 	 */
-	public function getMainVariantByProductId($productId, $langId = null)
+	public function getMainVariantByProductId($productId, $langId = null, $countryId = null)
 	{
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
-	    $results = array();
+	    $results = null;
 	    	    
 	    // Sending service start event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_variant_main_byproductid_start', $arrayParameters);
 	    
 	    // Service implementation start
 	    $variantTable = $this->getServiceLocator()->get('MelisEcomVariantTable');
-	    $results = $variantTable->getMainVariantById($arrayParameters['productId'], $arrayParameters['langId']);
-       
-    	if($results) {	      
-    	    foreach($results as $result){
-    	        $variantsId[] = $result->var_id;
-    	    }   	   
-    	    $variantId = array_unique($variantsId)[0];
-    	    $variant = $this->getVariantById($variantId, $arrayParameters['langId']);   	
-    	    $results = $variant;
-    	    
+	    $mainVariant = $variantTable->getMainVariantById($arrayParameters['productId'], $arrayParameters['langId'])->current();
+	    
+    	if($mainVariant) { 
+    	    $results = $this->getVariantById($mainVariant->var_id, $arrayParameters['langId'], $arrayParameters['countryId']);
 	    }
 	    // Service implementation end
 
@@ -479,6 +477,99 @@ class MelisComVariantService extends MelisComGeneralService
 	    // Sending service end event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_variant_final_prices_end', $arrayParameters);
 	     
+	    return  $arrayParameters['results'];
+	}
+	
+	/**
+	 * This Method will return all the variants that are associated to the product's variants
+	 * 
+	 * @param int $productId Id of the product
+	 * @return array[] Array of variants|NULL
+	 */
+	public function getAssocVariantsByProductId($productId)
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = null;
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_variant_get_assoc_variants_by_product_start', $arrayParameters);
+	    
+	    // Service implementation start
+	   $variantTbl = $this->getServiceLocator()->get('MelisEcomVariantTable');	   
+	   $assocVariants = $variantTbl->getAssocVariantsByProductId($arrayParameters['productId']);
+	   
+	   foreach($assocVariants as $assocVariant){
+	          $results[] = $this->getVariantById($assocVariant->var_id);
+	   }
+	   
+	    // Service implementation end
+	     
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_variant_get_assoc_variants_by_product_end', $arrayParameters);
+	    
+	    return  $arrayParameters['results'];
+	}
+	
+	/**
+	 * This method will retrieve variant that has common attributes to other variant 
+	 * @param int $productId 
+	 * @param int $attributeId 
+	 * @param int $attributeValueId
+	 * @return MelisEcomVariant
+	 */
+	public function getVariantCommonAttr($productId, $attributeId, $attributeValueId)
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = null;
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_variant_get_variant_common_attr_start', $arrayParameters);
+	     
+	    // Service implementation start
+	    
+	    $variantTbl = $this->getServiceLocator()->get('MelisEcomVariantTable');
+	    
+	    $results = $variantTbl->getVariantCommonAttr($arrayParameters['productId'], $arrayParameters['attributeId'], $arrayParameters['attributeValueId']);
+	    
+	    // Service implementation end
+	    
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_variant_get_variant_common_attr_end', $arrayParameters);
+	     
+	    return  $arrayParameters['results'];
+	}
+	
+	/**
+	 * This method will retrieve variants
+	 * 
+	 * @param array $variantsIds
+	 * @return MelisEcomVariant
+	 */
+	public function getVariantsAttrGroupByAttr($variantsIds)
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = null;
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_variant_get_variant_attr_group_start', $arrayParameters);
+	    
+	    // Service implementation start
+	    
+	    $variantTbl = $this->getServiceLocator()->get('MelisEcomVariantTable');
+	    
+	    $results = $variantTbl->getVariantsAttrGroupByAttr($arrayParameters['variantsIds']);
+	    
+	    // Service implementation end
+	    
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_variant_get_variant_attr_group_end', $arrayParameters);
+	    
 	    return  $arrayParameters['results'];
 	}
 	

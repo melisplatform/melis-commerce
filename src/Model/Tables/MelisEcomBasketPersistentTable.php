@@ -33,4 +33,17 @@ class MelisEcomBasketPersistentTable extends MelisEcomGenericTable
         return $resultData;
     }
     
+    public function getBasket($clientId, $currencyId = 0)
+    {
+        $select = $this->tableGateway->getSql()->select();
+        
+        $select->join('melis_ecom_variant', 'bper_variant_id = var_id', array(), $select::JOIN_LEFT);
+        $select->join('melis_ecom_price', 'var_id = price_var_id', array(), $select::JOIN_LEFT);
+        
+        $select->where->equalTo('bper_client_id', $clientId);
+        $select->where->equalTo('price_currency', $currencyId);
+        
+        return $this->tableGateway->selectWith($select);
+    }
+    
 }

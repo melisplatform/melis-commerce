@@ -172,5 +172,8 @@
 	    
 	    // tooltip messages
 	    'tr_meliscommerce_client_tooltip_password' => 'Le mot de passe doit être d\'au moins 8 caractères et doit contenir au moins une lettre ET un chiffre.',
-	    'tr_meliscommerce_client_tooltip_password_2' => 'Confirmer le mot de passe'
+	    'tr_meliscommerce_client_tooltip_password_2' => 'Confirmer le mot de passe',
+
+        'tr_meliscommerce_client_select_address' => 'Select address',
+        'tr_meliscommerce_client_add_new_address' => 'Add new address...',
 	);

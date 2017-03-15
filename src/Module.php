@@ -51,7 +51,6 @@ class Module
         $moduleRouteListener = new ModuleRouteListener();
         $moduleRouteListener->attach($eventManager);
         
-        $this->createTranslations($e);
         $container = new Container('meliscommerce');
         $container['documents'] = array('docRelationType' => '', 'docRelationId' => 0);
         // Determines if Melis is loaded or Front is loaded
@@ -59,14 +58,13 @@ class Module
         $sm = $e->getApplication()->getServiceManager();
         $routeMatch = $sm->get('router')->match($sm->get('request'));
         
-       
-        
-        
         if (!empty($routeMatch))
         {
             $routeName = $routeMatch->getMatchedRouteName();
             
             $module = explode('/', $routeName);
+            
+            $this->createTranslations($e, $module);
              
             if (!empty($module[0]))
             {
@@ -96,7 +94,6 @@ class Module
             $eventManager->attach(new MelisCommerceProductTextLanguageAddListener());
             $eventManager->attach(new MelisCommerceProductTextLanguageDeleteListener());
             $eventManager->attach(new MelisCommerceDocumentCountryDeletedListener());
-            $eventManager->attach(new MelisCommerceCheckoutCouponListener());
             $eventManager->attach(new MelisCommercePrdVarDuplicationListener());
             
         }
@@ -112,6 +109,8 @@ class Module
             // Init session for services that uses session (checkout)
             $container = new Container('meliscommerce');
         }
+        
+        $eventManager->attach(new MelisCommerceCheckoutCouponListener());
         
     }
     
@@ -149,58 +148,63 @@ class Module
     {
     	$config = array();
     	$configFiles = array(
-    			include __DIR__ . '/../config/module.config.php',
-                include __DIR__ . '/../config/diagnostic.config.php',
+			include __DIR__ . '/../config/module.config.php',
+            include __DIR__ . '/../config/diagnostic.config.php',
 
-    			include __DIR__ . '/../config/interface/app.interface.general.php',
-    	        include __DIR__ . '/../config/interface/app.interface.documents.php',
-    			include __DIR__ . '/../config/interface/app.interface.categories.php',
-    			include __DIR__ . '/../config/interface/app.interface.products.php',
-    			include __DIR__ . '/../config/interface/app.interface.variants.php',
-    			include __DIR__ . '/../config/interface/app.interface.clients.php',
-    	        include __DIR__ . '/../config/interface/app.interface.orders.php',
-    	        include __DIR__ . '/../config/interface/app.interface.prices.php',
-    	        include __DIR__ . '/../config/interface/app.interface.seo.php',
-	            include __DIR__ . '/../config/interface/app.interface.coupons.php',
-	            include __DIR__ . '/../config/interface/app.interface.checkout.php',
-    	        include __DIR__ . '/../config/interface/app.interface.currency.php',
-    	        include __DIR__ . '/../config/interface/app.interface.attributes.php',
-    	        include __DIR__ . '/../config/interface/app.interface.language.php',
-    	        include __DIR__ . '/../config/interface/app.interface.country.php',
-                include __DIR__ . '/../config/interface/app.interface.assoc-var.php',
-                include __DIR__ . '/../config/interface/app.interface.duplications.php',
-    	    
-    			include __DIR__ . '/../config/forms/app.forms.general.php',
-    	        include __DIR__ . '/../config/forms/app.forms.documents.php',
-    			include __DIR__ . '/../config/forms/app.forms.categories.php',
-    			include __DIR__ . '/../config/forms/app.forms.products.php',
-    			include __DIR__ . '/../config/forms/app.forms.variants.php',
-    			include __DIR__ . '/../config/forms/app.forms.clients.php',
-    	        include __DIR__ . '/../config/forms/app.forms.orders.php',
-    	        include __DIR__ . '/../config/forms/app.forms.prices.php',
-    	        include __DIR__ . '/../config/forms/app.forms.seo.php',
-    	        include __DIR__ . '/../config/forms/app.forms.coupons.php',
-    	        include __DIR__ . '/../config/forms/app.forms.checkout.php',
-    	        include __DIR__ . '/../config/forms/app.forms.currency.php',
-    	        include __DIR__ . '/../config/forms/app.forms.attributes.php',
-    	        include __DIR__ . '/../config/forms/app.forms.duplications.php',
-    	    
-    			include __DIR__ . '/../config/tools/app.tools.general.php',
-    	        include __DIR__ . '/../config/tools/app.tools.documents.php',
-    			include __DIR__ . '/../config/tools/app.tools.categories.php',
-    			include __DIR__ . '/../config/tools/app.tools.products.php',
-    			include __DIR__ . '/../config/tools/app.tools.variants.php',
-    			include __DIR__ . '/../config/tools/app.tools.clients.php',
-    	        include __DIR__ . '/../config/tools/app.tools.orders.php',
-    	        include __DIR__ . '/../config/tools/app.tools.prices.php',
-    	        include __DIR__ . '/../config/tools/app.tools.coupons.php',
-    	        include __DIR__ . '/../config/tools/app.tools.checkout.php',
+			include __DIR__ . '/../config/interface/app.interface.general.php',
+	        include __DIR__ . '/../config/interface/app.interface.documents.php',
+			include __DIR__ . '/../config/interface/app.interface.categories.php',
+			include __DIR__ . '/../config/interface/app.interface.products.php',
+			include __DIR__ . '/../config/interface/app.interface.variants.php',
+			include __DIR__ . '/../config/interface/app.interface.clients.php',
+	        include __DIR__ . '/../config/interface/app.interface.orders.php',
+	        include __DIR__ . '/../config/interface/app.interface.prices.php',
+	        include __DIR__ . '/../config/interface/app.interface.seo.php',
+            include __DIR__ . '/../config/interface/app.interface.coupons.php',
+            include __DIR__ . '/../config/interface/app.interface.checkout.php',
+	        include __DIR__ . '/../config/interface/app.interface.currency.php',
+	        include __DIR__ . '/../config/interface/app.interface.attributes.php',
+	        include __DIR__ . '/../config/interface/app.interface.language.php',
+	        include __DIR__ . '/../config/interface/app.interface.country.php',
+            include __DIR__ . '/../config/interface/app.interface.assoc-var.php',
+            include __DIR__ . '/../config/interface/app.interface.duplications.php',
+	    
+			include __DIR__ . '/../config/forms/app.forms.general.php',
+	        include __DIR__ . '/../config/forms/app.forms.documents.php',
+			include __DIR__ . '/../config/forms/app.forms.categories.php',
+			include __DIR__ . '/../config/forms/app.forms.products.php',
+			include __DIR__ . '/../config/forms/app.forms.variants.php',
+			include __DIR__ . '/../config/forms/app.forms.clients.php',
+	        include __DIR__ . '/../config/forms/app.forms.orders.php',
+	        include __DIR__ . '/../config/forms/app.forms.prices.php',
+	        include __DIR__ . '/../config/forms/app.forms.seo.php',
+	        include __DIR__ . '/../config/forms/app.forms.coupons.php',
+	        include __DIR__ . '/../config/forms/app.forms.checkout.php',
+	        include __DIR__ . '/../config/forms/app.forms.currency.php',
+	        include __DIR__ . '/../config/forms/app.forms.attributes.php',
+	        include __DIR__ . '/../config/forms/app.forms.duplications.php',
+	    
+			include __DIR__ . '/../config/tools/app.tools.general.php',
+	        include __DIR__ . '/../config/tools/app.tools.documents.php',
+			include __DIR__ . '/../config/tools/app.tools.categories.php',
+			include __DIR__ . '/../config/tools/app.tools.products.php',
+			include __DIR__ . '/../config/tools/app.tools.variants.php',
+			include __DIR__ . '/../config/tools/app.tools.clients.php',
+	        include __DIR__ . '/../config/tools/app.tools.orders.php',
+	        include __DIR__ . '/../config/tools/app.tools.prices.php',
+	        include __DIR__ . '/../config/tools/app.tools.coupons.php',
+	        include __DIR__ . '/../config/tools/app.tools.checkout.php',
 
-    	        include __DIR__ . '/../config/tools/app.tools.currency.php',
-    	        include __DIR__ . '/../config/tools/app.tools.attributes.php',
-    	        include __DIR__ . '/../config/tools/app.tools.language.php',
-    	        include __DIR__ . '/../config/tools/app.tools.country.php',
-                include __DIR__ . '/../config/tools/app.tools.assoc_var.php',
+	        include __DIR__ . '/../config/tools/app.tools.currency.php',
+	        include __DIR__ . '/../config/tools/app.tools.attributes.php',
+	        include __DIR__ . '/../config/tools/app.tools.language.php',
+	        include __DIR__ . '/../config/tools/app.tools.country.php',
+            include __DIR__ . '/../config/tools/app.tools.assoc_var.php',
+	    
+            include __DIR__ . '/../config/plugins/app.plugins.products.php',
+	        include __DIR__ . '/../config/plugins/app.plugins.categories.php',
+            include __DIR__ . '/../config/plugins/app.plugins.clients.php',
+            include __DIR__ . '/../config/plugins/app.plugins.orders.php',
     	);
     	
     	foreach ($configFiles as $file) {
@@ -221,14 +225,23 @@ class Module
         );
     }
     
-    public function createTranslations($e)
+    public function createTranslations($e, $module)
     {
         $sm = $e->getApplication()->getServiceManager();
         $translator = $sm->get('translator');
-
-        // Get the locale used from meliscore session
-        $container = new Container('meliscore');
-        $locale = $container['melis-lang-locale'];
+        
+        // Checking if the Request is from Melis-BackOffice or Front
+        if ($module[0] == 'melis-backoffice')
+        {
+            $container = new Container('meliscore');
+            $locale = $container['melis-lang-locale'];
+        }
+        else
+        {
+            $container = new Container('melisplugins');
+            $locale = $container['melis-plugins-lang-locale'];
+        }
+        
         if(!empty($locale)) 
         {   
             // Commerce sub modules langauge config
@@ -255,25 +268,29 @@ class Module
                 'duplication',
             );
             
+            $translationType = array(
+                'interface',
+                'forms',
+            );
+            
             // Load translation files
             foreach($commerceSubModules as $subModule){
                 
-                // interface translation
-                // checks for existing interface tranlation, else uses the default
-                $interfaceTransPath = 'module/MelisModuleConfig/languages/MelisCommerce/' . $locale . '.interface.'.$subModule.'.php';
-                $default =  __DIR__ . '/../language/'.$subModule.'/en_EN.interface.'.$subModule.'.php';
-                $transPath = (file_exists($interfaceTransPath))? $interfaceTransPath : $default;
-                $translator->addTranslationFile('phparray', $transPath);
+                foreach($translationType as $type){
                 
-                // forms translation
-                // checks for existing forms tranlation, else uses the default
-                $formsTransPath = 'module/MelisModuleConfig/languages/MelisCommerce/' . $locale . '.forms.'.$subModule.'.php';
-                $default = __DIR__ . '/../language/'.$subModule.'/en_EN.forms.'.$subModule.'.php';
-                $transPath = (file_exists($formsTransPath))? $formsTransPath : $default;
-                $translator->addTranslationFile('phparray', $transPath);
+                    $transPath = "module/MelisModuleConfig/languages/MelisCommerce/$locale.$type.$subModule.php";
                 
+                    if(!file_exists($transPath)){
+                
+                        // if translation is not found, use melis default translations
+                        $locale = (file_exists(__DIR__ . "/../language/$subModule/$locale.$type.$subModule.php"))? $locale : "en_EN";
+                
+                        $transPath = __DIR__ . "/../language/$subModule/$locale.$type.$subModule.php";
+                    }
+                
+                    $translator->addTranslationFile('phparray', $transPath);
+                }
             }
         }
     }
-
 }

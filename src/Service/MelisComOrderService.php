@@ -450,7 +450,6 @@ class MelisComOrderService extends MelisComGeneralService
 	     
 	    // Service implementation start
 	    $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
-	    $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
 	    
 	    if (!empty($order)&&is_array($order))
 	    {

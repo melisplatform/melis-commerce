@@ -46,7 +46,7 @@ class MelisComCategoryService extends MelisComGeneralService
         $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
         // Getting Categories under Category ID
         $melisCategoryData = $this->getCategoryListByIdRecursive($arrayParameters['categoryId'], $arrayParameters['langId'], $arrayParameters['onlyValid'], $arrayParameters['start'], $arrayParameters['limit']);
-
+        
         $arrayParameters['results'] = $melisCategoryData;
         // Service implementation end
 
@@ -87,7 +87,7 @@ class MelisComCategoryService extends MelisComGeneralService
         $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
 
         $dataCategoryData = $melisEcomCategoryTable->getCategoryChildrenListById($categoryId, $langId, $onlyValid, $start, $limit, $fatherId);
-
+        
         foreach ($dataCategoryData As $val){
 
             $melisCategory = new \MelisCommerce\Entity\MelisCategory();
@@ -449,7 +449,7 @@ class MelisComCategoryService extends MelisComGeneralService
 
         $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
 
-        $dataCategoryData = $melisEcomCategoryTable->getSubCategoryIdById($categoryId, $onlyValid, $fatherId);
+        $dataCategoryData = $melisEcomCategoryTable->getSubCategoryIdById($categoryId, $onlyValid, $fatherId)->toArray();
 
         foreach ($dataCategoryData As $key => $val)
         {

@@ -3,7 +3,6 @@
 return array(
     'plugins' => array(
         'meliscore' => array(
-            'datas' => array(),
             'interface' => array(
                 'meliscore_leftmenu' => array(
                     'interface' => array(

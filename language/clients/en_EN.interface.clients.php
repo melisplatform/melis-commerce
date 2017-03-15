@@ -172,5 +172,8 @@
 	    
 	    // tooltip messages
 	    'tr_meliscommerce_client_tooltip_password' => 'The password must be at least of 8 characters and must contain at least a letter AND a number.',
-	    'tr_meliscommerce_client_tooltip_password_2' => 'Confirm the password'
+	    'tr_meliscommerce_client_tooltip_password_2' => 'Confirm the password',
+
+        'tr_meliscommerce_client_select_address' => 'Select address',
+        'tr_meliscommerce_client_add_new_address' => 'Add new address...',
 	);

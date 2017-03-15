@@ -1,4 +1,4 @@
-
+<<<<<<< HEAD
 -- RENAME TABLE `melisv2`.`melis_ecom_atribute_value_trans` TO `melisv2`.`melis_ecom_attribute_value_trans`;
 -- ALTER TABLE `melis_ecom_product_text_type` ADD `ptt_field_type` INT NULL AFTER `ptt_name`;
 -- ALTER TABLE `melis_ecom_product` CHANGE `prd_date_creation` `prd_date_creation` DATETIME NULL COMMENT 'Creation date of this product';

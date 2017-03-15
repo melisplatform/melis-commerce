@@ -62,8 +62,9 @@ class MelisComDocumentController extends AbstractActionController
             if($data) {
                 $ctryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
                 $countryName = null;
-                if($data->getDocument()) {
-                    foreach($data->getDocument() as $doc) {
+                if($data) {
+                    foreach($data as $doc) {
+                        $doc = $doc->getArrayCopy();
                         $countryData = $ctryTable->getEntryById($doc['rdoc_country_id'])->current();
                         if($countryData) {
                             $countryName = $countryData->ctry_name;

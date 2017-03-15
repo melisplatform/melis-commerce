@@ -567,7 +567,7 @@ $(document).ready(function() {
 	
 	body.on("click", ".btnProductListDelete", function() {
 		
-		var productId = $(this).parent().parent().attr("id");
+		var productId = $(this).closest("tr").attr("id");
 		melisCoreTool.pending(".btnProductListDelete");
 		melisCoreTool.confirm(
 		translations.tr_meliscommerce_documents_common_label_yes,

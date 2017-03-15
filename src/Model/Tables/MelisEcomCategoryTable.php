@@ -46,8 +46,10 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
         
         if (is_bool($onlyValid)&&$onlyValid){
             $select->where('cat_status = 1');
-            $select->where('cat_date_valid_start <= "'. date('Y-m-d H:i:s').'"');
-            $select->where('cat_date_valid_end >= "'. date('Y-m-d H:i:s').'"');
+            $select->where->NEST->literal('cat_date_valid_start <= "'. date('Y-m-d H:i:s').'"')
+                ->or->literal('cat_date_valid_start IS NULL');;
+            $select->where->NEST->literal('cat_date_valid_end >= "'. date('Y-m-d H:i:s').'"')
+                ->or->literal('cat_date_valid_end IS NULL');
         }
         
         if($fatherId == 0){
@@ -148,7 +150,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
     }
  
     /**
-     *  Getting Categories under Category ID
+     * Getting Categories under Category ID
      * @param int $categoryId
      * @param boolean $onlyValid
      * @param int $fatherId If Zero (0), this will return the root of the category
@@ -175,16 +177,17 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
         
         if (is_bool($onlyValid)&&$onlyValid){
             $select->where('cat_status = 1');
-            $select->where('cat_date_valid_start <= "'. date('Y-m-d H:i:s').'"');
-            $select->where('cat_date_valid_end >= "'. date('Y-m-d H:i:s').'"');
+            $select->where->NEST->literal('cat_date_valid_start <= "'. date('Y-m-d H:i:s').'"')
+                    ->or->literal('cat_date_valid_start IS NULL');;
+            $select->where->NEST->literal('cat_date_valid_end >= "'. date('Y-m-d H:i:s').'"')
+                    ->or->literal('cat_date_valid_end IS NULL');
         }
         
         $select->order('cat_order ASC');
         
         $dataCategory = $this->tableGateway->selectWith($select);
-        $dataCategoryData = $dataCategory->toArray();
         
-        return $dataCategoryData;
+        return $dataCategory;
     }
     
     /**

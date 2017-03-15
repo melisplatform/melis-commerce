@@ -88,6 +88,35 @@ class MelisComProductService extends MelisComGeneralService
 	    return $arrayParameters['results'];
 	}
 	
+	public function getAssocProducts($productId , $langId = null)
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = array();
+	    
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_assoc_start', $arrayParameters);
+	   
+	    // Service implementation start
+	    $entProd = new MelisProduct();
+	    $tmpData = array();
+	    $variantTable = $this->getServiceLocator()->get('MelisEcomVariantTable');
+	    
+	    foreach($variantTable->getProductAssoc($arrayParameters['productId']) as $product){	        
+	        $results[] = $this->getProductById($product->assoc_prd_id, $arrayParameters['langId']);
+	    }
+	    
+	    // Service implementation end
+	    
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_assoc_end', $arrayParameters);
+	    
+	     
+	    return $arrayParameters['results'];
+	}
+	
 	
 	/**
 	 *
@@ -99,10 +128,12 @@ class MelisComProductService extends MelisComGeneralService
 	 * @param int $productId Product Id to look for
 	 * @param int $langId If specified, translations of product will be limited to that lang
 	 * @param int $countryId If specified, prices will be given only for the country specified
+	 * @param string $docType Key string identifier  'IMG','FILE',
+	 * @param string $docSubType Key string identifier for document sub type  'DEFAULT','SMALL','LARGE','MEDIUM'
 	 *
 	 * @return MelisProduct|null Product object
 	 */
-	public function getProductById($productId, $langId = null, $countryId = null)
+	public function getProductById($productId, $langId = null, $countryId = null, $docType = null, $docSubType = array())
 	{
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -120,7 +151,7 @@ class MelisComProductService extends MelisComGeneralService
 	    $prodDoc = array();
 
 	    $docSvc = $this->getServiceLocator()->get('MelisComDocumentService');
-	    $prodDoc = $docSvc->getDocumentsByRelation('product', $productId);
+	    $prodDoc = $docSvc->getDocumentsByRelationAndTypes('product', $arrayParameters['productId'], $arrayParameters['docType'], $arrayParameters['docSubType']);
 	    $entProd = new MelisProduct();
         if($productData) {
             foreach($productData as $prod) {
@@ -465,7 +496,7 @@ class MelisComProductService extends MelisComGeneralService
 	    $arrayParameters['productId'] = (int) $productTable->save($arrayParameters['product'], $arrayParameters['productId']);
 	    $saveProductId = (int) $arrayParameters['productId'];
         $results['saveProduct'] = $arrayParameters['productId'];
-        
+       
         try {
             // Deactivate variants that is under to this product
             if(!$prodStatus && !is_null($prodId)) {
@@ -478,6 +509,7 @@ class MelisComProductService extends MelisComGeneralService
                 foreach($arrayParameters['productTexts'] as $productText)
                 {
                         $prodTextId = isset($productText['ptxt_id']) ? $productText['ptxt_id'] : null;
+                        unset($productText['ptxt_id']);
                         $productText['ptxt_prd_id'] = $saveProductId;
                         $this->saveProductTexts(array_merge($productText, array('ptxt_prd_id' => $saveProductId)), $prodTextId);
                 }
@@ -488,6 +520,7 @@ class MelisComProductService extends MelisComGeneralService
                 foreach($arrayParameters['attributes'] as $attribute)
                 {
                     $patt_id = isset($attribute['patt_id']) ? $attribute['patt_id'] : null;
+                    unset($attribute['patt_id']);
                     $this->saveProductAttributes(array_merge($attribute, array('patt_product_id' => $saveProductId)), $patt_id);
                 }
             }
@@ -497,6 +530,7 @@ class MelisComProductService extends MelisComGeneralService
                 foreach($arrayParameters['categories'] as $category)
                 {
                     $pcat_id = isset($category['pcat_id']) ? $category['pcat_id'] : null;
+                    unset($category['pcat_id']);
                     $categorySvc->addCategoryProduct(array_merge($category, array('pcat_prd_id' => $arrayParameters['productId'])), (int) $pcat_id);  
                 }
             }
@@ -506,6 +540,7 @@ class MelisComProductService extends MelisComGeneralService
                 foreach($arrayParameters['prices'] as $price)
                 {
                     $price_id = isset($price['price_id']) ? $price['price_id'] : null;
+                    unset($price['price_id']);
                     $this->saveProductPrices(array_merge($price, array('price_prd_id' => $saveProductId)), (int) $price_id);
                 }
             }
@@ -554,13 +589,11 @@ class MelisComProductService extends MelisComGeneralService
 	    
 	    
 	    // Service implementation start
-	    $ptxtId = null;
 	    $translator = $this->getServiceLocator()->get('translator');
 	    $productTextTable = $this->getServiceLocator()->get('MelisEcomProductTextTable');
 	    $successFlag = true;
 	    try {
     	    if(isset($arrayParameters['productTexts']['ptxt_lang_id']) && $arrayParameters['productTexts']['ptxt_lang_id']) {
-    	        $ptxtId = empty($arrayParameters['productTexts']['ptxt_id'])? null : $arrayParameters['productTexts']['ptxt_id'];
 	            $results = (bool) $productTextTable->save($arrayParameters['productTexts'], $arrayParameters['productTextId']);
     	    }
 	    }catch(\Exception $e) {
@@ -787,6 +820,51 @@ class MelisComProductService extends MelisComGeneralService
         }
 
         return $newVal;
+	}
+	
+	/*
+	 * Returns a product's variant price based on the column order and price oolumn requested
+	 * 
+	 * @param string $order The db order. ASC/DESC
+	 * @param string $price_net The price column to get
+	 * 
+	 * @return Object|NULL
+	 */
+	public function getProductVariantPriceById($productId, $order = 'ASC', $priceColumn = 'price_net')
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = false;
+	    
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_get_variant_price_start', $arrayParameters);	     
+	     
+	    // Service implementation start
+	    $productTbl = $this->getServiceLocator()->get('MelisEcomProductTable');
+	    $currencyTbl = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+	    try {
+	        $prices = $productTbl->getProductVariantPriceById($arrayParameters['productId'], $arrayParameters['order'], $arrayParameters['priceColumn']);
+	        $column = $arrayParameters['priceColumn'];
+	        foreach($prices as $price){
+	            if(!empty($price->$column)){	                
+	                $results = $price;
+	                break;
+	            }
+	        }
+	        
+	    }catch(\Exception $e) {
+	        $results = false;
+	        echo $e->getMessage(), '\n';
+	    }
+	     
+	    // Service implementation end
+	    
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_get_variant_price_end', $arrayParameters);
+	     
+	    return $arrayParameters['results'];
 	}
 	
 	/**

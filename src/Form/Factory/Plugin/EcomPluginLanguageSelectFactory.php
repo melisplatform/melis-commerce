@@ -1,0 +1,40 @@
+<?php
+
+/**
+ * Melis Technology (http://www.melistechnology.com)
+ *
+ * @copyright Copyright (c) 2016 Melis Technology (http://www.melistechnology.com)
+ *
+ */
+
+namespace MelisCommerce\Form\Factory\Plugin;
+
+use Zend\ServiceManager\ServiceLocatorInterface;
+use MelisCore\Form\Factory\MelisSelectFactory;
+
+/**
+ * MelisCommerce Language select factory
+ */
+class EcomPluginLanguageSelectFactory extends MelisSelectFactory
+{
+	protected function loadValueOptions(ServiceLocatorInterface $formElementManager)
+	{
+		$serviceManager = $formElementManager->getServiceLocator();
+
+		$langTable = $serviceManager->get('MelisEcomLangTable');
+		$langData = $langTable->langOrderByName();
+
+		$valueoptions = array();
+		$max = $langData->count();
+		for ($i = 0; $i < $max; $i++)
+		{
+			$data = $langData->current();
+            if($data->elang_status) {
+                $valueoptions[$data->elang_id] = $data->elang_name;
+            }
+			$langData->next();
+		}
+		return $valueoptions;
+	}
+
+}

@@ -76,6 +76,16 @@ class TesterController extends AbstractActionController
         return $view;
     }
     
+    public function testDocumentAction()
+    {
+        $prodSvc = $this->getServiceLocator()->get('MelisComProductService');
+        $tmp = $prodSvc->getProductById(1, null, null);
+        echo '<pre>'; print_r($tmp); echo '</pre>'; die();
+//         $varSvc = $this->getServiceLocator()->get('MelisComVariantService');
+//         $tmp = $varSvc->getVariantById(1, 1, null, 'IMG', array('LARGE'));
+//         echo '<pre>'; print_r($tmp); echo '</pre>'; die();
+       
+    }
     
     public function testAction()
     {

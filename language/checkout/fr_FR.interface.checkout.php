@@ -92,4 +92,9 @@
 	    
 	    'tr_meliscommerce_order_checkout_save_success' => 'La commande a été sauvegardée avec succès',
 	    'tr_meliscommerce_order_checkout_save_unable' => 'Impossible de sauvegarder La commande, veuillez réessayer',
+	    
+	    // Plugins
+	    'tr_meliscommerce_cart_quantity' => 'Quantity',
+	    'tr_meliscommerce_variant_quantity_invalid' => 'Quantity must be numeric',
+	    'tr_meliscommerce_variant_quantity_empty' => 'Quantity must not be empty',
 	);

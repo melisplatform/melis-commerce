@@ -111,4 +111,36 @@ class MelisEcomPriceTable extends MelisEcomGenericTable
         $resultSet = $this->tableGateway->selectwith($select);
         return $resultSet;
     }
+    
+    /**
+     * 
+     * @param string $order  ASC/DESC, order of retrieving data
+     * @param string $column column order
+     * @param string $type variant|product 
+     * @return NULL|\Zend\Db\ResultSet\ResultSetInterface
+     */
+    public function getPriceByColumnOrder($order, $column = 'price_net', $categoryId = array())
+    {
+        $select = $this->tableGateway->getSql()->select();
+        
+//         if(!is_null($type)){
+//             if($type == 'variant'){
+//                 $select->where->isNotNull('price_var_id');
+//             }else{
+//                 $select->where->isNotNull('price_prd_id');
+//             }
+//         }
+        $select->join('melis_ecom_product', 'melis_ecom_product.prd_id = melis_ecom_price.price_prd_id', array(), $select::JOIN_LEFT)       
+        ->join(array('product_category' => 'melis_ecom_product_category'), 'product_category.pcat_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT)
+        ->join('melis_ecom_variant', 'melis_ecom_variant.var_id = melis_ecom_price.price_var_id', array(), $select::JOIN_LEFT)
+        ->join(array('product_variant'=> 'melis_ecom_product'), 'product_variant.prd_id = melis_ecom_variant.var_prd_id', array(), $select::JOIN_LEFT)
+        ->join(array('variant_product_category' => 'melis_ecom_product_category'), 'variant_product_category.pcat_prd_id = product_variant.prd_id', array('*'), $select::JOIN_LEFT);
+        if(!empty($categoryId)){
+            $select->where->in('product_category.pcat_cat_id' , $categoryId)->OR->in('variant_product_category.pcat_cat_id', $categoryId);
+        }
+        
+        $select->order($column.' '.$order);
+        $resultSet = $this->tableGateway->selectwith($select);
+        return $resultSet;
+    }
 }

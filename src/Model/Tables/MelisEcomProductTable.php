@@ -16,6 +16,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
 {
     protected $tableGateway;
     protected $idField;
+    protected $_currentProdDataCount;
     
     public function __construct(TableGateway $tableGateway)
     {
@@ -121,7 +122,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
     public function getProductText($productId, $langId = null, $productTextCode = null) 
     {
         $select = $this->tableGateway->getSql()->select();
-        $select->columns(array('*'));
+        $select->columns(array());
         $clause = array();
         
         $select->join(array('product_text' => 'melis_ecom_product_text'), 'product_text.ptxt_prd_id = melis_ecom_product.prd_id', array('*'), $select::JOIN_LEFT);
@@ -147,9 +148,10 @@ class MelisEcomProductTable extends MelisEcomGenericTable
     public function getProductPrice($productId, $countryId = null) 
     {
         $select = $this->tableGateway->getSql()->select();
-        $select->columns(array('*'));
+        $select->columns(array());
         $clause = array();
-        $select->join(array('product_price' => 'melis_ecom_price'), 'product_price.price_prd_id = melis_ecom_product.prd_id', array('*'), $select::JOIN_LEFT);
+        $select->join(array('product_price' => 'melis_ecom_price'), 'product_price.price_prd_id = melis_ecom_product.prd_id', array('*'), $select::JOIN_LEFT)
+        ->join('melis_ecom_currency', 'melis_ecom_currency.cur_id = product_price.price_currency', array('cur_symbol','cur_code'), $select::JOIN_LEFT);
         
         $clause['melis_ecom_product.prd_id'] = (int) $productId;
         
@@ -258,7 +260,8 @@ class MelisEcomProductTable extends MelisEcomGenericTable
     public function getProductCategoryByProductIdAndCategoryId($productId, $categoryIds = array(), $langId = null)
     {
         $select = $this->tableGateway->getSql()->select();
-        $select->join('melis_ecom_product_category', 'melis_ecom_product_category.pcat_prd_id = melis_ecom_product.prd_id', array('*'), $select::JOIN_LEFT)
+        $select->columns(array());
+        $select->join('melis_ecom_product_category', 'melis_ecom_product_category.pcat_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT)
         ->join('melis_ecom_category', 'melis_ecom_category.cat_id = melis_ecom_product_category.pcat_cat_id', array('*'), $select::JOIN_LEFT)
         ->join('melis_ecom_category_trans', 'melis_ecom_category_trans.catt_category_id = melis_ecom_category.cat_id', array('*'), $select::JOIN_LEFT);
         $select->where->equalTo('melis_ecom_product_category.pcat_prd_id', $productId);
@@ -280,6 +283,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
     public function getProductDocumentByProductIdAndCountryId($productId, $countryId = null)
     {
         $select = $this->tableGateway->getSql()->select();
+        $select->columns(array());
         $select->join('melis_ecom_doc_relations', 'melis_ecom_doc_relations.rdoc_product_id = melis_ecom_product.prd_id', array('*'), $select::JOIN_LEFT)
         ->join('melis_ecom_document', 'melis_ecom_document.doc_id = melis_ecom_doc_relations.rdoc_doc_id', array('*'), $select::JOIN_LEFT);
         
@@ -297,7 +301,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         
     }
     
-    public function getProductByAttributeValueIdsAndPriceRange($attrValIds, $minPrice , $maxPrice, $categoryIds = array(), $countryId = null, $status = 1, $start = 0, $limit = null)
+    public function getProductByAttributeValueIdsAndPriceRange($attrValIds = array(), $minPrice = null , $maxPrice = null, $categoryIds = array(), $countryId = null, $status = 1, $start = 0, $limit = null)
     {
         $select = $this->tableGateway->getSql()->select();
         $select->join('melis_ecom_variant', 'melis_ecom_variant.var_prd_id = melis_ecom_product.prd_id', array('*'), $select::JOIN_LEFT)
@@ -306,8 +310,9 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         ->join('melis_ecom_price', 'melis_ecom_price.price_prd_id = melis_ecom_product.prd_id', array('*'), $select::JOIN_LEFT)
         ->join('melis_ecom_product_category', 'melis_ecom_product_category.pcat_prd_id = melis_ecom_product.prd_id', array('*'), $select::JOIN_LEFT);
         
-        
-        $select->where->in('melis_ecom_attribute_value.atval_id', $attrValIds);
+        if(is_array($attrValIds) && !empty($attrValIds)){
+            $select->where->in('melis_ecom_attribute_value.atval_id', $attrValIds);
+        }
         
         if(!is_null($countryId)) {
             $select->where->and->equalTo('melis_ecom_price.price_country_id', $countryId);
@@ -343,25 +348,82 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         return $resultSet;
     }
     
-    public function getProductByNameTextTypeAttrIdsAndPrice($productText, $textType = array('TITLE'), $attrValIds = array(), $categoryIds = array(), $minPrice, $maxPrice, $langId = null, $countryId = null, $status = 1, $start = 0, $limit = null)
+    public function getProductByNameTextTypeAttrIdsAndPrice($productText = null, $textType = array(), $attrValIds = array(), $categoryIds = array(), $minPrice, $maxPrice, $langId = null, $countryId = null, $status = 1, $start = 0, $limit = null, $order = null)
     {
-        $select = $this->tableGateway->getSql()->select();
-        $select->join('melis_ecom_product_text', 'melis_ecom_product_text.ptxt_prd_id = melis_ecom_product.prd_id', array('*'), $select::JOIN_LEFT)
-        ->join('melis_ecom_product_text_type', 'melis_ecom_product_text_type.ptt_id = melis_ecom_product_text.ptxt_type', array('*'), $select::JOIN_LEFT)
-        ->join('melis_ecom_price', 'melis_ecom_price.price_prd_id = melis_ecom_product.prd_id', array('*'), $select::JOIN_LEFT)
-        ->join('melis_ecom_product_category', 'melis_ecom_product_category.pcat_prd_id = melis_ecom_product.prd_id', array('*'), $select::JOIN_LEFT)
-        ->join('melis_ecom_variant', 'melis_ecom_variant.var_prd_id = melis_ecom_product.prd_id', array('*'), $select::JOIN_LEFT)
-        ->join('melis_ecom_variant_attribute_value', 'melis_ecom_variant_attribute_value.vatv_variant_id = melis_ecom_variant.var_id', array('*'), $select::JOIN_LEFT)
-        ->join('melis_ecom_attribute_value', 'melis_ecom_attribute_value.atval_id = melis_ecom_variant_attribute_value.vatv_attribute_value_id', array('*'), $select::JOIN_LEFT);
-
+        $variants = array();
+        if(is_array($attrValIds) && !empty($attrValIds)) {
+            $variants = array();
+            foreach($attrValIds as $key => $value){
+                $attrSelect = new \Zend\Db\Sql\Select;
+                $attrSelect->columns(array());
+                $attrSelect->from('melis_ecom_attribute_value');
+                $attrSelect->join('melis_ecom_variant_attribute_value','atval_id = vatv_attribute_value_id', array('vatv_variant_id'));
+                $attrSelect->where->equalTo('atval_attribute_id', $key)->and->in('atval_id', $value);
+                $attrResult = $this->tableGateway->selectwith($attrSelect);
+                
+                $tmp = array();
+                foreach($attrResult->toArray() as $attrKey => $attrVal){                   
+                    $tmp[] = $attrVal['vatv_variant_id'];                     
+                }
+                
+                $variants[] = $tmp;
+            }
+            
+            if(count($variants)>1){
+                $variants = call_user_func_array('array_intersect',$variants);
+            }elseif(count($variants)==1){
+                $variants = $variants[0];
+            }
+        }
         
-        $select->where->nest->like('melis_ecom_product_text.ptxt_field_short', '%'. $productText. '%')->or->like('melis_ecom_product_text.ptxt_field_long', '%'. $productText . '%')->UNNEST;
-        $select->where->and->in('melis_ecom_product_text_type.ptt_code', $textType);
+        if(empty($variants) && !empty($attrValIds)){
+            return NULL;
+        }
+        
+        $select = $this->tableGateway->getSql()->select();
+        $select->columns(array(
+        'prd_id',
+            'price' => new \Zend\Db\Sql\Expression('COALESCE(prod_price.price_net, var_price.price_net)')
+        ));
+        $select->join('melis_ecom_product_text', 'melis_ecom_product_text.ptxt_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT)
+        
+        ->join('melis_ecom_product_text_type', 'melis_ecom_product_text_type.ptt_id = melis_ecom_product_text.ptxt_type', array(), $select::JOIN_LEFT)
+        
+        ->join(array('prod_price'=>'melis_ecom_price'), 'prod_price.price_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT)
+        
+        ->join('melis_ecom_product_category', 'melis_ecom_product_category.pcat_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT)
+        
+        ->join('melis_ecom_variant', 'melis_ecom_variant.var_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT)
+        
+//         ->join('melis_ecom_variant_attribute_value', 'melis_ecom_variant_attribute_value.vatv_variant_id = melis_ecom_variant.var_id', array(), $select::JOIN_LEFT)
+        
+//         ->join('melis_ecom_attribute_value', 'melis_ecom_attribute_value.atval_id = melis_ecom_variant_attribute_value.vatv_attribute_value_id', array(), $select::JOIN_LEFT)
+        
+        ->join(array('var_price'=>'melis_ecom_price'), 'var_price.price_var_id = melis_ecom_variant.var_id', array(), $select::JOIN_LEFT);
+        
+        if(!empty($productText)){
+            $select->where->like('melis_ecom_product_text.ptxt_field_short', '%'. $productText. '%');
+        }
+        
+        if(is_array($textType) && !empty($textType)) {
+            $select->where->and->in('melis_ecom_product_text_type.ptt_code', $textType);
+        }        
+        
         if(!is_null($langId)) {
             $select->where->and->equalTo('melis_ecom_product_text.ptxt_lang_id', $langId);
         }
-        if(!is_null($attrValIds)) {
-            $select->where->and->in('melis_ecom_attribute_value.atval_id', $attrValIds);
+//         if(is_array($attrValIds) && !empty($attrValIds)) {
+//             $select->where->and->in('melis_ecom_attribute_value.atval_id', $attrValIds);
+//         }
+//         if(is_array($attrValIds) && !empty($attrValIds)) {
+//             foreach($attrValIds as $key => $value){
+//                 $select->where->AND->NEST->in('melis_ecom_attribute_value.atval_id', $value)
+//                 ->and->equalTo('melis_ecom_attribute_value.atval_attribute_id', $key);
+//             }
+           
+//         }
+        if(!empty($variants)){
+            $select->where->in('melis_ecom_variant.var_id', $variants);
         }
         
         if(!is_null($countryId)) {
@@ -373,28 +435,54 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         }
         
         if($maxPrice) {
-            $select->where->and->between('melis_ecom_price.price_net', (float) $minPrice, (float) $maxPrice);
+            $select->where->NEST->and
+            ->between('prod_price.price_net', (float) $minPrice, (float) $maxPrice)
+            ->or->between('var_price.price_net', (float) $minPrice, (float) $maxPrice);
         }
         //$select->where->and->equalTo('melis_ecom_product.prd_status', $status);
         
+        $getCount = $this->tableGateway->selectWith($select);
+        $this->setProdCurrentDataCount((int) $getCount->count());
         
-        $select->order('melis_ecom_product.prd_id ASC');
+        if(!is_null($order)){
+            $select->order($order);
+        }        
         
         if(!is_null($limit)) {
-            $select->limit($limit);
+            $select->limit((int)$limit);
         }
         
         if(!is_null($start)) {
-            $select->offset($start);
+            $select->offset((int)$start);
         }
+//         $select->where->NEST->isNotNull('prod_price.price_net')->AND->isNotNull('var_price.price_net');
+       
+        $resultSet = $this->tableGateway->selectwith($select);
+//         echo $this->getRawSql($select);die();
+
+        return $resultSet;
+    }
+    
+    public function getProductVariantPriceById($productId, $order = 'ASC', $priceColumn = 'price_net')
+    {
+        $select = $this->tableGateway->getSql()->select();
+       
+        $select->join('melis_ecom_variant', 'melis_ecom_variant.var_prd_id = melis_ecom_product.prd_id', array('*'), $select::JOIN_LEFT)
+                ->join('melis_ecom_price', 'melis_ecom_price.price_var_id = melis_ecom_variant.var_id', array('*'), $select::JOIN_LEFT)
+                ->join('melis_ecom_currency', 'melis_ecom_currency.cur_id = melis_ecom_price.price_currency', array('*'), $select::JOIN_LEFT);
         
-        $select->group('melis_ecom_product.prd_id');
+        $select->where->equalTo('prd_id', $productId);
+        $select->order($priceColumn . " $order");
         
         $resultSet = $this->tableGateway->selectwith($select);
         
-        //echo $this->getRawSql($select);
-
         return $resultSet;
+        
+    }
+    
+    protected function setProdCurrentDataCount($dataCount)
+    {
+        $this->_currentProdDataCount = $dataCount;
     }
 
 }

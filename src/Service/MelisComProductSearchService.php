@@ -49,8 +49,6 @@ class MelisComProductSearchService extends MelisComGeneralService
 	    
 	    // Service implementation start
 	    $prodTable = $this->getServiceLocator()->get('MelisEcomProductTable');
-	    $coreToolSvc = $this->getServiceLocator()->get('MelisCoreTool');
-	    
 
 	    $productData = $prodTable->getProductByTextAndType($arrayParameters['search'], 
                                                                 $arrayParameters['fieldsTypeCodes'], $arrayParameters['categoryId'], $arrayParameters['langId'], (int) $arrayParameters['onlyValid'],
@@ -65,76 +63,39 @@ class MelisComProductSearchService extends MelisComGeneralService
        
            $ctr = 0;
            foreach($productData as $searchedData) {
-               $product = new MelisProduct();
-               $product->setId( (int) $searchedData['prd_id'] );
-       
-               $categoryData[] = $prodTable->getProductCategoryByProductIdAndCategoryId($searchedData['prd_id'], $arrayParameters['categoryId'], $arrayParameters['langId'])->toArray();
-               if(isset($categoryData[$ctr])) {
-                   $tmpCategory = array();
-                   $catCtr = 0;
-                   foreach($categoryData[$ctr] as $catData) {
-                       $tmpCategory[$ctr][$catCtr] = $coreToolSvc->removeDataWithPrefix('prd_', $catData);
-                       $tmpCategory[$ctr][$catCtr] = $coreToolSvc->removeDataWithPrefix('pcat_', $tmpCategory[$ctr][$catCtr]);
-                       $catCtr++;
-                   }
-                   if(isset($tmpCategory[$ctr])) {
-                       $categoryData[$ctr] = $tmpCategory[$ctr];
-                       $product->setCategories($categoryData[$ctr]);
-                   }
-               }
+                $product = new MelisProduct();
+                $product->setId( (int) $searchedData['prd_id'] );
 
-               $docData[] =  $prodTable->getProductDocumentByProductIdAndCountryId($searchedData['prd_id'], $arrayParameters['countryId'])->toArray();
-               if(isset($docData[$ctr])) {
-                   $tmpDoc = array();
-                   $docCtr = 0;
-                   foreach($docData[$ctr] as $docData) {
-                       $tmpDoc[$ctr][$docCtr] = $coreToolSvc->removeDataWithPrefix('prd_', $docData);
-                       $tmpDoc[$ctr][$docCtr] = $coreToolSvc->removeDataWithPrefix('rdoc_', $tmpDoc[$ctr][$docCtr]);
-                       $docCtr++;
-                   }
-                   if(isset($tmpDoc[$ctr])) {
-                       $docData[$ctr] = $tmpDoc[$ctr];
-                       $product->setDocuments($docData[$ctr]);
-                   }
-               }
+                $categoryData = $prodTable->getProductCategoryByProductIdAndCategoryId($searchedData['prd_id'], $arrayParameters['categoryId'], $arrayParameters['langId'])->toArray();
+                $product->setCategories($categoryData);
+
+                $docData =  $prodTable->getProductDocumentByProductIdAndCountryId($searchedData['prd_id'], $arrayParameters['countryId'])->toArray();
+                $product->setDocuments($docData);
                
+                $prodTexts = $prodTable->getProductText($searchedData['prd_id'], $arrayParameters['langId'])->toArray();
+                $product->setTexts($prodTexts);
                
-               $prodTexts[] = $prodTable->getProductText($searchedData['prd_id'], $arrayParameters['langId'])->toArray();
-               if(isset($prodTexts[$ctr])) {
-                   $tmpTexts = array();
-                   $txtCtr = 0;
-                   foreach($prodTexts[$ctr] as $txtData) {
-                       $tmpTexts[$ctr][$txtCtr] = $coreToolSvc->removeDataWithPrefix('prd_', $txtData);
-                       $txtCtr++;
-                   }
-                   if(isset($tmpTexts[$ctr])) {
-                       $prodTexts[$ctr] = $tmpTexts[$ctr];
-                       $product->setTexts($prodTexts[$ctr]);
-                   }
-               }
-               
-               
-               $prodPrice[] =  $prodTable->getProductPrice($searchedData['prd_id'], $arrayParameters['countryId'])->toArray();
-               if(isset($prodPrice[$ctr])) {
+                $prodPrice[] =  $prodTable->getProductPrice($searchedData['prd_id'], $arrayParameters['countryId'])->toArray();
+                if(isset($prodPrice[$ctr])) {
                    $tmpPrice = array();
                    $prcCtr = 0;
                    foreach($prodPrice[$ctr] as $prcData) {
-                       $tmpPrice[$ctr][$prcCtr] = $coreToolSvc->removeDataWithPrefix('prd_', $prcData);
+                       $tmpPrice[$ctr][$prcCtr] = $this->removeDataWithPrefix('prd_', $prcData);
                        $prcCtr++;
                    }
                    if(isset($tmpPrice[$ctr])) {
                        $prodPrice[$ctr] = $tmpPrice[$ctr];
                        $product->setPrice($prodPrice[$ctr]);
                    }
-               }
+                }
 
-               $tmpProductData = $coreToolSvc->splitData('prd_', $productData[$ctr]);
-               unset($tmpProductData['ptxt_prd_id']);
-
-               $product->setProduct($tmpProductData);
-       
-               $results[] = $product;
-               $ctr++;
+                $tmpProductData = $this->splitData('prd_', $productData[$ctr]);
+                unset($tmpProductData['ptxt_prd_id']);
+                
+                $product->setProduct($tmpProductData);
+                
+                $results[] = $product;
+                $ctr++;
            }
         }
 	    // Service implementation end
@@ -172,6 +133,9 @@ class MelisComProductSearchService extends MelisComGeneralService
 	                                                            $langId = null, $categoryId = array(), $countryId = null, 
 	                                                            $onlyValid = true, $start = 0, $limit = null)
 	{
+	    
+	    
+	    
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
 	    $results = array();
@@ -181,11 +145,13 @@ class MelisComProductSearchService extends MelisComGeneralService
 
 	    // Service implementation start
 	    $prodTable = $this->getServiceLocator()->get('MelisEcomProductTable');
-	    $coreToolSvc = $this->getServiceLocator()->get('MelisCoreTool');
 	    $product = new MelisProduct();
+	    
 	    $productData = $prodTable->getProductByAttributeValueIdsAndPriceRange($arrayParameters['attributeValuesIds'], (float) $arrayParameters['priceMin'], (float) $arrayParameters['priceMax'],
                                                                 	        $arrayParameters['categoryId'], $arrayParameters['countryId'], (int) $arrayParameters['onlyValid'], $arrayParameters['start'], $arrayParameters['limit']
                                                                         )->toArray();
+                                                                        
+                                                                        
         if($productData) {
              
             $categoryData = array();
@@ -198,58 +164,21 @@ class MelisComProductSearchService extends MelisComGeneralService
                 $product = new MelisProduct();
                 $product->setId( (int) $searchedData['prd_id'] );
                  
-                $categoryData[] = $prodTable->getProductCategoryByProductIdAndCategoryId($searchedData['prd_id'], $arrayParameters['categoryId'], $arrayParameters['langId'])->toArray();
-                if(isset($categoryData[$ctr])) {
-                    $tmpCategory = array();
-                    $catCtr = 0;
-                    foreach($categoryData[$ctr] as $catData) {
-                        $tmpCategory[$ctr][$catCtr] = $coreToolSvc->removeDataWithPrefix('prd_', $catData);
-                        $tmpCategory[$ctr][$catCtr] = $coreToolSvc->removeDataWithPrefix('pcat_', $tmpCategory[$ctr][$catCtr]);
-                        $catCtr++;
-                    }
-                    if(isset($tmpCategory[$ctr])) {
-                        $categoryData[$ctr] = $tmpCategory[$ctr];
-                        $product->setCategories($categoryData[$ctr]);
-                    }
-                }
-        
-                $docData[] =  $prodTable->getProductDocumentByProductIdAndCountryId($searchedData['prd_id'], $arrayParameters['countryId'])->toArray();
-                if(isset($docData[$ctr])) {
-                    $tmpDoc = array();
-                    $docCtr = 0;
-                    foreach($docData[$ctr] as $docData) {
-                        $tmpDoc[$ctr][$docCtr] = $coreToolSvc->removeDataWithPrefix('prd_', $docData);
-                        $tmpDoc[$ctr][$docCtr] = $coreToolSvc->removeDataWithPrefix('rdoc_', $tmpDoc[$ctr][$docCtr]);
-                        $docCtr++;
-                    }
-                    if(isset($tmpDoc[$ctr])) {
-                        $docData[$ctr] = $tmpDoc[$ctr];
-                        $product->setDocuments($docData[$ctr]);
-                    }
-                }
-                 
-                 
-                $prodTexts[] = $prodTable->getProductText($searchedData['prd_id'], $arrayParameters['langId'])->toArray();
-                if(isset($prodTexts[$ctr])) {
-                    $tmpTexts = array();
-                    $txtCtr = 0;
-                    foreach($prodTexts[$ctr] as $txtData) {
-                        $tmpTexts[$ctr][$txtCtr] = $coreToolSvc->removeDataWithPrefix('prd_', $txtData);
-                        $txtCtr++;
-                    }
-                    if(isset($tmpTexts[$ctr])) {
-                        $prodTexts[$ctr] = $tmpTexts[$ctr];
-                        $product->setTexts($prodTexts[$ctr]);
-                    }
-                }
-                 
+                $categoryData = $prodTable->getProductCategoryByProductIdAndCategoryId($searchedData['prd_id'], $arrayParameters['categoryId'], $arrayParameters['langId'])->toArray();
+                $product->setCategories($categoryData);
+
+                $docData =  $prodTable->getProductDocumentByProductIdAndCountryId($searchedData['prd_id'], $arrayParameters['countryId'])->toArray();
+                $product->setDocuments($docData);
+               
+                $prodTexts = $prodTable->getProductText($searchedData['prd_id'], $arrayParameters['langId'])->toArray();
+                $product->setTexts($prodTexts);
                  
                 $prodPrice[] =  $prodTable->getProductPrice($searchedData['prd_id'], $arrayParameters['countryId'])->toArray();
                 if(isset($prodPrice[$ctr])) {
                     $tmpPrice = array();
                     $prcCtr = 0;
                     foreach($prodPrice[$ctr] as $prcData) {
-                        $tmpPrice[$ctr][$prcCtr] = $coreToolSvc->removeDataWithPrefix('prd_', $prcData);
+                        $tmpPrice[$ctr][$prcCtr] = $this->removeDataWithPrefix('prd_', $prcData);
                         $prcCtr++;
                     }
                     if(isset($tmpPrice[$ctr])) {
@@ -258,7 +187,7 @@ class MelisComProductSearchService extends MelisComGeneralService
                     }
                 }
         
-                $tmpProductData = $coreToolSvc->splitData('prd_', $productData[$ctr]);
+                $tmpProductData = $this->splitData('prd_', $productData[$ctr]);
                 unset($tmpProductData['ptxt_prd_id']);
         
                 $product->setProduct($tmpProductData);
@@ -304,7 +233,7 @@ class MelisComProductSearchService extends MelisComGeneralService
 	public function searchProductFull($search, $fieldsTypeCodes = array(),
 	                                  $attributeValuesIds = array(), $priceMin = null, $priceMax = null,
 	                                  $langId = null, $categoryId = array(), $countryId = null, 
-	                                  $onlyValid = true, $start = 0, $limit = null)
+	                                  $onlyValid = true, $start = 0, $limit = null, $sort = null)
 	{
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -315,101 +244,118 @@ class MelisComProductSearchService extends MelisComGeneralService
 	     
 	    // Service implementation start
 	    $prodTable = $this->getServiceLocator()->get('MelisEcomProductTable');
-	    $coreToolSvc = $this->getServiceLocator()->get('MelisCoreTool');
-	    $product = new MelisProduct();
-	    $productData = $prodTable->getProductByNameTextTypeAttrIdsAndPrice($arrayParameters['search'], $arrayParameters['fieldsTypeCodes'], 
+	    
+	    $data = $prodTable->getProductByNameTextTypeAttrIdsAndPrice($arrayParameters['search'], $arrayParameters['fieldsTypeCodes'], 
 	        $arrayParameters['attributeValuesIds'], $arrayParameters['categoryId'], (float) $arrayParameters['priceMin'], (float) $arrayParameters['priceMax'],  $arrayParameters['langId'],
-	        $arrayParameters['countryId'], (int) $arrayParameters['onlyValid'], $arrayParameters['start'], $arrayParameters['limit']
-        )->toArray();
-
-        if($productData) {
-             
+	        $arrayParameters['countryId'], (int) $arrayParameters['onlyValid'], $arrayParameters['start'], $arrayParameters['limit'], $arrayParameters['sort']
+        );
+	    
+        if($data) {
+            foreach($data as $product){
+                unset($product->price);
+                $productData[] = $product;
+            }
+            
+            $productData = array_unique($productData, SORT_REGULAR);
+            
             $categoryData = array();
             $docData = array();
             $prodTexts = array();
             $prodPrice = array();
              
-            $ctr = 0;
             foreach($productData as $searchedData) {
+                
+                $categories = array();
+                $texts = array();
+                $prices = array();
+                $documents = array(); 
                 $product = new MelisProduct();
-                $product->setId( (int) $searchedData['prd_id'] );
-                 
-                $categoryData[] = $prodTable->getProductCategoryByProductIdAndCategoryId($searchedData['prd_id'], $arrayParameters['categoryId'], $arrayParameters['langId'])->toArray();
-                if(isset($categoryData[$ctr])) {
-                    $tmpCategory = array();
-                    $catCtr = 0;
-                    foreach($categoryData[$ctr] as $catData) {
-                        $tmpCategory[$ctr][$catCtr] = $coreToolSvc->removeDataWithPrefix('prd_', $catData);
-                        $tmpCategory[$ctr][$catCtr] = $coreToolSvc->removeDataWithPrefix('pcat_', $tmpCategory[$ctr][$catCtr]);
-                        $catCtr++;
-                    }
-                    if(isset($tmpCategory[$ctr])) {
-                        $categoryData[$ctr] = $tmpCategory[$ctr];
-                        $product->setCategories($categoryData[$ctr]);
-                    }
+                
+                $product->setId( (int) $searchedData->prd_id );
+                $product->setProduct($searchedData);
+                
+                // set product categories
+                $categoryData = $prodTable->getProductCategoryByProductIdAndCategoryId($searchedData->prd_id, $arrayParameters['categoryId'], $arrayParameters['langId']);
+                foreach($categoryData as $category){
+                    $categories[] = $category;
                 }
-        
-                $docData[] =  $prodTable->getProductDocumentByProductIdAndCountryId($searchedData['prd_id'], $arrayParameters['countryId'])->toArray();
-                if(isset($docData[$ctr])) {
-                    $tmpDoc = array();
-                    $docCtr = 0;
-                    foreach($docData[$ctr] as $docData) {
-                        $tmpDoc[$ctr][$docCtr] = $coreToolSvc->removeDataWithPrefix('prd_', $docData);
-                        $tmpDoc[$ctr][$docCtr] = $coreToolSvc->removeDataWithPrefix('rdoc_', $tmpDoc[$ctr][$docCtr]);
-                        $docCtr++;
-                    }
-                    if(isset($tmpDoc[$ctr])) {
-                        $docData[$ctr] = $tmpDoc[$ctr];
-                        $product->setDocuments($docData[$ctr]);
-                    }
+                $product->setCategories($categories);
+                
+                // set product documents
+                $docData =  $prodTable->getProductDocumentByProductIdAndCountryId($searchedData->prd_id, $arrayParameters['countryId']);
+                foreach($docData as $doc){
+                    $documents[] = $doc;
                 }
-                 
-                 
-                $prodTexts[] = $prodTable->getProductText($searchedData['prd_id'], $arrayParameters['langId'])->toArray();
-                if(isset($prodTexts[$ctr])) {
-                    $tmpTexts = array();
-                    $txtCtr = 0;
-                    foreach($prodTexts[$ctr] as $txtData) {
-                        $tmpTexts[$ctr][$txtCtr] = $coreToolSvc->removeDataWithPrefix('prd_', $txtData);
-                        $txtCtr++;
-                    }
-                    if(isset($tmpTexts[$ctr])) {
-                        $prodTexts[$ctr] = $tmpTexts[$ctr];
-                        $product->setTexts($prodTexts[$ctr]);
-                    }
+                $product->setDocuments($documents);
+               
+                // set product texts
+                $prodTexts = $prodTable->getProductText($searchedData->prd_id, $arrayParameters['langId']);
+                foreach($prodTexts as $text){
+                    $texts[] = $text;
                 }
+                $product->setTexts($texts);
                  
-                 
-                $prodPrice[] =  $prodTable->getProductPrice($searchedData['prd_id'], $arrayParameters['countryId'])->toArray();
-                if(isset($prodPrice[$ctr])) {
-                    $tmpPrice = array();
-                    $prcCtr = 0;
-                    foreach($prodPrice[$ctr] as $prcData) {
-                        $tmpPrice[$ctr][$prcCtr] = $coreToolSvc->removeDataWithPrefix('prd_', $prcData);
-                        $prcCtr++;
-                    }
-                    if(isset($tmpPrice[$ctr])) {
-                        $prodPrice[$ctr] = $tmpPrice[$ctr];
-                        $product->setPrice($prodPrice[$ctr]);
-                    }
+                // set product prices
+                $prodPrice =  $prodTable->getProductPrice($searchedData->prd_id, $arrayParameters['countryId']);
+                foreach ($prodPrice as $price){
+                    $prices[] = $price;
                 }
-        
-                $tmpProductData = $coreToolSvc->splitData('prd_', $productData[$ctr]);
-                unset($tmpProductData['ptxt_prd_id']);
-        
-                $product->setProduct($tmpProductData);
-                 
+                $product->setPrice($prices);
+                               
                 $results[] = $product;
-                $ctr++;
             }
         }
 	    // Service implementation end
-	
+        
 	    // Adding results to parameters for events treatment if needed
 	    $arrayParameters['results'] = $results;
 	    // Sending service end event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_productsearch_full_pricerange_end', $arrayParameters);
 	     
 	    return $arrayParameters['results'];
+	}
+	
+	/**
+	 * This function is the opposite of splitData, this function removes
+	 * the data with prefix  provided in the parameter
+	 * @param string $prefix
+	 * @param array $haystack
+	 * @return array
+	 */
+	public function removeDataWithPrefix($prefix, $haystack = array())
+	{
+	    $data = array();
+	    if($haystack) {
+	        foreach($haystack as $key => $value) {
+	            if(strpos($key, $prefix) !== false) {
+	                unset($data[$key]);
+	            }
+	            else {
+	                $data[$key] = $value;
+	            }
+	        }
+	    }
+	     
+	    return $data;
+	}
+	
+	/**
+	 * Used to split array data and return the data you need
+	 * @param String $prefix of the array data
+	 * @param array $haystack
+	 * @return array
+	 */
+	public function splitData($prefix, $haystack = array())
+	{
+	    $data = array();
+	    if($haystack) {
+	        foreach($haystack as $key => $value) {
+	            if(strpos($key, $prefix) !== false) {
+	                $data[$key] = $value;
+	            }
+	        }
+	    }
+	
+	    return $data;
 	}
 }

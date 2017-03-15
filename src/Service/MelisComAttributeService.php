@@ -216,6 +216,54 @@ class MelisComAttributeService extends MelisCoreGeneralService
         return $arrayParameters['results'];
     }
     
+    public function getUsedAttributeValuesByProductId($productId, $langId = null)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+        
+        $usedAttributes = array();
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_used_attribute_values_by_product_start', $arrayParameters);
+        
+        // Service implementation start
+        
+        $attrValueTable = $this->getServiceLocator()->get('MelisEcomAttributeValueTable');
+        $attrTable = $this->getServiceLocator()->get('MelisEcomAttributeTable');
+        $attrTransTable = $this->getServiceLocator()->get('MelisEcomAttributeTransTable');
+        $attributes = $attrTable->getUsedAttributeByProduct($arrayParameters['productId'], $arrayParameters['langId']);
+        
+        foreach($attributes as $data){
+            $entAttribute = new MelisAttribute();
+            $data->{'attr_trans'} = array();
+            
+            $attributeValues = array();
+            $entAttribute->setId($data->attr_id);
+            
+            foreach($attrTransTable->getAttributeTransByAtributeId( $data->attr_id, $arrayParameters['langId']) as $attrTrans){
+                $data->{'attr_trans'} = array_merge($this->getAttributeTransById($attrTrans->atrans_id, $arrayParameters['langId']), $data->{'attr_trans'});
+            }
+            
+            $entAttribute->setAttribute($data);
+            foreach($attrValueTable->getUsedAttributeValuesByProduct($productId, $data->attr_id) as $attrVal){
+                $attributeValues = array_merge($attributeValues, $this->getAttributeValuesById($attrVal->atval_id, $arrayParameters['langId']));
+            }
+            $entAttribute->setAttributeValues($attributeValues);
+            $results[] = $entAttribute;
+           
+        }        
+        // Service implementation end
+        
+        
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_used_attribute_values_by_product_start', $arrayParameters);
+         
+        return $arrayParameters['results'];
+    }
+    
     /**
      * 
      * This method gets the attribute values

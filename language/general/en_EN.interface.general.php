@@ -12,5 +12,5 @@
 	    'tr_meliscommerce_general_common_cancel' => 'Cancel',
 	    'tr_meliscommerce_general_common_loading' => 'Loading...',
 	    
-	    'tr_meliscommerce_general_text' => 'General',
+	    'tr_meliscommerce_general_text' => 'General', 
 	);
