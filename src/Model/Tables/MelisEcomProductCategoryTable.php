@@ -49,4 +49,16 @@ class MelisEcomProductCategoryTable extends MelisEcomGenericTable
         $resultData = $this->tableGateway->selectWith($select);
         return $resultData;
     }
+    
+    public function getProductCategories($productId)
+    {
+        $select = $this->tableGateway->getSql()->select();
+        
+        $select->join('melis_ecom_category', 'melis_ecom_category.cat_id = melis_ecom_product_category.pcat_cat_id',
+            array('*'), $select::JOIN_LEFT);
+        
+        $select->where('pcat_prd_id = '.$productId);
+        $resultData = $this->tableGateway->selectWith($select);
+        return $resultData;
+    }
 }

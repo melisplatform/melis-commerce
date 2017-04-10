@@ -94,10 +94,11 @@ class MelisCommerceDeliveryAddressPlugin extends MelisTemplatingPlugin
             ];
             $appConfigForm = ArrayUtils::merge($addSelectAddressSelect, $appConfigForm);
         }
-
+       
         $deliveryAddress = $factory->createForm($appConfigForm);
         
         $melisComAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
+        $translator = $this->getServiceLocator()->get('translator');
         /**
          * If the Authentication doesn't have identity
          * this will redirect to the $redirection_link_not_loggedin
@@ -129,36 +130,17 @@ class MelisCommerceDeliveryAddressPlugin extends MelisTemplatingPlugin
                 $deliveryAddressId = $clientAddress->cadd_id;
             }
             
-            $preData['cadd_address_name']   = (!$is_submit && !empty($clientAddress)) ? $clientAddress->cadd_address_name : '';
-            $preData['cadd_num']            = (!$is_submit && !empty($clientAddress)) ? $clientAddress->cadd_num : '';
-            $preData['cadd_street']         = (!$is_submit && !empty($clientAddress)) ? $clientAddress->cadd_street : '';
-            $preData['cadd_building_name']  = (!$is_submit && !empty($clientAddress)) ? $clientAddress->cadd_building_name : '';
-            $preData['cadd_stairs']         = (!$is_submit && !empty($clientAddress)) ? $clientAddress->cadd_stairs : '';
-            $preData['cadd_city']           = (!$is_submit && !empty($clientAddress)) ? $clientAddress->cadd_city : '';
-            $preData['cadd_state']          = (!$is_submit && !empty($clientAddress)) ? $clientAddress->cadd_state : '';
-            $preData['cadd_country']        = (!$is_submit && !empty($clientAddress)) ? $clientAddress->cadd_country : '';
-            $preData['cadd_zipcode']        = (!$is_submit && !empty($clientAddress)) ? $clientAddress->cadd_zipcode : '';
-            $preData['cadd_company']        = (!$is_submit && !empty($clientAddress)) ? $clientAddress->cadd_company : '';
-            $preData['cadd_phone_mobile']   = (!$is_submit && !empty($clientAddress)) ? $clientAddress->cadd_phone_mobile : '';
-            $preData['cadd_phone_landline'] = (!$is_submit && !empty($clientAddress)) ? $clientAddress->cadd_phone_landline : '';
-            $preData['cadd_complementary']  = (!$is_submit && !empty($clientAddress)) ? $clientAddress->cadd_complementary : '';
-            $preData['cadd_id']             = (!$is_submit && !empty($clientAddress)) ? $clientAddress->cadd_id : '';
+            // Retrieves the table columns for data looping
+            $tableColumns = $clientSrv->getTableColumns('MelisEcomClientAddressTable');
+            foreach($tableColumns as $column){
+                // if the form was submitted, retrieve its values
+                if ($is_submit) {
+                    $data[$column] = isset($this->pluginFrontConfig[$column])? $this->pluginFrontConfig[$column] : '';
+                } else {
+                    $data[$column] = !empty($clientAddress->$column)? $clientAddress->$column : '';
+                }
+            }
             
-            $data['cadd_address_name']      = (!empty($is_submit && $this->pluginFrontConfig['cadd_address_name']))   ? $this->pluginFrontConfig['cadd_address_name']  : $preData['cadd_address_name'];
-            $data['cadd_num']               = ($is_submit && !empty($this->pluginFrontConfig['cadd_num']))            ? $this->pluginFrontConfig['cadd_num']           : $preData['cadd_num'];
-            $data['cadd_street']            = ($is_submit && !empty($this->pluginFrontConfig['cadd_street']))         ? $this->pluginFrontConfig['cadd_street']        : $preData['cadd_street'];
-            $data['cadd_building_name']     = ($is_submit && !empty($this->pluginFrontConfig['cadd_building_name']))  ? $this->pluginFrontConfig['cadd_building_name'] : $preData['cadd_building_name'];
-            $data['cadd_stairs']            = ($is_submit && !empty($this->pluginFrontConfig['cadd_stairs']))         ? $this->pluginFrontConfig['cadd_stairs']        : $preData['cadd_stairs'];
-            $data['cadd_city']              = ($is_submit && !empty($this->pluginFrontConfig['cadd_city']))           ? $this->pluginFrontConfig['cadd_city'] : $preData['cadd_city'];
-            $data['cadd_state']             = ($is_submit && !empty($this->pluginFrontConfig['cadd_state']))          ? $this->pluginFrontConfig['cadd_state'] : $preData['cadd_state'];
-            $data['cadd_country']           = ($is_submit && !empty($this->pluginFrontConfig['cadd_country']))        ? $this->pluginFrontConfig['cadd_country'] : $preData['cadd_country'];
-            $data['cadd_zipcode']           = ($is_submit && !empty($this->pluginFrontConfig['cadd_zipcode']))        ? $this->pluginFrontConfig['cadd_zipcode'] : $preData['cadd_zipcode'];
-            $data['cadd_company']           = ($is_submit && !empty($this->pluginFrontConfig['cadd_company']))        ? $this->pluginFrontConfig['cadd_company'] : $preData['cadd_company'];
-            $data['cadd_phone_mobile']      = ($is_submit && !empty($this->pluginFrontConfig['cadd_phone_mobile']))   ? $this->pluginFrontConfig['cadd_phone_mobile'] : $preData['cadd_phone_mobile'];
-            $data['cadd_phone_landline']    = ($is_submit && !empty($this->pluginFrontConfig['cadd_phone_landline'])) ? $this->pluginFrontConfig['cadd_phone_landline'] : $preData['cadd_phone_landline'];
-            $data['cadd_complementary']     = ($is_submit && !empty($this->pluginFrontConfig['cadd_complementary']))  ? $this->pluginFrontConfig['cadd_complementary'] : $preData['cadd_complementary'];
-            $data['cadd_id']                = ($is_submit && !empty($this->pluginFrontConfig['cadd_id']))             ? $this->pluginFrontConfig['cadd_id'] : $preData['cadd_id'];
-
             // Setting the Datas to Profile Form
             $deliveryAddress->setData($data);
             if ($is_submit) {
@@ -176,45 +158,28 @@ class MelisCommerceDeliveryAddressPlugin extends MelisTemplatingPlugin
                     $clientAddType      = $clientAddTypeTbl->getEntryByField('catype_code', $addressType)->current();
                     $data['cadd_type']  = $clientAddType->catype_id;
                     
-                    /**
-                     * Retrieving client person data from Commerce Authentication Service
-                     */
-                    $data['cadd_civility']      = $melisComAuthSrv->getClientPersonSessDataByField('cper_civility');
-                    $data['cadd_name']          = $melisComAuthSrv->getClientPersonSessDataByField('cper_name');
-                    $data['cadd_middle_name']   = $melisComAuthSrv->getClientPersonSessDataByField('cper_middle_name');
-                    $data['cadd_firstname']     = $melisComAuthSrv->getClientPersonSessDataByField('cper_firstname');
-                    
                     // Saving Client person delivery addrress
                     $deliveryAddressId = $clientSrv->saveClientAddress($data, $deliveryAddressId);
                     
                     if (!is_null($deliveryAddressId))
                     {
                         $success = 1;
-                        $message = 'Delivery address has been successfully saved';
+                        $message = $translator->translate('tr_meliscommerce_checkout_delivery_save_success');
                     }
                     else
                     {
-                        $message = 'Something is wrong, please contact administrator for assistance';
+                        $message = $translator->translate('tr_meliscommerce_checkout_delivery_save_error');
                     }
                 }
                 else 
                 {
-                    $message = 'Error(s) occured';
+                    $message = $translator->translate('tr_meliscommerce_checkout_delivery_errors');
                     $errors  = $deliveryAddress->getMessages();
                 }
             }
             else {
 
             }
-        }
-        else
-        {
-            // Gettin the Redirect Uri from config
-            $m_redirection_link_not_loggedin = (!empty($this->pluginFrontConfig['redirection_link_not_loggedin'])) ? $this->pluginFrontConfig['redirection_link_not_loggedin'] : 'http://www.test.com';
-            
-            $controller = $this->getController();
-            $redirector = $controller->getPluginManager()->get('Redirect');
-            $redirector->toUrl($m_redirection_link_not_loggedin);
         }
         
         /**
@@ -233,14 +198,5 @@ class MelisCommerceDeliveryAddressPlugin extends MelisTemplatingPlugin
         
         // return the variable array and let the view be created
         return $viewVariables;
-    }
-    
-    /**
-     * This function return the back office rendering for the template edition system
-     * TODO
-     */
-    public function back()
-    {
-        return array();
     }
 }

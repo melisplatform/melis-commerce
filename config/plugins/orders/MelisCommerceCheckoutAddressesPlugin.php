@@ -1,157 +1,16 @@
 <?php
-// Orders plugins config
+// Product plugins config
 return array(
     'plugins' => array(
         'meliscommerce' => array(
             'plugins' => array(
-                'MelisCommerceCartAddPlugin' => array(
-                    'front' => array(
-                        'template_path' => 'MelisCommerceAddToCartShowPlugin/show-add-to-cart',
-                        'm_v_id' => null,
-                        'm_v_country' => 1,
-                        'm_v_quantity' => 1,
-                        'm_is_submit' => false,
-                        'forms' => array(
-                            'meliscommerce_add_to_cart_form' => array(
-                                'attributes' => array(
-                                    'name' => '',
-                                    'id' => '',
-                                    'method' => '',
-                                    'action' => '',
-                                    'class' => '',
-                                ),
-                                'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
-                                'elements' => array(
-                                    array(
-                                        'spec' => array(
-                                            'name' => 'm_v_id',
-                                            'type' => 'hidden',
-                                        )
-                                    ),
-                                    array(
-                                        'spec' => array(
-                                            'name' => 'm_v_country',
-                                            'type' => 'hidden',
-                                        )
-                                    ),
-                                    array(
-                                        'spec' => array(
-                                            'name' => 'm_v_quantity',
-                                            'type' => 'Text',
-                                            'options' => array(
-                                                'label' => 'tr_meliscommerce_add_to_cart_quantity',
-                                            ),
-                                            'attributes' => array(
-                                                'id' => 'm_v_quantity',
-                                            )
-                                        )
-                                    ),
-                                    
-                                ),
-                                'input_filter' => array(
-                                    'm_v_id' => array(
-                                        'name'     => 'm_v_id',
-                                        'required' => true,
-                                        'validators' => array(
-                                            array(
-                                                'name' => 'NotEmpty',
-                                                'options' => array(
-                                                    'messages' => array(
-                                                        \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_add_to_cart_variant_id_empty',
-                                                    ),
-                                                ),
-                                            ),
-                                        ),
-                                        'filters'  => array(
-                                            array('name' => 'StripTags'),
-                                            array('name' => 'StringTrim'),
-                                        ),
-                                    ),
-                                    'm_v_country' => array(
-                                        'name'     => 'm_v_country',
-                                        'required' => true,
-                                        'validators' => array(
-                                            array(
-                                                'name' => 'NotEmpty',
-                                                'options' => array(
-                                                    'messages' => array(
-                                                        \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_add_to_cart_variant_country_empty',
-                                                    ),
-                                                ),
-                                            ),
-                                        ),
-                                        'filters'  => array(
-                                            array('name' => 'StripTags'),
-                                            array('name' => 'StringTrim'),
-                                        ),
-                                    ),
-                                    'm_v_quantity' => array(
-                                        'name'     => 'm_v_quantity',
-                                        'required' => true,
-                                        'validators' => array(
-                                            array(
-                                                'name' => 'Digits',
-                                                'options' => array(
-                                                    'messages' => array(
-                                                        \Zend\Validator\Digits::NOT_DIGITS => 'tr_meliscommerce_add_to_cart_variant_quantity_invalid',
-                                                        \Zend\Validator\Digits::STRING_EMPTY => '',
-                                                    ),
-                                                ),
-                                            ),
-                                            array(
-                                                'name' => 'NotEmpty',
-                                                'options' => array(
-                                                    'messages' => array(
-                                                        \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_add_to_cart_variant_quantity_empty',
-                                                    ),
-                                                ),
-                                            ),
-                                        ),
-                                        'filters'  => array(
-                                            array('name' => 'StripTags'),
-                                            array('name' => 'StringTrim'),
-                                        ),
-                                    ),
-                                ),
-                            )
-                        )
-                    ),
-                    'melis' => array(),
-                ),
-                'MelisCommerceCheckoutPlugin' => array(
-                    'front' => array(
-                        'template_path' => 'MelisCommerceCheckout/show-check-out',
-                        'm_checkout_step' => '',
-                        'm_checkout_country_id' => 1,
-                        'm_checkout_site_id' => 1,
-                        'm_checkout_cart_plugin_param' => array(),
-                        'm_checkout_addresses_plugin_param' => array(),
-                        'm_checkout_summary_plugin_param' => array(),
-                        'm_checkout_cart_link' => 'http://www.test.com',
-                        'm_checkout_addresses_link' => 'http://www.test.com',
-                        'm_checkout_summary_link' => 'http://www.test.com',
-                        'm_login_page_link' => 'http://www.test.com',
-                        'm_checkout_payment_url' => 'http://www.test.com',
-                        'm_checkout_payment_notify_url' => 'http://www.test.com',
-                        'm_checkout_confirmation_url' => 'http://www.test.com',
-                    )
-                ),
-                'MelisCommerceCheckoutCartPlugin' => array(
-                    'front' => array(
-                        'template_path' => 'MelisCommerceCheckout/show-check-out-cart',
-                        'm_country_id' => null,
-                        'm_site_id' => null,
-                        'm_v_quantity' => array(),
-                        'm_v_id_remove' => null,
-                        'm_v_remove_link' => 'http://www.test.com'
-                    ),
-                    'melis' => array(),
-                ),
                 'MelisCommerceCheckoutAddressesPlugin' => array(
                     'front' => array(
                         'template_path' => 'MelisCommerceCheckout/show-check-out-address',
+                        // site id
                         'm_site_id' => 1,
                         
+                        // delivery form fields
                         'm_add_delivery_id' => '',
                         'm_add_delivery_address_name' => '',
                         'm_add_delivery_civility' => '',
@@ -170,9 +29,10 @@ return array(
                         'm_add_delivery_phone_landline' => '',
                         'm_add_delivery_complementary' => '',
                         
-                        // If the Delivery address and Billing address are the same
-                        'm_add_use_same' => false,
+                        // use same address flag
+                        'm_add_use_same_address' => 1,
                         
+                        // billing form fields
                         'm_add_billing_id' => '',
                         'm_add_billing_address_name' => '',
                         'm_add_billing_civility' => '',
@@ -191,8 +51,10 @@ return array(
                         'm_add_billing_phone_landline' => '',
                         'm_add_billing_complementary' => '',
                         
+                        // flag true if a form is submitted
                         'm_add_is_submit' => false,
                         
+                        // Form setup, elements and validators
                         'forms' => array(
                             'delivery_address' => array(
                                 'attributes' => array(
@@ -240,7 +102,7 @@ return array(
                                             'name' => 'm_add_delivery_address_name',
                                             'type' => 'text',
                                             'options' => array(
-                                                'label' => 'tr_meliscommerce_client_Contact_address_name',
+                                                'label' => 'tr_meliscommerce_client_Contact_address_title',
                                             ),
                                             'attributes' => array(
                                                 'id' => 'm_add_delivery_address_name',
@@ -451,7 +313,7 @@ return array(
                                                 'name' => 'NotEmpty',
                                                 'options' => array(
                                                     'messages' => array(
-                                                        \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_client_checkout_delivery_address_empty',
+                                                        \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_client_select_deliver_address',
                                                     ),
                                                 ),
                                             ),
@@ -851,7 +713,7 @@ return array(
                                             'name' => 'm_add_billing_address_name',
                                             'type' => 'text',
                                             'options' => array(
-                                                'label' => 'tr_meliscommerce_client_Contact_address_name',
+                                                'label' => 'tr_meliscommerce_client_Contact_address_title',
                                             ),
                                             'attributes' => array(
                                                 'id' => 'm_add_billing_address_name',
@@ -1062,7 +924,7 @@ return array(
                                                 'name' => 'NotEmpty',
                                                 'options' => array(
                                                     'messages' => array(
-                                                        \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_client_checkout_billing_address_empty',
+                                                        \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_client_select_billing_address',
                                                     ),
                                                 ),
                                             ),
@@ -1420,55 +1282,7 @@ return array(
                     ),
                     'melis' => array(),
                 ),
-                'MelisCommerceCheckoutSummaryPlugin' => array(
-                    'front' => array(
-                        'template_path' => 'MelisCommerceCheckout/show-check-out-summary',
-                        'm_country_id' => 1,
-                        'm_site_id' => 1,
-                    ),
-                    'melis' => array(),
-                ),
-                'MelisCommerceCheckoutCouponAddPlugin' => array(
-                    'front' => array(
-                        'template_path' => 'MelisCommerceCheckout/show-check-out-coupon',
-                        'm_coupon_code' => '',
-                        'm_site_id' => 1,
-                        'forms' => array(
-                            'meliscommerce_checkout_coupon_form' => array(
-                                'attributes' => array(
-                                    'name' => '',
-                                    'id' => '',
-                                    'method' => '',
-                                    'action' => '',
-                                    'class' => '',
-                                ),
-                                'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
-                                'elements' => array(
-                                    array(
-                                        'spec' => array(
-                                            'name' => 'm_coupon_code',
-                                            'type' => 'Text',
-                                            'options' => array(
-                                                'label' => 'tr_meliscommerce_order_checkout_variant_coupon_code',
-                                            ),
-                                            'attributes' => array(
-                                                'id' => 'm_coupon_code',
-                                            )
-                                        )
-                                    ),
-                                ),
-                            )
-                        )
-                    ),
-                    'melis' => array(),
-                ),
-                'MelisCommerceCartMenuPlugin' => array(
-                    'front' => array(
-                        'template_path' => 'MelisCommerceCartMenuPlugin/show-cart-menu',
-                    ),
-                    'melis' => array(),
-                ),
             ),
         ),
-    ),
+     ),
 );

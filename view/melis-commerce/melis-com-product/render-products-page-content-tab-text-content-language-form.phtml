@@ -8,11 +8,33 @@
             $id = $this->productId.'_'.$this->zoneconfig['conf']['id'];
         }
     $active = 'active';
+    
     $ctr = 0;
-    $c= 0;
+    $txtType = array();
     $del = '<label class="pull-right"><a data-text-identifier="%s"><i class="deleteTextInput fa fa-trash-o"></i></a><div class="clearfix"></div>';
-
-
+    
+    foreach($this->layout()->prodText as $txt){
+        if(isset($txt->ptxt_type)){
+            $txtType[] = $txt->ptxt_type;
+        }else{
+            $txtType[] = $txt->ptt_id;
+        }
+        
+    }
+    
+    if(!empty($txtType)){
+        $txtType = array_unique($txtType);
+    }
+    
+    $txtForms = array();
+    foreach($txtType as $key => $value){
+        $tmp['ptxt_type'] = $value;
+        $tmp['ptt_field_type'] = $this->layout()->prodText[$key]->ptt_field_type;
+        $tmp['ptt_name'] = $this->layout()->prodText[$key]->ptt_name;
+        $tmp['ptt_code'] = $this->layout()->prodText[$key]->ptt_name;
+        $txtForms[] = $tmp;
+    }
+    
 foreach($this->lang as $lang) {
     
     $href = $this->layout()->productId . '_id_meliscommerce_products_page_content_tab_text_language_list_field_'.$lang->elang_locale;
@@ -27,44 +49,53 @@ foreach($this->lang as $lang) {
     	<div class="custom-field-type-area" id="<?= $this->layout()->productId ?>_productTextForm">
     		<?php 
         		if($this->layout()->prodText) {
-            		foreach($this->layout()->prodText as $prodText) {
-            	        if($prodText->ptxt_lang_id == $lang->elang_id) {
-            	            $textId = isset($prodText->ptxt_id) ? $prodText->ptxt_id : null;
-            	          
-            		        $form = clone($this->productTextForm);
-            		        $form->get('ptxt_type')->setAttribute('style','display:none')->setLabel('');
-            		        $form->setAttribute('data-text-id', $textId);
-            		        $form->setAttribute('data-text-lang-id', $prodText->ptxt_lang_id);
-            	            $form->setData((array)$prodText);
-            	          
-            		        if((int) $prodText->ptt_field_type == 1){
-            		            $form->get('ptxt_field_short')
-                                    ->setAttribute('style', 'display:block')
-                                    ->setLabel($prodText->ptt_name . ' (' . $prodText->ptt_code . ')</label>'.sprintf($del, $prodText->ptt_name));
-                                $currentValue = $form->get('ptxt_field_short')->getValue();
-                                $currentValue = str_replace(array('&lt;', '&gt;'), array('<', '>'), $currentValue);
-                                $form->get('ptxt_field_short')->setValue($currentValue);
-
-            		        }
-            		      
-            		        if((int) $prodText->ptt_field_type == 2){
-            		            $form->get('ptxt_field_long')
-                		            ->setAttribute('class', 'product-text-mce form-control')
-                		            ->setAttribute("data-display", "true")
-                		            ->setAttribute("data-productid", $this->productId)
-                                    ->setLabel(sprintf($del, $prodText->ptt_name).'</label><label>'.$prodText->ptt_name . ' (' . $prodText->ptt_code . ')');
-            		            $form->get('ptxt_field_short')->setAttribute('style', 'display:none')->setLabel('');
-
-                                $currentValue = $form->get('ptxt_field_long')->getValue();
-                                $currentValue = str_replace(array('&lt;', '&gt;'), array('<', '>'), $currentValue);
-                                $form->get('ptxt_field_long')->setValue($currentValue);
-            		        }
-            		      
-            		        echo $this->form()->openTag($form);
-            		        echo $this->melisFieldCollection($form);
-            		        echo $this->form()->closeTag();
-            		        $c++;
-            		    }
+        		          
+        		    foreach($txtForms as $txt) {
+            		        
+                		        $textId = null;
+                		        $form = clone($this->productTextForm);
+                		        foreach($this->layout()->prodText as $prodText) {
+                		            if(isset($prodText->ptxt_type)){
+                		                if($prodText->ptxt_lang_id == $lang->elang_id && $prodText->ptxt_type == $txt['ptxt_type'] && $prodText->ptt_field_type == $txt['ptt_field_type']) {
+                		                    $form->setData((array)$prodText);
+                		                    $textId = $prodText->ptxt_id;
+                		                    $t = $prodText;
+                		                }
+                		            }
+                		        }
+                		       
+                		        $form->get('ptxt_type')->setAttribute('style','display:none')->setLabel('')->setValue($txt['ptxt_type']);
+                		        $form->setAttribute('data-text-id', $textId);
+                		        $form->setAttribute('data-text-lang-id', $lang->elang_id);
+                		        $form->get('ptxt_lang_id')->setValue($lang->elang_id);
+                		        
+                		        if($txt['ptt_field_type'] == 1){
+                		            $form->get('ptxt_field_short')
+                                        ->setAttribute('style', 'display:block')
+                                        ->setLabel($txt['ptt_name'] . ' (' . $txt['ptt_name'] . ')</label>'.sprintf($del, $txt['ptt_code']));
+                                    $currentValue = $form->get('ptxt_field_short')->getValue();
+                                    $currentValue = str_replace(array('&lt;', '&gt;'), array('<', '>'), $currentValue);
+                                    $form->get('ptxt_field_short')->setValue($currentValue);
+    
+                		        }
+                		      
+                		        if($txt['ptt_field_type'] == 2){
+                		            $form->get('ptxt_field_long')
+                    		            ->setAttribute('class', 'product-text-mce form-control')
+                    		            ->setAttribute("data-display", "true")
+                    		            ->setAttribute("data-productid", $this->productId)
+                                        ->setLabel(sprintf($del, $txt['ptt_name']).'</label><label>'.$txt['ptt_name'] . ' (' . $txt['ptt_code'] . ')');
+                		            $form->get('ptxt_field_short')->setAttribute('style', 'display:none')->setLabel('');
+    
+                                    $currentValue = $form->get('ptxt_field_long')->getValue();
+                                    $currentValue = str_replace(array('&lt;', '&gt;'), array('<', '>'), $currentValue);
+                                    $form->get('ptxt_field_long')->setValue($currentValue);
+                		        }
+                		      
+                		        echo $this->form()->openTag($form);
+                		        echo $this->melisFieldCollection($form);
+                		        echo $this->form()->closeTag();
+            		       
             		}
         		}
     	    ?>

@@ -58,4 +58,20 @@ class MelisEcomSeoTable extends MelisEcomGenericTable
         return $resultSet;
     }
     
+    public function getCategorySeoById($categoryId = null, $langId = null)
+    {
+        $select = $this->tableGateway->getSql()->select();
+        
+        if(!is_null($categoryId)){
+            $select->where->equalTo('eseo_category_id', $categoryId);
+        }
+        
+        if(!is_null($langId)){
+            $select->where->equalTo('eseo_lang_id', $langId);
+        }
+        
+        $resultSet = $this->tableGateway->selectwith($select);
+        return $resultSet;
+    }
+    
 }

@@ -8,4 +8,4 @@
         $name = $this->zoneconfig['conf']['name'];
     }
 ?>
-<h3 id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>"><?= $name; ?></h3>
+<h3 id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>"><?= $this->escapeHtml($name); ?></h3>

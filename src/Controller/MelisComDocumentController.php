@@ -238,7 +238,8 @@ class MelisComDocumentController extends AbstractActionController
 
             $this->getEventManager()->trigger('meliscommerce_document_update_'.$docType.'_start', $this, $request->getPost());
 
-            $postValues = get_object_vars($request->getPost());
+            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
             $logTypeCode = 'ECOM_'.strtoupper($postValues['docRelationType']).'_'.strtoupper($postValues['docType']);
             if (!empty($postValues['doc_id'])){
@@ -620,6 +621,7 @@ class MelisComDocumentController extends AbstractActionController
             $form = $factory->createForm($appTextTypeForm);
 
             $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getTool()->sanitizeRecursive($postValues);
             $form->setData($postValues);
 
             if($form->isValid()) {
@@ -685,6 +687,7 @@ class MelisComDocumentController extends AbstractActionController
             $form = $factory->createForm($appTextTypeForm);
 
             $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getTool()->sanitizeRecursive($postValues);
             $form->setData($postValues);
 
             if($form->isValid()) {

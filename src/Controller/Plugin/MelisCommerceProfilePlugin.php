@@ -14,6 +14,7 @@ use MelisFront\Navigation\MelisFrontNavigation;
 
 use Zend\Mvc\Controller\Plugin\Redirect;
 use Zend\View\Model\JsonModel;
+use Zend\Stdlib\ArrayUtils;
 /**
  * This plugin implements the business logic of the
  * "profile" plugin.
@@ -63,6 +64,8 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
         $errors = array();
         $message = '';
         
+        $translator = $this->getServiceLocator()->get('translator');
+        
         // Getting the Profile form from config
         $appConfigForm = (!empty($this->pluginFrontConfig['forms']['meliscommerce_profile'])) ? $this->pluginFrontConfig['forms']['meliscommerce_profile'] : array();
         
@@ -95,30 +98,34 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
             $preData = array();
             $clientSrv = $this->getServiceLocator()->get('MelisComClientService');
             $clientPersonEntity = $clientSrv->getClientByIdAndClientPerson($clientId, $personId);
-            foreach ($clientPersonEntity->getClient() As $key => $val)
-            {
-                $preData[$key] = (!$is_submit) ? $val : '';
+            
+            if(!empty($clientPersonEntity)){
+                $client = $clientPersonEntity->getClient();
+                $person = $clientPersonEntity->getPersons()[0];
             }
             
-            foreach ($clientPersonEntity->getPersons()[0] As $key => $val)
-            {
-                $preData[$key] = (!$is_submit) ? $val : '';
+            // Retrieves the table columns for data looping
+            $tableClientColumns = $clientSrv->getTableColumns('MelisEcomClientTable');
+            $tablePersonColumns = $clientSrv->getTableColumns('MelisEcomClientPersonTable');
+            
+            foreach($tableClientColumns as $column){
+                // if the form was submitted, retrieve its values
+                if (!empty($this->pluginFrontConfig[$column])) {
+                    $data[$column] = isset($this->pluginFrontConfig[$column])? $this->pluginFrontConfig[$column] : '';
+                } else {
+                    $data[$column] = isset($client->$column)? $client->$column : '';
+                }
             }
             
-            $data['cper_status'] = (!empty($this->pluginFrontConfig['cper_status'])) ? $this->pluginFrontConfig['cper_status'] : $preData['cper_status'];
-            $data['cper_civility'] = (!empty($this->pluginFrontConfig['cper_civility'])) ? $this->pluginFrontConfig['cper_civility'] : $preData['cper_civility'];
-            $data['cper_firstname'] = (!empty($this->pluginFrontConfig['cper_firstname'])) ? $this->pluginFrontConfig['cper_firstname'] : $preData['cper_firstname'];
-            $data['cper_name'] = (!empty($this->pluginFrontConfig['cper_name'])) ? $this->pluginFrontConfig['cper_name'] : $preData['cper_name'];
-            $data['cper_middle_name'] = (!empty($this->pluginFrontConfig['cper_middle_name'])) ? $this->pluginFrontConfig['cper_middle_name'] : $preData['cper_middle_name'];
-            $data['cper_lang_id'] = (!empty($this->pluginFrontConfig['cper_lang_id'])) ? $this->pluginFrontConfig['cper_lang_id'] : $preData['cper_lang_id'];
-            $data['cli_country_id'] = (!empty($this->pluginFrontConfig['cli_country_id'])) ? $this->pluginFrontConfig['cli_country_id'] : $preData['cli_country_id'];
-            $data['cper_email'] = (!empty($this->pluginFrontConfig['cper_email'])) ? $this->pluginFrontConfig['cper_email'] : $preData['cper_email'];
-            $data['cper_password'] = (!empty($this->pluginFrontConfig['cper_password'])) ? $this->pluginFrontConfig['cper_password'] : '';
+            foreach($tablePersonColumns as $column){
+                if (!empty($this->pluginFrontConfig[$column])) {
+                    $data[$column] = !empty($this->pluginFrontConfig[$column])? $this->pluginFrontConfig[$column] : '';
+                } else {
+                    $data[$column] = !empty($person->$column)? $person->$column : '';
+                }
+                $personData[$column] = $data[$column];
+            }
             $data['cper_confirm_password'] = (!empty($this->pluginFrontConfig['cper_confirm_password'])) ? $this->pluginFrontConfig['cper_confirm_password'] : '';
-            $data['cper_job_title'] = (!empty($this->pluginFrontConfig['cper_job_title'])) ? $this->pluginFrontConfig['cper_job_title'] : $preData['cper_job_title'];
-            $data['cper_job_service'] = (!empty($this->pluginFrontConfig['cper_job_service'])) ? $this->pluginFrontConfig['cper_job_service'] : $preData['cper_job_service'];
-            $data['cper_tel_mobile'] = (!empty($this->pluginFrontConfig['cper_tel_mobile'])) ? $this->pluginFrontConfig['cper_tel_mobile'] : $preData['cper_tel_mobile'];
-            $data['cper_tel_landline'] = (!empty($this->pluginFrontConfig['cper_tel_landline'])) ? $this->pluginFrontConfig['cper_tel_landline'] : $preData['cper_tel_landline'];
             
             // Setting the Datas to Profile Form
             $profile->setData($data);
@@ -138,71 +145,67 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
                 {
                     $profile->getInputFilter()->remove('cper_email');
                 }
+                else
+                {
+                    if ($clientSrv->checkEmailExist($data['cper_email'], $personId))
+                    {
+                        $errors['cper_email'] = array(
+                            'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
+                            'emailExist' => $translator->translate('Email address is not available'),
+                        );
+                    }
+                }
+                
                 
                 if ($profile->isValid())
                 {
-                    // Preparing the Client Data
-                    $clientData = array(
-                        'cli_country_id' => $data['cli_country_id']
-                    );
-                    
-                    // Unsetting the data that are not related to Client Person table
-                    unset($data['cli_country_id']);
-                    unset($data['cper_confirm_password']);
-                    
-                    if (empty($data['cper_password']))
+                    if (empty($errors))
                     {
-                        /**
-                         * Unsetting password from data to avoid overwrting 
-                         * the existing password stored in database
-                         */
-                        unset($data['cper_password']);
-                    }
-                    // Adding the Current user Client Id and Person Id from session
-                    $data['cper_id'] = $personId;
-                    $data['cper_client_id'] = $clientId;
-                    $personData[] = $data;
-                    
-                    // Saving Client credintial using Client Service
-                    $clientIdRes = $clientSrv->saveClient($clientData, $personData, array(), array(), $clientId);
-                    
-                    if (!is_null($clientIdRes))
-                    {
-                        $success = 1;
-                        $message = 'Profile has been successfully saved';
+                        // Preparing the Client Data
+                        $clientData = array(
+                            'cli_country_id' => $data['cli_country_id']
+                        );
                         
-                        // Retrieving updated info of Client Person using Client Service
-                        $clientPersonEntity = $clientSrv->getClientPersonById($personId);
-                        $personData = $clientPersonEntity->getPerson();
-                        // Unsetting password to avoid storing to session
-                        unset($personData->cper_password);
-                        // Unsetting civlity info
-                        unset($personData->civ_id);
-                        unset($personData->civility_trans);
-                        // Updating Data stored in Session
-                        $storage = $melisComAuthSrv->getStorage();
-                        $storage->write($personData);
-                    }
-                    else 
-                    {
-                        $message = 'Something is wrong, please contact administrator for assistance';
+                        
+                        // Adding the Current user Client Id and Person Id from session
+                        $personData['cper_id'] = $personId;
+                        $personData['cper_client_id'] = $clientId;
+                        $personData['cper_is_main_person'] = 1;
+                        $persons[] = $personData;
+                        // Saving Client credintial using Client Service
+                        $clientIdRes = $clientSrv->saveClient($clientData, $persons, array(), array(), $clientId);
+                        
+                        if (!is_null($clientIdRes))
+                        {
+                            $success = 1;
+                            $message = 'Profile has been successfully saved';
+                        
+                            // Retrieving updated info of Client Person using Client Service
+                            $clientPersonEntity = $clientSrv->getClientPersonById($personId);
+                            $personData = $clientPersonEntity->getPerson();
+                            // Unsetting password to avoid storing to session
+                            unset($personData->cper_password);
+                            // Unsetting civlity info
+                            unset($personData->civ_id);
+                            unset($personData->civility_trans);
+                            // Adding back the client key from old session ideitity and update a new Person details
+                            $personData->clientKey = $melisComAuthSrv->getIdentity()->clientKey;
+                            // Updating Data stored in Session
+                            $storage = $melisComAuthSrv->getStorage();
+                            $storage->write($personData);
+                        }
+                        else
+                        {
+                            $message = $translator->translate('tr_meliscommerce_client_common_error');
+                        }
                     }
                 }
                 else 
                 {
-                    $message = 'Error(s) occured';
-                    $errors = $profile->getMessages();
+                    $message = $translator->translate('tr_meliscommerce_client_pass_errors');
+                    $errors = ArrayUtils::merge($errors, $profile->getMessages());
                 }
             }
-        }
-        else 
-        {
-            // Gettin the Redirect Uri from config
-            $m_redirection_link_not_loggedin = (!empty($this->pluginFrontConfig['m_redirection_link_not_loggedin'])) ? $this->pluginFrontConfig['m_redirection_link_not_loggedin'] : 'http://www.test.com';
-            
-            $controller = $this->getController();
-            $redirector = $controller->getPluginManager()->get('Redirect');
-            $redirector->toUrl($m_redirection_link_not_loggedin);
         }
         
         /**
@@ -231,14 +234,5 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
         
         // return the variable array and let the view be created
         return $viewVariables;
-    }
-    
-    /**
-     * This function return the back office rendering for the template edition system
-     * TODO
-     */
-    public function back()
-    {
-        return array();
     }
 }

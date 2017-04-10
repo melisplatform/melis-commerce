@@ -9,7 +9,7 @@
 	<div class="me-heading bg-white innerAll" <?php echo $id.' '.$data_melisKey; ?>>      		
 		<div class="row">
 			<div class="me-hl col-xs-12 col-md-9">
-				<h1 class="content-heading"><?php echo $this->title?></h1>
+				<h1 class="content-heading"><?php echo $this->escapeHtml($this->title) ?></h1>
 			</div>
 			<div class="me-hl col-xs-12 col-md-3" align="right">
 				<?php 

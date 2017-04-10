@@ -16,7 +16,7 @@
     			
     			<tr>
         			<td class="col-md-4">
-        				<label><?= $attr['name']?>:&nbsp;</label>
+        				<label><?= $this->escapeHtml($attr['name']) ?>:&nbsp;</label>
         			</td>
         			<td>
         				<form name ="attrVal"> 
@@ -35,7 +35,7 @@
             						  }            						      
             						}
         						?>
-        						<option value ="<?= $val['id']?>" <?= $selected?>> <?= $val['value']?></option>
+        						<option value ="<?= $val['id']?>" <?= $selected?>> <?= $this->escapeHtml($val['value']) ?></option>
         						<?php endforeach;?>
         					</select>        					
         				</div>

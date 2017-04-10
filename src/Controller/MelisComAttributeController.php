@@ -583,7 +583,7 @@ class MelisComAttributeController extends AbstractActionController
                 switch($valCol){
                     case 'avt_v_datetime': $value = $this->getTool()->dateFormatLocale($value); break;
                     case 'avt_v_text': 
-                    case 'avt_v_varchar' : $value = $this->getTool()->limitedText($value,50); break;
+                    case 'avt_v_varchar' : $value = $this->getTool()->limitedText($this->getTool()->escapeHtml($value),50); break;
                 }                    
                 
                 $tableData[$c]['DT_RowId']  = $attributeValue->atval_id;
@@ -732,6 +732,8 @@ class MelisComAttributeController extends AbstractActionController
         
         if($this->getRequest()->isPost()){
             $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getTool()->sanitizeRecursive($postValues);
+
             $attributeId = $postValues['attributeId'];
             
             $attribute = $attributeSvc->getAttributeById($attributeId)->getAttribute();
@@ -928,6 +930,7 @@ class MelisComAttributeController extends AbstractActionController
             $this->getEventManager()->trigger('meliscommerce_attribute_save_start', $this, array());
             
             $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getTool()->sanitizeRecursive($postValues, [], true);
             
             
             if (!empty($postValues['attributeId'])){
@@ -1004,9 +1007,11 @@ class MelisComAttributeController extends AbstractActionController
         $factory = new \Zend\Form\Factory();
         $formElements = $this->serviceLocator->get('FormElementManager');
         $factory->setFormElementManager($formElements);
-        
-        
+
+
         $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getTool()->sanitizeRecursive($postValues);
+
 
         if(!empty($postValues['attribute'])){
             foreach($postValues['attribute'] as $attribute){
@@ -1042,8 +1047,10 @@ class MelisComAttributeController extends AbstractActionController
         $factory = new \Zend\Form\Factory();
         $formElements = $this->serviceLocator->get('FormElementManager');
         $factory->setFormElementManager($formElements);
-    
+
         $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getTool()->sanitizeRecursive($postValues);
+
        
         if(!empty($postValues['attributeTrans'])){
             foreach($postValues['attributeTrans'] as $attributeTrans){
@@ -1075,6 +1082,8 @@ class MelisComAttributeController extends AbstractActionController
         $errors = array();
         $data = array();
         $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getTool()->sanitizeRecursive($postValues);
+
         
         $attributeSvc = $this->getServiceLocator()->get('MelisComAttributeService');
         
@@ -1147,7 +1156,7 @@ class MelisComAttributeController extends AbstractActionController
         $attributeValueTransTable = $this->getServiceLocator()->get('MelisEcomAttributeValueTransTable');
         $langTable = $this->getServiceLocator()->get('MelisEcomLangTable');
     
-        $langId = $this->getRequest()->getPost('id');
+        $langId = (int) $this->getRequest()->getPost('id');
     
         //check if language is already deleted
         $lang = $langTable->getEntryById($langId);

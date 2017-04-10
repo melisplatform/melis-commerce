@@ -189,7 +189,7 @@ class MelisComCurrencyController extends AbstractActionController
                 // apply text limits
                 foreach($tableData[$ctr] as $vKey => $vValue)
                 {
-                    $tableData[$ctr][$vKey] = $this->getTool()->limitedText($vValue);
+                    $tableData[$ctr][$vKey] = $this->getTool()->limitedText($this->getTool()->escapeHtml($vValue));
         
                 }
         
@@ -233,6 +233,7 @@ class MelisComCurrencyController extends AbstractActionController
             $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
     
             $postData = get_object_vars($this->getRequest()->getPost());
+            $postData = $this->getTool()->sanitizePost($postData);
             $this->getEventManager()->trigger('meliscommerce_currency_save_start', $this, $postData);
             if($postData['cur_id']) {
                 $textTitle = 'tr_meliscommerce_currency_form_edit';
@@ -332,7 +333,7 @@ class MelisComCurrencyController extends AbstractActionController
     
         if($this->getRequest()->isPost())
         {
-            $id = $this->getRequest()->getPost('id');
+            $id = (int) $this->getRequest()->getPost('id');
             if(is_numeric($id))
             {
                 $currencyData = $currencyTable->getEntryById($id)->current();

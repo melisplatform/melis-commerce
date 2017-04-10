@@ -1,0 +1,14 @@
+<?php if (!$this->success):?>
+	
+	<h3>Error(s) occured. <small>Cannot proceed to payment, please check your checkout details before proceeding to payment</small></h3>
+	
+	<?php foreach ($this->errors As $key => $val):?>
+		<p><?php echo strtoupper($key)?></p>
+		<ul>
+			<?php foreach ($val As $sKey => $sval):?>
+				<li><?php echo $sval?></li>
+			<?php endforeach;?>
+		</ul>
+	<?php endforeach;?>
+	<a class="btn btn-primary" href="<?php echo $this->prevStep_link?>">Previous</a>
+<?php endif;?>

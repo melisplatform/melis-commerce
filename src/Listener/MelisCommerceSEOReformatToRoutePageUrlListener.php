@@ -55,13 +55,12 @@ class MelisCommerceSEOReformatToRoutePageUrlListener
         		    $uri = substr($uri, 1, strlen($uri));
         		
         		$request = $e->getRequest();
-        		$getString = $request->getQuery()->toString();
+        		$getString = $_SERVER['QUERY_STRING'];
         		if ($getString != '')
         		  $getString = '?' . $getString;
         		
         		$uri = str_replace($getString, '', $uri);
-        		  
-        		     
+
     		    // The SEO URLS will be effective only
     		    $domain = $_SERVER['SERVER_NAME'];
     		    $melisTableDomain = $sm->get('MelisEngineTableSiteDomain');
@@ -82,13 +81,14 @@ class MelisCommerceSEOReformatToRoutePageUrlListener
     		            $params .= '/' . $parameters[$i];
     		            $uri = str_replace($params, '', $uri);
     		    }
-    		     
+
     		    $melisEcomSeoTable = $sm->get('MelisEcomSeoTable');
     		    $datasComSeo = $melisEcomSeoTable->getEntryByField('eseo_url', $uri);
     		    if (!empty($datasComSeo))
     		    {
     		        
     		        $datasComSeo = $datasComSeo->current(); 
+    		            
     		        if (!empty($datasComSeo))
     		        {
     		            $router = $e->getApplication()->getServiceManager()->get('router');
@@ -102,13 +102,33 @@ class MelisCommerceSEOReformatToRoutePageUrlListener
     		                    'preview' => false,
     		                    'urlparams' => $params,
     		            );
-    		            
+
     		            if (!empty($datasComSeo->eseo_category_id))
+    		            {
     		                $defaults['categoryId'] = $datasComSeo->eseo_category_id;
+    		                $typeLink = 'category';
+    		                $id = $datasComSeo->eseo_category_id;
+    		            }
     		            if (!empty($datasComSeo->eseo_product_id))
+    		            {
     		                $defaults['productId'] = $datasComSeo->eseo_product_id;
+    		                $typeLink = 'product';
+    		                $id = $datasComSeo->eseo_product_id;
+    		            }
     		            if (!empty($datasComSeo->eseo_variant_id))
+    		            {
     		                $defaults['variantId'] = $datasComSeo->eseo_variant_id;
+    		                $typeLink = 'variant';
+    		                $id = $datasComSeo->eseo_variant_id;
+    		            }
+
+    		            if (empty($datasComSeo->eseo_page_id))
+    		            {
+    		              $melisComLinksService = $sm->get('MelisComLinksService');
+    		              $pageId = $melisComLinksService->getPageIdAssociated($typeLink, $id, $datasComSeo->eseo_lang_id);
+    		              $defaults['idpage'] = $pageId;
+    		              
+    		            }
     		                
     		            $route = Segment::factory(array(
     		                'route' => '/' . $uri,

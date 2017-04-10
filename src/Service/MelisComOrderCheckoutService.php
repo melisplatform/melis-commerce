@@ -83,71 +83,75 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         $okVariant = array();
         $koVariant = array();
         
-        // For each item in the basket, check if variant exists, if it's active and if quantity match the demand
-        foreach ($clientBasket As $val)
+        if (!is_null($clientBasket))
         {
-            // Basket Variant details
-            $variantId = $val->getVariantId();
-            $variant = $val->getVariant();
-            $variantQty = $val->getQuantity();
-            
-            // Checking if Variant exist on Database
-            if (!empty($variant))
+            // For each item in the basket, check if variant exists, if it's active and if quantity match the demand
+            foreach ($clientBasket As $val)
             {
-                // Variant Service that will return Variant final Stocks
-                $variantStock = $melisComVariantService->getVariantFinalStocks($variantId, $clientCountryId);
-                
-                if (!is_null($variantStock))
+                // Basket Variant details
+                $variantId = $val->getVariantId();
+                $variant = $val->getVariant();
+                $variantQty = $val->getQuantity();
+            
+                // Checking if Variant exist on Database
+                if (!empty($variant))
                 {
-                    if ($variantQty <= $variantStock->stock_quantity)
+                    // Variant Service that will return Variant final Stocks
+                    $variantStock = $melisComVariantService->getVariantFinalStocks($variantId, $clientCountryId);
+            
+                    if (!is_null($variantStock))
                     {
-                        // Checking if Variant status is Active
-                        $variantStatus = $variant->getVariant()->var_status;
-                        if ($variantStatus)
+                        if ($variantQty <= $variantStock->stock_quantity)
                         {
-                            // OK : Variant validated
-                            $okVariant[$variantId] = $val;
+                            // Checking if Variant status is Active
+                            $variantStatus = $variant->getVariant()->var_status;
+                            if ($variantStatus)
+                            {
+                                // OK : Variant validated
+                                $okVariant[$variantId] = $val;
+                            }
+                            else
+                            {
+                                // KO : Variant is Inactive status
+                                $koVariant[$variantId] = array(
+                                    'error' => 'MELIS_COMMERCE_CHECKOUT_ERROR_BASKET_VARIANT_NOT_ACTIVE',
+                                    $variantId => $val,
+                                );
+                            }
                         }
-                        else 
+                        else
                         {
-                            // KO : Variant is Inactive status
+                            // Variant Quantity is not enough of Basket demand
+                            // KO : Variant Quantity not enough
                             $koVariant[$variantId] = array(
-                                'error' => 'MELIS_COMMERCE_CHECKOUT_ERROR_BASKET_VARIANT_NOT_ACTIVE',
+                                'error' => 'MELIS_COMMERCE_CHECKOUT_ERROR_BASKET_QUANTITY',
                                 $variantId => $val,
                             );
                         }
                     }
-                    else 
+                    else
                     {
-                        // Variant Quantity is not enough of Basket demand
-                        // KO : Variant Quantity not enough
+                        // Variant Quantity is not set on Variant Page (Back-office)
+                        // KO : Variant Quantity not Set
                         $koVariant[$variantId] = array(
-                            'error' => 'MELIS_COMMERCE_CHECKOUT_ERROR_BASKET_QUANTITY',
+                            'error' => 'MELIS_COMMERCE_CHECKOUT_ERROR_BASKET_VARIANT_QUANTITY_NOT_SET',
                             $variantId => $val,
                         );
                     }
                 }
-                else 
+                else
                 {
-                    // Variant Quantity is not set on Variant Page (Back-office)
-                    // KO : Variant Quantity not Set
+                    // Variant is not Exist
+                    // KO : Variant not exist
                     $koVariant[$variantId] = array(
-                        'error' => 'MELIS_COMMERCE_CHECKOUT_ERROR_BASKET_VARIANT_QUANTITY_NOT_SET',
+                        'error' => 'MELIS_COMMERCE_CHECKOUT_ERROR_PRODUCT_NOT_EXISTING',
                         $variantId => $val,
                     );
                 }
+                // End of Variant Stocks Validations
             }
-            else
-            {
-                // Variant is not Exist
-                // KO : Variant not exist
-                $koVariant[$variantId] = array(
-                    'error' => 'MELIS_COMMERCE_CHECKOUT_ERROR_PRODUCT_NOT_EXISTING',
-                    $variantId => $val,
-                );
-            }
-            // End of Variant Stocks Validations
         }
+        
         
         if (!empty($okVariant))
         {
@@ -643,7 +647,13 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                 $billingAdd['o'.substr($bKey, 1)] = $bVal;
                 unset($billingAdd[$bKey]);
             }
-             
+            
+            if (!empty($billingAdd['oadd_id']))
+            {
+                unset($billingAdd['oadd_id']);
+            }
+            
+            $billingAdd['oadd_creation_date'] = date('Y-m-d H:i:s');
             $billingAddress[] = $billingAdd;
             
             
@@ -660,6 +670,12 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                 unset($deliveryAdd[$bKey]);
             }
             
+            if (!empty($deliveryAdd['oadd_id']))
+            {
+                unset($deliveryAdd['oadd_id']);
+            }
+            
+            $deliveryAdd['oadd_creation_date'] = date('Y-m-d H:i:s');
             $deliveryAddress[] = $deliveryAdd;
             
             $melisEcomClientPersonTable = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
@@ -795,6 +811,13 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                 $results['errors']['order'] = $orderReferenceCode['error'];
             }
             
+            if ($addressesValidity != true)
+            {
+                $results['errors']['addresses'] = array(
+                    'invalidAddress' => 'Something is wrong with the Checkout Addresses, Please check Addresses for Checkout before proceed to payment'
+                );
+            }
+            
             $results['success'] = false;
         }
         
@@ -893,13 +916,24 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             
             $paymentData = $arrayParameters['results']['payment_details'];
             
+            /**
+             * Retreiving Payment Type Id
+             */
+            $paymentTypeTbl = $this->getServiceLocator()->get('MelisEcomOrderPaymentTypeTable');
+            $paymentType = $paymentTypeTbl->getEntryByField('opty_code', $paymentData['paymentType'])->current();
+            $paymentTypeId = null;
+            if (!empty($paymentType))
+            {
+                $paymentTypeId = $paymentType->opty_id;
+            }
+            
             $payment = array(
                 'opay_order_id' => $orderId,
                 'opay_price_total' => $totalCost,
-                'opay_price_order' => $order['costs']['order']['total'],
+                'opay_price_order' => $order['costs']['order']['totalWithoutCoupon'],
                 'opay_price_shipping' => $order['costs']['shipment']['total'],
                 'opay_currency_id' => '-1', // Static data, -1 is Defualt Currentcy id
-                'opay_payment_type_id' => $paymentData['paymentType'],
+                'opay_payment_type_id' => $paymentTypeId,
                 'opay_transac_id' => $paymentData['transactionId'],
                 'opay_transac_return_value' => $paymentData['transactionReturnCode'],
                 'opay_transac_price_paid_confirm' => $paymentData['transactionPricepaidConfirm'],

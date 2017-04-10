@@ -63,7 +63,8 @@ class MelisCommerceProductShowPlugin extends MelisTemplatingPlugin
         $variant = null; 
         $action = null;
         $selection = array();
-        $productId = ($this->pluginFrontConfig['m_p_id'])? $this->pluginFrontConfig['m_p_id'] : NULL;
+        $currency = array();
+        $productId = ($this->pluginFrontConfig['m_p_id'])? $this->pluginFrontConfig['m_p_id'] : 1;
         $variantId = ($this->pluginFrontConfig['m_p_var_id'])? $this->pluginFrontConfig['m_p_var_id'] : NULL;
         $countryId = ($this->pluginFrontConfig['m_p_country'])? $this->pluginFrontConfig['m_p_country'] : NULL;
         $langId = ($this->pluginFrontConfig['m_p_lang'])? $this->pluginFrontConfig['m_p_lang'] : NULL;
@@ -74,12 +75,14 @@ class MelisCommerceProductShowPlugin extends MelisTemplatingPlugin
         
         $productSvc = $this->getServiceLocator()->get('MelisComProductService');
         $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
+        $currencySvc = $this->getServiceLocator()->get('MelisComCurrencyService');
         
         // get variant, main variant is fetch by default
         $product = $productSvc->getProductById($productId, $langId, $countryId, null, $imageTypeAllowed);
         
         if(is_null($variantId)){            
             $variant = $variantSvc->getMainVariantByProductId($productId, $langId, $countryId, null, $imageTypeAllowed);
+            
             if(is_null($variant)){
                 $variant = $variantSvc->getVariantListByProductId($productId);
                 $variant = !empty($variant)? $variant[0] : $variant;
@@ -109,6 +112,7 @@ class MelisCommerceProductShowPlugin extends MelisTemplatingPlugin
         
         $attributeShowPlugin = $this->getServiceLocator()->get('ControllerPluginManager')->get('MelisCommerceAttributesShowPlugin');
         $attributeShowParameters = array(
+            'm_p_id' => $productId,
             'template_path' => $attributeViewTemplate,
             'm_p_country' => $countryId,
             'm_action' => $action,
@@ -116,7 +120,7 @@ class MelisCommerceProductShowPlugin extends MelisTemplatingPlugin
             'm_is_submit' => !empty($action)? true : false
         );
         $attributeShowPluginView = $attributeShowPlugin->render($attributeShowParameters);
-       
+        
         if(!empty($variant)){
             $variantId = $variant->getVariant()->var_id;
         }
@@ -128,11 +132,14 @@ class MelisCommerceProductShowPlugin extends MelisTemplatingPlugin
             'm_v_country' => $countryId,
         );        
         $addToCartShowPluginView = $addToCartShowPlugin->render($addToCartShowParameters);
-//        echo '<pre>'; print_r($addToCartShowPluginView); echo '</pre>'; die();
+        
+        $currency = $currencySvc->getDefaultCurrency();
+        
         // Create an array with the variables that will be available in the view
         $viewVariables = array(
             'product' => $product,
             'product_variant' => $variant,
+            'currency' => $currency,
             'images' => $images,
             'attributes_view' => $attributeShowPluginView,
             'add_to_cart_view' => $addToCartShowPluginView,

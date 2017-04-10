@@ -12,9 +12,7 @@ namespace MelisCommerce\Listener;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\ListenerAggregateInterface;
 
-use MelisCore\Listener\MelisCoreGeneralListener;
-
-class MelisCommercePostPaymentListener extends MelisCoreGeneralListener implements ListenerAggregateInterface
+class MelisCommercePostPaymentListener implements ListenerAggregateInterface
 {
     public function attach(EventManagerInterface $events)
     {
@@ -28,7 +26,6 @@ class MelisCommercePostPaymentListener extends MelisCoreGeneralListener implemen
         	function($e){
         	    
         		$sm = $e->getTarget()->getServiceLocator();   	
-        		$melisCoreDispatchService = $sm->get('MelisCoreDispatch');
         		$params = $e->getParams();
         		
         		$postedValues = $sm->get('request')->getPost();
@@ -43,5 +40,14 @@ class MelisCommercePostPaymentListener extends MelisCoreGeneralListener implemen
         100);
         
         $this->listeners[] = $callBackHandler;
+    }
+    
+    public function detach(EventManagerInterface $events)
+    {
+        foreach ($this->listeners as $index => $listener) {
+            if ($events->detach($listener)) {
+                unset($this->listeners[$index]);
+            }
+        }
     }
 }

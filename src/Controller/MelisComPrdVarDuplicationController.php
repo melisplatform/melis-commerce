@@ -148,7 +148,8 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
         
         if ($request->isPost())
         {
-            $postValues = get_object_vars($request->getPost());
+            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getTool()->sanitizeRecursive($postValues);
             
             // Getting the variant Id from postvalue array
             if (!empty($postValues['variantSku']))
@@ -249,7 +250,8 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
         
         if ($request->isPost())
         {
-            $postValues = get_object_vars($request->getPost());
+            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getTool()->sanitizeRecursive($postValues);
             
             $prdId = $postValues['product_id'];
             
@@ -340,11 +342,18 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
     public function validateVariantDataAction()
     {
         $request = $this->getRequest();
-        $data = get_object_vars($request->getPost());
+        $data = get_object_vars($this->getRequest()->getPost());
+        $data = $this->getTool()->sanitizeRecursive($data);
         // Variant validated using Duliplication Service
         $dupSrv = $this->getServiceLocator()->get('MelisComDuplicationService');
         $result = $dupSrv->validateVariantData($data);
         
         return new JsonModel($result);
+    }
+
+    private function getTool()
+    {
+        $tool = $this->getServiceLocator()->get('MelisCoreTool');
+        return $tool;
     }
 }

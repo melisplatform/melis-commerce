@@ -25,16 +25,16 @@
 					<?php if ($personData->civility_trans):?>
     				<tr>
     					<td><label><?php echo $this->translate('tr_meliscommerce_client_Main_contact_civility')?></label></td>
-    					<td><?php echo $personData->civility_trans->civt_max_name ?></td>
+    					<td><?php echo $this->escapeHtml($personData->civility_trans->civt_max_name) ?></td>
     				</tr>
     				<?php endif;?>
     				<tr>
     					<td><label><?php echo $this->translate('tr_meliscommerce_client_Main_contact_name')?></label></td>
-    					<td><?php echo $personData->cper_firstname.' '.$personData->cper_name ?></td>
+    					<td><?php echo $this->escapeHtml($personData->cper_firstname).' '.$this->escapeHtml($personData->cper_name)?></td>
     				</tr>
     				<tr>
     					<td><label><?php echo $this->translate('tr_meliscommerce_client_Main_contact_email')?></label></td>
-    					<td><?php echo $personData->cper_email ?></td>
+    					<td><?php echo $this->escapeHtml($personData->cper_email) ?></td>
     				</tr>
 				</tbody>
 			</table>

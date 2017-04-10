@@ -12,4 +12,4 @@
 ?>
 <h1 class="content-heading" <?php echo $id. ' '. $data_melisKey;?>>
 <a href="products.php" style="color: #686868;"><?= $this->translate('tr_meliscommerce_variants_Products');?></a>
- / <a href="#" style="color: #686868;"><?= $prod_name ?></a>  / <?= $var_sku ?></h1>
+ / <a href="#" style="color: #686868;"><?= $this->escapeHtml($prod_name) ?></a>  / <?= $this->escapeHtml($var_sku) ?></h1>

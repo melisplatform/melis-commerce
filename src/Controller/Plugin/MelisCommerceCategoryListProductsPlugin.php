@@ -13,6 +13,7 @@ use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
 use Zend\Paginator\Paginator;
 use Zend\Paginator\Adapter\ArrayAdapter;
+use Zend\Session\Container;
 /**
  * This plugin implements the business logic of the
  * "Breadcrumb" plugin.
@@ -62,10 +63,12 @@ class MelisCommerceCategoryListProductsPlugin extends MelisTemplatingPlugin
         $categorySvc = $this->getServiceLocator()->get('MelisComCategoryService');
         $productSearchSvc = $this->getServiceLocator()->get('MelisComProductSearchService');
         $productSvc = $this->getServiceLocator()->get('MelisComProductService');
-        $productTable = $this->getServiceLocator()->get('MelisEcomProductTable');
-        $currencyTbl = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+        $currencySvc = $this->getServiceLocator()->get('MelisComCurrencyService');
+        $container = new Container('melisplugins');
+        $lang = $container['melis-plugins-lang-id'];
         $categoryId = array(); 
-        $attributeValueId = array();    
+        $attributeValueId = array();  
+        
        
         // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
         $search = !empty($this->pluginFrontConfig['m_box_filter_search'])? $this->pluginFrontConfig['m_box_filter_search'] : '';
@@ -73,19 +76,18 @@ class MelisCommerceCategoryListProductsPlugin extends MelisTemplatingPlugin
         $min = !empty($this->pluginFrontConfig['m_box_filter_price_min'])? $this->pluginFrontConfig['m_box_filter_price_min'] : null;
         $max = !empty($this->pluginFrontConfig['m_box_filter_price_max'])? $this->pluginFrontConfig['m_box_filter_price_max'] : null;
         $priceColumn = !empty($this->pluginFrontConfig['priceColumn'])? $this->pluginFrontConfig['priceColumn'] : 'price_net';
-        $lang = !empty($this->pluginFrontConfig['m_box_filter_lang'])? $this->pluginFrontConfig['m_box_filter_lang'] : null;
+        $docTypes = !empty($this->pluginFrontConfig['m_box_filter_docs'])? $this->pluginFrontConfig['m_box_filter_docs'] : 'price_net';
         $country = !empty($this->pluginFrontConfig['m_box_filter_country'])? $this->pluginFrontConfig['m_box_filter_country'] : null;
         $onlyValid = !empty($this->pluginFrontConfig['m_box_filter_only_valid'])? $this->pluginFrontConfig['m_box_filter_only_valid'] : true;
         $pageCurrent = !empty($this->pluginFrontConfig['m_pag_current']) ? $this->pluginFrontConfig['m_pag_current'] : 1;
-        $pageNbPerPage = !empty($this->pluginFrontConfig['m_pag_nb_per_page'])? $this->pluginFrontConfig['m_pag_nb_per_page'] : 10;
+        $pageNbPerPage = !empty($this->pluginFrontConfig['m_pag_nb_per_page'])? $this->pluginFrontConfig['m_pag_nb_per_page'] : null;
         $pageNbBeforeAfter = !empty($this->pluginFrontConfig['m_pag_nb_page_before_after']) ? $this->pluginFrontConfig['m_pag_nb_page_before_after'] : 3;
         $attributeValueId = !empty($this->pluginFrontConfig['m_box_filter_attribute_values_ids_selected'])? $this->pluginFrontConfig['m_box_filter_attribute_values_ids_selected'] : array();
         $categoryId = !empty($this->pluginFrontConfig['m_box_filter_categories_ids_selected']) ? $this->pluginFrontConfig['m_box_filter_categories_ids_selected'] : array();
         $sortColName = !empty($this->pluginFrontConfig['m_col_name']) ? $this->pluginFrontConfig['m_col_name'] : 'prd_id';
         $sortOrder = !empty($this->pluginFrontConfig['m_order']) ? $this->pluginFrontConfig['m_order'] : 'ASC';
         $sort = $sortColName. ' ' . $sortOrder;
-        
-       
+         
         foreach($categoryId as $catId){
             $categoryId = array_merge($categoryId, $this->categoryIdIterator($categorySvc->getAllSubCategoryIdById($catId, $onlyValid)));
         }
@@ -102,38 +104,37 @@ class MelisCommerceCategoryListProductsPlugin extends MelisTemplatingPlugin
             $onlyValid,                     // $onlyValid
             null,                           // $start
             null,                           // $limit
-            $sort
+            $sort,
+            $docTypes
         );
         
-        // Retrieve lowest variant price
 
-        foreach($data as $categoryProduct){ 
-            $productArray = $categoryProduct;
+        $currency = $currencySvc->getDefaultCurrency();
+        
+        foreach($data as $categoryProduct){
             
-            // get lowest variant price, maily used for displayig
-            $priceObj = $productTable->getProductVariantPriceById($categoryProduct->getId())->current();
-
-            // used product price if variant price is not set
-            if(empty($priceObj->price_id)){
-                $priceObj = $categoryProduct->getPrice()[0];
-            }
-
+            // get lowest variant price, maily used for display
+            $priceObj = $productSvc->getProductVariantPriceById($categoryProduct->prd_id);
             
-            // set currency symbol
-            if(empty($priceObj->cur_symbol)){
-                // use default currency if price symbol is not set
-                $currency = $currencyTbl->getEntryByField('cur_default', 1)->current();
-                if($priceObj->$priceColumn){
-                    $productArray->display_price = $currency->cur_symbol . $priceObj->$priceColumn;
-                }                
+            if(!empty($priceObj)){
+                if(empty($priceObj->cur_symbol)){
+                    // use default currency if price symbol is not set
+                    if($priceObj->$priceColumn){
+                        $categoryProduct->display_price = $currency->cur_symbol . $priceObj->$priceColumn;
+                    }
+                }else{
+                    if($priceObj->$priceColumn){
+                        $categoryProduct->display_price = $priceObj->cur_symbol . $priceObj->$priceColumn;
+                    }
+                }
             }else{
-                if($priceObj->$priceColumn){
-                    $productArray->display_price = $priceObj->cur_symbol . $priceObj->$priceColumn;
-                }                
+                $symbol = empty($categoryProduct->cur_symbol)? $currency->cur_symbol : $categoryProduct->cur_symbol;
+                $categoryProduct->display_price = $symbol . $categoryProduct->$priceColumn;
             }
-           
-            $categoryListProducts[] = $productArray;
+             
+            $categoryListProducts[] = $categoryProduct;
         }
+
         // Pagination
         $paginator = new Paginator(new ArrayAdapter($categoryListProducts));
         $paginator->setCurrentPageNumber($pageCurrent)
@@ -143,19 +144,11 @@ class MelisCommerceCategoryListProductsPlugin extends MelisTemplatingPlugin
         $viewVariables = array(
             'categoryListProducts' => $paginator,
             'nbPageBeforeAfter' => $pageNbBeforeAfter,
+            'langId' => $lang,
         );
         
         // return the variable array and let the view be created
         return $viewVariables;
-    }
-    
-    /**
-     * This function return the back office rendering for the template edition system
-     * TODO
-     */
-    public function back()
-    {
-        return array();
     }
     
     /**

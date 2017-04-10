@@ -268,12 +268,12 @@ $(function(){
 
 });
 
-window.initImageDocuments = function() {
+window.initImageDocuments = function(e) {
 	// Fix for Mobile
 	var custom_event = $.support.touch ? "touchstart" : "click";
 
 	// Initialize Image Container ISOTOPE
-	var $container = $("#" + activeTabId).find("div.imageDocumentContainer");
+	var $container = $(e).find("div.imageDocumentContainer");
 	$container.imagesLoaded( function() {
 		$container.isotope({
 			itemSelector : '.image'

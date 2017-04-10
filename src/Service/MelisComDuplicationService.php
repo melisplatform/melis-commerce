@@ -9,7 +9,6 @@
 
 namespace MelisCommerce\Service;
 
-use MelisCore\Service\MelisCoreGeneralService;
 use MelisCommerce\Entity\MelisAttribute;
 use phpDocumentor\Reflection\Types\Boolean;
 /**
@@ -17,7 +16,7 @@ use phpDocumentor\Reflection\Types\Boolean;
  * This service handles the Products and variant duplication service for MelisCommerce.
  *
  */
-class MelisComDuplicationService extends MelisCoreGeneralService
+class MelisComDuplicationService extends MelisComGeneralService
 {
     /**
      * This method will validate the Variant Data from Form

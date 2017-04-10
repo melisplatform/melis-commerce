@@ -50,7 +50,7 @@ return array(
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComDocument',
                                 'action' => 'render-document-image-lists',
-                                'jscallback' => 'initImageDocuments();',
+//                                 'jscallback' => 'initImageDocuments();',
                             ),
                         ),
                     )

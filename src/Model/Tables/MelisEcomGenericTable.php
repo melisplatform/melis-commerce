@@ -29,6 +29,8 @@ class MelisEcomGenericTable implements ServiceLocatorAwareInterface
 	protected $_selectedValues;
 	protected $_currentDataCount;
 	
+	protected $cacheResults = false;
+	
 	public function __construct(TableGateway $tableGateway)
 	{
 		$this->tableGateway = $tableGateway;
@@ -59,13 +61,41 @@ class MelisEcomGenericTable implements ServiceLocatorAwareInterface
 
 	public function getEntryById($id)
 	{
+        $cacheKey = get_class($this) . '_getEntryById_' . $id;
+        $cacheConfig = 'commerce_memory_services';
+	    if ($this->cacheResults)
+	    {
+            // Retrieve cache version if front mode to avoid multiple calls
+            $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+            $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+            if (!empty($results)) return $results;
+	    } 
+	    
 		$rowset = $this->tableGateway->select(array($this->idField => (int)$id));
+		
+		if ($this->cacheResults)
+	        $melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $rowset);
+		
 		return $rowset;
 	}
 
 	public function getEntryByField($field, $value)
 	{
+        $cacheKey = get_class($this) . '_getEntryByField_' . $field . '_' . $value;
+        $cacheConfig = 'commerce_memory_services';
+	    if ($this->cacheResults)
+	    {
+            // Retrieve cache version if front mode to avoid multiple calls
+            $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+            $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+            if (!empty($results)) return $results;
+	    } 
+	    
 		$rowset = $this->tableGateway->select(array($field => $value));
+		
+		if ($this->cacheResults)
+	        $melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $rowset);
+		
 		return $rowset;
 	}
 	

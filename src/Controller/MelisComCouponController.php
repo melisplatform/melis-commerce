@@ -13,6 +13,7 @@ use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Session\Container;
+use Zend\Stdlib\ArrayUtils;
 
 class MelisComCouponController extends AbstractActionController
 {
@@ -341,6 +342,10 @@ class MelisComCouponController extends AbstractActionController
             if($coupon->coup_type){
                 $type = 'checked';
             }
+            
+            if ($coupon->coup_current_use_number){
+                $couponForm->get('coup_code')->setAttribute('disabled', 'disabled');
+            }
         }
         $datepickerInit = $this->getTool()->datePickerInit('couponStart');
         $datepickerInit .= $this->getTool()->datePickerInit('couponEnd');
@@ -372,6 +377,10 @@ class MelisComCouponController extends AbstractActionController
         $couponForm = $factory->createForm($appConfigForm);
         if(isset($this->layout()->coupon)){
             $coupon = $this->layout()->coupon;
+            if ($coupon->coup_current_use_number){
+                $couponForm->get('coup_percentage')->setAttribute('disabled', 'disabled');
+                $couponForm->get('coup_discount_value')->setAttribute('disabled', 'disabled');
+            }
             $couponForm->setData((array)$coupon);
            
         }
@@ -563,10 +572,10 @@ class MelisComCouponController extends AbstractActionController
                 
                 $tableData[$c]['DT_RowId']      = $client->getClient()->cli_id;
                 $tableData[$c]['cli_id']        = $client->getClient()->cli_id;
-                $tableData[$c]['cper_firstname']= $client->getPersons()[0]->cper_firstname;
-                $tableData[$c]['cper_name']     = $client->getPersons()[0]->cper_name;
-                $tableData[$c]['cper_email']    = $client->getPersons()[0]->cper_email;
-                $tableData[$c]['ccomp_name']    = $companyName;
+                $tableData[$c]['cper_firstname']= $this->getTool()->escapeHtml($client->getPersons()[0]->cper_firstname);
+                $tableData[$c]['cper_name']     = $this->getTool()->escapeHtml($client->getPersons()[0]->cper_name);
+                $tableData[$c]['cper_email']    = $this->getTool()->escapeHtml($client->getPersons()[0]->cper_email);
+                $tableData[$c]['ccomp_name']    = $this->getTool()->escapeHtml($companyName);
                 $tableData[$c]['assign']        = $assign;
                 $tableData[$c]['DT_RowClass']   = (!empty($assign)) ? 'couponNoAddButton' : '';
                 $c++;
@@ -645,10 +654,10 @@ class MelisComCouponController extends AbstractActionController
                 $tableData[$c]['DT_RowId']      = $client->getClient()->cli_id;
                 $tableData[$c]['DT_RowAttr']    = array('data-couponid' => $couponId);
                 $tableData[$c]['cli_id']        = $client->getClient()->cli_id;
-                $tableData[$c]['cper_firstname']= $client->getPersons()[0]->cper_firstname;
-                $tableData[$c]['cper_name']     = $client->getPersons()[0]->cper_name;
-                $tableData[$c]['cper_email']    = $client->getPersons()[0]->cper_email;
-                $tableData[$c]['ccomp_name']    = $companyName;
+                $tableData[$c]['cper_firstname']= $this->getTool()->escapeHtml($client->getPersons()[0]->cper_firstname);
+                $tableData[$c]['cper_name']     = $this->getTool()->escapeHtml($client->getPersons()[0]->cper_name);
+                $tableData[$c]['cper_email']    = $this->getTool()->escapeHtml($client->getPersons()[0]->cper_email);
+                $tableData[$c]['ccomp_name']    = $this->getTool()->escapeHtml($companyName);
                 $tableData[$c]['assign']        = $assign;
                 $c++;
             }
@@ -682,6 +691,8 @@ class MelisComCouponController extends AbstractActionController
         
         if($this->getRequest()->isPost()){
             $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getTool()->sanitizeRecursive($postValues);
+
             if($postValues['method'] == 'add'){
                 unset($postValues['method']);
                 $couponId = $postValues['ccli_coupon_id'];
@@ -744,7 +755,8 @@ class MelisComCouponController extends AbstractActionController
         $valuesForm = $factory->createForm($valuesFormConfig);
         
         if($this->getRequest()->isPost()){
-            $postValues = get_object_vars($this->getRequest()->getPost()); 
+            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getTool()->sanitizeRecursive($postValues, array('coup_code'));
             
             if (!empty($postValues['couponId'])){
                 $logTypeCode = 'ECOM_COUPON_UPDATE';
@@ -752,17 +764,38 @@ class MelisComCouponController extends AbstractActionController
                 $logTypeCode = 'ECOM_COUPON_ADD';
             }
             
+            $couponData = array();
+            $couponIsUsed = false;
+            if (!empty($postValues['couponId'])){
+                $couponData = $couponTable->getEntryById($postValues['couponId'])->current();
+                if (!empty($couponData)){
+                    if ($couponData->coup_current_use_number > 0){
+                        $couponIsUsed = true;
+                        $generalForm->getInputFilter()->remove('coup_code');
+                    }
+                }
+            }
+            
             $generalForm->setData($postValues['coupon'][0]);
             if(!$generalForm->isValid()){
                 $errors = array_merge($errors, $this->getFormErrors($generalForm, $generalFormConfig));
             }
             $coupon = $generalForm->getData();
-           
-            if(empty($postValues['couponValues'][0]['coup_percentage']) && empty($postValues['couponValues'][0]['coup_discount_value'])){
-                $title = $this->getTool()->getTranslation('tr_meliscommerce_coupon_tabs_content_values_header_title');
-                $message = $this->getTool()->getTranslation('tr_meliscommerce_coupon_empty_percentage_discount');                
-                $errors = array_merge($errors, array('values' => array('isEmpty' => $message , 'label' => $title )));
-                
+            if ($couponIsUsed){
+                $coupon = ArrayUtils::merge($coupon, array('coup_code' => $couponData->coup_code));
+            }
+            
+            if (!$couponIsUsed){
+                if(empty($postValues['couponValues'][0]['coup_percentage']) && empty($postValues['couponValues'][0]['coup_discount_value'])){
+                    $title = $this->getTool()->getTranslation('tr_meliscommerce_coupon_tabs_content_values_header_title');
+                    $message = $this->getTool()->getTranslation('tr_meliscommerce_coupon_empty_percentage_discount');
+                    $errors = array_merge($errors, array('values' => array('isEmpty' => $message , 'label' => $title )));
+                }
+            }
+            
+            if ($couponIsUsed){
+                $valuesForm->getInputFilter()->remove('coup_percentage');
+                $valuesForm->getInputFilter()->remove('coup_discount_value');
             }
             
             $valuesForm->setData($postValues['couponValues'][0]);
@@ -770,6 +803,13 @@ class MelisComCouponController extends AbstractActionController
                 $errors = array_merge($errors, $this->getFormErrors($valuesForm, $valuesFormConfig));
             }
             $coupon = array_merge($coupon, $valuesForm->getData());
+            if ($couponIsUsed){
+                $couponVal = array(
+                    'coup_percentage' => $couponData->coup_percentage,
+                    'coup_discount_value' => $couponData->coup_discount_value,
+                );
+                $coupon = ArrayUtils::merge($coupon, $couponVal);
+            }
             
             $couponId = $postValues['couponId'];                       
             $coupon['coup_code'] = mb_strtoupper($this->str_without_accents($coupon['coup_code']));

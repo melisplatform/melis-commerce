@@ -199,7 +199,7 @@ class MelisComLanguageController extends AbstractActionController
                 foreach($tableData[$ctr] as $vKey => $vValue)
                 {
                     if($vKey != "elang_flag") {
-                        $tableData[$ctr][$vKey] = $this->getTool()->limitedText($vValue);
+                        $tableData[$ctr][$vKey] = $this->getTool()->limitedText($this->getTool()->escapeHtml($vValue));
                     }
                 }
 
@@ -248,6 +248,7 @@ class MelisComLanguageController extends AbstractActionController
             $langTable = $this->getServiceLocator()->get('MelisEcomLangTable');
 
             $postData = get_object_vars($this->getRequest()->getPost());
+            $postData = $this->getTool()->sanitizePost($postData);
             $this->getEventManager()->trigger('meliscommerce_language_save_start', $this, $postData);
             if($postData['elang_id']) {
                 $langId = $postData['elang_id'];

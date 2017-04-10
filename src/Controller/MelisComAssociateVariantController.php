@@ -206,11 +206,6 @@ class MelisComAssociateVariantController extends AbstractActionController
                 $varAttrText = '';
                 $tableData[$ctr]['DT_RowId'] = $tableData[$ctr]['var_id'];
 
-//                 if((isset($tableData[$ctr]['avar_id_1']) && !empty($tableData[$ctr]['avar_id_1'])) ||
-//                     (isset($tableData[$ctr]['avar_id_2']) && !empty($tableData[$ctr]['avar_id_2']))
-//                 ) {
-//                     $assigned = '<span class="text-success"><i class="fa fa-check"></i></span>';
-//                 }
                 
                 if($this->checkAssociation($variantId,$tableData[$ctr]['var_id'] )){
                     $assigned = '<span class="text-success"><i class="fa fa-check"></i></span>';
@@ -220,12 +215,12 @@ class MelisComAssociateVariantController extends AbstractActionController
                 if($varTextData) {
                     foreach($varTextData as $vText) {
                         if(isset($vText))
-                            $varAttrText .= sprintf($attributesDom, $vText);
+                            $varAttrText .= sprintf($attributesDom, $this->getTool2()->escapeHtml($vText));
                     }
                 }
 
                 $status = (int) $tableData[$ctr]['var_status'];
-                $tableData[$ctr]['var_sku'] = '<span data-sku="'.$tableData[$ctr]['var_sku'].'">'.$tableData[$ctr]['var_sku'].'</span>';
+                $tableData[$ctr]['var_sku'] = '<span data-sku="'.$this->getTool2()->escapeHtml($tableData[$ctr]['var_sku']).'">'.$this->getTool2()->escapeHtml($tableData[$ctr]['var_sku']).'</span>';
                 $tableData[$ctr]['var_status'] = $status ? $activeDom : $inactiveDom;
                 $tableData[$ctr]['var_attributes'] = $varAttrText;
                 $tableData[$ctr]['var_assigned'] = $assigned;
@@ -289,7 +284,7 @@ class MelisComAssociateVariantController extends AbstractActionController
                     // apply text limits
                     foreach($tableData[$ctr] as $vKey => $vValue)
                     {
-                        $tableData[$ctr][$vKey] = $this->getTool1()->limitedText($vValue);
+                        $tableData[$ctr][$vKey] = $this->getTool1()->limitedText($this->getTool1()->escapeHtml($vValue));
 
                     }
                     $dataVarId = (int) $tableData[$ctr]['var_id'];
@@ -304,12 +299,12 @@ class MelisComAssociateVariantController extends AbstractActionController
                     if($varTextData) {
                         foreach($varTextData as $vText) {
                             if(!empty($vText))
-                                $varAttrText .= sprintf($attributesDom, $vText);
+                                $varAttrText .= sprintf($attributesDom, $this->getTool1()->escapeHtml($vText));
                         }
                     }
 
                     $status = (int) $tableData[$ctr]['var_status'];
-                    $tableData[$ctr]['var_sku'] = '<span data-sku="'.$tableData[$ctr]['var_sku'].'">'.$tableData[$ctr]['var_sku'].'</span>';
+                    $tableData[$ctr]['var_sku'] = '<span data-sku="'.$this->getTool1()->escapeHtml($tableData[$ctr]['var_sku']).'">'.$this->getTool1()->escapeHtml($tableData[$ctr]['var_sku']).'</span>';
                     $tableData[$ctr]['var_status'] = $status ? $activeDom : $inactiveDom;
                     $tableData[$ctr]['var_attributes'] = $varAttrText;
                     $tableData[$ctr]['var_product_name'] = $this->getProductTextByVarId($dataVarId);
@@ -455,7 +450,7 @@ class MelisComAssociateVariantController extends AbstractActionController
     {
         $varSvc = $this->getServiceLocator()->get('MelisComVariantService');
         $prodSvc = $this->getServiceLocator()->get('MelisComProductService');
-        $getData = $varSvc->getProductByVariantId( (int) $varId);
+        $getData = $varSvc->getVariantById( (int) $varId);
         $variantData = $getData->getVariant();
         if($variantData) {
             $prodId = $variantData->var_prd_id;
@@ -469,7 +464,7 @@ class MelisComAssociateVariantController extends AbstractActionController
     {
         $varSvc = $this->getServiceLocator()->get('MelisComVariantService');
         $prodSvc = $this->getServiceLocator()->get('MelisComProductService');
-        $getData = $varSvc->getProductByVariantId( (int) $varId);
+        $getData = $varSvc->getVariantById( (int) $varId);
         if($getData) {
             $varData = $getData->getVariant();
             if($varData) {
@@ -487,19 +482,4 @@ class MelisComAssociateVariantController extends AbstractActionController
     }
 
 
-    public function testAction()
-    {
-
-        echo $this->getProductIdByVarId(5);
-        $table = $this->getServiceLocator()->get('MelisEcomVariantTable');
-        $data = $table->getAssocVariantsListById(6)->toArray();
-
-        print '<pre>';
-        print_r($data);
-        print '</pre>';
-
-
-
-        die;
-    }
 }

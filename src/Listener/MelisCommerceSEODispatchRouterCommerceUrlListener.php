@@ -28,16 +28,19 @@ class MelisCommerceSEODispatchRouterCommerceUrlListener
     
     public $commerceRouteNames = array(
         'melis-front/melis_front_commerce_category' => array(
+            'type' => 'category',
             'routeInternalParamName' => 'categoryId',
             'routeParamName' => 'cid',
             '301CheckingMethod' => 'is301Category',
         ),
         'melis-front/melis_front_commerce_product' => array(
+            'type' => 'product',
             'routeInternalParamName' => 'productId',
             'routeParamName' => 'pid',
             '301CheckingMethod' => 'is301Product',
         ),
         'melis-front/melis_front_commerce_variant' => array(
+            'type' => 'variant',
             'routeInternalParamName' => 'variantId',
             'routeParamName' => 'vid',
             '301CheckingMethod' => 'is301Variant',
@@ -115,7 +118,7 @@ class MelisCommerceSEODispatchRouterCommerceUrlListener
         	   }
                else 
                {
-            	   // add check if url is ok and redirected because of cid    
+            	   // add check if url is ok and redirected because of cid
             	       
             	   if (array_key_exists($params['front_route'], $this->commerceRouteNames))
             	   {
@@ -163,11 +166,44 @@ class MelisCommerceSEODispatchRouterCommerceUrlListener
             	                   $params['301_type'] = '';
             	               }
             	               else
-            	                   // internal redirection to a melis page, we'll just add the category
-            	                   $params['301'] = $uri301 . $queryCommerceEndParams . $paramsGet;
+            	               {
+            	                   $melisComLinksService = $this->serviceLocator->get('MelisComLinksService');
+
+            	                   $pageLink  = $melisComLinksService->getPageLink($routeItemConf['type'], 
+            	                                   $params[$routeItemConf['routeInternalParamName']], 
+            	                                   $params['datasPage']->getMelisPageTree()->plang_lang_id, 
+            	                                   true);
+            	                   
+            	                   $melisTree = $sm->get('MelisEngineTree');
+            	                   $host = $melisTree->getDomainByPageId($params['idpage']);
+            	                   $router = $this->serviceLocator->get('router');
+            	                   $uri = $router->getRequestUri();
+            	                   
+            	                   if ($host != '')
+            	                       $fullUrl = $uri->getScheme() . '://' . $uri->getHost() . $uri->getPath();
+            	                   else
+            	                       $fullUrl = $uri->getPath();
+    	                           
+    	                           if ($fullUrl != $pageLink)
+    	                           {
+    	                               $request = $this->serviceLocator->get('request');;
+    	                               if (!$request->isPost())
+    	                               {
+        	                               // URL is not ok, working but not the good one
+        	                               // only if not post or we'll loose data
+                                           $params['301'] = $pageLink . $paramsGet;
+        	                               $params['301_type'] = 'seoMelisURL';
+    	                               }
+    	                           }
+    	                           else 
+    	                           {
+    	                               // URL is ok
+            	                       $params['301'] = null;
+            	                       $params['301_type'] = '';
+    	                           }
+            	               }
             	           }
             	       }
-            	       
             	   }
                }
         	   // Setting all router datas
@@ -192,11 +228,6 @@ class MelisCommerceSEODispatchRouterCommerceUrlListener
             	           }
         	       }
         	   }
-        	   
-        	   
-        	/*   echo '<pre>';
-        	   print_r($params);
-        	   echo '</pre>'; */
         	    
             },
         100);

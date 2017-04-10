@@ -165,6 +165,9 @@ return array(
             'MelisComShipmentCostService'  => 'MelisCommerce\Service\Factory\MelisComShipmentCostServiceFactory',
             'MelisComVariantService'       => 'MelisCommerce\Service\Factory\MelisComVariantServiceFactory',
             'MelisComDuplicationService'   => 'MelisCommerce\Service\Factory\MelisComDuplicationServiceFactory',
+            'MelisComCurrencyService'      => 'MelisCommerce\Service\Factory\MelisComCurrencyServiceFactory',
+            
+            'MelisComLinksService'   => 'MelisCommerce\Service\Factory\MelisComLinksServiceFactory',
             
             //db tables
             'MelisCommerce\Model\Tables\MelisEcomAttributeTable'             => 'MelisCommerce\Model\Tables\Factory\MelisEcomAttributeTableFactory',
@@ -221,6 +224,9 @@ return array(
             'MelisCommerce\Listener\MelisCommerceSEOReformatToRoutePageUrlListener'    => 'MelisCommerce\Listener\Factory\MelisCommerceSEOReformatToRoutePageUrlListenerFactory',
             
         ),
+        'abstract_factories' => array(
+            'Zend\Cache\Service\StorageCacheAbstractServiceFactory',
+        )
     ),
     'controllers' => array(
         'invokables' => array(
@@ -270,16 +276,22 @@ return array(
             'MelisCommerceProfilePlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceProfilePlugin',
             'MelisCommerceDeliveryAddressPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceDeliveryAddressPlugin',
             'MelisCommerceBillingAddressPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceBillingAddressPlugin',
-            'MelisCommerceMyCartPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceMyCartPlugin',
             'MelisCommerceLostPasswordGetEmailPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceLostPasswordGetEmailPlugin',
             'MelisCommerceLostPasswordResetPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceLostPasswordResetPlugin',
             'MelisCommerceSelectAddressPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceSelectAddressPlugin',
             'MelisCommerceCheckoutPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutPlugin',
             'MelisCommerceCheckoutCartPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutCartPlugin',
+            'MelisCommerceCheckoutCouponAddPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutCouponAddPlugin',
             'MelisCommerceCheckoutAddressesPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutAddressesPlugin',
             'MelisCommerceCheckoutSummaryPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutSummaryPlugin',
+            'MelisCommerceCheckoutConfirmSummaryPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutConfirmSummaryPlugin',
+            'MelisCommerceCheckoutConfirmPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutConfirmPlugin',
             'MelisCommerceCartMenuPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCartMenuPlugin',
-            'MelisCommerceCheckoutCouponAddPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutCouponAddPlugin',
+            'MelisCommerceOrderListPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceOrderListPlugin',
+            'MelisCommerceOrderPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceOrderPlugin',
+            'MelisCommerceOrderAddressPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceOrderAddressPlugin',
+            'MelisCommerceOrderShippingDetailsPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceOrderShippingDetailsPlugin',
+            'MelisCommerceOrderMessagesPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceOrderMessagesPlugin',
         )
     ),
     'form_elements' => array(
@@ -317,6 +329,9 @@ return array(
         'invokables' => array(
             'ToolTipTable' => 'MelisCommerce\View\Helper\ToolTipTableHelper',
         ),
+        'factories' => array(
+            'MelisCommerceLink' => 'MelisCommerce\View\Helper\Factory\MelisCommerceLinksHelperFactory',
+        ),    
     ),
     'view_manager' => array(
         'display_not_found_reason' => true,
@@ -325,38 +340,79 @@ return array(
         'template_map' => array(
             'layout/layout' => __DIR__ . '/../view/layout/default.phtml',
             // Email Layout
-            'MelisCommerce/emailLayout'                         => __DIR__ . '/../view/layout/email-layout.phtml',
+            'MelisCommerce/emailLayout'                             => __DIR__ . '/../view/layout/email-layout.phtml',
             // Plugins layout
-            'MelisCommerce/ClientRegister'                      => __DIR__ . '/../view/plugins/clients/registration.phtml',
-            'MelisCommerce/ClientLogin'                         => __DIR__ . '/../view/plugins/clients/login.phtml',
-            'MelisCommerce/ClientLostPassword'                  => __DIR__ . '/../view/plugins/clients/lost-password.phtml',
-            'MelisCommerce/ClientLostPasswordReset'             => __DIR__ . '/../view/plugins/clients/lost-password-reset.phtml',
-            'MelisCommerce/ClientAccount'                       => __DIR__ . '/../view/plugins/clients/account.phtml',
-            'MelisCommerce/ClientProfile'                       => __DIR__ . '/../view/plugins/clients/profile.phtml',
-            'MelisCommerce/ClientDeliveryAddress'               => __DIR__ . '/../view/plugins/clients/delivery-address.phtml',
-            'MelisCommerce/ClientBillingAddress'                => __DIR__ . '/../view/plugins/clients/billing-address.phtml',
-            'MelisCommerce/ClientMyCart'                        => __DIR__ . '/../view/plugins/clients/my-cart.phtml',
-            'MelisCommerceProduct/show-product'                 => __DIR__ . '/../view/plugins/products/show-product.phtml',
-            'MelisCommerceProduct/show-attributes'              => __DIR__ . '/../view/plugins/products/show-attributes.phtml',
-            'MelisCommerceProduct/show-add-to-cart'             => __DIR__ . '/../view/plugins/products/show-add-to-cart.phtml',
-            'MelisCommerceProduct/show-related-products'        => __DIR__ . '/../view/plugins/products/show-related-products.phtml',
-            'MelisCommerceCheckout/show-check-out'              => __DIR__ . '/../view/plugins/checkout/show-check-out.phtml',
-            'MelisCommerceCheckout/show-check-out-cart'         => __DIR__ . '/../view/plugins/checkout/show-check-out-cart.phtml',
-            'MelisCommerceCheckout/show-check-out-address'      => __DIR__ . '/../view/plugins/checkout/show-check-out-address.phtml',
-            'MelisCommerceCheckout/show-check-out-summary'      => __DIR__ . '/../view/plugins/checkout/show-check-out-summary.phtml',
-            'MelisCommerceCheckout/show-check-out-coupon'       => __DIR__ . '/../view/plugins/checkout/show-check-out-coupon.phtml',
-            'MelisCommerceCartMenuPlugin/show-cart-menu'        => __DIR__ . '/../view/plugins/checkout/show-cart-menu.phtml',
-            'MelisCommerceCategory/categories-slider-products'  => __DIR__ . '/../view/plugins/categories/categories-slider-products.phtml',
-            'MelisCommerceCategory/categories-list-filter'      => __DIR__ . '/../view/plugins/categories/categories-list-filter.phtml',
-            'MelisCommerceCategory/categories-price-filter'     => __DIR__ . '/../view/plugins/categories/categories-price-filter.phtml',
-            'MelisCommerceCategory/categories-attribute-filter' => __DIR__ . '/../view/plugins/categories/categories-attribute-filter.phtml',
-            'MelisCommerceCategory/categories-product-list'     => __DIR__ . '/../view/plugins/categories/categories-product-list.phtml'
+            'MelisCommerce/ClientRegister'                          => __DIR__ . '/../view/plugins/clients/registration.phtml',
+            'MelisCommerce/ClientLogin'                             => __DIR__ . '/../view/plugins/clients/login.phtml',
+            'MelisCommerce/ClientLostPassword'                      => __DIR__ . '/../view/plugins/clients/lost-password.phtml',
+            'MelisCommerce/ClientLostPasswordReset'                 => __DIR__ . '/../view/plugins/clients/lost-password-reset.phtml',
+            'MelisCommerce/ClientAccount'                           => __DIR__ . '/../view/plugins/clients/account.phtml',
+            'MelisCommerce/ClientProfile'                           => __DIR__ . '/../view/plugins/clients/profile.phtml',
+            'MelisCommerce/ClientDeliveryAddress'                   => __DIR__ . '/../view/plugins/clients/delivery-address.phtml',
+            'MelisCommerce/ClientBillingAddress'                    => __DIR__ . '/../view/plugins/clients/billing-address.phtml',
+            'MelisCommerce/ClientMyCart'                            => __DIR__ . '/../view/plugins/clients/my-cart.phtml',
+            'MelisCommerceProduct/show-product'                     => __DIR__ . '/../view/plugins/products/show-product.phtml',
+            'MelisCommerceProduct/show-attributes'                  => __DIR__ . '/../view/plugins/products/show-attributes.phtml',
+            'MelisCommerceProduct/show-add-to-cart'                 => __DIR__ . '/../view/plugins/products/show-add-to-cart.phtml',
+            'MelisCommerceProduct/show-related-products'            => __DIR__ . '/../view/plugins/products/show-related-products.phtml',
+            'MelisCommerceCheckout/show-check-out'                  => __DIR__ . '/../view/plugins/checkout/show-check-out.phtml',
+            'MelisCommerceCheckout/show-check-out-cart'             => __DIR__ . '/../view/plugins/checkout/show-check-out-cart.phtml',
+            'MelisCommerceCheckout/show-check-out-coupon'           => __DIR__ . '/../view/plugins/checkout/show-check-out-coupon.phtml',
+            'MelisCommerceCheckout/show-check-out-address'          => __DIR__ . '/../view/plugins/checkout/show-check-out-address.phtml',
+            'MelisCommerceCheckout/show-check-out-summary'          => __DIR__ . '/../view/plugins/checkout/show-check-out-summary.phtml',
+            'MelisCommerceCheckout/show-check-out-confirm-summary'  => __DIR__ . '/../view/plugins/checkout/show-check-out-confirm-summary.phtml',
+            'MelisCommerceCheckout/show-check-out-confirm'          => __DIR__ . '/../view/plugins/checkout/show-check-out-confirm.phtml',
+            'MelisCommerceCartMenuPlugin/show-cart-menu'            => __DIR__ . '/../view/plugins/checkout/show-cart-menu.phtml',
+            'MelisCommerceCategory/categories-slider-products'      => __DIR__ . '/../view/plugins/categories/categories-slider-products.phtml',
+            'MelisCommerceCategory/categories-list-filter'          => __DIR__ . '/../view/plugins/categories/categories-list-filter.phtml',
+            'MelisCommerceCategory/categories-price-filter'         => __DIR__ . '/../view/plugins/categories/categories-price-filter.phtml',
+            'MelisCommerceCategory/categories-attribute-filter'     => __DIR__ . '/../view/plugins/categories/categories-attribute-filter.phtml',
+            'MelisCommerceCategory/categories-product-list'         => __DIR__ . '/../view/plugins/categories/categories-product-list.phtml',
+            'MelisCommerceOrder/show-client-order-list'             => __DIR__ . '/../view/plugins/order/show-client-order-list.phtml',
+            'MelisCommerceOrder/show-client-order'                  => __DIR__ . '/../view/plugins/order/show-client-order.phtml',
+            'MelisCommerceOrder/show-client-order-address'          => __DIR__ . '/../view/plugins/order/show-client-order-address.phtml',
+            'MelisCommerceOrder/show-client-shipping-details'       => __DIR__ . '/../view/plugins/order/show-client-shipping-details.phtml',
         ),
         'template_path_stack' => array(
             __DIR__ . '/../view',
         ),
         'strategies' => array(
             'ViewJsonStrategy',
+        ),
+    ),
+    'caches' => array(
+        'commerce_memory_services' => array( 
+            'active' => true, // activate or deactivate Melis Cache for this conf
+            'adapter' => array(
+                'name'    => 'Memory',
+                'options' => array('ttl' => 0, 'namespace' => 'meliscommerce'),
+            ),
+            'plugins' => array(
+                'exception_handler' => array('throw_exceptions' => false),
+            ),
+            'ttls' => array(
+                // add a specific ttl for a specific cache key (found via regexp)
+                // 'my_cache_key' => 60,
+            )
+        ),
+        'commerce_big_services' => array( 
+            'active' => true, // activate or deactivate Melis Cache for this conf
+            'adapter' => array(
+                'name'    => 'Filesystem',
+                'options' => array(
+                    'ttl' => 60 * 60 * 24, // 24hrs 
+                    'namespace' => 'meliscommerce',
+                    'cache_dir' => $_SERVER['DOCUMENT_ROOT'] . '/../cache'
+                ),
+            ),
+            'plugins' => array(
+                'exception_handler' => array('throw_exceptions' => false),
+                'Serializer'
+            ),
+            'ttls' => array(
+                // add a specific ttl for a specific cache key (found via regexp)
+                // 'my_cache_key' => 60,
+            )
         ),
     ),
 );

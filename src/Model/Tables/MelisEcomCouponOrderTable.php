@@ -25,15 +25,9 @@ class MelisEcomCouponOrderTable extends MelisEcomGenericTable
     public function checkUsedClientCoupon($couponId, $clientId)
     {
         $select = $this->tableGateway->getSql()->select();
-        $select->join('melis_ecom_order', 'melis_ecom_order.ord_id = melis_ecom_coupon_order.cord_id', array(), $select::JOIN_LEFT);
-        
-        if(!empty($couponId)){
-            $select->where('melis_ecom_coupon_order.cord_coupon_id ='.$couponId);
-        }
-        
-        if(!empty($clientId)){
-            $select->where('melis_ecom_order.ord_client_id ='.$clientId);
-        }        
+        $select->join('melis_ecom_order', 'melis_ecom_order.ord_id = melis_ecom_coupon_order.cord_order_id', array('*'), $select::JOIN_LEFT);
+        $select->where('melis_ecom_coupon_order.cord_coupon_id ='.$couponId);
+        $select->where('melis_ecom_order.ord_client_id ='.$clientId);
         
         $resultData = $this->tableGateway->selectWith($select);
         return $resultData;

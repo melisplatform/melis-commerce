@@ -12,6 +12,7 @@ namespace MelisCommerce\Controller\Plugin;
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
 use Zend\Stdlib\ArrayUtils;
+use Zend\Session\Container;
 /**
  * This plugin implements the business logic of the
  * "add to cart" plugin.
@@ -71,10 +72,10 @@ class MelisCommerceCartAddPlugin extends MelisTemplatingPlugin
         $formElements = $this->getServiceLocator()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $addToCartForm = $factory->createForm($appConfigForm);
-
         
         $ecomAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
         $basketSrv = $this->getServiceLocator()->get('MelisComBasketService');
+        $translator = $this->getServiceLocator()->get('translator');
         
         $clientKey = $ecomAuthSrv->getId();
         $clientId = null;
@@ -97,71 +98,83 @@ class MelisCommerceCartAddPlugin extends MelisTemplatingPlugin
         $data['m_v_quantity'] = $quantity;
         $data['m_v_country'] = $countryId;
         
-        $addToCartForm->setData($data);
-        
-//         echo '<pre>'; print_r($currentQty); echo '</pre>'; die();
         /**
          * Retrieving the Stock of the variant
          */
-        $varStock = 0;
-        if ($variantId)
-        {
-            $variantSrv = $this->getServiceLocator()->get('MelisComVariantService');
-            $varStock = $variantSrv->getVariantFinalStocks($variantId, $countryId);
-        
+        if (is_numeric($quantity))
+        {    
+            $addToCartForm->setData($data);
+            
+            //         echo '<pre>'; print_r($currentQty); echo '</pre>'; die();
+            /**
+             * Retrieving the Stock of the variant
+             */
+            $varStock = 0;
+            if ($variantId)
+            {
+                $variantSrv = $this->getServiceLocator()->get('MelisComVariantService');
+                $varStock = $variantSrv->getVariantFinalStocks($variantId, $countryId);
+            
+                if ($varStock)
+                {
+                    $newStock = $varStock->stock_quantity - $currentQty;
+                    $varStock = ($newStock > 0) ? $newStock : 0;
+                }
+            }
+            
+            // Pre value to form input field
+            $addToCartForm->get('m_v_quantity')->setAttribute('data-maxvalue', $varStock);
+            $addToCartForm->get('m_v_country')->setValue($countryId);
+            
+            /**
+             * Stock validation
+             */
             if ($varStock)
             {
-                $newStock = $varStock->stock_quantity - $currentQty;
-                $varStock = ($newStock > 0) ? $newStock : 0; 
-            }
-        }
-        
-        // Pre value to form input field
-        $addToCartForm->get('m_v_quantity')->setAttribute('data-maxvalue', $varStock);
-        $addToCartForm->get('m_v_country')->setValue($countryId);
-        
-        /**
-         * Stock validation
-         */
-        if ($varStock)
-        {
-            $hasStock = true;
+                $hasStock = true;
             
-            if ($quantity <= $varStock)
-            {
-                if ($is_submit)
+                if ($quantity <= $varStock)
                 {
-                    if ($addToCartForm->isValid())
+                    if ($is_submit)
                     {
-                        $data = $addToCartForm->getData();
-                        $quantity = $quantity + $currentQty;
-                        $basketId = $basketSrv->addVariantToBasket($variantId, $quantity, $clientId, $clientKey);
-                        
-                        if (is_null($basketId))
+                        if ($addToCartForm->isValid())
                         {
-                            $errors['genError'] = array(
-                                'genError' => 'Something is wrong, please contact administrator for assistance'
-                            );
+                            $data = $addToCartForm->getData();
+                            $quantity = $quantity + $currentQty;
+                            $basketId = $basketSrv->addVariantToBasket($variantId, $quantity, $clientId, $clientKey);
+            
+                            if (is_null($basketId))
+                            {
+                                $errors['genError'] = array(
+                                    'genError' => $translator->translate('tr_meliscommerce_products_plugins_cart_error')
+                                );
+                            }
+                        }
+                        else
+                        {
+                            $errors = $addToCartForm->getMessages();
                         }
                     }
-                    else
-                    {
-                        $errors = $addToCartForm->getMessages();
-                    }
+                }
+                else
+                {
+                    $errors['invalidStock'] = array(
+                        'invalidStock' => sprintf($translator->translate('tr_meliscommerce_products_plugins_stock_left'), $varStock),
+                    );
                 }
             }
             else
             {
-                $errors['invalidStock'] = array(
-                    'invalidStock' => 'The selected Product has only "'.$varStock.'" stock(s) left'
+                $errors['noStock'] = array(
+                    'noStock' => $translator->translate('tr_meliscommerce_products_plugins_no_stock')
                 );
             }
         }
-        else
+        else 
         {
-            $errors['noStock'] = array(
-                'noStock' => 'Product is not available'
-            );;
+            $errors['inValidQty'] = array(
+                'inValidQty' => $translator->translate('tr_meliscommerce_products_plugins_quantity_error')
+            );
         }
         
         // Create an array with the variables that will be available in the view

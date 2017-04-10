@@ -23,6 +23,7 @@ class EcomPluginDeliveryAddressSelectFactory extends EcomSelectFactory
 
         // user parameter
         $clientId         = null;
+        $personId         = null;
         $clientSrv        = $serviceManager->get('MelisComClientService');
         $melisComAuthSrv  = $serviceManager->get('MelisComAuthenticationService');
         $translator       = $serviceManager->get('translator');
@@ -30,13 +31,15 @@ class EcomPluginDeliveryAddressSelectFactory extends EcomSelectFactory
         if($melisComAuthSrv->hasIdentity()) {
             $personId =  (int) $melisComAuthSrv->getPersonId();
         }
-
-        $ecomAddresData = $clientSrv->getClientAddressesByClientPersonId($personId, 'DEL');
+        
         $options = array();
-
-        if($ecomAddresData)  {
-            foreach($ecomAddresData as $data) {
-                $options[$data->cadd_id] = $data->cadd_address_name;
+        
+        if(!is_null($personId)){
+            $ecomAddresData = $clientSrv->getClientAddressesByClientPersonId($personId, 'DEL');
+            if($ecomAddresData)  {
+                foreach($ecomAddresData as $data) {
+                    $options[$data->cadd_id] = $data->cadd_address_name;
+                }
             }
         }
 

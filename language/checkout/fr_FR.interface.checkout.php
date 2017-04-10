@@ -94,7 +94,22 @@
 	    'tr_meliscommerce_order_checkout_save_unable' => 'Impossible de sauvegarder La commande, veuillez réessayer',
 	    
 	    // Plugins
-	    'tr_meliscommerce_cart_quantity' => 'Quantity',
-	    'tr_meliscommerce_variant_quantity_invalid' => 'Quantity must be numeric',
-	    'tr_meliscommerce_variant_quantity_empty' => 'Quantity must not be empty',
+	    
+	    'tr_meliscommerce_add_to_cart_variant_id_empty' => 'L\'identifiant du variant ne peut être vide',
+    	'tr_meliscommerce_add_to_cart_variant_country_empty' => 'Le pays du variant ne peut être vide',
+    	'tr_meliscommerce_add_to_cart_quantity' => 'Quantité',
+    	'tr_meliscommerce_add_to_cart_variant_quantity_invalid' => 'La quantité doit être un nombre',
+    	'tr_meliscommerce_add_to_cart_variant_quantity_empty' => 'La quantité ne peut être vide',
+    	
+    	'tr_meliscommerce_client_checkout_delivery_address_empty' => 'L\'adresse de livraison ne peut être vide',
+    	'tr_meliscommerce_client_checkout_billing_address_empty' => 'L\'adresse de facturation ne peut être vide',
+    	
+    	'tr_meliscommerce_checkout_cart_label' => 'Panier',
+    	'tr_meliscommerce_checkout_addresses_label' => 'Adresse',
+    	'tr_meliscommerce_checkout_summary_label' => 'Résumé',
+    	
+    	'tr_meliscommerce_checkout_delivery_save_success' => 'L\'adresse de livraison a été sauvegardée avec succès',
+    	'tr_meliscommerce_checkout_delivery_save_error' => 'Une erreur est survenue, veuillez contacter l\'administrateur',
+    	'tr_meliscommerce_checkout_delivery_errors' => 'Une erreur est survenue',
+    	'tr_meliscommerce_checkout_billing_save_success' => 'L\'adresse de facturation a été sauvegardée avec succès',
 	);

@@ -179,7 +179,7 @@ class MelisComCategoryListController extends AbstractActionController
         $categoryListData = $melisComCategoryService->getCategoryTreeview(null, $currentLang->elang_id);
         
         // Category Tree View Preparation
-        $categoryList = $this->prepareCategoryDataForTreeView($categoryListData, $selected, $openStateParent, $idAndNameOnly, $categoryChecked);
+        $categoryList = $this->prepareCategoryDataForTreeView($categoryListData, $selected, $openStateParent, $idAndNameOnly, $categoryChecked, $currentLang->elang_id);
         
         return new JsonModel($categoryList);
     }
@@ -194,11 +194,12 @@ class MelisComCategoryListController extends AbstractActionController
      * 
      * @return int Array[]
      */
-    public function prepareCategoryDataForTreeView($categoryList, $selected = false, $openedStateParent = array(), $idAndNameOnly = false, $categoryChecked = array()){
+    public function prepareCategoryDataForTreeView($categoryList, $selected = false, $openedStateParent = array(), $idAndNameOnly = false, $categoryChecked = array(), $langId = null){
         
         $translator = $this->getServiceLocator()->get('translator');
         
         $melisEcomProductCategoryTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');
+        $categorySvc = $this->getServiceLocator()->get('MelisComCategoryService');
         foreach ($categoryList As $key => $val){
             
             $numProducts = ($idAndNameOnly) ? '' : ' <span title="'.$translator->translate('tr_meliscommerce_categories_list_tree_view_product_num').'">(%s)</span>';
@@ -221,13 +222,21 @@ class MelisComCategoryListController extends AbstractActionController
             }
             unset($categoryList[$key]['cat_status']);
             
+            // retrieves SEO page id
+            $catSeo = $categorySvc->getCategorySeoById($val['cat_id'], $langId);
+            $seoPage = '';
+           
+            if(!empty($catSeo->eseo_page_id)){
+                $seoPage = ' - <span class="fa fa-file-o"></span> '.$catSeo->eseo_page_id;
+            }
+                
             $categoryList[$key]['type'] = 'category';
             if ($val['cat_father_cat_id'] == -1){
                 $itemIcon = '<i class="fa fa-book"></i>';
                 $categoryList[$key]['type'] = 'catalog';
-                $categoryList[$key]['text'] = $itemIcon.' <b>'.$val['cat_id'].' - '.$categoryList[$key]['text'].' '.$numProducts.'</b>';
+                $categoryList[$key]['text'] = $itemIcon.' <b>'.$val['cat_id'].' - '.$categoryList[$key]['text'].' '.$numProducts.' '.$seoPage.'</b>';
             }else{
-                $categoryList[$key]['text'] = $val['cat_id'].' - '.$categoryList[$key]['text'].$numProducts;
+                $categoryList[$key]['text'] = $val['cat_id'].' - '.$categoryList[$key]['text'].$numProducts.' '.$seoPage;
             }
             unset($categoryList[$key]['cat_father_cat_id']);
             
@@ -254,7 +263,7 @@ class MelisComCategoryListController extends AbstractActionController
             );
             
             if (!empty($val['children'])){
-                $categoryList[$key]['children'] = $this->prepareCategoryDataForTreeView($categoryList[$key]['children'], $selected, $openedStateParent, $idAndNameOnly, $categoryChecked);
+                $categoryList[$key]['children'] = $this->prepareCategoryDataForTreeView($categoryList[$key]['children'], $selected, $openedStateParent, $idAndNameOnly, $categoryChecked, $langId);
             }
             
         }

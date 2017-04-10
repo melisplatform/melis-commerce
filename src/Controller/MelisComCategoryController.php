@@ -274,7 +274,7 @@ class MelisComCategoryController extends AbstractActionController
             if (!is_null($validFrom))
             {
                 $validFrom = explode(' ', $validFrom);
-                $validFrom = $validFrom[0];
+                $validFrom = (string) $validFrom[0] == '01/01/1970' ? '' : $validFrom[0];
             }
 
 
@@ -480,7 +480,8 @@ class MelisComCategoryController extends AbstractActionController
             // Category SEO Datas
             $categorySEO = $datas['seo_data'];
 
-            $postValues = get_object_vars($request->getPost());
+            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
             if ($postValues['cat_father_cat_id'] == '-1'){
                 $type = 'catalog';
@@ -766,7 +767,9 @@ class MelisComCategoryController extends AbstractActionController
 
         if($request->isPost()) {
 
-            $postValues = get_object_vars($request->getPost());
+            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getTool()->sanitizeRecursive($postValues);
+
             
             if ($postValues['cat_father_cat_id'] == '-1'){
                 $type = 'catalog';
@@ -788,6 +791,7 @@ class MelisComCategoryController extends AbstractActionController
                 $formElements = $this->serviceLocator->get('FormElementManager');
                 $factory->setFormElementManager($formElements);
 
+                
                 foreach ($catTransData As $val)
                 {
 
@@ -805,13 +809,18 @@ class MelisComCategoryController extends AbstractActionController
                                     'label' => $translator->translate('tr_meliscommerce_categories_category_information_form_cat_name'),
                                     'NotEmpty' => $translator->translate('tr_meliscommerce_categories_input_too_long_100')
                                 );
+                                print_r($propertyForm->getData());
                             }
                             else
                             {
+                                
                                 $hasCategoryName = true;
-
                                 array_push($catTrans, $propertyForm->getData());
                             }
+                        }
+                        else 
+                        {
+                            array_push($catTrans, $propertyForm->getData());
                         }
                     }
                     else
@@ -846,7 +855,7 @@ class MelisComCategoryController extends AbstractActionController
         if (empty($errors)){
             $success = 1;
         }
-
+        
         $result = array(
             'success' => $success,
             'errors' => array('cat_trans_err' => $errors),
@@ -864,7 +873,8 @@ class MelisComCategoryController extends AbstractActionController
     public function validateCategorySeoAction(){
 
         $request = $this->getRequest();
-        $postValues = get_object_vars($request->getPost());
+        $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
         $melisComSeoService = $this->getServiceLocator()->get('MelisComSeoService');
         $result = $melisComSeoService->validateSEOData('category', $postValues['category_seo']);
@@ -891,9 +901,11 @@ class MelisComCategoryController extends AbstractActionController
         $logTypeCode = '';
 
         if($request->isPost()) {
-            $postValues = get_object_vars($request->getPost());
-            $catId = $postValues['cat_id'];
-            $catFatherId = $postValues['cat_father_cat_id'];
+            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getTool()->sanitizeRecursive($postValues);
+
+            $catId = (int) $postValues['cat_id'];
+            $catFatherId = (int) $postValues['cat_father_cat_id'];
             
             if ($catFatherId == '-1'){
                 $type = 'catalog';
@@ -1187,7 +1199,7 @@ class MelisComCategoryController extends AbstractActionController
                 }
 
                 // Getting Product Name
-                $productStr = $productService->getProductName($productId, $langId);
+                $productStr = $melisTool->escapeHtml($productService->getProductName($productId, $langId));
                 $categoryProduct['prd_id'] = $productId;
 
                 // Getting Product Order
@@ -1195,13 +1207,13 @@ class MelisComCategoryController extends AbstractActionController
 
                 foreach ($productCategories As $cval){
                     if ($cval->pcat_cat_id == $catId){
-
+                        $categoryProduct['pcat_order'] = $cval->pcat_order;
                         $categoryProduct['DT_RowId'] = $cval->pcat_id;
                         $categoryProduct['DT_RowAttr'] = array('data-productid' => $productId, 'data-productname' => $productStr);
                     }
 
                 }
-                $categoryProduct['pcat_order'] = $cval->pcat_order;
+                
                 // GET PRODUCT IMAGE
                 $categoryProduct['prd_img'] = sprintf($prodImage, $docSvc->getDocDefaultImageFilePath('product', $productId));
 
@@ -1330,6 +1342,12 @@ class MelisComCategoryController extends AbstractActionController
         );
 
         return $columns;
+    }
+
+    private function getTool()
+    {
+        $tool =  $this->getServiceLocator()->get('MelisCoreTool');
+        return $tool;
     }
 
 }

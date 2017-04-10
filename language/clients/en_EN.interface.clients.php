@@ -174,6 +174,19 @@
 	    'tr_meliscommerce_client_tooltip_password' => 'The password must be at least of 8 characters and must contain at least a letter AND a number.',
 	    'tr_meliscommerce_client_tooltip_password_2' => 'Confirm the password',
 
-        'tr_meliscommerce_client_select_address' => 'Select address',
-        'tr_meliscommerce_client_add_new_address' => 'Add new address...',
+	    // Plugins, MelisCommerceLostPAsswordGetEmailPlugin
+	    'tr_meliscommerce_client_select_address' => 'Select address',
+	    'tr_meliscommerce_client_select_deliver_address' => 'Please select a delivery address',
+	    'tr_meliscommerce_client_select_billing_address' => 'Please select a billing address',
+	    'tr_meliscommerce_client_add_new_address' => 'Add new address',
+	    
+        'tr_meliscommerce_client_email_not_exist' => 'Email does not exist, please try another email address',
+        'tr_meliscommerce_client_pass_change_success' => 'Password has been successfully changed',
+        'tr_meliscommerce_client_pass_key_invalid' => 'Invalid password recovery key',
+        'tr_meliscommerce_client_pass_errors' => 'Error(s) occured',
+        'tr_meliscommerce_client_common_error' => 'Something is wrong, please contact administrator for assistance',
+	    
+	    'tr_meliscommerce_client_Contact_address_title' => 'Address title',
+	    'tr_meliscommerce_client_Checkout_cart_empty' => 'Cart is empty',
+	    'tr_meliscommerce_client_Checkout_no_identity' => 'User has no identity, please login/register before accessing this page',
 	);

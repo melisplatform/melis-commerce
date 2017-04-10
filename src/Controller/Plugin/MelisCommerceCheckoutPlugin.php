@@ -12,6 +12,7 @@ namespace MelisCommerce\Controller\Plugin;
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
 use Zend\Session\Container;
+use Zend\Stdlib\ArrayUtils;
 /**
  * This plugin implements the business logic of the
  * "checkOut" plugin.
@@ -57,21 +58,39 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
      */
     public function front()
     {
+        /**
+         * MelisCommerceCheckoutPlugin this Plugin process the Checkout
+         * This pulig provides pages with specific task as follows
+         * 1. Cart - the cart of the Client/user
+         * 2. Addresses - Delivery and Billing address for checkout
+         * 3. Summary - this page will show the summary of the checkout
+         * 3. Comfirm summary - This page will validate the checkout to become Order,
+         *                      this will display a page if the process encounter an
+         *                      error(s), otherwire this will provide a url for payment page
+         *                      where the payment of the checkout process.
+         *                      In this Demo we created a FAKE payment form in-order to
+         *                      proceed the checkout.
+         * 4. Payment - the step required event listener to process Payment
+         * 5. Order confirmation - the Order confirmation page of the checkout
+         */
+        $checkout = null;
+        $showSteps = true;
         $redirect = null;
         $pluginManager = $this->getServiceLocator()->get('ControllerPluginManager');
+        $translator = $this->getServiceLocator()->get('translator');
         
         // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
+        $checkOutCartParameters = (!empty($this->pluginFrontConfig['checkout_cart_parameters'])) ? $this->pluginFrontConfig['checkout_cart_parameters'] : array();
+        $checkOutAddressesParameters = (!empty($this->pluginFrontConfig['checkout_cart_addresses_parameters'])) ? $this->pluginFrontConfig['checkout_cart_addresses_parameters'] : array();
+        $checkOutSummaryParameters = (!empty($this->pluginFrontConfig['checkout_cart_summary_parameters'])) ? $this->pluginFrontConfig['checkout_cart_summary_parameters'] : array();
+        $checkOutConfirmSummaryParameters = (!empty($this->pluginFrontConfig['checkout_cart_confirm_summary_parameters'])) ? $this->pluginFrontConfig['checkout_cart_confirm_summary_parameters'] : array();
+        $checkOutConfirmParameters = (!empty($this->pluginFrontConfig['checkout_cart_confirm_parameters'])) ? $this->pluginFrontConfig['checkout_cart_confirm_parameters'] : array();
+        
         $countryId = (!empty($this->pluginFrontConfig['m_checkout_country_id'])) ? $this->pluginFrontConfig['m_checkout_country_id'] : 1;
         $siteId = (!empty($this->pluginFrontConfig['m_checkout_site_id'])) ? $this->pluginFrontConfig['m_checkout_site_id'] : 1;
         $steps = (!empty($this->pluginFrontConfig['m_checkout_step'])) ? $this->pluginFrontConfig['m_checkout_step'] : '';
         
-        $checkoutCartPage = (!empty($this->pluginFrontConfig['m_checkout_cart_link'])) ? $this->pluginFrontConfig['m_checkout_cart_link'] : 'http://www.test.com';
-        $checkoutAddressesPage = (!empty($this->pluginFrontConfig['m_checkout_addresses_link'])) ? $this->pluginFrontConfig['m_checkout_addresses_link'] : 'http://www.test.com';
-        $checkoutSummaryPage = (!empty($this->pluginFrontConfig['m_checkout_summary_link'])) ? $this->pluginFrontConfig['m_checkout_summary_link'] : 'http://www.test.com';
-        
-        $checkoutPaymentUrl = (!empty($this->pluginFrontConfig['m_checkout_payment_url'])) ? $this->pluginFrontConfig['m_checkout_payment_url'] : 'http://www.test.com';
-        $checkoutPaymentNotifyUrl = (!empty($this->pluginFrontConfig['m_checkout_payment_notify_url'])) ? $this->pluginFrontConfig['m_checkout_payment_notify_url'] : 'http://www.test.com';
-        $checkoutConfirmationUrl = (!empty($this->pluginFrontConfig['m_checkout_confirmation_url'])) ? $this->pluginFrontConfig['m_checkout_confirmation_url'] : 'http://www.test.com';
+        $checkoutPage = (!empty($this->pluginFrontConfig['m_checkout_page_link'])) ? $this->pluginFrontConfig['m_checkout_page_link'] : 'http://www.test.com';
         $loginPage = (!empty($this->pluginFrontConfig['m_login_page_link'])) ? $this->pluginFrontConfig['m_login_page_link'] : 'http://www.test.com';
         
         // Preparing the Container/Session of Commerce checkout
@@ -98,7 +117,8 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                 if (!$melisComAuthSrv->hasIdentity())
                 {
                     $link_query = array(
-                        'm_redirection_link_ok' => $checkoutAddressesPage.'?'.http_build_query(array('m_checkout_step' => 'checkout-addresses'))
+                        'm_redirection_link_ok' => $checkoutPage.'?'.http_build_query(array('m_checkout_step' => 'checkout-addresses')),
+                        'm_autologin' => 1
                     );
                     
                     $redirect = $loginPage.'?'.http_build_query($link_query);
@@ -110,26 +130,36 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                     $container['checkout'][$siteId]['contactId'] = $melisComAuthSrv->getPersonId();
                     $container['checkout'][$siteId]['clientId'] = $melisComAuthSrv->getClientId();
                     
+                    /**
+                     * Checkout Addresses this Plugin process the checkout addresses such as Delivery and Billing
+                     * needed to create an Order
+                     */
                     $checkOutAddressesPlugin = $pluginManager->get('MelisCommerceCheckoutAddressesPlugin');
-                    $checkOutAddressesParameters = array(
-                        'm_site_id' => $siteId
-                    );
-                    
+                    $checkOutAddressesParameters = ArrayUtils::merge($checkOutAddressesParameters, array('m_site_id' => $siteId));
                     $checkout = $checkOutAddressesPlugin->render($checkOutAddressesParameters);
-                    
                     $checkoutAddressesVars = $checkout->getVariables();
-                    
                     if ($checkoutAddressesVars->success)
                     {
-                        $redirect = $checkoutSummaryPage.'?'.http_build_query(array('m_checkout_step' => 'checkout-summary'));
+                        $redirect = $checkoutPage.'?'.http_build_query(array('m_checkout_step' => 'checkout-summary'));
                     }
                     else 
                     {
-                        $checkoutAddressesVars->checkOutDeliveryAddress->get('m_checkout_step')->setValue('checkout-addresses');
-                        $checkoutAddressesVars->checkOutBillingAddress->get('m_checkout_step')->setValue('checkout-addresses');
+                        /**
+                         * Set value to the Address form input hidden
+                         * the purpose is to identify the request after submission of the form
+                         */
+                        if ($checkoutAddressesVars->checkOutDeliveryAddress)
+                        {
+                            $checkoutAddressesVars->checkOutDeliveryAddress->get('m_checkout_step')->setValue('checkout-addresses');
+                            $checkoutAddressesVars->checkOutBillingAddress->get('m_checkout_step')->setValue('checkout-addresses');
+                        }
                         
-                        $checkout->setVariable('prevStep_link', $checkoutCartPage);
-                        $checkout->setVariable('nextStep_link', $checkoutSummaryPage.'?'.http_build_query(array('m_checkout_step' => 'checkout-summary')));
+                        /**
+                         * Adding view variable for "Previous" and "Next" step
+                         * to the Plugin view
+                         */
+                        $checkout->setVariable('prevStep_link', $checkoutPage);
+                        $checkout->setVariable('nextStep_link', $checkoutPage.'?'.http_build_query(array('m_checkout_step' => 'checkout-summary')));
                     }
                 }
                 break;
@@ -149,23 +179,83 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                 if (!$melisComAuthSrv->hasIdentity())
                 {
                     $link_query = array(
-                        'm_redirection_link_ok' => $checkoutAddressesPage.'?'.http_build_query(array('m_checkout_step' => 'checkout-summary'))
+                        'm_redirection_link_ok' => $checkoutPage,
+                        'm_autologin' => 1
                     );
                     
                     $redirect = $loginPage.'?'.http_build_query($link_query);
                 }
                 else
                 {
+                    /**
+                     * This Plugin show the summary of the Checkout
+                     * this will show the cart items, subtotal, discount, shippping and the total of the order
+                     */
                     $checkOutSummaryPlugin = $pluginManager->get('MelisCommerceCheckoutSummaryPlugin');
-                    $checkOutSummaryParameters = array();
                     $checkout = $checkOutSummaryPlugin->render($checkOutSummaryParameters);
-                    
-                    $checkout->setVariable('prevStep_link', $checkoutAddressesPage.'?'.http_build_query(array('m_checkout_step' => 'checkout-addresses')));
-                    $checkout->setVariable('nextStep_link', $checkoutSummaryPage.'?'.http_build_query(array('m_checkout_step' => 'checkout-payment')));
+                    /**
+                     * Adding view variable for "Previous" and "Next" step
+                     * to the Plugin view
+                     */
+                    $checkout->setVariable('prevStep_link', $checkoutPage.'?'.http_build_query(array('m_checkout_step' => 'checkout-addresses')));
+                    $checkout->setVariable('nextStep_link', $checkoutPage.'?'.http_build_query(array('m_checkout_step' => 'checkout-confirm-summary')));
                 }
                 break;
+            case 'checkout-confirm-summary':
+                /**
+                 * Login using the Commerce Athentication Service
+                 */
+                $melisComAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
                 
+                /**
+                 * Checking if the user has Loggedin
+                 * else this should redirect to Login page
+                 * with the param of the Checkout address page
+                 */
+                if (!$melisComAuthSrv->hasIdentity())
+                {
+                    $link_query = array(
+                        'm_redirection_link_ok' => $checkoutPage,
+                        'm_autologin' => 1
+                    );
+                    
+                    $redirect = $loginPage.'?'.http_build_query($link_query);
+                }
+                else 
+                {
+                    /**
+                     * This Plugin process the checkout to become an Order record
+                     * if the checkout complete this plugin return flag, else
+                     * this will show some error(s) occured 
+                     */
+                    $checkOutConfirmSummaryPlugin = $pluginManager->get('MelisCommerceCheckoutConfirmSummaryPlugin');
+                    $checkout = $checkOutConfirmSummaryPlugin->render($checkOutConfirmSummaryParameters);
+                    
+                    $checkoutVars = $checkout->getVariables();
+                    
+                    /**
+                     * if the process return success, this plugin "MelisCommerceCheckoutPlugin"
+                     * will return a url where the next step process which is the payment
+                     */
+                    if ($checkoutVars->success)
+                    {
+                        $link_query = array(
+                            'm_checkout_step' => 'checkout-payment'
+                        );
+                        $redirect = $checkoutPage.'?'.http_build_query($link_query);
+                    }
+                    else
+                    {
+                        /**
+                         * Adding view variable for "Previous" step
+                         * to the Plugin view
+                         */
+                        $checkout->setVariable('prevStep_link', $checkoutPage.'?'.http_build_query(array('m_checkout_step' => 'checkout-summary')));
+                    }
+                }
+                break;
             case 'checkout-payment':
+                
                 
                 /**
                  * Login using the Commerce Athentication Service
@@ -180,66 +270,112 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                 if (!$melisComAuthSrv->hasIdentity())
                 {
                     $link_query = array(
-                        'm_redirection_link_ok' => $checkoutAddressesPage
+                        'm_redirection_link_ok' => $checkoutPage,
+                        'm_autologin' => 1
                     );
                     
                     $redirect = $loginPage.'?'.http_build_query($link_query);
+                    $checkout = null;
                 }
                 else 
                 {
                     $clientId = $melisComAuthSrv->getClientId();
-                    
+                    // Retrieving the Checkout total cost
                     $melisComOrderCheckoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
                     $melisComOrderCheckoutService->setSiteId($siteId);
-//                     $validatedBasket = $melisComOrderCheckoutService->validateBasket($clientId);
-                    $validatedBasket = $melisComOrderCheckoutService->checkoutStep1_prePayment($clientId);
+                    $order = $melisComOrderCheckoutService->computeAllCosts($clientId);
+                    $totalCost = $order['costs']['total'];
                     
-                    echo '<pre>';
-                    print_r($validatedBasket);
-                    echo '</pre>';
-                    
-                    die();
-                    if (!empty($validatedBasket['basket']['ko']))
+                    if (!empty($container['checkout'][$siteId]['orderId']))
                     {
-                        $redirect = $checkoutCartPage.'?'.http_build_query(array('m_checkout_step' => 'checkout-addresses'));
-                    }
-                    else 
-                    {
+                        $orderId = $container['checkout'][$siteId]['orderId'];
                         
-                        $data = array(
-                            'tmp-payment-gateway' => 1
+                        $couponId = null;
+                        if (!empty($container['checkout'][$siteId]['couponId']))
+                        {
+                            $couponId = $container['checkout'][$siteId]['couponId'];
+                        }
+                        
+                        $param = array(
+                            'chechout' => null,
+                            'orderDetails' => array(
+                                'countryId' => $countryId,
+                                'orderId' => $orderId,
+                                'couponId' => $couponId,
+                                'totalCost' => $totalCost,
+                            )
                         );
-                        $redirect = $checkoutPaymentUrl.'?'.http_build_query($data);
+                        
+                        $showSteps = false;
+                        $checkoutPaymentEvent = $this->sendEvent('meliscommerce_checkout_plugin_payment', $param);
+                        $checkout = $checkoutPaymentEvent['chechout'];
                     }
                 }
                 
                 break;
+            case 'checkout-confirm':
+                
+                $checkOutConfirmPlugin = $pluginManager->get('MelisCommerceCheckoutConfirmPlugin');
+                $checkout = $checkOutConfirmPlugin->render($checkOutConfirmParameters);
+                
+                if(!empty($container['checkout'][$siteId]))
+                {
+                    // Unsetting Site Checkout Session
+                    unset($container['checkout'][$siteId]);
+                }
+                $showSteps = false;
+                
+                break;
             default:
                 
+                /**
+                 * As default step the cart of the checkout will show first
+                 * This Plugin include the updating of quantity of the item(s)
+                 * and validating coupon for discount
+                 */
                 $checkOutcartPlugin = $pluginManager->get('MelisCommerceCheckoutCartPlugin');
-                $checkOutCartParameters = array(
-                    'm_country_id' => $countryId,
-                    'm_v_remove_link' => $checkoutCartPage,
-                    'm_site_id' => $siteId
-                );
+                
+                $checkOutCartParameters = ArrayUtils::merge($checkOutCartParameters, 
+                                                            array(
+                                                                'm_country_id' => $countryId,
+                                                                'm_v_remove_link' => $checkoutPage,
+                                                                'm_site_id' => $siteId
+                                                            ));
                 $checkout = $checkOutcartPlugin->render($checkOutCartParameters);
                 
-                $checkout->setVariable('nextStep_link', $checkoutAddressesPage.'?'.http_build_query(array('m_checkout_step' => 'checkout-addresses')));
+                /**
+                 * Adding view variable for "Next" step
+                 * to the Plugin view
+                 */
+                $checkout->setVariable('nextStep_link', $checkoutPage.'?'.http_build_query(array('m_checkout_step' => 'checkout-addresses')));
                 
                 break;
         }
         
+        /**
+         * if the plugin redturn a redirect url this should redirect to the return url
+         * in-order to proceed the next step of the checkout
+         */
+        if ($redirect)
+        {
+            $this->getController()->redirect()->toUrl($redirect);
+        }
+        
+        /**
+         * Default steps of "MelisCommerceCheckoutPlugin"
+         * with activation of step depend on the data step provided by the controller/url
+         */
         $checkoutSteps = array(
             'checkout-cart' => array(
-                'label' => 'Checkout Cart',
+                'label' => $translator->translate('tr_meliscommerce_checkout_cart_label'),
                 'isActive' => ($steps == '') ? true : false,
             ),
             'checkout-addresses' => array(
-                'label' => 'Checkout Addresses',
+                'label' => $translator->translate('tr_meliscommerce_checkout_addresses_label'),
                 'isActive' => ($steps == 'checkout-addresses') ? true : false,
             ),
             'checkout-summary' => array(
-                'label' => 'Checkout Summary',
+                'label' => $translator->translate('tr_meliscommerce_checkout_summary_label'),
                 'isActive' => ($steps == 'checkout-summary') ? true : false,
             ),
         );
@@ -247,6 +383,7 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
         $viewVariables = array(
             'checkout' => $checkout,
             'checkoutSteps' => $checkoutSteps,
+            'showSteps' => $showSteps,
             'redirect' => $redirect
         );
         // return the variable array and let the view be created

@@ -12,9 +12,7 @@ namespace MelisCommerce\Listener;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\ListenerAggregateInterface;
 
-use MelisCore\Listener\MelisCoreGeneralListener;
-
-class MelisCommerceShipmentCostListener extends MelisCoreGeneralListener implements ListenerAggregateInterface
+class MelisCommerceShipmentCostListener implements ListenerAggregateInterface
 {
     public function attach(EventManagerInterface $events)
     {
@@ -28,7 +26,6 @@ class MelisCommerceShipmentCostListener extends MelisCoreGeneralListener impleme
         	function($e){
         	    
         		$sm = $e->getTarget()->getServiceLocator();   	
-        		$melisCoreDispatchService = $sm->get('MelisCoreDispatch');
         		$params = $e->getParams();
         		
         		$melisComShipmentCostService = $sm->get('MelisComShipmentCostService');
@@ -38,5 +35,14 @@ class MelisCommerceShipmentCostListener extends MelisCoreGeneralListener impleme
         100);
         
         $this->listeners[] = $callBackHandler;
+    }
+    
+    public function detach(EventManagerInterface $events)
+    {
+        foreach ($this->listeners as $index => $listener) {
+            if ($events->detach($listener)) {
+                unset($this->listeners[$index]);
+            }
+        }
     }
 }

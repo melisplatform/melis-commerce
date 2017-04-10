@@ -48,7 +48,7 @@ $(document).ready(function() {
 	
 	body.on("click", ".deletevariant", function(){
 		var del = this;
-		var variantId   = $(del).parent().parent().attr('id');		
+		var variantId   = $(del).closest('tr').attr('id');		
 		var url = 'melis/MelisCommerce/MelisComVariant/deleteVariant';
 		var dataString = [];
 		dataString.push({

@@ -1,0 +1,20 @@
+<?php 
+$billing = $this->billingAddress;
+$delivery = $this->deliveryAddress;
+?>
+<div>
+	<div>
+		<span>Delivery address</span>
+		<p><?= $delivery['oadd_firstname']. ' ' .$delivery['oadd_middle_name']. ' ' .$delivery['oadd_name']  ?>
+		<br><i><?= $delivery['oadd_num']. ' ' .$delivery['oadd_stairs']. ' ' .$delivery['oadd_building_name']. ' ' .$delivery['oadd_company']. ', ' .$delivery['oadd_street']
+		. ', ' .$delivery['oadd_city']. ', ' .$delivery['oadd_state']. ', ' .$delivery['oadd_country']. ', ' .$delivery['oadd_zipcode']
+		?></i></p>
+	</div>
+	<div>
+		<span>Billing address</span>
+		<p><?= $billing['oadd_firstname']. ' ' .$billing['oadd_middle_name']. ' ' .$billing['oadd_name']  ?>
+		<br><i><?= $billing['oadd_num']. ' ' .$billing['oadd_stairs']. ' ' .$billing['oadd_building_name']. ' ' .$billing['oadd_company']. ', ' .$billing['oadd_street']
+		. ', ' .$billing['oadd_city']. ', ' .$billing['oadd_state']. ', ' .$billing['oadd_country']. ', ' .$billing['oadd_zipcode']
+		?></i></p>
+	</div>			
+</div>

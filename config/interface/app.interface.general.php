@@ -45,7 +45,11 @@ return array(
                 ),
             ),
             'datas' => array(
-                
+                'seo_default_pages' => array(
+                    'category' => 1,
+                    'product' => 1,
+                    'variant' => 1,
+                )
             ),
             'interface' => array(
                 'meliscommerce_general' => array(

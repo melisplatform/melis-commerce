@@ -11,6 +11,7 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
+use Zend\Session\Container;
 /**
  * This plugin implements the business logic of the
  * "show attribute plugin" plugin.
@@ -68,6 +69,9 @@ class MelisCommerceAttributesShowPlugin extends MelisTemplatingPlugin
         $attrSelection = ($this->pluginFrontConfig['m_attrSelection'])? $this->pluginFrontConfig['m_attrSelection'] : array();
         $countryId = ($this->pluginFrontConfig['m_p_country'])? $this->pluginFrontConfig['m_p_country'] : 0;
         $is_submit = ($this->pluginFrontConfig['m_is_submit'])? $this->pluginFrontConfig['m_is_submit'] : false;
+        
+        $container = new Container('melisplugins');
+        $lang = $container['melis-plugins-lang-id'];
         
         $attributeSvc = $this->getServiceLocator()->get('MelisComAttributeService');
         // Array of attribute entities, refer to melis-commerce/src/entity/MelisAttribute
@@ -172,7 +176,7 @@ class MelisCommerceAttributesShowPlugin extends MelisTemplatingPlugin
                     sort($variantsIds);
                     
                     // Getting the Variant from Variant Service Entity
-                    $variant = $variantSrv->getVariantById($variantsIds[0]);
+                    $variant = $variantSrv->getVariantById($variantsIds[0], $lang);
                     
                     // Getting the Final Price of the variant
                     $varPrice = $variantSrv->getVariantFinalPrice($variantsIds[0], $countryId, true);
@@ -215,7 +219,7 @@ class MelisCommerceAttributesShowPlugin extends MelisTemplatingPlugin
                 }
             }
         }
-       
+        
         // Create an array with the variables that will be available in the view
         $viewVariables = array(
             'attributes' => $attributes,
@@ -228,14 +232,5 @@ class MelisCommerceAttributesShowPlugin extends MelisTemplatingPlugin
         
         // return the variable array and let the view be created
         return $viewVariables;
-    }
-    
-    /**
-     * This function return the back office rendering for the template edition system
-     * TODO
-     */
-    public function back()
-    {
-        return array();
     }
 }

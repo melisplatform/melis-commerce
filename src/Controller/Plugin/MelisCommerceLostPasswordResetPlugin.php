@@ -79,13 +79,15 @@ class MelisCommerceLostPasswordResetPlugin extends MelisTemplatingPlugin
         $data['m_recovery_key'] = (!empty($this->pluginFrontConfig['m_recovery_key'])) ? $this->pluginFrontConfig['m_recovery_key'] : '';
         $data['m_autologin'] = (!empty($this->pluginFrontConfig['m_autologin'])) ? $this->pluginFrontConfig['m_autologin'] : false;
         
-        $clientPersonTbl = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
-        $clientPerson = $clientPersonTbl->getEntryByField('cper_password_recovery_key', $data['m_recovery_key'])->current();
+        $clientSrv = $this->getServiceLocator()->get('MelisComClientService');
+        $translator = $this->getServiceLocator()->get('translator');
+        $clientPerson = $clientSrv->getClientPersonByRecoveryKey($data['m_recovery_key']);
         
         if (empty($clientPerson))
         {
             $isValidKey = false;
             $message = 'Invalid password recovery key';
+            $message = $translator->translate('tr_meliscommerce_client_pass_key_invalid');
         }
         else
         {
@@ -103,15 +105,14 @@ class MelisCommerceLostPasswordResetPlugin extends MelisTemplatingPlugin
                     $person = (Array) $clientPerson;
                     $person['cper_password'] = $data['m_password'];
                     $person['cper_password_recovery_key'] = null;
-                    $person['reset_pass_flag'] = 1;
-        
-                    $clientSrv = $this->getServiceLocator()->get('MelisComClientService');
+                    unset($person['cper_id']);
+                    
                     $clientSrv->saveClientPerson($person, null, $clientPerson->cper_id);
-        
+                    
                     if ($data['m_autologin'])
                     {
                         $pluginManager = $this->getServiceLocator()->get('ControllerPluginManager');
-        
+                        
                         $login = $pluginManager->get('MelisCommerceLoginPlugin');
                         // Adding the custom link the user is already identify
                         $loginParameters = array(
@@ -120,54 +121,14 @@ class MelisCommerceLostPasswordResetPlugin extends MelisTemplatingPlugin
                         );
                         // add generated view to children views for displaying it in the contact view
                         $login->render($loginParameters);
-        
-                        // Gettin the Redirect Uri from config
-                        //$loggedinRedirectLink = (!empty($this->pluginFrontConfig['redirect_link_loggedin'])) ? $this->pluginFrontConfig['redirect_link_loggedin'] : 'http://www.test.com';
-        
-                        /**
-                         * Checking if the request is not from a Post request
-                         * if true this will redirected to the link specified on paramater
-
-                        $controller = $this->getController();
-                        if (!$controller->getRequest()->isPost())
-                        {
-                            $redirector = $controller->getPluginManager()->get('Redirect');
-                            $redirector->toUrl($loggedinRedirectLink);
-                        }
-						NOTE: COMMENTED TO ALLOW DEVELOPERS TO EXECUTE EVENT VIA AJAX POST 
-						REMOVING THE ABILITY OF ROUTING THE PAGE AUTOMATICALLY, INSTEAD
-						THIS WOULD ALLOW THE DEVELOPERS TO CREATE THEIR OWN CALLBACK AFTER
-						SUCCESSFULLY RESETTING THE PASSWORD
-                         * */
-                    }
-                    else
-                    {
-                        // Gettin the Redirect Uri from config
-                        //$notLoggedinRedirectLink = (!empty($this->pluginFrontConfig['redirect_link_not_loggedin'])) ? $this->pluginFrontConfig['redirect_link_not_loggedin'] : 'http://www.test.com';
-        
-                        /**
-                         * Checking if the request is not from a Post request
-                         * if true this will redirected to the link specified on paramater
-
-                        $controller = $this->getController();
-                        if (!$controller->getRequest()->isPost())
-                        {
-                            $redirector = $controller->getPluginManager()->get('Redirect');
-                            $redirector->toUrl($notLoggedinRedirectLink);
-                        }
-						NOTE: COMMENTED TO ALLOW DEVELOPERS TO EXECUTE EVENT VIA AJAX POST 
-						REMOVING THE ABILITY OF ROUTING THE PAGE AUTOMATICALLY, INSTEAD
-						THIS WOULD ALLOW THE DEVELOPERS TO CREATE THEIR OWN CALLBACK AFTER
-						SUCCESSFULLY RESETTING THE PASSWORD
-                         */
                     }
                     
-                    $message = 'Password has been successfully changed';
+                    $message = $translator->translate('tr_meliscommerce_client_pass_change_success');
                     $success = 1;
                 }
                 else
                 {
-                    $message = 'Error(s) occured';
+                    $message = $translator->translate('tr_meliscommerce_client_pass_errors');
                     $errors = $lostPasswordReset->getMessages();
                 }
             }
@@ -192,14 +153,5 @@ class MelisCommerceLostPasswordResetPlugin extends MelisTemplatingPlugin
         
         // return the variable array and let the view be created
         return $viewVariables;
-    }
-    
-    /**
-     * This function return the back office rendering for the template edition system
-     * TODO
-     */
-    public function back()
-    {
-        return array();
     }
 }

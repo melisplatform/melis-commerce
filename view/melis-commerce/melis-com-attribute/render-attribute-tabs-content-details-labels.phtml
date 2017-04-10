@@ -5,7 +5,7 @@
     }
 ?>
 <div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="row">
-		<div class="col-xs-12 col-md-4">
+		<div class="col-xs-12 col-md-3 col-lg-2">
     		<div class="product-text-tab-container">
             	<ul class="nav-tabs product-text-tab">
             		<?php 
@@ -22,7 +22,7 @@
                                     echo '<i class="fa fa-globe"></i>';
                                 }
 								?>								
-                				<span><?= $lang->elang_name ?></span>
+                				<span><?= $this->escapeHtml($lang->elang_name); ?></span>
                 			</a>
                 		</li>                		
             		<?php 
@@ -32,7 +32,7 @@
             	</ul>
             </div>
 		</div>
-		<div class="col-xs-12 col-md-8">
+		<div class="col-xs-12 col-md-9 col-lg-10">
 			<div class="tab-content">
 				<?php
 				$active = 'active';
@@ -40,7 +40,7 @@
 				?>
 				<div id="<?= $this->langs[$i]->elang_locale.$id?>" class="tab-pane product-text-tab-content <?= $active ?>">
 					<div class="me-heading bg-white border-bottom">
-            			<h3 class=""><i class="fa fa-language" aria-hidden="true"></i> <?= $this->langs[$i]->elang_name?></h3>
+            			<h3 class=""><i class="fa fa-language" aria-hidden="true"></i> <?= $this->escapeHtml($this->langs[$i]->elang_name); ?></h3>
             		</div>
             		<div class="product-text-tab-form-content">
             			<?php             			

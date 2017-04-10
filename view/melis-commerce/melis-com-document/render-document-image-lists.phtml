@@ -2,7 +2,8 @@
     $id = '';
     if (!empty($this->zoneconfig['conf']['id'])){
         $id = 'id="'.$this->zoneconfig['conf']['id'] .'" ';
-    } 
+    }
+    $idLen = $this->docRelationType.$this->docRelationId;
     $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
 ?>
 <div <?= $id . $data_melisKey; ?>>
@@ -53,7 +54,7 @@
         	</div>			
 		</div>
 	</div>
-    <div class="imageDocumentContainer">	
+    <div class="imageDocumentContainer" id="<?= $idLen ?>">	
 		<?php 
 		if($this->images) {
 		    $typeUpload = "image";
@@ -64,7 +65,7 @@
 		        $imageLoc = $image['doc_path'];
 		    
 		?>
-                <div class="imageDocumentItem image <?= $image['dtype_code'] .' ' . $image['rdoc_country_id']; ?>">
+                <div class="imageDocumentItem image <?= $image['dtype_code'].' ' . $image['dtype_sub_code'] .' ' . $image['rdoc_country_id']; ?>">
                 	<div class="me-p-image">
                 	<img src="<?= $imageLoc; ?>"/>
                 		<div class="hover-details">
@@ -92,3 +93,8 @@
 		?>
     </div>
 </div>
+<script>
+$("#<?= $idLen ?>").load(function(){
+	initImageDocuments($("#<?= $idLen ?>").closest('.container-level-a'));	
+})
+</script>

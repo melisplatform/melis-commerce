@@ -95,12 +95,21 @@
 	    
 	    // Plugins
 	    
-	    'tr_meliscommerce_add_to_cart_variant_id_empty' => 'Variant id cannot be empty',
-	    'tr_meliscommerce_add_to_cart_variant_country_empty' => 'Variant country cannot be empty',
+	    'tr_meliscommerce_add_to_cart_variant_id_empty' => 'Variant id can\'t be empty',
+	    'tr_meliscommerce_add_to_cart_variant_country_empty' => 'Variant country can\'t be empty',
 	    'tr_meliscommerce_add_to_cart_quantity' => 'Quantity',
 	    'tr_meliscommerce_add_to_cart_variant_quantity_invalid' => 'Quantity must be numeric',
-	    'tr_meliscommerce_add_to_cart_variant_quantity_empty' => 'Quantity cannot be empty',
+	    'tr_meliscommerce_add_to_cart_variant_quantity_empty' => 'Quantity can\'t be empty',
 	    
-	    'tr_meliscommerce_client_checkout_delivery_address_empty' => 'Delivery address cannont be empty',
-	    'tr_meliscommerce_client_checkout_billing_address_empty' => 'Billing address cannont be empty'
+	    'tr_meliscommerce_client_checkout_delivery_address_empty' => 'Delivery address can\'t be empty',
+	    'tr_meliscommerce_client_checkout_billing_address_empty' => 'Billing address can\'t be empty',
+	    
+	    'tr_meliscommerce_checkout_cart_label' => 'Checkout Cart',
+	    'tr_meliscommerce_checkout_addresses_label' => 'Checkout Addresses',
+	    'tr_meliscommerce_checkout_summary_label' => 'Checkout Summary',
+	    
+	    'tr_meliscommerce_checkout_delivery_save_success' => 'Delivery address has been successfully saved',
+	    'tr_meliscommerce_checkout_delivery_save_error' => 'Something is wrong, please contact administrator for assistance',
+	    'tr_meliscommerce_checkout_delivery_errors' => 'Error(s) occured',
+	    'tr_meliscommerce_checkout_billing_save_success' => 'Delivery address has been successfully saved',
 	);

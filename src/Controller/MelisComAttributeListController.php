@@ -237,9 +237,9 @@ class MelisComAttributeListController extends AbstractActionController
                 $tableData[$c]['attr_status']       = $status;
                 $tableData[$c]['attr_visible']      = $visible;
                 $tableData[$c]['attr_searchable']   = $searchable;
-                $tableData[$c]['atrans_name']       = $atrans_name;
-                $tableData[$c]['attr_reference']    = $attribute->getAttribute()->attr_reference;
-                $tableData[$c]['atype_name']        = $atype_name;
+                $tableData[$c]['atrans_name']       = $this->getTool()->escapeHtml($atrans_name);
+                $tableData[$c]['attr_reference']    = $this->getTool()->escapeHtml($attribute->getAttribute()->attr_reference);
+                $tableData[$c]['atype_name']        = $this->getTool()->escapeHtml($atype_name);
                 $c++;
             }
         }

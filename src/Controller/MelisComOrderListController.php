@@ -429,14 +429,14 @@ class MelisComOrderListController extends AbstractActionController
                 $tableData[$c]['DT_RowId'] = $order->getId();
                 $tableData[$c]['order_table_checkbox'] = sprintf($checkBox, $order->getId());                
                 $tableData[$c]['ord_id'] = $order->getId();
-                $tableData[$c]['ord_reference'] = $order->getOrder()->ord_reference;
+                $tableData[$c]['ord_reference'] = $this->getTool()->escapeHtml($order->getOrder()->ord_reference);
                 $tableData[$c]['ord_status'] = sprintf($status, $class, $order->getId(), $disabled, $orderStatus->osta_id, $orderStatus->ostt_status_name);
                 $tableData[$c]['products'] = number_format($products, 0);
                 $tableData[$c]['price'] = number_format($price, 2);
-                $tableData[$c]['ccomp_name'] = $company;
-                $tableData[$c]['civt_min_name'] = $civt_min_name;
-                $tableData[$c]['cper_firstname'] = $cper_firstname;
-                $tableData[$c]['cper_name'] = $cper_name;
+                $tableData[$c]['ccomp_name'] = $this->getTool()->escapeHtml($company);
+                $tableData[$c]['civt_min_name'] = $this->getTool()->escapeHtml($civt_min_name);
+                $tableData[$c]['cper_firstname'] = $this->getTool()->escapeHtml($cper_firstname);
+                $tableData[$c]['cper_name'] = $this->getTool()->escapeHtml($cper_name);
                 $tableData[$c]['ord_date_creation'] = $this->getTool()->dateFormatLocale($order->getOrder()->ord_date_creation);
                 $tableData[$c]['last_status_update'] = '';
                 
@@ -472,6 +472,7 @@ class MelisComOrderListController extends AbstractActionController
         if($this->getRequest()->isPost()){
             $this->getEventManager()->trigger('meliscommerce_order_status_save_start', $this, array());
             $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getTool()->sanitizeRecursive($postValues);
             $orderId = $postValues['ord_id'];
             unset($postValues['ord_id']);
             $data = $orderSvc->saveOrder($postValues, null, null, null, null, null, $orderId);

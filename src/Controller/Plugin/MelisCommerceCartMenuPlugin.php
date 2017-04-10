@@ -11,6 +11,7 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
+use Zend\Session\Container;
 /**
  * This plugin implements the business logic of the
  * "cart menu plugin" plugin.
@@ -58,12 +59,18 @@ class MelisCommerceCartMenuPlugin extends MelisTemplatingPlugin
     {
         // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
         $limit = !empty($this->pluginFrontConfig['cart_menu_limit'])? $this->pluginFrontConfig['cart_menu_limit'] : null;
+        $imageType = !empty($this->pluginFrontConfig['image_type'])? $this->pluginFrontConfig['image_type'] : array();
+        
         $basket = array();
+        $total = 0;
+        $totalCurrency = '';
         
         $ecomAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
         $basketSrv = $this->getServiceLocator()->get('MelisComBasketService');
         $prodSvc = $this->getServiceLocator()->get('MelisComProductService');
-        $currencyTbl = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+        $currencySvc = $this->getServiceLocator()->get('MelisComCurrencyService');
+        $container = new Container('melisplugins');
+        $lang = $container['melis-plugins-lang-id'];
         
         $clientKey = $ecomAuthSrv->getId();
         $clientId = null;
@@ -77,11 +84,12 @@ class MelisCommerceCartMenuPlugin extends MelisTemplatingPlugin
         
         if($basketObj){
             foreach($basketObj as $item){
-            
+                
+                $itemTotal = 0;
                 $var = $item->getVariant();
                 
-                $product = $prodSvc->getProductById($var->getVariant()->var_prd_id, null, null, 'IMG', array('DEFAULT'));
-
+                $product = $prodSvc->getProductById($var->getVariant()->var_prd_id, $lang, null, 'IMG', array('DEFAULT'));
+                
                 // Get the product name
                 foreach($product->getTexts() as $text){
                     if($text->ptt_code == 'TITLE'){
@@ -111,7 +119,7 @@ class MelisCommerceCartMenuPlugin extends MelisTemplatingPlugin
                 
                 // if no currency set from the prices, get the default site currency
                 if(empty($tmp['cur_symbol'])){
-                    $currency = $currencyTbl->getEntryByField('cur_default', 1)->current();
+                    $currency = $currencySvc->getDefaultCurrency();
                     $tmp['cur_symbol'] = $currency->cur_symbol;
                 }
                 
@@ -124,30 +132,25 @@ class MelisCommerceCartMenuPlugin extends MelisTemplatingPlugin
                     }
                 }else{
                     foreach($product->getDocuments() as $doc){
-                        if($doc->dtype_sub_code == 'DEFAULT'){
+                        if($doc->dtype_sub_code == $imageType){
                             $tmp['image'] = $doc->doc_path;
                         }
                     }
                 }
-            
+                
+                $itemTotal = $tmp['price'] * $tmp['quantity'];
+                $totalCurrency = $tmp['cur_symbol'];
+                $total = $total + $itemTotal;
                 $basket[] = $tmp;
             }
         }
         
         $viewVariables = array(
             'basket' => $basket,
+            'basketTotal' => $total,
+            'currency' => $totalCurrency,
         );
-//         echo '<pre>'; print_r($viewVariables); echo 'asdasd</pre>';
         // return the variable array and let the view be created
         return $viewVariables;
-    }
-    
-    /**
-     * This function return the back office rendering for the template edition system
-     * TODO
-     */
-    public function back()
-    {
-        return array();
     }
 }

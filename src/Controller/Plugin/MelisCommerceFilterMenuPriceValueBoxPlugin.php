@@ -56,7 +56,7 @@ class MelisCommerceFilterMenuPriceValueBoxPlugin extends MelisTemplatingPlugin
      */
     public function front()
     {
-       $priceTbl = $this->getServiceLocator()->get('MelisEcomPriceTable');
+       $productSearchSvc = $this->getServiceLocator()->get('MelisComProductSearchService');
        $categorySvc = $this->getServiceLocator()->get('MelisComCategoryService');
        
        $priceType = $this->pluginFrontConfig['price_type'];
@@ -67,8 +67,8 @@ class MelisCommerceFilterMenuPriceValueBoxPlugin extends MelisTemplatingPlugin
            $categoryId = array_merge($categoryId, $this->categoryIdIterator($categorySvc->getAllSubCategoryIdById($catId)));
        }
        
-       $priceMin = $priceTbl->getPriceByColumnOrder('ASC', $priceType, $categoryId)->current();
-       $priceMax = $priceTbl->getPriceByColumnOrder('DESC', $priceType, $categoryId)->current();
+       $priceMin = $productSearchSvc->getPriceByColumn('ASC', $priceType, $categoryId);
+       $priceMax = $productSearchSvc->getPriceByColumn('DESC', $priceType, $categoryId);
        $defaultMin =  ($priceMin)? $priceMin->$priceType: 0;
        $defaultMax =  ($priceMax)? $priceMax->$priceType: 1000;
        $min = !empty($this->pluginFrontConfig['m_box_filter_price_min'])? $this->pluginFrontConfig['m_box_filter_price_min'] : $defaultMin;
@@ -87,15 +87,6 @@ class MelisCommerceFilterMenuPriceValueBoxPlugin extends MelisTemplatingPlugin
         
         // return the variable array and let the view be created
         return $viewVariables;
-    }
-    
-    /**
-     * This function return the back office rendering for the template edition system
-     * TODO
-     */
-    public function back()
-    {
-        return array();
     }
     
     /**

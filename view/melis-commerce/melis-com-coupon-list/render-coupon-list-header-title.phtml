@@ -9,4 +9,4 @@
     }
     
 ?>
-<h1 id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="content-heading"><?= $this->translate($name); ?></h1>
+<h1 id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="content-heading"><?= $this->translate($this->escapeHtml($name)); ?></h1>

@@ -9,6 +9,8 @@
 
 namespace MelisCommerce\Service;
 
+use Zend\View\Model\JsonModel;
+
 /**
  *
  * This Service will process Checkout Post Payment 
@@ -43,13 +45,12 @@ class MelisComPostPaymentService extends MelisComGeneralService
             
             // Payment Details
             $payment['payment_details'] = array(
-                'paymentType' => $postValues['payment-type-id'],
+                'paymentType' => $postValues['payment-type-value'],
                 'transactionId' => $postValues['payment-transaction-id'],
                 'transactionReturnCode' => $postValues['payment-transaction-return-code'],
                 'transactionPricePaid' => $postValues['payment-transaction-price-paid'],
-                'transactionFullRawResponse' => $postValues['payment-transaction-raw-response'],
+                'transactionFullRawResponse' => json_encode($postValues),
                 'transactionPricepaidConfirm' => $postValues['payment-transaction-price-paid-confirm'],
-                'transactionFullRawResponse' => $postValues['payment-transaction-raw-response'],
                 'transactionDateTime' => $postValues['payment-transaction-date'],
                 'transactionCountryId' => $postValues['payment-transaction-country-id'],
                 'transactionCouponId' => $postValues['payment-transaction-coupon-id'],

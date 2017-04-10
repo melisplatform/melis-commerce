@@ -181,4 +181,15 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
     
     }
     
+    public function checkEmailExist($email, $personId)
+    {
+        $select = $this->tableGateway->getSql()->select();
+        
+        $select->where('cper_email = "'.$email.'"');
+        $select->where('cper_id !='.$personId);
+        $resultData = $this->tableGateway->selectWith($select);
+        
+        return $resultData;
+    }
+    
 }

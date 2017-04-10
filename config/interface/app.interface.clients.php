@@ -24,7 +24,7 @@ return array(
                         'length' => 25,
                     ),
                     'session' => array(
-                        'default_ttl' => 86400, // 1 day, TTL (in seconds) for the session cookie expiry
+                        'default_ttl' => 0, // 1 day, TTL (in seconds) for the session cookie expiry
                         'remember_me_ttl' => 1209600, // 14 days, TTL (in seconds) for the session cookie expiry
                     ),
                 )

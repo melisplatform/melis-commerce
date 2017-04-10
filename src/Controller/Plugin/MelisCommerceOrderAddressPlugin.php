@@ -11,12 +11,12 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
-
+use Zend\Session\Container;
 use Zend\Mvc\Controller\Plugin\Redirect;
-use Zend\View\Model\JsonModel;
+use Zend\Stdlib\ArrayUtils;
 /**
  * This plugin implements the business logic of the
- * "myCart" plugin.
+ * "order address" plugin.
  * 
  * Please look inside app.plugins.php for possible awaited parameters
  * in front and back function calls.
@@ -30,25 +30,25 @@ use Zend\View\Model\JsonModel;
  * Merge detects automatically from the route if rendering must be done for front or back.
  * 
  * How to call this plugin without parameters:
- * $plugin = $this->MelisCommerceMyCartPlugin();
+ * $plugin = $this->MelisCommerceOrderAddressPlugin();
  * $pluginView = $plugin->render();
  *
  * How to call this plugin with custom parameters:
- * $plugin = $this->MelisFrontBreadcrumbPlugin();
+ * $plugin = $this->MelisCommerceOrderAddressPlugin();
  * $parameters = array(
- *      'template_path' => 'MySiteTest/account/mycart'
+ *      'template_path' => 'your-site-folder/your-custom-template'
  * );
  * $pluginView = $plugin->render($parameters);
  * 
  * How to add to your controller's view:
- * $view->addChild($pluginView, 'myCart');
+ * $view->addChild($pluginView, 'orderAddress');
  * 
  * How to display in your controller's view:
- * echo $this->myCart;
+ * echo $this->orderAddress;
  * 
  * 
  */
-class MelisCommerceMyCartPlugin extends MelisTemplatingPlugin
+class MelisCommerceOrderAddressPlugin extends MelisTemplatingPlugin
 {
     // the key of the configuration in the app.plugins.php
     public $configPluginKey = 'meliscommerce';
@@ -59,26 +59,45 @@ class MelisCommerceMyCartPlugin extends MelisTemplatingPlugin
      */
     public function front()
     {
-        $myCart = array(
-            'Order 1' => 'Order 1',
-            'Order 2' => 'Order 2',
-        );
+        $clientId = null;
+        $billing = array();
+        $delivery = array();
+        $addresses = array();
         
-        // Create an array with the variables that will be available in the view
+        $orderId = !empty($this->pluginFrontConfig['m_c_order'])? $this->pluginFrontConfig['m_c_order'] : null;
+        $container = new Container('melisplugins');
+        $lang = $container['melis-plugins-lang-id'];
+        
+        $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
+        if(!empty($orderId)){
+            $addresses = $orderSvc->getOrderAddressesByOrderId($orderId, $lang);
+        }
+        
+        foreach($addresses as $address){
+            switch($address->oadd_type){
+                case(1):
+                    // Billing address
+                    $billing = $address->getArrayCopy();
+                    break;
+                case(2):
+                    // delivery address
+                    $delivery = $address->getArrayCopy();
+                    break;
+                default:
+                    break;
+            }
+        }
+        
         $viewVariables = array(
-            'myCart' => $myCart
+            'deliveryAddress' => $delivery,
+            'billingAddress' => $billing,
         );
-        
         // return the variable array and let the view be created
         return $viewVariables;
     }
     
-    /**
-     * This function return the back office rendering for the template edition system
-     * TODO
-     */
     public function back()
     {
-        return array();
+        
     }
 }

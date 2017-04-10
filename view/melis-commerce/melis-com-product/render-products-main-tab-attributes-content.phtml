@@ -22,7 +22,7 @@ foreach($attributes as $attribute){
    
 ?>
 <span class="attr-values" data-patt-attribute-id="<?= $attribute->patt_attribute_id; ?>" data-patt-id="<?= $attribute->patt_id?>">
-	<span class="ab-attr"><span class="attrib-value"><?= $attribute->atrans_name; ?></span> <i class="prdDelAttr fa fa-times"></i>
+	<span class="ab-attr"><span class="attrib-value"><?= $this->escapeHtml($attribute->atrans_name); ?></span> <i class="prdDelAttr fa fa-times"></i>
 	</span>
 </span>
 <p style="display:none" id="<?= $this->productId; ?>_no_attributes"><?= $this->translate('tr_meliscommerce_products_no_attributes'); ?></p>

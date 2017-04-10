@@ -204,6 +204,7 @@ class MelisComClientService extends MelisComGeneralService
 	    $clientPerson = $clientPersonData->current();
 	    if (!empty($clientPerson))
 	    {
+	        unset($clientPerson->cper_password);
 	        $clientPerson->civility_trans = $this->getCivilityTransByCivilityIdAndLangId($clientPerson->civ_id);
 	        $melisClientPerson->setPerson($clientPerson);
 	    }
@@ -330,7 +331,7 @@ class MelisComClientService extends MelisComGeneralService
 	 *
 	 * @return MelisEcomClientAddress[] Array of Client Addresses object
 	 */
-	public function getClientAddressesByClientPersonId($personId, $addressType = null)
+	public function getClientAddressesByClientPersonId($personId, $addressType = null, $caddId = null)
 	{
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -341,7 +342,7 @@ class MelisComClientService extends MelisComGeneralService
 	     
 	    // Service implementation start
 	    $melisEcomClientAddressTable = $this->getServiceLocator()->get('MelisEcomClientAddressTable');
-	    $clientAddress = $melisEcomClientAddressTable->getPersonAddressByPersonId($arrayParameters['personId'], $arrayParameters['addressType']);
+	    $clientAddress = $melisEcomClientAddressTable->getPersonAddressByPersonId($arrayParameters['personId'], $arrayParameters['addressType'], $arrayParameters['caddId']);
 	    foreach ($clientAddress As $val)
 	    {
 	        array_push($results, $val);
@@ -376,7 +377,7 @@ class MelisComClientService extends MelisComGeneralService
 	    $address  = $addrTable->getClientPersonAddressByAddressId($arrayParameters['personId'], $arrayParameters['addrId']);
 	    if (!empty($address))
 	    {
-	        $results = $address;
+	        $results = $address->current();
 	    }
 	    // Service implementation end
 	
@@ -387,42 +388,6 @@ class MelisComClientService extends MelisComGeneralService
 	
 	    return $arrayParameters['results'];
 	}
-
-    /**
-     * Returns the specific address of the client by providing the address ID
-     * @param $addrId
-     * @return mixed
-     */
-	public function getClientAddressByAddressId($addrId)
-    {
-        // Event parameters prepare
-        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
-        $results = array();
-
-        // Sending service start event
-        $arrayParameters = $this->sendEvent('meliscommerce_service_client_address_by_address_id_start', $arrayParameters);
-
-        // Service implementation start
-        $doNotInclude    = array('cadd_creation_date', 'cadd_civility',
-            'cadd_client_id', 'cadd_client_person', 'cadd_type', 'cadd_name', 'cadd_firstname',
-            'cadd_middle_name');
-        $addrTable = $this->getServiceLocator()->get('MelisEcomClientAddressTable');
-        $address  = $addrTable->getEntryById($addrId)->current();
-        if($address) {
-            foreach($doNotInclude as $column) {
-                unset($address->$column);
-            }
-        }
-        $results = $address;
-        // Service implementation end
-
-        // Adding results to parameters for events treatment if needed
-        $arrayParameters['results'] = $results;
-        // Sending service end event
-        $arrayParameters = $this->sendEvent('meliscommerce_service_client_address_by_address_id_end', $arrayParameters);
-
-        return $arrayParameters['results'];
-    }
 	
 	public function getAddressTransByAddressTypeIdAndLangId($addTypeId, $langId = null)
 	{
@@ -648,6 +613,44 @@ class MelisComClientService extends MelisComGeneralService
 	}
 	
 	/**
+	 * This method wil retrieve client person detail 
+	 * using recoevery key,
+	 * this method can be use "Lost password" feature
+	 * @param string $recoverKey
+	 * @return Array|null
+	 */
+	public function getClientPersonByRecoveryKey($recoverKey)
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = null;
+	    
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_save_start', $arrayParameters);
+	    
+	    // Service implementation start
+	    if (!empty($arrayParameters['recoverKey']))
+	    {
+	        $clientPersonTbl = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
+	        $clientPerson = $clientPersonTbl->getEntryByField('cper_password_recovery_key', $recoverKey)->current();
+	         
+	        if (!empty($clientPerson))
+	        {
+	            $results = $clientPerson;
+	        }
+	    }
+	    // Service implementation end
+	    
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_save_end', $arrayParameters);
+	    
+	    return $arrayParameters['results'];
+	    
+	}
+	
+	/**
 	 *
 	 * This method saves a client account in database.
 	 *
@@ -817,66 +820,39 @@ class MelisComClientService extends MelisComGeneralService
             }
             
             $arrayParameters['person']['cper_email'] = mb_strtolower($arrayParameters['person']['cper_email']);
-
-            $email       = $arrayParameters['person']['cper_email'];
-            $emailData   = $melisEcomClientPersonTable->getEntryByField('cper_email', $email)->current();
-            $perId       = null;
-            $isResetPass = isset($arrayParameters['person']['reset_pass_flag']) ? (int) $arrayParameters['person']['reset_pass_flag'] : 0;
-            $allowSave   = false;
-
-            if(!$emailData && !$isResetPass) {
-                // used for registration and account updates
-                $allowSave = true;
-            }
-            else {
-                if($isResetPass) {
-                    // use for password reset
-                    $allowSave = true;
-                    // remove reset_pass_flag in the array
-                    unset($arrayParameters['person']['reset_pass_flag']);
-                }
-                else {
-                    throw new \Exception('Error: Email address already exist');
-                }
-            }
-
-
-
-            if($allowSave) {
-                $perId = $melisEcomClientPersonTable->save($arrayParameters['person'], $arrayParameters['personId']);
-
-                $clientPersonAddData = $arrayParameters['clientPersonAddresses'];
-                foreach ($clientPersonAddData As $key => $val)
+            
+            $perId = $melisEcomClientPersonTable->save($arrayParameters['person'], $arrayParameters['personId']);
+            
+            $clientPersonAddData = $arrayParameters['clientPersonAddresses'];
+            foreach ($clientPersonAddData As $key => $val)
+            {
+                $val['cadd_client_id'] = $clientId;
+                $val['cadd_client_person'] = $perId;
+                $caddId = $val['cadd_id'] ? $val['cadd_id'] : null;
+                unset($val['cadd_id']);
+                
+                if (is_null($caddId))
                 {
-                    $val['cadd_client_id'] = $clientId;
-                    $val['cadd_client_person'] = $perId;
-                    $caddId = $val['cadd_id'] ? $val['cadd_id'] : null;
-                    unset($val['cadd_id']);
-
-                    if (is_null($caddId))
-                    {
-                        $val['cadd_creation_date'] = date('Y-m-d H:i:s');
-                    }
-
-                    $val['cadd_civility'] = (!empty($val['cadd_civility'])) ? $val['cadd_civility'] : 0;
-
-                    $val['cadd_name'] = mb_strtoupper($val['cadd_name']);
-                    $val['cadd_firstname'] = ucwords(mb_strtolower($val['cadd_firstname']));
-                    if (!empty($val['cadd_middle_name']))
-                    {
-                        $val['cadd_middle_name'] = ucwords(mb_strtolower($val['cadd_middle_name']));
-                    }
-
-                    $melisEcomClientAddressTable->save($val, $caddId);
+                    $val['cadd_creation_date'] = date('Y-m-d H:i:s');
                 }
+                
+                $val['cadd_civility'] = ($val['cadd_civility']) ? $val['cadd_civility'] : null;
+                
+                $val['cadd_name'] = mb_strtoupper($val['cadd_name']);
+                $val['cadd_firstname'] = ucwords(mb_strtolower($val['cadd_firstname']));
+                if (!empty($val['cadd_middle_name']))
+                {
+                    $val['cadd_middle_name'] = ucwords(mb_strtolower($val['cadd_middle_name']));
+                }
+                
+                $melisEcomClientAddressTable->save($val, $caddId);
             }
-
+            
             $results = $perId;
-
         }
         catch (\Exception $e)
         {
-            echo $e->getMessage();
+           
         }
         
 	    // Service implementation end
@@ -886,6 +862,44 @@ class MelisComClientService extends MelisComGeneralService
 	    // Sending service end event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_persons_save_end', $arrayParameters);
 	
+	    return $arrayParameters['results'];
+	}
+	
+	/**
+	 * This method will check if the email exist
+	 * that not match to the person id
+	 * @param string $email
+	 * @param int $personId, person id of the current use
+	 * @return boolean
+	 */
+	public function checkEmailExist($email, $personId)
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = true;
+	     
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_check_email_exist_start', $arrayParameters);
+	     
+	    // Service implementation start
+	    $melisEcomClientPersonTable = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
+	    try 
+	    {
+	        $person = $melisEcomClientPersonTable->checkEmailExist($arrayParameters['email'], $arrayParameters['personId']);
+	         
+	        if (empty($person->current()))
+	        {
+	            $results = false;
+	        }
+	    }
+	    catch(\Exception $e){}
+	    // Service implementation end
+	     
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_check_email_exist_end', $arrayParameters);
+	     
 	    return $arrayParameters['results'];
 	}
 	
@@ -987,13 +1001,21 @@ class MelisComClientService extends MelisComGeneralService
             {
                 $arrayParameters['address']['cadd_creation_date'] = date('Y-m-d H:i:s');
             }
+            else 
+            {
+                if (isset($arrayParameters['address']['cadd_creation_date']))
+                {
+                    unset($arrayParameters['address']['cadd_creation_date']);
+                }
+            }
+            
             
             if (empty($arrayParameters['address']['cadd_client_person']))
             {
                 $arrayParameters['address']['cadd_client_person'] = null;
             }
             
-            $arrayParameters['address']['cadd_civility'] = (!empty($arrayParameters['address']['cadd_civility'])) ? $arrayParameters['address']['cadd_civility'] : 0;
+            $arrayParameters['address']['cadd_civility'] = !empty($arrayParameters['address']['cadd_civility']) ? $arrayParameters['address']['cadd_civility'] : null;
            
             $arrayParameters['address']['cadd_name'] = mb_strtoupper($arrayParameters['address']['cadd_name']);
             $arrayParameters['address']['cadd_firstname'] = ucwords(mb_strtolower($arrayParameters['address']['cadd_firstname']));
@@ -1010,7 +1032,7 @@ class MelisComClientService extends MelisComGeneralService
         }
         catch (\Exception $e)
         {
-            //echo $e->getMessage();
+
         }
 	    // Service implementation end
 	
@@ -1323,4 +1345,65 @@ class MelisComClientService extends MelisComGeneralService
 	    return $arrayParameters['results'];
 	}
 	
+    /**
+     * This method retrieves a client person by email
+     * @param string $email email identifier of the client person
+     * @return object returns the a client person table row
+     */
+	public function getClientPersonByEmail($email)
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = false;
+	    
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_get_person_by_email_start', $arrayParameters);
+	    
+	    // Service implementation start
+	    $clientPersonTbl = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
+	    $results = $clientPersonTbl->getEntryByField('cper_email', $arrayParameters['email'])->current();
+	    // Service implementation end
+	    
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_get_person_by_email_end', $arrayParameters);
+	    
+	    return $arrayParameters['results'];
+	}
+	
+	/**
+	 * This method saves the recovery key from the lost password plugin
+	 * @param int $personId id of the client person
+	 * @param string $recoverKey recovery key
+	 * @return int insert id
+	 */
+	public function savePasswordRecoveryKey($personId, $recoverKey)
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = false;
+	     
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_save_password_recovery_key_start', $arrayParameters);
+	     
+	    // Service implementation start
+	    $clientPersonTbl = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
+	    try{
+	        $results = $clientPersonTbl->save(array('cper_password_recovery_key' => $arrayParameters['recoverKey']), $arrayParameters['personId']);
+
+	    }catch(\Exception $e){
+	        
+	        $results = false;
+	    }
+	    
+	    // Service implementation end
+	     
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_save_password_recovery_key_end', $arrayParameters);
+	     
+	    return $arrayParameters['results'];
+	}
 }

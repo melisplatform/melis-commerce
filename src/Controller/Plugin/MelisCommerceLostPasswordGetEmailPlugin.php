@@ -67,6 +67,7 @@ class MelisCommerceLostPasswordGetEmailPlugin extends MelisTemplatingPlugin
         $message = 'Unable to send an email';
         
         $appConfigForm = (!empty($this->pluginFrontConfig['forms']['lost_password'])) ? $this->pluginFrontConfig['forms']['lost_password'] : array();
+        $emailConfig = (!empty($this->pluginFrontConfig['email'])) ? $this->pluginFrontConfig['email'] : array();
         
         $factory = new \Zend\Form\Factory();
         $formElements = $this->getServiceLocator()->get('FormElementManager');
@@ -77,7 +78,7 @@ class MelisCommerceLostPasswordGetEmailPlugin extends MelisTemplatingPlugin
         $is_submit = (!empty($this->pluginFrontConfig['m_is_submit'])) ? $this->pluginFrontConfig['m_is_submit'] : false;
         
         $data['m_email'] = (!empty($this->pluginFrontConfig['m_email'])) ? $this->pluginFrontConfig['m_email'] : '';
-        
+        $sendMailSvc = $this->getServiceLocator()->get('MelisEngineSendMail');
         // Setting the Datas to Lost Password Form
         $lostPassword->setData($data);
 
@@ -93,82 +94,31 @@ class MelisCommerceLostPasswordGetEmailPlugin extends MelisTemplatingPlugin
                 if(!empty($data['m_email']))
                 {
                     // Checking if the Email entered is existing on the database
-                    $clientPerson = $clientPersonTbl->getEntryByField('cper_email', $data['m_email'])->current();
+                    $clientPerson = $clientSrv->getClientPersonByEmail($data['m_email']);
                     if (empty($clientPerson))
                     {
-                        $message = 'Email does not exist, please try another email address';
+                        $message = $translator->translate('tr_meliscommerce_client_email_not_exist');
                     }
                     else 
                     {
 
-                        $to = $data['m_email'];
-                        $from = 'noreply@melistechnology.com';
-                        $from_name = 'Melis Commerce Demo';
-                        $subject = 'Lost Password';
-
-                        $emailTemplatePath = $this->pluginFrontConfig['email_template_path'];
-
-
                         $personId = $clientPerson->cper_id;
                         $recoveryKey = $clientSrv->generatePsswordRecoveryKey();
-                        $clientPersonTbl->save(array('cper_password_recovery_key' => $recoveryKey), $personId);
+                        $clientSrv->savePasswordRecoveryKey($personId, $recoveryKey);
                         $changeLostPasswordLink = (!empty($this->pluginFrontConfig['lost_password_reset_page_link'])) ? $this->pluginFrontConfig['lost_password_reset_page_link'] : 'http://www.test.com';
-                        $message = 'Please click the link below to change your password.<br>'
-                                    .'<a href="'.$changeLostPasswordLink.'?m_recovery_key='.$recoveryKey.'">'
-                                    .'Reset password link</a><br>';
-
-                        $html = new MimePart($message);
-                        $data = [];
-
-                        $config = $this->getServiceLocator()->get('config');
-
-                        // email template
-                        $tplPathStack = isset($config['view_manager']['template_map'][$emailTemplatePath]) ?
-                            ['mailTemplate' => $config['view_manager']['template_map'][$emailTemplatePath]] : 'MelisCommerce/emailLayout';
-
-                        $view       = new \Zend\View\Renderer\PhpRenderer();
-                        $resolver   = new \Zend\View\Resolver\TemplateMapResolver();
-                        $viewModel  = new ViewModel();
-
-                        $resolver->setMap($tplPathStack);
-                        $view->setResolver($resolver);
-
-                        $env             = getenv('MELIS_PLATFORM');
-                        $siteDomainTable = $this->getServiceLocator()->get('MelisEngineTableSiteDomain');
-                        $siteData        = $siteDomainTable->getEntryByField('sdom_env', $env)->current();
-
-                        $domain = '/';
-                        if($siteData) {
-                            $domain = $siteData->sdom_scheme . '://' . $siteData->sdom_domain . '/';
-                        }
-
-                        $data = [
-                            'domain'        => $domain,
-                            'from_name'     => $from_name,
-                            'from_email'    => $from,
-                            'to_first_name' => $clientPerson->cper_firstname,
-                            'to_last_name'  => mb_convert_case($clientPerson->cper_name, MB_CASE_TITLE, "UTF-8"),
-                            'to_email'      => $clientPerson->cper_email,
-                            'message'       => $message,
-                        ];
-                        $viewModel->setTemplate('mailTemplate')->setVariables($data);
-                        $html = new MimePart($view->render($viewModel));
-
-                        $html->type = "text/html";
-
-                        $body = new MimeMessage();
-                        $body->addPart($html);
-
-                        $mail = new Message();
-                        $mail->setFrom($from, $from_name);
-                        $mail->addTo($to);
-                        $mail->setSubject($subject);
-                        $mail->setBody($body);
-
-                        $message = $mail->toString();
-
-                         $transport = new Sendmail();
-                         $transport->send($mail);
+                        
+                        $changePassConfig = array(
+                            'lostPasswordLink' => $changeLostPasswordLink,
+                            'recoveryKey' => $recoveryKey
+                        );
+                        
+                        $emailConfig['email_content_tag_replace'] = array_merge($emailConfig['email_content_tag_replace'], $changePassConfig);
+                        
+                        $sendMailSvc->sendEmail(
+                            $emailConfig['email_template_path'], $emailConfig['email_from'], $emailConfig['email_from_name'],
+                            $emailConfig['email_to'], $emailConfig['email_to_name'], $emailConfig['email_subject'],
+                            $emailConfig['email_content'], $emailConfig['email_content_tag_replace'], $emailConfig['email_reply_to']
+                        );
                         
                         $message = 'Email sent';
                         $success = 1;

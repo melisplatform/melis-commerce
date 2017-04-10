@@ -83,4 +83,10 @@ return array(
     'tr_meliscommerce_product_confirm_remove_title' => 'Supprimer le type de texte',
     'tr_meliscommerce_product_confirm_remove_test' => 'Etes-vous sûr de vouloir supprimer ce type de texte?',
     'tr_meliscommerce_products_attributes_lists_loading' => 'Chargement des attributs...',
+    
+    // Plugins
+    'tr_meliscommerce_products_plugins_stock_left' => "L\'élément sélectionné n\'a que \"%s\" produits en stock",
+    'tr_meliscommerce_products_plugins_no_stock' => "Le produit est indisponible",
+    'tr_meliscommerce_products_plugins_cart_error' => "Une erreur est survenue, veuillez contacter l'administrateur",
+	'tr_meliscommerce_products_plugins_quantity_error' => 'La quantité doit être un nombre',
 );

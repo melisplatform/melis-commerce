@@ -20,7 +20,7 @@ $(document).ready(function() {
 	
 	// order list - refreshes the order list table
 	body.on("click", ".orderListRefresh", function(){
-		melisHelper.zoneReload("id_meliscommerce_order_list_content_table", "meliscommerce_order_list_content_table");
+		melisHelper.zoneReload("id_meliscommerce_order_list_page", "meliscommerce_order_list_page");
 		if($('#'+activeTabId).data('pageid') == 'coupon'){
 			var couponId = activeTabId.split("_")[0];
 			melisHelper.zoneReload(couponId+"_id_meliscommerce_coupon_tabs_content_orders_details_table", "meliscommerce_coupon_tabs_content_orders_details_table", {couponId : couponId});
@@ -75,7 +75,7 @@ $(document).ready(function() {
 							melisHelper.tabClose(  orderId + "_id_meliscommerce_orders_page");
 							orderTabOpen(translations.tr_meliscommerce_orders_Order+' '+data.chunk.order.ord_reference, data.chunk.order.ord_id);				
 							melisHelper.melisOkNotification( data.textTitle, data.textMessage );
-							melisHelper.zoneReload("id_meliscommerce_order_list_content_table", "meliscommerce_order_list_content_table");				
+							melisHelper.zoneReload("id_meliscommerce_order_list_page", "meliscommerce_order_list_page");
 							melisCore.flashMessenger();
 							
 							// Relload Client Order list if id exist
@@ -96,7 +96,7 @@ $(document).ready(function() {
 					melisHelper.tabClose(  orderId + "_id_meliscommerce_orders_page");
 					orderTabOpen(translations.tr_meliscommerce_orders_Order+' '+data.chunk.order.ord_reference, data.chunk.order.ord_id);				
 					melisHelper.melisOkNotification( data.textTitle, data.textMessage );
-					melisHelper.zoneReload("id_meliscommerce_order_list_content_table", "meliscommerce_order_list_content_table");				
+					melisHelper.zoneReload("id_meliscommerce_order_list_page", "meliscommerce_order_list_page");
 					melisCore.flashMessenger();
 					
 					// Relload Client Order list if id exist
@@ -184,7 +184,7 @@ $(document).ready(function() {
 					melisCommerce.postSave(url, dataString, function(data){
 						if(data.success){;				
 							melisHelper.melisOkNotification( data.textTitle, data.textMessage );
-							melisHelper.zoneReload("id_meliscommerce_order_list_content_table", "meliscommerce_order_list_content_table");
+							melisHelper.zoneReload("id_meliscommerce_order_list_page", "meliscommerce_order_list_page");
 							// Relload Client Order list if id exist
 							if(data.clientId+"_id_meliscommerce_client_page_tab_orders".length){
 								melisHelper.zoneReload(data.clientId+"_id_meliscommerce_client_page_tab_orders", "meliscommerce_client_page_tab_orders", {clientId: data.clientId, activateTab:true});
@@ -209,7 +209,7 @@ $(document).ready(function() {
 			melisCommerce.postSave(url, dataString, function(data){
 				if(data.success){;				
 					melisHelper.melisOkNotification( data.textTitle, data.textMessage );
-					melisHelper.zoneReload("id_meliscommerce_order_list_content_table", "meliscommerce_order_list_content_table");
+					melisHelper.zoneReload("id_meliscommerce_order_list_page", "meliscommerce_order_list_page");
 					// Relload Client Order list if id exist
 					if(data.clientId+"_id_meliscommerce_client_page_tab_orders".length){
 						melisHelper.zoneReload(data.clientId+"_id_meliscommerce_client_page_tab_orders", "meliscommerce_client_page_tab_orders", {clientId: data.clientId, activateTab:true});

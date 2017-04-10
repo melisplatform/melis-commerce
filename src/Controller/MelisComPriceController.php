@@ -351,8 +351,9 @@ class MelisComPriceController extends AbstractActionController
         $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
         $appConfigPriceForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_prices/meliscommerce_prices_form','meliscommerce_prices_form');
         $priceForm = $factory->createForm($appConfigPriceForm);
-        
+
         $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getTool()->sanitizeRecursive($postValues);
         if(!empty($postValues['priceForm'])){
             foreach($postValues['priceForm'] as $price){
                 $tmp = $price;
@@ -403,7 +404,7 @@ class MelisComPriceController extends AbstractActionController
         $priceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');
         $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
         
-        $countryId = $this->getRequest()->getPost('id');
+        $countryId = (int) $this->getRequest()->getPost('id');
         
         //check if country is already deleted
         $country = $countryTable->getEntryById($countryId);
@@ -460,6 +461,12 @@ class MelisComPriceController extends AbstractActionController
         $num = number_format('2,211.124', 2, '.', '');
         echo $num;
         die;
+    }
+
+    private function getTool()
+    {
+        $tool = $this->getServiceLocator()->get('MelisCoreTool');
+        return $tool;
     }
 
     

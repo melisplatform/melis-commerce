@@ -753,9 +753,10 @@ class MelisComVariantController extends AbstractActionController
         $countries = $countryTable->getCountries();
         $ctyData[] = $ctyGeneral;
         foreach ($countries as $country){
+            $countryName = $this->getTool()->escapeHtml($country->ctry_name);
             $imageData = $country->ctry_flag;
             $image = !empty($imageData) ? '<span class="pull-right"><img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay pull-right"/></span>' : '<i class="fa fa-globe"></i>';
-            $ctyData[] = sprintf($ctyFormat, $this->getVariantId(), str_replace(' ', '', $country->ctry_name), $country->ctry_name, $country->ctry_name, $image);
+            $ctyData[] = sprintf($ctyFormat, $this->getVariantId(), str_replace(' ', '', $countryName), $countryName, $countryName, $image);
         }
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
@@ -834,10 +835,8 @@ class MelisComVariantController extends AbstractActionController
      * @return \Zend\View\Model\JsonModel
      */
     public function saveVariantAction()
-    {   
-        
-       
-        //defualts
+    {
+        //defaults
         $success = false;
         $data = array();
         $errors  = array();
@@ -864,12 +863,13 @@ class MelisComVariantController extends AbstractActionController
                 if (!empty($container['variant-tmp-data']['datas']))
                     $data = $container['variant-tmp-data']['datas'];
             }
+
+            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getTool()->sanitizeRecursive($postValues);
             
-            $postVlaues = $this->getRequest()->getPost();
-            
-            if (!empty($postVlaues['variantId'])){
+            if (!empty($postValues['variantId'])){
                 $logTypeCode = 'ECOM_VARIANT_UPDATE';
-                $variantId= $postVlaues['variantId'];
+                $variantId= $postValues['variantId'];
             }else{
                 $logTypeCode = 'ECOM_VARIANT_ADD';
             }
@@ -985,8 +985,9 @@ class MelisComVariantController extends AbstractActionController
         $informationForm = $factory->createForm($appConfigInformationForm);
         
         $variantTable = $this->getServiceLocator()->get('MelisEcomVariantTable');
-        
+
         $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getTool()->sanitizeRecursive($postValues);
         
         if(!empty($postValues['variant'])){
             $informationForm->setData($postValues['variant'][0]);
@@ -1041,8 +1042,9 @@ class MelisComVariantController extends AbstractActionController
         $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
         $appConfigStockForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_variants/meliscommerce_variants_stocks_form','meliscommerce_variants_stocks_form');
         $stockForm = $factory->createForm($appConfigStockForm);
-        
+
         $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getTool()->sanitizeRecursive($postValues);
         if(!empty($postValues['stockForm'])){
             foreach($postValues['stockForm'] as $stock){
         
@@ -1083,6 +1085,7 @@ class MelisComVariantController extends AbstractActionController
         $success = true;
         $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
         $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getTool()->sanitizeRecursive($postValues);
         
         if(!empty($postValues['attrVal'])){            
             foreach($postValues['attrVal'] as $attrVal){
@@ -1113,6 +1116,7 @@ class MelisComVariantController extends AbstractActionController
             ),
         );
         $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getTool()->sanitizeRecursive($postValues);
         $melisComSeoService = $this->getServiceLocator()->get('MelisComSeoService');
         if(!empty($postValues['variant_seo'])){
             $seoResult = $melisComSeoService->validateSEOData('variant', $postValues['variant_seo']);

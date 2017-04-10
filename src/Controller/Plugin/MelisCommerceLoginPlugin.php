@@ -76,22 +76,6 @@ class MelisCommerceLoginPlugin extends MelisTemplatingPlugin
         // Redirection key after login authentication success
         $redirection_link  = (!empty($this->pluginFrontConfig['m_redirection_link_ok'])) ? $this->pluginFrontConfig['m_redirection_link_ok'] : '';
         
-        /**
-         * Login using the Commerce Athentication Service
-         */
-        $melisComAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
-        
-        /**
-         * If the Authentication has identity
-         * this will redirect to the $redirection_link
-         */
-        if ($melisComAuthSrv->hasIdentity())
-        {
-            $controller = $this->getController();
-            $redirector = $controller->getPluginManager()->get('Redirect');
-            $redirector->toUrl($redirection_link);
-        }
-        
         $success = 0;
         $message = null;
         $errors = array();
@@ -105,6 +89,7 @@ class MelisCommerceLoginPlugin extends MelisTemplatingPlugin
                 /**
                  * Login using Commerce Authentication Service
                  */
+                $melisComAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
                 $result = $melisComAuthSrv->login($m_login, $m_password, $m_remeber_me);
                 if ($result['success'] == 1)
                 {
@@ -114,9 +99,6 @@ class MelisCommerceLoginPlugin extends MelisTemplatingPlugin
                     $clientKey = $melisComAuthSrv->getClientKey();
                     
                     $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
-                    // After selecting contact this will clear the current Basket and create new entry for client basket
-                    // This process will avoid merging the old basket to the current basket
-                    $melisComBasketService->emptyPersistentBasket($clientId);
                     // Preparing the client Basket, which is added to Persistent basket
                     $melisComBasketService->getBasket($clientId, $clientKey);
                 }

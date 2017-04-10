@@ -19,7 +19,7 @@
             	        echo '<li>
                 	            <a class="'.$tabIcon.'" data-toggle="tab" href="#'.$tabId.'" aria-expanded="true">
                             		<i></i>
-                            		<span>'.$this->translate($tabName).'</span>
+                            		<span>'.$this->translate($this->escapeHtml($tabName)).'</span>
                             	</a>
                             </li>';
             	    }

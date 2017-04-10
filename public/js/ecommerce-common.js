@@ -95,7 +95,7 @@ var melisCommerce = (function(window) {
 		
 	function openProductPage(productId, productName)
 	{
-		melisHelper.tabOpen(productName, "icon-shippment", productId+"_id_meliscommerce_products_page", "meliscommerce_products_page",  { productId: productId } );
+		melisHelper.tabOpen(melisCore.escapeHtml(productName), "icon-shippment", productId+"_id_meliscommerce_products_page", "meliscommerce_products_page",  { productId: productId } );
 	}
 	
 	function closeCurrentProductPage() {

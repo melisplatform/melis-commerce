@@ -683,7 +683,7 @@ CREATE TABLE IF NOT EXISTS `melis_ecom_order_address` (
   `oadd_id` INT NOT NULL AUTO_INCREMENT COMMENT 'Order address Id',
   `oadd_order_id` INT NOT NULL COMMENT 'Order Id',
   `oadd_type` INT NULL COMMENT 'Type of address, delivery or billing',
-  `oadd_civility` INT NOT NULL COMMENT 'Civility Id',
+  `oadd_civility` INT NULL COMMENT 'Civility Id',
   `oadd_name` VARCHAR(255) NOT NULL COMMENT 'Name',
   `oadd_middle_name` VARCHAR(255) NULL COMMENT 'Middle name',
   `oadd_firstname` VARCHAR(255) NOT NULL COMMENT 'Firstname',
@@ -884,7 +884,7 @@ DROP TABLE IF EXISTS `melis_ecom_seo` ;
 
 CREATE TABLE IF NOT EXISTS `melis_ecom_seo` (
   `eseo_id` INT NOT NULL AUTO_INCREMENT COMMENT 'Ecommerce SEO id',
-  `eseo_page_id` INT NOT NULL COMMENT 'The page id to redirect to',
+  `eseo_page_id` INT NULL DEFAULT NULL COMMENT 'The page id to redirect to',
   `eseo_category_id` INT NULL COMMENT 'Category id if seo is linked to a category',
   `eseo_product_id` INT NULL COMMENT 'Product Id if SEO is linked to product',
   `eseo_variant_id` INT NULL COMMENT 'Variant Id if SEO is linked to variant',

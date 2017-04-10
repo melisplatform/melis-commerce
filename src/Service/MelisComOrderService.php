@@ -92,7 +92,6 @@ class MelisComOrderService extends MelisComGeneralService
 	     
 	    // Service implementation start
 	    $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
-	    $melisEcomOrderShippingTable = $this->getServiceLocator()->get('MelisEcomOrderShippingTable');	    
 	    $melisEcomClientTable = $this->getServiceLocator()->get('MelisEcomClientTable');
 	    $melisEcomClientSvc = $this->getServiceLocator()->get('MelisComClientService');
 	    
@@ -205,13 +204,13 @@ class MelisComOrderService extends MelisComGeneralService
 	    // Sending service start event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_addresses_byorderid_start', $arrayParameters);
 	    
-	    // Service implementation start
-	    $addressTrans = array();
-	    $civilityTrans = array();	    
+	    // Service implementation start	    	    
 	    $melisEcomOrderAddressTable = $this->getServiceLocator()->get('MelisEcomOrderAddressTable');
 	    $melisEcomCivilityTransTable = $this->getServiceLocator()->get('MelisEcomCivilityTransTable');
 	    $melisEcomClientAddressTypeTransTable = $this->getServiceLocator()->get('MelisEcomClientAddressTypeTransTable');
 	    foreach($melisEcomOrderAddressTable->getOrderAddressesByOrderId($arrayParameters['orderId']) as $address){
+	        $addressTrans = array();
+	        $civilityTrans = array();
 	        foreach($melisEcomClientAddressTypeTransTable->getAddressTransByAddressTypeIdAndLangId($address->oadd_type, $arrayParameters['langId']) as $trans){
 	            $addressTrans[] = $trans;
 	        }
@@ -385,7 +384,11 @@ class MelisComOrderService extends MelisComGeneralService
 	    
 	    // Service implementation start
 	    $melisEcomOrderStatusTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTable');
-	    $results = $melisEcomOrderStatusTable->getOrderStatusListByLangId($arrayParameters['langId']);
+	    $status = $melisEcomOrderStatusTable->getOrderStatusListByLangId($arrayParameters['langId']);
+	    foreach($status as $item){
+	        $results[] = $item;
+	    }
+	   
 	    // Service implementation end
 	    
 	    // Adding results to parameters for events treatment if needed
@@ -424,6 +427,60 @@ class MelisComOrderService extends MelisComGeneralService
 	    return $arrayParameters['results'];
 	}
 	
+	public function getClientOrderDetailsById($orderId, $clientId, $personId = null, $langId = null)
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = array();
+	
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_get_client_order_start', $arrayParameters);
+	     
+	    // Service implementation start
+	    $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
+	     
+	    $clientOrderData = $melisEcomOrderTable->getClientOrderDetailsById($arrayParameters['orderId'], $arrayParameters['clientId'], $arrayParameters['personId'], $arrayParameters['langId'])->current();
+	    if (!empty($clientOrderData))
+	    {
+	        $results = $clientOrderData;
+	    }
+	    // Service implementation end
+	
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_get_client_order_end', $arrayParameters);
+	
+	    return $arrayParameters['results'];
+	}
+	
+	public function getOrderPaymentWithTypeAndCouponByOrderId($orderId)
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = array();
+	    
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_get_order_payment_payment_type_coupon_start', $arrayParameters);
+	    
+	    // Service implementation start
+	    $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
+	     
+	    $orderPayment = $melisEcomOrderTable->getOrderPaymentWithTypeAndCouponByOrderId($orderId)->current(); 
+	    
+	    if (!empty($orderPayment))
+	    {
+	        $results = $orderPayment;
+	    }
+	    
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_get_order_payment_payment_type_coupon_end', $arrayParameters);
+	    
+	    return $arrayParameters['results'];
+	}
+	
 	/**
 	 *
 	 * This method saves an order in database.
@@ -458,10 +515,10 @@ class MelisComOrderService extends MelisComGeneralService
 	            $results['ord_id'] = $melisEcomOrderTable->save($arrayParameters['order'], $arrayParameters['orderId']);
 	        }
 	        catch(\Exception $e){
-	            echo $e->getMessage();
+	            
 	        }
 	    }
-// 	    var_dump($arrayParameters['basket']);die();
+
 	    if ($results['ord_id'])
 	    {
 	        
@@ -469,7 +526,7 @@ class MelisComOrderService extends MelisComGeneralService
 	        if(!empty($basketData)){
     	        foreach ($basketData As $key => $val)
     	        {
-    	            $obasId = ($val['obas_id']) ? $val['obas_id'] : null;
+    	            $obasId = (!empty($val['obas_id'])) ? $val['obas_id'] : null;
     	            unset($basketData[$key]['obas_id']);
     	            $basketData[$key]['obas_order_id'] = $results['ord_id'];
     	            $results['obas_id'] = $this->saveOrderBasket($basketData[$key], $obasId);
@@ -479,7 +536,7 @@ class MelisComOrderService extends MelisComGeneralService
 	        if(!empty($billingAddressData)){
     	        foreach ($billingAddressData As $key => $val)
     	        {
-    	           $oaddId = ($val['oadd_id']) ? $val['oadd_id'] : null;
+    	           $oaddId = (!empty($val['oadd_id'])) ? $val['oadd_id'] : null;
     	            unset($billingAddressData[$key]['oadd_id']);
     	            $billingAddressData[$key]['oadd_order_id'] = $results['ord_id'];
     	            $addType = 1; // Billing Id of the Address
@@ -491,7 +548,7 @@ class MelisComOrderService extends MelisComGeneralService
 	        if(!empty($deliveryAddressData)){
     	        foreach ($deliveryAddressData As $key => $val)
     	        {
-    	            $oaddId = ($val['oadd_id']) ? $val['oadd_id'] : null;
+    	            $oaddId = (!empty($val['oadd_id'])) ? $val['oadd_id'] : null;
     	            unset($deliveryAddressData[$key]['oadd_id']);
     	            $deliveryAddressData[$key]['oadd_order_id'] = $results['ord_id'];
     	            $addType = 2; // Delivery Id of the Address
@@ -502,7 +559,7 @@ class MelisComOrderService extends MelisComGeneralService
 	        if(!empty($paymentData)){
     	        foreach ($paymentData As $key => $val)
     	        {
-    	            $opayId = ($val['opay_id']) ? $val['opay_id'] : null;
+    	            $opayId = (!empty($val['opay_id'])) ? $val['opay_id'] : null;
     	            unset($paymentData[$key]['opay_id']);
     	            $paymentData[$key]['opay_order_id'] = $results['ord_id'];
     	            $result['opay_id'] = $this->saveOrderPayment($paymentData[$key], $opayId);	            
@@ -511,7 +568,7 @@ class MelisComOrderService extends MelisComGeneralService
 	        $shippingData = $arrayParameters['shipping'];
 	        if(!empty($shippingData)){
 	            foreach ($shippingData as $key => $val){
-	                $oship_id = ($val['oship_id']) ? $val['oship_id'] : null;
+	                $oship_id = (!empty($val['oship_id'])) ? $val['oship_id'] : null;
 	                unset($shippingData[$key]['oship_id']);
 	                $shippingData[$key]['oship_order_id'] = $results['ord_id'];
 	                $result['oship_id'] = $this->saveOrderShipping($shippingData[$key], $oship_id);
@@ -579,9 +636,7 @@ class MelisComOrderService extends MelisComGeneralService
 	        $oaddId = $melisEcomOrderAddressTable->save($arrayParameters['address']);
 	        $results = $oaddId;
 	    }
-	    catch(\Exception $e){	        
-	        echo $e->getMessage();
-	    }
+	    catch(\Exception $e){}
 	    // Service implementation end
 	    
 	    // Adding results to parameters for events treatment if needed
@@ -655,7 +710,7 @@ class MelisComOrderService extends MelisComGeneralService
 	        $results = $obasId;
 	    }
 	    catch(\Exception $e){
-	        echo $e->getMessage();
+	        
 	    }
 	    // Service implementation end
 	    
@@ -693,7 +748,7 @@ class MelisComOrderService extends MelisComGeneralService
 	        $results = $oshipId;
 	    }
 	    catch(\Exception $e){
-	        echo $e->getMessage();
+	        
 	    }
 	    // Service implementation end
 	    

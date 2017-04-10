@@ -43,7 +43,7 @@ class MelisEcomClientAddressTable extends MelisEcomGenericTable
         return $resultData;
     }
     
-    public function getPersonAddressByPersonId($personId, $addressType = null)
+    public function getPersonAddressByPersonId($personId, $addressType = null, $caddId = null)
     {
         $select = $this->tableGateway->getSql()->select();
     
@@ -56,6 +56,10 @@ class MelisEcomClientAddressTable extends MelisEcomGenericTable
         
         if (!is_null($addressType)){
             $select->where('melis_ecom_client_address_type.catype_code = "'.$addressType.'"');
+        }
+
+        if(!is_null($caddId)) {
+            $select->where->equalTo('cadd_id', (int) $caddId);
         }
     
         $resultData = $this->tableGateway->selectWith($select);

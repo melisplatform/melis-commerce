@@ -12,11 +12,11 @@
     $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
 ?>
 <div <?php echo $id. ' '.$data_melisKey?>>	
-	<div class="melis-product-heading border-bottom" style="margin-bottom: 20px">
+	<div class="melis-product-heading border-bottom">
 		<h3><?php echo $this->translate('tr_meliscommerce_seo_Seo') ?></h3>					
 	</div>
 	<div class="row">
-		<div class="col-xs-12 col-md-3">
+		<div class="col-xs-12 col-md-3 col-lg-2">
     		<div class="product-text-tab-container">
             	<ul class="nav-tabs product-text-tab">
             		<?php foreach ($this->ecomLang As $val):?>
@@ -37,7 +37,7 @@
             	</ul>
             </div>
 		</div>
-		<div class="col-xs-12 col-md-9">
+		<div class="col-xs-12 col-md-9 col-lg-10">
 			<div class="tab-content">
 				<?php foreach ($this->ecomLang As $val):?>
     				<div id="<?php echo $val['elang_locale'].'_'.$this->typeId.'_'.$formType.'_seo'?>" class="tab-pane product-text-tab-content">

@@ -1,4 +1,4 @@
-<?php if ($this->hasCartItems):?>
+<?php if ($this->checkootErrorMsg):?>
     <form id="checkout-addresses-default">
     	<div style="overflow: hidden;">
     		<div id="checkout-delivery-address-default" style="width: 50%; float: left; padding: 5px">
@@ -10,12 +10,20 @@
                 ?>
             </div>
     		<div id="checkout-billing-address-default"  style="width: 50%; float: left; padding: 5px">
-    			<h1>Billing Address</h1>
-                <?php
-                	$form = $this->checkOutBillingAddress;
-                	$form->prepare();
-                	echo $this->formCollection($form);
-                ?>
+    			<div class="ship-acc clearfix">
+        			<h1>Billing Address</h1>
+    				<label>
+                        <input type="checkbox" id="checkout-billing-address-same-default" <?php echo ($this->sameAddress) ? 'checked' : ''?>> Use same address.
+                        <input type="hidden" name="m_add_use_same_address" id="m_add_use_same_address" value="<?php echo ($this->sameAddress) ? 1 : 0?>">
+                    </label>
+                    <div class="checkout-billing-address-default-zone" style="display: <?php echo ($this->sameAddress) ? 'none' : ''?>">
+                    <?php
+                    	$form = $this->checkOutBillingAddress;
+                    	$form->prepare();
+                    	echo $this->formCollection($form);
+                    ?>
+                    </div>
+                </div>
             </div>
         </div>
         <div>
@@ -24,6 +32,8 @@
 		</div>
     </form>
 <?php else:?>
-	<h1>Cart is empty</h1>
-	<a class="btn btn-primary" href="<?php echo $this->prevStep_link?>">Previous</a>
+	<h1><?php echo $this->checkootErrorMsg?></h1>
+	<?php if ($this->prevStep_link):?>
+    	<a class="btn btn-primary" href="<?php echo $this->prevStep_link?>">Previous</a>
+    <?php endif;?>
 <?php endif;?>

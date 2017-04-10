@@ -44,6 +44,21 @@ class MelisComGeneralService implements ServiceLocatorAwareInterface, EventManag
 	{
 	    return $this->eventManager;
 	}
+
+	public function getRenderMode()
+	{
+	    $router = $this->serviceLocator->get('router');
+	    $request = $this->serviceLocator->get('request');
+	
+	    $routeMatch = $router->match($request);
+	    
+	    if (!empty($routeMatch))
+	       $renderMode = $routeMatch->getParam('renderMode', 'melis');
+	    else
+	        $renderMode = 'melis';
+	     
+	    return $renderMode;
+	}
 	
 	/**
 	 * This method creates an array from the parameters, using parameters' name as keys
@@ -129,5 +144,15 @@ class MelisComGeneralService implements ServiceLocatorAwareInterface, EventManag
 	    }
 	    
 	    return $data;
+	}
+	
+	/**
+	 * This method gets the list of column names from the requested table
+	 * @param string $tableName name of table to be retrieved
+	 */
+	public function getTableColumns($tableName)
+	{
+	    $table = $this->getServiceLocator()->get($tableName);
+	    return $table->getTableColumns();
 	}
 }

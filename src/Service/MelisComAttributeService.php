@@ -9,14 +9,13 @@
 
 namespace MelisCommerce\Service;
 
-use MelisCore\Service\MelisCoreGeneralService;
 use MelisCommerce\Entity\MelisAttribute;
 /**
  *
  * This service handles the attribute system of MelisCommerce.
  *
  */
-class MelisComAttributeService extends MelisCoreGeneralService
+class MelisComAttributeService extends MelisComGeneralService
 {
     /**
      * Returns all the data from `melis_ecom_attribute` table
@@ -308,6 +307,52 @@ class MelisComAttributeService extends MelisCoreGeneralService
     }
     
     /**
+     *
+     * This method gets the attribute values id and translation in a single line, used in the front end
+     *
+     * @param int $attributeId If Specified, the attributeId to look for
+     * @param int $langId If specified, translations of attribute values will be limited to that lang
+     *
+     * @return MelisAttributeValue and attribute Value trans | null attributevalue object
+     *
+     */
+    public function getAttributeValuesByAttributeId($attributeId, $langId = null)
+    {
+        // Retrieve cache version if front mode to avoid multiple calls
+        $cacheKey = 'attribute-' . $attributeId . '-getAttributeValuesByAttributeId_' . $attributeId . '_' . $langId;
+        $cacheConfig = 'commerce_big_services';
+        $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+        if (!empty($results)) return $results;
+        
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+    
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_attributevalue_byid_start', $arrayParameters);
+    
+        // Service implementation start
+        $attrValTable = $this->getServiceLocator()->get('MelisEcomAttributeValueTable');
+        foreach($attrValTable->getAttributeValuesByAttributeId($arrayParameters['attributeId'], $arrayParameters['langId']) as $data){
+            $results[] = $data;
+        }
+         
+        // Service implementation end
+    
+    
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_attributevalue_byid_end', $arrayParameters);
+
+	    // Save cache key
+		$melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
+         
+        return $arrayParameters['results'];
+    }
+    
+    /**
      * 
      * $this method gets the attribute value trans
      * attribute value trans wil lcome back with attribute value trans 
@@ -373,10 +418,13 @@ class MelisComAttributeService extends MelisCoreGeneralService
                     unset($trans['atrans_id']);
                     $this->saveAttributeTrans($trans, $attributeTransId);
                 }  
-            }            
+            }
+            
+            $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+            $melisEngineCacheSystem->deleteCacheByPrefix('attribute-' . $results, 'commerce_big_services');            
             
         }catch (\Exception $e){
-            echo $e->getMessage(); die();
+            
         }
         // Service implementation end
         
@@ -409,9 +457,12 @@ class MelisComAttributeService extends MelisCoreGeneralService
         $attributeTransTable = $this->getServiceLocator()->get('MelisEcomAttributeTransTable');
         try {
             $results = $attributeTransTable->save($arrayParameters['attributeTrans'], $arrayParameters['attributeTransId']);            
+
+            $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+            $melisEngineCacheSystem->deleteCacheByPrefix('attribute-' . $arrayParameters['attributeTrans']['atrans_attribute_id'], 'commerce_big_services');
             
         }catch (\Exception $e){
-            echo $e->getMessage(); die();
+            
         }
         // Service implementation end
         
@@ -444,8 +495,13 @@ class MelisComAttributeService extends MelisCoreGeneralService
         $attributeValueTable = $this->getServiceLocator()->get('MelisEcomAttributeValueTable');
             try {
                 $results = $attributeValueTable->save($arrayParameters['attributeValue'], $arrayParameters['attributeValueId']);
+                
+                $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+                $melisEngineCacheSystem->deleteCacheByPrefix('attribute-' . $arrayParameters['attributeValue']['atval_attribute_id'], 'commerce_big_services');
+            
+            
             }catch(\Exception $e){
-                echo $e->getMessage(); die();
+                
             }
         // Service implementation end
         
@@ -478,8 +534,15 @@ class MelisComAttributeService extends MelisCoreGeneralService
         $attributeValueTransTable = $this->getServiceLocator()->get('MelisEcomAttributeValueTransTable');
         try {
             $results = $attributeValueTransTable->save($arrayParameters['attributeValueTrans'], $arrayParameters['attributeValueTransId']);
+            
+
+                $attrValTable = $this->getServiceLocator()->get('MelisEcomAttributeValueTable');
+                $attValueDatas = $attrValTable->getEntryById($arrayParameters['attributeValueTrans']['av_attribute_value_id'])->current();
+                $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+                $melisEngineCacheSystem->deleteCacheByPrefix('attribute-' . $attValueDatas->atval_attribute_id, 'commerce_big_services');
+            
         }catch(\Exception $e){
-            echo $e->getMessage(); die();
+            
         }
         // Service implementation end
         
@@ -528,6 +591,9 @@ class MelisComAttributeService extends MelisCoreGeneralService
                 if(!$results){
                     throw new \Exception('Unable to delete product attribute');
                 }
+                $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+                $melisEngineCacheSystem->deleteCacheByPrefix('product-', 'commerce_big_services');
+                $melisEngineCacheSystem->deleteCacheByPrefix('variant-', 'commerce_big_services');
             }
             
             //delete attribute values
@@ -539,9 +605,13 @@ class MelisComAttributeService extends MelisCoreGeneralService
             }
             
            $results = $attributeTable->deleteById($arrayParameters['attributeId']);
+           
+           $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+           $melisEngineCacheSystem->deleteCacheByPrefix('attribute-' . $arrayParameters['attributeId'], 'commerce_big_services');
+           
             
         }catch (\Exception $e){
-            echo $e->getMessage(); die();
+            
         }
         // Service implementation end
         
@@ -572,10 +642,15 @@ class MelisComAttributeService extends MelisCoreGeneralService
         $attributeTransTable = $this->getServiceLocator()->get('MelisEcomAttributeTrans');
         
         try{
+            $attTransDatas = $attributeTransTable->getEntryById($arrayParameters['attributeTransId'])->current();
+            
             $results = $attributeTransTable->deleteById($arrayParameters['attributeTransId']);
-        
+            
+            $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+            $melisEngineCacheSystem->deleteCacheByPrefix('attribute-', 'commerce_big_services');
+             
         }catch (\Exception $e){
-            echo $e->getMessage(); die();
+            
         }
         // Service implementation end
         
@@ -607,9 +682,13 @@ class MelisComAttributeService extends MelisCoreGeneralService
         
         try{
             $results = $productAttributeTable->deleteById($arrayParameters['productAttributeId']);
+
+            $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+            $melisEngineCacheSystem->deleteCacheByPrefix('product-', 'commerce_big_services');
+            $melisEngineCacheSystem->deleteCacheByPrefix('variant-', 'commerce_big_services');
         
         }catch (\Exception $e){
-            echo $e->getMessage(); die();
+            
         }
         // Service implementation end
         
@@ -660,8 +739,13 @@ class MelisComAttributeService extends MelisCoreGeneralService
             }
 
             $results = $attributeValueTable->deleteById($arrayParameters['attributeValueId']);
+            
+            $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+            $melisEngineCacheSystem->deleteCacheByPrefix('variant-', 'commerce_big_services');
+            $melisEngineCacheSystem->deleteCacheByPrefix('attribute-', 'commerce_big_services');
+            
         }catch(\Exception $e){
-            echo $e->getMessage(); die();
+            
         }
         // Service implementation end
         
@@ -695,9 +779,12 @@ class MelisComAttributeService extends MelisCoreGeneralService
         try {            
             
             $results = $attributeValueTransTable->deleteById($arrayParameters['attributeValueTransId']);
+
+            $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+            $melisEngineCacheSystem->deleteCacheByPrefix('attribute-', 'commerce_big_services');
             
         }catch(\Exception $e){
-            echo $e->getMessage(); die();
+            
         }
         // Service implementation end
         
@@ -730,9 +817,12 @@ class MelisComAttributeService extends MelisCoreGeneralService
         try {
         
             $results = $varriantAttributeValueTable->deleteById($arrayParameters['variantAttributeValueId']);
+            
+            $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+            $melisEngineCacheSystem->deleteCacheByPrefix('variant-', 'commerce_big_services');
         
         }catch(\Exception $e){
-            echo $e->getMessage(); die();
+            
         }
         // Service implementation end
         

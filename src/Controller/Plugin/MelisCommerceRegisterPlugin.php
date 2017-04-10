@@ -13,6 +13,7 @@ use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
 use Zend\Code\Scanner\Util;
 use Zend\Stdlib\ArrayUtils;
+use Zend\Session\Container;
 /**
  * This plugin implements the business logic of the
  * "Registration" plugin.
@@ -65,18 +66,19 @@ class MelisCommerceRegisterPlugin extends MelisTemplatingPlugin
         $formElements = $this->getServiceLocator()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $registrationForm = $factory->createForm($appConfigForm);
+        $melisComClientService = $this->getServiceLocator()->get('MelisComClientService');
         
         // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
         $is_submit              = (!empty($this->pluginFrontConfig['m_is_submit'])) ? $this->pluginFrontConfig['m_is_submit'] : false;
         $data['m_autologin']    = (!empty($this->pluginFrontConfig['m_autologin'])) ? $this->pluginFrontConfig['m_autologin'] : true;
-        $data['m_email']        = (!empty($this->pluginFrontConfig['m_email'])) ? $this->pluginFrontConfig['m_email'] : '';
-        $data['m_password']     = (!empty($this->pluginFrontConfig['m_password'])) ? $this->pluginFrontConfig['m_password'] : '';
-        $data['m_password2']    = (!empty($this->pluginFrontConfig['m_password2'])) ? $this->pluginFrontConfig['m_password2'] : '';
-        $data['m_civility']     = (!empty($this->pluginFrontConfig['m_civility'])) ? $this->pluginFrontConfig['m_civility'] : '';
-        $data['m_firstname']    = (!empty($this->pluginFrontConfig['m_firstname'])) ? $this->pluginFrontConfig['m_firstname'] : '';
-        $data['m_lastname']     = (!empty($this->pluginFrontConfig['m_lastname'])) ? $this->pluginFrontConfig['m_lastname'] : '';
-        $data['m_language']     = (!empty($this->pluginFrontConfig['m_language'])) ? $this->pluginFrontConfig['m_language'] : '';
-        $data['m_country']      = (!empty($this->pluginFrontConfig['m_country'])) ? $this->pluginFrontConfig['m_country'] : '';
+        $data['m_redirection_link_ok']      = (!empty($this->pluginFrontConfig['m_redirection_link_ok'])) ? $this->pluginFrontConfig['m_redirection_link_ok'] : 'http://www.test.com';
+        
+        // get submitted form values
+        foreach($registrationForm->getElements() as $key => $val){
+            $data[$key] = (!empty($this->pluginFrontConfig[$key])) ? $this->pluginFrontConfig[$key] : null;
+        }
+        
+        $redirection_link = $data['m_redirection_link_ok'];
         
         $registrationForm->setData($data);
         
@@ -92,40 +94,55 @@ class MelisCommerceRegisterPlugin extends MelisTemplatingPlugin
                     'cli_status'        => 1,
                     'cli_country_id'    => $data['m_country']
                 );
+                
+                $container = new Container('melisplugins');
+                $langId = $container['melis-plugins-lang-id'];
+                
                 // Preparing the person data
                 $person[] = array(
                     'cper_status'           => 1,
                     'cper_is_main_person'   => 1,
-                    'cper_lang_id'          => $data['m_language'],
-                    'cper_email'            => $data['m_email'],
-                    'cper_password'         => $data['m_password'],
-                    'cper_civility'         => $data['m_civility'],
-                    'cper_name'             => $data['m_lastname'],
-                    'cper_firstname'        => $data['m_firstname'],
+                    'cper_lang_id'          => $langId,
+                    'cper_email'            => $data['cper_email'],
+                    'cper_password'         => $data['cper_password'],
+                    'cper_civility'         => $data['cper_civility'],
+                    'cper_name'             => $data['cper_name'],
+                    'cper_firstname'        => $data['cper_firstname'],
 
                 );
 
-                if(!empty($data['m_email']))
+                if(!empty($data['cper_email']))
                 {
-                    $clientPersonTbl = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
                     // Checking if the Email entered is existing on the database
-                    $clientPerson = $clientPersonTbl->getEntryByField('cper_email', $data['m_email'])->current();
+                    $clientPerson = $melisComClientService->getClientPersonByEmail($data['cper_email']);
 
                     if ($clientPerson)
                     {
+                        $translator = $this->getServiceLocator()->get('translator');
                         $errors['m_email'] = array(
-                            'label' => 'Email address',
-                            'isExist' => 'Email already exist, please try another email address'
+                            'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
+                            'emailExist' => $translator->translate('Email address is not available'),
                         );
                     }
-                    else {
+                    else 
+                    {
                         // Saving Client data using Client Servive
-                        $melisComClientService = $this->getServiceLocator()->get('MelisComClientService');
                         $success = (int) $melisComClientService->saveClient($client, $person);
-
+                        
+                        /**
+                         * if the autologgin has true/1 value 
+                         * this will automatically loggin after registration
+                         */
+                        if ($data['m_autologin'])
+                        {
+                            /**
+                             * Login using Commerce Authentication Service
+                             */
+                            $melisComAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
+                            $melisComAuthSrv->login($data['cper_email'], $data['cper_password']);
+                        }
                     }
                 }
-
             }
             else
             {
@@ -143,20 +160,12 @@ class MelisCommerceRegisterPlugin extends MelisTemplatingPlugin
         // Create an array with the variables that will be available in the view
         $viewVariables = array(
             'registration' => $registrationForm,
+            'redirect_link' => $redirection_link,
             'success' => $success,
             'errors' => $errors
         );
         
         // return the variable array and let the view be created
         return $viewVariables;
-    }
-    
-    /**
-     * This function return the back office rendering for the template edition system
-     * TODO
-     */
-    public function back()
-    {
-        return array();
     }
 }

@@ -446,8 +446,9 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $catParents = '';
         
         if($request->isPost()) {
-            $postValues = get_object_vars($request->getPost());
-            
+            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getTool()->sanitizeRecursive($postValues);
+
             $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
             
             // Adding variant to bakset quantity will automatocally 1 (One)
@@ -762,7 +763,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
                     $contactStatus = '<i class="fa fa-circle text-danger"></i>';
                 }
                 
-                $contactName = $val['cper_firstname'].' '.$val['cper_name'];
+                $contactName = $this->getTool()->sanitize($val['cper_firstname'].' '.$val['cper_name']);
                 
                 // Getting the Contact number of Order(s)
                 $contactOrderData = $melisEcomOrderTable->getEntryByField('ord_client_person_id', $val['cper_id']);
@@ -779,7 +780,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
                     'cper_id' => $val['cper_id'],
                     'cper_status' => $contactStatus,
                     'cper_contact' => $contactName,
-                    'cper_email' => $val['cper_email'],
+                    'cper_email' => $this->getTool()->sanitize($val['cper_email']),
                     'cper_num_orders' => $contactNumOrders,
                     'cper_last_order' => $contactLastDateOrderStr,
                 );
@@ -1165,7 +1166,9 @@ class MelisComOrderCheckoutController extends AbstractActionController
         
         if($request->isPost())
         {
-            $postValues = get_object_vars($request->getPost());
+            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getTool()->sanitizeRecursive($postValues);
+
             
             // Getting address form configuration from config
             $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
@@ -1277,6 +1280,8 @@ class MelisComOrderCheckoutController extends AbstractActionController
                         
                         if ($validatedAddresses['success'] == true)
                         {
+                            $clientSrv = $this->getServiceLocator()->get('MelisComClientService');
+                            
                             foreach ($validatedAddresses['addresses'] As $key => $val)
                             {
                                 // checking if the entry is existing in db, else this will save to selected contact addresses
@@ -1284,11 +1289,8 @@ class MelisComOrderCheckoutController extends AbstractActionController
                                 {
                                     $val['address']['cadd_client_id'] = $container['checkout'][self::SITE_ID]['clientId'];
                                     $val['address']['cadd_client_person'] = $container['checkout'][self::SITE_ID]['contactId'];
-                                    $val['address']['cadd_creation_date'] = date('Y-m-d H:i:s');
-                                    $val['address']['cadd_civility'] = (int) $val['address']['cadd_civility'];
                                     
-                                    $addId = $melisEcomClientAddressTable->save($val['address']);
-                                    
+                                    $addId = $clientSrv->saveClientAddress($val['address']);
                                     $validatedAddresses['addresses'][$key]['address'] = (Array) $melisEcomClientAddressTable->getEntryById($addId)->current();
                                 }
                             }
@@ -1634,7 +1636,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
             
             $couponSrv = $this->getServiceLocator()->get('MelisComCouponService');
             
-            $couponCode = $request->getPost('couponCode');
+            $couponCode = $this->getTool()->sanitize($request->getPost('couponCode'));
             
             $totalDiscount = 0;
             $couponErr = '';
@@ -1697,7 +1699,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
                                                     
                                                     $errors[$bKey.'_basket'] = array(
                                                         'label' => $productName,
-                                                        $bKey.'_err_msg' => $translator->translate($bVal['error'])
+                                                        $bKey.'_err_msg' => $translator->translate('tr_'.$bVal['error'])
                                                     );
                                                 }
                                             }
@@ -1975,5 +1977,11 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $view->result = $result;
         $view->activateTab = $activateTab;
         return $view;
+    }
+
+    private function getTool()
+    {
+        $tool = $this->getServiceLocator()->get('MelisCoreTool');
+        return $tool;
     }
 }

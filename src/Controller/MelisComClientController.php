@@ -13,6 +13,7 @@ use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\Session\Container;
 use Zend\View\Model\JsonModel;
+use Zend\Stdlib\ArrayUtils;
 
 class MelisComClientController extends AbstractActionController
 {
@@ -988,7 +989,9 @@ class MelisComClientController extends AbstractActionController
             $propertyForm = $factory->createForm($appConfigForm);
             
             // Getting Posted data in a form of array and set Data to the Client Address form
-            $postValues = get_object_vars($request->getPost());
+            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getTool()->sanitizeRecursive($postValues);
+
             $propertyForm->setData($postValues);
             
             // Gettiing Client Address elements/fields
@@ -1245,13 +1248,20 @@ class MelisComClientController extends AbstractActionController
             // Unset Temporary Data on Session
             unset($container['action-client-tmp']);
             // Getting Datas validated
-            $clientData = $datas['client'];
-            $contactsData = $datas['clientContacts'];
-            $companyData = $datas['clientCompany'];
-            $addressesData = $datas['clientAddresses'];
+            $clientData = $this->getTool()->sanitizeRecursive($datas['client']);
+            $contactsData = $this->getTool()->sanitizeRecursive($datas['clientContacts']);
+            $companyData = $this->getTool()->sanitizeRecursive($datas['clientCompany']);
+            $addressesData = $this->getTool()->sanitizeRecursive($datas['clientAddresses']);
             
             // Getting Data from Post in array form
-            $postValues = get_object_vars($request->getPost());
+            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getTool()->sanitizeRecursive($postValues);
+
+
+            for($i = 0; $i < count($contactsData); $i++) {
+                $contactsData[$i]['reset_pass_flag'] = true;
+            }
+
             $clientId = $postValues['clientId'];
             
             if (!empty($postValues['clientId']))
@@ -1329,7 +1339,9 @@ class MelisComClientController extends AbstractActionController
         
         if($request->isPost())
         {
-            $postValues = get_object_vars($request->getPost());
+            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getTool()->sanitizeRecursive($postValues);
+
             // Getting Client Form from Config
             $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
             $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_main_form','meliscommerce_clients_main_form');
@@ -1410,7 +1422,9 @@ class MelisComClientController extends AbstractActionController
         
         if($request->isPost())
         {
-            $postValues = get_object_vars($request->getPost());
+            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getTool()->sanitizeRecursive($postValues);
+
             
             // Getting Client Conatct Form from Config
             $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
@@ -1482,72 +1496,92 @@ class MelisComClientController extends AbstractActionController
                             $propertyForm_1->getInputFilter()->remove('cper_password');
                             $propertyForm_1->getInputFilter()->remove('cper_confirm_password');
                         }
+                        
+                        if (!empty($val['cper_email']))
+                        {
+                            $melisComClientService = $this->getServiceLocator()->get('MelisComClientService');
+                            if ($melisComClientService->checkEmailExist($val['cper_email'], $val['cper_id']))
+                            {
+                                $errors_1_temp['cper_email'] = array(
+                                    'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
+                                    'emailExist' => $translator->translate('Email address is not available'),
+                                );
+                            }
+                        }
                     }
                     
                     // Checking if Contact Form is valid
                     if ($propertyForm_1->isValid())
                     {
-                        $clientContactsDataTemp = $propertyForm_1->getData();
-                        // After validation confirm password would remove from final and validated data for contact datas
-                        unset($clientContactsDataTemp['cper_confirm_password']);
-                        
-                        // Client Contact Addresses validations
-                        if (!empty($val['contact_address']))
+                        if (empty($errors_1_temp))
                         {
-                            $clientContactAddresses = $val['contact_address'];
+                            $clientContactsDataTemp = $propertyForm_1->getData();
+                            // After validation confirm password would remove from final and validated data for contact datas
+                            unset($clientContactsDataTemp['cper_confirm_password']);
                             
-                            foreach ($clientContactAddresses As $akey => $aVal)
+                            // Client Contact Addresses validations
+                            if (!empty($val['contact_address']))
                             {
-                                // PropertyFrom 2 assign as Client Contact Address Form
-                                $propertyForm_2 = $factory_2->createForm($appConfigForm_2);
-                                $propertyForm_2->setData($aVal);
-                                
-                                // Checking if datas are valid
-                                if ($propertyForm_2->isValid())
+                                $clientContactAddresses = $val['contact_address'];
+                            
+                                foreach ($clientContactAddresses As $akey => $aVal)
                                 {
-                                    // Client Contact Validated data added to static index "contact_address" array
-                                    $clientContactsDataTemp['contact_address'][] = $propertyForm_2->getData();
-                                }
-                                else 
-                                {
-                                    // Getting Client Contact Address Form errors if errors is occured
-                                    $errors_2_temp = $propertyForm_2->getMessages();
-                                    foreach ($errors_2_temp as $keyError => $valueError)
+                                    // PropertyFrom 2 assign as Client Contact Address Form
+                                    $propertyForm_2 = $factory_2->createForm($appConfigForm_2);
+                                    $propertyForm_2->setData($aVal);
+                            
+                                    // Checking if datas are valid
+                                    if ($propertyForm_2->isValid())
                                     {
-                                        $errors_2_temp[$keyError]['form'][] = $akey.'_contact_address_form';
+                                        // Client Contact Validated data added to static index "contact_address" array
+                                        $clientContactsDataTemp['contact_address'][] = $propertyForm_2->getData();
                                     }
-                                    $errors_2 = array_merge_recursive($errors_2, $errors_2_temp);
-                                }
-                                
-                                // Getting From Elements/fields
-                                $appConfigFormElements_2 = $appConfigForm_2['elements'];
-                                // Preparing Error messages for Client Contact Address
-                                foreach ($errors_2 as $keyError => $valueError)
-                                {
-                                    foreach ($appConfigFormElements_2 as $keyForm => $valueForm)
+                                    else
                                     {
-                                        if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
+                                        // Getting Client Contact Address Form errors if errors is occured
+                                        $errors_2_temp = $propertyForm_2->getMessages();
+                                        foreach ($errors_2_temp as $keyError => $valueError)
                                         {
-                                            $errors_2[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                                            $errors_2_temp[$keyError]['form'][] = $akey.'_contact_address_form';
+                                        }
+                                        $errors_2 = array_merge_recursive($errors_2, $errors_2_temp);
+                                    }
+                            
+                                    // Getting From Elements/fields
+                                    $appConfigFormElements_2 = $appConfigForm_2['elements'];
+                                    // Preparing Error messages for Client Contact Address
+                                    foreach ($errors_2 as $keyError => $valueError)
+                                    {
+                                        foreach ($appConfigFormElements_2 as $keyForm => $valueForm)
+                                        {
+                                            if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
+                                            {
+                                                $errors_2[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                                            }
                                         }
                                     }
                                 }
                             }
+                            
+                            // Client Contact Details validated datas added to final Array Container
+                            array_push($clientContactsData, $clientContactsDataTemp);
                         }
-                        
-                        // Client Contact Details validated datas added to final Array Container
-                        array_push($clientContactsData, $clientContactsDataTemp);
                     }
                     else
                     {
                         // Getting Client Contact Form errors if errors is occured
-                        $errors_1_temp = $propertyForm_1->getMessages();
+                        $errors_1_temp = ArrayUtils::merge($errors_1_temp, $propertyForm_1->getMessages());
                         foreach ($errors_1_temp as $keyError => $valueError)
                         {
                             $errors_1_temp[$keyError]['form'][] = $key.'_contact_form';
                         }
                         $errors_1 = array_merge_recursive($errors_1, $errors_1_temp);
                         
+                    }
+                    
+                    if (!empty($errors_1_temp) && empty($errors_1))
+                    {
+                        $errors_1 = $errors_1_temp;
                     }
                     
                     // Getting From Elements/fields
@@ -1636,7 +1670,9 @@ class MelisComClientController extends AbstractActionController
         
         if($request->isPost())
         {
-            $postValues = get_object_vars($request->getPost());
+            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getTool()->sanitizeRecursive($postValues);
+
             
             // Getting Client Company Form from Config
             $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
@@ -1745,7 +1781,9 @@ class MelisComClientController extends AbstractActionController
             $factory->setFormElementManager($formElements);
             
             // Getting Datas from Post
-            $postValues = get_object_vars($request->getPost());
+            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getTool()->sanitizeRecursive($postValues);
+
             
             if (!empty($postValues['clientAddresses']))
             {
@@ -1820,7 +1858,9 @@ class MelisComClientController extends AbstractActionController
         
         if($request->isPost())
         {
-            $postValues = get_object_vars($request->getPost());
+            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getTool()->sanitizeRecursive($postValues);
+
             
             if (!empty($postValues['deletedaddresses']))
             {
@@ -1855,5 +1895,11 @@ class MelisComClientController extends AbstractActionController
         );
         
         return new JsonModel($result);
+    }
+
+    private function getTool()
+    {
+        $tool = $this->getServiceLocator()->get('MelisCoreTool');
+        return $tool;
     }
 }

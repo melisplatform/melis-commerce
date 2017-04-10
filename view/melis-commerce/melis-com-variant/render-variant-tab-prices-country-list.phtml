@@ -10,7 +10,7 @@
 <ul <?= $id. ' '. $data_melisKey?> class="nav-tabs product-text-tab country-price-tab">
 	<?php 
 	foreach ($this->countries as $country){
-	    echo $country;
+	    echo $this->escapeHtml($country);
 	}
 	?>
 </ul>

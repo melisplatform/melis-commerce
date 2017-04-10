@@ -80,33 +80,6 @@ class MelisComSeoService extends MelisComGeneralService
             
             // Checking if Seo Fields/input has data then checking if Page Id has Data
             $colOptionalField = array('eseo_meta_title', 'eseo_meta_description', 'eseo_url', 'eseo_url_redirect', 'eseo_url_301');
-            foreach ($colOptionalField As $oVal)
-            {
-                if (!empty(($val[$oVal])))
-                {
-                    if (empty($val['eseo_page_id']))
-                    {
-                        $errors['eseo_page_id'] = array(
-                            'label' => $translator->translate('tr_meliscommerce_seo_Page_id'),
-                            $key.'_notEmpty' => $langName.$translator->translate('tr_meliscommerce_seo_Seo_input_empty')
-                        );
-                        
-                        $includeThisSeoDataFalse = false;
-                    }
-                }
-            }
-            
-            // Checking if Seo Page Id is Numeric
-            if (!empty($val['eseo_page_id']))
-            {
-                if (!is_numeric($val['eseo_page_id']))
-                {
-                    $errors['eseo_page_id'] = array(
-                        'label' => $translator->translate('tr_meliscommerce_seo_Page_id'),
-                        $key.'_notNumeric' => $langName.$translator->translate('tr_meliscommerce_seo_Page_id_invalid')
-                    );
-                }
-            }
             
             // Checking of the SEO url uniqueness on Database
             if (!empty($val['eseo_url'])){
@@ -229,6 +202,8 @@ class MelisComSeoService extends MelisComGeneralService
                 if (!empty(($val[$oVal])))
                 {
                     $saveDataFlag = true;
+                }else{
+                    $val[$oVal] = NULL;
                 }
             }
             
@@ -285,6 +260,7 @@ class MelisComSeoService extends MelisComGeneralService
         try
         {
             $seo['eseo_url'] = $enginePage->cleanString(mb_strtolower($seo['eseo_url']));
+            $seo['eseo_url'] = $enginePage->cleanLink(mb_strtolower($seo['eseo_url']));
             
             if (preg_match('/\s/', $seo['eseo_url']))
             {
@@ -293,7 +269,7 @@ class MelisComSeoService extends MelisComGeneralService
             
             $seo['eseo_url_redirect'] = mb_strtolower($seo['eseo_url_redirect']);
             $seo['eseo_url_301'] = mb_strtolower($seo['eseo_url_301']);
-            
+
             $ecomSeotable->save($seo, $seoId);
             $successFlag = true;
         }

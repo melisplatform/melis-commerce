@@ -233,7 +233,7 @@ class MelisComProductSearchService extends MelisComGeneralService
 	public function searchProductFull($search, $fieldsTypeCodes = array(),
 	                                  $attributeValuesIds = array(), $priceMin = null, $priceMax = null,
 	                                  $langId = null, $categoryId = array(), $countryId = null, 
-	                                  $onlyValid = true, $start = 0, $limit = null, $sort = null)
+	                                  $onlyValid = true, $start = 0, $limit = null, $sort = null, $docTypes)
 	{
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -244,12 +244,12 @@ class MelisComProductSearchService extends MelisComGeneralService
 	     
 	    // Service implementation start
 	    $prodTable = $this->getServiceLocator()->get('MelisEcomProductTable');
-	    
+	    $productData = array();
 	    $data = $prodTable->getProductByNameTextTypeAttrIdsAndPrice($arrayParameters['search'], $arrayParameters['fieldsTypeCodes'], 
 	        $arrayParameters['attributeValuesIds'], $arrayParameters['categoryId'], (float) $arrayParameters['priceMin'], (float) $arrayParameters['priceMax'],  $arrayParameters['langId'],
 	        $arrayParameters['countryId'], (int) $arrayParameters['onlyValid'], $arrayParameters['start'], $arrayParameters['limit'], $arrayParameters['sort']
         );
-	    
+       
         if($data) {
             foreach($data as $product){
                 unset($product->price);
@@ -269,39 +269,11 @@ class MelisComProductSearchService extends MelisComGeneralService
                 $texts = array();
                 $prices = array();
                 $documents = array(); 
-                $product = new MelisProduct();
-                
-                $product->setId( (int) $searchedData->prd_id );
-                $product->setProduct($searchedData);
-                
-                // set product categories
-                $categoryData = $prodTable->getProductCategoryByProductIdAndCategoryId($searchedData->prd_id, $arrayParameters['categoryId'], $arrayParameters['langId']);
-                foreach($categoryData as $category){
-                    $categories[] = $category;
-                }
-                $product->setCategories($categories);
-                
-                // set product documents
-                $docData =  $prodTable->getProductDocumentByProductIdAndCountryId($searchedData->prd_id, $arrayParameters['countryId']);
-                foreach($docData as $doc){
-                    $documents[] = $doc;
-                }
-                $product->setDocuments($documents);
-               
-                // set product texts
-                $prodTexts = $prodTable->getProductText($searchedData->prd_id, $arrayParameters['langId']);
-                foreach($prodTexts as $text){
-                    $texts[] = $text;
-                }
-                $product->setTexts($texts);
-                 
-                // set product prices
-                $prodPrice =  $prodTable->getProductPrice($searchedData->prd_id, $arrayParameters['countryId']);
-                foreach ($prodPrice as $price){
-                    $prices[] = $price;
-                }
-                $product->setPrice($prices);
-                               
+                $product = $prodTable->getProductCategoryPriceByProductId($searchedData->prd_id, $arrayParameters['categoryId'], 
+                    $arrayParameters['langId'], $arrayParameters['countryId'], 
+                    $arrayParameters['fieldsTypeCodes'] , $arrayParameters['docTypes']
+                )->current();
+                                               
                 $results[] = $product;
             }
         }
@@ -311,6 +283,81 @@ class MelisComProductSearchService extends MelisComGeneralService
 	    $arrayParameters['results'] = $results;
 	    // Sending service end event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_productsearch_full_pricerange_end', $arrayParameters);
+	     
+	    return $arrayParameters['results'];
+	}
+	
+	/**
+	 *
+	 * This method will fetch products by category ID
+	 * Product will come back with: category selected, texts translations, price, documents
+	 * It won't load variants
+	 *
+	 * @param array $categoryId Retrieves a list of product based on the category ID
+	 * @param int $langId If specified, translations of products will be limited to that lang
+	 * @param int $countryId If specified, prices will be givena nd searched only for the country specified
+	 *
+	 * @example searchProductByAttributeValuesAndPriceRange(array(1, 2), 0, 500, 1, array(1, 2, 3));
+	 *
+	 * @return MelisProduct[] Product object
+	 */
+	public function getProductByCategory($categoryId, $langId = null, $countryId = null, $fieldsTypeCodes = array(), $docTypes = array())
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = array();
+	    
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_productsearch_product_by_category_start', $arrayParameters);
+	    
+	    // Service implementation start
+	    $prodTable = $this->getServiceLocator()->get('MelisEcomProductTable');
+	    
+	    $prods = $prodTable->getProductCategoryPriceByProductId(null, $arrayParameters['categoryId'], 
+	        $arrayParameters['langId'], $arrayParameters['countryId'], 
+	        $arrayParameters['fieldsTypeCodes'], $arrayParameters['docTypes']
+        );
+	   
+	    foreach($prods as $prod){
+	         $results[] = $prod;
+	    }
+	   
+	    // Service implementation end
+	    
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_productsearch_product_by_category_end', $arrayParameters);
+
+	    return $arrayParameters['results'];
+	    
+	}
+	
+	/**
+	 * This method returns either the minimum or maximum price on the price table
+	 * @param string $order db order, ASC/DESC
+	 * @param string $column column to sort
+	 * @param array $categoryId limits the queary to the array of category
+	 * @return object returns the first row of the result
+	 */
+	public function getPriceByColumn($order, $column = 'price_net', $categoryId = array())
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = false;
+	     
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_productsearch_get_price_by_column_start', $arrayParameters);
+	     
+	    // Service implementation start
+	    $priceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');
+	    $results = $priceTable->getPriceByColumnOrder($arrayParameters['order'], $arrayParameters['column'], $arrayParameters['categoryId'])->current(); 
+	    // Service implementation end
+	     
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_productsearch_get_price_by_column_end', $arrayParameters);
 	     
 	    return $arrayParameters['results'];
 	}

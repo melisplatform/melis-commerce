@@ -12,6 +12,7 @@ namespace MelisCommerce\Controller\Plugin;
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
 use Zend\Session\Container;
+use Zend\Stdlib\ArrayUtils;
 /**
  * This plugin implements the business logic of the
  * "checkOutCart" plugin.
@@ -66,6 +67,9 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
         $errors = array();
         $couponView = null;
         $hasErr = false;
+        $hasDiscount = false;
+        
+        $checkoutCartCouponParameters = (!empty($this->pluginFrontConfig['checkout_cart_coupon_parameters'])) ? $this->pluginFrontConfig['checkout_cart_coupon_parameters'] : array();
         
         $translator = $this->getServiceLocator()->get('translator');
         
@@ -79,6 +83,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
         
         $variantIdRemove = (!empty($this->pluginFrontConfig['m_v_id_remove'])) ? $this->pluginFrontConfig['m_v_id_remove'] : null;
         $variantRemoveLink = (!empty($this->pluginFrontConfig['m_v_remove_link'])) ? $this->pluginFrontConfig['m_v_remove_link'] : null;
+        $imageType = !empty($this->pluginFrontConfig['m_image_type'])? $this->pluginFrontConfig['m_image_type'] : array();
         
         $ecomAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
         $basketSrv = $this->getServiceLocator()->get('MelisComBasketService');
@@ -108,39 +113,46 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
              */
             foreach ($variantQuantities As $varId => $varQty)
             {
-                if ($varQty < 1)
+                if (is_numeric($varQty))
                 {
-                    /**
-                     * variant that has zero (0) quantity will 
-                     * automatically remove from the use's cart
-                     */
-                    $basketSrv->removeVariantFromBasket($varId, 0, $clientId, $clientKey);
+                    if ($varQty < 1)
+                    {
+                        /**
+                         * variant that has zero (0) quantity will 
+                         * automatically remove from the use's cart
+                         */
+                        $basketSrv->removeVariantFromBasket($varId, 0, $clientId, $clientKey);
+                    }
+                    else  
+                    {
+                        /**
+                         * Checking varain stock
+                         * else this will try to look Product Stock
+                         */
+                        $varStock = $variantSrv->getVariantFinalStocks($varId, $countryId);
+                        
+                        if ($varStock)
+                        {
+                            $varStock = $varStock->stock_quantity;
+                            
+                            if ($varStock >= $varQty)
+                            {
+                                $basketSrv->addVariantToBasket($varId, $varQty, $clientId, $clientKey);
+                            }
+                            else
+                            {
+                                $errors[$varId] = sprintf($translator->translate('tr_meliscommerce_products_plugins_stock_left'), $varStock);
+                            }
+                        }
+                        else 
+                        {
+                            $errors[$varId] = $translator->translate('tr_meliscommerce_products_plugins_no_stock');
+                        }
+                    }
                 }
                 else 
                 {
-                    /**
-                     * Checking varain stock
-                     * else this will try to look Product Stock
-                     */
-                    $varStock = $variantSrv->getVariantFinalStocks($varId, $countryId);
-                    
-                    if ($varStock)
-                    {
-                        $varStock = $varStock->stock_quantity;
-                        
-                        if ($varStock >= $varQty)
-                        {
-                            $basketSrv->addVariantToBasket($varId, $varQty, $clientId, $clientKey);
-                        }
-                        else
-                        {
-                            $errors[$varId] = 'Product has only "'.$varStock.'" stock(s) left';
-                        }
-                    }
-                    else 
-                    {
-                        $errors[$varId] = 'Product is not available';
-                    }
+                    $errors[$varId] = 'Quantity must be numeric';
                 }
             }
         }
@@ -197,7 +209,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                  * with the return is multi array
                  */
                 $documentSrv = $this->getServiceLocator()->get('MelisComDocumentService');
-                $doc = $documentSrv->getDocumentsByRelationAndTypes('product', $productId, 'IMG', array('DEFAULT'));
+                $doc = $documentSrv->getDocumentsByRelationAndTypes('product', $productId, 'IMG', array($imageType));
                 $productImg = null;
                 if (!empty($doc))
                 {
@@ -231,10 +243,10 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
              */
             $pluginManager = $this->getServiceLocator()->get('ControllerPluginManager');
             $checkoutCouponPlugin = $pluginManager->get('MelisCommerceCheckoutCouponAddPlugin');
-            $checkoutCouponPluginParameters = array(
+            $checkoutCartCouponParameters = ArrayUtils::merge($checkoutCartCouponParameters, array(
                 'm_site_id' => $siteId
-            );
-            $couponView = $checkoutCouponPlugin->render($checkoutCouponPluginParameters);
+            ));
+            $couponView = $checkoutCouponPlugin->render($checkoutCartCouponParameters);
             $coupon = $couponView->getVariables();
             
             if (!empty($coupon->coupon))
@@ -248,11 +260,12 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                 {
                     $totalDiscount = ($couponData->coup_percentage / 100) * $subTotal;
                     $discountInfo = $couponData->coup_percentage.'%';
+                    $hasDiscount = true;
                 }
-                
                 elseif (!empty($couponData->coup_discount_value))
                 {
                     $totalDiscount = $couponData->coup_discount_value;
+                    $hasDiscount = true;
                 }
                 
                 $total = $subTotal - $totalDiscount;
@@ -269,12 +282,13 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
         
         $viewVariables = array(
             'checkOutCart' => $checkOutCart,
-            'checkOutCartSubTotal' => $currency.' '.$subTotal,
-            'checkOutCartDiscount' => $currency.' '.$totalDiscount,
+            'checkOutCartSubTotal' => $currency.number_format($subTotal, 2),
+            'checkOutCartDiscount' => $currency.number_format($totalDiscount, 2),
             'checkOutCartDiscountInfo' => $discountInfo,
-            'checkOutCartTotal' => $currency.' '.$total,
+            'checkOutCartTotal' => $currency.number_format($total, 2),
             'checkoutErrors' => $errors,
             'checkoutCoupon' => $couponView,
+            'checkoutHasCoupon' => $hasDiscount,
             'checkoutHasErr' => $hasErr,
         );
         // return the variable array and let the view be created

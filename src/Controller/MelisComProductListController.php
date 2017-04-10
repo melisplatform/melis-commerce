@@ -199,6 +199,7 @@ class MelisComProductListController extends AbstractActionController
             $dataCount = $prodTable->getTotalData();
             foreach($prodData as $prod) {
                 $prodText = $prodSvc->getProductName($prod->getProduct()->prd_id, $this->getTool()->getCurrentLocaleID());
+                $prodText = $this->getTool()->escapeHtml($prodText);
 
                 $tableData[$ctr]['DT_RowData'] = array('productname', $prodText);
                 $tableData[$ctr]['DT_RowId'] = $prod->getProduct()->prd_id;
@@ -210,10 +211,9 @@ class MelisComProductListController extends AbstractActionController
                 
                 $tableData[$ctr]['product_categories'] = '';
                 foreach($prod->getCategories() as $prodCat){                    
-                    $cat = $categorySvc->getCategoryById($prodCat->pcat_cat_id, $this->getTool()->getCurrentLocaleID());  
-                    //if(isset($cat->getTranslations()->catt_name) && $cat->getTranslations()->catt_name) {
-                        $tableData[$ctr]['product_categories'] .= sprintf($categoryDom, $categorySvc->getCategoryNameById($prodCat->pcat_cat_id, $this->getTool()->getCurrentLocaleID()));
-                    //}
+                    $cat     = $categorySvc->getCategoryById($prodCat->pcat_cat_id, $this->getTool()->getCurrentLocaleID());
+                    $catName = $categorySvc->getCategoryNameById($prodCat->pcat_cat_id, $this->getTool()->getCurrentLocaleID());
+                    $tableData[$ctr]['product_categories'] .= sprintf($categoryDom, $this->getTool()->escapeHtml($catName));
                 }
                 
                 $toolTipTable->setTable('productTable'.$prod->getProduct()->prd_id, 'table-row-'.($ctr+1). ' ' . 'productTable'.$prod->getProduct()->prd_id, '');
@@ -221,8 +221,7 @@ class MelisComProductListController extends AbstractActionController
                 
                 $prodTextData = $prod->getTexts();
 
-               /*  $tableData[$ctr]['product_name'] = sprintf($toolTipTextTag, ($ctr+1), $prod->getProduct()->prd_id, ($ctr+1), $prodText) . $toolTipTable->render(); */
-                /* $tableData[$ctr]['product_name'] = sprintf($toolTipTextTag, ($ctr+1), $prod->getProduct()->prd_id, ($ctr+1), $prodText); */
+
                
 				// Detect if Mobile remove qTipTable
 				$useragent=$_SERVER['HTTP_USER_AGENT'];
@@ -331,7 +330,7 @@ class MelisComProductListController extends AbstractActionController
 
         if($this->getRequest()->isPost()) {
             $productId = (int) $this->getRequest()->getPost('productId');
-            $variantId = $this->getRequest()->getPost('variantId');
+            $variantId = (int) $this->getRequest()->getPost('variantId');
             
            // $productId = (int) $this->params()->fromQuery('productId');
             $variants = $this->getProductVariantsData($productId);
@@ -372,8 +371,8 @@ class MelisComProductListController extends AbstractActionController
                     $sContent .= $table->setRowData($image, array('class' => 'center'));
                     
 
-                    // SKu
-                    $sku = '<h4 class="text-danger">'.$variant['sku'].'</h4>';
+                    // SKU
+                    $sku = '<h4 class="text-danger">'.$this->getTool()->escapeHtml($variant['sku']).'</h4>';
                     $sContent .= $table->setRowData($sku, array('class' => 'text-left', 'style' => 'font-size: 14px'));
                     
                     // ATTRIBUTES
@@ -524,7 +523,7 @@ class MelisComProductListController extends AbstractActionController
                 switch($valCol){
                     case 'avt_v_datetime': $value = $this->getTool()->dateFormatLocale($value); break;
                     case 'avt_v_text':
-                    case 'avt_v_varchar' : $value = $this->getTool()->limitedText($value,50); break;
+                    case 'avt_v_varchar' : $value = $this->getTool()->limitedText($this->getTool()->escapeHtml($value),50); break;
                 }
                 if($value) {
                     $attributes[] = $value;
@@ -607,18 +606,6 @@ class MelisComProductListController extends AbstractActionController
 
         
         return $newArray;
-    }
-    
-    public function testAction()
-    {
-        $textTable = $this->getServiceLocator()->get('MelisComProductService');
-        $data = $textTable->getProductTextByCode(13, 'TITLE');
-        
-        print '<pre>';
-        print_r($data);
-        print '</pre>';
-    
-        die;
     }
 
 }

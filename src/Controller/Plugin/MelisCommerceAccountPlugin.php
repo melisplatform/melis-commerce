@@ -58,21 +58,6 @@ class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
      */
     public function front()
     {
-        $melisComAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
-        /**
-         * If the Authentication doesn't have identity
-         * this will redirect to the $m_redirection_link_not_loggedin
-         */
-        if (!$melisComAuthSrv->hasIdentity())
-        {
-            // Gettin the Redirect Uri from config
-            $m_redirection_link_not_loggedin = (!empty($this->pluginFrontConfig['m_redirection_link_not_loggedin'])) ? $this->pluginFrontConfig['m_redirection_link_not_loggedin'] : 'http://www.test.com';
-            
-            $controller = $this->getController();
-            $redirector = $controller->getPluginManager()->get('Redirect');
-            $redirector->toUrl($m_redirection_link_not_loggedin);
-        }
-        
         $pluginManager = $this->getServiceLocator()->get('ControllerPluginManager');
         
         // Getting custom param for Profile Plugin
@@ -107,8 +92,13 @@ class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
         
         // Getting custom param for Profile Plugin
         $clientMyCartParam = (!empty($this->pluginFrontConfig['my_cart_parameter'])) ? $this->pluginFrontConfig['my_cart_parameter'] : array();
-        $clientMyCartPlugin = $pluginManager->get('MelisCommerceMyCartPlugin');
+        $clientMyCartPlugin = $pluginManager->get('MelisCommerceCartMenuPlugin');
         $clientMyCart = $clientMyCartPlugin->render($clientMyCartParam);
+        
+        // Order list plugin
+        $clientOrderParameter =(!empty($this->pluginFrontConfig['order_history_paremeter'])) ? $this->pluginFrontConfig['order_history_paremeter'] : array();
+        $clientOrderPlugin = $pluginManager->get('MelisCommerceOrderListPlugin');
+        $clientOrderHistory = $clientOrderPlugin->render($clientOrderParameter);
         
         // Create an array with the variables that will be available in the view
         $viewVariables = array(
@@ -119,14 +109,51 @@ class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
             'billingAddress' => $clientBillingAddress,
             'billing_variables' => $clientBillingAddressVariables,
             'myCart' => $clientMyCart,
+            'orderHistory' => $clientOrderHistory,
         );
         
         // return the variable array and let the view be created
         return $viewVariables;
     }
     
-    public function back()
+    /**
+     * This method retrieving the address details of a client logged in
+     * $parma $addId, Id of the address
+     * 
+     * @return MelisEcomClientAddress
+     */
+    public function getSelectedAddressDetailsAction($addId)
     {
+        $address  = array();
+         
+        $melisComAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
         
+        if ($melisComAuthSrv->hasIdentity())
+        {
+            $personId = $melisComAuthSrv->getPersonId();
+            $clientSrv = $this->getServiceLocator()->get('MelisComClientService');
+            $address = $clientSrv->getClientPersonAddressByAddressId($personId, $addId);
+        }
+         
+        return $address;
+    }
+    
+    /**
+     * This method deleting the client person address
+     * $parma $addId, Id of the address
+     * 
+     * @return Boolean
+     */
+    public function deleteAddressAction($addId)
+    {
+        $success = false;
+        
+        $comClientSvc = $this->getServiceLocator()->get('MelisComClientService');
+        $success      = (int) $comClientSvc->deleteClientAddressByAddressId($addId);
+        if($success) {
+            $success = true;
+        }
+        
+        return $success;
     }
 }

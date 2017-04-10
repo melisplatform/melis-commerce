@@ -201,7 +201,7 @@ class MelisComCountryController extends AbstractActionController
                 foreach($tableData[$ctr] as $vKey => $vValue)
                 {
                     if($vKey != "ctry_flag") {
-                        $tableData[$ctr][$vKey] = $this->getTool()->limitedText($vValue);
+                        $tableData[$ctr][$vKey] = $this->getTool()->limitedText($this->getTool()->escapeHtml($vValue));
                     }
                 }
         
@@ -265,6 +265,7 @@ class MelisComCountryController extends AbstractActionController
             $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
 
             $postData = get_object_vars($this->getRequest()->getPost());
+            $postData = $this->getTool()->sanitizePost($postData);
             $this->getEventManager()->trigger('meliscommerce_country_save_start', $this, $postData);
             if($postData['ctry_id']) {
                 $textTitle = 'tr_meliscommerce_CountrY_edit_country';

@@ -245,7 +245,7 @@ class MelisComClientListController extends AbstractActionController
             $clientDataFiltered = $melisComClientService->getClientList(null, null, null, null, null, null, $sortOrder, $search);
             
             $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
-            
+            $melisTool           = $this->getServiceLocator()->get('MelisCoreTool');
             foreach ($clientData As $val)
             {
                 // Client ID
@@ -268,7 +268,7 @@ class MelisComClientListController extends AbstractActionController
                 $pCtr = 0;
                 foreach ($clientPersons As $pVal)
                 {
-                    $tempPersonName = $pVal->cper_firstname.' '.$pVal->cper_name;
+                    $tempPersonName = $melisTool->escapeHtml($pVal->cper_firstname).' '.$melisTool->escapeHtml($pVal->cper_name);
                     
                     if ($pVal->cper_is_main_person==1)
                     {
@@ -297,7 +297,7 @@ class MelisComClientListController extends AbstractActionController
                 $clientCompanyArray = array();
                 foreach ($clientCompany As $cVal)
                 {
-                    array_push($clientCompanyArray, $cVal->ccomp_name);
+                    array_push($clientCompanyArray, $melisTool->escapeHtml($cVal->ccomp_name));
                 }
                 $clientCompanyStr = implode(',', $clientCompanyArray);
                 

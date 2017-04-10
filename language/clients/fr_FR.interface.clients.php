@@ -174,6 +174,17 @@
 	    'tr_meliscommerce_client_tooltip_password' => 'Le mot de passe doit être d\'au moins 8 caractères et doit contenir au moins une lettre ET un chiffre.',
 	    'tr_meliscommerce_client_tooltip_password_2' => 'Confirmer le mot de passe',
 
-        'tr_meliscommerce_client_select_address' => 'Select address',
-        'tr_meliscommerce_client_add_new_address' => 'Add new address...',
+        // Plugins, MelisCommerceLostPAsswordGetEmailPlugin
+	    'tr_meliscommerce_client_select_address' => 'Choisir l\'adresse',
+    	'tr_meliscommerce_client_select_deliver_address' => 'Veuillez choisir une adresse de livraison',
+    	'tr_meliscommerce_client_select_billing_address' => 'Veuillez choisir une adresse de facturation',
+    	'tr_meliscommerce_client_add_new_address' => 'Ajouter une nouvelle adresse',
+    		
+    	'tr_meliscommerce_client_email_not_exist' => 'L\'email n\'existe pas, veuillez saisir une adresse email valide',
+    	'tr_meliscommerce_client_pass_change_success' => 'Le mot de passe a été changé avec succès',
+    	'tr_meliscommerce_client_pass_key_invalid' => 'Clef de récupération de mot de passe invalide',
+    	'tr_meliscommerce_client_pass_errors' => 'Une erreur est survenue',
+    	'tr_meliscommerce_client_common_error' => 'Une erreur est survenue, veuillez contacter l\'administrateur',
+	    
+	    'tr_meliscommerce_client_Contact_address_title' => 'Adresse titre'
 	);

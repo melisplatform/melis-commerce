@@ -44,8 +44,9 @@ class MelisEcomOrderBasketTable extends MelisEcomGenericTable
         }
         
         $select->order($order);
-        $select->offset((int)$start);
-        
+        if(!empty($start)){
+            $select->offset((int)$start);
+        }
         return $this->tableGateway->selectwith($select);
     }
 }

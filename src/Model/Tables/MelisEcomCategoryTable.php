@@ -11,6 +11,7 @@ namespace MelisCommerce\Model\Tables;
 
 use Zend\Db\TableGateway\TableGateway;
 use MelisCommerce\Model\MelisEcomCategory;
+use Zend\Db\Sql\Predicate\Expression;
 
 class MelisEcomCategoryTable extends MelisEcomGenericTable 
 {
@@ -21,6 +22,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
     {
         parent::__construct($tableGateway);
         $this->idField = 'cat_id';
+        $this->cacheResults = true;
     }
     
     /**
@@ -35,7 +37,6 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
      */
     public function getCategoryChildrenListById($categoryId, $langId, $onlyValid, $start, $limit, $fatherId = 0)
     {
-        
         $select = $this->tableGateway->getSql()->select();
         
         if ($fatherId == 0){
@@ -46,9 +47,9 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
         
         if (is_bool($onlyValid)&&$onlyValid){
             $select->where('cat_status = 1');
-            $select->where->NEST->literal('cat_date_valid_start <= "'. date('Y-m-d H:i:s').'"')
+            $select->where->NEST->literal('cat_date_valid_start <= "'. date('Y-m-d').'"')
                 ->or->literal('cat_date_valid_start IS NULL');;
-            $select->where->NEST->literal('cat_date_valid_end >= "'. date('Y-m-d H:i:s').'"')
+            $select->where->NEST->literal('cat_date_valid_end >= "'. date('Y-m-d').'"')
                 ->or->literal('cat_date_valid_end IS NULL');
         }
         
@@ -76,6 +77,13 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
      * @return NULL|\Zend\Db\ResultSet\ResultSetInterface
      */
     public function getCategoryTranslationBylangId($categoryId, $langId){
+
+        // Retrieve cache version if front mode to avoid multiple calls
+        $cacheKey = 'category-' . $categoryId . '_getCategoryTranslationBylangId_' . $categoryId . '_' . $langId;
+        $cacheConfig = 'commerce_memory_services';
+        $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+        if (!empty($results)) return $results;
         
         $select = $this->tableGateway->getSql()->select();
         
@@ -92,6 +100,10 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
         }
         
         $dataCategory = $this->tableGateway->selectWith($select);
+		
+		if ($this->cacheResults)
+		    $melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $dataCategory);
+		
         return $dataCategory;
     }
     
@@ -156,13 +168,16 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
      * @param int $fatherId If Zero (0), this will return the root of the category
      * @return int Array()
      */
-    public function getSubCategoryIdById($categoryId, $onlyValid, $fatherId = 0)
+    public function getSubCategoryIdById($categoryId, $onlyValid, $fatherId = 0, $langId = null)
     {
         $select = $this->tableGateway->getSql()->select();
         
-        if (is_null($onlyValid)){
-            return array();
+        if (!is_null($langId))
+        {
+            $join = new Expression('melis_ecom_category_trans.catt_category_id = melis_ecom_category.'.$this->idField.' AND catt_lang_id='.$langId);
+            $select->join('melis_ecom_category_trans', $join, array('*'), $select::JOIN_LEFT);
         }
+        
         
         if ($fatherId == 0){
             if(!in_array($categoryId, array('-1'))&&is_numeric($categoryId)){
@@ -177,9 +192,9 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
         
         if (is_bool($onlyValid)&&$onlyValid){
             $select->where('cat_status = 1');
-            $select->where->NEST->literal('cat_date_valid_start <= "'. date('Y-m-d H:i:s').'"')
+            $select->where->NEST->literal('cat_date_valid_start <= "'. date('Y-m-d').'"')
                     ->or->literal('cat_date_valid_start IS NULL');;
-            $select->where->NEST->literal('cat_date_valid_end >= "'. date('Y-m-d H:i:s').'"')
+            $select->where->NEST->literal('cat_date_valid_end >= "'. date('Y-m-d').'"')
                     ->or->literal('cat_date_valid_end IS NULL');
         }
         
@@ -259,5 +274,58 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
         $dataCategory = $this->tableGateway->selectWith($select);
         
         return $dataCategory;
+    }
+    
+    public function getParentCategory($catId, $langId = null, $addSeo = false)
+    {
+	    // Retrieve cache version if front mode to avoid multiple calls
+        $cacheKey = 'categories_table_getParentCategory_' . $catId . '_' . $langId . '_' . $addSeo;
+        $cacheConfig = 'commerce_big_services';
+		$melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+	    $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+	    if (!empty($results)) return $results;
+        
+        $select = $this->tableGateway->getSql()->select();
+        
+        if (!is_null($langId))
+        {
+            $join = new Expression('melis_ecom_category_trans.catt_category_id = melis_ecom_category.'.$this->idField.' AND catt_lang_id ='.$langId);
+            $select->join('melis_ecom_category_trans', $join, 
+                array('*'), $select::JOIN_LEFT);
+        }
+        
+        if ($addSeo)
+        {
+            $join = new Expression('melis_ecom_seo.eseo_category_id = melis_ecom_category.'.$this->idField.' AND eseo_category_id='.$catId);
+            $select->join('melis_ecom_seo', $join,
+                array('*'), $select::JOIN_LEFT);
+        }
+        
+        $select->where('cat_id ='.$catId);
+        
+        $dataCategory = $this->tableGateway->selectWith($select);
+        
+        $dataCategory = $dataCategory->toArray();
+        
+		if ($this->cacheResults)
+		    $melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $dataCategory);
+        
+        
+        return $dataCategory;
+    }
+    
+    public function getFatherCategory($catId, $langId)
+    {
+        $select = $this->tableGateway->getSql()->select();
+                
+        $select->join('melis_ecom_category_trans', 'melis_ecom_category_trans.catt_id = melis_ecom_category.cat_id', array('catt_name'), $select::JOIN_LEFT);
+        
+        $select->where->equalTo('melis_ecom_category.cat_id', $catId);
+        
+        $select->where->equalTo('melis_ecom_category_trans.catt_lang_id', $langId);
+        
+        $resultSet = $this->tableGateway->selectWith($select);
+        
+        return $resultSet;
     }
 }

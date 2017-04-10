@@ -8,7 +8,7 @@
 
 <div <?php echo $id.' '.$data_melisKey; ?>>
 	<div class="row">
-		<div class="col-xs-12 col-md-3">
+		<div class="col-xs-12 col-md-3 col-lg-2">
     		<div class="product-text-tab-container">
             	<ul class="nav-tabs product-text-tab" id="<?php echo $this->clientId.'_client_address_tab_nav' ?>">
             		<?php foreach ($this->clientAddresses As $val):?>
@@ -16,7 +16,7 @@
             			<li class="<?php echo $addressId.'_address'?>">
                 			<a class="clearfix" data-toggle="tab" id="<?php echo 'nav_add_'.$addressId ?>" href="#<?php echo $addressId.'_address'?>" aria-expanded="false">
                 				<span>
-                			        <?php echo $val->cadd_address_name ?>
+                			        <?php echo $this->escapeHtml($val->cadd_address_name) ?>
             				    </span>
                 				<i class="fa fa-times deleteClientAddress" data-addressid="<?php echo $val->cadd_id ?>" data-tabclass="<?php echo $addressId.'_address'?>" data-isnewadded="0"></i>
                 			</a>
@@ -25,7 +25,7 @@
             	</ul>
             </div>
 		</div>
-		<div class="col-xs-12 col-md-9">
+		<div class="col-xs-12 col-md-9 col-lg-10">
 			<div class="tab-content client-contact-tab-content" id="<?php echo $this->clientId.'_client_address_tab_content' ?>">
 				<?php foreach ($this->clientAddresses As $val):?>
 					<?php $addressId = md5($val->cadd_id)?>

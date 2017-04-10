@@ -9,13 +9,12 @@
 
 namespace MelisCommerce\Service;
 
-use MelisCore\Service\MelisCoreGeneralService;
 /**
  *
  * This service handles the coupon system of MelisCommerce.
  *
  */
-class MelisComCouponService extends MelisCoreGeneralService
+class MelisComCouponService extends MelisComGeneralService
 {
     /**
      * Returns a list of coupons from the coupon table
@@ -109,7 +108,7 @@ class MelisComCouponService extends MelisCoreGeneralService
         try{
             $results = $couponTable->save($arrayParameters['coupon'], $arrayParameters['couponId']);
         }catch(\Exception $e){
-            echo $e->getMessage();
+            
         }
         // Service implementation end
          
@@ -143,7 +142,7 @@ class MelisComCouponService extends MelisCoreGeneralService
         try{
             $results = $couponClientTable->save($arrayParameters['couponClient'], $arrayParameters['ccli_id']);
         }catch(\Exception $e){
-            echo $e->getMessage();
+            
         }
         // Service implementation end
          
@@ -263,30 +262,27 @@ class MelisComCouponService extends MelisCoreGeneralService
                 {
                     if ($arrayParameters['clientId'])
                     {
-                        // Check coupon if already use by the clientId
-                        $melisEcomCouponOrderTable = $this->getServiceLocator()->get('MelisEcomCouponOrderTable');
-                        $clientOrderCoupon = $melisEcomCouponOrderTable->checkUsedClientCoupon($coupon->coup_id, $arrayParameters['clientId'])->current();
-                    
-                        if (empty($clientOrderCoupon))
+                        //check coupon type if assigned type
+                        if ($coupon->coup_type == '1')
                         {
-                            //check coupon type if assigned type
-                            if ($coupon->coup_type == '1')
-                            {
-                                // Checking if Client is assigned to this couponId
-                                $melisEcomCouponClientTable = $this->getServiceLocator()->get('MelisEcomCouponClientTable');
-                                $couponClient = $melisEcomCouponClientTable->checkCouponClientExist($coupon->coup_id, $arrayParameters['clientId'])->current();
+                            // Checking if Client is assigned to this couponId
+                            $melisEcomCouponClientTable = $this->getServiceLocator()->get('MelisEcomCouponClientTable');
+                            $couponClient = $melisEcomCouponClientTable->checkCouponClientExist($coupon->coup_id, $arrayParameters['clientId'])->current();
                         
-                                if (empty($couponClient))
-                                {
-                                    // Coupon is not assigned to the selected client
-                                    $results['error'] = 'MELIS_COMMERCE_COUPON_CLIENT_NOT_ASSIGN';
-                                }
+                            if (empty($couponClient))
+                            {
+                                // Coupon is not assigned to the selected client
+                                $results['error'] = 'MELIS_COMMERCE_COUPON_CLIENT_NOT_ASSIGN';
                             }
                         }
-                        else
+                        
+                    }
+                    else 
+                    {
+                        if ($coupon->coup_type == '1')
                         {
-                            // Client has already used the coupon code
-                            $results['error'] = 'MELIS_COMMERCE_COUPON_CLIENT_ALREADY_USED';
+                            // Coupon is not assigned to the selected client
+                            $results['error'] = 'MELIS_COMMERCE_COUPON_CLIENT_NOT_ASSIGN';
                         }
                     }
                     

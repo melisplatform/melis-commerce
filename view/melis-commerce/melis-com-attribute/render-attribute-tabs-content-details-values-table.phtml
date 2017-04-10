@@ -27,7 +27,7 @@
 
         foreach($this->tableColumns as $colName => $columnText)
         {
-            $columns[] = $columnText['text'];
+            $columns[] = $this->escapeHtml($columnText['text']);
         }
 
         // this process inserts all the array columns into the table.

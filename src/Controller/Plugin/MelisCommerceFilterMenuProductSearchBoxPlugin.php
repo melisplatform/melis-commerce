@@ -67,13 +67,4 @@ class MelisCommerceFilterMenuProductSearchBoxPlugin extends MelisTemplatingPlugi
         // return the variable array and let the view be created
         return $viewVariables;
     }
-    
-    /**
-     * This function return the back office rendering for the template edition system
-     * TODO
-     */
-    public function back()
-    {
-        return array();
-    }
 }

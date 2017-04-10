@@ -83,8 +83,9 @@ class MelisEcomVariantTable extends MelisEcomGenericTable
            $select->limit($limit);
        }
         
-        $select->offset($start);
-        
+       if(!empty($start)){
+            $select->offset($start);
+       }
         $resultSet = $this->tableGateway->selectwith($select);
         
         return $resultSet;
@@ -143,8 +144,9 @@ class MelisEcomVariantTable extends MelisEcomGenericTable
         }
         
         $select->order($order);
-        $select->offset((int)$start);
-       
+        if(!empty($start)){
+            $select->offset((int)$start);
+        }
         if($clause){
             $select->where($clause);
         }
@@ -274,6 +276,19 @@ class MelisEcomVariantTable extends MelisEcomGenericTable
     public function getVarTotalFiltered()
     {
         return $this->_currentVarDataCount;
+    }
+    
+    public function getVariantAndSeoById($variantId)
+    {
+        $select = $this->tableGateway->getSql()->select();
+        
+        $select->join('melis_ecom_seo', 'melis_ecom_seo.eseo_variant_id = melis_ecom_variant.var_id', array('*'), $select::JOIN_LEFT);
+        
+        $select->where->equalTo('melis_ecom_variant.var_id', $variantId);
+        
+        $resultSet = $this->tableGateway->selectWith($select);
+        
+        return $resultSet;
     }
 
     protected function setVarCurrentDataCount($dataCount)

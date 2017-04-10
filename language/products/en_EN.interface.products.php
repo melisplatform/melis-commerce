@@ -85,5 +85,9 @@ return array(
     'tr_meliscommerce_product_confirm_remove_test' => 'Are you sure you want to remove this text type?',
     'tr_meliscommerce_products_attributes_lists_loading' => 'Loading attributes...',
     
-    
+    // Plugins
+    'tr_meliscommerce_products_plugins_stock_left' => "\"%s\" stock(s) left",
+    'tr_meliscommerce_products_plugins_no_stock' => "Product is not available",
+    'tr_meliscommerce_products_plugins_cart_error' => "Something is wrong, please contact administrator for assistance",
+    'tr_meliscommerce_products_plugins_quantity_error' => 'Quantity must be numeric',
 );

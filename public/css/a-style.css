@@ -193,7 +193,10 @@ a {
 	padding: 10px 0 0;
 }
 .row .pdc-heading {
-	padding: 10px 0 0;
+    padding: 10px 0 0;
+}
+.pdc-heading.pt-0 {
+	padding-top: 0;
 }
 
 /* dataTable */

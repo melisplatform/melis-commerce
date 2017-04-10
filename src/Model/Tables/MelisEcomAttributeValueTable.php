@@ -96,4 +96,20 @@ class MelisEcomAttributeValueTable extends MelisEcomGenericTable
     
         return $resultData;
     }
+    
+    public function getAttributeValuesByAttributeId($attributeId, $langId)
+    {
+        $select = $this->tableGateway->getSql()->select();
+        
+        $select ->join('melis_ecom_attribute_type', 'melis_ecom_attribute_type.atype_id = melis_ecom_attribute_value.atval_type_id', array('atype_column_value'), $select::JOIN_LEFT)
+        ->join('melis_ecom_attribute_value_trans', 'melis_ecom_attribute_value_trans.av_attribute_value_id = melis_ecom_attribute_value.atval_id', array('*'), $select::JOIN_LEFT);
+        
+        $select->where->equalTo('melis_ecom_attribute_value.atval_attribute_id', $attributeId);
+        
+        $select->where->equalTo('melis_ecom_attribute_value_trans. avt_lang_id', $langId);
+        
+        $resultData = $this->tableGateway->selectWith($select);
+        
+        return $resultData;
+    }
 }

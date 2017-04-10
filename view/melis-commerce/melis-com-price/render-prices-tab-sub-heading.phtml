@@ -7,7 +7,7 @@
     $id .= $this->zoneconfig['conf']['id'].'"';
     $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
 ?>
-<div class="pdc-heading clearfix" <?= $id. ' '.$data_melisKey?>>
+<div class="pdc-heading clearfix pt-0" <?= $id. ' '.$data_melisKey?>>
 	<?php 
     	if(!empty($this->zoneconfig['interface'])) {
     	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {

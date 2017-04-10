@@ -12,6 +12,7 @@ namespace MelisCommerce\Controller;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
 use Zend\View\Model\ViewModel;
+use Zend\Db\Metadata\Metadata;
 class TesterController extends AbstractActionController
 {
 
@@ -87,76 +88,78 @@ class TesterController extends AbstractActionController
        
     }
     
+    public function testSeoCategoryAction()
+    {
+        
+        $categorySvc = $this->getServiceLocator()->get('MelisComCategoryService');
+        
+        $data = $categorySvc->getCategorySeoById(3,2);
+        echo '<pre>'; print_r($data); echo '</pre>'; die();
+    }
+    
     public function testAction()
     {
-        $test = array(
-            'MelisEcomCategoryTable' => 'MelisCommerce\Model\Tables\MelisEcomCategoryTable',
-            'MelisEcomCategoryTransTable' => 'MelisCommerce\Model\Tables\MelisEcomCategoryTransTable',
-            'MelisEcomCountryCategoryTable' => 'MelisCommerce\Model\Tables\MelisEcomCountryCategoryTable',
-            'MelisEcomLangTable' => 'MelisCommerce\Model\Tables\MelisEcomLangTable',
-            'MelisEcomDocumentTable' => 'MelisCommerce\Model\Tables\MelisEcomDocumentTable',
-            'MelisEcomDocTypeTable' => 'MelisCommerce\Model\Tables\MelisEcomDocTypeTable',
-            'MelisEcomProductTable' => 'MelisCommerce\Model\Tables\MelisEcomProductTable',
-            'MelisEcomProductTextTable' => 'MelisCommerce\Model\Tables\MelisEcomProductTextTable',
-            'MelisEcomProductTextTypeTable' => 'MelisCommerce\Model\Tables\MelisEcomProductTextTypeTable',
-            'MelisEcomVariantTable' => 'MelisCommerce\Model\Tables\MelisEcomVariantTable',
-            'MelisEcomCountryTable' => 'MelisCommerce\Model\Tables\MelisEcomCountryTable',
-            'MelisEcomPriceTable' => 'MelisCommerce\Model\Tables\MelisEcomPriceTable',
-            'MelisEcomVariantStockTable' => 'MelisCommerce\Model\Tables\MelisEcomVariantStockTable',
-            'MelisEcomProductCategoryTable' => 'MelisCommerce\Model\Tables\MelisEcomProductCategoryTable',
-            'MelisEcomProductAttributeTable' => 'MelisCommerce\Model\Tables\MelisEcomProductAttributeTable',
-            'MelisEcomProductCategoryTable' => 'MelisCommerce\Model\Tables\MelisEcomProductCategoryTable',
-            'MelisEcomProductVariantAttributeValueTable' => 'MelisCommerce\Model\Tables\MelisEcomVariantAttributeValueTable',
-            'MelisEcomLang' => 'MelisCommerce\Model\Tables\MelisEcomLangTable',
-            'MelisEcomDocRelationsTable' => 'MelisCommerce\Model\Tables\MelisEcomDocRelationsTable',
-            'MelisEcomAttributeTrans' => 'MelisCommerce\Model\Tables\MelisEcomAttributeTransTable',
-            'MelisEcomSeoTable' => 'MelisCommerce\Model\Tables\MelisEcomSeoTable',
-            'MelisEcomAttributeTypeTable' => 'MelisCommerce\Model\Tables\MelisEcomAttributeTypeTable',
-            'MelisEcomAttributeTable' => 'MelisCommerce\Model\Tables\MelisEcomAttributeTable',
-            'MelisEcomAttributeTransTable' => 'MelisCommerce\Model\Tables\MelisEcomAttributeTransTable',
-            'MelisEcomAttributeValueTable' => 'MelisCommerce\Model\Tables\MelisEcomAttributeValueTable',
-            'MelisEcomAttributeValueTransTable' => 'MelisCommerce\Model\Tables\MelisEcomAttributeValueTransTable',
-            'MelisEcomClientTable' => 'MelisCommerce\Model\Tables\MelisEcomClientTable',
-            'MelisEcomClientPersonTable' => 'MelisCommerce\Model\Tables\MelisEcomClientPersonTable',
-            'MelisEcomClientAddressTable' => 'MelisCommerce\Model\Tables\MelisEcomClientAddressTable',
-            'MelisEcomClientCompanyTable' => 'MelisCommerce\Model\Tables\MelisEcomClientCompanyTable',
-            'MelisEcomCivilityTransTable' => 'MelisCommerce\Model\Tables\MelisEcomCivilityTransTable',
-            'MelisEcomClientAddressTypeTable' => 'MelisCommerce\Model\Tables\MelisEcomClientAddressTypeTable',
-            'MelisEcomClientAddressTypeTransTable' => 'MelisCommerce\Model\Tables\MelisEcomClientAddressTypeTransTable',
-            'MelisEcomBasketPersistentTable' => 'MelisCommerce\Model\Tables\MelisEcomBasketPersistentTable',
-            'MelisEcomBasketAnonymousTable' => 'MelisCommerce\Model\Tables\MelisEcomBasketAnonymousTable',
-            'MelisEcomOrderTable' => 'MelisCommerce\Model\Tables\MelisEcomOrderTable',
-            'MelisEcomOrderAddressTable' => 'MelisCommerce\Model\Tables\MelisEcomOrderAddressTable',
-            'MelisEcomCouponTable' => 'MelisCommerce\Model\Tables\MelisEcomCouponTable',
-            'MelisEcomCouponOrderTable' => 'MelisCommerce\Model\Tables\MelisEcomCouponOrderTable',
-            'MelisEcomCouponClientTable' => 'MelisCommerce\Model\Tables\MelisEcomCouponClientTable',
-            'MelisEcomOrderPaymentTable' => 'MelisCommerce\Model\Tables\MelisEcomOrderPaymentTable',
-            'MelisEcomOrderPaymentTypeTable' => 'MelisCommerce\Model\Tables\MelisEcomOrderPaymentTypeTable',
-            'MelisEcomOrderStatusTable' => 'MelisCommerce\Model\Tables\MelisEcomOrderStatusTable',
-            'MelisEcomOrderStatusTransTable' => 'MelisCommerce\Model\Tables\MelisEcomOrderStatusTransTable',
-            'MelisEcomOrderMessageTable' => 'MelisCommerce\Model\Tables\MelisEcomOrderMessageTable',
-            'MelisEcomOrderShippingTable' => 'MelisCommerce\Model\Tables\MelisEcomOrderShippingTable',
-            'MelisEcomOrderBasketTable' => 'MelisCommerce\Model\Tables\MelisEcomOrderBasketTable',
-            'MelisEcomCurrencyTable' => 'MelisCommerce\Model\Tables\MelisEcomCurrencyTable',
-            'MelisEcomAssocVariantTable'      => 'MelisCommerce\Model\Tables\MelisEcomAssocVariantTable',
-            'MelisEcomAssocVariantTypeTable'  => 'MelisCommerce\Model\Tables\MelisEcomAssocVariantTypeTable',
-        );
         
-        ksort($test);
-        foreach($test as $key => $value){
-//             echo "<br> 'get$key' => array(\n
-//                   <br> &nbsp&nbsp&nbsp 'model' => 'MelisCommerce\Model\\".substr($key, 0, -5)."',
-//                   <br> &nbsp&nbsp&nbsp 'model_table' => '$value',
-//                   <br> &nbsp&nbsp&nbsp 'db_table_name' => '',
-//                   <br> ),";
-//                 echo "\$this->assertNotEmpty(\$this->get$key()->fetchAll()->toArray());<br>";
-                echo "\$this->get$key(),<br>";
-        }
+//         $productSvc = $this->getServiceLocator()->get('MelisComProductService');
+        
+//         $data = $productSvc->getProductSeoById(1, 1);
+
+//         $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
+        
+//         $data = $variantSvc->getVariantSeoById(1, 1);
+
+        $categorySvc = $this->getServiceLocator()->get('MelisComCategoryService');
+        
+        $data = $categorySvc->getCategorySeoById(3, 1);
+        
+        echo '<pre>'; var_dump($data); echo '</pre>'; die();
         die();
 
     }
     
+    public function testingAction()
+    {
+        $currencySvc = $this->getServiceLocator()->get('MelisComProductSearchService');
+        
+        $data = $currencySvc->getProductByCategory(array(20), 1);
+        echo '<pre>'; print_r($data); echo '</pre>'; die();
+        die();
+    }
     
+    public function testMailAction()
+    {
+        $sendMailSvc = $this->getServiceLocator()->get('MelisEngineSendMail');
+    
+       
+            $email_template_path = 'MelisDemoCommerce/emailLayout';
+            $email_from_name = 'Gwapo gwapo';
+            $email_from =  'gwapo@gmail.com';
+            $email_to_name = 'Alvin Lanceta';
+            $email_reply_to = 'noReply@gmail.com';
+            $email_to = 'alanceta@melistechnology.com';
+            $email_content = 'Testing ni email ni';
+            $email_subject =  'Testing';
+            $email_content_tag_replace = array();
+    
+        $sendMailSvc->sendEmail($email_template_path, $email_from, $email_from_name, 
+	                           $email_to, $email_to_name, $email_subject, 
+	                           $email_content, $email_content_tag_replace, $email_reply_to);
+        echo 'ni send kahaa?';
+        die();
+    }
+    
+    public function cacheTestAction()
+    {
+        $cacheKey = 'getPageLinkCategory_' . 12 . '_' . 1 . '_' . false;
+        $cacheConfig = 'commerce_memory_services';
+        $melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
+        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+        echo 'cache<pre>'; var_dump($results); echo '</pre> cache_end';
+        
+        $comLinkSrv = $this->getServiceLocator()->get('MelisComLinksService');
+        $test = $comLinkSrv->getPageLink('category', 12, 1, false);
+        echo '<pre>'; print_r($test); die();
+    }
 
     
 }

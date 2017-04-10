@@ -1171,6 +1171,7 @@ class MelisComProductController extends AbstractActionController
         if($this->getRequest()->isPost()) {
 
             $data = get_object_vars($this->getRequest()->getPost());
+            $data = $this->getTool()->sanitizeRecursive($data);
 
             $productId = $data['product'][0]['prd_id'] ? (int) $data['product'][0]['prd_id'] : null;
             
@@ -1648,6 +1649,7 @@ class MelisComProductController extends AbstractActionController
             }
 
         }
+        
         $comLangTable = $this->getServiceLocator()->get('MelisEcomLangTable');
         $ctrText = 0;
         $localeCtr = array();
@@ -1664,7 +1666,7 @@ class MelisComProductController extends AbstractActionController
             $layoutVar['prodAttributes'][] = $attr;
         }
 
-
+        
         $this->layout()->setVariables(array_merge(array(
             'productId' => $productId,
             'prodText' => $prodText,

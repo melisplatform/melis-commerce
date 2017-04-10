@@ -10,6 +10,7 @@
         'tr_meliscommerce_orders_invalid_status' => 'Please select a valid status',
         'tr_meliscommerce_orders_message_your' => 'Your message',
         'tr_meliscommerce_orders_message_send' => 'Send',
+        'tr_meliscommerce_orders_message_your_error' => 'Please provide a valid message',
     
         'tr_meliscommerce_orders_invalid_number' => 'The input must contain only digits',
         'tr_meliscommerce_orders_invalid_phone' => 'Please provide a valid contact number',

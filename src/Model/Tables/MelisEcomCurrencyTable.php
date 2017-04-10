@@ -22,4 +22,50 @@ class MelisEcomCurrencyTable extends MelisEcomGenericTable
         $this->idField = 'cur_id';
     }
     
+    public function getCurrencies($status = null, $start = null, $limit = null, $order = null, $search = null)
+    {
+        $select = $this->tableGateway->getSql()->select();
+        
+
+        if(!is_null($search)){
+            $search = '%'.$search.'%';
+            $select->where->NEST->like('cur_id', $search)
+            ->or->like('cur_name', $search)
+            ->or->like('cur_code', $search)
+            ->or->like('cur_symbol', $search);
+        }
+        
+        if(!is_null($status)){
+            $select->where->equalTo('cur_status', $status);    
+        }
+        
+        if(!is_null($start)){
+            $select->offset($start);   
+        }
+        
+        if(!is_null($limit)){
+            $select->limit($limit);
+        }
+        
+        if(!is_null($order)){
+            $select->order($order);
+        }
+        
+        $resultSet = $this->tableGateway->selectWith($select);
+        
+        return $resultSet;
+        
+    }
+    
+    public function getDefaultCurrency()
+    {
+        $select = $this->tableGateway->getSql()->select();
+        
+        $select->where->equalTo('cur_default', 1);
+        
+        $resultSet = $this->tableGateway->selectWith($select);
+        
+        return $resultSet;
+    }
+    
 }

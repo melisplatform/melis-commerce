@@ -82,9 +82,7 @@ class Module
             $eventManager->attach(new MelisCommerceValidateVariantListener());
             $eventManager->attach(new MelisCommerceSaveOrderListener());
             $eventManager->attach(new MelisCommerceSaveClientListener());
-            $eventManager->attach(new MelisCommerceShipmentCostListener());
             $eventManager->attach(new MelisCommerceSaveAttributeListener());
-            $eventManager->attach(new MelisCommercePostPaymentListener());
             $eventManager->attach(new MelisCommerceProductPriceCountryDeletedListener());
             $eventManager->attach(new MelisCommerceProductStockCountryDeletedListener());
             $eventManager->attach(new MelisCommerceCategoryCountryLinkCountryDeletedListener());
@@ -110,7 +108,9 @@ class Module
             $container = new Container('meliscommerce');
         }
         
+        $eventManager->attach(new MelisCommerceShipmentCostListener());
         $eventManager->attach(new MelisCommerceCheckoutCouponListener());
+        $eventManager->attach(new MelisCommercePostPaymentListener());
         
     }
     
@@ -201,10 +201,45 @@ class Module
 	        include __DIR__ . '/../config/tools/app.tools.country.php',
             include __DIR__ . '/../config/tools/app.tools.assoc_var.php',
 	    
-            include __DIR__ . '/../config/plugins/app.plugins.products.php',
-	        include __DIR__ . '/../config/plugins/app.plugins.categories.php',
-            include __DIR__ . '/../config/plugins/app.plugins.clients.php',
-            include __DIR__ . '/../config/plugins/app.plugins.orders.php',
+    	    // categories plugin configs
+    	    include __DIR__ . '/../config/plugins/categories/MelisCommerceCategorySliderListProductsPlugin.php',
+    	    include __DIR__ . '/../config/plugins/categories/MelisCommerceCategoryListProductsPlugin.php',
+    	    include __DIR__ . '/../config/plugins/categories/MelisCommerceFilterMenuCategoryListPlugin.php',
+    	    include __DIR__ . '/../config/plugins/categories/MelisCommerceFilterMenuProductSearchBoxPlugin.php',
+    	    include __DIR__ . '/../config/plugins/categories/MelisCommerceFilterMenuPriceValueBoxPlugin.php',
+    	    include __DIR__ . '/../config/plugins/categories/MelisCommerceFilterMenuAttributeValueBoxPlugin.php',
+    	    
+    	    // clients plugin configs
+    	    include __DIR__ . '/../config/plugins/clients/MelisCommerceLoginPlugin.php',
+    	    include __DIR__ . '/../config/plugins/clients/MelisCommerceLostPasswordGetEmailPlugin.php',
+    	    include __DIR__ . '/../config/plugins/clients/MelisCommerceLostPasswordResetPlugin.php',
+    	    include __DIR__ . '/../config/plugins/clients/MelisCommerceRegisterPlugin.php',
+    	    include __DIR__ . '/../config/plugins/clients/MelisCommerceAccountPlugin.php',
+    	    include __DIR__ . '/../config/plugins/clients/MelisCommerceProfilePlugin.php',
+    	    include __DIR__ . '/../config/plugins/clients/MelisCommerceDeliveryAddressPlugin.php',
+    	    include __DIR__ . '/../config/plugins/clients/MelisCommerceBillingAddressPlugin.php',
+    	    
+    	    // order plugin configs
+    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCartAddPlugin.php',
+    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutPlugin.php',
+    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutCartPlugin.php',
+    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutCouponAddPlugin.php',
+    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutAddressesPlugin.php',
+    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutSummaryPlugin.php',
+    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutConfirmSummaryPlugin.php',
+    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutConfirmPlugin.php',
+    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCartMenuPlugin.php',
+    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderListPlugin.php',
+    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderPlugin.php',
+    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderAddressPlugin.php',
+    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderShippingDetailsPlugin.php',
+    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderMessagesPlugin.php',
+    	    
+    	    // products plugin configs
+    	    include __DIR__ . '/../config/plugins/products/MelisCommerceProductShowPlugin.php',
+    	    include __DIR__ . '/../config/plugins/products/MelisCommerceAttributesShowPlugin.php',
+    	    include __DIR__ . '/../config/plugins/products/MelisCommerceProductsRelatedPlugin.php',
+    	    
     	);
     	
     	foreach ($configFiles as $file) {

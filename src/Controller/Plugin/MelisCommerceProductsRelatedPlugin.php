@@ -70,7 +70,7 @@ class MelisCommerceProductsRelatedPlugin extends MelisTemplatingPlugin
             $productObj->display_price = $productSvc->getProductVariantPriceById($productObj->getId());
             $data[]= $productObj;     
         }
-//         echo '<pre>'; print_r($data); echo '</pre>'; die();
+        
         // Create an array with the variables that will be available in the view
         $viewVariables = array(
             'relatedProducts' => $data
@@ -78,14 +78,5 @@ class MelisCommerceProductsRelatedPlugin extends MelisTemplatingPlugin
         
         // return the variable array and let the view be created
         return $viewVariables;
-    }
-    
-    /**
-     * This function return the back office rendering for the template edition system
-     * TODO
-     */
-    public function back()
-    {
-        return array();
     }
 }

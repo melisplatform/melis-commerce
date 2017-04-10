@@ -11,6 +11,7 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
+use Zend\Session\Container;
 /**
  * This plugin implements the business logic of the
  * "Filter menu attribute value" plugin.
@@ -57,6 +58,9 @@ class MelisCommerceFilterMenuAttributeValueBoxPlugin extends MelisTemplatingPlug
     public function front()
     {
         $selected = array();
+        $container = new Container('melisplugins');
+        $lang = $container['melis-plugins-lang-id'];
+        
         // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
         $attributeId = !empty($this->pluginFrontConfig['attribute_id']) ? $this->pluginFrontConfig['attribute_id'] : 1;
         $selectedAttrVal = !empty($this->pluginFrontConfig['m_box_filter_attribute_values_ids_selected']) ? $this->pluginFrontConfig['m_box_filter_attribute_values_ids_selected'] : array();
@@ -65,8 +69,7 @@ class MelisCommerceFilterMenuAttributeValueBoxPlugin extends MelisTemplatingPlug
         }
         // Retrieve data from the melis services
         $attributeSvc = $this->getServiceLocator()->get('MelisComAttributeService');
-        $attributeValuesObj = $attributeSvc->getAttributeValuesList($attributeId);        
-        
+        $attributeValuesObj = $attributeSvc->getAttributeValuesByAttributeId($attributeId , $lang);        
         
         // Create an array with the variables that will be available in the view
         $viewVariables = array(
@@ -76,14 +79,5 @@ class MelisCommerceFilterMenuAttributeValueBoxPlugin extends MelisTemplatingPlug
         
         // return the variable array and let the view be created
         return $viewVariables;
-    }
-    
-    /**
-     * This function return the back office rendering for the template edition system
-     * TODO
-     */
-    public function back()
-    {
-        return array();
     }
 }
