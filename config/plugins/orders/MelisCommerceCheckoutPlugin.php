@@ -9,11 +9,11 @@ return array(
                         'template_path' => 'MelisCommerceCheckout/show-check-out',
                         
                         // Sub plugin paramaters
-                        'checkout_cart_parametesr' => array(),
-                        'checkout_cart_addresses_parameters' => array(),
-                        'checkout_cart_summary_parameters' => array(),
-                        'checkout_cart_confirm_summary_parameters' => array(),
-                        'checkout_cart_confirm_parameters' => array(),
+                        'checkout_cart_parameters' => array(),
+                        'checkout_addresses_parameters' => array(),
+                        'checkout_summary_parameters' => array(),
+                        'checkout_confirm_summary_parameters' => array(),
+                        'checkout_confirm_parameters' => array(),
                         
                         // checkout steps
                         'm_checkout_step' => '',

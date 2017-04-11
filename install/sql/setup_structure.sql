@@ -127,8 +127,8 @@ CREATE TABLE IF NOT EXISTS `melis_ecom_product` (
   `prd_id` INT NOT NULL AUTO_INCREMENT COMMENT 'Product Id',
   `prd_reference` VARCHAR(45) NULL COMMENT 'Reference for this product',
   `prd_status` TINYINT(1) NOT NULL DEFAULT 1 COMMENT 'Active / Not acitve',
-  `prd_date_creation` DATETIME NOT NULL COMMENT 'Creation date of this product',
-  `prd_user_id_creation` INT NOT NULL COMMENT 'BO user who created this product',
+  `prd_date_creation` DATETIME NULL COMMENT 'Creation date of this product',
+  `prd_user_id_creation` INT NULL COMMENT 'BO user who created this product',
   `prd_date_edit` DATETIME NULL COMMENT 'Last edit date of this product',
   `prd_user_id_edit` INT NULL COMMENT 'Last BO User who edited this product',
   PRIMARY KEY (`prd_id`))
@@ -183,7 +183,7 @@ CREATE TABLE IF NOT EXISTS `melis_ecom_product_text_type` (
   `ptt_id` INT NOT NULL AUTO_INCREMENT COMMENT 'Text\'s type Id',
   `ptt_code` VARCHAR(45) NOT NULL COMMENT 'Code for the type, ex \'TITLE\' or \'DESCRIPTION\'',
   `ptt_name` VARCHAR(255) NOT NULL COMMENT 'Name of the type',
-  `ptt_field_type` INT NOT NULL COMMENT '1 for short text, 2 for long text',
+  `ptt_field_type` INT NULL COMMENT '1 for short text, 2 for long text',
   PRIMARY KEY (`ptt_id`))
 ENGINE = InnoDB
 COMMENT = 'This table stores the type of product text';
@@ -550,7 +550,7 @@ DROP TABLE IF EXISTS `melis_ecom_client_address_type` ;
 
 CREATE TABLE IF NOT EXISTS `melis_ecom_client_address_type` (
   `catype_id` INT NOT NULL AUTO_INCREMENT COMMENT 'Type id of address',
-  `catype_code` VARCHAR(10) NULL COMMENT 'Code if needed',
+  `catype_code` VARCHAR(10) NULL DEFAULT NULL COMMENT 'Code if needed',
   PRIMARY KEY (`catype_id`))
 ENGINE = InnoDB
 COMMENT = 'This table stores the address types';
@@ -601,7 +601,7 @@ DROP TABLE IF EXISTS `melis_ecom_order_status` ;
 CREATE TABLE IF NOT EXISTS `melis_ecom_order_status` (
   `osta_id` INT NOT NULL AUTO_INCREMENT COMMENT 'Order status Id',
   `osta_color_code` VARCHAR(45) NOT NULL COMMENT 'Color associated to this status',
-  `osta_status` TINYINT(1) NOT NULL DEFAULT 1,
+  `osta_status` TINYINT(1) NULL DEFAULT 1,
   PRIMARY KEY (`osta_id`))
 ENGINE = InnoDB
 COMMENT = 'This table stores the different status available for an order';
@@ -811,7 +811,7 @@ CREATE TABLE IF NOT EXISTS `melis_ecom_order_message` (
   `omsg_order_id` INT NOT NULL COMMENT 'Order Id ',
   `omsg_client_id` INT NOT NULL COMMENT 'Client id',
   `omsg_client_person_id` INT NULL COMMENT 'Client Person talking',
-  `omsg_user_id` INT NOT NULL COMMENT 'BO user Id who is talking',
+  `omsg_user_id` INT NULL COMMENT 'BO user Id who is talking',
   `omsg_message` TEXT NOT NULL COMMENT 'Message',
   `omsg_date_creation` DATETIME NOT NULL COMMENT 'Creation date of the message',
   PRIMARY KEY (`omsg_id`),
@@ -834,7 +834,7 @@ CREATE TABLE IF NOT EXISTS `melis_ecom_coupon` (
   `coup_type` INT NOT NULL COMMENT 'Type of coupon: for all or affected to a client',
   `coup_percentage` FLOAT NULL COMMENT 'Percentage of discount',
   `coup_discount_value` FLOAT NULL COMMENT 'Value of discount',
-  `coup_max_use_number` INT NOT NULL COMMENT 'Max number of use',
+  `coup_max_use_number` INT NULL DEFAULT NULL COMMENT 'Max number of use',
   `coup_current_use_number` INT NOT NULL DEFAULT 0 COMMENT 'Current number of use',
   `coup_date_valid_start` DATETIME NULL COMMENT 'Start datetime of validity',
   `coup_date_valid_end` DATETIME NULL COMMENT 'End datetime of validity',
@@ -947,7 +947,7 @@ COMMIT;
 -- Data for table `melis_ecom_lang`
 -- -----------------------------------------------------
 START TRANSACTION;
-INSERT INTO `melis_ecom_lang` (`elang_id`, `elang_locale`, `elang_name`, `elang_status`, `elang_flag`) VALUES (1, 'en_EN', 'English', 0, NULL);
+INSERT INTO `melis_ecom_lang` (`elang_id`, `elang_locale`, `elang_name`, `elang_status`, `elang_flag`) VALUES (1, 'en_EN', 'English', 1, NULL);
 INSERT INTO `melis_ecom_lang` (`elang_id`, `elang_locale`, `elang_name`, `elang_status`, `elang_flag`) VALUES (2, 'fr_FR', 'Français', 1, NULL);
 INSERT INTO `melis_ecom_lang` (`elang_id`, `elang_locale`, `elang_name`, `elang_status`, `elang_flag`) VALUES (3, 'de_DE', 'Deutsch', NULL, NULL);
 INSERT INTO `melis_ecom_lang` (`elang_id`, `elang_locale`, `elang_name`, `elang_status`, `elang_flag`) VALUES (4, 'pt_PT', 'Português', NULL, NULL);
@@ -1088,20 +1088,20 @@ COMMIT;
 -- Data for table `melis_ecom_order_status_trans`
 -- -----------------------------------------------------
 START TRANSACTION;
-INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (1, 1, 1, 'New order');
-INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (2, 1, 2, 'Nouvelle commande');
-INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (3, 2, 1, 'Order on hold');
-INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (4, 2, 2, 'Commande en attente');
-INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (5, 3, 1, 'Order shipped');
-INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (6, 3, 2, 'Commande envoyée');
-INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (7, 4, 1, 'Order delivered');
-INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (8, 4, 2, 'Commande livrée');
-INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (9, 5, 1, 'Order canceled');
-INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (10, 5, 2, 'Commande annulée');
+INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (1, 1, 1, 'New');
+INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (2, 1, 2, 'Nouvelle');
+INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (3, 2, 1, 'On hold');
+INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (4, 2, 2, 'En attente');
+INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (5, 3, 1, 'Shipped');
+INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (6, 3, 2, 'Envoyée');
+INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (7, 4, 1, 'Delivered');
+INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (8, 4, 2, 'Livrée');
+INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (9, 5, 1, 'Canceled');
+INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (10, 5, 2, 'Annulée');
 INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (11, 6, 1, 'Error payment');
 INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (12, 6, 2, 'Erreur paiement');
-INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (13, -1, 1, 'Temporary');
-INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (14, -1, 2, 'Temporary');
+INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (13, -1, 1, 'Not finalized');
+INSERT INTO `melis_ecom_order_status_trans` (`ostt_id`, `ostt_status_id`, `ostt_lang_id`, `ostt_status_name`) VALUES (14, -1, 2, 'Non finalisé');
 
 COMMIT;
 

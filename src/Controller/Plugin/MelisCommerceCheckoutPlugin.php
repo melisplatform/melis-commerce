@@ -81,10 +81,10 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
         
         // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
         $checkOutCartParameters = (!empty($this->pluginFrontConfig['checkout_cart_parameters'])) ? $this->pluginFrontConfig['checkout_cart_parameters'] : array();
-        $checkOutAddressesParameters = (!empty($this->pluginFrontConfig['checkout_cart_addresses_parameters'])) ? $this->pluginFrontConfig['checkout_cart_addresses_parameters'] : array();
-        $checkOutSummaryParameters = (!empty($this->pluginFrontConfig['checkout_cart_summary_parameters'])) ? $this->pluginFrontConfig['checkout_cart_summary_parameters'] : array();
-        $checkOutConfirmSummaryParameters = (!empty($this->pluginFrontConfig['checkout_cart_confirm_summary_parameters'])) ? $this->pluginFrontConfig['checkout_cart_confirm_summary_parameters'] : array();
-        $checkOutConfirmParameters = (!empty($this->pluginFrontConfig['checkout_cart_confirm_parameters'])) ? $this->pluginFrontConfig['checkout_cart_confirm_parameters'] : array();
+        $checkOutAddressesParameters = (!empty($this->pluginFrontConfig['checkout_addresses_parameters'])) ? $this->pluginFrontConfig['checkout_addresses_parameters'] : array();
+        $checkOutSummaryParameters = (!empty($this->pluginFrontConfig['checkout_summary_parameters'])) ? $this->pluginFrontConfig['checkout_summary_parameters'] : array();
+        $checkOutConfirmSummaryParameters = (!empty($this->pluginFrontConfig['checkout_confirm_summary_parameters'])) ? $this->pluginFrontConfig['checkout_confirm_summary_parameters'] : array();
+        $checkOutConfirmParameters = (!empty($this->pluginFrontConfig['checkout_confirm_parameters'])) ? $this->pluginFrontConfig['checkout_confirm_parameters'] : array();
         
         $countryId = (!empty($this->pluginFrontConfig['m_checkout_country_id'])) ? $this->pluginFrontConfig['m_checkout_country_id'] : 1;
         $siteId = (!empty($this->pluginFrontConfig['m_checkout_site_id'])) ? $this->pluginFrontConfig['m_checkout_site_id'] : 1;
