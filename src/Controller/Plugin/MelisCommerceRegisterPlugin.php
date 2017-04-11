@@ -99,17 +99,19 @@ class MelisCommerceRegisterPlugin extends MelisTemplatingPlugin
                 $langId = $container['melis-plugins-lang-id'];
                 
                 // Preparing the person data
-                $person[] = array(
-                    'cper_status'           => 1,
-                    'cper_is_main_person'   => 1,
-                    'cper_lang_id'          => $langId,
-                    'cper_email'            => $data['cper_email'],
-                    'cper_password'         => $data['cper_password'],
-                    'cper_civility'         => $data['cper_civility'],
-                    'cper_name'             => $data['cper_name'],
-                    'cper_firstname'        => $data['cper_firstname'],
-
-                );
+                $tmpData = [];
+                $tmpData['cper_status'] = 1;
+                $tmpData['cper_is_main_person'] = 1;
+                $tmpData['cper_lang_id'] = $langId;
+                $exclude = ['m_autologin', 'm_redirection_link_ok', 'cper_password2', 'm_country'];
+                
+                foreach($data as $key => $value) {
+                    if(!in_array($key, $exclude)) {
+                        $tmpData[$key] = $value;
+                    }
+                
+                }
+                $person[] = $tmpData;
 
                 if(!empty($data['cper_email']))
                 {

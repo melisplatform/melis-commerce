@@ -1636,7 +1636,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
             
             $couponSrv = $this->getServiceLocator()->get('MelisComCouponService');
             
-            $couponCode = $this->getTool()->sanitize($request->getPost('couponCode'));
+            $couponCode = $request->getPost('couponCode');
             
             $totalDiscount = 0;
             $couponErr = '';
