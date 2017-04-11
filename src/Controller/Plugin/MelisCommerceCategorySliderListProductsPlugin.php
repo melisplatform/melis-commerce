@@ -60,6 +60,7 @@ class MelisCommerceCategorySliderListProductsPlugin extends MelisTemplatingPlugi
     {
         $container = new Container('melisplugins');
         $lang = $container['melis-plugins-lang-id'];
+        $categoryListProducts = array();
         // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
         // $showMainVariant default TRUE, main variant will be displayed and if set to false this plugin will retrieve
         $categoryProductSliderTemplate =  !empty($this->pluginFrontConfig['template_path'])? $this->pluginFrontConfig['template_path'] : '';

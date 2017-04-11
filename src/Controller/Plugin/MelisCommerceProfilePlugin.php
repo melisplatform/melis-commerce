@@ -125,6 +125,9 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
                 }
                 $personData[$column] = $data[$column];
             }
+            if(empty($data['cper_confirm_password'])){
+                $data['cper_password'] = null;
+            }
             $data['cper_confirm_password'] = (!empty($this->pluginFrontConfig['cper_confirm_password'])) ? $this->pluginFrontConfig['cper_confirm_password'] : '';
             
             // Setting the Datas to Profile Form
@@ -172,6 +175,7 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
                         $personData['cper_client_id'] = $clientId;
                         $personData['cper_is_main_person'] = 1;
                         $persons[] = $personData;
+                        
                         // Saving Client credintial using Client Service
                         $clientIdRes = $clientSrv->saveClient($clientData, $persons, array(), array(), $clientId);
                         

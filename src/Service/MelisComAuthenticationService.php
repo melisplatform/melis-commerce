@@ -99,7 +99,7 @@ class MelisComAuthenticationService extends Session
                 
                 $personIdentity = $authAdapter->getResultRowObject(
                     null,
-                    'cper_password' // removing the password from the result object
+                    ['cper_password'] // removing the password from the result object
                     );
                 
                 $personIdentity->clientKey = $this->getId();

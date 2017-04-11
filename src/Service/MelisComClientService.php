@@ -714,7 +714,7 @@ class MelisComClientService extends MelisComGeneralService
 	                $personAddress = $val['contact_address'];
 	            }
 	            unset($val['contact_address']);
-	            
+	            unset($val['reset_pass_flag']);
 	            $successflag = $this->saveClientPerson($val, $personAddress, $cperId);
 	            
 	            if (!$successflag)
@@ -820,7 +820,7 @@ class MelisComClientService extends MelisComGeneralService
             }
             
             $arrayParameters['person']['cper_email'] = mb_strtolower($arrayParameters['person']['cper_email']);
-            
+            unset($arrayParameters['person']['cper_id']);
             $perId = $melisEcomClientPersonTable->save($arrayParameters['person'], $arrayParameters['personId']);
             
             $clientPersonAddData = $arrayParameters['clientPersonAddresses'];
@@ -852,7 +852,7 @@ class MelisComClientService extends MelisComGeneralService
         }
         catch (\Exception $e)
         {
-           
+         echo $e->getMessage(); die();  
         }
         
 	    // Service implementation end

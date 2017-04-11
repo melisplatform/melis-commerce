@@ -393,7 +393,15 @@ class MelisComOrderListController extends AbstractActionController
                 $disabled = '';
                 $class = 'class="updateListStatus"';
                 
-                $orderStatus = $melisComOrderService->getOrderStatusByOrderId($order->getId(), $langId)[0];
+                $orderStatus = null;
+                $statusTrans = $melisComOrderService->getOrderStatusByOrderId($order->getId());
+                foreach($statusTrans as $trans){
+                    if($trans->ostt_lang_id == $langId){
+                        $orderStatus = $trans;
+                    }
+                }
+                
+                $orderStatus = empty($orderStatus)? $statusTrans[0] : $orderStatus;
                 
                 foreach($order->getBasket() as $basket){
                     $products = $products + $basket->obas_quantity;

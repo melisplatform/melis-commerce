@@ -367,7 +367,12 @@ class MelisComOrderController extends AbstractActionController
         
         $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
         $langId = $this->getTool()->getCurrentLocaleID();
-        foreach($orderSvc->getOrderStatusList($langId) as $orderStatus){
+        
+        $statuses = $orderSvc->getOrderStatusList($langId);
+        
+        $statuses = empty($statuses)? $orderSvc->getOrderStatusList(1) : $statuses;
+        
+        foreach($statuses as $orderStatus){
             $status[] = $orderStatus;
             $disabled = '';
             $class = 'mainOrderStatus';
@@ -451,9 +456,14 @@ class MelisComOrderController extends AbstractActionController
      */
     public function renderOrdersContentTabsContentAddressDetailsTabsAction()
     {   
-        $addTypeSvc = $this->getServiceLocator()->get('MelisEcomClientAddressTypeTransTable');
+        $addTypeTable = $this->getServiceLocator()->get('MelisEcomClientAddressTypeTransTable');
         $addressTypes = array();
-        foreach($addTypeSvc->getAddressTypeTransByLangId($this->getTool()->getCurrentLocaleID()) as $type){
+        
+        $types = $addTypeTable->getAddressTypeTransByLangId($this->getTool()->getCurrentLocaleID());
+        
+        $types = empty($types->toArray())? $addTypeTable->getAddressTypeTransByLangId(1) : $types;
+        
+        foreach($types as $type){
             $addressTypes[] = $type;
         }
         $view = new ViewModel();
@@ -493,7 +503,11 @@ class MelisComOrderController extends AbstractActionController
         $formElements = $this->serviceLocator->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $addressForm = $factory->createForm($appConfigForm);
-        foreach($addTypeTable->getAddressTypeTransByLangId($this->getTool()->getCurrentLocaleID()) as $type){
+        $types = $addTypeTable->getAddressTypeTransByLangId($this->getTool()->getCurrentLocaleID());
+        
+        $types = empty($types->toArray())? $addTypeTable->getAddressTypeTransByLangId(1) : $types;
+        
+        foreach($types as $type){
             $addressTypes[] = $type;
             $form = clone $addressForm;
             $form->setName('address['.$type->catype_code.']');
@@ -1270,12 +1284,23 @@ class MelisComOrderController extends AbstractActionController
     private function setOrderVariables($orderId)
     {
         $layoutVar = array();
+        $langId =  $this->getTool()->getCurrentLocaleID();
         $melisComOrderService = $this->getServiceLocator()->get('MelisComOrderService');
         
         $resultData = $melisComOrderService->getOrderById($orderId, $this->getTool()->getCurrentLocaleID());
         
+        $statusTrans = $melisComOrderService->getOrderStatusByOrderId($orderId);
+        
+        foreach($statusTrans as $trans){
+            if($trans->ostt_lang_id == $langId){
+                $orderStatus = $trans;
+            }
+        }
+        
+        $orderStatus = empty($orderStatus)? $statusTrans[0] : $orderStatus;
+        
         $layoutVar['order']     = $resultData->getOrder();
-        $layoutVar['status']    = $melisComOrderService->getOrderStatusByOrderId($orderId, $this->getTool()->getCurrentLocaleID())[0];
+        $layoutVar['status']    = $orderStatus;
         $layoutVar['client']    = $resultData->getClient();
         $layoutVar['person']    = $resultData->getPerson();
         $layoutVar['addresses'] = $resultData->getAddresses();
