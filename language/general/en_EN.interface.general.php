@@ -13,4 +13,6 @@
 	    'tr_meliscommerce_general_common_loading' => 'Loading...',
 	    
 	    'tr_meliscommerce_general_text' => 'General', 
+	    'tr_meliscommerce_general_permission_error_label' => 'Permission denied',
+	    'tr_meliscommerce_general_csv_permission_error' => 'You don\'t have the rights to write on the server, please check your rights (%s)',
 	);

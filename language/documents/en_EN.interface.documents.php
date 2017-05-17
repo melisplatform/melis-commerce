@@ -9,12 +9,13 @@
 	    'tr_meliscommerce_documents_image_lists' => 'Image lists',
         // Temporary Translation
         'tr_meliscommerce_documents_image_attachments' => 'Image',
-        'tr_meliscommerce_documents_file_attachments_button' => 'Attach file',
+        'tr_meliscommerce_documents_file_attachments_button' => 'Add file',
         'tr_meliscommerce_documents_add_image_button' => 'Image',
-	    'tr_meliscommerce_documents_attachment' => 'Attachment',
+	'tr_meliscmsnews_add_file' => 'File',
+        'tr_meliscommerce_documents_attachment' => 'File',
 
         // Common labels
-        'tr_meliscommerce_documents_common_btn_close' => 'Cancel',
+        'tr_meliscommerce_documents_common_btn_close' => 'Close',
         'tr_meliscommerce_documents_common_btn_save' => 'Save',
         'tr_meliscommerce_documents_common_btn_update' => 'Update',
         'tr_meliscommerce_documents_common_btn_delete' => 'Delete',

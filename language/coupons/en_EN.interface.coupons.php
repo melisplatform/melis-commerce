@@ -11,7 +11,7 @@
 	    'tr_meliscommerce_coupon_list_col_code' => 'Code',
 	    'tr_meliscommerce_coupon_list_col_percent' => 'Percentage discount',
 	    'tr_meliscommerce_coupon_list_col_money' => 'Value discount',
-	    'tr_meliscommerce_coupon_list_col_used' => 'Used',
+	    'tr_meliscommerce_coupon_list_col_used' => 'Uses',
 	    'tr_meliscommerce_coupon_list_col_Action' => 'Action',
 	    
 	    //coupon page
@@ -55,4 +55,11 @@
 	    'tr_meliscommerce_coupon_invalid_end_date' => 'End date must be equal or higher than the start date',
 	    'tr_meliscommerce_coupon_delete_confirm' => 'Are you sure you want to delete this coupon?',
 	    'tr_meliscommerce_coupon_delete_confirm_remove' => 'Are you sure you want to remove the coupon from this client?',
+
+	    'tr_meliscommerce_coupon_table_refresher' => 'Refresh',
+	    
+	    'tr_meliscommerce_coupon_page_tabs_assign_product' => 'Assign to product(s)',
+	    'tr_meliscommerce_coupon_page_tabs_assign_product_tab' => 'Assign products',
+	    'tr_meliscommerce_coupon_tabs_content_assigned_product_header_title' => 'Assigned products',
+	    'tr_meliscommerce_coupon_delete_confirm_remove_product' => 'Are you sure you want to remove the coupon from this product?',
 	);

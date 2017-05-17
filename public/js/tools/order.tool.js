@@ -1,6 +1,15 @@
 $(document).ready(function() {
 	
 	var body = $("body");
+
+	//removes modal elements when clicking outside
+	body.on("click", function (e) {
+		if ($(e.target).hasClass('modal')) {
+			$('#id_meliscommerce_order_list_content_status_form_container').modal('hide');
+			$('#id_meliscommerce_order_modal_content_shipping_form_container').modal('hide');
+		}
+	});
+
 	// order list - opens specific order for editing
 	body.on("click", ".orderInfo", function() {
 		var orderId   = $(this).closest('tr').attr('id');
@@ -26,6 +35,26 @@ $(document).ready(function() {
 			melisHelper.zoneReload(couponId+"_id_meliscommerce_coupon_tabs_content_orders_details_table", "meliscommerce_coupon_tabs_content_orders_details_table", {couponId : couponId});
 		}		
 	});
+	
+	// order status list - refreshes the order status table
+	body.on("click", ".orderStatusRefresh", function(){
+		melisHelper.zoneReload("id_meliscommerce_order_status_content_table", "meliscommerce_order_status_content_table");
+	});
+	
+	// order list - toggles the status form modal
+	body.on("click", ".addNewOrderStatus", function(){
+		var statusId = $(this).closest('tr').attr('id');
+//		melisCoreTool.pending(this);
+		// initialation of local variable
+		zoneId = 'id_meliscommerce_order_status_form';
+		melisKey = 'meliscommerce_order_status_form';
+		modalUrl = '/melis/MelisCommerce/MelisComOrderStatus/renderOrderStatusModal';
+		// requesitng to create modal and display after
+    	melisHelper.createModal(zoneId, melisKey, false, {ostaId : statusId}, modalUrl, function(){
+//    		melisCoreTool.done(this);
+    	});
+	});
+	
 	// order page - refreshes the basket table
 	body.on("click", ".orderBasketRefresh", function(){
 		var id = $(this).closest('.container-level-a').attr('id');
@@ -330,6 +359,142 @@ $(document).ready(function() {
 		melisCommerce.enableAllTabs();
 	});	
 	
+	body.on("click", ".ordersExport", function() {
+		if(!melisCoreTool.isTableEmpty("tableOrderList")) {
+			
+			// initialation of local variable
+			zoneId = 'id_meliscommerce_order_list_content_export_form';
+			melisKey = 'meliscommerce_order_list_content_export_form';
+			modalUrl = '/melis/MelisCommerce/MelisComOrderList/renderOrderListModal';
+			// requesitng to create modal and display after
+	    	melisHelper.createModal(zoneId, melisKey, false, {}, modalUrl, function(){
+	    		melisCoreTool.done(this);
+	    	});
+		}
+	});
+	
+	body.on("click", "#exportOrders", function(){
+		var button = $(this);
+		var formValues = button.closest('#id_meliscommerce_order_list_content_export_form').find('form').serializeArray();
+		var target = 'id_meliscommerce_order_list_content_export_form';
+		melisCoreTool.pending(button);
+		
+		$.ajax({
+		     type        : "POST", 
+		     url         : "/melis/MelisCommerce/MelisComOrderList/ordersExportValidate",
+		     data		: formValues,
+		     dataType    : "json",
+		     encode		: true
+		}).done(function(data) {
+			
+			if(!data.success) {
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);	
+				melisCoreTool.highlightErrors(0, data.errors, target);
+				$(".date_start").prev("label").css("color","#686868");
+				$(".date_end").prev("label").css("color","#686868");
+				$.each( data.errors, function( key, error ) {
+					if( key == 'date_start'){
+						$(".date_start").prev("label").css("color","red");
+					}
+					if( key == 'date_end'){
+						$(".date_end").prev("label").css("color","red");
+					}
+				});
+			}else{
+				melisCoreTool.exportData('/melis/MelisCommerce/MelisComOrderList/ordersExportToCsv');
+				melisHelper.melisOkNotification( data.textTitle, data.textMessage );
+			}
+		})
+		
+		melisCoreTool.done(button);	
+	});
+	
+	// order status - saves the order status
+	body.on("click", "#saveOrderStatusForm", function(){
+		var saveButton = $(this);
+		var statusId = saveButton.data('statusid');
+		var statusDom = $('#id_meliscommerce_order_status_form_container .make-switch div').hasClass('switch-on');
+		var forms  = $('#id_meliscommerce_order_status_form_container').find('form');
+		var url = 'melis/MelisCommerce/MelisComOrderStatus/saveOrderStatus';
+		var dataString = [];
+		var len;
+		var ctr = 0;
+		var status = 0;
+		
+		if(statusDom){
+			status = 1;
+		}
+		
+		forms.each(function(){
+			var pre = $(this).attr('name');
+			var data = $(this).serializeArray();
+			len = data.length;
+			for(j=0; j<len; j++ ){
+				dataString.push({  name: pre+'['+ctr+']['+data[j].name+']', value : data[j].value});
+			}	
+			ctr++;
+		});
+		
+		dataString.push({ name: 'statusId', value : statusId });
+		dataString.push({ name: 'order_status[0][osta_status]', value : status });
+		
+		melisCoreTool.pending(this);
+		melisCommerce.postSave(url, dataString, function(data){
+			if(data.success){;				
+				melisHelper.melisOkNotification( data.textTitle, data.textMessage );
+				melisHelper.zoneReload("id_meliscommerce_order_status_content_table", "meliscommerce_order_status_content_table");
+				$("#id_meliscommerce_order_status_form_container").modal("hide");
+			}else{
+				melisCoreTool.highlightErrors(data.success, data.errors, "id_meliscommerce_order_status_form_container");
+				$.each( data.errors, function( key, error ) {
+					if( key == 'osta_color_code'){
+						$(".osta_color_code").prev("label").css("color","red");
+					}
+				});
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);				
+			}	
+			melisCore.flashMessenger();
+		}, function(data){
+			console.log(data);
+		});
+		melisCoreTool.done(this);
+		
+	});
+	
+	// order status - deletes the coupon
+	body.on("click", ".orderStatusDelete", function(){ 
+		var ostaId   = $(this).closest('tr').attr('id');
+		var url = 'melis/MelisCommerce/MelisComOrderStatus/deleteOrderStatus';
+		var dataString = [];
+		dataString.push({
+			name : 'ostaId',
+			value: ostaId,
+		});
+		melisCoreTool.pending(this);
+		
+		melisCoreTool.confirm(
+			translations.tr_meliscommerce_documents_common_label_yes,
+			translations.tr_meliscommerce_documents_common_label_no,
+			translations.tr_meliscommerce_order_status_tool_leftmenu, 
+			translations.tr_meliscommerce_order_status_delete_confirm,
+			function(){
+			melisCommerce.postSave(url, dataString, function(data){
+				if(data.success){				
+					melisHelper.melisOkNotification( data.textTitle, data.textMessage );
+					melisHelper.zoneReload("id_meliscommerce_order_status_content_table", "meliscommerce_order_status_content_table");
+					melisHelper.tabClose(  couponId + "_id_meliscommerce_coupon_page");
+				}else{
+					melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);				
+				}		
+				melisCore.flashMessenger();	
+			}, function(data){
+				console.log(data);
+			})
+		});
+		
+		melisCoreTool.done(this);
+	});
+	
 });
 // table datafunction for basket
 window.initOrderBasket = function(data, tblSettings) {
@@ -366,4 +531,10 @@ window.initOrderList = function(data, tblSettings){
 window.initOrderListTitle = function(){
 	$('#tableOrderList .icon-shippment').parent('th').attr('title', translations.tr_meliscommerce_order_list_col_products);
 	$('#tableOrderList .fa-usd').parent('th').attr('title', translations.tr_meliscommerce_order_list_col_price_title);	
+}
+
+// order status table remove delete button for permanent status
+window.initCheckPermStatus = function(tblSettings){
+	var btnDelete = $('tr.primeStatus td').find(".orderStatusDelete");
+	btnDelete.remove();
 }

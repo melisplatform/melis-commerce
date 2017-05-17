@@ -13,7 +13,7 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\EventManager\EventManagerAwareInterface;
 use Zend\EventManager\EventManagerInterface;
-
+use Zend\Session\Container;
 /**
  * 
  * This service handles the generic service system of Melis.
@@ -154,5 +154,24 @@ class MelisComGeneralService implements ServiceLocatorAwareInterface, EventManag
 	{
 	    $table = $this->getServiceLocator()->get($tableName);
 	    return $table->getTableColumns();
+	}
+
+	public function getEcomLang($locale = null)
+	{
+	    $melisEcomLangTable = $this->getServiceLocator()->get('MelisEcomLangTable');
+	    
+	    if(empty($locale)){
+	        $container = new Container('meliscore');
+	        $locale = $container['melis-lang-locale'];
+	    }
+	    
+	    $currentLangData = $melisEcomLangTable->getEntryByField('elang_locale', $locale)->current();
+	    
+	    // use enlish as default
+	    if(empty($currentLangData)){
+	        $currentLangData = $melisEcomLangTable->getEntryByField('elang_locale', 'en_EN')->current();
+	    }
+	    
+	    return $currentLangData;
 	}
 }

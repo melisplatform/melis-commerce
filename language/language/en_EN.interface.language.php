@@ -6,4 +6,5 @@ return array(
     'tr_meliscommerce_language_modal' => 'Language modal',
     
     'tr_meliscommerce_language_header_add' => 'Add language',
+    'tr_meliscommerce_language_refresh' => 'Refresh',
 );

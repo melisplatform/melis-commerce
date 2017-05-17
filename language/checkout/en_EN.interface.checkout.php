@@ -48,18 +48,20 @@
 	    
 	    // Addresses
 	    'tr_meliscommerce_order_checkout_address_prev_btn' => 'Back to contacts',
-	    'tr_meliscommerce_order_checkout_address_create_billing_btn' => 'Or create new billing address',
-	    'tr_meliscommerce_order_checkout_address_create_delivery_btn' => 'Or create new delivery address',
+	    'tr_meliscommerce_order_checkout_address_create_billing_btn' => 'Or create a new billing address',
+	    'tr_meliscommerce_order_checkout_address_create_delivery_btn' => 'Or create a new delivery address',
 	    'tr_meliscommerce_order_checkout_address_billing' => 'Billing address',
-	    'tr_meliscommerce_order_checkout_address_billing_Select' => 'Choose account billing address',
+	    'tr_meliscommerce_order_checkout_address_billing_Select' => 'Choose a billing address',
 	    'tr_meliscommerce_order_checkout_address_delivery' => 'Delivery address',
-	    'tr_meliscommerce_order_checkout_address_delivery_Select' => 'Choose account delivery address',
+	    'tr_meliscommerce_order_checkout_address_delivery_Select' => 'Choose a delivery address',
 	    'tr_meliscommerce_order_checkout_address_next_btn' => 'Proceed to summary',
 	    'tr_meliscommerce_order_checkout_address_no_selected_billing_address' => 'Please select billing address or create new billing address',
 	    'tr_meliscommerce_order_checkout_address_no_selected_delivery_address' => 'Please select delivery address or create new delivery address',
+	    'tr_meliscommerce_order_checkout_address_same_address' => 'Use the same address',
+	    
 	    
 	    // Basket
-	    'tr_meliscommerce_order_checkout_variant_basket' => 'Basket list',
+	    'tr_meliscommerce_order_checkout_variant_basket' => 'Basket',
 	    'tr_meliscommerce_order_checkout_variant_next_button' => 'Proceed to contacts',
 	    'tr_meliscommerce_order_checkout_variant_sub_total' => 'Sub total',
 	    'tr_meliscommerce_order_checkout_variant_discount' => 'Discount',
@@ -112,4 +114,6 @@
 	    'tr_meliscommerce_checkout_delivery_save_error' => 'Something is wrong, please contact administrator for assistance',
 	    'tr_meliscommerce_checkout_delivery_errors' => 'Error(s) occured',
 	    'tr_meliscommerce_checkout_billing_save_success' => 'Delivery address has been successfully saved',
+
+	    'tr_meliscommerce_checkout_contact_refresh' => 'Refresh',
 	);

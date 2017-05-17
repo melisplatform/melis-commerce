@@ -67,7 +67,8 @@ class MelisComAssociateVariantController extends AbstractActionController
     public function renderTabContentAssocVarListAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
-
+        $variantId = $this->params()->fromQuery('variantId');
+        
         $columns = $this->getTool1()->getColumns();
 
         $columns['action'] =  array(
@@ -78,8 +79,9 @@ class MelisComAssociateVariantController extends AbstractActionController
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->tableColumns = $columns;
-        $view->getToolDataTableConfig = $this->getTool1()->getDataTableConfiguration('#tableAssocVariantList1_'.$this->getPrefix(), null, null, array('order' => '[[ 0, "asc" ]]'));
+        $view->getToolDataTableConfig = $this->getTool1()->getDataTableConfiguration('#tableAssocVariantList1_'.$this->getPrefix());
         $view->prefixId = $this->getPrefix();
+        $view->variantId = $variantId;
         return $view;
     }
 
@@ -106,7 +108,7 @@ class MelisComAssociateVariantController extends AbstractActionController
     public function renderTabContentVarListAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
-
+        $variantId = $this->params()->fromQuery('variantId');
         $columns = $this->getTool2()->getColumns();
 
         $columns['action'] =  array(
@@ -117,8 +119,9 @@ class MelisComAssociateVariantController extends AbstractActionController
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->tableColumns = $columns;
-        $view->getToolDataTableConfig = $this->getTool2()->getDataTableConfiguration('#tableAssocVariantList2_'.$this->getPrefix(), null, null, array('order' => '[[ 0, "asc" ]]'));
+        $view->getToolDataTableConfig = $this->getTool2()->getDataTableConfiguration('#tableAssocVariantList2_'.$this->getPrefix());
         $view->prefixId = $this->getPrefix();
+        $view->variantId = $variantId;
         return $view;
     }
 
@@ -151,7 +154,134 @@ class MelisComAssociateVariantController extends AbstractActionController
     {
         return new ViewModel();
     }
+    
+    public function getProductListAction()
+    {
+        $draw = 0;
+        $dataCount = 0;
+        $tableData = array();
+        $productFilter = array();
+        $productList = array();
+        
+        if($this->getRequest()->isPost()) {
+        
+            // Getting Current Langauge ID
+            $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+            $langId = $melisTool->getCurrentLocaleID();
+    
+            $productTable = $this->getServiceLocator()->get('MelisEcomProductTable');
+    
+            $prodSvc = $this->getServiceLocator()->get('MelisComProductService');
+            $docSvc = $this->getServiceLocator()->get('MelisComDocumentService');
+    
+            $sortOrder = $this->getRequest()->getPost('order');
+            $sortOrder = $sortOrder[0]['dir'];
+    
+            $sortOrder = $this->getRequest()->getPost('order');
+            $sortOrder = $sortOrder[0]['dir'];
+    
+            $draw = (int) $this->getRequest()->getPost('draw');
+    
+            $start = (int) $this->getRequest()->getPost('start');
+            $length =  (int) $this->getRequest()->getPost('length');
+    
+            $search = $this->getRequest()->getPost('search');
+            $search = $search['value'];
+    
+            $productList = $productTable->getProductList(null, null, true,  $start, $length, $sortOrder, $search);
+    
+            $productFilter = $productTable->getProductList(null, null, true,  null, null, $sortOrder, $search)->toArray();
+    
+            $activeDom     = '<span class="text-success"><i class="fa fa-fw fa-circle"></i></span>';
+            $inactiveDom   = '<span class="text-danger"><i class="fa fa-fw fa-circle"></i></span>';
+            $prodImage = '<img src="%s" width="60" height="60" class="img-rounded img-responsive"/>';
+    
+            foreach($productList as $val) {
+                $productId = $val->prd_id;
+                
+                $rowData = array(
+                    'DT_RowId' => $productId,
+                    'DT_RowClass' => 'showPrdVariants',
+                    'prd_id' => $productId,
+                    'var_status' => $val->prd_status ? $activeDom : $inactiveDom,
+                    'prd_name' => $prodSvc->getProductName($productId, $langId),
+                );
+                array_push($tableData, $rowData);
+            }
+        }
+        
+        return new JsonModel(array(
+            'draw' => (int) $draw,
+            'recordsTotal' => count($productList),
+            'recordsFiltered' =>  count($productFilter),
+            'data' => $tableData,
+        ));
+    }
+    
+    /**
+     * This will return the Product variant list
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderVariantAssocProductVariantsAction()
+    {
+        $productId = $this->params()->fromQuery('productId');
+        $search = $this->params()->fromQuery('search');
+        $curVariantId = $this->params()->fromQuery('variantId');
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view = new ViewModel();
+        
+        $hasVariant = false;
+        $variants = array();
+    
+        $translator = $this->getServiceLocator()->get('translator');
 
+        // Getting Current Langauge ID
+        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $langId = $melisTool->getCurrentLocaleID();
+
+
+        $melisComVariantService = $this->getServiceLocator()->get('MelisComVariantService');
+        $melisComProductService = $this->getServiceLocator()->get('MelisComProductService');
+        // Getting the list of Activated Variant from Variant Service using the ProductId
+        $variantData = $melisComVariantService->getVariantListByProductId($productId, $langId, null, null, null, 0, null, $search);
+
+        foreach ($variantData As $val)
+        {
+            $variantId = $val->getId();
+            
+            // Excluding the current/selected variant on variant list
+            if ($curVariantId != $variantId)
+            {
+                $hasVariant = true;
+                
+                $variant = $val->getVariant();
+                
+                // Checking if the variant is already associated to the current/selected variant
+                $assigned = false;
+                if($this->checkAssociation($curVariantId, $variantId)){
+                    $assigned = true;
+                }
+                
+                $variantRow = array(
+                    'var_id' => $variant->var_id,
+                    'label' => $translator->translate('tr_meliscommerce_order_checkout_common_sku'),
+                    'var_sku' => $variant->var_sku,
+                    'var_status' => $variant->var_status,
+                    'var_assigned' => $assigned,
+                );
+                
+                array_push($variants, $variantRow);
+            }
+        }
+        
+        $view->hasVariant = $hasVariant;
+        $view->variants = $variants;
+        $view->productId = $productId;
+        $view->curVariantId = $curVariantId;
+        $view->melisKey = $melisKey;
+        return $view;
+    }
 
     public function getVariantsListAction()
     {
@@ -294,6 +424,7 @@ class MelisComAssociateVariantController extends AbstractActionController
 
                     $varAttrText = '';
                     $tableData[$ctr]['DT_RowId'] = $dataVarId;
+                    $tableData[$ctr]['DT_RowAttr'] = array('data-productid' => $tableData[$ctr]['var_prd_id']);
 
                     $varTextData = $this->getVarAttributeText((int) $tableData[$ctr]['var_id']);
                     if($varTextData) {
@@ -435,14 +566,14 @@ class MelisComAssociateVariantController extends AbstractActionController
             $attrReference = $attr->atval_reference;
             $attTrans = $attr->atval_trans;
             foreach($attTrans as $attrText) {
-                $text[$ctr] = $attrText->avt_v_varchar;
+                $varAttrCol = 'avt_v_'.$attr->atype_column_value;
+                $text[$ctr] = $attrText->$varAttrCol;
                 if(empty($text)) {
                     $text[$ctr] = $attrReference;
                 }
             }
             $ctr++;
         }
-
         return $text;
     }
 

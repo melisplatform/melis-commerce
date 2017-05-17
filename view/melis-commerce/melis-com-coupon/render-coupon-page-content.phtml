@@ -16,7 +16,9 @@
             	        $tabName = $menuConfig['conf']['name'];
             	        
             	        if($this->couponId != 0 || $this->couponId == 0 && $menuConfig['conf']['melisKey'] == 'meliscommerce_coupon_page_tabs_main'){
-                	       if(empty($this->coup_type) && $menuConfig['conf']['melisKey'] == 'meliscommerce_coupon_page_tabs_assign'){
+                	       if(empty($this->coup_type) && $menuConfig['conf']['melisKey'] == 'meliscommerce_coupon_page_tabs_assign'
+                	          || empty($this->product_assign) && $menuConfig['conf']['melisKey'] == 'meliscommerce_coupon_page_tabs_assign_product'
+                	           ){
                 	           continue;
                 	       }
             	            echo '<li>

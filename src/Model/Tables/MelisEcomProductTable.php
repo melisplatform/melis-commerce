@@ -68,6 +68,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         $select->quantifier('DISTINCT');
         $select->join('melis_ecom_product_text', 'melis_ecom_product_text.ptxt_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT);
         $select->join('melis_ecom_product_category', 'melis_ecom_product_category.pcat_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT);
+        $select->join('melis_ecom_variant', 'melis_ecom_variant.var_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT);
         
         if (!is_null($categoryId))
         {
@@ -83,7 +84,8 @@ class MelisEcomProductTable extends MelisEcomGenericTable
             $search = '%'.$search.'%';
             $select->where->NEST->like('melis_ecom_product.prd_id', $search)
             ->or->like('melis_ecom_product.prd_reference', $search)
-            ->or->like('melis_ecom_product_text.ptxt_field_short', $search);
+            ->or->like('melis_ecom_product_text.ptxt_field_short', $search)
+            ->or->like('melis_ecom_variant.var_sku', $search);
         }
         
         if (!is_null($start))
@@ -588,6 +590,47 @@ class MelisEcomProductTable extends MelisEcomGenericTable
     protected function setProdCurrentDataCount($dataCount)
     {
         $this->_currentProdDataCount = $dataCount;
+    }
+    
+
+    public function getCouponProductList($couponId, $assigned = null, $start = null, $limit = null, $order = null, $search = null)
+    {
+        $select= $this->tableGateway->getSql()->select();
+        $clause = array();
+    
+        $select->quantifier('DISTINCT');
+        $select->join('melis_ecom_coupon_product', 'melis_ecom_coupon_product.cprod_product_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT);
+        $select->join('melis_ecom_product_text', 'melis_ecom_product_text.ptxt_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT);
+        
+        if(!is_null($assigned)){
+            $select->where->equalTo('melis_ecom_coupon_product.cprod_coupon_id', $couponId);
+        }
+        
+        if(!is_null($search)){
+            $search = '%'.$search.'%';
+            $select->where->NEST->like('melis_ecom_product.prd_id', $search)
+            ->or->like('melis_ecom_product.prd_reference', $search)
+            ->or->like('melis_ecom_product_text.ptxt_field_short', $search);
+        }
+        
+        if (!is_null($start))
+        {
+            $select->offset($start);
+        }
+        
+        if (!is_null($limit)&&$limit!=-1)
+        {
+            $select->limit($limit);
+        }
+        
+        if (!is_null($order))
+        {
+            $select->order($order);
+        }
+        
+        $resultData = $this->tableGateway->selectWith($select);
+        return $resultData;
+        
     }
 
 }

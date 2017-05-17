@@ -12,7 +12,8 @@ return array(
                         'm_image_type' => '',
                         'm_custom_image' => '',
                         'm_c_order' => ''
-                    )
+                    ),
+                    'melis' => array(),
                 )
             )
         )

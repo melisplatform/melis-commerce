@@ -37,11 +37,19 @@ class MelisEcomClientTable extends MelisEcomGenericTable
         }
         
         if (!is_null($dateCreationMin)){
-            $select->where('melis_ecom_client.cli_date_creation >='.$dateCreationMin);
+            $select->where->greaterThan('melis_ecom_client.cli_date_creation', $dateCreationMin);
         }
         
         if (!is_null($dateCreationMax)){
-            $select->where('melis_ecom_client.cli_date_creation <='.$dateCreationMax);
+            $select->where->lessThan('melis_ecom_client.cli_date_creation', $dateCreationMax);
+        }
+        
+        if($onlyValid == 'active'){
+            $onlyValid = 1;
+        }
+        
+        if($onlyValid == 'inactive'){
+            $onlyValid = 0 ;
         }
         
         if (!is_null($onlyValid)&&in_array($onlyValid, array('0','1'))){

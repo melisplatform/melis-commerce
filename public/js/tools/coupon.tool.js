@@ -223,6 +223,85 @@ $(document).ready(function() {
 	function couponTabOpen(ordername, id){
 		melisHelper.tabOpen(ordername, 'fa fa-ticket', id+'_id_meliscommerce_coupon_page', 'meliscommerce_coupon_page', { couponId : id});
 	}
+	
+	$("body").on("mouseenter mouseout", ".toolTipHoverEvent", function(e) {
+		var productId = $(this).data("productid");
+		var loaderText = '<div class="qtipLoader"><hr/><span class="text-center col-lg-12">Loading...</span><br/></div>';
+		$.each($("table.couponProductTable"+productId + " thead").nextAll(), function(i,v) {
+			$(v).remove();
+		});
+		$(loaderText).insertAfter("table.couponProductTable"+productId + " thead");
+		var xhr = $.ajax({
+	        type        : 'POST', 
+	        url         : 'melis/MelisCommerce/MelisComProductList/getToolTip',
+	        data		: {productId : productId},
+	        dataType    : 'json',
+	        encode		: true,
+	    }).success(function(data){
+    	 	$("div.qtipLoader").remove();
+		    if(data.content.length === 0) {
+		    	$('<div class="qtipLoader"><hr/><span class="text-center col-lg-12">'+translations.tr_meliscommerce_product_tooltip_no_variants+'</span><br/></div>').insertAfter("table.qtipTable thead");
+		    } else {
+		    	// make sure tbody is clear
+				$.each($("table.productTable"+productId + " thead").nextAll(), function(i,v) {
+					$(v).remove();
+				});
+    		    $.each(data.content.reverse(), function(i ,v) {
+    		    	$(v).insertAfter("table.couponProductTable"+productId + " thead")
+    		    });		    	 
+		    }
+	    });
+		if(e.type === "mouseout") {
+			xhr.abort();
+		}
+	});
+	
+	body.on("click", ".addCouponToProduct", function(){
+ 		melisCoreTool.pending(this);
+ 		var productId = $(this).closest('tr').attr('id');
+ 		var dataString = [];
+ 		dataString.push({ name : 'cprod_product_id', value: productId });
+ 		dataString.push({ name : 'method', value : 'add'});
+ 		couponProductManagement(dataString); 		
+		melisCoreTool.done(this);
+ 	});
+	
+	body.on("click", ".couponAssignedProductDelete", function(){
+		melisCoreTool.pending(this);
+		var productId = $(this).closest('tr').attr('id');
+		var dataString = [];
+		dataString.push({ name : 'cprod_product_id', value: productId });
+		dataString.push({ name : 'method', value : 'remove'});
+		melisCoreTool.confirm(
+			translations.tr_meliscommerce_documents_common_label_yes,
+			translations.tr_meliscommerce_documents_common_label_no,
+			translations.tr_meliscommerce_coupon_list_page_coupon, 
+			translations.tr_meliscommerce_coupon_delete_confirm_remove_product,
+			function(){
+				couponProductManagement(dataString); 		
+		});
+		
+		melisCoreTool.done(this);
+	});
+	
+	function couponProductManagement(dataString){ 		
+ 		var couponId = activeTabId.split("_")[0];
+ 		var url = 'melis/MelisCommerce/MelisComCoupon/couponProductManagement';
+ 		dataString.push({ name: 'cprod_coupon_id', value : couponId});
+ 		melisCommerce.postSave(url, dataString, function(data){
+			if(data.success){
+				melisHelper.melisOkNotification( data.textTitle, data.textMessage );
+				melisHelper.zoneReload(couponId+"_id_meliscommerce_coupon_tabs_content_assign_product_details_table", "meliscommerce_coupon_tabs_content_assign_product_details_table", { couponId : couponId });;
+				melisHelper.zoneReload(couponId+"_id_meliscommerce_coupon_tabs_content_assigned_product_details_table", "meliscommerce_coupon_tabs_content_assigned_product_details_table", { couponId : couponId });
+			}else{
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);				
+			}	
+			melisCore.flashMessenger();
+		}, function(data){
+			console.log(data);
+		});
+// 		$('#'+couponId+"_id_meliscommerce_coupon_tabs_content_assign_details").addClass('active');
+ 	}
 });
 window.initCouponClient = function(data, tblSettings) {
 	var couponId = $("#" + tblSettings.sTableId ).data("couponid");
@@ -267,4 +346,12 @@ window.initCheckClientUsedCoupon = function(tblSettings){
 window.initMelisCommerceCouponTbl = function(){
 	$('.commerce-coupon-percent').attr('title', translations.tr_meliscommerce_coupon_list_col_percent);
 	$('.commerce-coupon-value').attr('title', translations.tr_meliscommerce_coupon_list_col_money);
+}
+
+
+window.initMelisCouponProduct = function(data, tblSettings) {
+	var couponId = $("#" + tblSettings.sTableId ).data("couponid");
+	var assign = $("#" + tblSettings.sTableId ).data("assign");
+	data.couponId = couponId;
+	data.assign = assign;
 }

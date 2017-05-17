@@ -5,7 +5,7 @@ if (!empty($this->zoneconfig['conf']['id']))
 $data_melisKey = $this->melisKey;
 ?>
 
-<div <?= $id; ?> data-melisKey="<?= $data_melisKey; ?>">
+<div <?= $id; ?> data-melisKey="<?= $data_melisKey; ?>" style="position: relative">
     <div class="spacing-x2">
 
         <?php
@@ -16,6 +16,7 @@ $data_melisKey = $this->melisKey;
         $this->melisGenericTable()->setTable(array(
             'id' => 'tableAssocVariantList1_'.$this->prefixId,
             'class' => 'tableAssocVariantList1 table table-striped table-primary dt-responsive nowrap',
+            'data-variantid' => $this->variantId,
             'cellspacing' => '0',
             'width' => '100%'
         ));

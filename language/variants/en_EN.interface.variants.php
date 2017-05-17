@@ -71,5 +71,10 @@
 	    'tr_meliscommerce_variants_delete_fail' => 'Failed to delete variant',
 	    'tr_meliscommerce_variants_delete_success' => 'The variant has been successfully deleted',
 	    //confirm messages
-	   
+	    
+	    //action button
+	    'tr_meliscommerce_variants_remove' => 'Remove',
+	    'tr_meliscommerce_variants_edit' => 'Edit variant',
+	    'tr_meliscommerce_variants_show_product' => 'Display variants',
+	    'tr_meliscommerce_variants_associate' => 'Associate',
 	);

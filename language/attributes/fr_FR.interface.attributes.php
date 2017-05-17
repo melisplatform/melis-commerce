@@ -65,4 +65,6 @@
 	    'tr_meliscommerce_attribute_value_delete_confirm' => 'Etes-vous sûre de vouloir supprimer cette valeur de l\'attribut ?',
 	    'tr_meliscommerce_attribute_value_delete_fail' => 'Echec de la suppression de la valeur de l\'attribut',
 	    'tr_meliscommerce_attribute_value_delete_success' => 'La valeur de l\'attribut a été supprimée avec succès',
+
+	    'tr_meliscommerce_attribute_table_refresher' => 'Actualiser',
 	);

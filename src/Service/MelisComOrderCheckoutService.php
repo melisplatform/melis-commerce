@@ -759,7 +759,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                     'obas_sku' => $variant->var_sku,
                     'obas_attributes' => $variantAttributesStr,
                     'obas_category_name' => $productCategoryName,
-                    'obas_currency' => ($variantPrice->cur_id) ? $variantPrice->cur_id : '-1',
+                    'obas_currency' => ($variantPrice->cur_id) ? $variantPrice->cur_id : '-1', //TODO update the currency using the API/ payment gateway
                     'obas_price_net' => $variantPrice->price_net,
                     'obas_price_gross' => $variantPrice->price_gross,
                     'obas_price_vat' => $variantPrice->price_vat_price,
@@ -891,112 +891,128 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         
         if ($arrayParameters['results']['success'] && !empty($arrayParameters['results']['orderId']))
         {
-            // We have a validated payment and the orderId has been retrieved
-            $orderId = $arrayParameters['results']['orderId'];
-            // one last check: full price must be equal to price paid, if not save order with error status
-            // else proceed with finalizing order: orderPayment, and update status to new order on order table
-            
-            $clientId = $arrayParameters['results']['clientId'];
-            $order = $this->computeAllCosts($clientId);
-            
-            $totalCost = $order['costs']['total'];
-            
-            if ($totalCost == $arrayParameters['results']['payment_details']['transactionPricePaid'])
-            {
-                $orderData = array(
-                    'ord_status' => 1 // Status new Order
-                );
-            }
-            else 
-            {
-                $orderData = array(
-                    'ord_status' => 6 // Payment total cost not equal to paid amount
-                );
-            }
-            
-            $paymentData = $arrayParameters['results']['payment_details'];
-            
-            /**
-             * Retreiving Payment Type Id
-             */
-            $paymentTypeTbl = $this->getServiceLocator()->get('MelisEcomOrderPaymentTypeTable');
-            $paymentType = $paymentTypeTbl->getEntryByField('opty_code', $paymentData['paymentType'])->current();
-            $paymentTypeId = null;
-            if (!empty($paymentType))
-            {
-                $paymentTypeId = $paymentType->opty_id;
-            }
-            
-            $payment = array(
-                'opay_order_id' => $orderId,
-                'opay_price_total' => $totalCost,
-                'opay_price_order' => $order['costs']['order']['totalWithoutCoupon'],
-                'opay_price_shipping' => $order['costs']['shipment']['total'],
-                'opay_currency_id' => '-1', // Static data, -1 is Defualt Currentcy id
-                'opay_payment_type_id' => $paymentTypeId,
-                'opay_transac_id' => $paymentData['transactionId'],
-                'opay_transac_return_value' => $paymentData['transactionReturnCode'],
-                'opay_transac_price_paid_confirm' => $paymentData['transactionPricepaidConfirm'],
-                'opay_transac_raw_response' => $paymentData['transactionFullRawResponse'],
-                'opay_date_payment' => date('Y-m-d H:i:s'),
-            );
-            
-            $clientCountryId = $paymentData['transactionCountryId'];
-            $clientCouponId = $paymentData['transactionCouponId'];
-            
-            // Unset data not requried to return as results
-            unset($arrayParameters['results']['payment_details']['transactionPricepaidConfirm']);
-            unset($arrayParameters['results']['payment_details']['transactionCountryId']);
-            unset($arrayParameters['results']['payment_details']['transactionCouponId']);
-            
-            $melisEcomOrderPaymentTable = $this->getServiceLocator()->get('MelisEcomOrderPaymentTable');
-            $melisEcomOrderPaymentTable->save($payment);
-            
             $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
-            $melisEcomOrderTable->save($orderData, $arrayParameters['results']['orderId']);
+            $orderDetails = $melisEcomOrderTable->getEntryById($arrayParameters['results']['orderId'])->current();
             
-            // Deduct Quantity of the Product/Variant
-            $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
-            $clientBasket = $melisComBasketService->getBasket($arrayParameters['results']['clientId']);
-            
-            $melisComVariantService = $this->getServiceLocator()->get('MelisComVariantService');
-            $melisEcomVariantStockTable = $this->getServiceLocator()->get('MelisEcomVariantStockTable');
-            
-            foreach ($clientBasket As $val)
+            // Checking if the Order is existing
+            // Just to be sure that the Order Id is existing on Order records
+            if (!empty($orderDetails))
             {
-                $variantData = $val->getVariant();
-                $variantId = $variantData->getId();
-                $variantQty = $val->getQuantity();
-                
-                $variantStock = $melisComVariantService->getVariantFinalStocks($variantId, $clientCountryId);
-                
-                if (!empty($variantStock))
+                // Checking if the order is still new entry/temporary status
+                // To avoid changing the status after payment
+                if ($orderDetails->ord_status == -1)
                 {
-                    $newQty = array(
-                        'stock_quantity' => $variantStock->stock_quantity - $variantQty
+                    // We have a validated payment and the orderId has been retrieved
+                    $orderId = $arrayParameters['results']['orderId'];
+                    // one last check: full price must be equal to price paid, if not save order with error status
+                    // else proceed with finalizing order: orderPayment, and update status to new order on order table
+                    
+                    $clientId = $arrayParameters['results']['clientId'];
+                    $order = $this->computeAllCosts($clientId);
+                    
+                    $totalCost = $order['costs']['total'];
+                    
+                    if ($totalCost == $arrayParameters['results']['payment_details']['transactionPricePaid'])
+                    {
+                        $orderData = array(
+                            'ord_status' => 1 // Status new Order
+                        );
+                    }
+                    else
+                    {
+                        $orderData = array(
+                            'ord_status' => 6 // Payment total cost not equal to paid amount
+                        );
+                    }
+                    
+                    $paymentData = $arrayParameters['results']['payment_details'];
+                    
+                    /**
+                     * Retreiving Payment Type Id
+                     */
+                    $paymentTypeTbl = $this->getServiceLocator()->get('MelisEcomOrderPaymentTypeTable');
+                    $paymentType = $paymentTypeTbl->getEntryByField('opty_code', $paymentData['paymentType'])->current();
+                    $paymentTypeId = null;
+                    if (!empty($paymentType))
+                    {
+                        $paymentTypeId = $paymentType->opty_id;
+                    }
+                    
+                    $payment = array(
+                        'opay_order_id' => $orderId,
+                        'opay_price_total' => $totalCost,
+                        'opay_price_order' => $order['costs']['order']['totalWithoutCoupon'],
+                        'opay_price_shipping' => $order['costs']['shipment']['total'],
+                        'opay_currency_id' => '-1', // Static data, -1 is Defualt Currentcy id
+                        'opay_payment_type_id' => $paymentTypeId,
+                        'opay_transac_id' => $paymentData['transactionId'],
+                        'opay_transac_return_value' => $paymentData['transactionReturnCode'],
+                        'opay_transac_price_paid_confirm' => $paymentData['transactionPricepaidConfirm'],
+                        'opay_transac_raw_response' => $paymentData['transactionFullRawResponse'],
+                        'opay_date_payment' => date('Y-m-d H:i:s'),
                     );
-                    $melisEcomVariantStockTable->save($newQty, $variantStock->stock_id);
+                    
+                    $clientCountryId = $paymentData['transactionCountryId'];
+                    $clientCouponId = $paymentData['transactionCouponId'];
+                    
+                    // Unset data not requried to return as results
+                    unset($arrayParameters['results']['payment_details']['transactionPricepaidConfirm']);
+                    unset($arrayParameters['results']['payment_details']['transactionCountryId']);
+                    unset($arrayParameters['results']['payment_details']['transactionCouponId']);
+                    
+                    $melisEcomOrderPaymentTable = $this->getServiceLocator()->get('MelisEcomOrderPaymentTable');
+                    $melisEcomOrderPaymentTable->save($payment);
+                    
+                    // Save order
+                    $melisEcomOrderTable->save($orderData, $arrayParameters['results']['orderId']);
+                    
+                    // Deduct Quantity of the Product/Variant
+                    $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
+                    $clientBasket = $melisComBasketService->getBasket($arrayParameters['results']['clientId']);
+                    
+                    $melisComVariantService = $this->getServiceLocator()->get('MelisComVariantService');
+                    $melisEcomVariantStockTable = $this->getServiceLocator()->get('MelisEcomVariantStockTable');
+                    
+                    if (!is_null($clientBasket))
+                    {
+                        foreach ($clientBasket As $val)
+                        {
+                            $variantData = $val->getVariant();
+                            $variantId = $variantData->getId();
+                            $variantQty = $val->getQuantity();
+                        
+                            $variantStock = $melisComVariantService->getVariantFinalStocks($variantId, $clientCountryId);
+                        
+                            if (!empty($variantStock))
+                            {
+                                $newQty = array(
+                                    'stock_quantity' => $variantStock->stock_quantity - $variantQty
+                                );
+                                $melisEcomVariantStockTable->save($newQty, $variantStock->stock_id);
+                            }
+                        }
+                    }
+                    
+                    // Use Coupon id to Client Order
+                    if (!empty($clientCouponId))
+                    {
+                        // Getting Coupon details from Coupon Service
+                        $couponSrv = $this->getServiceLocator()->get('MelisComCouponService');
+                        $couponEntity = $couponSrv->getCouponById($clientCouponId);
+                        $coupon = $couponEntity->getCoupon();
+                    
+                        if (!empty($coupon))
+                        {
+                            $couponCode = $coupon->coup_code;
+                            $coupon = $couponSrv->useCoupon($couponCode, $clientId, $orderId);
+                        }
+                    }
+                    
+                    // Empty Client Basket
+                    $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
+                    $melisComBasketService->emptyBasket($arrayParameters['results']['clientId']);
                 }
             }
-            
-            // Use Coupon id to Client Order
-            if (!empty($clientCouponId))
-            {
-                // Getting Coupon details from Coupon Service
-                $couponSrv = $this->getServiceLocator()->get('MelisComCouponService');
-                $couponEntity = $couponSrv->getCouponById($clientCouponId);
-                $coupon = $couponEntity->getCoupon();
-                
-                if (!empty($coupon))
-                {
-                    $couponCode = $coupon->coup_code;
-                    $coupon = $couponSrv->useCoupon($couponCode, $clientId, $orderId);
-                }
-            }
-            
-            // Empty Client Basket
-            $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
-            $melisComBasketService->emptyBasket($arrayParameters['results']['clientId']);
         }
         
         return $arrayParameters['results'];

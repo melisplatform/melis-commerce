@@ -51,6 +51,34 @@ class MelisComCouponService extends MelisComGeneralService
         return $arrayParameters['results'];
     }
     
+    
+    public function getCouponProductList($couponId, $assigned = null, $start = null, $limit = null, $order = null, $search = null)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_client_coupons_start', $arrayParameters);
+        
+        // Service implementation start
+        $productSvc = $this->getServiceLocator()->get('MelisComProductService');
+        $productTable = $this->getServiceLocator()->get('MelisEcomProductTable');
+        foreach($productTable->getCouponProductList($arrayParameters['couponId'], $arrayParameters['assigned'],
+            $arrayParameters['start'], $arrayParameters['limit'],
+            $arrayParameters['order'], $arrayParameters['search']) as $productCoupon){
+                $results[] = $productSvc->getProductById($productCoupon->prd_id);
+        }
+        // Service implementation end
+        
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_client_coupons_end', $arrayParameters);
+         
+        return $arrayParameters['results'];
+    }
+    
     /**
      * Returns a coupon by id from melis_ecom_coupon_table
      * Retrieves data by coupon id
@@ -155,6 +183,40 @@ class MelisComCouponService extends MelisComGeneralService
     }
     
     /**
+     * This method saves a coupon assigned to a product in the database
+     * 
+     * @param array $couponClient coupon reflecting the melis_ecom_coupon_client table
+     * @param int $ccli_id If specified, an update will be done instead of an insert
+     * 
+     * @return int|null The coupon client id created or updated, null if error occured
+     */
+    public function saveCouponProduct($couponProduct, $cprod_id = null)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = null;
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_coupon_client_save_start', $arrayParameters);
+        
+        // Service implementation start
+        $couponProductTable = $this->getServiceLocator()->get('MelisEcomCouponProductTable');
+        try{
+            $results = $couponProductTable->save($arrayParameters['couponProduct'], $arrayParameters['cprod_id']);
+        }catch(\Exception $e){
+           
+        }
+        // Service implementation end
+         
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_coupon_client_save_end', $arrayParameters);
+        
+        return $arrayParameters['results'];
+    }
+    
+    /**
      * This method deletes a coupon by ID
      * This method is only used when the coupon is unused
      * 
@@ -174,8 +236,10 @@ class MelisComCouponService extends MelisComGeneralService
         // Service implementation start
         $couponTable = $this->getServiceLocator()->get('MelisEcomCouponTable');
         $couponClientTable = $this->getServiceLocator()->get('MelisEcomCouponClientTable');
+        $couponProductTable = $this->getServiceLocator()->get('MelisEcomCouponProductTable');
         try {
             $results = $couponClientTable->deleteByField('ccli_coupon_id', $arrayParameters['couponId']);
+            $results = $couponProductTable->deleteByField('cprod_coupon_id', $arrayParameters['couponId']);
             $results = $couponTable->deleteById($arrayParameters['couponId']);
         }catch(\Exception $e){
             

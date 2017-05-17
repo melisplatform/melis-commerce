@@ -13,6 +13,7 @@ use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Zend\Session\Container;
+use Zend\Http\Response;
 
 class MelisComOrderListController extends AbstractActionController
 {
@@ -180,7 +181,7 @@ class MelisComOrderListController extends AbstractActionController
         $options = '<option  value="">'.$this->getTool()->getTranslation('tr_meliscommerce_order_list_filter_status').'</option>';
         $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
         $langId = $this->getTool()->getCurrentLocaleID();
-        foreach($orderSvc->getOrderStatusList($langId) as $orderStatus){
+        foreach($orderSvc->getOrderStatusList($langId, false) as $orderStatus){
                 $selected  = ($orderStatus->osta_id == $status)? 'selected' : ''; 
                 $options .= '<option value="'.$orderStatus->osta_id.'" '.$selected.'>'.$orderStatus->ostt_status_name .'</option>';
         }
@@ -234,6 +235,14 @@ class MelisComOrderListController extends AbstractActionController
         return new ViewModel();
     }
     
+    /**
+     * renders the order list content table filter export
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderOrderListContentFilterExportAction()
+    {
+        return new ViewModel();
+    }
     /**
      * renders the order list content table filter refresh
      * @return \Zend\View\Model\ViewModel
@@ -312,6 +321,38 @@ class MelisComOrderListController extends AbstractActionController
         return $view;
     }
     
+    /**
+     * renders the order list modal for updating order export
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderOrderListContentExportFormAction()
+    {
+        
+        $datepickerInit = $this->getTool()->datePickerInit('date_start');
+        $datepickerInit .= $this->getTool()->datePickerInit('date_end');
+        
+        $status = array();
+        $orderStatusTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTable');
+        foreach($orderStatusTable->fetchAll() as $orderStatus){
+            $status[] = $orderStatus;
+        }
+        
+        $view = new ViewModel();
+        $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_order_list/meliscommerce_order_list_export_form','meliscommerce_order_list_export_form');
+        $factory = new \Zend\Form\Factory();
+        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory->setFormElementManager($formElements);        
+        $orderExportForm = $factory->createForm($appConfigForm);
+
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view->melisKey = $melisKey;
+        $view->status = $status;
+        $view->datePickerInit = $datepickerInit;
+        $view->setVariable('meliscommerce_order_list_export_form', $orderExportForm);
+        return $view;
+    }
+    
     public function getOrderListDataAction()
     {
         $success = 0;
@@ -376,9 +417,17 @@ class MelisComOrderListController extends AbstractActionController
             if (isset($postValues['couponId'])) {
                 $couponId = ($this->getRequest()->getPost('couponId'))? $this->getRequest()->getPost('couponId'): -1;;
             }
-            $tmp = $melisComOrderService->getOrderList($osta_id, $onlyValid, null, $clientId, null, $couponId, null, null, null, null, null, null, null, $search, $startDate, $endDate);
+            $tmp = $melisComOrderService->getOrderList(
+                $osta_id, $onlyValid, null, $clientId, 
+                null, $couponId, null, null, 
+                null, null, $search, $startDate, $endDate
+                );
             $dataFilter = count($tmp);
-            $orderData = $melisComOrderService->getOrderList($osta_id, $onlyValid, $langId, $clientId, null, $couponId, null, null, null, null, $start, $length, $colOrder, $search, $startDate, $endDate);
+            $orderData = $melisComOrderService->getOrderList(
+                $osta_id, $onlyValid, $langId, $clientId, 
+                null, $couponId, null, $start, 
+                $length, $colOrder, $search, $startDate, $endDate
+            );
             $dataCount = count($orderData);
             $c = 0;
 
@@ -529,6 +578,149 @@ class MelisComOrderListController extends AbstractActionController
             $this, array_merge($response, array('typeCode' => 'ECOM_ORDER_STATUS_UPDATE', 'itemId' => $orderId)));
         
         return new JsonModel($response);
+    }
+    
+    public function ordersExportValidateAction()
+    {   
+        $errors = array();
+        $dateErrors = array();
+        $permErrors = array();
+        $data = array();
+        $success = 0;
+        $textMessage = 'tr_meliscommerce_order_export_fail';
+        $textTitle = 'tr_meliscommerce_order_page';
+        
+        $tool = $this->getServiceLocator()->get('MelisCoreTool');
+        $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
+        
+        $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_order_list/meliscommerce_order_list_export_form','meliscommerce_order_list_export_form');
+        $factory = new \Zend\Form\Factory();
+        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+        $orderExportForm = $factory->createForm($appConfigForm);
+        
+        $csvConfig = $melisCoreConfig->getItem('meliscommerce/datas/default/export/csv');
+        $csvFileName = $csvConfig['orderFileName'];
+        $dir = $csvConfig['dir'];
+        
+        $container = new Container('meliscore');
+        $locale = $container['melis-lang-locale'];
+        $lang = $orderSvc->getEcomLang();
+        
+        if($this->getRequest()->isPost()){
+            $postValues = get_object_vars($this->getRequest()->getPost());
+            
+            // convert date to generic for date comparison
+            if(!empty($postValues['date_start'])){
+                $startDate = $postValues['date_start'];
+                $startDate = ($locale == 'fr_FR')? str_replace('/','-', $startDate) : $startDate;
+            }
+            
+            if(!empty($postValues['date_end'])){
+                $endDate = $postValues['date_end'];
+                $endDate = ($locale == 'fr_FR')? str_replace('/','-', $endDate) : $endDate;
+            }
+            
+            if( !empty($postValues['date_start']) && !empty($postValues['date_end'])){
+                if(strtotime($startDate) > strtotime($endDate)){
+                    $dateErrors['date_end'] = array(
+                        'isGreaterThan' => $this->getTool()->getTranslation('tr_meliscommerce_orders_date_end_error'),
+                        'label' => $this->getTool()->getTranslation('tr_meliscommerce_orders_date_end'),
+                    );
+                }
+            }
+            
+            $orderExportForm->setData($postValues);
+            if(!$orderExportForm->isValid()){
+                $exportError = $orderExportForm->getMessages();
+                foreach ($exportError as $keyError => $valueError)
+                {
+                    foreach ($appConfigForm['elements'] as $keyForm => $valueForm)
+                    {
+                        if ($valueForm['spec']['name'] == $keyError &&
+                            !empty($valueForm['spec']['options']['label']))
+                            $exportError[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                    }
+                }
+                $errors = $exportError;
+
+            }
+            
+            $errors = array_merge($dateErrors, $errors);
+            
+            // check file access and permission
+            
+            if(!is_dir($dir)){
+                $dirCreate = mkdir($dir);
+                if(!$dirCreate){
+                    $permErrors['date_end'] = array(
+                        'permissionError' => $tool->getTranslation('tr_meliscommerce_general_csv_permission_error', $dir),
+                        'label' => $tool->getTranslation('tr_meliscommerce_general_permission_error_label'),
+                    );
+                }
+            }
+            
+            $content = '';
+            if(file_exists($dir)) {
+                $test = file_put_contents($dir.$csvFileName, $content, LOCK_EX);
+            }
+            
+            $errors = array_merge($errors, $permErrors);
+            
+            if(empty($errors)){
+                $success = 1;
+                $textMessage = 'tr_meliscommerce_order_export_success';
+                $data = $orderExportForm->getData();
+                
+                $data['orderExportEncapse'] = ($postValues['orderExportEncapse'])? '"' : '';
+                
+                $data['date_start'] = !empty($data['date_start'])? $tool->localeDateToSql($data['date_start']) : $data['date_start'];
+                if(!empty($endDate)){
+                    $data['date_end'] = $tool->localeDateToSql($data['date_end']);
+                    $data['date_end'] = date("Y-m-d", strtotime($data['date_end'] . "+1 days"));
+                }
+                
+                $result = $orderSvc->exportOrderList($data['ord_status'], $data['date_start'], $data['date_end'], $data['separator'], $data['orderExportEncapse'], $lang->elang_id);
+                
+                if(!$result){
+                    $errors[]['unknown'] = array(
+                        'permissionError' => 'unknown error',
+                        'label' => $tool->getTranslation('tr_meliscommerce_general_permission_error_label'),
+                    );
+                }
+            }
+        }
+        
+        $results = array(
+            'success' => $success,
+            'errors' => $errors,
+            'datas' => $data,
+            'textTitle' => $textTitle,
+            'textMessage' => $textMessage,
+        );
+        return new JsonModel($results);
+    }
+    
+    public function ordersExportToCsvAction()
+    {
+        $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $csvConfig = $melisCoreConfig->getItem('meliscommerce/datas/default/export/csv');
+        $csvFileName = $csvConfig['orderFileName'];
+        $dir = $csvConfig['dir'];
+        
+        $csvData = file_get_contents($dir.$csvFileName);
+        
+        $response = new Response();
+	    $headers  = $response->getHeaders();
+	    $headers->addHeaderLine('Content-Type', 'text/csv; charset=utf-8');
+	    $headers->addHeaderLine('Content-Disposition', "attachment; filename=\"".$csvFileName."\"");
+	    $headers->addHeaderLine('Accept-Ranges', 'bytes');
+	    $headers->addHeaderLine('Content-Length', strlen($csvData));
+	    $response->setContent($csvData);
+	    
+	    return $response;
+                
     }
     
     /**

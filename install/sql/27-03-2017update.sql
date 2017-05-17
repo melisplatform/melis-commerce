@@ -1,0 +1,1 @@
+ALTER TABLE `melis_ecom_seo` CHANGE `eseo_page_id` `eseo_page_id` INT(11) NULL DEFAULT NULL;

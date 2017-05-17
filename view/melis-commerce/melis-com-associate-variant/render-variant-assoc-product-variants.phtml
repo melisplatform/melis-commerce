@@ -1,0 +1,21 @@
+<?php 
+    $id = 'id="'.$this->productId.'_'.$this->curVariantId.'_'.$this->zoneconfig['conf']['id'] .'"';
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<div class="variant-assoc-product-variant-list" <?php echo $id.' '.$data_melisKey; ?>>
+    <?php foreach ($this->variants As $val):?>
+        <div class="variant-assoc-product-variant">
+            <div class="float-left">
+                <span class="dtr-title"><strong><?php echo $val['label']?>: </strong> <i class="fa fa-circle <?php echo ($val['var_status']) ? 'text-success' : 'text-danger'?>"></i> <?php echo $val['var_sku']?></span>
+            </div>
+            <div class="float-right">
+            	<a class="btn btn-success btnAVVV2" title="<?php echo $this->translate('tr_meliscommerce_variants_edit');?>"  data-variantid="<?php echo $val['var_id']?>" data-variantsku="<?php echo $val['var_sku']?>" data-productid="<?php echo $this->productId?>"><i class="fa fa-pencil"></i></a>
+            	<?php if ($val['var_assigned']):?>
+            		<span class="text-success"><i class="fa fa-check fa-lg"></i></span>
+            	<?php else:?>
+            		<button class="btn btn-info btnAssocVAssign" title="<?php echo $this->translate('tr_meliscommerce_variants_associate');?>"   data-variantid="<?php echo $val['var_id']?>" data-productid="<?php echo $this->productId?>"><i class="fa fa-plus"></i></button>
+            	<?php endif;?>
+            </div>  
+        </div>
+    <?php endforeach;?>
+</div>

@@ -655,6 +655,153 @@ return array(
                                                 ),
                                             ),
                                         ),
+                                        'meliscommerce_coupon_page_tabs_assign_product' => array(
+                                            'conf' => array(
+                                                'id' => 'id_meliscommerce_coupon_page_tabs_assign_product',
+                                                'melisKey' => 'meliscommerce_coupon_page_tabs_assign_product',
+                                                'name' => 'tr_meliscommerce_coupon_page_tabs_assign_product_tab',
+                                                'icon' => 'glyphicons more_items',
+                                            ),
+                                            'forward' => array(
+                                                'module' => 'MelisCommerce',
+                                                'controller' => 'MelisComCoupon',
+                                                'action' => 'render-coupon-page-tabs-main',
+                                            ),
+                                            'interface' => array(
+                                                'meliscommerce_coupon_tabs_content_assigned_product_header' => array(
+                                                    'conf' => array(
+                                                        'id' => 'id_meliscommerce_coupon_tabs_content_assigned_product_header',
+                                                        'melisKey' => 'meliscommerce_coupon_tabs_content_assigned_product_header',
+                                                        'name' => 'tr_meliscommerce_coupon_tabs_content_assigned_product_header',
+                                                    ),
+                                                    'forward' => array(
+                                                        'module' => 'MelisCommerce',
+                                                        'controller' => 'MelisComCoupon',
+                                                        'action' => 'render-coupon-tabs-content-header',
+                                                    ),
+                                                    'interface' => array(
+                                                        'meliscommerce_coupon_tabs_content_assigned_product_header_left' => array(
+                                                            'conf' => array(
+                                                                'id' => 'id_meliscommerce_coupon_tabs_content_assigned_product_header_left',
+                                                                'melisKey' => 'meliscommerce_coupon_tabs_content_assigned_product_header_left',
+                                                                'name' => 'tr_meliscommerce_coupon_tabs_content_assigned_product_header_left',
+                                                            ),
+                                                            'forward' => array(
+                                                                'module' => 'MelisCommerce',
+                                                                'controller' => 'MelisComCoupon',
+                                                                'action' => 'render-coupon-tabs-content-header-left',
+                                                            ),
+                                                            'interface' => array(
+                                                                'meliscommerce_coupon_tabs_content_assigned_product_header_title' => array(
+                                                                    'conf' => array(
+                                                                        'id' => 'id_meliscommerce_coupon_tabs_content_assigned_product_header_title',
+                                                                        'melisKey' => 'meliscommerce_coupon_tabs_content_assigned_product_header_title',
+                                                                        'name' => 'tr_meliscommerce_coupon_tabs_content_assigned_product_header_title',
+                                                                    ),
+                                                                    'forward' => array(
+                                                                        'module' => 'MelisCommerce',
+                                                                        'controller' => 'MelisComCoupon',
+                                                                        'action' => 'render-coupon-tabs-content-header-title',
+                                                                    ),
+                                                                ),
+                                                            ),
+                                                        ),
+                                                    ),
+                                                ),
+                                                'meliscommerce_coupon_tabs_content_assigned_product_details' => array(
+                                                    'conf' => array(
+                                                        'id' => 'id_meliscommerce_coupon_tabs_content_assigned_product_details',
+                                                        'melisKey' => 'meliscommerce_coupon_tabs_content_assigned_product_details',
+                                                        'name' => 'tr_meliscommerce_coupon_tabs_content_assigned_product_details',
+                                                    ),
+                                                    'forward' => array(
+                                                        'module' => 'MelisCommerce',
+                                                        'controller' => 'MelisComCoupon',
+                                                        'action' => 'render-coupon-tabs-content-details',
+                                                    ),
+                                                    'interface' => array(
+                                                        'meliscommerce_coupon_tabs_content_assigned_product_details_table' => array(
+                                                            'conf' => array(
+                                                                'id' => 'id_meliscommerce_coupon_tabs_content_assigned_product_details_table',
+                                                                'melisKey' => 'meliscommerce_coupon_tabs_content_assigned_product_details_table',
+                                                                'name' => 'tr_meliscommerce_coupon_tabs_content_assigned_product_details_table',
+                                                            ),
+                                                            'forward' => array(
+                                                                'module' => 'MelisCommerce',
+                                                                'controller' => 'MelisComCoupon',
+                                                                'action' => 'render-coupon-tabs-content-details-assigned-product-table',
+                                                            ),
+                                                        ),
+                                                    ),
+                                                ),
+                                                'meliscommerce_coupon_tabs_content_assign_product_header' => array(
+                                                    'conf' => array(
+                                                        'id' => 'id_meliscommerce_coupon_tabs_content_assign_product_header',
+                                                        'melisKey' => 'meliscommerce_coupon_tabs_content_assign_product_header',
+                                                        'name' => 'tr_meliscommerce_coupon_tabs_content_assign_product_header',
+                                                    ),
+                                                    'forward' => array(
+                                                        'module' => 'MelisCommerce',
+                                                        'controller' => 'MelisComCoupon',
+                                                        'action' => 'render-coupon-tabs-content-header',
+                                                    ),
+                                                    'interface' => array(
+                                                        'meliscommerce_coupon_tabs_content_assign_product_header_left' => array(
+                                                            'conf' => array(
+                                                                'id' => 'id_meliscommerce_coupon_tabs_content_assign_product_header_left',
+                                                                'melisKey' => 'meliscommerce_coupon_tabs_content_assign_product_header_left',
+                                                                'name' => 'tr_meliscommerce_coupon_tabs_content_assign_product_header_left',
+                                                            ),
+                                                            'forward' => array(
+                                                                'module' => 'MelisCommerce',
+                                                                'controller' => 'MelisComCoupon',
+                                                                'action' => 'render-coupon-tabs-content-header-left',
+                                                            ),
+                                                            'interface' => array(
+                                                                'meliscommerce_coupon_tabs_content_assign_product_header_title' => array(
+                                                                    'conf' => array(
+                                                                        'id' => 'id_meliscommerce_coupon_tabs_content_assign_product_header_title',
+                                                                        'melisKey' => 'meliscommerce_coupon_tabs_content_assign_product_header_title',
+                                                                        'name' => 'tr_meliscommerce_products_Product_lists',
+                                                                    ),
+                                                                    'forward' => array(
+                                                                        'module' => 'MelisCommerce',
+                                                                        'controller' => 'MelisComCoupon',
+                                                                        'action' => 'render-coupon-tabs-content-header-title',
+                                                                    ),
+                                                                ),
+                                                            ),
+                                                        ),
+                                                    ),
+                                                ),
+                                                'meliscommerce_coupon_tabs_content_assign_product_details' => array(
+                                                    'conf' => array(
+                                                        'id' => 'id_meliscommerce_coupon_tabs_content_assign_product_details',
+                                                        'melisKey' => 'meliscommerce_coupon_tabs_content_assign_product_details',
+                                                        'name' => 'tr_meliscommerce_coupon_tabs_content_assign_product_details',
+                                                    ),
+                                                    'forward' => array(
+                                                        'module' => 'MelisCommerce',
+                                                        'controller' => 'MelisComCoupon',
+                                                        'action' => 'render-coupon-tabs-content-details',
+                                                    ),
+                                                    'interface' => array(
+                                                        'meliscommerce_coupon_tabs_content_assign_product_details_table' => array(
+                                                            'conf' => array(
+                                                                'id' => 'id_meliscommerce_coupon_tabs_content_assign_product_details_table',
+                                                                'melisKey' => 'meliscommerce_coupon_tabs_content_assign_product_details_table',
+                                                                'name' => 'tr_meliscommerce_coupon_tabs_content_assign_product_details_table',
+                                                            ),
+                                                            'forward' => array(
+                                                                'module' => 'MelisCommerce',
+                                                                'controller' => 'MelisComCoupon',
+                                                                'action' => 'render-coupon-tabs-content-details-assign-product-table',
+                                                            ),
+                                                        ),
+                                                    ),
+                                                ),
+                                            ),
+                                        ),
                                         'meliscommerce_coupon_page_tabs_orders' => array(
                                             'conf' => array(
                                                 'id' => 'id_meliscommerce_coupon_page_tabs_orders',

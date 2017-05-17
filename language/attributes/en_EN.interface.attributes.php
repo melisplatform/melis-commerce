@@ -12,7 +12,7 @@
 	    'tr_meliscommerce_attribute_list_col_name' => 'Attribute',
 	    'tr_meliscommerce_attribute_list_col_reference' => 'Reference',
 	    'tr_meliscommerce_attribute_list_col_type' => 'Type',
-	    
+	   
 	    //attribute page 
 	    'tr_meliscommerce_attribute_page' => 'Attribute',
 	    'tr_meliscommerce_attribute_page_new_attribute' => 'New attribute',
@@ -65,4 +65,6 @@
 	    'tr_meliscommerce_attribute_value_delete_confirm' => 'Are you sure you want to delete this?',
 	    'tr_meliscommerce_attribute_value_delete_fail' => 'Failed to delete attribute value',
 	    'tr_meliscommerce_attribute_value_delete_success' => 'The attribute value has been successfully deleted',
+
+	    'tr_meliscommerce_attribute_table_refresher' => 'Refresh',
 	);

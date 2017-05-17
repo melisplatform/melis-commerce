@@ -49,6 +49,104 @@ return array(
                             ),
                         )
                     ),
+                    'meliscommerce_client_list_export_form' => array(
+                        'attributes' => array(
+                            'name' => 'client-list-export',
+                            'id' => '',
+                            'method' => 'POST',
+                            'action' => '',
+                        ),
+                        'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
+                        'elements' => array(
+                            array(
+                                'spec' => array(
+                                    'name' => 'cli_status',
+                                    'type' => 'Select',
+                                    'options' => array(
+                                        'label' => 'tr_meliscommerce_coupon_page_status',
+                                        'empty_option' => 'tr_meliscommerce_clients_common_label_all',
+                                        'value_options' => array(
+                                            'active' => 'tr_meliscommerce_coupon_page_status_online',
+                                            'inactive' => 'tr_meliscommerce_coupon_page_status_offline',
+                                        ),
+                                    ),
+                                    'attributes' => array(
+                                        'id' => 'cper_civility',
+                                    )
+                                )
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'date_start',
+                                    'type' => 'EcomDateField',
+                                    'options' => array(
+                                        'label' => 'tr_meliscommerce_orders_date_start',
+                                    ),
+                                    'attributes' => array(
+                                        'dateId' => 'date_start',
+                                        'dateLabel' => 'tr_meliscommerce_orders_date_start',
+                                    ),
+                                ),
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'date_end',
+                                    'type' => 'EcomDateField',
+                                    'options' => array(
+                                        'label' => 'tr_meliscommerce_orders_date_end',
+                                    ),
+                                    'attributes' => array(
+                                        'dateId' => 'date_end',
+                                        'dateLabel' => 'tr_meliscommerce_orders_date_end',
+                                    ),
+                                ),
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'separator',
+                                    'type' => 'MelisText',
+                                    'options' => array(
+                                        'label' => 'tr_meliscommerce_orders_sperator',
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                        'value' => ';',
+                                        'maxlength' => '1'
+                                    ),
+                                ),
+                            ),
+                        ),
+                        'input_filter' => array(
+                            'cli_status' => array(
+                                'name' => 'cli_status',
+                                'required' => false,
+                                'validators' => array(
+                                ),
+                                'filters'  => array(
+                                    array('name' => 'StripTags'),
+                                    array('name' => 'StringTrim'),
+                                ),
+                            ),
+                            'separator' => array(
+                                'name' => 'separator',
+                                'require' => true,
+                                'validators' => array(
+                                    array(
+                                        'name' => 'NotEmpty',
+                                        'options' => array(
+                                            'messages' => array(
+                                                \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_address_error_empty',
+                                            ),
+                                        ),
+                                    )
+                                ),
+                                'filters'  => array(
+                                    array('name' => 'StripTags'),
+                                    array('name' => 'StringTrim'),
+                                ),
+                            ),
+                        ),
+                    ),
                     'meliscommerce_clients_contact_form' => array(
                         'attributes' => array(
                             'name' => '',

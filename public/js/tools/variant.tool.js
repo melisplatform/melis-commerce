@@ -133,7 +133,13 @@ $(document).ready(function() {
 				melisCommerce.setUniqueId(data.chunk.variantId);
 				melisCore.flashMessenger();
 			}else{
-				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);				
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);	
+				var target = 'id_meliscommerce_variant_content';
+				if(data.chunk.variantId){
+					target = data.chunk.variantId + 'id_meliscommerce_variant_content'
+				}
+				
+				melisCoreTool.highlightErrors(0, data.errors, target);
 			}	
 			melisCoreTool.done(".save-variant");
 			melisCore.flashMessenger();

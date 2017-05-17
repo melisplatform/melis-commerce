@@ -281,17 +281,20 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $tableData = array();
         $productFilter = array();
         $productList = array();
+
+        $dataCount = 0;
         
         if($this->getRequest()->isPost()) {
-            
+
+            $productTable = $this->getServiceLocator()->get('MelisEcomProductTable');
+
             $container = new Container('meliscommerce');
             if (!empty($container['checkout'][self::SITE_ID]['countryId']))
             {
+                $dataCount = $productTable->getTotalData();
                 // Getting Current Langauge ID
                 $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
                 $langId = $melisTool->getCurrentLocaleID();
-                
-                $productTable = $this->getServiceLocator()->get('MelisEcomProductTable');
                 
                 $prodSvc = $this->getServiceLocator()->get('MelisComProductService');
                 $docSvc = $this->getServiceLocator()->get('MelisComDocumentService');
@@ -306,12 +309,12 @@ class MelisComOrderCheckoutController extends AbstractActionController
                 
                 $start = (int) $this->getRequest()->getPost('start');
                 $length =  (int) $this->getRequest()->getPost('length');
-                
+
                 $search = $this->getRequest()->getPost('search');
                 $search = $search['value'];
                 
                 $productList = $productTable->getProductList(null, null, true,  $start, $length, $sortOrder, $search);
-                
+
                 $productFilter = $productTable->getProductList(null, null, true,  null, null, $sortOrder, $search)->toArray();
                 
                 $prodImage = '<img src="%s" width="60" height="60" class="img-rounded img-responsive"/>';
@@ -332,8 +335,8 @@ class MelisComOrderCheckoutController extends AbstractActionController
         
         return new JsonModel(array(
             'draw' => (int) $draw,
-            'recordsTotal' => count($productList),
-            'recordsFiltered' =>  count($productFilter),
+            'recordsTotal' => $dataCount,
+            'recordsFiltered' => $dataCount,
             'data' => $tableData,
         ));
     }
@@ -564,6 +567,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $select = '<select id="orderCheckoutCountries" class="form-control input-sm"> %s</select>';
         
         $selectOptions = '<option value="" selected>'.$translator->translate('tr_meliscommerce_order_checkout_common_chooose').'</option>';
+
         foreach ($ecomCountries As $val)
         {
             if ($selectedCountry == $val->ctry_id)
@@ -946,10 +950,24 @@ class MelisComOrderCheckoutController extends AbstractActionController
      */
     public function renderOrderCheckoutBillingAddressAction()
     {
+        $container = new Container('meliscommerce');
+        
+        $sameAddress = true;
+        if ($this->params()->fromQuery('emptyBillingAddress') || $this->params()->fromQuery('action'))
+        {
+            $sameAddress = false;
+        }
+        else 
+        {
+            if (isset($container['checkout'][self::SITE_ID]['sameAddress']))
+            {
+                $sameAddress = $container['checkout'][self::SITE_ID]['sameAddress'];
+            }
+        }
+        
         $melisComOrderCheckoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
         $melisComOrderCheckoutService->setSiteId(self::SITE_ID);
         
-        $container = new Container('meliscommerce');
         $emptyBillingAddress = $this->params()->fromQuery('emptyBillingAddress');
         
         // Address form will hide if Create address action is trigger
@@ -1014,16 +1032,20 @@ class MelisComOrderCheckoutController extends AbstractActionController
             $melisEcomClientAddressTable = $this->getServiceLocator()->get('MelisEcomClientAddressTable');
             $clientAddress = $melisEcomClientAddressTable->getEntryById($clientAddId);
             
-            if (!empty($clientAddress)){
+            if (!empty($clientAddress) && !$sameAddress){
                 $propertyAddressForm->bind($clientAddress->current());
             }
             
             $propertyBillingAddressForm->get('cadd_id')->setValue($clientAddId);
-            $hideAddressForm = false;
+            
+            if (!$sameAddress)
+            {
+                $hideAddressForm = false;
+            }
         }
         else 
         {
-            if (!empty($checkoutBillingAddress))
+            if (!empty($checkoutBillingAddress) && !$sameAddress)
             {
                 $propertyAddressForm->setData($checkoutBillingAddress);
                 $hideAddressForm = false;
@@ -1035,6 +1057,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->hideAddressForm = $hideAddressForm;
+        $view->sameAddress = $sameAddress;
         $view->setVariable('meliscommerce_order_checkout_billing_address_form', $propertyBillingAddressForm);
         $view->setVariable('meliscommerce_order_checkout_address_form', $propertyAddressForm);
         return $view;
@@ -1182,17 +1205,29 @@ class MelisComOrderCheckoutController extends AbstractActionController
             $melisEcomClientPersonTable = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
             
             $clientAddresses = array();
+            $sameAddress = false;
             foreach ($postValues As $key => $val)
             {
+                if ($key == 'billing')
+                {
+                    if ($val['sameAddress'])
+                    {
+                        $sameAddress = true;
+                    }
+                }
+                
                 if (!empty($val['noSelected']))
                 {
                     if ($key == 'billing')
                     {
-                        // Error message if no selected/datas for Billing address
-                        $errors['billing'] = array(
-                            'label' => $translator->translate('tr_meliscommerce_order_checkout_address_billing'),
-                            'noSelected' => $translator->translate('tr_meliscommerce_order_checkout_address_no_selected_billing_address')
-                        );
+                        if (!$val['sameAddress'])
+                        {
+                            // Error message if no selected/datas for Billing address
+                            $errors['billing'] = array(
+                                'label' => $translator->translate('tr_meliscommerce_order_checkout_address_billing'),
+                                'noSelected' => $translator->translate('tr_meliscommerce_order_checkout_address_no_selected_billing_address')
+                            );
+                        }
                     }
                     else 
                     {
@@ -1250,6 +1285,15 @@ class MelisComOrderCheckoutController extends AbstractActionController
                 }
             }
             
+            if ($sameAddress)
+            {
+                if (!empty($clientAddresses['delivery']))
+                {
+                    $clientAddresses['billing'] = $clientAddresses['delivery'];
+                    $clientAddresses['billing']['cadd_type'] = 1;
+                }
+            }
+            
             if (empty($errors))
             {
                 if (!empty($clientAddresses))
@@ -1296,6 +1340,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
                             }
                             
                             $container['checkout'][self::SITE_ID]['addresses'] = $validatedAddresses;
+                            $container['checkout'][self::SITE_ID]['sameAddress'] = $sameAddress;
                             $success = 1;
                         }
                     }
@@ -1762,8 +1807,10 @@ class MelisComOrderCheckoutController extends AbstractActionController
         
         $response = array(
             'success' => $success,
-            'textTitle' => ($textTitle != 'tr_meliscommerce_order_checkout_save_success') ? $textTitle : '', // Just to be sure the message for log will not show to checkout interface as response
-            'textMessage' => ($textMessage == 'tr_meliscommerce_order_checkout_save_success') ? $textMessage : '',
+//             'textTitle' => ($textTitle != 'tr_meliscommerce_order_checkout_save_success') ? $textTitle : '', // Just to be sure the message for log will not show to checkout interface as response
+//             'textMessage' => ($textMessage == 'tr_meliscommerce_order_checkout_save_success') ? $textMessage : '',
+            'textTitle' => $textTitle,
+            'textMessage' => $textMessage,
             'errors' => $errors,
         );
         
@@ -1977,6 +2024,15 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $view->result = $result;
         $view->activateTab = $activateTab;
         return $view;
+    }
+    
+    public function testAction(){
+        $container = new Container('meliscommerce');
+        var_dump($container['checkout'][self::SITE_ID]['sameAddress']);
+        echo '<pre>';
+        print_r($container['checkout']);
+        echo '</pre>';
+        die();
     }
 
     private function getTool()

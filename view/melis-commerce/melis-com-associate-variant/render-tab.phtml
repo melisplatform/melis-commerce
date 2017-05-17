@@ -1,3 +1,4 @@
+<?php if ($this->prefixId):?>
 <?php
 $name = '';
 if (!empty($this->zoneconfig['conf']['name'])){
@@ -31,3 +32,4 @@ $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
         <span><?= $name;?></span>
     </a>
 </li>
+<?php endif;?>

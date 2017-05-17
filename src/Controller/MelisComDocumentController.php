@@ -371,11 +371,25 @@ class MelisComDocumentController extends AbstractActionController
                                             if(empty($data['doc_name'])) {
                                                 unset($data['doc_name']);
                                             }
+                                            
+                                            $documentData = $this->getDocSvc()->getDocumentById($docId)->getDocument();
+                                            $fname = pathinfo($fileName, PATHINFO_FILENAME);
                                             //$data['doc_name'] = !empty($data['doc_name']) ? $this->renameIfDuplicateName($data['doc_name']) : $this->getFormattedFileName($adapter->getFileName());
+                                            $data['doc_name'] = !empty($data['doc_name']) ? $this->renameIfDuplicateName($data['doc_name']) : $fname;
                                             $data['doc_subtype_id'] = isset($postValues['doc_subtype_id']) ? $postValues['doc_subtype_id'] : 0;
                                             $data['doc_path'] = str_replace('public/media/commerce', '/media/commerce', $savedDocFileName);
+
                                             $documentId = $this->getDocSvc()->saveDocument($relationType, $relationId, $countryId, $data, $docId);
                                             if($documentId) {
+                                                
+                                                if (!empty($documentData))
+                                                {
+                                                    // if the file exists, delete the file after update
+                                                    if(file_exists('public'.$documentData['doc_path'])) {
+                                                        unlink('public'.$documentData['doc_path']);
+                                                    }
+                                                }
+                                                
                                                 $textMessage = 'tr_meliscommerce_documents_'.$docType.'_save_success';
                                                 $success = 1;
                                             }
@@ -392,8 +406,12 @@ class MelisComDocumentController extends AbstractActionController
                                 }
                                 else {
                                     if(empty($data['doc_name'])) {
-                                        unset($data['doc_name']);
+                                        $docData = $this->getDocSvc()->getDocumentById( (int) $data['doc_id']);
+                                        $docData = $docData->getDocument();
+                                        $fileName = pathinfo($docData['doc_path'], PATHINFO_FILENAME);
+                                        $data['doc_name'] = $fileName;
                                     }
+
                                     $data['doc_subtype_id'] = isset($postValues['doc_subtype_id']) ? $postValues['doc_subtype_id'] : 0;
                                     $documentId = $this->getDocSvc()->saveDocument($relationType, $relationId, $countryId, $data, $docId);
                                     if($documentId) {

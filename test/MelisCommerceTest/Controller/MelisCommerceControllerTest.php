@@ -456,312 +456,196 @@ class MelisCommerceControllerTest extends AbstractHttpControllerTestCase
      * START ADDING YOUR TESTS HERE
      */
 
-    
-    /*
-     * Test for inserting commerce data
-     */
-    public function testInsertData()
+    public function testComLanguage()
     {
         $payloads = $this->getPayload(__METHOD__);
         $this->method = 'fetchAll';
+        $table = $this->getMelisEcomLangTable();
         
-        //language
-        $langID = $this->insertLanguage($payloads['languages']);  
-        
-        //currency
-        $currenciesID = $this->insertCurrency($payloads['currencies']);
-        
-        //country
-        $countriesID = $this->insertCountry($payloads['countries'], $currenciesID[0]);
-        
-        //categories
-        $categoriesID = $this->insertCategory($payloads['categories'], $langID[0], $countriesID[0]);
-        
-        //products
-        $productsID = $this->insertProduct($payloads['products'], $payloads['prices'], $categoriesID[0], $langID[0], $countriesID[0], $currenciesID[0]);
-        
-        //variants
-        $variantsID = $this->insertVariant($payloads['variants'], $payloads['prices'], $productsID[0], $countriesID[0], $currenciesID[0]);
-        
-        //attributes
-        $attributesID = $this->insertAttribute($payloads['attributes'], $productsID[0], $variantsID[0], $langID[0]);
-        
-        //clients
-        $clientsID = $this->insertClient($payloads['clients'], $categoriesID[0], $langID[0]);
-        
-        //orders
-        $orders = $this->insertOrder($payloads['orders'], $clientsID[0], $variantsID[0], $currenciesID[0], $countriesID[0]);
-
-    }
-    
-    /*
-     * Test for accessing inserted tests data
-     */
-    public function testTableAccessWithPayloadFromConfig()
-    {
-        $payloads = $this->getPayload(__METHOD__);
-        $tables   = $this->getMelisCommerceTables();
-        
-        foreach($tables as $value => $table) {
-            if(!empty($payloads[$value])){
-                foreach($payloads[$value] as $entry){
-                    $result = $table->getEntryByField($entry['column'], $entry['value'])->current();
-                    if($result) {
-                        $this->assertNotEmpty($result);
-                    }
-                }
-            }
+        foreach($payloads['create'] as $data){
+            $id = $table->save($data);
+            $this->assertNotEmpty($id, "Failed to insert language");
         }
         
-    }
-    
-    /**
-     * Test for removing commerce data, first inserted last deleted
-     */
-    public function testRemoveData()
-    {   
-        $payloads = $this->getPayload(__METHOD__);
+        foreach($payloads['read'] as $data){
+            $result = $table->getEntryByField($data['column'], $data['value'])->current();
+            $this->assertNotEmpty($result);
+        }
         
-        $this->removeOrder($payloads['melis_ecom_order']);
-        $this->removeClient($payloads['melis_ecom_client_person']);
-        $this->removeAttribute($payloads['melis_ecom_attribute']);
-        $this->removeVariant($payloads['melis_ecom_variant']);
-        $this->removeProduct($payloads['melis_ecom_product']);
-        $this->removeCategory($payloads['melis_ecom_category']);
-        $this->removeCountry($payloads['melis_ecom_country']);
-        $this->removeCurrency($payloads['melis_ecom_currency']);
-        $this->removeLanguage($payloads['melis_ecom_lang']);    
-
-    }
-    
-    /**
-     * Inserts test currency
-     * @param [] $payloads
-     * @return currency ID
-     */
-    private function insertCurrency($currencies)
-    {    
-        $currenciesID = array();
-        foreach($currencies as $currency){
-            $currencyID = $this->getMelisEcomCurrencyTable()->save($currency['melis_ecom_currency']);
-            $this->assertNotEmpty($currencyID, "Failed to insert currency");
-            $currenciesID[] = $currencyID;
-        }            
-        return $currenciesID;
-    }
-    
-    /*
-     * Removes test currency data
-     * @param [] $payloads
-     */
-    private function removeCurrency($currencies)
-    {
-        foreach($currencies as $currency){
-            $currenciesTable = $this->getMelisEcomCurrencyTable();
-            $currenciesTable->deleteByField($currency['column'], $currency['value']);
-            $result = $currenciesTable->getEntryByField($currency['column'], $currency['value']);
-            $this->assertEmpty($result, "Failed to delete currency");
-        }        
-    }
-    
-    /**
-     * Inserts test country
-     * @param [] $payloads
-     * @return country ID
-     */
-    private function insertCountry($countries, $currencyID)
-    {
-        $countriesID = array();
-        foreach($countries as $country){
-            $countryID = $this->getMelisEcomCountryTable()->save(array_merge($country['melis_ecom_country'], array('ctry_currency_id' => $currencyID)));
-            $this->assertNotEmpty($countryID, "Failed to insert country");
-            $countriesID[] = $countryID;
-        }
-        return $countriesID;
-    }
-    
-    /*
-     * Removes test country data
-     * @param [] $payloads
-     */
-    private function removeCountry($countries)
-    {
-        foreach($countries as $country){
-            $countryTable = $this->getMelisEcomCountryTable();
-            $countryTable->deleteByField($country['column'], $country['value']);
-            $result = $countryTable->getEntryByField($country['column'], $country['value']);
-            $this->assertEmpty($result, "Failed to delete country");
-        }        
-    }
-    
-    /**
-     * Inserts test langauge
-     * @param [] $payloads
-     * @return language ID
-     */
-    private function insertLanguage($languages)
-    {
-        $languagesID = array();
-        foreach($languages as $language){ 
-           $languageID = $this->getMelisEcomLangTable()->save($language['melis_ecom_lang']);
-           $this->assertNotEmpty($languageID, "Failed to insert language");
-           $languagesID[] = $languageID;         
-           
-        }
-        return $languagesID;
-    }
-    
-    /**
-     * Removes test language data
-     * @param [] $payloads
-     */
-    private function removeLanguage($languages)
-    {
-        foreach($languages as $language){     
-            $languageTable = $this->getMelisEcomLangTable();
-            $languageTable->deleteByField($language['column'], $language['value']);
-            $result = $languageTable->getEntryByField($language['column'], $language['value']);
+        foreach($payloads['delete'] as $data){
+            $table->deleteByField($data['column'], $data['value']);
+            $result = $table->getEntryByField($data['column'], $data['value']);
             $this->assertEmpty($result, "Failed to delete language");
-        }        
+        }
+        
     }
     
-    /**
-     * Inserts test category datas
-     * @param [] $payloads
-     * @return category ID
-     */
-    private function insertCategory($categories, $langID , $countryID)
+    public function testComCurrency()
     {
-        $categoriesID = array();
+        $payloads = $this->getPayload(__METHOD__);
+        $this->method = 'fetchAll';
+        $table = $this->getMelisEcomCurrencyTable();
         
-        foreach($categories as $category){
-            // catalogs and categories
-            $catID = $this->getMelisEcomCategoryTable()->save($category['melis_ecom_category']);
+        foreach($payloads['create'] as $data){
+            $id = $table->save($data);
+            $this->assertNotEmpty($id, "Failed to insert language");
+        }
+        
+        foreach($payloads['read'] as $data){
+            $result = $table->getEntryByField($data['column'], $data['value'])->current();
+            $this->assertNotEmpty($result);
+        }
+        
+        foreach($payloads['delete'] as $data){
+            $table->deleteByField($data['column'], $data['value']);
+            $result = $table->getEntryByField($data['column'], $data['value']);
+            $this->assertEmpty($result, "Failed to delete currency");
+        }
+    }
+    
+    public function testComCountry()
+    {
+        $payloads = $this->getPayload(__METHOD__);
+        $this->method = 'fetchAll';
+        $table = $this->getMelisEcomCountryTable();
+        
+        foreach($payloads['create'] as $data){
+            $id = $table->save($data);
+            $this->assertNotEmpty($id, "Failed to insert country");
+        }
+    
+        foreach($payloads['read'] as $data){
+            $result = $table->getEntryByField($data['column'], $data['value'])->current();
+            $this->assertNotEmpty($result);
+        }
+    
+        foreach($payloads['delete'] as $data){
+            $table->deleteByField($data['column'], $data['value']);
+            $result = $table->getEntryByField($data['column'], $data['value']);
+            $this->assertEmpty($result, "Failed to delete country");
+        }
+    }
+    
+    public function testComCategories()
+    {
+        $payloads = $this->getPayload(__METHOD__);
+        $this->method = 'fetchAll';
+        $table = $this->getMelisEcomCategoryTable();
+        $table->disableCache();
+        $transTable = $this->getMelisEcomCategoryTransTable();
+        $countryCatTable = $this->getMelisEcomCountryCategoryTable();
+        
+        foreach($payloads['create'] as $category){
+            
+            $catID = $table->save($category['melis_ecom_category']);
             $this->assertNotEmpty($catID, "Failed to insert category");
+            
             $catTransData = array(
                 'catt_category_id' => $catID,
-                'catt_lang_id' => $langID,
+                'catt_lang_id' => '-1',
             );
             
             $catTransData = array_merge($category['melis_ecom_category_trans'], $catTransData);
-            $catTransID = $this->getMelisEcomCategoryTransTable()->save($catTransData);
+            $catTransID = $transTable->save($catTransData);
+            
             $this->assertNotEmpty($catID, "Failed to insert category translations");
             
-            // uncommenct the code below to link country and category
             $countryCatData = array(
                 'ccat_category_id' => $catID,
-                'ccat_country_id' => $countryID
+                'ccat_country_id' => '-1'
             );
-            $catCountryID = $this->getMelisEcomCountryCategoryTable()->save($countryCatData);
-            $this->assertNotEmpty($catCountryID, "Failed to assign country to a category");
-            $categoriesID[] = $catID;
-                     
-        }
-        
-        return $categoriesID;
-    }
-    
-    /**
-     * Removes test category data
-     * @param [] $payloads
-     */
-    private function removeCategory($categories)
-    {        
-        foreach($categories as $category){
-            $categoryID = $this->getMelisEcomCategoryTable()->getEntryByField($category['column'], $category['value'])->current()->cat_id;
             
-            $countryCatTable = $this->getMelisEcomCountryCategoryTable();
+            $catCountryID = $countryCatTable->save($countryCatData);
+            $this->assertNotEmpty($catCountryID, "Failed to assign country to a category");
+            
+        }
+    
+        foreach($payloads['read'] as $data){
+            $result = $table->getEntryByField($data['column'], $data['value'])->current();
+            $this->assertNotEmpty($result);
+        }
+    
+        foreach($payloads['delete'] as $data){
+           $categoryID = $table->getEntryByField($data['column'], $data['value'])->current()->cat_id;
+            
             $countryCatTable->deleteByField('ccat_category_id', $categoryID);
             $result = $countryCatTable->getEntryByField('ccat_category_id', $categoryID);
             $this->assertEmpty($result, "Failed to unassigned country from a category");
             
             unset($result);
-            $catTransTable = $this->getMelisEcomCategoryTransTable();
-            $catTransTable->deleteByField('catt_category_id', $categoryID);
-            $result = $catTransTable->getEntryByField('catt_category_id', $categoryID);
+            $transTable->deleteByField('catt_category_id', $categoryID);
+            $result = $transTable->getEntryByField('catt_category_id', $categoryID);
             $this->assertEmpty($result, "Failed to delete category translations");
             
             unset($result);
-            $this->getMelisEcomCategoryTable()->deleteByID($categoryID);            
-            $result = $this->getMelisEcomCategoryTable()->getEntryById($categoryID);
+            $table->deleteByID($categoryID);            
+            $result = $table->getEntryById($categoryID);
             $this->assertEmpty($result, "Failed to delete category");
-            
         }
     }
     
-    /**
-     * Inserts test product datas
-     * @param [] $payloads
-     * @param int $categoryID
-     * @param int $langID
-     * @param int $countryID
-     * @param int $currencyID
-     */
-    private function insertProduct($products, $prices, $categoryID, $langID, $countryID, $currencyID)
+    public function testComProducts()
     {
-        $productsID = array();
-        foreach($products as $product){
-            
-            $productID  = $this->getMelisEcomProductTable()->save($product['melis_ecom_product']);
+        $payloads = $this->getPayload(__METHOD__);
+        $this->method = 'fetchAll';
+        $table = $this->getMelisEcomProductTable();
+        $prodTextTypeTable = $this->getMelisEcomProductTextTypeTable();
+        $prodTextTable = $this->getMelisEcomProductTextTable();
+        $prodCatTable = $this->getMelisEcomProductCategoryTable();
+        $priceTable = $this->getMelisEcomPriceTable();
+        
+        foreach($payloads['create'] as $product){
+                
+            $productID  = $table->save($product['melis_ecom_product']);
             $this->assertNotEmpty($productID, "Failed to insert product");
             
-            $prodTextType = $this->getMelisEcomProductTextTypeTable()->save($product['melis_ecom_product_text_type']);
+            $prodTextType = $prodTextTypeTable->save($product['melis_ecom_product_text_type']);
             $this->assertNotEmpty($prodTextType, "Failed to insert product text type");
             
             $prodText = array_merge($product['melis_ecom_product_text'],
                 array(
                     'ptxt_prd_id' => $productID,
-                    'ptxt_lang_id' => $langID,
+                    'ptxt_lang_id' => '-1',
                     'ptxt_type' => $prodTextType,
                 )
                 );
             
-            $prodTextId = $this->getMelisEcomProductTextTable()->save($prodText);
+            $prodTextId = $prodTextTable->save($prodText);
             $this->assertNotEmpty($prodTextId, "Failed to insert product text");
             
-            $prodCatId = $this->getMelisEcomProductCategoryTable()->save(array_merge($product['melis_ecom_product_category'], array('pcat_prd_id' => $productID, 'pcat_cat_id' => $categoryID)));
+            $prodCatId = $prodCatTable->save(array_merge($product['melis_ecom_product_category'], array('pcat_prd_id' => $productID, 'pcat_cat_id' => '-1')));
             $this->assertNotEmpty($prodCatId);
             
-            foreach($prices as $price){
-                $productPrice = array_merge($price['melis_ecom_price'],
-                    array(
-                        'price_prd_id' => $productID,
-                        'price_country_id' => $countryID,
-                        'price_currency' => $currencyID,
-                    )
-                    );
-                $prodPriceId = $this->getMelisEcomPriceTable()->save($productPrice);
-                $this->assertNotEmpty($prodPriceId);
-            }
-            
-            $productsID[] = $productID;
-                       
+            $productPrice = array_merge($product['melis_ecom_price'],
+                array(
+                    'price_prd_id' => $productID,
+                    'price_country_id' => '-1',
+                    'price_currency' => '-1',
+                )
+                );
+           
+            $prodPriceId = $priceTable->save($productPrice);
+            $this->assertNotEmpty($prodPriceId);
         }
         
-        return $productsID;
-    }
-    
-    /**
-     * Removes test product datas
-     * @param [] $payloads
-     */
-    private function removeProduct($products)
-    {
-        foreach($products as $product){
+        foreach($payloads['read'] as $data){
+            $result = $table->getEntryByField($data['column'], $data['value'])->current();
+            $this->assertNotEmpty($result);
+        }
+        
+        foreach($payloads['delete'] as $product){
             
-            $productTable = $this->getMelisEcomProductTable();
-            $productID = $productTable->getEntryByField($product['column'], $product['value'])->current()->prd_id;
+            $productID = $table->getEntryByField($product['column'], $product['value'])->current()->prd_id;
             
-            $this->getMelisEcomPriceTable()->deleteByField('price_prd_id', $productID);
-            $result = $this->getMelisEcomPriceTable()->getEntryByField('price_prd_id', $productID);
-            $this->assertEmpty($result, "Failed to delete product prices");            
+            $priceTable->deleteByField('price_prd_id', $productID);
+            $result = $priceTable->getEntryByField('price_prd_id', $productID);
+            $this->assertEmpty($result, "Failed to delete product prices");
             
-            $this->getMelisEcomProductCategoryTable()->deleteByField('pcat_prd_id', $productID);
-            $result = $this->getMelisEcomProductCategoryTable()->getEntryByField('pcat_prd_id', $productID);
+            $prodCatTable->deleteByField('pcat_prd_id', $productID);
+            $result = $prodCatTable->getEntryByField('pcat_prd_id', $productID);
             $this->assertEmpty($result, "Failed to remove category from product");
             
-            $prodTextTable = $this->getMelisEcomProductTextTable();
-            $prodTxts = $prodTextTable->getEntryByField('ptxt_prd_id', $productID);          
+            $prodTxts = $prodTextTable->getEntryByField('ptxt_prd_id', $productID);
              
             $prodTextTable->deleteByField('ptxt_prd_id', $productID);
             $result = $prodTextTable->getEntryByField('ptxt_prd_id', $productID);
@@ -770,427 +654,360 @@ class MelisCommerceControllerTest extends AbstractHttpControllerTestCase
             $result = $prodTextTable->getEntryByField('ptxt_prd_id', $productID);
             $this->assertEmpty($result);
             foreach($prodTxts as $txt){
-                $prodTextTypeTable =  $this->getMelisEcomProductTextTypeTable();
                 $prodTextTypeTable->deleteById($txt->ptxt_type);
                 $result = $prodTextTypeTable->getEntryById($txt->ptxt_type);
                 $this->assertEmpty($result, "Failed to delete product text type");
             }
-            $productTable->deleteById($productID);
-            $result = $productTable->getEntryById($productID);
+            $table->deleteById($productID);
+            $result = $table->getEntryById($productID);
             $this->assertEmpty($result);
-                      
         }
-                
     }
     
-    /**
-     * Inserts test variant data
-     * @param [] $payloads
-     * @param int $productID
-     * @param int $countryID
-     * @param int $currencyID
-     */
-    private function insertVariant($variants, $prices, $productID, $countryID, $currencyID)
+    public function testComVariants()
     {
-        $variantsID = array();
-        foreach($variants as $variant){
-            
-            $variantID = $this->getMelisEcomVariantTable()->save(array_merge($variant['melis_ecom_variant'], array('var_prd_id' => $productID)));
+        $payloads = $this->getPayload(__METHOD__);
+        $this->method = 'fetchAll';
+        $varTable = $this->getMelisEcomVariantTable();
+        $varStockTable = $this->getMelisEcomVariantStockTable();
+        $priceTable = $this->getMelisEcomPriceTable();
+        
+        foreach($payloads['create'] as $variant){
+        
+            $variantID = $varTable->save(array_merge($variant['melis_ecom_variant'], array('var_prd_id' => '-1')));
             $this->assertNotEmpty($variantID);
-            
+        
             $stock = array_merge($variant['melis_ecom_variant_stock'],
                 array(
                     'stock_var_id' => $variantID,
-                    'stock_country_id' => $countryID,
+                    'stock_country_id' => '-1',
                 ));
-            
-            $variantStockId = $this->getMelisEcomVariantStockTable()->save($stock);
+        
+            $variantStockId = $varStockTable->save($stock);
             $this->assertNotEmpty($variantStockId);
-            
-            foreach($prices as $price){
-               $variantPrice = array_merge($price['melis_ecom_price'],
-                   array(
-                       'price_var_id' => $variantID,
-                       'price_country_id' => $countryID,
-                       'price_currency' => $currencyID,
-                   )
-               );               
-               $varPriceId = $this->getMelisEcomPriceTable()->save($variantPrice);
-               $this->assertNotEmpty($varPriceId);
-           }
-           
-           $variantsID[] = $variantID;
+        
+            $variantPrice = array_merge($variant['melis_ecom_price'],
+                array(
+                    'price_var_id' => $variantID,
+                    'price_country_id' => '-1',
+                    'price_currency' => '-1',
+                )
+                );
+            $varPriceId = $priceTable->save($variantPrice);
+            $this->assertNotEmpty($varPriceId);
+             
         }
-        return $variantsID;
-    }
-    
-    /**
-     * Removes test variant data
-     * @param [] $payloads
-     */
-    private function removeVariant($variants)
-    {   
-        foreach($variants as $variant){
-            $variantTable = $this->getMelisEcomVariantTable();
-            $variantID = $variantTable->getEntryByField($variant['column'], $variant['value'])->current()->var_id;
-                        
-            $this->getMelisEcomPriceTable()->deleteByField('price_var_id', $variantID);
-            $result = $this->getMelisEcomPriceTable()->getEntryByField('price_var_id', $variantID);
-            
-            $variantStockTable = $this->getMelisEcomVariantStockTable();
-            $variantStockTable->deleteByField('stock_var_id', $variantID);
-            $result = $variantStockTable->getEntryByField('stock_var_id', $variantID);
+        
+        foreach($payloads['read'] as $data){
+            $result = $varTable->getEntryByField($data['column'], $data['value'])->current();
+            $this->assertNotEmpty($result);
+        }
+        
+        foreach($payloads['delete'] as $variant){
+            $variantID = $varTable->getEntryByField($variant['column'], $variant['value'])->current()->var_id;
+        
+            $priceTable->deleteByField('price_var_id', $variantID);
+            $result = $priceTable->getEntryByField('price_var_id', $variantID);
+        
+            $varStockTable->deleteByField('stock_var_id', $variantID);
+            $result = $varStockTable->getEntryByField('stock_var_id', $variantID);
             $this->assertEmpty($result, "Faield to remove variant stocks");
-            
-            $variantTable->deleteByID($variantID);
-            $result = $variantTable->getEntryById($variantID);
+        
+            $varTable->deleteByID($variantID);
+            $result = $varTable->getEntryById($variantID);
             $this->assertEmpty($result);
-            unset($variantTable);                       
+            unset($variantTable);
         }
     }
     
-    /**
-     * Inserts test attributes data
-     * @param int $payloads
-     * @param int $productID
-     * @param int $variantID
-     * @param int $langID
-     */
-    private function insertAttribute($attributes, $productID, $variantID, $langID)
+    public function testComAttributes()
     {
-        $attributesID = array();
-        foreach($attributes as $attribute){
-            $attributeTable = $this->getMelisEcomAttributeTable();
+        $payloads = $this->getPayload(__METHOD__);
+        $this->method = 'fetchAll';
+        $attributeTable = $this->getMelisEcomAttributeTable();
+        $attrTransTable = $this->getMelisEcomAttributeTransTable();
+        $prodAttrTable = $this->getMelisEcomProductAttributeTable();
+        $attrValTable = $this->getMelisEcomAttributeValueTable();
+        $varAttrValTable = $this->getMelisEcomProductVariantAttributeValueTable();
+        $attrValTransTable = $this->getMelisEcomAttributeValueTransTable();
+        
+        foreach($payloads['create'] as $attribute){
+            
             $attributeID = $attributeTable->save($attribute['melis_ecom_attribute']);
             $this->assertNotEmpty($attributeID, "Failed to insert attribute");
             $attributeTrans = array_merge($attribute['melis_ecom_attribute_trans'],
                 array(
                     'atrans_attribute_id' => $attributeID,
-                    'atrans_lang_id' => $langID,
+                    'atrans_lang_id' => '-1',
                 )
                 );
-            
-            $attributeTransID = $this->getMelisEcomAttributeTransTable()->save($attributeTrans);
-            $this->assertNotEmpty($attributeTransID, " Failed to insert attribute translations");            
-            
-            $prodAttributeID = $this->getMelisEcomProductAttributeTable()->save(array('patt_product_id' => $productID, 'patt_attribute_id' => $attributeID));
+        
+            $attributeTransID = $attrTransTable->save($attributeTrans);
+            $this->assertNotEmpty($attributeTransID, " Failed to insert attribute translations");
+        
+            $prodAttributeID = $prodAttrTable->save(array('patt_product_id' => '-1', 'patt_attribute_id' => $attributeID));
             $this->assertNotEmpty($prodAttributeID, "Failed to assign attribute to a product");
             $attributeVal = array_merge($attribute['melis_ecom_attribute_value'],
                 array(
                     'atval_attribute_id' => $attributeID,
                 )
                 );
-            
-            $attributeValID = $this->getMelisEcomAttributeValueTable()->save($attributeVal);
-            $this->assertNotEmpty($attributeValID, "Failed to insert attribute value");            
-            
-            $attrValTransId = $this->getMelisEcomProductVariantAttributeValueTable()->save(array('vatv_variant_id' => $variantID, 'vatv_attribute_value_id' => $attributeValID));
+        
+            $attributeValID = $attrValTable->save($attributeVal);
+            $this->assertNotEmpty($attributeValID, "Failed to insert attribute value");
+        
+            $attrValTransId = $varAttrValTable->save(array('vatv_variant_id' => '-1', 'vatv_attribute_value_id' => $attributeValID));
             $this->assertNotEmpty($attrValTransId);
-            
+        
             $attributeValTrans = array_merge($attribute['melis_ecom_attribute_value_trans'],
                 array(
                     'av_attribute_value_id' => $attributeValID,
-                    'avt_lang_id' => $langID,
+                    'avt_lang_id' => '-1',
                 )
                 );
-            
-            $attrValTransId = $this->getMelisEcomAttributeValueTransTable()->save($attributeValTrans);
+        
+            $attrValTransId = $attrValTransTable->save($attributeValTrans);
             $this->assertNotEmpty($attrValTransId);
-            
-            $attributesID[] = $attributeID;
-                       
+        
         }
         
-        return $attributesID;
-    }
-    
-    /**
-     * This removes test attribute data
-     * @param unknown $payloads
-     */
-    private function removeAttribute($attributes)
-    {
-        foreach($attributes as $attribute){
-            $attributeTable = $this->getMelisEcomAttributeTable();
-            $attributeID  = $attributeTable->getEntryByField($attribute['column'], $attribute['value'])->current()->attr_id;            
-            
-            $attributeValTable = $this->getMelisEcomAttributeValueTable();
-            $attrValID  = $attributeValTable->getEntryByField('atval_attribute_id', $attributeID)->current()->atval_id;            
-            
-            $attrValTransTable = $this->getMelisEcomAttributeValueTransTable();
+        foreach($payloads['read'] as $data){
+            $result = $attributeTable->getEntryByField($data['column'], $data['value'])->current();
+            $this->assertNotEmpty($result);
+        }
+        
+        foreach($payloads['delete'] as $attribute){
+            $attributeID  = $attributeTable->getEntryByField($attribute['column'], $attribute['value'])->current()->attr_id;
+        
+            $attrValID  = $attrValTable->getEntryByField('atval_attribute_id', $attributeID)->current()->atval_id;
+        
             $attrValTransTable->deleteByField('av_attribute_value_id', $attrValID);
             $result = $attrValTransTable->getEntryByField('av_attribute_value_id', $attrValID);
             $this->assertEmpty($result, "Failed to delete attribute value translations");
-            
-            $prodVarAttrValTable = $this->getMelisEcomProductVariantAttributeValueTable();
-            $prodVarAttrValTable->deleteByField('vatv_attribute_value_id', $attrValID);
-            $result = $prodVarAttrValTable->getEntryByField('vatv_attribute_value_id', $attrValID);                
+        
+            $varAttrValTable->deleteByField('vatv_attribute_value_id', $attrValID);
+            $result = $varAttrValTable->getEntryByField('vatv_attribute_value_id', $attrValID);
             $this->assertEmpty($result, "Failed to remove attribute from a variant");
-            
-            $attributeValTable->deleteByID($attrValID);
-            $result = $attributeValTable->getEntryById($attrValID);
+        
+            $attrValTable->deleteByID($attrValID);
+            $result = $attrValTable->getEntryById($attrValID);
             $this->assertEmpty($result, "Faield to remove attribute value");
-            
-            $prodAttrTable = $this->getMelisEcomProductAttributeTable();
+        
             $prodAttrTable->deleteByField('patt_attribute_id', $attributeID);
             $result = $prodAttrTable->getEntryByField('patt_attribute_id', $attributeID);
             $this->assertEmpty($result, "Failed to remove attribute from a product");
-            
-            $attrTransTable = $this->getMelisEcomAttributeTransTable();
+        
             $attrTransTable->deleteByField('atrans_attribute_id', $attributeID);
             $result = $attrTransTable->getEntryByField('atrans_attribute_id', $attributeID);
             $this->assertEmpty($result, "Failed to delete attribute translations");
-            
+        
             $attributeTable->deleteById($attributeID);
             $result = $attributeTable->getEntryById($attributeID);
-            $this->assertEmpty($result, "Failed to delete attribute");              
+            $this->assertEmpty($result, "Failed to delete attribute");
         }
+        
     }
     
-    /**
-     * Inserts test client data
-     * @param int $payloads
-     * @param int $countryID
-     * @param int $langID
-     */
-    private function insertClient($clients, $countryID, $langID)
+    public function testComClients()
     {
-        $clientsID = array();
-        $c = 1;
-        foreach($clients as $client){            
-            $clientID = $this->getMelisEcomClientTable()->save(array_merge($client['melis_ecom_client'], array('cli_country_id' => $countryID)));
+        $payloads = $this->getPayload(__METHOD__);
+        $this->method = 'fetchAll';
+        $clientTable = $this->getMelisEcomClientTable();
+        $clientPerTable = $this->getMelisEcomClientPersonTable();
+        $clientCompTable = $this->getMelisEcomClientCompanyTable();
+        $clientAddrTable = $this->getMelisEcomClientAddressTable();
+        
+        foreach($payloads['create'] as $client){
+            $clientID = $clientTable->save(array_merge($client['melis_ecom_client'], array('cli_country_id' => '-1')));
             $this->assertNotEmpty($clientID);
             $clientPerson = array_merge($client['melis_ecom_client_person'],
                 array(
                     'cper_client_id' => $clientID,
-                    'cper_lang_id' => $langID,
+                    'cper_lang_id' => '-1',
                 )
                 );
-            
-            $clientPersonID = $this->getMelisEcomClientPersonTable()->save($clientPerson);
+        
+            $clientPersonID = $clientPerTable->save($clientPerson);
             $this->assertNotEmpty($clientPersonID);
-            $clientCompanyID = $this->getMelisEcomClientCompanyTable()->save(array_merge($client['melis_ecom_client_company'], array('ccomp_client_id' => $clientID)));
+            $clientCompanyID = $clientCompTable->save(array_merge($client['melis_ecom_client_company'], array('ccomp_client_id' => $clientID)));
             $this->assertNotEmpty($clientCompanyID);
             $clientAddress = array_merge($client['melis_ecom_client_address'],
                 array(
                     'cadd_client_id' => $clientID,
                     'cadd_client_person' => $clientPersonID,
                 ));
-            
-            $clientAddressId = $this->getMelisEcomClientAddressTable()->save($clientAddress);
+        
+            $clientAddressId = $clientAddrTable->save($clientAddress);
             $this->assertNotEmpty($clientAddressId);
-            
-            $this->assertNotEmpty($clientID, "Failed to insert test client $c");
-            $clientsID[] = $clientID;
-                     
-            $c++;
+        
+            $this->assertNotEmpty($clientID, "Failed to insert test client");
         }
-        return $clientsID;
-    }
-    
-    /**
-     * Removes test client data
-     * @param int $payloads
-     */
-    private function removeClient($clients)
-    {
-        $c = 1;
-        foreach($clients as $client){
+        
+        foreach($payloads['read'] as $data){
+            $result = $clientPerTable->getEntryByField($data['column'], $data['value'])->current();
+            $this->assertNotEmpty($result);
+        }
+        
+        foreach($payloads['delete'] as $client){
             $result = array();
-            $clientID = $this->getMelisEcomClientPersonTable()->getEntryByField($client['column'], $client['value'])->current()->cper_client_id;
-            $this->getMelisEcomClientAddressTable()->deleteByField('cadd_client_id', $clientID);
-            $result = $this->getMelisEcomClientAddressTable()->getEntryByField('cadd_client_id', $clientID);
+            $clientID = $clientPerTable->getEntryByField($client['column'], $client['value'])->current()->cper_client_id;
+            $clientAddrTable->deleteByField('cadd_client_id', $clientID);
+            $result = $clientAddrTable->getEntryByField('cadd_client_id', $clientID);
             $this->assertEmpty($result, "Failed to delete client addresses");
-            
-            $this->getMelisEcomClientCompanyTable()->deleteByField('ccomp_client_id', $clientID);
-            $result = $this->getMelisEcomClientCompanyTable()->getEntryByField('ccomp_client_id', $clientID);
+        
+            $clientCompTable->deleteByField('ccomp_client_id', $clientID);
+            $result = $clientCompTable->getEntryByField('ccomp_client_id', $clientID);
             $this->assertEmpty($result, "Failed to remove company");
-            
-            $this->getMelisEcomClientPersonTable()->deleteByField('cper_client_id', $clientID);
-            $this->getMelisEcomClientTable()->deleteByField('cli_id', $clientID);
-            $result = $this->getMelisEcomClientTable()->getEntryById($clientID)->toArray();
-            $this->assertEmpty($result, "Failed to delete client");        
-            $c++;
+        
+            $clientPerTable->deleteByField('cper_client_id', $clientID);
+            $clientTable->deleteByField('cli_id', $clientID);
+            $result = $clientTable->getEntryById($clientID)->toArray();
+            $this->assertEmpty($result, "Failed to delete client");
         }
     }
     
-    private function insertOrder($orders, $clientID, $variantID, $currencyID, $countryID)
+    public function testComOrders()
     {
-        $ordersID = array();
-        foreach($orders as $order){
-            $clientPerID = $this->getMelisEcomClientPersonTable()->getEntryByField('cper_client_id', $clientID)->current()->cper_id;
-            
-            $orderData = array_merge($order['melis_ecom_order'], 
+        $payloads = $this->getPayload(__METHOD__);
+        $this->method = 'fetchAll';
+        $prodTextTable = $this->getMelisEcomProductTextTable();
+        $catTransTable = $this->getMelisEcomCategoryTransTable();
+        $varTable = $this->getMelisEcomVariantTable();
+        $orderTable = $this->getMelisEcomOrderTable();
+        $priceTable = $this->getMelisEcomPriceTable();
+        $orderBasketTable = $this->getMelisEcomOrderBasketTable();
+        $orderAddrTable = $this->getMelisEcomOrderAddressTable();
+        $orderPayTable = $this->getMelisEcomOrderPaymentTable();
+        $orderShippTable = $this->getMelisEcomOrderShippingTable();
+        
+        foreach($payloads['create'] as $order){
+        
+            $orderData = array_merge($order['melis_ecom_order'],
                 array(
-                    'ord_client_id' => $clientID,
-                    'ord_client_person_id' => $clientPerID,
-                    'ord_country_id' => $countryID,
-                    
+                    'ord_client_id' => '-1',
+                    'ord_client_person_id' => '-1',
+                    'ord_country_id' => '-1',
+        
                 )
-            );
+                );
             //save order
-            $orderID = $this->getMelisEcomOrderTable()->save($orderData);
+            $orderID = $orderTable->save($orderData);
             $this->assertNotEmpty($orderID, "Failed to insert order");
+        
+            $variant = $varTable->getEntryByField($order['order_variant']['column'], $order['order_variant']['value'])->current();
+            $varId = !empty($variant)? $variant->var_prd_id: '-1';
+            $varSku = !empty($variant)? $variant->var_sku: 'PHPUNITTEST123';
             
-            $variant = $this->getMelisEcomVariantTable()->getEntryById($variantID)->current();            
-            $productText = $this->getMelisEcomProductTextTable()->getEntryByField('ptxt_prd_id', $variant->var_prd_id)->current();
-            $productCat = $this->getMelisEcomProductCategoryTable()->getEntryByField('pcat_prd_id', $variant->var_prd_id)->current();
-            $categoryText = $this->getMelisEcomCategoryTransTable()->getEntryByField('catt_category_id', $productCat->pcat_cat_id)->current();
-            $variantPrice = $this->getMelisEcomPriceTable()->getEntryByField('price_var_id', $variantID)->current();
+            $productText = $prodTextTable->getEntryByField($order['order_product_text']['column'], $order['order_product_text']['value'])->current();
+            $productTextString = !empty($productText)? $productText->ptxt_field_short : 'Product Text Test PHP';
             
-            $basketData = array_merge($order['melis_ecom_order_basket'], 
+            $category = $catTransTable->getEntryByField($order['order_category']['column'], $order['order_category']['value'])->current();
+            $catId = !empty($category)? $category->catt_category_id: '-1';
+            $categoryName = !empty($category)? $category->catt_name: 'PHP Category Test Name';
+            
+            $price = $priceTable->getEntryByField('price_var_id', $varId)->current(); 
+            $priceNet = !empty($price)? $price->price_net: 100;
+            $priceGross = !empty($price)? $price->price_gross: 80;
+            $priceVat = !empty($price)? $price->price_vat_price: 11;
+        
+            $basketData = array_merge($order['melis_ecom_order_basket'],
                 array(
                     'obas_order_id' => $orderID,
-                    'obas_variant_id' => $variantID,
-                    'obas_product_name' => $productText->ptxt_field_short,
-                    'obas_sku' => $variant->var_sku,
-                    'obas_category_id' => $productCat->pcat_cat_id,
-                    'obas_category_name' => $categoryText->catt_name,
-                    'obas_currency' => $currencyID,
-                    'obas_price_net' => $variantPrice->price_net,
-                    'obas_price_gross' => $variantPrice->price_gross,
-                    'obas_price_vat' =>  $variantPrice->price_vat_price
+                    'obas_variant_id' => $varId,
+                    'obas_product_name' => $productTextString,
+                    'obas_sku' => $varSku,
+                    'obas_category_id' => $catId,
+                    'obas_category_name' => $categoryName,
+                    'obas_currency' => '-1',
+                    'obas_price_net' => $priceNet,
+                    'obas_price_gross' => $priceGross,
+                    'obas_price_vat' =>  $priceVat
                 )
-            );
-            
-            $orderBasketID = $this->getMelisEcomOrderBasketTable()->save($basketData);
+                );
+        
+            $orderBasketID = $orderBasketTable->save($basketData);
             $this->assertNotEmpty($orderBasketID, "Failed to insert order basket");
-            
+        
             $billAddress = array_merge($order['melis_ecom_order_address'],
                 array(
                     'oadd_order_id' => $orderID,
                     'oadd_type' => 1,
                 )
-            );
+                );
             //save billing address
-            $billAddressID = $this->getMelisEcomOrderAddressTable()->save($billAddress);
+            $billAddressID = $orderAddrTable->save($billAddress);
             $this->assertNotEmpty($billAddressID, "Failed to insert order billing address");
-            
+        
             $shipAddress = array_merge($order['melis_ecom_order_address'],
                 array(
                     'oadd_order_id' => $orderID,
                     'oadd_type' => 2,
                 )
-            );
+                );
             // save shipping/delivery address
-            $shipAddressID = $this->getMelisEcomOrderAddressTable()->save($shipAddress);
+            $shipAddressID = $orderAddrTable->save($shipAddress);
             $this->assertNotEmpty($shipAddressID, "Failed to insert shipping address");
-            
-            $paymentData = array_merge($order['melis_ecom_order_payment'], 
+        
+            $paymentData = array_merge($order['melis_ecom_order_payment'],
                 array(
                     'opay_order_id' => $orderID,
-                    'opay_price_total' => $variantPrice->price_net + 100,
-                    'opay_price_order' => $variantPrice->price_net,
+                    'opay_price_total' => $priceNet + 100,
+                    'opay_price_order' => $priceNet,
                     'opay_price_shipping' => 100,
-                    'opay_currency_id' => $currencyID,                    
+                    'opay_currency_id' => '-1',
                 )
-            );
-            
+                );
+        
             // save payment details
-            $paymentID = $this->getMelisEcomOrderPaymentTable()->save($paymentData);
+            $paymentID = $orderPayTable->save($paymentData);
             $this->assertNotEmpty($paymentID, "Failed to insert order payment");
-            
+        
             $shippingData = array_merge($order['melis_ecom_order_shipping'],
                 array(
-                    'oship_order_id' => $orderID,      
+                    'oship_order_id' => $orderID,
                 )
-            );
+                );
             //save shipping details
-            $shippingID = $this->getMelisEcomOrderShippingTable()->save($shippingData);
+            $shippingID = $orderShippTable->save($shippingData);
             $this->assertNotEmpty($shippingID, "Failed to insert order shipping details");
-            
+        
             $orderUpdate = array(
                 'ord_billing_address' => $billAddressID,
                 'ord_delivery_address' => $shipAddressID,
             );
-            
-            $this->getMelisEcomOrderTable()->save($orderUpdate, $orderID);
+        
+            $orderTable->save($orderUpdate, $orderID);
         }
-    }
-    
-    private function removeOrder($orders)
-    {
-        foreach($orders as $order){
-            $orderID = $this->getMelisEcomOrderTable()->getEntryByField($order['column'], $order['value'])->current()->ord_id;
-            $this->getMelisEcomOrderPaymentTable()->deleteByField('opay_order_id', $orderID);
-            $result = $this->getMelisEcomOrderPaymentTable()->getEntryByField('opay_order_id', $orderID);
+        
+        foreach($payloads['read'] as $data){
+            $result = $orderTable->getEntryByField($data['column'], $data['value'])->current();
+            $this->assertNotEmpty($result);
+        }
+        
+        foreach($payloads['delete'] as $order){
+            $orderID = $orderTable->getEntryByField($order['column'], $order['value'])->current()->ord_id;
+            $orderPayTable->deleteByField('opay_order_id', $orderID);
+            $result = $orderPayTable->getEntryByField('opay_order_id', $orderID);
             $this->assertEmpty($result, "Failed to delete order payment");
-            
-            $this->getMelisEcomOrderAddressTable()->deleteByField('oadd_order_id', $orderID);
-            $result = $this->getMelisEcomOrderAddressTable()->getEntryByField('oadd_order_id', $orderID);
+        
+            $orderAddrTable->deleteByField('oadd_order_id', $orderID);
+            $result = $orderAddrTable->getEntryByField('oadd_order_id', $orderID);
             $this->assertEmpty($result, "Failed to delete order addresses");
-            
-            $this->getMelisEcomOrderShippingTable()->deleteByField('oship_order_id', $orderID);
-            $result = $this->getMelisEcomOrderShippingTable()->getEntryByField('oship_order_id', $orderID);
+        
+            $orderShippTable->deleteByField('oship_order_id', $orderID);
+            $result = $orderShippTable->getEntryByField('oship_order_id', $orderID);
             $this->assertEmpty($result, "Failed to delete order shipping details");
-            
-            $this->getMelisEcomOrderBasketTable()->deleteByField('obas_order_id', $orderID);
-            $result = $this->getMelisEcomOrderBasketTable()->getEntryByField('obas_order_id', $orderID);
+        
+            $orderBasketTable->deleteByField('obas_order_id', $orderID);
+            $result = $orderBasketTable->getEntryByField('obas_order_id', $orderID);
             $this->assertEmpty($result, "Failed to delete order basket");
-            
-            $this->getMelisEcomOrderTable()->deleteById($orderID);
-            $result = $this->getMelisEcomOrderTable()->getEntryById($orderID);
+        
+            $orderTable->deleteById($orderID);
+            $result = $orderTable->getEntryById($orderID);
             $this->assertEmpty($result, "Failed to delete order");
         }
+        
     }
-    
-    /**
-     * List of MelisCommerce db tables
-     * @return array
-     */
-    private function getMelisCommerceTables()
-    {
-        return array(
-          'melis_ecom_assoc_variant'        =>  $this->getMelisEcomAssocVariantTable(),
-          'melis_ecom_assoc_variants_type'  =>  $this->getMelisEcomAssocVariantTypeTable(),
-          'melis_ecom_attribute'            =>  $this->getMelisEcomAttributeTable(),
-          'melis_ecom_attribute_trans'      =>  $this->getMelisEcomAttributeTransTable(),
-          'melis_ecom_attribute_type'       =>  $this->getMelisEcomAttributeTypeTable(),
-          'melis_ecom_attribute_value'      =>  $this->getMelisEcomAttributeValueTable(),
-          'melis_ecom_attribute_value_trans'=>  $this->getMelisEcomAttributeValueTransTable(),
-          'melis_ecom_basket_anonymous'     =>  $this->getMelisEcomBasketAnonymousTable(),
-          'melis_ecom_basket_persistent'    =>  $this->getMelisEcomBasketPersistentTable(),
-          'melis_ecom_category'             =>  $this->getMelisEcomCategoryTable(),
-          'melis_ecom_category_trans'       =>  $this->getMelisEcomCategoryTransTable(),
-          'melis_ecom_civility_trans'       =>  $this->getMelisEcomCivilityTransTable(),
-          'melis_ecom_client_address'       =>  $this->getMelisEcomClientAddressTable(),
-          'melis_ecom_client_address_type'  =>  $this->getMelisEcomClientAddressTypeTable(),
-          'melis_ecom_client_address_type'  =>  $this->getMelisEcomClientAddressTypeTransTable(),
-          'melis_ecom_client_company'       =>  $this->getMelisEcomClientCompanyTable(),
-          'melis_ecom_client_person'        =>  $this->getMelisEcomClientPersonTable(),
-          'melis_ecom_client'               =>  $this->getMelisEcomClientTable(),
-          'melis_ecom_country_category'     =>  $this->getMelisEcomCountryCategoryTable(),
-          'melis_ecom_country'              =>  $this->getMelisEcomCountryTable(),
-          'melis_ecom_coupon_client'        =>  $this->getMelisEcomCouponClientTable(),
-          'melis_ecom_coupon_order'         =>  $this->getMelisEcomCouponOrderTable(),
-          'melis_ecom_coupon'               =>  $this->getMelisEcomCouponTable(),
-          'melis_ecom_currency'             =>  $this->getMelisEcomCurrencyTable(),
-          'melis_ecom_doc_relations'        =>  $this->getMelisEcomDocRelationsTable(),
-          'melis_ecom_doc_type'             =>  $this->getMelisEcomDocTypeTable(),
-          'melis_ecom_document'             =>  $this->getMelisEcomDocumentTable(),
-          'melis_ecom_lang'                 =>  $this->getMelisEcomLangTable(),
-          'melis_ecom_order_address'        =>  $this->getMelisEcomOrderAddressTable(),
-          'melis_ecom_order_basket'         =>  $this->getMelisEcomOrderBasketTable(),
-          'melis_ecom_order_message'        =>  $this->getMelisEcomOrderMessageTable(),
-          'melis_ecom_order_payment'        =>  $this->getMelisEcomOrderPaymentTable(),
-          'melis_ecom_order_payment_type'   =>  $this->getMelisEcomOrderPaymentTypeTable(),
-          'melis_ecom_order_shipping'       =>  $this->getMelisEcomOrderShippingTable(),
-          'melis_ecom_order_status'         =>  $this->getMelisEcomOrderStatusTable(),
-          'melis_ecom_order_status_trans'   =>  $this->getMelisEcomOrderStatusTransTable(),
-          'melis_ecom_order'                =>  $this->getMelisEcomOrderTable(),
-          'melis_ecom_price'                =>  $this->getMelisEcomPriceTable(),
-          'melis_ecom_product_attribute'    =>  $this->getMelisEcomProductAttributeTable(),
-          'melis_ecom_product_category'     =>  $this->getMelisEcomProductCategoryTable(),
-          'melis_ecom_product'              =>  $this->getMelisEcomProductTable(),
-          'melis_ecom_product_text'         =>  $this->getMelisEcomProductTextTable(),
-          'melis_ecom_product_text_type'    =>  $this->getMelisEcomProductTextTypeTable(),
-          'melis_ecom_variant_attribute_value'  =>  $this->getMelisEcomProductVariantAttributeValueTable(),
-          'melis_ecom_seo'                  =>  $this->getMelisEcomSeoTable(),
-          'melis_ecom_variant_stock'        =>  $this->getMelisEcomVariantStockTable(),
-          'melis_ecom_variant'              =>  $this->getMelisEcomVariantTable(),
-        );
-    }
-
 
 }
 

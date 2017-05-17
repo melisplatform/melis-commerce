@@ -31,7 +31,7 @@
         $tmp['ptxt_type'] = $value;
         $tmp['ptt_field_type'] = $this->layout()->prodText[$key]->ptt_field_type;
         $tmp['ptt_name'] = $this->layout()->prodText[$key]->ptt_name;
-        $tmp['ptt_code'] = $this->layout()->prodText[$key]->ptt_name;
+        $tmp['ptt_code'] = $this->layout()->prodText[$key]->ptt_code;
         $txtForms[] = $tmp;
     }
     
@@ -72,7 +72,7 @@ foreach($this->lang as $lang) {
                 		        if($txt['ptt_field_type'] == 1){
                 		            $form->get('ptxt_field_short')
                                         ->setAttribute('style', 'display:block')
-                                        ->setLabel($txt['ptt_name'] . ' (' . $txt['ptt_name'] . ')</label>'.sprintf($del, $txt['ptt_code']));
+                                        ->setLabel($txt['ptt_name'] . ' (' . $txt['ptt_code'] . ')</label>'.sprintf($del, $txt['ptt_code']));
                                     $currentValue = $form->get('ptxt_field_short')->getValue();
                                     $currentValue = str_replace(array('&lt;', '&gt;'), array('<', '>'), $currentValue);
                                     $form->get('ptxt_field_short')->setValue($currentValue);

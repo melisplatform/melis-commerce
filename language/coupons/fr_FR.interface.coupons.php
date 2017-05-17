@@ -55,4 +55,11 @@
 	    'tr_meliscommerce_coupon_invalid_end_date' => 'La date de fin doit être égale ou supérieure à la date de début',
 	    'tr_meliscommerce_coupon_delete_confirm' => 'Etes-vous sûr de vouloir supprimer ce coupon ?',
 	    'tr_meliscommerce_coupon_delete_confirm_remove' => 'Etes-vous sûr de vouloir retirer le coupon de ce client ?',
+
+	    'tr_meliscommerce_coupon_table_refresher' => 'Actualiser',
+	    
+	    'tr_meliscommerce_coupon_page_tabs_assign_product' => 'Assign to product(s)',
+	    'tr_meliscommerce_coupon_page_tabs_assign_product_tab' => 'Assign products',
+	    'tr_meliscommerce_coupon_tabs_content_assigned_product_header_title' => 'Assigned products',
+	    'tr_meliscommerce_coupon_delete_confirm_remove_product' => 'Are you sure you want to remove the coupon from this product?',
 	);

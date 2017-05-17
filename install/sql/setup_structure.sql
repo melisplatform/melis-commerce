@@ -876,6 +876,20 @@ CREATE TABLE IF NOT EXISTS `melis_ecom_coupon_client` (
 ENGINE = InnoDB
 COMMENT = 'This table stores the coupons that are affected to a client';
 
+-- -----------------------------------------------------
+-- Table `melis_ecom_coupon_product`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `melis_ecom_coupon_product` ;
+
+CREATE TABLE IF NOT EXISTS `melis_ecom_coupon_product` (
+  `cprod_id` INT NOT NULL AUTO_INCREMENT,
+  `cprod_coupon_id` INT NOT NULL,
+  `cprod_product_id` INT NOT NULL,
+  PRIMARY KEY (`cprod_id`),
+  INDEX `fk_melis_ecom_coupon_product_melis_ecom_coupon1_idx` (`cprod_coupon_id` ASC),
+  INDEX `fk_melis_ecom_coupon_product_melis_ecom_product1_idx` (`cprod_product_id` ASC))
+ENGINE = InnoDB;
+COMMENT = 'This table stores the relation between assigned coupons and their product';
 
 -- -----------------------------------------------------
 -- Table `melis_ecom_seo`

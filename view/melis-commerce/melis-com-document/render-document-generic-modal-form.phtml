@@ -62,15 +62,6 @@
                                   </div>
                                 </div><br/>
         					</div>
-
-                            <div class="row">
-                            	<div class="col-md-12">
-                                 	<div align="right">
-                                 		<a data-dismiss="modal" class="btn btn-danger pull-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_documents_common_btn_close')?></a>
-                                 		<button type="submit" class="btn btn-success pull-right" id="btnDocFileAdd"><i class="fa fa-save"></i> <?php echo $this->translate('tr_meliscommerce_documents_common_btn_save'); ?></button>
-                                 	</div>
-                            	</div>
-                            </div>
                             <?php 
                             echo $this->form()->closeTag();
                             ?>
@@ -136,6 +127,14 @@
                             <?php    
                             }
                             ?>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div align="right">
+                                        <a data-dismiss="modal" class="btn btn-danger pull-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_documents_common_btn_close')?></a>
+                                        <button type="submit" form="<?php echo $this->relationId.'_'.$this->relationType.'_frmDocUpload'?>" class="btn btn-success pull-right" id="btnDocFileAdd"><i class="fa fa-save"></i> <?php echo $this->translate('tr_meliscommerce_documents_common_btn_save'); ?></button>
+                                    </div>
+                                </div>
+                            </div>
                             <script type="text/javascript">
                             	$(":file").filestyle({buttonBefore: true, input: true, buttonText: '<?php echo $this->translate($this->fileTitle)?>', placeholder : '<?= $file; ?>'});
                             </script>

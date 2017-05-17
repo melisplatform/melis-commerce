@@ -79,5 +79,26 @@
 	    'tr_meliscommerce_order_save_status_canceled_confirm' => 'Changer le statut en annulée annulera définitivement la commande, son statut ne pourra plus être modifié. Etes-vous sûre de vouloir annuler la commande ?',
 	    'tr_meliscommerce_order_common_label_yes' => 'Oui',
 	    'tr_meliscommerce_order_common_label_no' => 'Non',
+
+	    'tr_meliscommerce_order_referesh' => 'Actualiser',
 	    
+	    'tr_meliscommerce_order_export_label' => 'Exporter',
+	    'tr_meliscommerce_order_export_success' => 'Les commandes ont été exportées avec succès',
+	    'tr_meliscommerce_order_export_fail' => 'Echec de l\'export',
+	    
+	    'tr_meliscommerce_order_status_tool_leftmenu' => 'Statuts commande',
+	    'tr_meliscommerce_order_status_header_title' => 'Statuts commande',
+	    'tr_meliscommerce_order_status_add_order' => 'Ajouter un statut',
+	    'tr_meliscommerce_order_status_col_ord_status' => 'Nom',
+	    'tr_meliscommerce_order_status_col_color_code' => 'Code couleur',
+	    'tr_meliscommerce_order_status_col_color_preview' => 'Couleur',
+	    'tr_meliscommerce_order_status_form' => 'Formulaire du statut de la commande',
+	    'tr_meliscommerce_order_status_save_failed' => 'Echec de la sauvegarde du statut',
+	    'tr_meliscommerce_order_status_save_success' => 'Le statut de la commande a été sauvegardé avec succès',
+	    'tr_meliscommerce_order_status_status_filled_all_error' => 'Veuillez remplir soit le champ pour tous les langages soit chaque langage individuellement',
+	    'tr_meliscommerce_order_status_status_prime_edit_error' => 'Ce statut est obligatoire, il ne peut pas être supprimé',
+	    'tr_meliscommerce_order_status_delete_confirm' => 'Etes-vous sûr de vouloir supprimer ce statut ?',
+	    'tr_meliscommerce_order_status_delete_fail' => 'Echec e la suppression du statut',
+	    'tr_meliscommerce_order_status_delete_success' => 'Le statut a été supprimé avec succès',
+	    'tr_meliscommerce_orders_status_empty' => 'Tous (sauf temporaire)',
 	);

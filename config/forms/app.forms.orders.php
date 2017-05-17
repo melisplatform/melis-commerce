@@ -58,6 +58,115 @@ return array(
                             ),
                         ),
                     ),
+                    'meliscommerce_order_list_export_form' => array(
+                        'attributes' => array(
+                            'name' => 'order-list-export',
+                            'id' => '',
+                            'method' => 'POST',
+                            'action' => '',
+                        ),
+                        'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
+                        'elements' => array(
+                            array(
+                                'spec' => array(
+                                    'name' => 'ord_status',
+                                    'type' => 'EcomOrderStatusAllSelect',
+                                    'options' => array(
+                                        'label' => 'tr_meliscommerce_orders_status',
+                                        'empty_option' => 'tr_meliscommerce_orders_status_empty',
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                    ),
+                                ),
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'date_start',
+                                    'type' => 'EcomDateField',
+                                    'options' => array(
+                                        'label' => 'tr_meliscommerce_orders_date_start',
+                                    ),
+                                    'attributes' => array(
+                                        'dateId' => 'date_start',
+                                        'dateLabel' => 'tr_meliscommerce_orders_date_start',
+                                    ),
+                                ),
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'date_end',
+                                    'type' => 'EcomDateField',
+                                    'options' => array(
+                                        'label' => 'tr_meliscommerce_orders_date_end',
+                                    ),
+                                    'attributes' => array(
+                                        'dateId' => 'date_end',
+                                        'dateLabel' => 'tr_meliscommerce_orders_date_end',
+                                    ),
+                                ),
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'separator',
+                                    'type' => 'MelisText',
+                                    'options' => array(
+                                        'label' => 'tr_meliscommerce_orders_sperator',
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                        'value' => ';',
+                                        'maxlength' => '1'
+                                    ),
+                                ),
+                            ),
+                        ),
+                        'input_filter' => array(
+                            'ord_status' => array(
+                                'name'     => 'ord_status',
+                                'required' => false,
+                                'validators' => array(
+                                    array(
+                                        'name'    => '\Zend\I18n\Validator\IsInt',
+                                        'options' => array(
+                                            'messages'=> array(
+                                                \Zend\I18n\Validator\IsInt::NOT_INT   => 'tr_meliscommerce_orders_invalid_status',
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                                'filters'  => array(
+                                    array('name' => 'StripTags'),
+                                    array('name' => 'StringTrim'),
+                                ),
+                            ),
+                            'separator' => array(
+                                'name' => 'separator',
+                                'require' => true,
+                                'validators' => array(
+//                                     array(
+//                                         'name'    => '\Zend\Validator\InArray',
+//                                         'options' => array(
+//                                             'haystack' => array(',', ';'),
+//                                             'messages'=> array(\Zend\Validator\InArray::NOT_IN_ARRAY => 'tr_meliscommerce_orders_invalid_separator'),
+//                                         ),
+//                                     ),
+                                    array(
+                                        'name' => 'NotEmpty',
+                                        'options' => array(
+                                            'messages' => array(
+                                                \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_address_error_empty',
+                                            ),
+                                        ),
+                                    )
+                                ),
+                                'filters'  => array(
+                                    array('name' => 'StripTags'),
+                                    array('name' => 'StringTrim'),
+                                ),
+                            ),
+                        ),
+                    ),
                 ),
                 'meliscommerce_orders' => array(
                     'meliscommerce_order_information_form' => array(
@@ -926,6 +1035,150 @@ return array(
                                             'max'      => 1200,
                                             'messages' => array(
                                                 \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_address_error_long_1200',
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                                'filters'  => array(
+                                    array('name' => 'StripTags'),
+                                    array('name' => 'StringTrim'),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                'meliscommerce_order_status' => array(
+                    'meliscommerce_order_status_form' => array(
+                        'attributes' => array(
+                            'name' => 'order_status',
+                            'id' => '',
+                            'method' => 'POST',
+                            'action' => '',
+                        ),
+                        'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
+                        'elements' => array(
+                            array(
+                                'spec' => array(
+                                    'name' => 'osta_id',
+                                    'type' => 'hidden',
+                                    'options' => array(
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                    ),
+                                ),
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'osta_color_code',
+                                    'type' => 'EcomColorPicker',
+                                    'options' => array(
+                                        'label' => 'tr_meliscommerce_order_status_col_color_code',
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                    ),
+                                ),
+                            ),
+                        ),
+                        'input_filter' => array(
+                            'osta_color_code' => array(
+                                'name'     => 'osta_color_code',
+                                'required' => true,
+                                'validators' => array(
+                                    array(
+                                        'name' => '\Zend\Validator\NotEmpty',
+                                        'options' => array(
+                                            'messages' => array(
+                                                \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_address_error_empty',
+                                            ),
+                                        ),
+                                    ),
+                                    array(
+                                        'name'    => 'StringLength',
+                                        'options' => array(
+                                            'encoding' => 'UTF-8',
+                                            'max'      => 45,
+                                            'messages' => array(
+                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_address_error_long_45',
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                                'filters'  => array(
+                                    array('name' => 'StripTags'),
+                                    array('name' => 'StringTrim'),
+                                ),
+                            ),
+                        ),
+                    ),
+                    'meliscommerce_order_status_trans_form' => array(
+                        'attributes' => array(
+                            'name' => 'order_trans',
+                            'id' => '',
+                            'method' => 'POST',
+                            'action' => '',
+                        ),
+                        'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
+                        'elements' => array(
+                            array(
+                                'spec' => array(
+                                    'name' => 'ostt_id',
+                                    'type' => 'hidden',
+                                    'options' => array(
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                    ),
+                                ),
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'ostt_status_id',
+                                    'type' => 'hidden',
+                                    'options' => array(
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                    ),
+                                ),
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'ostt_lang_id',
+                                    'type' => 'hidden',
+                                    'options' => array(
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                    ),
+                                ),
+                            ),
+                            array(
+                                'spec' => array(
+                                    'name' => 'ostt_status_name',
+                                    'type' => 'MelisText',
+                                    'options' => array(
+                                        'label' => 'tr_meliscommerce_order_status_col_ord_status',
+                                    ),
+                                    'attributes' => array(
+                                        'id' => '',
+                                    ),
+                                ),
+                            ),
+                        ),
+                        'input_filter' => array(
+                            'ostt_status_name' => array(
+                                'name'     => 'ostt_status_name',
+                                'required' => false,
+                                'validators' => array(
+                                    array(
+                                        'name'    => 'StringLength',
+                                        'options' => array(
+                                            'encoding' => 'UTF-8',
+                                            'max'      => 50,
+                                            'messages' => array(
+                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_address_error_long_50',
                                             ),
                                         ),
                                     ),

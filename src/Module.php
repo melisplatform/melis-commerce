@@ -308,21 +308,30 @@ class Module
                 'forms',
             );
             
+            $translationList = array();
+            if(file_exists($_SERVER['DOCUMENT_ROOT'].'/../module/MelisModuleConfig/config/translation.list.php')){
+                $translationList = include 'module/MelisModuleConfig/config/translation.list.php';
+            }
+            
             // Load translation files
             foreach($commerceSubModules as $subModule){
                 
                 foreach($translationType as $type){
-                
-                    $transPath = "module/MelisModuleConfig/languages/MelisCommerce/$locale.$type.$subModule.php";
-                
-                    if(!file_exists($transPath)){
-                
-                        // if translation is not found, use melis default translations
-                        $locale = (file_exists(__DIR__ . "/../language/$subModule/$locale.$type.$subModule.php"))? $locale : "en_EN";
-                
-                        $transPath = __DIR__ . "/../language/$subModule/$locale.$type.$subModule.php";
+
+                    $transPath = '';
+                    $moduleTrans = __NAMESPACE__."/$locale.$type.$subModule.php";
+                    
+                    if(in_array($moduleTrans, $translationList)){
+                        $transPath = "module/MelisModuleConfig/languages/".$moduleTrans;
                     }
-                
+                    
+                    if(empty($transPath)){
+                    
+                        // if translation is not found, use melis default translations
+                        $defaultLocale = (file_exists(__DIR__ . "/../language/$subModule/$locale.$type.$subModule.php"))? $locale : "en_EN";
+                        $transPath = __DIR__ . "/../language/$subModule/$defaultLocale.$type.$subModule.php";
+                    }
+                    
                     $translator->addTranslationFile('phparray', $transPath);
                 }
             }

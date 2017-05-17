@@ -70,4 +70,10 @@
 	    'tr_meliscommerce_variants_page_save_success' => 'Le variant a été sauvegardé avec succès',
 	    'tr_meliscommerce_variants_delete_fail' => 'Erreur lors de la suppression du variant',
 	    'tr_meliscommerce_variants_delete_success' => 'Le variant a été supprimé avec succès',
+
+	    //action button
+	    'tr_meliscommerce_variants_remove' => 'Retirer',
+	    'tr_meliscommerce_variants_edit' => 'Editer le variant',
+	    'tr_meliscommerce_variants_show_product' => 'Afficher les variants',
+	    'tr_meliscommerce_variants_associate' => 'Associer',
 	);

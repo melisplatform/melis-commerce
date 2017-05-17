@@ -3,3 +3,9 @@
 	color: #932e2a;
     font-weight: bold;
 }
+
+.swatch {
+  width:80px;
+  height:30px;
+  border-radius:5px;
+}

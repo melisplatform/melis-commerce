@@ -172,7 +172,9 @@ class MelisComCategoryListController extends AbstractActionController
         // Getting the Current language
         $melisEcomLangTable = $this->getServiceLocator()->get('MelisEcomLangTable');
         $currentLangData = $melisEcomLangTable->getEntryByField('elang_locale',$langLocale);
-        $currentLang = $currentLangData->current();
+        $melisComCategoryService = $this->getServiceLocator()->get('MelisComCategoryService');
+        
+        $currentLang = $melisComCategoryService->getEcomLang();
         
         // Getting Category Tree View form the Category Service
         $melisComCategoryService = $this->getServiceLocator()->get('MelisComCategoryService');

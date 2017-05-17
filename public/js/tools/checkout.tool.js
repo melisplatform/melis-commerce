@@ -244,8 +244,17 @@ $(function(){
     // Selecting Checkout Billing Address
     $('body').on('change', '#orderCheckoutBillingSelect', function () {
     	var clientAddId = $(this).val();
-    	melisHelper.zoneReload("id_meliscommerce_order_checkout_billing_address", "meliscommerce_order_checkout_billing_address", {cadd_id: clientAddId});
+    	melisHelper.zoneReload("id_meliscommerce_order_checkout_billing_address", "meliscommerce_order_checkout_billing_address", {cadd_id: clientAddId, action: 1});
     });
+    
+    $("body").on("change", "#order-checkout-billing-address-same", function(){
+    	if($(this).is(":checked")){
+    		$("#order-checkout-billing-form-zone").addClass("hidden");
+    	}else{
+    		$("#order-checkout-billing-form-zone").removeClass("hidden");
+    	}
+    });
+    
     // Selecting Checkout Delivery Address
     $('body').on('change', '#orderCheckoutDeliverySelect', function () {
     	var clientAddId = $(this).val();
@@ -266,6 +275,24 @@ $(function(){
     	var dataString = new Array;
     	var nxtTabid = $(this).data("tabid");
     	
+    	// Serializing Delivery address form
+    	$("#id_meliscommerce_order_checkout_delivery_address form").each(function(){
+    		var billingAddressFrom = $(this).serializeArray();
+    		$.each(billingAddressFrom, function(){
+    			dataString.push({
+    				name: 'delivery['+this.name+']',
+					value: this.value
+    			});
+    		});
+    	});
+    	
+    	if($('#deliveryAddressOrderCheckoutForm').hasClass('hidden')){
+    		dataString.push({
+				name: 'delivery[noSelected]',
+				value: true
+			});
+    	}
+    	
     	// Serializing Billing address form
     	$("#id_meliscommerce_order_checkout_billing_address form").each(function(){
     		var billingAddressFrom = $(this).serializeArray();
@@ -284,23 +311,15 @@ $(function(){
 			});
     	}
     	
-    	// Serializing Delivery address form
-    	$("#id_meliscommerce_order_checkout_delivery_address form").each(function(){
-    		var billingAddressFrom = $(this).serializeArray();
-    		$.each(billingAddressFrom, function(){
-    			dataString.push({
-    				name: 'delivery['+this.name+']',
-					value: this.value
-    			});
-    		});
-    	});
-    	
-    	if($('#deliveryAddressOrderCheckoutForm').hasClass('hidden')){
-    		dataString.push({
-				name: 'delivery[noSelected]',
-				value: true
-			});
+    	var sameAddress = 0;
+    	if($("#order-checkout-billing-address-same").is(":checked")){
+    		sameAddress = 1;
     	}
+    	
+    	dataString.push({
+			name: 'billing[sameAddress]',
+			value: sameAddress
+		});
     	
     	btn.attr('disabled', true);
     	

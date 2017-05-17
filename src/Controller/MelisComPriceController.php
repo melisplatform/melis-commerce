@@ -370,7 +370,17 @@ class MelisComPriceController extends AbstractActionController
         
                     if(!$priceForm->isValid()){
                         $success = false;
-                        $errors[] = $this->getFormErrors($priceForm, $appConfigPriceForm);
+                        $priceError = $priceForm->getMessages();
+                        foreach ($priceError as $keyError => $valueError)
+                        {
+                            foreach ($appConfigPriceForm['elements'] as $keyForm => $valueForm)
+                            {
+                                if ($valueForm['spec']['name'] == $keyError &&
+                                    !empty($valueForm['spec']['options']['label']))
+                                    $priceError[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                            }
+                        }
+                        array_push($errors, $priceError);
                     }
                     $price = array_map(function($item) { return is_numeric($item) ? $item: NULL; }, $priceForm->getData());
                     $data['prices'][] = $price;

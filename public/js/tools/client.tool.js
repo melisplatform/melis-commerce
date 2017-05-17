@@ -3,6 +3,15 @@ $(function(){
 	$("body").on("click", ".addNewClient", function(){ 
 		melisHelper.tabOpen(translations.tr_meliscommerce_clients_add_client, "fa fa-user-plus", "0_id_meliscommerce_client_page", "meliscommerce_client_page", {clientId:0});
 	});
+
+	//removes modal elements when clicking outside
+	$("body").on("click", function (e) {
+		if ($(e.target).hasClass('modal')) {
+			$('#id_meliscommerce_client_modal_contact_form_container').modal('hide');
+			$('#id_meliscommerce_client_modal_contact_address_form_container').modal('hide');
+			$('#id_meliscommerce_client_modal_address_form_container').modal('hide');
+		}
+	});
 	
 	$("body").on("click", ".viewCleintInfo", function(){ 
 		var clientId = $(this).parents("tr").attr("id");
@@ -441,6 +450,57 @@ $(function(){
 	$("body").on("click", ".clientOrderListRefresh", function(){
 		var clientId = $(this).data("clientid");
 		melisHelper.zoneReload(clientId+"_id_meliscommerce_client_page_tab_orders", "meliscommerce_client_page_tab_orders", {clientId: clientId, activateTab:true});
+	});
+	
+	$("body").on("click", ".clientsExport", function() {
+		if(!melisCoreTool.isTableEmpty("clientListTbl")) {
+			
+			// initialation of local variable
+			zoneId = 'id_meliscommerce_client_list_content_export_form';
+			melisKey = 'meliscommerce_client_list_content_export_form';
+			modalUrl = '/melis/MelisCommerce/MelisComClientList/renderClientListModal';
+			// requesitng to create modal and display after
+	    	melisHelper.createModal(zoneId, melisKey, false, {}, modalUrl, function(){
+	    		melisCoreTool.done(this);
+	    	});
+		}
+	});
+	
+	$("body").on("click", "#exportClients", function(){
+		var button = $(this);
+		var formValues = button.closest('#id_meliscommerce_client_list_content_export_form').find('form').serializeArray();
+		var target = 'id_meliscommerce_client_list_content_export_form';
+		
+		melisCoreTool.pending(button);
+		
+		$.ajax({
+		     type        : "POST", 
+		     url         : "/melis/MelisCommerce/MelisComClientList/clientsExportValidate",
+		     data		: formValues,
+		     dataType    : "json",
+		     encode		: true
+		}).done(function(data) {
+			
+			if(!data.success) {
+				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);	
+				melisCoreTool.highlightErrors(0, data.errors, target);
+				$(".date_start").prev("label").css("color","#686868");
+				$(".date_end").prev("label").css("color","#686868");
+				$.each( data.errors, function( key, error ) {
+					if( key == 'date_start'){
+						$(".date_start").prev("label").css("color","red");
+					}
+					if( key == 'date_end'){
+						$(".date_end").prev("label").css("color","red");
+					}
+				});
+			}else{
+				melisCoreTool.exportData('/melis/MelisCommerce/MelisComClientList/clientsExportToCsv');
+				melisHelper.melisOkNotification( data.textTitle, data.textMessage );
+			}
+		})
+		
+		melisCoreTool.done(button);	
 	});
 });
 

@@ -1,0 +1,1 @@
+ALTER TABLE `melis_ecom_order_address` CHANGE `oadd_civility` `oadd_civility` INT(11) NULL COMMENT 'Civility Id';

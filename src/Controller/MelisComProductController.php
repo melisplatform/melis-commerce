@@ -55,6 +55,23 @@ class MelisComProductController extends AbstractActionController
         return $view;
     }
 
+        /**
+     * products page header container
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderProductsPageContentTabTextModalCloseAction()
+    {
+        $productId = $this->params()->fromQuery('productId');
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+
+        $view = new ViewModel();
+        $view->close_text = $this->getTool()->getTranslation('tr_meliscommerce_products_text_close');
+        $view->melisKey = $melisKey;
+        $view->productId = $productId;
+        
+        return $view;
+    }
+
     /**
      * products page header Left container
      * @return \Zend\View\Model\ViewModel
@@ -1171,7 +1188,7 @@ class MelisComProductController extends AbstractActionController
         if($this->getRequest()->isPost()) {
 
             $data = get_object_vars($this->getRequest()->getPost());
-            $data = $this->getTool()->sanitizeRecursive($data);
+            $data = $this->getTool()->sanitizeRecursive($data, array('ptxt_field_short','ptxt_field_long'));
 
             $productId = $data['product'][0]['prd_id'] ? (int) $data['product'][0]['prd_id'] : null;
             
@@ -1601,7 +1618,7 @@ class MelisComProductController extends AbstractActionController
         $attrTransTable = $this->getServiceLocator()->get('MelisEcomAttributeTransTable');
         $prodTextTypeTable = $this->getServiceLocator()->get('MelisEcomProductTextTypeTable');
         $ecomLangTable = $this->getServiceLocator()->get('MelisEcomLangTable');
-        $product = $this->getProduct($productId, $this->getTool()->getCurrentLocaleID());
+        $product = $this->getProduct($productId, null);
         $categories = array();
         $prodText = array();
         $attributes = array();

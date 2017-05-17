@@ -30,6 +30,11 @@ return array(
                                 ),
                             ),
                             'right' => array(
+                                'meliscommerce-clients-list-tbl-export' => array(
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComClientList',
+                                    'action' => 'render-client-list-table-export',
+                                ),
                                 'meliscommerce-clients-list-tbl-refresh' => array(
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComClientList',

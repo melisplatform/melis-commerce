@@ -6,12 +6,12 @@
 	    'tr_meliscommerce_orders_header_right_container_cancel' => 'Cancel',
 	    'tr_meliscommerce_orders_content_tab_main' => 'Properties',
 	    'tr_meliscommerce_orders_content_tab_basket' => 'Basket',	    
-	    'tr_meliscommerce_orders_content_tab_address' => 'Address',
+	    'tr_meliscommerce_orders_content_tab_address' => 'Addresses',
 	    'tr_meliscommerce_orders_content_tab_paymnet' => 'Payment',
 	    'tr_meliscommerce_orders_content_tab_shipping' => 'Shipping',
 	    'tr_meliscommerce_orders_content_tab_messages' => 'Messages',
 	    'tr_meliscommerce_orders_content_tabs_content_main_left_header_title' => 'Properties',
-	    'tr_meliscommerce_orders_content_tabs_content_baskets_left_header_title' => 'Baskets',
+	    'tr_meliscommerce_orders_content_tabs_content_baskets_left_header_title' => 'Basket',
 	    'tr_meliscommerce_orders_content_tabs_content_address_left_header_title' => 'Address',
 	    'tr_meliscommerce_orders_content_tabs_content_payment_left_header_title' => 'Payment',
 	    'tr_meliscommerce_orders_content_tabs_content_shipping_left_header_title' => 'Shipping',
@@ -60,8 +60,8 @@
 	    //payments tab
 	    'tr_meliscommerce_order_payment_paid' => 'Amount paid',
 	    'tr_meliscommerce_order_payment_price' => 'Order price',
-	    'tr_meliscommerce_order_payment_shipment' => 'Shipping price',
-	    'tr_meliscommerce_order_payment_type' => 'Type', //type of payment, visa, mastercard or money transfer
+	    'tr_meliscommerce_order_payment_shipment' => 'Shipping fees',
+	    'tr_meliscommerce_order_payment_type' => 'Payment method', //type of payment, visa, mastercard or money transfer
 	    'tr_meliscommerce_order_payment_validation' => 'Validation', //validation code or id for the payment confirmation
 	    'tr_meliscommerce_order_payment_date' => 'Payment date',
 	    'tr_meliscommerce_order_payment_coupon' => 'Coupon',
@@ -79,5 +79,26 @@
 	    'tr_meliscommerce_order_save_status_canceled_confirm' => 'Changing the status to canceled will definitely cancel the order, its status will not be editable afterwards. Are you sure you want to cancel the order ?',
 	    'tr_meliscommerce_order_common_label_yes' => 'Yes',
 	    'tr_meliscommerce_order_common_label_no' => 'No',
+
+	    'tr_meliscommerce_order_referesh' => 'Refresh',
 	    
+	    'tr_meliscommerce_order_export_label' => 'Export',
+	    'tr_meliscommerce_order_export_success' => 'The order(s) has been exported successfully',
+	    'tr_meliscommerce_order_export_fail' => 'Failed to export order(s)',
+	    
+	    'tr_meliscommerce_order_status_tool_leftmenu' => 'Order status',
+	    'tr_meliscommerce_order_status_header_title' => 'Order status',
+	    'tr_meliscommerce_order_status_add_order' => 'Add status',
+	    'tr_meliscommerce_order_status_col_ord_status' => 'Name',
+	    'tr_meliscommerce_order_status_col_color_code' => 'Color code',
+	    'tr_meliscommerce_order_status_col_color_preview' => 'Color',
+	    'tr_meliscommerce_order_status_form' => 'Order status form',
+	    'tr_meliscommerce_order_status_save_failed' => 'Failed  to save order status',
+	    'tr_meliscommerce_order_status_save_success' => 'The order status has been saved successfully',
+	    'tr_meliscommerce_order_status_status_filled_all_error' => 'Please fill in either the field for all languages or each language individually',
+	    'tr_meliscommerce_order_status_status_prime_edit_error' => 'This status is mandatory for the commerce platform, it cannot be deleted',
+	    'tr_meliscommerce_order_status_delete_confirm' => 'Are you sure you want to delete this order status?',
+	    'tr_meliscommerce_order_status_delete_fail' => 'Failed to delete the order status',
+	    'tr_meliscommerce_order_status_delete_success' => 'The order status has been successfully deleted',
+	    'tr_meliscommerce_orders_status_empty' => 'All (except temporary)',  
 	);

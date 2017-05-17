@@ -5,4 +5,5 @@ return array(
     'tr_meliscommerce_currency_header' => 'Currency header',
     'tr_meliscommerce_currency_content' => 'Currency content',
     'tr_meliscommerce_currency_modal' => 'Currency modal',
+    'tr_meliscommerce_currency_refresh' => 'Refresh',
 );

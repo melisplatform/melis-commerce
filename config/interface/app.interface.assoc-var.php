@@ -11,7 +11,9 @@ return array(
                 'js' => array(
                     '/MelisCommerce/js/tools/ecomAssocVar.js',
                 ),
-                'css' => array(),
+                'css' => array(
+                    '/MelisCommerce/css/variant-assoc.css',
+                ),
             ),
             'datas' => array(),
             'interface' => array(
@@ -92,6 +94,20 @@ return array(
                                         'controller' => 'MelisComAssociateVariant',
                                         'action' => 'render-tab-content-var-list',
                                     ),
+                                    'interface' => array(
+                                        'meliscommerce_avar_product_variants' => array(
+                                            'conf' => array(
+                                                'id' => 'id_meliscommerce_avar_product_variants',
+                                                'name' => 'tr_meliscommerce_avar_product_variants',
+                                                'melisKey' => 'meliscommerce_avar_product_variants',
+                                            ),
+                                            'forward' => array(
+                                                'module' => 'MelisCommerce',
+                                                'controller' => 'MelisComAssociateVariant',
+                                                'action' => 'render-variant-assoc-product-variants',
+                                            ),
+                                        )
+                                    )
                                 ),
                             ),
                         ),

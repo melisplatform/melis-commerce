@@ -25,6 +25,11 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
         $this->cacheResults = true;
     }
     
+    public function disableCache()
+    {
+        $this->cacheResults = false;
+    }
+    
     /**
      * Get Category List By Category Id
      * @param int $categoryId If not specified, it will bring back the root categories.
@@ -318,7 +323,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
     {
         $select = $this->tableGateway->getSql()->select();
                 
-        $select->join('melis_ecom_category_trans', 'melis_ecom_category_trans.catt_id = melis_ecom_category.cat_id', array('catt_name'), $select::JOIN_LEFT);
+        $select->join('melis_ecom_category_trans', 'melis_ecom_category_trans.catt_category_id = melis_ecom_category.cat_id', array('catt_name'), $select::JOIN_LEFT);
         
         $select->where->equalTo('melis_ecom_category.cat_id', $catId);
         

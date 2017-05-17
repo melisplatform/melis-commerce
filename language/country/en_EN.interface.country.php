@@ -5,4 +5,5 @@ return array(
     'tr_meliscommerce_country_header' => 'Country header',
     'tr_meliscommerce_country_content' => 'Country content',
     'tr_meliscommerce_country_modal' => 'Country modal',
+    'tr_meliscommerce_country_refresh' => 'Refresh',
 );

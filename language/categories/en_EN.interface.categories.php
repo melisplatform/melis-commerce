@@ -35,7 +35,7 @@
 	    'tr_meliscommerce_categories_common_label_remove' => 'Remove',
 	    
 	    'tr_meliscommerce_categories_page' => 'Categories page',
-	    'tr_meliscommerce_categories_list' => 'Categories list',
+	    'tr_meliscommerce_categories_list' => 'List of categories',
 	    'tr_meliscommerce_categories_list_header' => 'Categories list header',
 	    'tr_meliscommerce_categories_list_header_add_category' => 'Add category',
 	    'tr_meliscommerce_categories_list_header_add_catalog' => 'Add catalog',

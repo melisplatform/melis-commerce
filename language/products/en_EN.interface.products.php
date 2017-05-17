@@ -66,9 +66,10 @@ return array(
     'tr_meliscommerce_product_tooltip_no_variants' => 'No variants available',
     
     // Product Text
-    'tr_meliscommerce_products_page_content_tab_main_header_add_button' => 'Product Texts &amp; Type',
+    'tr_meliscommerce_products_page_content_tab_main_header_add_button' => 'Text types',
     'tr_meliscommerce_products_add_product_text' => 'Add product text',
     'tr_meliscommerce_products_text_tab_ptxt_short_field' => 'Product title here',
+    'tr_meliscommerce_products_text_close' => 'Close',
     
     // Product Attribute
     'tr_meliscommerce_products_main_tab_attributes_container' => 'Attributes',

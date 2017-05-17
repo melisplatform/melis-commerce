@@ -75,7 +75,7 @@ class MelisCommerceOrderListPlugin extends MelisTemplatingPlugin
         if ($ecomAuthSrv->hasIdentity())
         {
             $clientId = $ecomAuthSrv->getClientId();
-            $data = $orderSvc->getOrderList(null, true, $lang, $clientId, null, null, null, null, null, null, null, null, $sort);
+            $data = $orderSvc->getOrderList(null, true, $lang, $clientId, null, null, null, null, null, $sort);
             
             foreach($data as $item){
                 

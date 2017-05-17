@@ -20,17 +20,148 @@ return array(
             'ressources' => array(
                 'js' => array(
                     '/MelisCommerce/js/tools/order.tool.js',
+                    '/MelisCommerce/assets/bootstrap-colorpicker-master/dist/js/bootstrap-colorpicker.js',
                 ),
                 'css' => array(
                     '/MelisCommerce/css/a-style.css', 
                     '/MelisCommerce/css/orders.css', 
+                    '/MelisCommerce/assets/bootstrap-colorpicker-master/dist/css/bootstrap-colorpicker.css', 
 // 					'/MelisCommerce/css/order-steps.css', 
                 ),
             ),
             'datas' => array(
-            
+                'default' => array(
+                    'export' => array(
+                        'csv' => array(
+                            'orderFileName' => 'melis_order_export.csv', 
+                            'orderLimit' => 100,
+                            'dir' => $_SERVER['DOCUMENT_ROOT'] . '/csv/'
+                        ),     
+                    ),  
+                    'permanent_order_status' => array(1,2,3,4,5,6),
+                ),
             ),
             'interface' => array(
+                'meliscommerce_order_status_tool' => array(
+                    'interface' => array(
+                        'meliscommerce_order_status_tool_leftmenu' => array(
+                            'conf' => array(
+                                'id' => 'id_meliscommerce_order_status_tool_page',
+                                'melisKey' => 'meliscommerce_order_status_tool_page',
+                                'name' => 'tr_meliscommerce_order_status_tool_leftmenu',
+                                'icon' => 'fa fa-plus-square',
+                            ),
+                        ),  
+                        'meliscommerce_order_status_tool_page' => array(
+                            'conf' => array(
+                                'id' => 'id_meliscommerce_order_status_tool_page',
+                                'melisKey' => 'meliscommerce_order_status_tool_page',
+                                'name' => 'tr_meliscommerce_order_status_tool_page',
+                            ),
+                            'forward' => array(
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComOrderStatus',
+                                'action' => 'render-order-status-page',
+                                'jscallback' => '',
+                                'jsdatas' => array()
+                            ),
+                            'interface' => array(
+                                'meliscommerce_order_status_header_container' => array(
+                                    'conf' => array(
+                                        'id' => 'id_meliscommerce_order_status_header_container',
+                                        'melisKey' => 'meliscommerce_order_status_header_container',
+                                        'name' => 'tr_meliscommerce_order_status_header_container',
+                                    ),
+                                    'forward' => array(
+                                        'module' => 'MelisCommerce',
+                                        'controller' => 'MelisComOrderStatus',
+                                        'action' => 'render-order-status-header-container',
+                                    ),
+                                    'interface' => array(
+                                        'meliscommerce_order_status_header_left_container' => array(
+                                            'conf' => array(
+                                                'id' => 'id_meliscommerce_order_status_header_left_container',
+                                                'melisKey' => 'meliscommerce_order_status_header_left_container',
+                                                'name' => 'tr_meliscommerce_order_status_header_left_container',
+                                            ),
+                                            'forward' => array(
+                                                'module' => 'MelisCommerce',
+                                                'controller' => 'MelisComOrderStatus',
+                                                'action' => 'render-order-status-header-left-container',
+                                            ),
+                                            'interface' => array(
+                                                'meliscommerce_order_status_header_title' => array(
+                                                    'conf' => array(
+                                                        'id' => 'id_meliscommerce_order_status_header_title',
+                                                        'melisKey' => 'meliscommerce_order_status_header_title',
+                                                        'name' => 'tr_meliscommerce_order_status_header_title',
+                                                    ),
+                                                    'forward' => array(
+                                                        'module' => 'MelisCommerce',
+                                                        'controller' => 'MelisComOrderStatus',
+                                                        'action' => 'render-order-status-header-title',
+                                                    ),
+                                                ),
+                                            ),
+                                        ),
+                                        'meliscommerce_order_status_header_right_container' => array(
+                                            'conf' => array(
+                                                'id' => 'id_meliscommerce_order_status_header_right_container',
+                                                'melisKey' => 'meliscommerce_order_status_header_right_container',
+                                                'name' => 'tr_meliscommerce_order_status_header_right_container',
+                                            ),
+                                            'forward' => array(
+                                                'module' => 'MelisCommerce',
+                                                'controller' => 'MelisComOrderStatus',
+                                                'action' => 'render-order-status-header-right-container',
+                                            ),
+                                            'interface' => array(
+                                                'meliscommerce_order_status_add_order' => array(
+                                                    'conf' => array(
+                                                        'id' => 'id_meliscommerce_order_status_add_order',
+                                                        'melisKey' => 'meliscommerce_order_status_add_order',
+                                                        'name' => 'tr_meliscommerce_order_status_add_order',
+                                                    ),
+                                                    'forward' => array(
+                                                        'module' => 'MelisCommerce',
+                                                        'controller' => 'MelisComOrderStatus',
+                                                        'action' => 'render-order-status-add',
+                                                    ),
+                                                )
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                                'meliscommerce_order_status_content' => array(
+                                    'conf' => array(
+                                        'id' => 'id_meliscommerce_order_status_content',
+                                        'melisKey' => 'meliscommerce_order_status_content',
+                                        'name' => 'tr_meliscommerce_order_status_content',
+                                    ),
+                                    'forward' => array(
+                                        'module' => 'MelisCommerce',
+                                        'controller' => 'MelisComOrderStatus',
+                                        'action' => 'render-order-status-content',
+                                    ),
+                                    'interface' => array(
+                                        'meliscommerce_order_status_content_table' => array(
+                                            'conf' => array(
+                                                'id' => 'id_meliscommerce_order_status_content_table',
+                                                'melisKey' => 'meliscommerce_order_status_content_table',
+                                                'name' => 'tr_meliscommerce_order_status_content_table',
+                                            ),
+                                            'forward' => array(
+                                                'module' => 'MelisCommerce',
+                                                'controller' => 'MelisComOrderStatus',
+                                                'action' => 'render-order-status-content-table',
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),  
+                    ),    
+                ),
                 'meliscommerce_order_list' => array(
                     'interface' => array(
                         'meliscommerce_order_list_leftmenu' => array(
@@ -1246,6 +1377,18 @@ return array(
                                 'action' => 'render-order-list-content-status-form',
                             ),
                         ),
+                        'meliscommerce_order_list_content_export_form' => array(
+                            'conf' => array(
+                                'id' => 'id_meliscommerce_order_list_content_export_form',
+                                'name' => 'tr_meliscommerce_order_list_content_export_form',
+                                'melisKey' => 'meliscommerce_order_list_content_export_form',
+                            ),
+                            'forward' => array(
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComOrderList',
+                                'action' => 'render-order-list-content-export-form',
+                            ),
+                        ),
                     ),
                 ),
                 'meliscommerce_order_modal' => array(
@@ -1270,6 +1413,32 @@ return array(
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComOrder',
                                 'action' => 'render-order-modal-content-shipping-form',
+                            ),
+                        ),
+                    ),
+                ),
+                'meliscommerce_order_status_modal' => array(
+                    'conf' => array(
+                        'id' => 'id_meliscommerce_order_status_modal',
+                        'name' => 'tr_meliscommerce_order_status_modal',
+                        'melisKey' => 'meliscommerce_order_status_modal',
+                    ),
+                    'forward' => array(
+                        'module' => 'MelisCommerce',
+                        'controller' => 'MelisComOrderStatus',
+                        'action' => 'render-order-status-modal',
+                    ),
+                    'interface' => array(
+                        'meliscommerce_order_status_form' => array(
+                            'conf' => array(
+                                'id' => 'id_meliscommerce_order_status_form',
+                                'name' => 'tr_meliscommerce_order_status_form',
+                                'melisKey' => 'meliscommerce_order_status_form',
+                            ),
+                            'forward' => array(
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComOrderStatus',
+                                'action' => 'render-order-status-form',
                             ),
                         ),
                     ),

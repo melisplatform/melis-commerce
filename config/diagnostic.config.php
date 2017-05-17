@@ -256,43 +256,85 @@ return array(
                 // you don't have to put all the methods in the test controller,
                 // instead, just put the methods that will be needing or requiring the payloads for your test.
                 'methods' => array(
-                    'testInsertData' => array(
+                    
+                    'testComLanguage' => array(
                         'payloads' => array(
-                            
-                            'languages' => array(
+                            'create' => array(
                                 array(
-                                    'melis_ecom_lang' => array(
-                                        'elang_locale' => 'tt_TT',
-                                        'elang_name' => 'PHP Test',
-                                        'elang_status' => 1,
-                                    ),
+                                    'elang_locale' => 'tt_TT',
+                                    'elang_name' => 'PHP Test',
+                                    'elang_status' => 1,
                                 ),
                             ),
-                            
-                            'currencies' => array(
+                            'read' => array(
                                 array(
-                                    'melis_ecom_currency' => array(
-                                        'cur_default' => 0,
-                                        'cur_name' => 'PHP TEST',
-                                        'cur_code' => 'PHP',
-                                        'cur_symbol' => 'P',
-                                        'cur_status' => 1,
-                                    ),
-                                ), 
-                            ),                            
-                            
-                            'countries' => array(
+                                    'column' => 'elang_locale',
+                                    'value' => 'tt_TT',
+                                ),
+                            ),
+                            'delete' => array(
                                 array(
-                                    'melis_ecom_country' => array(
-                                        'ctry_name' => 'PHP Test',
-                                        'ctry_currency_id' => '',
-                                        'ctry_status' => 1,
-                                    ),
-                                ),  
-                            ),                            
-                            
-                            // Category data
-                            'categories' => array(
+                                    'column' => 'elang_locale',
+                                    'value' => 'tt_TT',
+                                ),
+                            )
+                        ),  
+                    ),
+                    
+                    'testComCurrency' => array(
+                        'payloads' => array(
+                            'create' => array(
+                                array(
+                                    'cur_default' => 0,
+                                    'cur_name' => 'PHP TEST',
+                                    'cur_code' => 'PHP',
+                                    'cur_symbol' => 'P',
+                                    'cur_status' => 1,
+                                ),
+                            ),
+                            'read' => array(
+                                array(
+                                    'column' => 'cur_name',
+                                    'value' => 'PHP TEST',
+                                ),
+                            ),
+                            'delete' => array(
+                                array(
+                                    'column' => 'cur_name',
+                                    'value' => 'PHP TEST',
+                                ),
+                            ),
+                        ), 
+                    ),
+                    
+                    'testComCountry' => array(
+                        'payloads' => array(
+                            'create' => array(
+                                array(
+                                    'ctry_name' => 'PHP Test',
+                                    'ctry_currency_id' => '',
+                                    'ctry_status' => 1,
+                                    'ctry_currency_id' => '-1',
+                                ),
+                            ),
+                            'read' => array(
+                                array(
+                                    'column' => 'ctry_name',
+                                    'value' => 'PHP Test',
+                                ),
+                            ),
+                            'delete' => array(
+                                array(
+                                    'column' => 'ctry_name',
+                                    'value' => 'PHP Test',
+                                ),
+                            ),
+                        ),
+                    ),
+                    
+                    'testComCategories' => array(
+                        'payloads' => array(
+                            'create' => array(
                                 array(
                                     'melis_ecom_category' => array(
                                         'cat_reference' => 'PHP Category Ref',
@@ -319,31 +361,33 @@ return array(
                                         'catt_description' => 'This category is created using the PHPunit tests2',
                                     ),
                                 ),
-                            ),                            
-                            
-                            // Price
-                            'prices' => array(
+                            ),
+                            'read' => array(
                                 array(
-                                    'melis_ecom_price' => array(
-                                        'price_net' => 100,
-                                        'price_gross' => 80,
-                                        'price_vat_percent' => 10,
-                                        'price_vat_price' => 11,
-                                    ),
+                                    'column' => 'cat_reference',
+                                    'value'  => 'PHP Category Ref',
                                 ),
                                 array(
-                                    'melis_ecom_price' => array(
-                                        'price_net' => 101,
-                                        'price_gross' => 81,
-                                        'price_vat_percent' => 11,
-                                        'price_vat_price' => 12,
-                                    ),
+                                    'column' => 'cat_reference',
+                                    'value'  => 'PHP Category Ref2',
                                 ),
-                            ),                            
-                            
-                            // Product data
-                            'products' => array(
-                                // data 1
+                            ),
+                            'delete' => array(
+                                array(
+                                    'column' => 'cat_reference',
+                                    'value'  => 'PHP Category Ref',
+                                ),
+                                array(
+                                    'column' => 'cat_reference',
+                                    'value'  => 'PHP Category Ref2',
+                                ),
+                            ),
+                        ),  
+                    ),
+                    
+                    'testComProducts' => array(
+                        'payloads' => array(
+                            'create' => array(
                                 array(
                                     'melis_ecom_product_text_type' => array(
                                         'ptt_code' => 'PHP',
@@ -362,33 +406,32 @@ return array(
                                     'melis_ecom_product_category' => array(
                                         'pcat_order' => 1,
                                     ),
-                                ),
-                                // data 2
-                                array(
-                                    'melis_ecom_product_text_type' => array(
-                                        'ptt_code' => 'PHP2',
-                                        'ptt_name' => 'PHP TEST2',
-                                        'ptt_field_type' => 1,
-                                    ),
-                                    'melis_ecom_product' => array(
-                                        'prd_reference' => 'PHP product test ref2',
-                                        'prd_status' => 1,
-                                        'prd_date_creation' => date('Y-m-d H:i:s'),
-                                        'prd_user_id_creation' => 1,
-                                    ),
-                                    'melis_ecom_product_text' => array(
-                                        'ptxt_field_short' => 'Product Text Test PHP2',
-                                    ),
-                                    'melis_ecom_product_category' => array(
-                                        'pcat_order' => 2,
+                                    'melis_ecom_price' => array(
+                                        'price_net' => 100,
+                                        'price_gross' => 80,
+                                        'price_vat_percent' => 10,
+                                        'price_vat_price' => 11,
                                     ),
                                 ),
                             ),
-                            
-                            
-                            // Variant  data
-                            'variants' => array(
-                                // data 1
+                            'read' => array(
+                                array(
+                                    'column' => 'prd_reference',
+                                    'value' => 'PHP product test ref',
+                                ),
+                            ),
+                            'delete' => array(
+                                array(
+                                    'column' => 'prd_reference',
+                                    'value' => 'PHP product test ref',
+                                ),
+                            ),
+                        ),  
+                    ),
+                    
+                    'testComVariants' => array(
+                        'payloads' => array(
+                            'create' => array(
                                 array(
                                     'melis_ecom_variant' => array(
                                         'var_status' => 1,
@@ -400,23 +443,32 @@ return array(
                                     'melis_ecom_variant_stock' => array(
                                         'stock_quantity' => 100
                                     ),
-                                ),
-                                array(
-                                    'melis_ecom_variant' => array(
-                                        'var_status' => 1,
-                                        'var_sku'    => 'PHPUNITTEST1232',
-                                        'var_main_variant' => 0,
-                                        'var_date_creation' => date('Y-m-d H:i:s'),
-                                        'var_user_id_creation' => 1,
-                                    ),
-                                    'melis_ecom_variant_stock' => array(
-                                        'stock_quantity' => 101
+                                    'melis_ecom_price' => array(
+                                        'price_net' => 100,
+                                        'price_gross' => 80,
+                                        'price_vat_percent' => 10,
+                                        'price_vat_price' => 11,
                                     ),
                                 ),
                             ),
-                            
-                            //Attributes
-                            'attributes' => array(
+                            'read' =>  array(
+                                array(
+                                    'column' => 'var_sku',
+                                    'value' => 'PHPUNITTEST123',
+                                ),
+                            ),
+                            'delete' => array(
+                                array(
+                                    'column' => 'var_sku',
+                                    'value' => 'PHPUNITTEST123',
+                                ),
+                            ),
+                        ),  
+                    ),
+                    
+                    'testComAttributes' => array(
+                        'payloads' => array(
+                            'create'=> array(
                                 array(
                                     'melis_ecom_attribute' => array(
                                         'attr_type_id' => 1,
@@ -437,31 +489,25 @@ return array(
                                         'avt_v_int' => 143,
                                     ),
                                 ),
+                            ),
+                            'read'=> array(
                                 array(
-                                    'melis_ecom_attribute' => array(
-                                        'attr_type_id' => 2,
-                                        'attr_status' => 1,
-                                        'attr_reference' => 'PHP Attribute Test2',
-                                        'attr_visible' => 1,
-                                        'attr_searchable' => 1,
-                                    ),
-                                    'melis_ecom_attribute_trans' => array(
-                                        'atrans_name' => 'PHP Attribute Test Trans2',
-                                        'atrans_description' => 'PHP Attribute Test Trans2',
-                                    ),
-                                    'melis_ecom_attribute_value' => array(
-                                        'atval_type_id' => 2,
-                                        'atval_reference' => 'PHP Attr Val Test2',
-                                    ),
-                                    'melis_ecom_attribute_value_trans' => array(
-                                        'avt_v_float' => 1432.1,
-                                    ),
+                                    'column' => 'attr_reference',
+                                    'value' => 'PHP Attribute Test',
                                 ),
                             ),
-                            
-                            //Clients
-                            'clients' => array(
-                                //data 1
+                            'delete'=> array(
+                               array(
+                                   'column' => 'attr_reference',
+                                   'value' => 'PHP Attribute Test',
+                               ),
+                            ),
+                        ),
+                    ),
+                    
+                    'testComClients' => array(
+                        'payloads' => array(
+                            'create' => array(
                                 array(
                                     'melis_ecom_client' => array(
                                         'cli_status' => 1,
@@ -510,379 +556,100 @@ return array(
                                         'cadd_creation_date' => date('Y-m-d H:i:s'),
                                     ),
                                 ),
-                                //data 2
-                                array(
-                                    'melis_ecom_client' => array(
-                                        'cli_status' => 1,
-                                        'cli_date_creation' => date('Y-m-d H:i:s'),
-                                    ),
-                                    'melis_ecom_client_person' => array(
-                                        'cper_status' => 1,
-                                        'cper_is_main_person' => 1,
-                                        'cper_email' => 'phptest123452@mail.com',
-                                        'cper_password' => 'passwordni2',
-                                        'cper_password_recovery_key' => 'hashkeyni2',
-                                        'cper_civility' => 2,
-                                        'cper_name' => 'Php2',
-                                        'cper_middle_name' => 'Test2',
-                                        'cper_firstname' => 'Php2',
-                                        'cper_job_title' => 'Tester2',
-                                        'cper_job_service' => 'Shell2',
-                                        'cper_tel_mobile' => '1234567892',
-                                        'cper_tel_landline' => '1234567892',
-                                        'cper_date_creation' => date('Y-m-d H:i:s'),
-                                    ),
-                                    'melis_ecom_client_company' => array(
-                                        'ccomp_name' => 'PHPTest company2',
-                                        'ccomp_number_id' => 143442,
-                                        'ccomp_vat_number' => 123452,
-                                        'ccomp_date_creation' => date('Y-m-d H:i:s'),
-                                    ),
-                                    'melis_ecom_client_address' => array(
-                                        'cadd_type' => 1,
-                                        'cadd_address_name' => 'PHPTest address2',
-                                        'cadd_civility' => 2,
-                                        'cadd_name' => 'Php2',
-                                        'cadd_middle_name' => 'Test2',
-                                        'cadd_firstname' => 'Php2',
-                                        'cadd_num' => 1,
-                                        'cadd_stairs' => 2,
-                                        'cadd_building_name' => 'Winland2',
-                                        'cadd_company' => 'Php tester2',
-                                        'cadd_street' => 'Escario2',
-                                        'cadd_zipcode' => 60002,
-                                        'cadd_city' => 'Cebu2',
-                                        'cadd_state' => 'Cebu2',
-                                        'cadd_country' => 'Philippines2',
-                                        'cadd_phone_mobile' => 1234567892,
-                                        'cadd_phone_landline' => 9876543212,
-                                        'cadd_creation_date' => date('Y-m-d H:i:s'),
-                                    ),
-                                ),
-                            ),
-                            
-                            'orders' => array(
-                                //data 1
-                                array(
-                                    'melis_ecom_order' => array(
-                                        'ord_status' => 1,
-                                        'ord_reference' => 'Php Test Order',
-                                        'ord_date_creation' => date('Y-m-d H:i:s'),
-                                        'ord_billing_address' => -1,
-                                        'ord_delivery_address' => -1,
-                                    ),
-                                    'melis_ecom_order_basket' => array(
-                                        'obas_quantity' => 1,
-                                        'obas_sent' => 0,
-                                    ),                                    
-                                    
-                                    'melis_ecom_order_address' => array(
-                                        'oadd_civility' => 1,
-                                        'oadd_name' => 'Tester',
-                                        'oadd_middle_name' => 'Middle',
-                                        'oadd_firstname' => 'Php',
-                                        'oadd_num' => 1,
-                                        'oadd_stairs' => 2,
-                                        'oadd_building_name' => 'Winland',
-                                        'oadd_company' => 'PHPTESTER',
-                                        'oadd_street' => 'Escario',
-                                        'oadd_zipcode' => '6000',
-                                        'oadd_city' => 'Cebu City',
-                                        'oadd_state' => 'Cebu',
-                                        'oadd_country' => 'Philippines',
-                                        'oadd_phone_mobile' => '123456798',
-                                        'oadd_phone_landline' => '23456789',
-                                        'oadd_creation_date' => date('Y-m-d H:i:s'),
-                                    ),
-                                    'melis_ecom_order_payment' => array(
-                                        'opay_payment_type_id' => 1,
-                                        'opay_transac_id' => 'PHPTESTERTRANSID',
-                                        'opay_transac_return_value' => 1,
-                                        'opay_transac_price_paid_confirm' => 100,
-                                        'opay_transac_raw_response' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-                                        'opay_date_payment' => date('Y-m-d H:i:s'),
-                                    ),
-                                    'melis_ecom_order_shipping' => array(
-                                        'oship_tracking_code' => 'PHPTESTSHIPPINGID',
-                                        'oship_content' => 'Shipping includes php test',
-                                        'oship_date_sent' => date('Y-m-d H:i:s'),
-                                    ),                                      
-                                ),
-                                //data 2
-                                array(
-                                    'melis_ecom_order' => array(
-                                        'ord_status' => 1,
-                                        'ord_reference' => 'Php Test Order2',
-                                        'ord_date_creation' => date('Y-m-d H:i:s'),
-                                        'ord_billing_address' => -1,
-                                        'ord_delivery_address' => -1,
-                                    ),
-                                    'melis_ecom_order_basket' => array(
-                                        'obas_quantity' => 1,
-                                    ),
-                                
-                                    'melis_ecom_order_address' => array(
-                                        'oadd_civility' => 1,
-                                        'oadd_name' => 'Tester2',
-                                        'oadd_middle_name' => 'Middle2',
-                                        'oadd_firstname' => 'Php2',
-                                        'oadd_num' => 1,
-                                        'oadd_stairs' => 2,
-                                        'oadd_building_name' => 'Winland2',
-                                        'oadd_company' => 'PHPTESTER2',
-                                        'oadd_street' => 'Escario2',
-                                        'oadd_zipcode' => '6002',
-                                        'oadd_city' => 'Cebu City2',
-                                        'oadd_state' => 'Cebu2',
-                                        'oadd_country' => 'Philippines2',
-                                        'oadd_phone_mobile' => '1234567982',
-                                        'oadd_phone_landline' => '234567892',
-                                        'oadd_creation_date' => date('Y-m-d H:i:s'),
-                                    ),
-                                    'melis_ecom_order_payment' => array(
-                                        'opay_payment_type_id' => 1,
-                                        'opay_transac_id' => 'PHPTESTERTRANSID2',
-                                        'opay_transac_return_value' => 1,
-                                        'opay_transac_price_paid_confirm' => 100,
-                                        'opay_transac_raw_response' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ2',
-                                        'opay_date_payment' => date('Y-m-d H:i:s'),
-                                    ),
-                                    'melis_ecom_order_shipping' => array(
-                                        'oship_tracking_code' => 'PHPTESTSHIPPINGID2',
-                                        'oship_content' => 'Shipping includes php test2',
-                                        'oship_date_sent' => date('Y-m-d H:i:s'),
-                                    ),
-                                ),
-                            ),
-                        ), 
-                    ),
-                    'testTableAccessWithPayloadFromConfig' => array(
-                        'payloads' => array(
-                            
-                            'melis_ecom_lang' => array(
-                                array(                                    
-                                    'column' => 'elang_locale',
-                                    'value' => 'tt_TT',                                   
-                                ),  
-                            ),
-                            
-                            'melis_ecom_currency' => array(
-                                array(                                   
-                                    'column' => 'cur_name',
-                                    'value' => 'PHP TEST',                                    
-                                ),  
-                            ),
-                            
-                            'melis_ecom_country' => array(
-                                array(                                    
-                                    'column' => 'ctry_name',
-                                    'value' => 'PHP Test',                                    
-                                ),  
-                            ),
-                            
-                            //categories
-                            'melis_ecom_category' => array(
-                                array(                                
-                                    'column' => 'cat_reference',
-                                    'value'  => 'PHP Category Ref',
-                                ),
-                                array(
-                                    'column' => 'cat_reference',
-                                    'value'  => 'PHP Category Ref2',
-                                ),
-                            ),                            
-                            'melis_ecom_category_trans' => array(
-                                array(
-                                    'column' => 'catt_name',
-                                    'value' => 'PHP Category Test Name',
-                                ),
-                                array(
-                                    'column' => 'catt_name',
-                                    'value' => 'PHP Category Test Name2',
-                                ),
-                            ),
-                            
-                            // Product data
-                            'melis_ecom_product_text_type' => array(
-                                array(
-                                    'column' => 'ptt_code',
-                                    'value' => 'PHP',
-                                ),
-                                array(
-                                    'column' => 'ptt_code',
-                                    'value' => 'PHP2',
-                                ),
-                                
-                            ),
-                            'melis_ecom_product' => array(
-                                array(
-                                    'column' => 'prd_reference',
-                                    'value' => 'PHP product test ref',
-                                ),
-                                array(
-                                    'column' => 'prd_reference',
-                                    'value' => 'PHP product test ref2',
-                                ),
-                                
-                            ),
-                            'melis_ecom_product_text' => array(
-                                array(
-                                    'column' => 'ptxt_field_short',
-                                    'value' => 'Product Text Test PHP',
-                                ),
-                                array(
-                                    'column' => 'ptxt_field_short',
-                                    'value' => 'Product Text Test PHP2',
-                                ),
-                            ),        
-                            
-                            // Variant  data
-                            'melis_ecom_variant' => array(
-                                array(
-                                    'column' => 'var_sku',
-                                    'value' => 'PHPUNITTEST123',
-                                ),
-                                array(
-                                    'column' => 'var_sku',
-                                    'value' => 'PHPUNITTEST1232',
-                                ),
-                            ),
-                            
-                            //Attributes
-                            'melis_ecom_attribute' => array(
-                                array(
-                                    'column' => 'attr_reference',
-                                    'value' => 'PHP Attribute Test',
-                                ),
-                                array(
-                                    'column' => 'attr_reference',
-                                    'value' => 'PHP Attribute Test2',
-                                ),
-                            ),
-                            'melis_ecom_client_person' => array(
-                                //data 1
-                                array(
-                                    'column' => 'cper_email',
-                                    'value' => 'phptest12345@mail.com',                                                                       
-                                ),
-                                //data 2
-                                array(                                    
-                                    'column' => 'cper_email',
-                                    'value' => 'phptest123452@mail.com',                                                                      
-                                ),
-                            ),
-                            'melis_ecom_order' => array(
-                                //data 1
-                                array(
-                                    'column' => 'ord_reference', 
-                                    'value' => 'Php Test Order',
-                                ),
-                                array(
-                                    'column' => 'ord_reference',
-                                    'value' => 'Php Test Order2',
-                                ),
-                            ),
-                        ),
-                    ),
-                    'testRemoveData' => array(
-                        'payloads' => array(
-                            
-                            'melis_ecom_lang' => array(
-                                array(                                    
-                                    'column' => 'elang_locale',
-                                    'value' => 'tt_TT',                                   
-                                ),  
-                            ),
-                            
-                            'melis_ecom_currency' => array(
-                                array(                                   
-                                    'column' => 'cur_name',
-                                    'value' => 'PHP TEST',                                    
-                                ),  
-                            ),
-                            
-                            'melis_ecom_country' => array(
-                                array(                                    
-                                    'column' => 'ctry_name',
-                                    'value' => 'PHP Test',                                    
-                                ),  
-                            ),
-                            
-                            //Categories
-                            'melis_ecom_category' => array(
-                                array(                                
-                                    'column' => 'cat_reference',
-                                    'value'  => 'PHP Category Ref',
-                                ),
-                                array(
-                                    'column' => 'cat_reference',
-                                    'value'  => 'PHP Category Ref2',
-                                ),
-                            ),
-                            
-                            // Product data
-                            'melis_ecom_product' => array(
-                                array(
-                                    'column' => 'prd_reference',
-                                    'value' => 'PHP product test ref',
-                                ),
-                                array(
-                                    'column' => 'prd_reference',
-                                    'value' => 'PHP product test ref2',
-                                ),
-                                
-                            ),
-                            
-                            // Variant  data
-                            'melis_ecom_variant' => array(
-                                array(
-                                    'column' => 'var_sku',
-                                    'value' => 'PHPUNITTEST123',
-                                ),
-                                array(
-                                    'column' => 'var_sku',
-                                    'value' => 'PHPUNITTEST1232',
-                                ),
-                            ),
-                            
-                            //Attributes
-                            'melis_ecom_attribute' => array(
-                               array(
-                                   'column' => 'attr_reference',
-                                   'value' => 'PHP Attribute Test',
-                               ),
-                                array(
-                                    'column' => 'attr_reference',
-                                    'value' => 'PHP Attribute Test2',
-                                ),
-                            ),
-                            
-                            'melis_ecom_client_person' => array(
-                                //data 1
+                            ),  
+                            'read' => array(
                                 array(
                                     'column' => 'cper_email',
                                     'value' => 'phptest12345@mail.com',
                                 ),
-                                //data 2
+                            ),  
+                            'delete' => array(
                                 array(
                                     'column' => 'cper_email',
-                                    'value' => 'phptest123452@mail.com',
+                                    'value' => 'phptest12345@mail.com',
                                 ),
-                            ),
-                            
-                            'melis_ecom_order' => array(
-                                //data 1
+                            ),  
+                        ),  
+                    ),
+                    
+                    'testComOrders' => array(
+                        'payloads' => array(
+                            'create' => array(
+                               array(
+                                   'order_product_text' => array(
+                                       'column' => 'ptxt_field_short', 
+                                       'value'   => 'Product Text Test PHP',
+                                   ),
+                                   'order_product' => array(
+                                       'column' => 'prd_reference',
+                                       'value' => 'PHP product test ref',
+                                   ),
+                                   'order_variant' => array(
+                                       'column' => 'var_sku',
+                                       'value' => 'PHPUNITTEST123',
+                                   ),
+                                   'order_category' => array(
+                                       'column' => 'catt_name',
+                                       'value' => 'PHP Category Test Name',
+                                    ),
+                                   'melis_ecom_order' => array(
+                                       'ord_status' => 1,
+                                       'ord_reference' => 'Php Test Order',
+                                       'ord_date_creation' => date('Y-m-d H:i:s'),
+                                       'ord_billing_address' => -1,
+                                       'ord_delivery_address' => -1,
+                                   ),
+                                   'melis_ecom_order_basket' => array(
+                                       'obas_quantity' => 1,
+                                       'obas_sent' => 0,
+                                   ),
+                                   
+                                   'melis_ecom_order_address' => array(
+                                       'oadd_civility' => 1,
+                                       'oadd_name' => 'Tester',
+                                       'oadd_middle_name' => 'Middle',
+                                       'oadd_firstname' => 'Php',
+                                       'oadd_num' => 1,
+                                       'oadd_stairs' => 2,
+                                       'oadd_building_name' => 'Winland',
+                                       'oadd_company' => 'PHPTESTER',
+                                       'oadd_street' => 'Escario',
+                                       'oadd_zipcode' => '6000',
+                                       'oadd_city' => 'Cebu City',
+                                       'oadd_state' => 'Cebu',
+                                       'oadd_country' => 'Philippines',
+                                       'oadd_phone_mobile' => '123456798',
+                                       'oadd_phone_landline' => '23456789',
+                                       'oadd_creation_date' => date('Y-m-d H:i:s'),
+                                   ),
+                                   'melis_ecom_order_payment' => array(
+                                       'opay_payment_type_id' => 1,
+                                       'opay_transac_id' => 'PHPTESTERTRANSID',
+                                       'opay_transac_return_value' => 1,
+                                       'opay_transac_price_paid_confirm' => 100,
+                                       'opay_transac_raw_response' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+                                       'opay_date_payment' => date('Y-m-d H:i:s'),
+                                   ),
+                                   'melis_ecom_order_shipping' => array(
+                                       'oship_tracking_code' => 'PHPTESTSHIPPINGID',
+                                       'oship_content' => 'Shipping includes php test',
+                                       'oship_date_sent' => date('Y-m-d H:i:s'),
+                                   ),
+                               ),
+                            ),  
+                            'read' => array(
                                 array(
                                     'column' => 'ord_reference',
                                     'value' => 'Php Test Order',
                                 ),
-                                //data 2
+                            ),  
+                            'delete' => array(
                                 array(
                                     'column' => 'ord_reference',
-                                    'value' => 'Php Test Order2',
+                                    'value' => 'Php Test Order',
                                 ),
-                            ),
-                        ),
+                            ),  
+                        ),  
                     ),
                 ),
             ),

@@ -25,8 +25,7 @@ class MelisEcomOrderTable extends MelisEcomGenericTable
     }
     
     public function getOrderList($orderStatusId = null, $onlyValid, $clientId = null, $clientPersonId = null, 
-                                 $couponId = null, $reference = null, $dateCreationMin = null, $dateCreationMax = null, 
-	                             $status = null, $start = 0, $limit = null, $order = 'ord_id', 
+                                 $couponId = null, $reference = null, $start = 0, $limit = null, $order = 'ord_id', 
                                  $search = null, $startDate = null, $endDate = null)
     {
         $select = $this->tableGateway->getSql()->select();
@@ -82,24 +81,12 @@ class MelisEcomOrderTable extends MelisEcomGenericTable
             $select->where->like('melis_ecom_order.ord_reference', $reference);
         }
         
-        if (!is_null($dateCreationMin))
-        {
-            $select->where('melis_ecom_order.ord_date_creation >= "'.$dateCreationMin.'"');
+        if (!is_null($startDate)){
+            $select->where->greaterThan('melis_ecom_order.ord_date_creation', $startDate);
         }
         
-        if (!is_null($dateCreationMax))
-        {
-            $select->where('melis_ecom_order.ord_date_creation <= "'.$dateCreationMax.'"');
-        }
-        
-        if (!is_null($status)&&is_bool($status))
-        {
-            $select->where('melis_ecom_order.ord_status ='.$status);
-        }
-        
-        if (!is_null($startDate)&& !is_null($endDate))
-        {
-            $select->where('melis_ecom_order.ord_date_creation BETWEEN \''.$startDate.'\' AND \''.$endDate.'\'');
+        if (!is_null($endDate)){
+            $select->where->lessThan('melis_ecom_order.ord_date_creation', $endDate);
         }
         
         if(!is_null($search)){

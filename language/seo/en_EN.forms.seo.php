@@ -7,8 +7,8 @@
         'tr_meliscommerce_seo_Meta_title' => 'Meta title',
         'tr_meliscommerce_seo_Meta_description' => 'Meta description',
         'tr_meliscommerce_seo_Url' => 'URL',
-        'tr_meliscommerce_seo_Url_redirect' => 'URL redirection <i class="fa fa-info-circle fa-lg" title="For an internal page enter its ID or its URL. For an external page enter its complete URL with the http://"></i>',
-        'tr_meliscommerce_seo_Url_301' => 'URL 301 <i class="fa fa-info-circle fa-lg" title="For an internal page enter its ID or its URL. For an external page enter its complete URL with the http://"></i>',
+        'tr_meliscommerce_seo_Url_redirect' => 'URL redirection <i class="fa fa-info-circle fa-lg" title="For an internal page enter its URL with its ID (ex: /mypagename/id/1). For an external page enter its complete URL with the http://"></i>',
+        'tr_meliscommerce_seo_Url_301' => 'URL 301 <i class="fa fa-info-circle fa-lg" title="For an internal page enter its URL with its ID (ex: /mypagename/id/1). For an external page enter its complete URL with the http://"></i>',
         
         'tr_meliscommerce_seo_Url_eseo_url' => 'URL',
         'tr_meliscommerce_seo_Url_eseo_url_redirect' => 'URL redirection',

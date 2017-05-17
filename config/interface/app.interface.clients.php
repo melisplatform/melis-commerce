@@ -27,6 +27,13 @@ return array(
                         'default_ttl' => 0, // 1 day, TTL (in seconds) for the session cookie expiry
                         'remember_me_ttl' => 1209600, // 14 days, TTL (in seconds) for the session cookie expiry
                     ),
+                    'export' => array(
+                        'csv' => array(
+                            'clientFileName' => 'melis_client_export.csv',
+                            'clientLimit' => 100,
+                            'dir' => $_SERVER['DOCUMENT_ROOT'] . '/csv/'
+                        ),
+                    ),
                 )
             ),
             'interface' => array(
@@ -458,7 +465,33 @@ return array(
                             )
                         )
                     )
-                ), 
+                ),
+                'meliscommerce_client_list_modal' => array(
+                    'conf' => array(
+                        'id' => 'id_meliscommerce_client_list_modal',
+                        'name' => 'tr_meliscommerce_client_list_modal',
+                        'melisKey' => 'meliscommerce_client_list_modal',
+                    ),
+                    'forward' => array(
+                        'module' => 'MelisCommerce',
+                        'controller' => 'MelisComClientList',
+                        'action' => 'render-client-list-modal',
+                    ),
+                    'interface' => array(
+                        'meliscommerce_client_list_content_export_form' => array(
+                            'conf' => array(
+                                'id' => 'id_meliscommerce_client_list_content_export_form',
+                                'name' => 'tr_meliscommerce_client_list_content_export_form',
+                                'melisKey' => 'meliscommerce_client_list_content_export_form',
+                            ),
+                            'forward' => array(
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComClientList',
+                                'action' => 'render-client-list-content-export-form',
+                            ),
+                        ),
+                    ),
+                ),
                 'meliscommerce_client_modal' => array(
                     'conf' => array(
                         'id' => 'id_meliscommerce_client_modal',

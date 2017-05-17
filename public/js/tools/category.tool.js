@@ -203,6 +203,7 @@ $(function(){
 	    		$("#categoryTreeView #"+selectedNode+" div").first().addClass("jstree-wholerow-clicked");
 			}else{
 				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors );
+				melisCoreTool.highlightErrors(data.success, data.errors, "id_meliscommerce_categories_category_form_transalations");
 			}
 			
 			melisCore.flashMessenger();

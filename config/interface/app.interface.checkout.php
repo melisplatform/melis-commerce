@@ -215,18 +215,6 @@ return array(
                                                 'action' => 'render-order-checkout-select-addresses-content',
                                             ),
                                             'interface' => array(
-                                                'meliscommerce_order_checkout_billing_address' => array(
-                                                    'conf' => array(
-                                                        'id' => 'id_meliscommerce_order_checkout_billing_address',
-                                                        'name' => 'tr_meliscommerce_order_checkout_billing_address',
-                                                        'melisKey' => 'meliscommerce_order_checkout_billing_address',
-                                                    ),
-                                                    'forward' => array(
-                                                        'module' => 'MelisCommerce',
-                                                        'controller' => 'MelisComOrderCheckout',
-                                                        'action' => 'render-order-checkout-billing-address',
-                                                    ),
-                                                ),
                                                 'meliscommerce_order_checkout_delivery_address' => array(
                                                     'conf' => array(
                                                         'id' => 'id_meliscommerce_order_checkout_delivery_address',
@@ -237,6 +225,18 @@ return array(
                                                         'module' => 'MelisCommerce',
                                                         'controller' => 'MelisComOrderCheckout',
                                                         'action' => 'render-order-checkout-delivery-address',
+                                                    ),
+                                                ),
+                                                'meliscommerce_order_checkout_billing_address' => array(
+                                                    'conf' => array(
+                                                        'id' => 'id_meliscommerce_order_checkout_billing_address',
+                                                        'name' => 'tr_meliscommerce_order_checkout_billing_address',
+                                                        'melisKey' => 'meliscommerce_order_checkout_billing_address',
+                                                    ),
+                                                    'forward' => array(
+                                                        'module' => 'MelisCommerce',
+                                                        'controller' => 'MelisComOrderCheckout',
+                                                        'action' => 'render-order-checkout-billing-address',
                                                     ),
                                                 )
                                             )
@@ -292,18 +292,6 @@ return array(
                                                         'action' => 'render-order-checkout-summary-basket',
                                                     ),
                                                 ),
-                                                'meliscommerce_order_checkout_summary_billing_address' => array(
-                                                    'conf' => array(
-                                                        'id' => 'id_meliscommerce_order_checkout_summary_billing_address',
-                                                        'name' => 'tr_meliscommerce_order_checkout_summary_billing_address',
-                                                        'melisKey' => 'meliscommerce_order_checkout_summary_billing_address',
-                                                    ),
-                                                    'forward' => array(
-                                                        'module' => 'MelisCommerce',
-                                                        'controller' => 'MelisComOrderCheckout',
-                                                        'action' => 'render-order-checkout-summary-billing-address',
-                                                    ),
-                                                ),
                                                 'meliscommerce_order_checkout_summary_delivery_address' => array(
                                                     'conf' => array(
                                                         'id' => 'id_meliscommerce_order_checkout_summary_delivery_address',
@@ -314,6 +302,18 @@ return array(
                                                         'module' => 'MelisCommerce',
                                                         'controller' => 'MelisComOrderCheckout',
                                                         'action' => 'render-order-checkout-summary-delivery-address',
+                                                    ),
+                                                ),
+                                                'meliscommerce_order_checkout_summary_billing_address' => array(
+                                                    'conf' => array(
+                                                        'id' => 'id_meliscommerce_order_checkout_summary_billing_address',
+                                                        'name' => 'tr_meliscommerce_order_checkout_summary_billing_address',
+                                                        'melisKey' => 'meliscommerce_order_checkout_summary_billing_address',
+                                                    ),
+                                                    'forward' => array(
+                                                        'module' => 'MelisCommerce',
+                                                        'controller' => 'MelisComOrderCheckout',
+                                                        'action' => 'render-order-checkout-summary-billing-address',
                                                     ),
                                                 ),
                                             )

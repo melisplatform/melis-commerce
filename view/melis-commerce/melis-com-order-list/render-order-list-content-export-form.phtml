@@ -1,0 +1,73 @@
+<?php 
+$id = '';
+if (!empty($this->zoneconfig['conf']['id']))
+    $id = ' id="' .$this->zoneconfig['conf']['id'] . '"';
+    $data_melisKey = $this->melisKey;
+?>
+
+<div class="modal-content">
+	<div class="modal-body padding-none">
+		<div class="wizard">
+			<div class="widget widget-tabs widget-tabs-double widget-tabs-responsive margin-none border-none">
+                <div class="widget-head">
+                	<ul class="nav nav-tabs">
+                		<li class="active"><a href="#<?php echo $this->zoneconfig['conf']['id'] ?>" class="glyphicons notes" data-toggle="tab" aria-expanded="true"><i></i> 
+                		<?= $this->translate('tr_meliscommerce_order_export_label')?></a></li>
+            		</ul>
+        		</div>
+        		<div class="widget-body innerAll inner-2x">
+        			<div class="tab-content">
+        				<div class="tab-pane active" <?php echo $id ?>>
+                            <div class="row">
+                            	<div class="col-md-12">
+                            		
+                                    <?php
+                                    	$form = $this->meliscommerce_order_list_export_form;
+                                    	echo $this->form()->openTag($form);
+                                    	echo $this->melisFieldCollection($form);
+                                    ?>
+                                    <div class="checkbox cb-cont">
+                                       <label class="remember-me-cont">
+                                            <span class="cbmask-outer">
+                                            	<span  class="cbmask-inner"></span>
+                                           	</span>
+                                            <input type="hidden" name="orderExportEncapse" value="0" >
+                                            <input type="checkbox" name="orderExportEncapse" value="1"> <?= $this->translate('tr_meliscommerce_orders_encapse'); ?>
+                                       </label>
+                                  </div>
+                                  <br>
+                                    <?php 
+                                    	echo $this->form()->closeTag(); 
+                                    ?>
+                                    <script>
+                                    $('form select[name=ord_status]').ready(function () {
+                                        <?php 
+                                        $c = 2;
+                                        foreach($this->status as $status):
+                                        ?>
+                                        $('form[name=order-list-export] select[name=ord_status] option:nth-child(<?= $c ?>)').css("color", "<?= $status->osta_color_code ?>");
+                                        <?php
+                                        $c++;
+                                        endforeach;
+                                        ?>
+                                        $('form[name=order-list-export] select[name=ord_status]').attr("style", $("form[name=order-list-export] select[name=ord_status] option:selected").attr("style"));
+                                    });
+                                    $('form[name=order-list-export] select[name=ord_status] option:nth-child(1)').attr("style", 'color : black');
+                                    $('form[name=order-list-export] select[name=ord_status]').change(function () {
+                                        $('form[name=order-list-export] select[name=ord_status]').attr("style", $("form[name=order-list-export] select[name=ord_status] option:selected").attr("style"));
+                                    });
+                                    </script>
+                                 	<div align="right">
+                                 		<button data-dismiss="modal" class="btn btn-danger pull-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
+                                 		<button class="btn btn-success" id="exportOrders" ><i class="fa fa-save"></i>  <?php echo $this->translate('tr_meliscommerce_order_export_label') ?></button>
+                                 	</div> 
+                                 	<?= $this->datePickerInit; ?>                              	
+                            	</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

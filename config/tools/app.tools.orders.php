@@ -48,6 +48,11 @@ return array(
 //                                     'controller' => 'MelisComOrderList',
 //                                     'action' => 'render-order-list-content-filter-list-view'
 //                                 ),
+                                'order-list-table-filter-export' => array(
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComOrderList',
+                                    'action' => 'render-order-list-content-filter-export',
+                                ),
                                 'order-list-table-filter-refresh' => array(
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComOrderList',
@@ -204,6 +209,81 @@ return array(
                             ),
                         ),
                     ),                   
+                ),
+                'meliscommerce_order_status' => array(
+                    'table' => array(
+                        'target' => '#tableOrderStatus',
+                        'ajaxUrl' => '/melis/MelisCommerce/MelisComOrderStatus/getOrderStatusData',
+                        'dataFunction' => '',
+                        'ajaxCallback' => 'initCheckPermStatus()',
+                        'filters' => array(
+                            'left' => array(
+                                'order-status-table-filter-limit' => array(
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComOrderStatus',
+                                    'action' => 'render-order-status-content-filter-limit'
+                                ),
+                            ),
+                            'center' => array(
+                                'order-status-table-filter-search' => array(
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComOrderStatus',
+                                    'action' => 'render-order-status-content-filter-search'
+                                ),
+                            ),
+                
+                            'right' => array(
+                                'order-status-table-filter-refresh' => array(
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComOrderStatus',
+                                    'action' => 'render-order-status-content-filter-refresh'
+                                ),
+                            ),
+                        ),
+                
+                        'columns' => array(
+                            'osta_id' => array(
+                                'text' => 'tr_meliscommerce_order_list_col_id',
+                                'css' => array('width' => '10', 'padding-right' => '0'),
+                                'sortable' => true,
+                            ),
+                            'osta_status' => array(
+                                'text' => 'tr_meliscommerce_order_list_col_status',
+                                'css' => array('width' => '10%', 'padding-right' => '0'),
+                                'sortable' => true,
+                            ),
+                            'ostt_status_name' => array(
+                                'text' => 'tr_meliscommerce_order_status_col_ord_status',
+                                'css' => array('width' => '20%', 'padding-right' => '0'),
+                                'sortable' => true,
+                            ),
+                            'osta_color_code' => array(
+                                'text' => 'tr_meliscommerce_order_status_col_color_code',
+                                'css' => array('width' => '20%', 'padding-right' => '0'),
+                                'sortable' => true,
+                            ),
+                            'color_preview' => array(
+                                'text' => 'tr_meliscommerce_order_status_col_color_preview',
+                                'css' => array('width' => '20%', 'padding-right' => '0'),
+                                'sortable' => false,
+                            ),
+                        ),
+                
+                        'searchables' => array(),
+                        'actionButtons' => array(
+                            'info' => array(
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComOrderStatus',
+                                'action' => 'render-order-status-content-action-info'
+                            ),
+                            'delete' => array(
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComOrderStatus',
+                                'action' => 'render-order-status-content-action-delete'
+                            ),
+                        ),
+                
+                    ),
                 ),
             ),
         ),

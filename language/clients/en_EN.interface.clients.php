@@ -7,7 +7,7 @@
 	    'tr_meliscommerce_clients_Client' => 'Client info',
 
         // Common labels
-        'tr_meliscommerce_clients_common_btn_close' => 'Cancel',
+        'tr_meliscommerce_clients_common_btn_close' => 'Close',
         'tr_meliscommerce_clients_common_btn_save' => 'Save',
         'tr_meliscommerce_clients_common_btn_update' => 'Update',
         'tr_meliscommerce_clients_common_btn_delete' => 'Delete',
@@ -52,7 +52,7 @@
 	    'tr_meliscommerce_clients_table_Client_person' => 'Client(s)',
 	    'tr_meliscommerce_clients_table_Client_company' => 'Company',
 	    'tr_meliscommerce_clients_table_Client_num_orders' => 'Order(s)',
-	    'tr_meliscommerce_clients_table_Client_last_order' => 'Last orders date',
+	    'tr_meliscommerce_clients_table_Client_last_order' => 'Last order',
 	    
 	    // Buttons
 	    'tr_meliscommerce_clients_add_client' => 'Add client',
@@ -189,4 +189,10 @@
 	    'tr_meliscommerce_client_Contact_address_title' => 'Address title',
 	    'tr_meliscommerce_client_Checkout_cart_empty' => 'Cart is empty',
 	    'tr_meliscommerce_client_Checkout_no_identity' => 'User has no identity, please login/register before accessing this page',
+	    
+	    'tr_meliscommerce_client_export_success' => 'The client(s) has been exported successfully',
+	    'tr_meliscommerce_client_export_fail' => 'Failed to export client(s)',
+
+	    'tr_meliscommerce_client_order_refresh' => 'Refresh',
+	    'tr_meliscommerce_client_refresh' => 'Refresh',
 	);

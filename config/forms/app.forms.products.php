@@ -322,7 +322,6 @@ return array(
                                     'name' => 'prd_reference',
                                     'type' => 'MelisText',
                                     'options' => array(
-                                        'label' => 'tr_meliscommerce_products_reference',
                                     ),
                                     'attributes' => array(
                                         'id' => 'prd_reference',

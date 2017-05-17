@@ -1,0 +1,19 @@
+.variant-assoc-product-variant-list {
+    min-height: 35px;
+    position: relative;
+}
+
+.variant-assoc-product-variant {
+    display: block;
+    float: none;
+    width: 100%;
+    padding: 4px 10px;
+    clear: both;
+    overflow: hidden;
+    margin-bottom: 5px;
+    background: #f4f4f4;
+}
+
+.variant-assoc-product-variant .fa-check{
+    margin: 10px;
+}

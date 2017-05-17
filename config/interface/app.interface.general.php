@@ -107,6 +107,11 @@ return array(
                                         'type' => 'meliscommerce/interface/meliscommerce_currency_lists/interface/meliscommerce_currency_left_menu'
                                     ),
                                 ),                               
+                                'meliscommerce_order_status_lists' => array(
+                                    'conf' => array(
+                                        'type' => 'meliscommerce/interface/meliscommerce_order_status_tool/interface/meliscommerce_order_status_tool_leftmenu'
+                                    ),
+                                ),                               
                             ),
                         ),
                     ),

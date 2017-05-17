@@ -13,6 +13,7 @@ use MelisCommerce\Entity\MelisClientPerson;
 use Zend\Crypt\Key\Derivation\Pbkdf2;
 use Zend\Crypt\BlockCipher;
 use Zend\Crypt\Symmetric\Mcrypt;
+use Zend\Http\Response;
 /**
  *
  * This service handles the client system of MelisCommerce.
@@ -174,6 +175,190 @@ class MelisComClientService extends MelisComGeneralService
 	    // Sending service end event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_byid_andperson_end', $arrayParameters);
 	     
+	    return $arrayParameters['results'];
+	}
+	
+	
+	public function exportClientList($clientStatus = null, $startDate = null, $endDate = null, $separator, $encapseulate ="", $langId)
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = false;
+	    
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_export_client_start', $arrayParameters);
+	     
+	    // Service implementation start
+	    $melisCoreConfig = $this->getServiceLocator()->get('MelisCoreConfig');
+	    // get config for file name
+	    $csvConfig = $melisCoreConfig->getItem('meliscommerce/datas/default/export/csv');
+	    $csvFileName = $csvConfig['clientFileName'];
+	    $dir = $csvConfig['dir']; 
+	    $clientTable = $this->getServiceLocator()->get('MelisEcomClientTable');
+
+	    $clienData = $clientTable->fetchAll();
+	    $count = $clienData->count();
+	    unset($clienData);
+	    $limit = $csvConfig['clientLimit'];
+
+	    
+	    if ($count)
+	    {
+	        $cycles = ceil((float)($count / $limit));
+	        
+	        // fetching data by segment
+	        for($c = 0 ; $c < $cycles;  $c++){
+	            $csvData = '';
+	            $start = $c * $limit;
+	            $clients = $this->getClientList(
+	                null, $arrayParameters['startDate'], $arrayParameters['endDate'], $arrayParameters['clientStatus'], 
+                    $start, $limit, null, null
+	                );
+	            
+	            foreach($clients as $client){
+	                $csvData .= $this->formatClientToCsv($client, $arrayParameters['separator'], $arrayParameters['encapseulate'], $arrayParameters['langId']);
+	            }
+	            $append = file_put_contents($dir.$csvFileName, $csvData, FILE_APPEND | LOCK_EX );
+	            if(!$append){
+	                break;
+	            }else{
+	                $results = true;
+	            }
+	        }
+	         
+	    }  
+	    
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_export_client_end', $arrayParameters);
+	     
+	    return $arrayParameters['results'];
+	}
+	
+	public function formatClientToCsv($clientEntity, $separator, $encapsulate = '', $langId)
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = '';
+	    
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_format_to_csv_start', $arrayParameters);
+	    
+	    // Service implementation start
+	    
+	    $s = $arrayParameters['separator'];
+	    $e =  $arrayParameters['encapsulate'];
+	    
+	    $client = $arrayParameters['clientEntity']->getClient();
+	    $companies = $arrayParameters['clientEntity']->getCompany();
+	    $addresses = $arrayParameters['clientEntity']->getAddresses();
+	    $persons  = $arrayParameters['clientEntity']->getPersons();
+	    
+	    $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+	    $country = $countryTable->getEntryByField('ctry_id', $client->cli_country_id);
+	    $countryName = ($country->count())? $country->current()->ctry_name : '';
+	    
+	    $langTable = $this->getServiceLocator()->get('MelisEcomLangTable');
+	    $languages = $langTable->fetchAll();
+	    
+	    $content = array();
+	    
+	    // client
+	    $line1[] = $client->cli_id;
+	    $line1[] = $client->cli_status;
+	    $line1[] = $client->cli_country_id;
+	    $line1[] = $countryName;
+	    $line1[] = $client->cli_date_creation;
+	    $tmp = array();
+	    
+	    foreach($line1 as $line){
+	        $tmp[] = addslashes($line);
+	    }
+	    
+	    $content[] = $e.implode($e.$s.$e, $tmp).$e.$s;
+	    
+	    //company
+	    if(!empty($companies)){
+	        $content[] = 'COMPANY';
+	    }
+	    
+	    foreach($companies as $company){
+	        $tmp = array();
+	        
+	        foreach($company as $detail){
+	            $tmp[] = addslashes($detail);
+	        }
+	        $content[] = $e.implode($e.$s.$e, $tmp).$e.$s;
+	    }
+	    
+	    //addresses
+	    if(!empty($addresses)){
+	        $content[] = 'ADDRESSES ACCOUNT';
+	    }
+	    
+	    foreach($addresses as $address){
+	        $tmp = array();
+	        foreach($address as $key => $val){
+	            if(gettype($val) != 'array'){
+	                $tmp[] = addslashes($val);
+	            }
+	        }
+	        $content[] = $e.implode($e.$s.$e, $tmp).$e.$s;
+	    }
+	    
+	    //persons
+        foreach($persons as $person){
+            $content[] = 'PERSON';
+            $per = array();
+            $per[] = $person->cper_id;
+            $per[] = $person->cper_lang_id;
+            
+            $langName = '';
+            foreach($languages as $lang){
+                if($lang->elang_id == $person->cper_lang_id){
+                    $langName = $lang->elang_name;
+                }
+            }
+            
+            $per[] = $langName;
+            $per[] = $person->cper_is_main_person;
+            $per[] = $person->cper_civility;
+            $per[] = $person->cper_name;
+            $per[] = $person->cper_middle_name;
+            $per[] = $person->cper_firstname;
+            $per[] = $person->cper_email;
+            $per[] = $person->cper_job_title;
+            $per[] = $person->cper_job_service;
+            $per[] = $person->cper_tel_mobile;
+            $per[] = $person->cper_tel_landline;
+            $per[] = $person->cper_date_creation;
+            
+            $tmp = array();
+            foreach($per as $t){
+                $tmp[] = addslashes($t);
+            }
+            
+            $content[] = $e.implode($e.$s.$e, $tmp).$e.$s;
+            
+            foreach($person->addresses as $perAddress){
+                $tmp = array();
+                foreach($perAddress as $key => $val){
+                    if(gettype($val) != 'array'){
+                        $tmp[] = addslashes($val);
+                    }
+                }
+                $content[] = $e.implode($e.$s.$e, $tmp).$e.$s;
+            }
+        }
+        $content[] = PHP_EOL;
+        $results = implode(PHP_EOL, $content);
+	    
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_format_to_csv_end', $arrayParameters);
+	    
 	    return $arrayParameters['results'];
 	}
 	

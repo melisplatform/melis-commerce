@@ -15,10 +15,7 @@ $content = '<div id="'.$id.'" data-melisKey="'.$this->melisKey.'">'.
     '<div data-class="addTextFieldNotif"></div>'.
     $this->form()->openTag($formText).
     $this->melisFieldCollection($formText).
-    $this->form()->closeTag() .
-    '<button class="btn btn-success pull-right btnAddText" data-productid="'.$this->productId.'" id="btnAddText"><i class="fa fa-plus"></i> '.$this->translate('tr_meliscommerce_general_common_add').'</button>'.
-    '<div class="clearfix"></div>'.
-    '</div>';
+    $this->form()->closeTag() . '</div>';
 
 echo $content;
 

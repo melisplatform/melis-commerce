@@ -134,6 +134,7 @@ return array(
             'MelisEcomCouponTable' => 'MelisCommerce\Model\Tables\MelisEcomCouponTable',
             'MelisEcomCouponOrderTable' => 'MelisCommerce\Model\Tables\MelisEcomCouponOrderTable',
             'MelisEcomCouponClientTable' => 'MelisCommerce\Model\Tables\MelisEcomCouponClientTable',
+            'MelisEcomCouponProductTable' => 'MelisCommerce\Model\Tables\MelisEcomCouponProductTable',
             'MelisEcomOrderPaymentTable' => 'MelisCommerce\Model\Tables\MelisEcomOrderPaymentTable',
             'MelisEcomOrderPaymentTypeTable' => 'MelisCommerce\Model\Tables\MelisEcomOrderPaymentTypeTable',
             'MelisEcomOrderStatusTable' => 'MelisCommerce\Model\Tables\MelisEcomOrderStatusTable',
@@ -193,6 +194,7 @@ return array(
             'MelisCommerce\Model\Tables\MelisEcomCountryTable'               => 'MelisCommerce\Model\Tables\Factory\MelisEcomCountryTableFactory',
             'MelisCommerce\Model\Tables\MelisEcomCouponClientTable'          => 'MelisCommerce\Model\Tables\Factory\MelisEcomCouponClientTableFactory',
             'MelisCommerce\Model\Tables\MelisEcomCouponOrderTable'           => 'MelisCommerce\Model\Tables\Factory\MelisEcomCouponOrderTableFactory',
+            'MelisCommerce\Model\Tables\MelisEcomCouponProductTable'         => 'MelisCommerce\Model\Tables\Factory\MelisEcomCouponProductTableFactory',
             'MelisCommerce\Model\Tables\MelisEcomCouponTable'                => 'MelisCommerce\Model\Tables\Factory\MelisEcomCouponTableFactory',
             'MelisCommerce\Model\Tables\MelisEcomCurrencyTable'              => 'MelisCommerce\Model\Tables\Factory\MelisEcomCurrencyTableFactory',
             'MelisCommerce\Model\Tables\MelisEcomDocRelationsTable'          => 'MelisCommerce\Model\Tables\Factory\MelisEcomDocRelationsTableFactory',
@@ -255,6 +257,7 @@ return array(
             'MelisCommerce\Controller\Diagnostic' => 'MelisCommerce\Controller\DiagnosticController',
             'MelisCommerce\Controller\MelisComAssociateVariant' => 'MelisCommerce\Controller\MelisComAssociateVariantController',
             'MelisCommerce\Controller\MelisComPrdVarDuplication' => 'MelisCommerce\Controller\MelisComPrdVarDuplicationController',
+            'MelisCommerce\Controller\MelisComOrderStatus' => 'MelisCommerce\Controller\MelisComOrderStatusController',
         ),
     ),
     'controller_plugins' => array(
@@ -268,7 +271,6 @@ return array(
             'MelisCommerceProductShowPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceProductShowPlugin',
             'MelisCommerceAttributesShowPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceAttributesShowPlugin',
             'MelisCommerceProductsRelatedPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceProductsRelatedPlugin',
-            'MelisCommerceProductVariantsPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceProductVariantsPlugin',
             'MelisCommerceCartAddPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCartAddPlugin',
             'MelisCommerceFilterMenuProductSearchBoxPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceFilterMenuProductSearchBoxPlugin',
             'MelisCommerceFilterMenuCategoryListPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceFilterMenuCategoryListPlugin',
@@ -306,6 +308,7 @@ return array(
             'EcomCivilitySelect' => 'MelisCommerce\Form\Factory\EcomCivilitySelectFactory',
             'EcomAddressTypeSelect' => 'MelisCommerce\Form\Factory\EcomAddressTypeSelectFactory',
             'EcomOrderStatusSelect' => 'MelisCommerce\Form\Factory\EcomOrderStatusSelectFactory',
+            'EcomOrderStatusAllSelect' => 'MelisCommerce\Form\Factory\EcomOrderStatusAllSelectFactory',
             'EcomDateField' => 'MelisCommerce\Form\Factory\EcomDateFieldFactory',
             'EcomAttributeTypeSelect' => 'MelisCommerce\Form\Factory\EcomAttributeTypeSelectFactory',
             'EcomCurrencySelect' => 'MelisCommerce\Form\Factory\EcomCurrencySelectFactory',
@@ -315,6 +318,7 @@ return array(
             'EcomCountriesAllStatusSelect' => 'MelisCommerce\Form\Factory\EcomCountriesAllStatusSelectFactory',
             'EcomCurrencyAllStatusSelect' => 'MelisCommerce\Form\Factory\EcomCurrencyAllStatusSelectFactory',
             'EcomLanguageAllStatusSelect' => 'MelisCommerce\Form\Factory\EcomLanguageAllStatusSelectFactory',
+            'EcomColorPicker' => 'MelisCommerce\Form\Factory\EcomColorPicker',
             
             // Plugins
             'EcomPluginCivilitySelect'       => 'MelisCommerce\Form\Factory\Plugin\EcomPluginCivilitySelectFactory',

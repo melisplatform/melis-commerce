@@ -15,4 +15,10 @@
         'tr_meliscommerce_orders_invalid_phone' => 'Please provide a valid contact number',
         'tr_meliscommerce_orders_common_btn_save' => 'Enregistrer',
         
+        'tr_meliscommerce_orders_date_start' => 'Date de début',
+        'tr_meliscommerce_orders_date_end'  => 'Date de fin',
+        'tr_meliscommerce_orders_sperator' => 'Separateur',
+        'tr_meliscommerce_orders_invalid_separator' => 'Seperator must be comma (,) or semi-colon (;)',
+        'tr_meliscommerce_orders_date_end_error' => 'La date de fin doit être ultérieure à la date de début',
+        'tr_meliscommerce_orders_encapse' => 'Encapsuler les colonnes',
     );

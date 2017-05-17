@@ -3,6 +3,13 @@ $(function(){
 	var zoneId = "id_meliscommerce_language_list_page_content_modal_form";
 	var melisKey = 'meliscommerce_language_list_page_content_modal_form';
 	var modalUrl = '/melis/MelisCommerce/MelisComLanguage/renderLanguageListPageModalContainer';
+
+	//removes modal elements when clicking outside
+	body.on("click", function (e) {
+		if ($(e.target).hasClass('modal')) {
+			$('#id_meliscommerce_language_list_page_content_modal_form_container').modal('hide');
+		}
+	});
 	
 	$(document).on("submit", "form#ecomlanguageform", function(e) {
 		saveType = $(this).data("savetype");

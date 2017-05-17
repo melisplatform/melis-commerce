@@ -19,11 +19,20 @@ if(!$this->couponId):
 ?>
 <div class="form-group">
 	<label class="label-block" for="" style="padding-top: 12px;"><?= $this->translate('tr_meliscommerce_coupon_page_tabs_assign');?></label>
-	<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="make-switch main_variant_switch" data-on-label="<?php echo $this->translate('tr_meliscommerce_coupon_page_tabs_yes')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_coupon_page_tabs_no')?>" data-text-label="<i class='fa fa-arrows-h'>">
+	<div id="<?= $this->couponId.'_assignTo' ?>" data-melisKey="<?= $this->melisKey; ?>" class="make-switch main_variant_switch" data-on-label="<?php echo $this->translate('tr_meliscommerce_coupon_page_tabs_yes')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_coupon_page_tabs_no')?>" data-text-label="<i class='fa fa-arrows-h'>">
         <input type="checkbox" name="coup_type" id="coup_type"  <?= $this->type ?>>
     </div>
     <script type="text/javascript">
-    	$("#<?= $id ?>").bootstrapSwitch();
+    	$("#<?= $this->couponId.'_assignTo' ?>").bootstrapSwitch();
+    </script>	
+</div>
+<div class="form-group">
+	<label class="label-block" for="" style="padding-top: 12px;"><?= $this->translate('tr_meliscommerce_coupon_page_tabs_assign_product');?></label>
+	<div id="<?= $this->couponId.'_assignProduct' ?>" data-melisKey="<?= $this->melisKey; ?>" class="make-switch main_variant_switch" data-on-label="<?php echo $this->translate('tr_meliscommerce_coupon_page_tabs_yes')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_coupon_page_tabs_no')?>" data-text-label="<i class='fa fa-arrows-h'>">
+        <input type="checkbox" name="coup_product_assign" id="coup_product_assign"  <?= $this->type ?>>
+    </div>
+    <script type="text/javascript">
+    	$("#<?= $this->couponId.'_assignProduct' ?>").bootstrapSwitch();
     </script>	
 </div>
 <?php endif;?>

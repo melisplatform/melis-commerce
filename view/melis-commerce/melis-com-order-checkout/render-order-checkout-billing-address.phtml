@@ -9,6 +9,10 @@
     <div class="red-box-panel">
         <h3><?php echo $this->translate('tr_meliscommerce_order_checkout_address_billing')?></h3>
         <div class="red-box-panel-list">
+        	<label>
+                <input type="checkbox" id="order-checkout-billing-address-same" <?php echo ($this->sameAddress) ? 'checked' : ''?>> <?php echo $this->translate('tr_meliscommerce_order_checkout_address_same_address')?>
+            </label>
+            <div style="margin-top: 15px;" class="<?php echo ($this->sameAddress) ? 'hidden' : ''?>" id="order-checkout-billing-form-zone">
             <?php
             	$form = $this->meliscommerce_order_checkout_billing_address_form;
             	$form->prepare();
@@ -30,6 +34,7 @@
             	echo $this->melisFieldCollection($form);
             	echo $this->form()->closeTag(); 
             ?>
+            </div>
         </div>
     </div>
 </div>

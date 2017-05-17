@@ -8,7 +8,7 @@
  */
 
 namespace MelisCommerce\Service;
-
+use Zend\Http\Response;
 
 /**
  *
@@ -34,9 +34,8 @@ class MelisComOrderService extends MelisComGeneralService
 	 * 
 	 * @return MelisOrder[] Array of Order objects
 	 */
-	public function getOrderList($orderStatusId = null, $onlyValid = null, $langId = null, $clientId = null, $clientPersonId = null, 
-                                 $couponId = null, $reference = null, $dateCreationMin = null,
-                                 $dateCreationMax = null, $status = null, $start = null, 
+	public function getOrderList($orderStatusId = null, $onlyValid = null, $langId = null, $clientId = null, 
+	                             $clientPersonId = null, $couponId = null, $reference = null,  $start = null, 
 	                             $limit = null, $colOrder = null, $search = '', $startDate = null, $endDate = null)
 	{
 	    // Event parameters prepare
@@ -52,13 +51,12 @@ class MelisComOrderService extends MelisComGeneralService
         $orderData = $melisEcomOrderTable->getOrderList($arrayParameters['orderStatusId'] , $arrayParameters['onlyValid'],
                                                        $arrayParameters['clientId'], $arrayParameters['clientPersonId'], 
                                                        $arrayParameters['couponId'], $arrayParameters['reference'],
-                                                       $arrayParameters['dateCreationMin'], $arrayParameters['dateCreationMax'],
-                                                       $arrayParameters['status'], $arrayParameters['start'], $arrayParameters['limit'], 
+                                                       $arrayParameters['start'], $arrayParameters['limit'], 
                                                        $arrayParameters['colOrder'], $arrayParameters['search'], 
                                                        $arrayParameters['startDate'], $arrayParameters['endDate'] )->toArray();
 	    foreach ($orderData As $key => $val)
 	    {
-	        $melisOrder = $this->getOrderById($val['ord_id']);
+	        $melisOrder = $this->getOrderById($val['ord_id'], $arrayParameters['langId']);
 	        array_push($results, $melisOrder);
 	    }
 	    // Service implementation end
@@ -150,6 +148,292 @@ class MelisComOrderService extends MelisComGeneralService
 	    // Sending service end event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_byid_end', $arrayParameters);
 	    
+	    return $arrayParameters['results'];
+	}
+	
+	/**
+	 * This method exports the orders into csv
+	 * @param int $orderStatus status order id
+	 * @param datetime $dateStart starting date 
+	 * @param datetime $dateEnd end date
+	 * @param char $separator seperator
+	 * @param char $encapseulate encapsulator
+	 * @param int $langId language id
+	 * @return array()
+	 */
+	public function exportOrderList($orderStatus = null, $dateStart = null, $dateEnd = null, $separator, $encapseulate = '', $langId = null)
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = array();
+	    
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_export_order_start', $arrayParameters);
+	    
+	    // Service implementation start
+	    $melisCoreConfig = $this->getServiceLocator()->get('MelisCoreConfig');
+	    // get config for file name
+	    $csvConfig = $melisCoreConfig->getItem('meliscommerce/datas/default/export/csv');
+	    $csvFileName = $csvConfig['orderFileName'];
+	    $dir = $csvConfig['dir'];
+	    
+	    $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
+	    
+	    $orderData = $melisEcomOrderTable->fetchAll();
+	    $count = $orderData->count();
+	    unset($orderData);
+	    $limit = $csvConfig['orderLimit'];
+	    
+	    if ($count)
+	    {
+	        $cycles = ceil((float)($count / $limit));
+	        
+	        // fetching data by segment
+	        for($c = 0 ; $c < $cycles;  $c++){
+	            $csvData = '';
+	            $start = $c * $limit;
+	            $orders = $this->getOrderList(
+	                $arrayParameters['orderStatus'], null, $arrayParameters['langId'], null,
+	                null, null, null, $start,
+	                $limit , null, null, $arrayParameters['dateStart'], $arrayParameters['dateEnd']
+                );
+	            
+	            foreach($orders as $order){
+	                $formatted = $this->formatOrderToCsv($order, $arrayParameters['separator'], $arrayParameters['encapseulate']);
+	                if($arrayParameters['orderStatus'] != '-1' && $order->getOrder()->ord_status == '-1'){
+	                    $formatted = '';
+	                }
+	                $csvData .= $formatted;
+	            }
+	            $append = file_put_contents($dir.$csvFileName, $csvData, FILE_APPEND | LOCK_EX );
+	            if(!$append){
+	                break;
+	            }else{
+	                $results = true;
+	            }
+	        }
+	        
+	    }
+	    
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_export_order_end', $arrayParameters);
+	    
+	    return $arrayParameters['results'];
+	}
+	
+	
+	public function formatOrderToCsv($orderEntity, $separator, $encapsulate = '')
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = '';
+	     
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_format_to_csv_start', $arrayParameters);
+	     
+	    // Service implementation start
+	    $orderStatusTransTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTransTable'); 
+	    $clientSvc = $this->getServiceLocator()->get('MelisComClientService');
+	    $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+	    
+	    $s = $arrayParameters['separator'];
+	    $e =  $arrayParameters['encapsulate'];
+	    $currencies = array();
+	    $paymentTypes = array();
+	    $billAdd = array();
+	    $delAdd = array();
+	    
+	    $order = $arrayParameters['orderEntity']->getOrder();
+	    // add status name
+	    $orderTrans = $orderStatusTransTable->getEntryByField('ostt_status_id', $order->ord_status);
+	    $order->status_name = ($orderTrans->count())? $orderTrans->current()->ostt_status_name : '';
+	    
+	    // add country nem
+	    $country = $countryTable->getEntryByField('ctry_id', $order->ord_country_id);
+	    $order->country_name = ($country->count())? $country->current()->ctry_name : '';
+	    
+	    $client = $arrayParameters['orderEntity']->getClient();
+	    // add company name
+	    $company = $clientSvc->getCompanyByClientId($client->cli_id);
+	    $client->client_company_name = !empty($company)? $company[0]->ccomp_name : '';
+	    
+	    $person = $arrayParameters['orderEntity']->getPerson();
+	    $payments = $arrayParameters['orderEntity']->getPayment();
+	    
+	    foreach($arrayParameters['orderEntity']->getAddresses() as $addr){
+	        if($addr->oadd_type == 1){
+	            $billAdd = $addr;
+	        }
+	        if($addr->oadd_type == 2){
+	            $delAdd = $addr;
+	        }
+	    }
+	    
+	    //fetch currency
+	    $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+	    
+	    foreach($currencyTable->fetchAll() as $data){
+	        $currencies[] = $data;
+	    }
+	    
+	    $content = array();
+	    
+	    // 1st line
+	    $line1[] = addslashes($order->ord_id);
+	    $line1[] = addslashes($order->ord_client_id);
+	    $line1[] = addslashes($order->ord_status);
+	    $line1[] = addslashes($order->status_name);
+	    $line1[] = addslashes($order->ord_client_person_id);
+	    $line1[] = addslashes($person->civility_trans[0]->civt_min_name);
+	    $line1[] = addslashes($person->cper_name);
+	    $line1[] = addslashes($person->cper_firstname);
+	    $line1[] = addslashes($client->client_company_name);
+	    $line1[] = addslashes($order->ord_country_id);
+	    $line1[] = addslashes($order->country_name);
+	    $line1[] = addslashes($order->ord_reference);
+	    $line1[] = addslashes($order->ord_date_creation);
+	    $content[] = $e.implode($e.$s.$e, $line1).$e.$s;
+	    
+	    $add1 = array();
+	    // billing address
+	    foreach($billAdd as $key => $val){
+	        if(gettype($val) != 'array'){
+	            $add1[] = $val;
+	        }
+	    }
+	    $content[] = $e.implode($e.$s.$e, $add1).$e.$s;
+	    
+	    $add2 = array();
+	    // delivery address
+	    foreach($delAdd as $key => $val){
+	        if(gettype($val) != 'array'){
+	            $add2[] = $val;
+	        }
+	    }
+	    $content[] = $e.implode($e.$s.$e, $add2).$e.$s;
+	    
+	    // payments
+	    if(!empty($payments)){
+	        $content[] = 'PAYMENTS';
+	        
+	        $pays = array();
+	        foreach($payments as $data){
+	            $currencyName = '';
+	            foreach($currencies as $currency){
+	                if($data->opay_currency_id == $currency->cur_id){
+	                    $currencyName = $currency->cur_name;
+	                }
+	            }
+	            $pay = array();
+	            $pay[] = addslashes($data->opay_id);
+	            $pay[] = addslashes($data->opay_price_total);
+	            $pay[] = addslashes($data->opay_price_order);
+	            $pay[] = addslashes($data->opay_price_shipping);
+	            $pay[] = addslashes($data->opay_currency_id);
+	            $pay[] = addslashes($currencyName);
+	            $pay[] = addslashes($data->opay_payment_type_id);
+	            $pay[] = addslashes($data->payment_type->opty_name);
+	            $pay[] = addslashes($data->opay_transac_id);
+	            $pay[] = addslashes($data->opay_transac_price_paid_confirm);
+	            $pay[] = addslashes($data->opay_date_payment);
+	             
+	            $pays[] = $e.implode($e.$s.$e, $pay).$e.$s;
+	        }
+	        
+	        $content[] = implode(PHP_EOL, $pays);
+	    }
+	    
+	    
+	    // coupons
+	    // fetch order coupons
+	    $couponSvc= $this->getServiceLocator()->get('MelisComCouponService');
+	    $couponData= $couponSvc->getCouponList($order->ord_id);
+	    if(!empty($couponData)){
+	        $content[] = 'COUPONS';
+	        
+	        foreach($couponData as $data){
+	            $tmp = (array) $data->getCoupon();
+	            $coupon = array();
+	            foreach($tmp as $t){
+	                $coupon[] = addslashes($t);
+	            }
+	            $coupons[] = $e.implode($e.$s.$e, $coupon).$e.$s;
+	        }
+	        
+	        $content[] = implode(PHP_EOL, $coupons);
+	    }
+	    
+	    // shipping
+	    $shippingData = $arrayParameters['orderEntity']->getShipping();
+	    if(!empty($shippingData)){
+	        $content[] = 'SHIPPING';
+	         
+	        foreach($shippingData as $data){
+	            $tmp = (array) $data;
+	            $shipping = array();
+	            foreach($tmp as $t){
+	                $shipping[] = addslashes($t);
+	            }
+	            $shippings[] = $e.implode($e.$s.$e, $shipping).$e.$s;
+	        }
+	         
+	        $content[] = implode(PHP_EOL, $shippings);
+	    }
+	    
+	    // basket
+	    $basketData = $arrayParameters['orderEntity']->getBasket();
+	    if(!empty($basketData)){
+	        $content[] = 'BASKET';
+	        
+	        foreach($basketData as $data){
+	            $tmp = (array) $data;
+	            $basket = array();
+	            foreach($tmp as $key => $val){
+	                if($key == 'obas_currency'){
+	                    foreach($currencies as $currency){
+	                        if($val == $currency->cur_id){
+	                            $basket[] = addslashes($val);
+	                            $basket[] = addslashes($currency->cur_name);
+	                        }
+	                    }
+	                }
+	                else{
+	                   $basket[] = addslashes($val);
+	                }
+	            }
+	            $baskets[] = $e.implode($e.$s.$e, $basket).$e.$s;
+	        }
+	        
+	        $content[] = implode(PHP_EOL, $baskets);
+	    }
+	    
+	    // messages
+	    $messagesData = $arrayParameters['orderEntity']->getMessages();
+	    if(!empty($messagesData)){
+	        $content[] = 'MESSAGES';
+	        
+	        foreach($messagesData as $data){
+	            $tmp = (array) $data;
+	            $message = array();
+	            foreach($tmp as $t){
+	                $message[] = addslashes($t);
+	            }
+	            $messages[] = $e.implode($e.$s.$e, $message).$e.$s;
+	        }
+	         
+	        $content[] = implode(PHP_EOL, $messages);
+	    }
+	    
+	    $content[] = PHP_EOL;
+
+	    $results = implode(PHP_EOL, $content);
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_format_to_csv_end', $arrayParameters);
+	     
 	    return $arrayParameters['results'];
 	}
 	
@@ -373,7 +657,7 @@ class MelisComOrderService extends MelisComGeneralService
 	 *
 	 * @return MelisEcomOrderStatus[] Array of Order status objects
 	 */
-	public function getOrderStatusList($langId = null)
+	public function getOrderStatusList($langId = null, $onlyValid = null)
 	{
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -384,7 +668,7 @@ class MelisComOrderService extends MelisComGeneralService
 	    
 	    // Service implementation start
 	    $melisEcomOrderStatusTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTable');
-	    $status = $melisEcomOrderStatusTable->getOrderStatusListByLangId($arrayParameters['langId']);
+	    $status = $melisEcomOrderStatusTable->getOrderStatusListByLangId($arrayParameters['langId'], $arrayParameters['onlyValid']);
 	    foreach($status as $item){
 	        $results[] = $item;
 	    }
@@ -395,6 +679,85 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters['results'] = $results;
 	    // Sending service end event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_status_list_end', $arrayParameters);
+	    
+	    return $arrayParameters['results'];
+	}
+	
+	/**
+	 *
+	 * This method gets the list of order status and their translations
+	 *
+	 * @param int $langId If specified, it will send back only the translations in this language
+	 *
+	 * @return MelisEcomOrderStatus[] Array of Order status objects
+	 */
+	public function getOrderStatuses($langId = null, $onlyValid = null, $start = null, $limit = null, $colOrder = null, $search = '')
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = array();
+	     
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_statuses_start', $arrayParameters);
+	     
+	    // Service implementation start
+	    $melisEcomOrderStatusTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTable');
+	    $orderStatusTransTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTransTable');
+	    
+	    $status = $melisEcomOrderStatusTable->getOrderStatusList(
+	        $arrayParameters['onlyValid'], $arrayParameters['start'], $arrayParameters['limit'], 
+	        $arrayParameters['colOrder'], $arrayParameters['search']
+        );
+	    
+	    foreach($status as $item){
+	        $trans = array();
+	        foreach($orderStatusTransTable->getEntryByField('ostt_status_id', $item->osta_id) as $stat){
+	            $trans[] = $stat;
+	        }
+	        $item->trans = $trans;
+	        $results[] = $item;
+	    }
+	   
+	    // Service implementation end
+	     
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_statuses_end', $arrayParameters);
+	     
+	    return $arrayParameters['results'];
+	}
+	
+	public function getOrderStatus($orderStatusId, $langId = null)
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = array();
+	    
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_status_start', $arrayParameters);
+	    
+	    // Service implementation start
+	    $melisEcomOrderStatusTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTable');
+	    $orderStatusTransTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTransTable');
+	     
+	    $status = $melisEcomOrderStatusTable->getEntryById($arrayParameters['orderStatusId'])->current();;
+	    
+	    if(!empty($status)){
+	        $trans = array();
+	        foreach($orderStatusTransTable->getEntryByField('ostt_status_id', $status->osta_id) as $stat){
+	            $trans[] = $stat;
+	        }
+	        $status->trans = $trans;
+	    }
+	    
+	    $results = $status;
+	    // Service implementation end
+	    
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_status_end', $arrayParameters);
 	    
 	    return $arrayParameters['results'];
 	}
@@ -821,15 +1184,19 @@ class MelisComOrderService extends MelisComGeneralService
 	    $melisEcomOrderStatusTransTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTransTable');
 	    try
 	    {
-	        $ostaId = $melisEcomOrderStatusTable->save($arrayParameters['orderStatus'], $arrayParameters['newStatusId']);
+	        unset($arrayParameters['orderStatus']['osta_id']);
+	        
+	        $ostaId = $melisEcomOrderStatusTable->save($arrayParameters['orderStatus'], $arrayParameters['orderStatusId']);
 	        
 	        $statusTransData = $arrayParameters['orderStatusTranslations'];
-	        $statusTransData['ostt_status_id'] = $ostaId;
 	        
-	        $statusTrans = $melisEcomOrderStatusTransTable->getEntryByField('ostt_status_id', $ostaId)->current();
-	        $osttId = (!empty($statusTrans)) ? $statusTrans->ostt_id : null;
-	        
-            $melisEcomOrderStatusTransTable->save($statusTransData, $osttId);
+	        foreach($statusTransData as $trans){
+	            $trans['ostt_status_id'] = $ostaId;
+	            $osttId = (!empty($trans['ostt_id'])) ? $trans['ostt_id'] : null;
+	            unset($trans['ostt_id']);
+	            
+	            $melisEcomOrderStatusTransTable->save($trans, $osttId);
+	        }
 	        
 	        $results = $ostaId;
 	    }
@@ -913,6 +1280,39 @@ class MelisComOrderService extends MelisComGeneralService
 	    // Sending service end event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_message_save_end', $arrayParameters);
 	     
+	    return $arrayParameters['results'];
+	}
+	
+	/**
+	 * This method deletes the order status and its translations
+	 * @param unknown $orderStatusId
+	 * @return mixed
+	 */
+	public function deleteOrderStatusById($orderStatusId)
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = null;
+	
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_status_delete_start', $arrayParameters);
+	
+	    // Service implementation start
+	    $orderStatusTbl = $this->getServiceLocator()->get('MelisEcomOrderStatusTable');
+	    $orderStatusTransTbl = $this->getServiceLocator()->get('MelisEcomOrderStatusTransTable');
+	    try
+	    {
+	        $results = $orderStatusTransTbl->deleteByField('ostt_status_id', $arrayParameters['orderStatusId']);
+	        $results = $orderStatusTbl->deleteById($arrayParameters['orderStatusId']);
+	    }
+	    catch(\Exception $e){}
+	    // Service implementation end
+	
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_status_delete_end', $arrayParameters);
+	
 	    return $arrayParameters['results'];
 	}
 	

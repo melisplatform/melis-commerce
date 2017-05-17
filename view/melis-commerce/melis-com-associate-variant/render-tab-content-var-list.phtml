@@ -5,10 +5,11 @@ if (!empty($this->zoneconfig['conf']['id']))
 $data_melisKey = $this->melisKey;
 ?>
 
-<div <?= $id; ?> data-melisKey="<?= $data_melisKey; ?>">
+<div <?= $id; ?> data-melisKey="<?= $data_melisKey; ?>" style="position: relative">
     <div class="border-bottom">
         <h3><?php echo $this->translate('tr_meliscommerce_varaints'); ?></h3><br/>
-    </div><br/>
+    </div>
+    <br/>
 
     <div class="spacing-x2">
 
@@ -20,6 +21,7 @@ $data_melisKey = $this->melisKey;
         $this->melisGenericTable()->setTable(array(
             'id' => 'tableAssocVariantList2_'.$this->prefixId,
             'class' => 'tableAssocVariantList2 table table-striped table-primary dt-responsive nowrap',
+            'data-variantid' => $this->variantId,
             'cellspacing' => '0',
             'width' => '100%'
         ));
@@ -48,9 +50,7 @@ $data_melisKey = $this->melisKey;
         <script type="text/javascript">
             // this script cannot be separated to this file since all table configuration and initialization are done here
             // render table to DataTable plugin
-            $(document).ready(function() {
-                <?php echo$this->getToolDataTableConfig; ?>
-            });
+            <?php echo$this->getToolDataTableConfig; ?>
         </script>
     </div>
 </div>

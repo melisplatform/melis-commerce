@@ -67,9 +67,10 @@ return array(
     'tr_meliscommerce_product_tooltip_no_variants' => 'Pas de variant',
     
     // Product Text
-    'tr_meliscommerce_products_page_content_tab_main_header_add_button' => 'Types de texte du produit',
+    'tr_meliscommerce_products_page_content_tab_main_header_add_button' => 'Types de texte',
     'tr_meliscommerce_products_add_product_text' => 'Ajouter un type de texte',
     'tr_meliscommerce_products_text_tab_ptxt_short_field' => 'Titre du produit ici',
+    'tr_meliscommerce_products_text_close' => 'Close',
 
     // Product Attribute
     'tr_meliscommerce_products_page_attributes_refresh_list' => 'Actualiser',
@@ -85,7 +86,7 @@ return array(
     'tr_meliscommerce_products_attributes_lists_loading' => 'Chargement des attributs...',
     
     // Plugins
-    'tr_meliscommerce_products_plugins_stock_left' => "L\'élément sélectionné n\'a que \"%s\" produits en stock",
+    'tr_meliscommerce_products_plugins_stock_left' => "L'élément sélectionné n'a que \"%s\" produits en stock",
     'tr_meliscommerce_products_plugins_no_stock' => "Le produit est indisponible",
     'tr_meliscommerce_products_plugins_cart_error' => "Une erreur est survenue, veuillez contacter l'administrateur",
 	'tr_meliscommerce_products_plugins_quantity_error' => 'La quantité doit être un nombre',

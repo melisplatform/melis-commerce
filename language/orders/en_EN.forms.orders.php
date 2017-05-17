@@ -15,4 +15,11 @@
         'tr_meliscommerce_orders_invalid_number' => 'The input must contain only digits',
         'tr_meliscommerce_orders_invalid_phone' => 'Please provide a valid contact number',
         'tr_meliscommerce_orders_common_btn_save' => 'Save',
+        
+        'tr_meliscommerce_orders_date_start' => 'Start Date',
+        'tr_meliscommerce_orders_date_end'  => 'End date',
+        'tr_meliscommerce_orders_sperator' => 'Separator',
+        'tr_meliscommerce_orders_invalid_separator' => 'Seperator must be comma (,) or semi-colon (;)',
+        'tr_meliscommerce_orders_date_end_error' => 'End date must be utlerior than start date',
+        'tr_meliscommerce_orders_encapse' => 'Encapsulate columns',
     );

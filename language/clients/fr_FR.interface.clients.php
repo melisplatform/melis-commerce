@@ -186,5 +186,12 @@
     	'tr_meliscommerce_client_pass_errors' => 'Une erreur est survenue',
     	'tr_meliscommerce_client_common_error' => 'Une erreur est survenue, veuillez contacter l\'administrateur',
 	    
-	    'tr_meliscommerce_client_Contact_address_title' => 'Adresse titre'
+	    'tr_meliscommerce_client_Contact_address_title' => 'Adresse titre',
+	    
+	    'tr_meliscommerce_client_export_success' => 'Les clients ont été exportés avec succès',
+	    'tr_meliscommerce_client_export_fail' => 'Echec de l\'export',
+
+	    'tr_meliscommerce_client_order_refresh' => 'Rafraîchir',
+	    'tr_meliscommerce_client_refresh' => 'Actualiser',
+
 	);

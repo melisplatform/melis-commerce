@@ -52,6 +52,7 @@ return array(
     
     // Product Reference
     'tr_meliscommerce_products_reference' => 'Reference',
+    'tr_meliscommerce_products_reference_form' => '<h4><i class="fa fa-asterisk"></i>Reference</h4>',
     'tr_meliscommerce_products_reference_long' => 'Product reference too long, value should be less than 45 characters',
     'tr_meliscommerce_products_reference_empty' => 'To save the product please enter the product reference',
     

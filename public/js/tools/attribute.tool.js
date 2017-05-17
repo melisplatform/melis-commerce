@@ -5,7 +5,14 @@ $(document).ready(function() {
 	body.on("click", ".attributeListRefresh", function(){
 		melisHelper.zoneReload("id_meliscommerce_attribute_list_content_table", "meliscommerce_attribute_list_content_table");
 	});
-	
+
+	//removes modal elements when clicking outside
+	body.on("click", function (e) {
+		if ($(e.target).hasClass('modal')) {
+			$('#id_meliscommerce_attribute_value_modal_value_form_container').modal('hide');
+		}
+	});
+
 	// attribute value - refreshes the attribute value table
 	body.on("click", ".attributeValueRefresh", function(){
 		var attributeId = activeTabId.split("_")[0];

@@ -991,8 +991,19 @@ class MelisComVariantController extends AbstractActionController
         
         if(!empty($postValues['variant'])){
             $informationForm->setData($postValues['variant'][0]);
-            if(!$informationForm->isValid()){                
-                $errors[] = $this->getFormErrors($informationForm, $appConfigInformationForm);
+            if(!$informationForm->isValid()){
+                
+                $varError = $informationForm->getMessages();
+                foreach ($varError as $keyError => $valueError)
+                {
+                    foreach ($appConfigInformationForm['elements'] as $keyForm => $valueForm)
+                    {
+                        if ($valueForm['spec']['name'] == $keyError &&
+                            !empty($valueForm['spec']['options']['label']))
+                            $varError[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                    }
+                }
+                array_push($errors, $varError);
             }else{
                 $success = true;
             }
@@ -1056,7 +1067,17 @@ class MelisComVariantController extends AbstractActionController
                     $stockForm->setData($stock);
         
                     if(!$stockForm->isValid()){
-                        $errors[] = $this->getFormErrors($stockForm, $appConfigStockForm);
+                        $stockError = $stockForm->getMessages();
+                        foreach ($stockError as $keyError => $valueError)
+                        {
+                            foreach ($appConfigStockForm['elements'] as $keyForm => $valueForm)
+                            {
+                                if ($valueForm['spec']['name'] == $keyError &&
+                                    !empty($valueForm['spec']['options']['label']))
+                                    $stockError[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                            }
+                        }
+                        array_push($errors, $stockError);
                         break;
                     }else{
                         $success = true;

@@ -10,6 +10,13 @@ $(function() {
 			melisCoreTool.done("#btnComAddCurrency");
 		});
 	});
+
+	//removes modal elements when clicking outside
+	body.on("click", function (e) {
+		if ($(e.target).hasClass('modal')) {
+			$('#id_meliscommerce_currency_content_modal_form_container').modal('hide');
+		}
+	});
 	
 	body.on("click", ".btnEditComCurrency", function() {
 		melisCoreTool.pending(".btnEditComCurrency");

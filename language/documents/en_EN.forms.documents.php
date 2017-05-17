@@ -6,7 +6,7 @@ return array(
     
     // Upload File Attachment Form
     'tr_meliscommerce_documents_main_information_upload_file_select' => 'Select file',
-    'tr_meliscommerce_documents_main_information_update_file_country' => 'Select country',
+    'tr_meliscommerce_documents_main_information_update_file_country' => 'Country',
     'tr_meliscommerce_documents_main_information_update_file_image' => 'Select type',
     // Images Filter Dropdown
     
@@ -19,7 +19,7 @@ return array(
     
     // Upload Image Form
     'tr_meliscommerce_documents_main_information_upload_select_img' => 'Select image',
-    'tr_meliscommerce_documents_main_information_upload_select_type' => 'Select type',
+    'tr_meliscommerce_documents_main_information_upload_select_type' => 'Type',
     'tr_meliscommerce_documents_main_information_upload_select_type_default' => 'Default',
     'tr_meliscommerce_documents_main_information_upload_select_type_small' => 'Small',
     'tr_meliscommerce_documents_main_information_upload_select_type_large' => 'Large',
