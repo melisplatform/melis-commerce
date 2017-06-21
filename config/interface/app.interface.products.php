@@ -608,6 +608,11 @@ return array(
                                                                                     ),
                                                                                 ),
                                                                             ),
+                                                                            'meliscommerce_product_main_email_alert' => array(
+                                                                                'conf' => array(
+                                                                                    'type' => 'meliscommerce/interface/meliscommerce_settings/interface/meliscommerce_settings_tabs_content_details_general',
+                                                                                )
+                                                                            ),
                                                                         ),
                                                                     ),
                                                                     'meliscommerce_products_main_tab_right_container' => array(

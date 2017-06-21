@@ -696,6 +696,7 @@ class MelisComClientController extends AbstractActionController
             $formElements = $this->serviceLocator->get('FormElementManager');
             $factory->setFormElementManager($formElements);
             $propertyForm = $factory->createForm($appConfigForm);
+            $clientSvc = $this->getServiceLocator()->get('MelisComClientService');
             
             // Getting the Elements/fields of the Client COntact form
             $appConfigFormElements = $appConfigForm['elements'];
@@ -703,6 +704,16 @@ class MelisComClientController extends AbstractActionController
             // Gtting Data from Post and Set as values to the Client Contact Form
             $postValues = get_object_vars($request->getPost());
             $propertyForm->setData($postValues);
+            
+            if(!empty($postValues['cper_email'])){
+                $client = $clientSvc->getClientPersonByEmail($postValues['cper_email']);
+                
+                if(!empty($client)){
+                    $errors['cper_email'] = array(
+                        'isDuplicate' => $translator->translate('tr_meliscommerce_client_email_not_available'),      
+                    );
+                }
+            }
             
             // Cehcking if the Client Contact form is valid after set the Data from Post
             if ($propertyForm->isValid())
@@ -746,7 +757,7 @@ class MelisComClientController extends AbstractActionController
             else 
             {
                 $textMessage = $translator->translate('tr_meliscommerce_client_Contact_unable_to_add');
-                $errors = $propertyForm->getMessages();
+                $errors = ArrayUtils::merge($errors, $propertyForm->getMessages());
             }
             
             // Preparing the error messages if error is occured
@@ -760,6 +771,10 @@ class MelisComClientController extends AbstractActionController
                     }
                 }
             }
+        }
+        
+        if(!empty($errors)){
+            $success = 0;
         }
         
         $response = array(
@@ -1504,7 +1519,7 @@ class MelisComClientController extends AbstractActionController
                             {
                                 $errors_1_temp['cper_email'] = array(
                                     'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
-                                    'emailExist' => $translator->translate('Email address is not available'),
+                                    'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
                                 );
                             }
                         }

@@ -127,6 +127,7 @@ CREATE TABLE IF NOT EXISTS `melis_ecom_product` (
   `prd_id` INT NOT NULL AUTO_INCREMENT COMMENT 'Product Id',
   `prd_reference` VARCHAR(45) NULL COMMENT 'Reference for this product',
   `prd_status` TINYINT(1) NOT NULL DEFAULT 1 COMMENT 'Active / Not acitve',
+  `prd_stock_low` INT NULL DEFAULT NULL,
   `prd_date_creation` DATETIME NULL DEFAULT NULL COMMENT 'Creation date of this product',
   `prd_user_id_creation` INT NULL DEFAULT NULL COMMENT 'BO user who created this product',
   `prd_date_edit` DATETIME NULL COMMENT 'Last edit date of this product',
@@ -219,6 +220,8 @@ CREATE TABLE IF NOT EXISTS `melis_ecom_variant_stock` (
   `stock_var_id` INT NOT NULL COMMENT '',
   `stock_country_id` INT NOT NULL DEFAULT 0 COMMENT '',
   `stock_quantity` INT NULL DEFAULT 0 COMMENT '',
+  `stock_low` INT NULL DEFAULT NULL,
+  `stock_qty_email_sent` SMALLINT NULL DEFAULT 0,
   `stock_next_fill_up` DATETIME NULL COMMENT '',
   PRIMARY KEY (`stock_id`)  COMMENT '',
   INDEX `variant_idx` (`stock_var_id` ASC)  COMMENT '')
@@ -854,6 +857,9 @@ CREATE TABLE IF NOT EXISTS `melis_ecom_coupon_order` (
   `cord_id` INT NOT NULL AUTO_INCREMENT COMMENT 'Relation coupon order Id',
   `cord_coupon_id` INT NOT NULL COMMENT 'Coupon Id',
   `cord_order_id` INT NOT NULL COMMENT 'Order Id',
+  `cord_basket_id` INT NULL DEFAULT NULL,
+  `cord_status` INT NULL DEFAULT NULL,
+  `cord_quantity_used` INT NOT NULL,
   PRIMARY KEY (`cord_id`)  COMMENT '',
   INDEX `coupon_idx` (`cord_coupon_id` ASC)  COMMENT '',
   INDEX `order_idx` (`cord_order_id` ASC)  COMMENT '')
@@ -890,6 +896,21 @@ CREATE TABLE IF NOT EXISTS `melis_ecom_coupon_product` (
   INDEX `fk_melis_ecom_coupon_product_melis_ecom_product1_idx` (`cprod_product_id` ASC))
 ENGINE = InnoDB;
 COMMENT = 'This table stores the relation between assigned coupons and their product';
+
+-- -----------------------------------------------------
+-- Table `melis_ecom_stock_email_alert`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `melis_ecom_stock_email_alert` ;
+
+CREATE TABLE IF NOT EXISTS `melis_ecom_stock_email_alert` (
+  `sea_id` INT NOT NULL AUTO_INCREMENT,
+  `sea_stock_level_alert` INT NULL,
+  `sea_email` VARCHAR(255) NULL,
+  `sea_prd_id` INT NULL,
+  `sea_user_id` INT NULL,
+  PRIMARY KEY (`sea_id`),
+  INDEX `fk_melis_ecom_stock_email_alert_melis_ecom_product1_idx` (`sea_prd_id` ASC))
+ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `melis_ecom_seo`

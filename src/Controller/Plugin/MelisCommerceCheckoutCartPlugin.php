@@ -62,6 +62,8 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
         $currency = null;
         $subTotal = 0;
         $totalDiscount = 0;
+        $subTotalWithProdDiscount = 0;
+        $orderDiscount = 0;
         $discountInfo = '';
         $total = 0;
         $errors = array();
@@ -88,6 +90,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
         $ecomAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
         $basketSrv = $this->getServiceLocator()->get('MelisComBasketService');
         $variantSrv = $this->getServiceLocator()->get('MelisComVariantService');
+        $couponSrv = $this->getServiceLocator()->get('MelisComCouponService');
         
         $clientKey = $ecomAuthSrv->getId();
         $clientId = null;
@@ -175,8 +178,38 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
         
         if (!is_null($basketData)){
             
+            /**
+             * Checkouk Coupon Plugin
+             * This plugin will validate the coupon if coupon code if submitted
+             */
+            $pluginManager = $this->getServiceLocator()->get('ControllerPluginManager');
+            $checkoutCouponPlugin = $pluginManager->get('MelisCommerceCheckoutCouponAddPlugin');
+            $checkoutCartCouponParameters = ArrayUtils::merge($checkoutCartCouponParameters, array(
+                'm_site_id' => $siteId
+            ));
+            $couponView = $checkoutCouponPlugin->render($checkoutCartCouponParameters);
+            $coupon = $couponView->getVariables();
+            
+            $sessionCoupons = !empty($coupon['coupon'])? $coupon['coupon'] : array();
+            $generalCoupons = !empty($sessionCoupons['generalCoupons'])? $sessionCoupons['generalCoupons'] : array();
+            $productCoupons = !empty($sessionCoupons['productCoupons'])? $sessionCoupons['productCoupons'] : array();
+            
             $melisComVariantService = $this->getServiceLocator()->get('MelisComVariantService');
             $melisComProductService = $this->getServiceLocator()->get('MelisComProductService');
+            
+            $tmp = array();
+            foreach($productCoupons as $productCoupon){
+                
+                $discountedProducts = $couponSrv->getCouponProductList($productCoupon->coup_id, true);
+                $ids = array();
+                foreach($discountedProducts as $discountProduct){
+                    
+                    $ids[] = $discountProduct->getId();
+                }
+                $productCoupon->products = $ids;
+                $tmp[$productCoupon->coup_id] = clone $productCoupon;
+            }
+            $productCoupons = $tmp;
             
             foreach ($basketData As $val)
             {
@@ -218,6 +251,44 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                 
                 // Compute variant total amount
                 $variantTotal = $quantity * $varPrice->price_net;
+                
+                $discount = 0;
+                $discountDetails = '';
+                $tmp = array();
+                // calculate final variant price with coupons applied
+                foreach($productCoupons as $productCoupon){
+                    $hasDiscount = true;
+                    // get coupon quantity
+                    $couponQty = $productCoupon->coup_max_use_number - $productCoupon->coup_current_use_number;
+                    
+                    // check if variant is discounted by a coupon
+                    if(in_array($variant->getVariant()->var_prd_id, $productCoupon->products)){
+                        
+                        // get actual usable quantity
+                        $usableCouponQty = (($couponQty - $quantity) >= 0)? $quantity : $couponQty;
+                        
+                        if($usableCouponQty > 0){
+                            
+                            if(!empty($productCoupon->coup_percentage)){
+                                
+                                $discount += ($productCoupon->coup_percentage / 100) * ($varPrice->price_net * $usableCouponQty);
+                                $discountDetails = "$productCoupon->coup_percentage%";
+                                
+                            } elseif (!empty($productCoupon->coup_discount_value)){
+                                
+                                $discount += $productCoupon->coup_discount_value * $usableCouponQty;
+                                $discountDetails = $discount;
+                            }
+                            
+                            $productCoupon->coup_current_use_number = $productCoupon->coup_current_use_number + $usableCouponQty;
+                            
+                        }
+                    }
+                    
+                    $tmp[$productCoupon->coup_id] = clone $productCoupon;
+                }
+                $productCoupons = $tmp;
+                
                 $data = array(
                     'var_id' => $variantId,
                     'var_sku' => $varSku,
@@ -226,64 +297,49 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                     'var_price' => $varPrice->price_net,
                     'product_name' => $melisComProductService->getProductName($productId, $langId),
                     'product_img' => $productImg,
-                    'var_total' => $variantTotal,
+                    'var_total' => $variantTotal - $discount,
                     'var_remove_link' => $variantRemoveLink.'?m_v_id_remove='.$variantId,
-                    'var_err' => $variantErr
+                    'var_err' => $variantErr,
+                    'var_discount' => $discount,
+                    'var_discount_details' => $discountDetails,
                 );
                 
                 // Setting the currency use of the cart
                 $currency = $varPrice->cur_symbol;
                 $subTotal += $variantTotal;
+                $subTotalWithProdDiscount += $variantTotal - $discount;
                 array_push($checkOutCart, $data);
             }
             
-            /**
-             * Checkouk Coupon Plugin
-             * This plugin will validate the coupon if coupon code if submitted
-             */
-            $pluginManager = $this->getServiceLocator()->get('ControllerPluginManager');
-            $checkoutCouponPlugin = $pluginManager->get('MelisCommerceCheckoutCouponAddPlugin');
-            $checkoutCartCouponParameters = ArrayUtils::merge($checkoutCartCouponParameters, array(
-                'm_site_id' => $siteId
-            ));
-            $couponView = $checkoutCouponPlugin->render($checkoutCartCouponParameters);
-            $coupon = $couponView->getVariables();
-            
-            if (!empty($coupon->coupon))
-            {
-                $couponData = $coupon->coupon;
-                /**
-                 * Checking if the coupon is using Pecentage or value
-                 * that will deducted to the sub-total of the cart
-                 */
-                if (!empty($couponData->coup_percentage))
-                {
-                    $totalDiscount = ($couponData->coup_percentage / 100) * $subTotal;
-                    $discountInfo = $couponData->coup_percentage.'%';
-                    $hasDiscount = true;
-                }
-                elseif (!empty($couponData->coup_discount_value))
-                {
-                    $totalDiscount = $couponData->coup_discount_value;
-                    $hasDiscount = true;
+            foreach($generalCoupons as $generalCoupon){
+                $hasDiscount = true;
+                if(!empty($generalCoupon->coup_percentage)){
+                    
+                    $totalDiscount = ($generalCoupon->coup_percentage / 100) * $subTotalWithProdDiscount;
+                    $discountInfo[] = array(
+                        'details' => $generalCoupon->coup_percentage.'%',
+                        'amount' => $currency.number_format($totalDiscount, 2),
+                    );
+                    
+                }elseif (!empty($generalCoupon->coup_discount_value)){
+                    
+                    $totalDiscount = $generalCoupon->coup_discount_value;
+                    $discountInfo[] =  array(
+                        'details' => $totalDiscount,
+                        'amount' => $currency.number_format($totalDiscount,2),
+                    );
                 }
                 
-                $total = $subTotal - $totalDiscount;
-                if ($total < 0)
-                {
-                    $total = 0;
-                }
+                $orderDiscount += $totalDiscount;
             }
-            else
-            {
-                $total = $subTotal;
-            }
+            
+            $total = $subTotalWithProdDiscount - $orderDiscount;
         }
         
         $viewVariables = array(
             'checkOutCart' => $checkOutCart,
-            'checkOutCartSubTotal' => $currency.number_format($subTotal, 2),
-            'checkOutCartDiscount' => $currency.number_format($totalDiscount, 2),
+            'checkOutCartSubTotal' => $currency.number_format($subTotalWithProdDiscount, 2),
+            'checkOutCartDiscount' => $currency.number_format($orderDiscount, 2),
             'checkOutCartDiscountInfo' => $discountInfo,
             'checkOutCartTotal' => $currency.number_format($total, 2),
             'checkoutErrors' => $errors,

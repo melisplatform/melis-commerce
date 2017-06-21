@@ -123,42 +123,41 @@ return array(
                         'columns' => array(
                             'cli_id' => array(
                                 'text' => 'tr_meliscommerce_coupon_page_table_col_id',
-                                'css' => array('width' => '1%', 'padding-right' => '0'),
+                                'css' => array('width' => '10%', 'padding-right' => '0'),
                                 'sortable' => true,
                             ),
                             
-                            'assign' => array(
-                                'text' => 'tr_meliscommerce_coupon_page_table_col_assigned',
-                                'css' => array('width' => '1%', 'padding-right' => '0'),
-                                'sortable' => true,
-                            ),
-                        
                             'cper_firstname' => array(
                                 'text' => 'tr_meliscommerce_coupon_page_table_col_name_first',
-                                'css' => array('width' => '20%', 'padding-right' => '0'),
+                                'css' => array('width' => '15%', 'padding-right' => '0'),
                                 'sortable' => true,
                             ),
                             
                             'cper_name' => array(
                                 'text' => 'tr_meliscommerce_coupon_page_table_col_name_last',
-                                'css' => array('width' => '20%', 'padding-right' => '0'),
+                                'css' => array('width' => '15%', 'padding-right' => '0'),
                                 'sortable' => true,
                             ),
                             
                             'cper_email' => array(
                                 'text' => 'tr_meliscommerce_coupon_page_table_col_email',
-                                'css' => array('width' => '20%', 'padding-right' => '0'),
+                                'css' => array('width' => '15%', 'padding-right' => '0'),
                                 'sortable' => true,
                             ),
                             'ccomp_name' => array(
                                 'text' => 'tr_meliscommerce_coupon_page_table_col_company',
-                                'css' => array('width' => '20%', 'padding-right' => '0'),
+                                'css' => array('width' => '15%', 'padding-right' => '0'),
                                 'sortable' => true,
                             ),                                                        
                         ),
                         
                         'searchables' => array(),
-                        'actionButtons' => array(                            
+                        'actionButtons' => array(
+                            'edit' => array(
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComCoupon',
+                                'action' => 'render-coupon-content-action-edit-client',
+                            ),
                             'add' => array(
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComCoupon',
@@ -231,6 +230,11 @@ return array(
                 
                         'searchables' => array(),
                         'actionButtons' => array(
+                            'edit' => array(
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComCoupon',
+                                'action' => 'render-coupon-content-action-edit-client',
+                            ),
                             'delete' => array(
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComCoupon',
@@ -398,11 +402,11 @@ return array(
                                 'sortable' => true,
                             ),
 
-                            'product_image' => array(
-                                'text' => 'tr_meliscommerce_product_list_col_image',
-                                'css' => array('width' => '5%', 'padding-right' => '0'),
-                                'sortable' => false,
-                            ),
+//                             'product_image' => array(
+//                                 'text' => 'tr_meliscommerce_product_list_col_image',
+//                                 'css' => array('width' => '5%', 'padding-right' => '0'),
+//                                 'sortable' => false,
+//                             ),
                             'product_name' => array(
                                 'text' => 'tr_meliscommerce_product_list_col_name',
                                 'css' => array('width' => '20%', 'padding-right' => '0'),
@@ -418,6 +422,11 @@ return array(
                 
                         'searchables' => array(),
                         'actionButtons' => array(
+                            'edit' => array(
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComProductList',
+                                'action' => 'render-product-list-content-action-edit'
+                            ),
                             'delete' => array(
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComCoupon',
@@ -431,7 +440,7 @@ return array(
                         'target' => '#productList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComCoupon/getCouponProductData',
                         'dataFunction' => 'initMelisCouponProduct',
-                        'ajaxCallback' => 'melisCommerce.initTooltipTable()',
+                        'ajaxCallback' => 'melisCommerce.initTooltipTable(), initCouponProductTable()',
                         'filters' => array(
                             'left' => array(
                                 'coupon-table-filter-limit-assign-product' => array(
@@ -471,17 +480,11 @@ return array(
                                 'sortable' => true,
                             ),
                             
-                            'assign' => array(
-                                'text' => 'tr_meliscommerce_coupon_page_table_col_assigned',
-                                'css' => array('width' => '1%', 'padding-right' => '0'),
-                                'sortable' => true,
-                            ),
-
-                            'product_image' => array(
-                                'text' => 'tr_meliscommerce_product_list_col_image',
-                                'css' => array('width' => '5%', 'padding-right' => '0'),
-                                'sortable' => false,
-                            ),
+//                             'product_image' => array(
+//                                 'text' => 'tr_meliscommerce_product_list_col_image',
+//                                 'css' => array('width' => '5%', 'padding-right' => '0'),
+//                                 'sortable' => false,
+//                             ),
                             'product_name' => array(
                                 'text' => 'tr_meliscommerce_product_list_col_name',
                                 'css' => array('width' => '20%', 'padding-right' => '0'),
@@ -497,6 +500,11 @@ return array(
                 
                         'searchables' => array(),
                         'actionButtons' => array(
+                            'edit' => array(
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComProductList',
+                                'action' => 'render-product-list-content-action-edit'
+                            ),
                             'add' => array(
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComCoupon',

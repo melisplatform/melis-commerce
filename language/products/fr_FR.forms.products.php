@@ -63,4 +63,6 @@ return array(
     'tr_meliscommerce_products_attributes_add_failed' => 'Impossible de rajouter, attribut sélectionné invalide',
     'tr_meliscommerce_products_attributes_add_empty' => 'Veuillez saisir la valeur de l\'attribut',
     'tr_meliscommerce_products_attributes_save_failed' => 'Impossible de sauvegarder avec les attributs, veuillez vérifier les attributs du produit',
+    
+    'tr_meliscommerce_product_stock_low_field' => 'Alerte de stock',
 );

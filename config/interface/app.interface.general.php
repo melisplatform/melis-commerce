@@ -111,7 +111,12 @@ return array(
                                     'conf' => array(
                                         'type' => 'meliscommerce/interface/meliscommerce_order_status_tool/interface/meliscommerce_order_status_tool_leftmenu'
                                     ),
-                                ),                               
+                                ),
+                                'meliscommerce_settings' => array(
+                                    'conf' => array(
+                                        'type' => 'meliscommerce/interface/meliscommerce_settings/interface/meliscommerce_settings_leftmenu'
+                                    ),
+                                ),
                             ),
                         ),
                     ),

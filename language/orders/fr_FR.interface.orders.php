@@ -59,6 +59,7 @@
 	    
 	    //payments tab
 	    'tr_meliscommerce_order_payment_paid' => 'Montant payé',
+	    'tr_meliscommerce_order_payment_price_with_discount' => 'Commande avec réduction',
 	    'tr_meliscommerce_order_payment_price' => 'Prix de la commande',
 	    'tr_meliscommerce_order_payment_shipment' => 'Frais de transport',
 	    'tr_meliscommerce_order_payment_type' => 'Mode de paiement', //type of payment, visa, mastercard or money transfer
@@ -101,4 +102,9 @@
 	    'tr_meliscommerce_order_status_delete_fail' => 'Echec e la suppression du statut',
 	    'tr_meliscommerce_order_status_delete_success' => 'Le statut a été supprimé avec succès',
 	    'tr_meliscommerce_orders_status_empty' => 'Tous (sauf temporaire)',
+	    
+	    //emails
+	    'tr_meliscommerce_orders_email_low_stock_subject' => 'Alerte de Stock : Produit %s SKU %s',
+	    'tr_meliscommerce_orders_email_low_stock_html' => '<p>Bonjour,</p><p>L\'alerte de stock du produit suivant a été atteinte :</p><p>ID : [PRODUCT_ID]</p><p>Nom du produit : [PRODUCT_TEXT] </p><p>SKU : [VARIANT_SKU]</p><p>Stock restant : [STOCKS]</p>',
+	    'tr_meliscommerce_orders_email_low_stock_text' => 'Bonjour, L\'alerte de stock du produit suivant a été atteinte : ID : [PRODUCT_ID] Nom du produit : [PRODUCT_TEXT] SKU : [VARIANT_SKU] Stock restant : [STOCKS]',
 	);

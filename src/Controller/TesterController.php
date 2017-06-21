@@ -99,31 +99,51 @@ class TesterController extends AbstractActionController
     
     public function testAction()
     {
+        $stockAlertTable = $this->getServiceLocator()->get('MelisEcomStockEmailAlertTable');
+        $data = $stockAlertTable->fetchAll();
         
-//         $productSvc = $this->getServiceLocator()->get('MelisComProductService');
-        
-//         $data = $productSvc->getProductSeoById(1, 1);
-
-//         $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
-        
-//         $data = $variantSvc->getVariantSeoById(1, 1);
-
-        $categorySvc = $this->getServiceLocator()->get('MelisComCategoryService');
-        
-        $data = $categorySvc->getCategorySeoById(3, 1);
-        
-        echo '<pre>'; var_dump($data); echo '</pre>'; die();
+        var_dump($data->toArray());
+       
         die();
 
     }
     
     public function testingAction()
     {
-        $currencySvc = $this->getServiceLocator()->get('MelisComProductSearchService');
+//         $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+//         $confOrder = $melisCoreConfig->getItem('meliscommerce/emails');
+//         $confOrder = $melisCoreConfig->getItem('meliscommerce/');
         
-        $data = $currencySvc->getProductByCategory(array(20), 1);
-        echo '<pre>'; print_r($data); echo '</pre>'; die();
-        die();
+//         echo '<pre>'; print_r($confOrder); echo '</pre>';
+//         die();
+           $stockEmailSvc = $this->getServiceLocator()->get('MelisComStockEmailAlertService');
+           $stockEmailSvc->checkStockLevelByOrderId((int) $this->params()->fromQuery('orderId', ''));
+           echo 'sending....';
+           die();
+    }
+    
+    public function checkMailConfigAction()
+    {
+                $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+                $confOrder = $melisCoreConfig->getItem('meliscommerce/emails');
+//                 $confOrder = $melisCoreConfig->getItem('meliscommerce/');
+    
+                echo '<pre>'; print_r($confOrder); echo '</pre>';
+                die();
+    }
+    
+    /**
+     * Returns the translation text
+     * @param String $key
+     * @param array $args
+     * @return string
+     */
+    private function getTranslation($key, $args = null)
+    {
+        $translator = $this->getServiceLocator()->get('translator');
+        $text = vsprintf($translator->translate($key), $args);
+    
+        return $text;
     }
     
     public function testMailAction()

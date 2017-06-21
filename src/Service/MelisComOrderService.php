@@ -801,7 +801,7 @@ class MelisComOrderService extends MelisComGeneralService
 	     
 	    // Service implementation start
 	    $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
-	     
+        	    
 	    $clientOrderData = $melisEcomOrderTable->getClientOrderDetailsById($arrayParameters['orderId'], $arrayParameters['clientId'], $arrayParameters['personId'], $arrayParameters['langId'])->current();
 	    if (!empty($clientOrderData))
 	    {

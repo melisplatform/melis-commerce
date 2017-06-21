@@ -144,7 +144,7 @@ class MelisEcomOrderTable extends MelisEcomGenericTable
         $select = $this->tableGateway->getSql()->select();
         
         $select->where('ord_client_id ='. $clientID);
-        $select->order('ord_id', 'DESC');
+        $select->order('ord_id DESC');
         $select->limit(1);
         
         $resultData = $this->tableGateway->selectWith($select);
@@ -184,12 +184,12 @@ class MelisEcomOrderTable extends MelisEcomGenericTable
         $join = new Expression('melis_ecom_order_payment_type.opty_id = melis_ecom_order_payment.opay_payment_type_id');
         $select->join('melis_ecom_order_payment_type', $join, array('*'),$select::JOIN_LEFT);
         
-        $join = new Expression('melis_ecom_coupon_order.cord_order_id=melis_ecom_order.ord_id AND cord_order_id='.$orderId);
-        $select->join('melis_ecom_coupon_order', $join,
-            array('*'),$select::JOIN_LEFT);
-        $join = new Expression('melis_ecom_coupon.coup_id=melis_ecom_coupon_order.cord_coupon_id');
-        $select->join('melis_ecom_coupon', $join,
-            array('*'),$select::JOIN_LEFT);
+//         $join = new Expression('melis_ecom_coupon_order.cord_order_id=melis_ecom_order.ord_id AND cord_order_id='.$orderId);
+//         $select->join('melis_ecom_coupon_order', $join,
+//             array('*'),$select::JOIN_LEFT);
+//         $join = new Expression('melis_ecom_coupon.coup_id=melis_ecom_coupon_order.cord_coupon_id');
+//         $select->join('melis_ecom_coupon', $join,
+//             array('*'),$select::JOIN_LEFT);
         
         $select->where('ord_id ='.$orderId);
         $select->where('ord_client_id ='.$clientId);

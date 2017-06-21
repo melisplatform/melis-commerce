@@ -65,4 +65,5 @@ return array(
     'tr_meliscommerce_products_attributes_save_failed' => 'Unable to save attributes, please review product attributes',
     
     'tr_meliscommerce_products_category_save_failed' => 'Unable to save categories, please review product categories',
+    'tr_meliscommerce_product_stock_low_field' => 'Stock alert',
 );

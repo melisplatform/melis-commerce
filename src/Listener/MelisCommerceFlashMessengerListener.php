@@ -68,6 +68,7 @@ class MelisCommerceFlashMessengerListener extends MelisCoreGeneralListener imple
         	    'meliscommerce_country_save_end',
         	    'meliscommerce_language_save_end',
         	    'meliscommerce_checkout_order_add',
+        	    'meliscommerce_settings_save_end',
         	),
         	function($e){
 

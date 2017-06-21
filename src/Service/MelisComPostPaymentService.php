@@ -53,6 +53,7 @@ class MelisComPostPaymentService extends MelisComGeneralService
                 'transactionPricepaidConfirm' => $postValues['payment-transaction-price-paid-confirm'],
                 'transactionDateTime' => $postValues['payment-transaction-date'],
                 'transactionCountryId' => $postValues['payment-transaction-country-id'],
+                'transactionCourrencyCode' => $postValues['payment-transaction-currency-code'],
                 'transactionCouponId' => $postValues['payment-transaction-coupon-id'],
             );
             

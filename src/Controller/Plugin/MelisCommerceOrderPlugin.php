@@ -86,6 +86,18 @@ class MelisCommerceOrderPlugin extends MelisTemplatingPlugin
             $clientId = $ecomAuthSrv->getClientId();
             $data = $orderSvc->getOrderById($orderId, $langId);
            
+            $orderCoupons = $couponSvc->getCouponList($orderId);
+            $tmp = array();
+            foreach($orderCoupons as $coupon){
+            
+                if($coupon->getCoupon()->coup_product_assign){
+                    $coupon->getCoupon()->discountedBasket = $couponSvc->getCouponDiscountedBasketItems($coupon->getCoupon()->coup_id, $orderId);
+                }
+                $tmp[] = $coupon;
+            }
+            
+            $orderCoupons = $tmp;
+            
             if(!empty($data->getClient())){
                 if($data->getClient()->cli_id == $clientId){
                     //auhtorized
@@ -93,12 +105,6 @@ class MelisCommerceOrderPlugin extends MelisTemplatingPlugin
                     
                     $currencies = $currencySvc->getCurrencies();
                     
-                    $orderCoupon = array();
-                    foreach($couponSvc->getCouponList($data->getId()) as $coupon){
-                        $order['coupon'] = $coupon->getCoupon()->coup_code;
-                        $order['coupon_value'] = $coupon->getCoupon()->coup_discount_value;
-                        $order['coupon_percentage'] = $coupon->getCoupon()->coup_percentage;
-                    }
                     
                     $status = '';
                     
@@ -116,6 +122,31 @@ class MelisCommerceOrderPlugin extends MelisTemplatingPlugin
                     $shipping = 0;
                    
                     foreach($data->getBasket() as $basket){
+                        
+                        $basket->discount = 0;
+                        if(!empty($orderCoupons)){
+                        
+                            foreach($orderCoupons as $coupon){
+                        
+                                if($coupon->getCoupon()->coup_product_assign){
+                        
+                                    foreach($coupon->getCoupon()->discountedBasket as $item){
+                        
+                                        if ($item->cord_basket_id == $basket->obas_id){
+                        
+                                            if(!empty($coupon->getCoupon()->coup_percentage)){
+                        
+                                                $basket->discount = ($coupon->getCoupon()->coup_percentage / 100) * $basket->obas_price_net;
+                        
+                                            } elseif (!empty($coupon->getCoupon()->coup_discount_value)){
+                        
+                                                $basket->discount = $coupon->getCoupon()->coup_discount_value * $item->cord_quantity_used;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     
                         $count = $count + $basket->obas_quantity;
                         $details = array();
@@ -158,16 +189,34 @@ class MelisCommerceOrderPlugin extends MelisTemplatingPlugin
                         $details['sku'] = $basket->obas_sku;
                         $details['currency'] = $currency;
                         $details['price'] = $basket->obas_price_net;
+                        $details['total'] = ($basket->obas_price_net * $basket->obas_quantity) - $basket->discount;
+                        $details['discount'] = $basket->discount;
                         $details['quantity'] = $basket->obas_quantity;
-                    
+                        
+                        $subTotal += $details['total'];
                         $items[] = $details;
+                    }
+                    
+                    $couponDetails = array();
+                    if(!empty($orderCoupons)){
+                    
+                        foreach($orderCoupons as $coupon){
+                    
+                            if(!$coupon->getCoupon()->coup_product_assign){
+                                $couponDetails[] = array(
+                                    'couponCode' => $coupon->getCoupon()->coup_code,
+                                    'couponIsInPercentage' => ($coupon->getCoupon()->coup_percentage) ? true : false,
+                                    'couponValue' => ($coupon->getCoupon()->coup_percentage) ? $coupon->getCoupon()->coup_percentage.'%' : $coupon->getCoupon()->coup_discount_value,
+                                    'couponDiscount' => ($coupon->getCoupon()->coup_percentage) ? ($coupon->getCoupon()->coup_percentage / 100) * $coupon->getCoupon()->opay_price_order : $coupon->getCoupon()->coup_discount_value,
+                                );
+                            }
+                        }
                     }
                     
                     if(!empty($data->getPayment())){
                     
                         foreach($data->getPayment() as $payment){
                             $shipping = $shipping + $payment->opay_price_shipping;
-                            $subTotal = $subTotal + $payment->opay_price_order;
                             $total = $total + $payment->opay_price_total;
                         }
                     }
@@ -180,10 +229,9 @@ class MelisCommerceOrderPlugin extends MelisTemplatingPlugin
                     $order['date'] = $data->getOrder()->ord_date_creation;
                     $order['status'] = $status;
                     $order['itemCount'] = $count;
-                    $order['total'] = $total;
                     $order['currency'] = $currency;
                     $order['items'] = $items;
-                    
+                    $order['coupons'] = $couponDetails;
                 }
             }
         }

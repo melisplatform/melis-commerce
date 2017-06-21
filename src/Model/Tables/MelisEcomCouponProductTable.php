@@ -22,10 +22,15 @@ class MelisEcomCouponProductTable extends MelisEcomGenericTable
         $this->idField = 'cprod_id';
     }
     
-    public function checkCouponProductExist($couponId, $productId)
+    public function checkCouponProductExist($couponId, $clientId, $productId = null)
     {
         
         $select = $this->tableGateway->getSql()->select();
+        
+        if(!is_null($clientId)){
+            $select->join('melis_ecom_coupon_client', 'melis_ecom_coupon_client.ccli_coupon_id = cprod_coupon_id', array(), $select::JOIN_LEFT);
+            $select->where->equalTo('ccli_client_id', $clientId);
+        }
         
         $select->where->equalTo('cprod_coupon_id', $couponId);
         
@@ -46,4 +51,5 @@ class MelisEcomCouponProductTable extends MelisEcomGenericTable
         $resultData = $this->tableGateway->deleteWith($delete);
         return $resultData;
     }
+    
 }

@@ -120,6 +120,7 @@ a {
 .meliscommerce-order-checkout-product-list-countries .pays {
 	margin: 0 7px;
 }
+
  
 /* filter searchbar ----------*/
 .filter-searchbar{
@@ -308,6 +309,15 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child:before {
 }
 
 /* qTip Custom CSS */
+.tooltipTable {
+}
+.qtip.qtip-default.qtip-tipsy {
+	/*top: 300px !important;*/
+}
+.qtip-content {
+/*	position: relative!important;
+	top: 100px !important;*/
+}
 .qtip-tipsy {
 	background: #555555;
 	color: #fff;
@@ -333,6 +343,20 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child:before {
 .qtipTable {
 	overflow-y: auto;
 	max-height: 620px;
+}
+.qtipTable.tooltiptext .fa-warning {
+	position: relative;
+}
+.qtipTable.tooltiptext .fa-warning:after {
+    content: "";
+    display: block;
+    width: 4px;
+    height: 7px;
+    background: #fff;
+    position: absolute;
+    top: 3px;
+    left: 4px;
+    z-index: -1;
 }
 .qtipTable th {
 	padding:0 10px 5px;
@@ -1399,4 +1423,9 @@ textarea {
 span .fa-globe{
 	width:24px;
 	height:24px;
+}
+
+@media ( min-width: 1200px ) {
+.pays-country .form-control {
+	min-width: 120px;
 }

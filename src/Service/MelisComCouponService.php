@@ -80,7 +80,7 @@ class MelisComCouponService extends MelisComGeneralService
     }
     
     /**
-     * Returns a coupon by id from melis_ecom_coupon_table
+     * Returns a coupon by id from melis_ecom_coupon_
      * Retrieves data by coupon id
      * 
      * @param int $couponId the coupon id to look for
@@ -110,6 +110,82 @@ class MelisComCouponService extends MelisComGeneralService
         $arrayParameters['results'] = $results;
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_get_coupons_end', $arrayParameters);
+         
+        return $arrayParameters['results'];
+    }
+    
+    /**
+     * Returns the coupon order table from melis_ecom_coupon_order
+     * 
+     * @param int $couponId Id of the coupon
+     * @param int $orderId 
+     * 
+     * @return coupon order object | empty []
+     */
+    public function getCouponDiscountedBasketItems($couponId, $orderId = null)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_coupon_discounted_basket_items_start', $arrayParameters);
+        
+        // Service implementation start
+        $couponOrderTable = $this->getServiceLocator()->get('MelisEcomCouponOrderTable');
+        $data = $couponOrderTable->getCouponDiscountedBasketItems($arrayParameters['couponId'], $arrayParameters['orderId']);
+        
+        foreach($data as $couponOrder){
+            $results[] = $couponOrder;
+        }
+        // Service implementation end
+        
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_coupon_discounted_basket_items_start', $arrayParameters);
+         
+        return $arrayParameters['results'];
+    }
+    
+    /**
+     * This method retrieves coupon by type, the types are general and product
+     * 
+     * @param string $type general | product string
+     * @param int $orderId order id
+     * 
+     * @return coupon array()
+     */
+    public function getCouponByType($type, $orderId = null)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_coupons_by_type_start', $arrayParameters);
+        
+        // Service implementation start
+        $couponTable = $this->getServiceLocator()->get('MelisEcomCouponTable');
+        $coupons = array();
+        try{
+           $coupons =  $couponTable->getCouponByType($arrayParameters['type'], $arrayParameters['orderId']);
+        }catch(\Exception $e){
+            
+        }
+        
+        foreach($coupons as $coupon){
+            $melisCoupon = new \MelisCommerce\Entity\MelisCoupon();
+            $melisCoupon->setId($coupon->coup_id);
+            $melisCoupon->setCoupon($coupon);
+            $results[] = $melisCoupon;
+        }
+        // Service implementation end
+        
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_coupons_by_type_end', $arrayParameters);
          
         return $arrayParameters['results'];
     }
@@ -267,7 +343,7 @@ class MelisComCouponService extends MelisComGeneralService
      *      )
      * @return Array
      */
-    public function validateCoupon($code, $clientId)
+    public function validateCoupon($code, $clientId, $productId = null)
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -281,7 +357,7 @@ class MelisComCouponService extends MelisComGeneralService
         
         // Service implementation start
         $couponTable = $this->getServiceLocator()->get('MelisEcomCouponTable');
-        
+        $couponProductTable = $this->getServiceLocator()->get('MelisEcomCouponProductTable');
         $coupon = $couponTable->getEntryByField('coup_code', $arrayParameters['code'])->current();
         
         if (!empty($coupon))
@@ -322,50 +398,77 @@ class MelisComCouponService extends MelisComGeneralService
                     $dateValid = true;
                 }
                 
-                if ($dateValid)
+            if ($dateValid)
                 {
-                    if ($arrayParameters['clientId'])
+                    if(!empty($arrayParameters['productId']))
                     {
-                        //check coupon type if assigned type
-                        if ($coupon->coup_type == '1')
+                        if($coupon->coup_product_assign){
+                            $cliId = ($coupon->coup_type == '1')? $arrayParameters['clientId'] : null;
+                            $couponProduct = $couponProductTable->checkCouponProductExist($coupon->coup_id, $cliId, $arrayParameters['productId'])->current();
+                            
+                            $results['success'] = !empty($couponProduct)? true : false;
+                            if(!empty($couponProduct)){
+                                // Checking if coupon still available base on number of used
+                                if ($coupon->coup_current_use_number < $coupon->coup_max_use_number)
+                                {
+                                    // Result success
+                                    $results['success'] = true;
+                                    // Assign coupon data as result
+                                    $results['coupon'] = $coupon;
+                                }
+                                else
+                                {
+                                    // Number of coupon used had reached the Limit
+                                    $results['error'] = 'MELIS_COMMERCE_COUPON_REACHED_LIMIT';
+                                    $results['success'] = false;
+                                }
+                            }
+                        }
+                    }else{
+                        if ($arrayParameters['clientId'])
                         {
-                            // Checking if Client is assigned to this couponId
-                            $melisEcomCouponClientTable = $this->getServiceLocator()->get('MelisEcomCouponClientTable');
-                            $couponClient = $melisEcomCouponClientTable->checkCouponClientExist($coupon->coup_id, $arrayParameters['clientId'])->current();
+                            //check coupon type if assigned type
+                            if ($coupon->coup_type == '1')
+                            {
+                                // Checking if Client is assigned to this couponId
+                                $melisEcomCouponClientTable = $this->getServiceLocator()->get('MelisEcomCouponClientTable');
+                                $couponClient = $melisEcomCouponClientTable->checkCouponClientExist($coupon->coup_id, $arrayParameters['clientId'])->current();
                         
-                            if (empty($couponClient))
+                                if (empty($couponClient))
+                                {
+                                    // Coupon is not assigned to the selected client
+                                    $results['error'] = 'MELIS_COMMERCE_COUPON_CLIENT_NOT_ASSIGN';
+                                }
+                            }
+                        
+                        }
+                        else
+                        {
+                            if ($coupon->coup_type == '1')
                             {
                                 // Coupon is not assigned to the selected client
                                 $results['error'] = 'MELIS_COMMERCE_COUPON_CLIENT_NOT_ASSIGN';
                             }
                         }
                         
-                    }
-                    else 
-                    {
-                        if ($coupon->coup_type == '1')
+                        if (empty($results['error']))
                         {
-                            // Coupon is not assigned to the selected client
-                            $results['error'] = 'MELIS_COMMERCE_COUPON_CLIENT_NOT_ASSIGN';
+                            // Checking if coupon still available base on number of used
+                            if ($coupon->coup_current_use_number < $coupon->coup_max_use_number)
+                            {
+                                // Result success
+                                $results['success'] = true;
+                                // Assign coupon data as result
+                                $results['coupon'] = $coupon;
+                            }
+                            else
+                            {
+                                // Number of coupon used had reached the Limit
+                                $results['error'] = 'MELIS_COMMERCE_COUPON_REACHED_LIMIT';
+                            }
                         }
                     }
                     
-                    if (empty($results['error']))
-                    {
-                        // Checking if coupon still available base on number of used
-                        if ($coupon->coup_current_use_number < $coupon->coup_max_use_number)
-                        {
-                            // Result success
-                            $results['success'] = true;
-                            // Assign coupon data as result
-                            $results['coupon'] = $coupon;
-                        }
-                        else
-                        {
-                            // Number of coupon used had reached the Limit
-                            $results['error'] = 'MELIS_COMMERCE_COUPON_REACHED_LIMIT';
-                        }
-                    }
                 }
                 else 
                 {
@@ -389,6 +492,32 @@ class MelisComCouponService extends MelisComGeneralService
         $arrayParameters['results'] = $results;
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_coupon_check_validity_end', $arrayParameters);
+        
+        return $arrayParameters['results'];
+    }
+    
+    public function saveCouponOrder($couponOrderData, $couponOrderId = null)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_coupon_add_to_order_start', $arrayParameters);
+        
+        // Service implementation start
+        $couponOrderTable = $this->getServiceLocator()->get('MelisEcomCouponOrderTable');
+        try{
+            $results = $couponOrderTable->save($arrayParameters['couponOrderData'], $arrayParameters['couponOrderId']);
+        }catch(\Exception $e){
+            
+        }
+//         $results = $this->validateCoupon($arrayParameters['code'], $arrayParameters['clientId']);
+        
+        
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_coupon_add_to_order_end', $arrayParameters);
         
         return $arrayParameters['results'];
     }

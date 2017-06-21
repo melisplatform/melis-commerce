@@ -1178,8 +1178,8 @@ class MelisComProductController extends AbstractActionController
 
         $success = 0;
         $errors = array();
-        $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_products_Products');
-        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_products_save_fail');
+        $textTitle = 'tr_meliscommerce_products_Products';
+        $textMessage = 'tr_meliscommerce_products_save_fail';
         $productId = 0;
         $isNew = false;
         $prodName = '';
@@ -1237,7 +1237,7 @@ class MelisComProductController extends AbstractActionController
             }
 
             if($success) {
-                $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_products_save_success');
+                $textMessage = 'tr_meliscommerce_products_save_success';
                 $prodName = $this->getProductSvc()->getProductName($productId, $this->getTool()->getCurrentLocaleID());
             }
         }
@@ -1249,9 +1249,9 @@ class MelisComProductController extends AbstractActionController
             'errors' => $errors,
             'chunk' => array('productId' => $productId, 'isNew' => $isNew, 'prodName' => $prodName),
         );
-
+        
         $this->getEventManager()->trigger('meliscommerce_product_save_end', 
-            $this, array_merge($response, array('typeCode' => $logTypeCode, 'itemId' => $productId)));
+            $this, array_merge($response, array('typeCode' => $logTypeCode, 'itemId' => $productId, '')));
 
         return new JsonModel($response);
     }
@@ -1276,12 +1276,19 @@ class MelisComProductController extends AbstractActionController
         $formElements = $this->serviceLocator->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        
         $prodRefFormConfig = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_products/meliscommerce_products_reference_form','meliscommerce_products_reference_form');
         $prodRefForm = $factory->createForm($prodRefFormConfig);
+        
         $prodTextFormConfig = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_products/meliscommerce_product_text_form','meliscommerce_product_text_form');
         $prodTextForm = $factory->createForm($prodTextFormConfig);
+        
         $prodPriceFormConfig = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_prices/meliscommerce_prices_form','meliscommerce_prices_form');
         $prodPriceForm = $factory->createForm($prodPriceFormConfig);
+        
+        $stockAlertFormConfig = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_settings/meliscommerce_settings_alert_form','meliscommerce_settings_alert_form');
+        $stocksAlertForm  = $factory->createForm($stockAlertFormConfig);
+        
         $prodSvc = $this->getServiceLocator()->get('MelisComProductService');
         $prodTextTypeTable = $this->getServiceLocator()->get('MelisEcomProductTextTypeTable');
         $prdAttrTable = $this->getServiceLocator()->get('MelisEcomProductAttributeTable');
@@ -1306,7 +1313,6 @@ class MelisComProductController extends AbstractActionController
                                 if ($valueForm['spec']['name'] == $keyError &&
                                     !empty($valueForm['spec']['options']['label']))
                                     $prodError[$keyError]['label'] = $valueForm['spec']['options']['label'];
-                                $prodError[$keyError]['isEmpty'] = $valueError['isEmpty'];
                             }
                         }
                         array_push($errors, $prodError);
@@ -1329,7 +1335,7 @@ class MelisComProductController extends AbstractActionController
                         unset($prodText['ptt_id']);
                         $prodText = array_filter($prodText);
                         
-                        if(!empty($prodText)){
+//                         if(!empty($prodText)){
                             $prodText['ptxt_lang_id'] = $ptxt_lang_id;
                             $prodText['ptxt_type'] = $ptxt_type;
                             $prodTextForm->setData($prodText);
@@ -1346,7 +1352,7 @@ class MelisComProductController extends AbstractActionController
                             unset($prodText['ptt_name']);
                             unset($prodText['ptt_id']);
                             $textClean[] = $prodText;
-                        }
+//                         }
                         
                     }
                 }
@@ -1404,6 +1410,28 @@ class MelisComProductController extends AbstractActionController
                 {
                     array_push($errors, $seoErrors);
                 }
+                
+                $stocksAlertForm->setData($requestData);
+                
+                if(!$stocksAlertForm->isValid()){
+                    
+                    $stocksAlertError = $stocksAlertForm->getMessages();
+                    
+                    foreach ($stocksAlertError as $keyError => $valueError)
+                    {
+                        foreach ($stockAlertFormConfig['elements'] as $keyForm => $valueForm)
+                        {
+                            if ($valueForm['spec']['name'] == $keyError &&
+                                !empty($valueForm['spec']['options']['label']))
+                                $stocksAlertError[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                        }
+                    }
+                    array_push($errors, $stocksAlertError);
+                }else{
+                    $product['prd_stock_low'] = $stocksAlertForm->get('sea_stock_level_alert')->getValue();
+                    $product['prd_stock_low'] = !empty($product['prd_stock_low'])? $product['prd_stock_low'] : null;
+                }
+                
             }
         }
 
@@ -1417,6 +1445,8 @@ class MelisComProductController extends AbstractActionController
                     $categorySvc->deleteCategoryProduct($delCat['pcat_id']);
                 }
             }
+            
+            // stopped here, validation and insertion
             
             $success = $prodSvc->saveProduct($product, $textClean, $attributes, $categories, $priceClean, $seo, (int) $product['prd_id']);
 

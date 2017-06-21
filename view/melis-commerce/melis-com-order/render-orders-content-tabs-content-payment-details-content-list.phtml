@@ -16,16 +16,20 @@
     	<div class="<?= $collapse?>" id="<?= $payment->opay_id.'_'.$this->melisKey?>">
     		<table class="info-table">
     			<tr>
-    				<td><label><?= $this->translate('tr_meliscommerce_order_payment_paid')?></label></td>
-    				<td><?= $payment->cur_symbol.$payment->opay_transac_price_paid_confirm ?></td>
+    				<td><label><?= $this->translate('tr_meliscommerce_order_payment_price')?></label></td>
+    				<td><?= $payment->cur_symbol.number_format($payment->opay_price_order, 2) ?></td>
     			</tr>
     			<tr>
-    				<td><label><?= $this->translate('tr_meliscommerce_order_payment_price')?></label></td>
-    				<td><?= $payment->cur_symbol.$payment->opay_price_order ?></td>
+    				<td><label><?= $this->translate('tr_meliscommerce_order_payment_price_with_discount')?></label></td>
+    				<td><?= $payment->cur_symbol.number_format($payment->opay_price_total, 2) ?></td>
+    			</tr>
+    			<tr>
+    				<td><label><?= $this->translate('tr_meliscommerce_order_payment_paid')?></label></td>
+    				<td><?= $payment->cur_symbol.number_format($payment->opay_transac_price_paid_confirm, 2) ?></td>
     			</tr>
     			<tr>
     				<td><label><?= $this->translate('tr_meliscommerce_order_payment_shipment')?></label></td>
-    				<td><?= $payment->cur_symbol.$payment->opay_price_shipping ?></td>
+    				<td><?= $payment->cur_symbol.number_format($payment->opay_price_shipping, 2) ?></td>
     			</tr>
     			<tr>
     				<td><label><?= $this->translate('tr_meliscommerce_order_payment_type')?></label></td>
@@ -43,10 +47,15 @@
     				<td><label><?= $this->translate('tr_meliscommerce_order_payment_coupon')?></label></td>
     				<td>
     					<?php 
-    					    $labelContainer = '<span class="orderPaymentCouponLink" data-couponid="%s"  data-couponname="%s">%s (%s)</span>';
+    					$coupons = array();
+    					    $labelContainer = '<span class="orderPaymentCouponLink" data-couponid="%s"  data-couponname="%s">%s (%s) x %s</span>';
         					foreach($payment->coupons as $coupon){
-        					    echo sprintf($labelContainer, $coupon->coup_id, $coupon->coup_code, $coupon->coup_code, ($coupon->coup_percentage) ? $coupon->coup_percentage.'%' : number_format($coupon->coup_discount_value, 2));
+        					    $coupons[]  = sprintf(
+        					        $labelContainer, $coupon->coup_id, $coupon->coup_code, 
+        					        $coupon->coup_code, ($coupon->coup_percentage) ? $coupon->coup_percentage.'%' : $payment->cur_symbol.number_format($coupon->coup_discount_value, 2), 
+        					        $coupon->qty_used);
         					}
+        					echo implode(', <br>', $coupons);
     					?>
     				</td>
     			</tr>

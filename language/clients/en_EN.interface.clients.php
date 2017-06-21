@@ -181,6 +181,7 @@
 	    'tr_meliscommerce_client_add_new_address' => 'Add new address',
 	    
         'tr_meliscommerce_client_email_not_exist' => 'Email does not exist, please try another email address',
+        'tr_meliscommerce_client_email_not_available' => 'This email address is already used',
         'tr_meliscommerce_client_pass_change_success' => 'Password has been successfully changed',
         'tr_meliscommerce_client_pass_key_invalid' => 'Invalid password recovery key',
         'tr_meliscommerce_client_pass_errors' => 'Error(s) occured',
@@ -195,4 +196,6 @@
 
 	    'tr_meliscommerce_client_order_refresh' => 'Refresh',
 	    'tr_meliscommerce_client_refresh' => 'Refresh',
+	    
+	    'tr_meliscommerce_clients_table_Client_date_created' => 'Created',
 	);

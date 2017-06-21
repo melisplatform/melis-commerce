@@ -33,4 +33,35 @@ class MelisEcomCouponOrderTable extends MelisEcomGenericTable
         return $resultData;
     }
     
+    public function getAssociatedBasketItem($couponId, $orderId)
+    {
+        $select = $this->tableGateway->getSql()->select();
+        
+        $select->join('melis_ecom_order_basket', 'melis_ecom_order_basket.obas_id = melis_ecom_coupon_order.cord_basket_id', array('*'), $select::JOIN_LEFT);
+        
+        $select->where->equalTo('melis_ecom_coupon_order.cord_coupon_id', $couponId);
+        
+        $select->where->equalTo('melis_ecom_coupon_order.cord_order_id', $orderId);
+        
+        $resultData = $this->tableGateway->selectWith($select);
+        
+        return $resultData;
+    }
+    
+    public function getCouponDiscountedBasketItems($couponId, $orderId = null)
+    {
+        $select = $this->tableGateway->getSql()->select();
+        
+        $select->where->equalTo('cord_coupon_id', $couponId);
+        
+        if(!is_null($orderId)){
+            $select->where->equalTo('cord_order_id', $orderId);
+        }
+        
+        $resultData = $this->tableGateway->selectWith($select);
+        
+         return $resultData;
+        
+    }
+    
 }

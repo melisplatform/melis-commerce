@@ -260,8 +260,8 @@ class MelisComAttributeListController extends AbstractActionController
         $data = array();
         $attributeId = null;
         
-        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_attribute_delete_fail');
-        $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_attribute_list_page');
+        $textMessage = 'tr_meliscommerce_attribute_delete_fail';
+        $textTitle = 'tr_meliscommerce_attribute_list_page';
         $this->getEventManager()->trigger('meliscommerce_attribute_delete_start', $this, array());
         
         $attributeSvc = $this->getServiceLocator()->get('MelisComAttributeService');
@@ -271,7 +271,7 @@ class MelisComAttributeListController extends AbstractActionController
             $attributeId = $postValues['attributeId'];
             $success = $attributeSvc->deleteAttributeById($attributeId);
             if($success){
-                $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_attribute_delete_success');
+                $textMessage = 'tr_meliscommerce_attribute_delete_success';
             }
         }
         

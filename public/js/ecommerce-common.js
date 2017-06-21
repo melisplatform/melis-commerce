@@ -42,13 +42,15 @@ var melisCommerce = (function(window) {
 				content: {
 					text: $(this).next('.tooltiptext')
 				},
+				overwrite: false,
 				style: {
 					classes: 'qtip-tipsy qtip-shadow',
 					width: "auto",
 				},
 				hide: {
 					fixed: true,
-					delay: 300
+					delay: 300,
+					event: "mouseleave"
 				},
 				position: {
 					target: 'mouse',

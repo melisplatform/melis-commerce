@@ -18,6 +18,7 @@
         'tr_MELIS_COMMERCE_COUPON_NOT_ACTIVE' => 'The coupon is inactive',
         'tr_MELIS_COMMERCE_COUPON_NOT_FOUND' => 'The coupon code is invalid',
         'tr_MELIS_COMMERCE_COUPON_CLIENT_NOT_ASSIGN' => 'The coupon is not assigned to the selected client',
+        'tr_MELIS_COMMERCE_COUPON_PRODUCT_NOT_ASSIGN' => 'The coupon is not assigned to the selected products',
         'tr_meliscommerce_coupon_valid' => 'The coupon is valid',
         'tr_meliscommerce_coupon_invalid' => '"%s" is not a valid coupon',
     );

@@ -55,7 +55,7 @@ return array(
                             ),
                             'cli_person' => array(
                                 'text' => 'tr_meliscommerce_clients_table_Client_person',
-                                'css' => array('width' => '35%', 'padding-right' => '0'),
+                                'css' => array('width' => '20%', 'padding-right' => '0'),
                                 'sortable' => false,
                             ),
                             'cli_company' => array(
@@ -70,6 +70,11 @@ return array(
                             ),
                             'cli_last_order' => array(
                                 'text' => 'tr_meliscommerce_clients_table_Client_last_order',
+                                'css' => array('width' => '15%', 'padding-right' => '0'),
+                                'sortable' => false,
+                            ),
+                            'cli_date_creation' => array(
+                                'text' => 'tr_meliscommerce_clients_table_Client_date_created',
                                 'css' => array('width' => '15%', 'padding-right' => '0'),
                                 'sortable' => false,
                             ),

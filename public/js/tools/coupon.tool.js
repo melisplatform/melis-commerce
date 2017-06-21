@@ -310,6 +310,12 @@ window.initCouponClient = function(data, tblSettings) {
 
 window.initCouponClientTable = function() {
 	$('.couponNoAddButton .addCouponToClient').remove();
+	$('.couponNoAddButton .assignedClients').show()
+}
+
+window.initCouponProductTable = function() {
+	$('.couponProductNoAddButton .addCouponToProduct').remove();
+	$('.couponProductNoAddButton .assignedProduct').show()
 }
 
 window.initCouponOrder = function(data, tblSettings) {

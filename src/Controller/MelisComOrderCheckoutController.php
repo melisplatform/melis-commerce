@@ -336,7 +336,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
         return new JsonModel(array(
             'draw' => (int) $draw,
             'recordsTotal' => $dataCount,
-            'recordsFiltered' => $dataCount,
+            'recordsFiltered' => count($productFilter),
             'data' => $tableData,
         ));
     }
@@ -563,7 +563,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
             $selectedCountry = $container['checkout'][self::SITE_ID]['countryId'];
         }
             
-        $selectContainer = '%s %s';
+        $selectContainer = '%s %s %s';
         $select = '<select id="orderCheckoutCountries" class="form-control input-sm"> %s</select>';
         
         $selectOptions = '<option value="" selected>'.$translator->translate('tr_meliscommerce_order_checkout_common_chooose').'</option>';
@@ -582,7 +582,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
         }
         
         $select = sprintf($select, $selectOptions);
-        $selectContainer = sprintf($selectContainer, '<div class="pays">'.$translator->translate('tr_meliscommerce_order_checkout_country').'</div>', $select);
+        $selectContainer = sprintf($selectContainer, '<label style="font-weight: normal;">'.$translator->translate('tr_meliscommerce_order_checkout_country'), $select, '</label>');
         
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
@@ -1388,6 +1388,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $action = $this->params()->fromQuery('action');
         $variantId = $this->params()->fromQuery('variantId');
         $variantQty = (int) $this->params()->fromQuery('variantQty');
+        $removeCoupoon = $this->params()->fromQuery('removeCoupon');
         
         if (!empty($variantId))
         {
@@ -1398,6 +1399,27 @@ class MelisComOrderCheckoutController extends AbstractActionController
             elseif ($action == 'deduct')
             {
                 $melisComBasketService->removeVariantFromBasket($variantId, $variantQty, $clientId, $clientKey);
+            }
+        }
+        
+        if(!empty($removeCoupoon)){
+            
+            if(!empty($container['checkout'][self::SITE_ID]['coupons']['productCoupons'])){
+                $productCoupons = $container['checkout'][self::SITE_ID]['coupons']['productCoupons'];
+                foreach($productCoupons as $key => $val){
+                    if($val == $removeCoupoon){
+                        unset($container['checkout'][self::SITE_ID]['coupons']['productCoupons'][$key]);
+                    }
+                }
+            }
+           
+            if(!empty($container['checkout'][self::SITE_ID]['coupons']['generalCoupons'])){
+                $generalCoupons = $container['checkout'][self::SITE_ID]['coupons']['generalCoupons'];
+                foreach($generalCoupons as $key => $val){
+                    if($val == $removeCoupoon){
+                        unset($container['checkout'][self::SITE_ID]['coupons']['generalCoupons'][$key]);
+                    }
+                } 
             }
         }
         
@@ -1419,6 +1441,12 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $countryId = $container['checkout'][self::SITE_ID]['countryId'];
         $melisComOrderCheckoutService->setSiteId(self::SITE_ID);
         $clientOrderCost = $melisComOrderCheckoutService->computeAllCosts($clientId);
+        
+        $coupons = array();
+        $productCoupons = !empty($container['checkout'][self::SITE_ID]['coupons']['productCoupons']) ? $container['checkout'][self::SITE_ID]['coupons']['productCoupons'] : array();
+        $generalCoupons = !empty($container['checkout'][self::SITE_ID]['coupons']['generalCoupons']) ? $container['checkout'][self::SITE_ID]['coupons']['generalCoupons'] : array();
+        $coupons = $productCoupons + $generalCoupons;
+        $couponErr = !empty($container['checkout'][self::SITE_ID]['coupons']['couponErr'])? $container['checkout'][self::SITE_ID]['coupons']['couponErr'] : null;
         
         if (isset($clientOrderCost['costs']['order']))
         {
@@ -1455,13 +1483,18 @@ class MelisComOrderCheckoutController extends AbstractActionController
                             'var_quantity' => $quantity,
                             'var_price' => $varPrice->cur_symbol.' '.number_format($varPrice->price_net, 2),
                             'product_name' => $melisComProductService->getProductName($productId, $langId),
-                            'var_total' => $varPrice->cur_symbol.' '.number_format($variantTotal, 2)
+                            'discount_price' => !empty($val['discount_price'])? $varPrice->cur_symbol.' '.number_format($val['discount_price'],2) : '',
+                            'discount' => !empty($val['discount'])? $varPrice->cur_symbol.' '.number_format($val['discount'],2) : '',
+                            'var_total' => $varPrice->cur_symbol.' '.number_format($variantTotal, 2),
+                            'discount_details' => !empty($val['discount_details'])? $val['discount_details'] : array(),
                         );
                         
                         array_push($basket, $data);
                     }
                 }
             }
+            
+            $productDiscount = 0;
             
             if (isset($clientOrder['totalWithoutCoupon']))
             {
@@ -1470,12 +1503,18 @@ class MelisComOrderCheckoutController extends AbstractActionController
             
             if (isset($clientOrder['total']))
             {
+                $totalDiscount = $clientOrder['totalWithoutCoupon'] - $clientOrder['total'];
                 $total = $clientOrder['total'];
             }
+            
+            if (isset($clientOrder['totalWithProductCoupon'])){
+                $productDiscount = $clientOrder['totalWithoutCoupon'] - $clientOrder['totalWithProductCoupon'];
+                $totalDiscount = $totalDiscount - $productDiscount;
+            }
         }
-        
+
         $couponCode = $this->params()->fromQuery('couponCode');
-        $couponErr = '';
+//         $couponErr = '';
         
         // Getting the Country currency, depend on country selected during step 1
         $melisEcomCountryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
@@ -1487,42 +1526,19 @@ class MelisComOrderCheckoutController extends AbstractActionController
         }
         
         $discountInfo = '';
-        if (!empty($couponCode) && !is_null($clientId))
-        {
-            $couponSrv = $this->getServiceLocator()->get('MelisComCouponService');
-            $coupon = $couponSrv->validateCoupon($couponCode, $clientId);
-            
-            if($coupon['success'])
-            {
-                $couponData = $coupon['coupon'];
-                
-                if (!empty($couponData->coup_percentage))
-                {
-                    $totalDiscount = ($couponData->coup_percentage / 100) * $subTotal;
-                    $discountInfo = $couponData->coup_percentage.'%';
-                }
-                elseif (!empty($couponData->coup_discount_value))
-                {
-                    $totalDiscount = $couponData->coup_discount_value;
-                    $discountInfo = $countryCurrencySympbol.' '.number_format($couponData->coup_discount_value, 2);
-                }
-            }
-            else
-            {
-                $couponErr = $translator->translate('tr_'.$coupon['error']);
-            }
-        }
         
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->clientOrderCost = $clientOrderCost;
         $view->couponCode = $couponCode;
+        $view->coupons = $coupons;
         $view->couponErr = $couponErr;
         $view->basket = $basket;
         $view->subTotal = $subTotal;
         $view->totalDiscount = $totalDiscount;
         $view->discountInfo = $discountInfo;
+        $view->productDiscount = $productDiscount;
         $view->total = $total;
         $view->countryCurrencySympbol = $countryCurrencySympbol;
         return $view;
@@ -2028,7 +2044,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
     
     public function testAction(){
         $container = new Container('meliscommerce');
-        var_dump($container['checkout'][self::SITE_ID]['sameAddress']);
+//         var_dump($container['checkout'][self::SITE_ID]['sameAddress']);
         echo '<pre>';
         print_r($container['checkout']);
         echo '</pre>';

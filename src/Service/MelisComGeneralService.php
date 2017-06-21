@@ -174,4 +174,18 @@ class MelisComGeneralService implements ServiceLocatorAwareInterface, EventManag
 	    
 	    return $currentLangData;
 	}
+	
+	public function getFrontPluginLangId()
+	{
+	    $container = new Container('melisplugins');
+	    $langId = $container['melis-plugins-lang-id'];
+	    return $langId;
+	}
+	
+	public function getFrontPluginLangLocale()
+	{
+	    $container = new Container('melisplugins');
+	    $langLocale = $container['melis-plugins-lang-locale'];
+	    return $langLocale;
+	}
 }

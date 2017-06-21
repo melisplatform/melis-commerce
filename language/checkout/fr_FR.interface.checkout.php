@@ -37,6 +37,7 @@
 	    
 	    // Empty basket
 	    'tr_meliscommerce_order_checkout_product_basket_empty' => 'Veuillez choisir au moins un produit',
+	    'tr_meliscommerce_order_checkout_stock_left' => "L'élément sélectionné n'a que \"%s\" produits en stock",
 	    
 	    // Contacts
 	    'tr_meliscommerce_checkout_tbl_cper_id' => 'ID',

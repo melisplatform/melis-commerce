@@ -22,7 +22,7 @@ class MelisEcomCouponTable extends MelisEcomGenericTable
         $this->idField = 'coup_id';
     }
     
-    public function getCouponList($orderId, $clientId, $start = null, $limit = null, $order = null, $search = '')
+    public function getCouponList($orderId, $clientId = null, $start = null, $limit = null, $order = null, $search = '')
     {
         $select = $this->tableGateway->getSql()->select();    
         $clause = array();
@@ -67,4 +67,26 @@ class MelisEcomCouponTable extends MelisEcomGenericTable
         $resultData = $this->tableGateway->selectWith($select);
         return $resultData;
     }
+    
+    public function getCouponByType($type, $orderId = null)
+    {
+        $select = $this->tableGateway->getSql()->select();
+        $select->quantifier("DISTINCT");
+        $select->join('melis_ecom_coupon_order', 'melis_ecom_coupon_order.cord_coupon_id = melis_ecom_coupon.coup_id', array(), $select::JOIN_LEFT);
+        
+        if($type == 'general'){
+            $select->where->equalTo('melis_ecom_coupon.coup_product_assign', '0');
+        }elseif ($type == 'product'){
+            $select->where->equalTo('melis_ecom_coupon.coup_product_assign', '1');
+        }
+    
+        if(!is_null($orderId)){
+            $select->where->equalTo('cord_order_id', $orderId);
+        }
+        
+        $resultSet = $this->tableGateway->selectWith($select);
+        
+        return $resultSet;
+    }
+    
 }

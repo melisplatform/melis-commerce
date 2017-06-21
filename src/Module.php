@@ -41,7 +41,11 @@ use MelisCommerce\Listener\MelisCommerceProductTextLanguageAddListener;
 use MelisCommerce\Listener\MelisCommerceProductTextLanguageDeleteListener;
 use MelisCommerce\Listener\MelisCommerceDocumentCountryDeletedListener;
 use MelisCommerce\Listener\MelisCommerceCheckoutCouponListener;
+use MelisCommerce\Listener\MelisCommercePostCheckoutCouponListener;
 use MelisCommerce\Listener\MelisCommercePrdVarDuplicationListener;
+use MelisCommerce\Listener\MelisCommerceVariantCheckLowStockListener;
+use MelisCommerce\Listener\MelisCommerceVariantRestockListener;
+use MelisCommerce\Listener\MelisCommerceSaveProductStockEmailAlertListener;
 
 class Module
 {
@@ -93,6 +97,7 @@ class Module
             $eventManager->attach(new MelisCommerceProductTextLanguageDeleteListener());
             $eventManager->attach(new MelisCommerceDocumentCountryDeletedListener());
             $eventManager->attach(new MelisCommercePrdVarDuplicationListener());
+            $eventManager->attach(new MelisCommerceSaveProductStockEmailAlertListener());
             
         }
         else
@@ -110,7 +115,10 @@ class Module
         
         $eventManager->attach(new MelisCommerceShipmentCostListener());
         $eventManager->attach(new MelisCommerceCheckoutCouponListener());
+        $eventManager->attach(new MelisCommercePostCheckoutCouponListener());
         $eventManager->attach(new MelisCommercePostPaymentListener());
+        $eventManager->attach(new MelisCommerceVariantCheckLowStockListener());
+        $eventManager->attach(new MelisCommerceVariantRestockListener());
         
     }
     
@@ -149,6 +157,7 @@ class Module
     	$config = array();
     	$configFiles = array(
 			include __DIR__ . '/../config/module.config.php',
+			include __DIR__ . '/../config/app.emails.php',
             include __DIR__ . '/../config/diagnostic.config.php',
 
 			include __DIR__ . '/../config/interface/app.interface.general.php',
@@ -168,6 +177,7 @@ class Module
 	        include __DIR__ . '/../config/interface/app.interface.country.php',
             include __DIR__ . '/../config/interface/app.interface.assoc-var.php',
             include __DIR__ . '/../config/interface/app.interface.duplications.php',
+            include __DIR__ . '/../config/interface/app.interface.settings.php',
 	    
 			include __DIR__ . '/../config/forms/app.forms.general.php',
 	        include __DIR__ . '/../config/forms/app.forms.documents.php',
@@ -183,6 +193,7 @@ class Module
 	        include __DIR__ . '/../config/forms/app.forms.currency.php',
 	        include __DIR__ . '/../config/forms/app.forms.attributes.php',
 	        include __DIR__ . '/../config/forms/app.forms.duplications.php',
+	        include __DIR__ . '/../config/forms/app.forms.settings.php',
 	    
 			include __DIR__ . '/../config/tools/app.tools.general.php',
 	        include __DIR__ . '/../config/tools/app.tools.documents.php',
@@ -301,6 +312,7 @@ class Module
                 'country',
                 'assoc-var',
                 'duplication',
+                'settings',
             );
             
             $translationType = array(

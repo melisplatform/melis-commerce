@@ -181,6 +181,7 @@
     	'tr_meliscommerce_client_add_new_address' => 'Ajouter une nouvelle adresse',
     		
     	'tr_meliscommerce_client_email_not_exist' => 'L\'email n\'existe pas, veuillez saisir une adresse email valide',
+	    'tr_meliscommerce_client_email_not_available' => 'Cette adresse email est déjà utilisée',
     	'tr_meliscommerce_client_pass_change_success' => 'Le mot de passe a été changé avec succès',
     	'tr_meliscommerce_client_pass_key_invalid' => 'Clef de récupération de mot de passe invalide',
     	'tr_meliscommerce_client_pass_errors' => 'Une erreur est survenue',
@@ -193,5 +194,7 @@
 
 	    'tr_meliscommerce_client_order_refresh' => 'Rafraîchir',
 	    'tr_meliscommerce_client_refresh' => 'Actualiser',
+	    
+	    'tr_meliscommerce_clients_table_Client_date_created' => 'Création',
 
 	);

@@ -12,6 +12,7 @@ namespace MelisCommerce\Controller\Plugin;
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
 use Zend\Session\Container;
+use Zend\Stdlib\ArrayUtils;
 /**
  * This plugin implements the business logic of the
  * "checkOutSummary" plugin.
@@ -133,7 +134,7 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
             
                             $quantity = $val['quantity'];
             
-                            $variantTotal = $quantity * $varPrice->price_net;
+                            $variantTotal = ($quantity * $varPrice->price_net) - $val['discount'];
                             $data = array(
                                 'var_id' => $variantId,
                                 'var_sku' => $varSku,
@@ -141,6 +142,7 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
                                 'var_currency_symbol' => $varPrice->cur_symbol,
                                 'var_price' => number_format($varPrice->price_net, 2),
                                 'product_name' => $melisComProductService->getProductName($productId, $langId),
+                                'var_discount' => $val['discount'],
                                 'var_total' => number_format($variantTotal, 2),
                                 'var_err' => $variantErr
                             );
@@ -153,7 +155,7 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
                 
                 if (isset($clientOrder['totalWithoutCoupon']))
                 {
-                    $subTotal = $clientOrder['totalWithoutCoupon'];
+                    $subTotal = $clientOrder['totalWithProductCoupon'];
                 }
                 
                 if (isset($clientOrderCost['costs']['total']))
@@ -166,40 +168,9 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
                     $shippingTotal = $clientOrderCost['costs']['shipment']['total'];
                 }
                 
-                /**
-                 * Checkouk Coupon Plugin
-                 * This plugin will validate the coupon if coupon code if submitted
-                 */
-                $pluginManager = $this->getServiceLocator()->get('ControllerPluginManager');
-                $checkoutCouponPlugin = $pluginManager->get('MelisCommerceCheckoutCouponAddPlugin');
-                $checkoutCouponPluginParameters = array(
-                    'm_site_id' => $siteId,
-                );
-                $couponView = $checkoutCouponPlugin->render($checkoutCouponPluginParameters);
-                $coupon = $couponView->getVariables();
-                
-                if (!empty($coupon->coupon))
+                if (isset($clientOrderCost['costs']['order']['orderDiscount']))
                 {
-                    $couponData = $coupon->coupon;
-                    /**
-                     * Checking if the coupon is using Pecentage or value
-                     * that will deducted to the sub-total of the cart
-                     */
-                    if (!empty($couponData->coup_percentage))
-                    {
-                        $totalDiscount = ($couponData->coup_percentage / 100) * $subTotal;
-                        $discountInfo = $couponData->coup_percentage.'%';
-                    }
-                    elseif (!empty($couponData->coup_discount_value))
-                    {
-                        $totalDiscount = $couponData->coup_discount_value;
-                    }
-                    
-                    $couponCode = $couponData->coup_code;
-                }
-                else 
-                {
-                    $couponMsg = $coupon->message;
+                    $totalDiscount = $clientOrderCost['costs']['order']['orderDiscount'];
                 }
             }
             

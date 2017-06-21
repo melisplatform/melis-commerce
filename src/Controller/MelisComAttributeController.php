@@ -920,8 +920,8 @@ class MelisComAttributeController extends AbstractActionController
         $attributeId = null;
         $logTypeCode = '';
         
-        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_attribute_save_failed');
-        $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_attribute_page');
+        $textMessage = 'tr_meliscommerce_attribute_save_failed';
+        $textTitle = 'tr_meliscommerce_attribute_page';
         
         $container = new Container('meliscommerce');
         unset($container['attribute-valid-data']);
@@ -944,7 +944,7 @@ class MelisComAttributeController extends AbstractActionController
             {
                 if (!empty($container['attribute-valid-data']['success'])){
                     $success = $container['attribute-valid-data']['success'];
-                    $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_attribute_save_success');
+                    $textMessage = 'tr_meliscommerce_attribute_save_success';
                 }
                 if (!empty($container['attribute-valid-data']['errors']))
                     $errors = $container['attribute-valid-data']['errors'];

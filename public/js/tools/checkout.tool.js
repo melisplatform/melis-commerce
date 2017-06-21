@@ -357,6 +357,14 @@ $(function(){
     	}
     });
     
+    // Deleting validated coupon
+    $("body").on("click", ".orderValidCoupons i", function(){
+    	var couponCode = $(this).closest('.orderValidCoupons').data('couponcode');
+    	if(couponCode != ''){
+    		melisHelper.zoneReload("id_meliscommerce_order_checkout_summary_basket", "meliscommerce_order_checkout_summary_basket", {removeCoupon: couponCode});
+    	}
+    });
+    
     // Changing the Quantity by typing the number of the quantity of the variant in Basket List in Summary Step
     $('body').on('change', '.orderSummaryBasketVariantQty', function () {
     	var variantId = $(this).data("variantid");

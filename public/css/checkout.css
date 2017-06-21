@@ -13,6 +13,10 @@
 .order-basket-variant-qty-btn{
 	cursor: pointer;
 }
+
+.order-table-country-list select{
+	width: 100% !important;
+}
 .info-table td:first-child {
     width: 30%;
 }
@@ -74,6 +78,11 @@
 	display: block;
     text-align: center;
 	margin: 0 10px;
+}
+
+.alert-checkout {
+    padding: 6px;
+    border-radius: 0px;
 }
 
 /* Tab */
@@ -143,9 +152,10 @@ tr.last-tr td {
 		text-align: center;
 		margin: 10px 0 0;
 	}
-	.dataTables_length {
-		display: none;
-	}
+.order-table-country-list select{
+	 width: 75px;
+     display: inline-block
+}
 	.order-variant .cell-val-table {
 		display: none;
 	}	

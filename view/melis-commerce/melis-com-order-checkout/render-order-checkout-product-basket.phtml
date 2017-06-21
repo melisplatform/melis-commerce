@@ -21,6 +21,9 @@
                         <i class="fa fa-plus order-basket-variant-qty-btn qty-plus text-primary" data-variantid="<?php echo $val['var_id']?>"></i>
                         <strong class="order-price float-right"><?php echo $val['var_total']?></strong>
                     </div>
+                    <?php if (!empty($val['var_qty_err'])):?>
+                    	<div class="alert alert-danger alert-checkout"><?php echo $val['var_qty_err']?></div>
+                    <?php endif;?>
                 </div>
         	<?php endforeach;?>   
         	

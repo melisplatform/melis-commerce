@@ -461,6 +461,15 @@ class MelisComCouponController extends AbstractActionController
     }
     
     /**
+     * renders the product list table action button edit client
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function renderCouponContentActionEditClientAction()
+    {
+        return new ViewModel();
+    }
+    
+    /**
      * renders the client list table
      * @return \Zend\View\Model\ViewModel
      */
@@ -828,7 +837,7 @@ class MelisComCouponController extends AbstractActionController
                     $prodText = $this->getTool()->escapeHtml($prodText);
                     $assignData = '';
                     if(in_array($prod->getProduct()->prd_id, $assigns)){
-                        $assignData = '<a class="btn btn-success" style="cursor:default" title="'.$this->getTool()->getTranslation('tr_meliscommerce_coupon_page_tabs_assign_hover').'" ><i class="fa fa-check" ></i></a>';
+                        $tableData[$ctr]['DT_RowClass']   = (!empty($assign)) ? 'couponProductNoAddButton' : '';
                     }
                     
                     $tableData[$ctr]['DT_RowData'] = array('productname', $prodText);
@@ -1012,8 +1021,8 @@ class MelisComCouponController extends AbstractActionController
         $exist = false;
         $result = false;
         $logTypeCode = '';
-        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_coupon_save_fail');
-        $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_coupon_page');        
+        $textMessage = 'tr_meliscommerce_coupon_save_fail';
+        $textTitle = 'tr_meliscommerce_coupon_page';        
         $couponSvc = $this->getServiceLocator()->get('MelisComCouponService');
         $this->getEventManager()->trigger('meliscommerce_coupon_save_start', $this, array());
         $couponTable = $this->getServiceLocator()->get('MelisEcomCouponTable');
@@ -1120,8 +1129,14 @@ class MelisComCouponController extends AbstractActionController
                 if($exist->coup_id != $coupon['coup_id']){
                     $errorTitle   = $this->getTool()->getTranslation('tr_meliscommerce_coupon_list_col_code');
                     $errorMessage = $this->getTool()->getTranslation('tr_meliscommerce_coupon_code_duplicate_error_message');
-                    $errors = array_merge($errors, array( $errorTitle => $errorMessage));                    
-                }                
+                    $errors = array_merge($errors, array( 'coup_code' => array( 'label' => $errorTitle, 'isExist' => $errorMessage)));                    
+                }
+                
+                if($exist->coup_current_use_number > $coupon['coup_max_use_number']){
+                    $errorTitle   = $this->getTool()->getTranslation('tr_meliscommerce_coupon_max');
+                    $errorMessage = $this->getTool()->getTranslation('tr_meliscommerce_coupon_code_current_use_error');
+                    $errors = array_merge($errors, array( 'coup_max_use_number' => array( 'label' => $errorTitle, 'invalid' => $errorMessage)));
+                }
             }
             
             if(!$errors){
@@ -1139,7 +1154,7 @@ class MelisComCouponController extends AbstractActionController
                 $coupon = $couponSvc->getCouponById($result)->getCoupon();
                 $data['couponId'] = $result;
                 $data['coup_code'] = $coupon->coup_code;
-                $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_coupon_save_success');
+                $textMessage = 'tr_meliscommerce_coupon_save_success';
             }            
         }
         

@@ -79,6 +79,7 @@ class MelisCommerceLostPasswordGetEmailPlugin extends MelisTemplatingPlugin
         
         $data['m_email'] = (!empty($this->pluginFrontConfig['m_email'])) ? $this->pluginFrontConfig['m_email'] : '';
         $sendMailSvc = $this->getServiceLocator()->get('MelisEngineSendMail');
+        $translator = $this->getServiceLocator()->get('translator');
         // Setting the Datas to Lost Password Form
         $lostPassword->setData($data);
 

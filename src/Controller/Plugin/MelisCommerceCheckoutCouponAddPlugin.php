@@ -62,104 +62,132 @@ class MelisCommerceCheckoutCouponAddPlugin extends MelisTemplatingPlugin
         $coupon = array();
         $message = '';
         $success = 0;
+        $items = array();
         $siteId = (!empty($this->pluginFrontConfig['m_site_id'])) ? $this->pluginFrontConfig['m_site_id'] : '';
+        $isMultiple = !empty($this->pluginFrontConfig['m_coupon_multiple'])? $this->pluginFrontConfig['m_coupon_multiple'] : false;
+        $appConfigForm = (!empty($this->pluginFrontConfig['forms']['meliscommerce_checkout_coupon_form'])) ? $this->pluginFrontConfig['forms']['meliscommerce_checkout_coupon_form'] : $this->pluginConfig['forms']['meliscommerce_checkout_coupon_form'];
+        $isSubmit = (!empty($this->pluginFrontConfig['m_is_submit'])) ? $this->pluginFrontConfig['m_is_submit'] : false;
+        $couponCode = (!empty($this->pluginFrontConfig['m_coupon_code'])) ? $this->pluginFrontConfig['m_coupon_code'] : null;
         
-        $appConfigForm = (!empty($this->pluginFrontConfig['forms']['meliscommerce_checkout_coupon_form'])) ? $this->pluginFrontConfig['forms']['meliscommerce_checkout_coupon_form'] : null;
         $factory = new \Zend\Form\Factory();
         $formElements = $this->getServiceLocator()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $couponForm = $factory->createForm($appConfigForm);
         
         $couponSrv = $this->getServiceLocator()->get('MelisComCouponService');
+        $basketSrv = $this->getServiceLocator()->get('MelisComBasketService');
+        $checkoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
         $translator = $this->getServiceLocator()->get('translator');
+        $ecomAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
         
         $container = new Container('meliscommerce');
-        if (!isset($container['checkout']))
-        {
-            $container['checkout'] = array();
-        }
+        $coupons = !empty($container['checkout'][$siteId]['coupons'])? $container['checkout'][$siteId]['coupons'] : array();
+	    $productCoupons = !empty($coupons['productCoupons'])? $coupons['productCoupons'] : array();
+	    $generalCoupons = !empty($coupons['generalCoupons'])? $coupons['generalCoupons'] : array();
         
-        $isSubmit = (!empty($this->pluginFrontConfig['m_is_submit'])) ? $this->pluginFrontConfig['m_is_submit'] : false;
-        
-        $couponCode = '';
-        if (isset($container['checkout'][$siteId]['couponId']))
-        {
-            $couponTmp = $couponSrv->getCouponById($container['checkout'][$siteId]['couponId']);
-            if (!is_null($couponTmp))
-            {
-                $couponCode = $couponTmp->getCoupon()->coup_code;
-            }
-        }
-        
-        $preDataCouponCode = (!$isSubmit) ? $couponCode : '';
-        
-        $data['m_coupon_code'] = (!empty($this->pluginFrontConfig['m_coupon_code'])) ? $this->pluginFrontConfig['m_coupon_code'] : $preDataCouponCode;
-        
-        $ecomAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
+        $clientKey = $ecomAuthSrv->getId();
         $clientId = null;
         if ($ecomAuthSrv->hasIdentity())
         {
             $clientId = $ecomAuthSrv->getClientId();
+            $clientKey = $ecomAuthSrv->getClientKey();
         }
         
         if ($isSubmit)
         {
-            if (!empty($data['m_coupon_code']))
+            if (!empty($couponCode))
             {
-                $couponForm->setData($data);
-                $couponData = $couponSrv->validateCoupon($data['m_coupon_code'], $clientId);
-            
-                if ($couponData['success'])
-                {
-                    $coupon = $couponData['coupon'];
-                    $message = $translator->translate('tr_meliscommerce_coupon_valid');
-                    $success = 1;
-                    /**
-                     * Adding the coupon id to commerce session
-                     * to be able to access from other plugin easily
-                     */
-                    $container['checkout'][$siteId]['couponId'] = $coupon->coup_id;
-                }
-                else
-                {
-                    $message = sprintf($translator->translate('tr_meliscommerce_coupon_invalid'), $data['m_coupon_code']);
-            
-                    if (empty($coupon) && !empty($couponCode))
-                    {
-                        $couponForm->get('m_coupon_code')->setValue($couponCode);
-                        $couponData = $couponSrv->validateCoupon($couponCode, $clientId);
-                        $coupon = $couponData['coupon'];
+                $couponForm->setData(array('m_coupon_code' => $couponCode));
+                if($couponForm->isValid()){
+                    $couponData = $couponForm->getData();
+                    
+                    $basketData = $basketSrv->getBasket($clientId, $clientKey);
+                    
+                    if(!empty($basketData)){
+                        foreach($basketData as $item){
+                            
+                            $items[] = $item->getVariant()->getVariant()->var_prd_id;
+                        }
+                        $items = array_unique($items);
+                    }
+                    
+                    $validatedCoupon = $checkoutService->validateCoupon($couponData['m_coupon_code'], $clientId, $items);
+                    
+                    if($validatedCoupon['success']){
+                        
+                        $validCoupon = array($validatedCoupon['coupon']->coup_id => $validatedCoupon['coupon']);
+                        
+                        if($validatedCoupon['type'] == 'general'){
+                            
+                            // general coupons
+                            $generalCoupons = ($isMultiple)? $validCoupon + $generalCoupons: $validCoupon;
+                            $productCoupons = ($isMultiple)?  $productCoupons :  array();
+                            
+                            
+                        }else{
+                            
+                            // product coupons
+                            $productCoupons = ($isMultiple)? $validCoupon + $productCoupons :  $validCoupon;
+                            $generalCoupons = ($isMultiple)? $generalCoupons : array();
+                        }
+                        
+                        $coupon = $validatedCoupon['coupon'];
+                        $success = 1;
+                        $message = $translator->translate('tr_meliscommerce_coupon_valid');
+                        $sessionCoupons['couponErr'] = array();
+                        $sessionCoupons['productCoupons'] = $productCoupons;
+                        $sessionCoupons['generalCoupons'] = $generalCoupons;
+                        
+                    }else{
+                        
+                        if(!$isMultiple){
+                            // clear data if not multiple coupons
+                            $sessionCoupons = array();
+                        }
+                        
+                        // invalid coupon
+                        $message = $translator->translate('tr_'.$validatedCoupon['error']);
+                        $sessionCoupons['couponErr'] = $message;
+                        $success = 0;
+                    }
+                    
+                }else{
+                    
+                    // form errors
+                    $varError = $couponForm->getMessages();
+                    
+                    foreach ($varError as $keyError => $valueError){
+                        
+                        foreach ($appConfigForm['elements'] as $keyForm => $valueForm){
+                            
+                            if ($valueForm['spec']['name'] == $keyError &&
+                                !empty($valueForm['spec']['options']['label']))
+                                $varError[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                        }
+                        $message[] = $varError;
                     }
                 }
+            
             }
             else
             {
-                if (isset($container['checkout'][$siteId]['couponId']))
-                {
-                    unset($container['checkout'][$siteId]['couponId']);
-                }
+               $message = $translator->translate('tr_MELIS_COMMERCE_COUPON_DATE_VALIDITY_INVALID');
+               
             }
-        }
-        else 
-        {
-            if (!empty($couponCode))
-            {
-                $couponForm->get('m_coupon_code')->setValue($couponCode);
-                $couponData = $couponSrv->validateCoupon($couponCode, $clientId);
-                $coupon = $couponData['coupon'];
-            }
+        }else{
+            $sessionCoupons = array();
         }
         
-        $couponForm->get('m_is_submit')->setValue(1);
+        $container['checkout'][$siteId]['coupons'] = $sessionCoupons;
         
         // Create an array with the variables that will be available in the view
         $viewVariables = array(
             'couponForm' => $couponForm,
-            'coupon' => $coupon,
+            'coupon' => $sessionCoupons,
             'message' => $message,
             'success' => $success,
         );
-
+        
         // return the variable array and let the view be created
         return $viewVariables;
     }

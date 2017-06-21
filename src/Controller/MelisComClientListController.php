@@ -363,6 +363,8 @@ class MelisComClientListController extends AbstractActionController
                     $clientLastOrderStr = strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($clientLastOrder->ord_date_creation));
                 }
                 
+                $dateCreated = strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($clientData->cli_date_creation));
+                
                 $tempData = array(
                     'DT_RowId' => $clientId,
                     'cli_id' => $clientId,
@@ -371,6 +373,7 @@ class MelisComClientListController extends AbstractActionController
                     'cli_company' => $clientCompanyStr,
                     'cli_num_orders' => $clientNumOrders,
                     'cli_last_order' => $clientLastOrderStr,
+                    'cli_date_creation' => $dateCreated,
                 );
                 
                 array_push($tableData, $tempData);

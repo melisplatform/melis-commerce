@@ -192,6 +192,7 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                      * this will show the cart items, subtotal, discount, shippping and the total of the order
                      */
                     $checkOutSummaryPlugin = $pluginManager->get('MelisCommerceCheckoutSummaryPlugin');
+                    $checkOutSummaryParameters = ArrayUtils::merge($checkOutSummaryParameters, array('m_site_id' => $siteId));
                     $checkout = $checkOutSummaryPlugin->render($checkOutSummaryParameters);
                     /**
                      * Adding view variable for "Previous" and "Next" step
@@ -229,6 +230,7 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                      * this will show some error(s) occured 
                      */
                     $checkOutConfirmSummaryPlugin = $pluginManager->get('MelisCommerceCheckoutConfirmSummaryPlugin');
+                    $checkOutConfirmSummaryParameters = ArrayUtils::merge($checkOutConfirmSummaryParameters, array('m_site_id' => $siteId));
                     $checkout = $checkOutConfirmSummaryPlugin->render($checkOutConfirmSummaryParameters);
                     
                     $checkoutVars = $checkout->getVariables();

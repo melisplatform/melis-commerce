@@ -8,6 +8,7 @@ return array(
                     'front' => array(
                         'template_path' => 'MelisCommerceCheckout/show-check-out-coupon',
                         'm_coupon_code' => '',
+                        'm_coupon_multiple' => false,
                         'm_is_submit' => false,
                         'm_site_id' => 1,
                         'forms' => array(
@@ -25,6 +26,9 @@ return array(
                                         'spec' => array(
                                             'name' => 'm_is_submit',
                                             'type' => 'hidden',
+                                            'attributes' => array(
+                                                'value' => '1',
+                                            ),
                                         ),
                                     ),
                                     array(

@@ -85,6 +85,18 @@ class MelisCommerceCheckoutConfirmPlugin extends MelisTemplatingPlugin
         
         $clientOrderDetails = $orderSvc->getClientOrderDetailsById($orderId, $ecomAuthSrv->getClientId(), $ecomAuthSrv->getPersonId(), $langId);
         
+        $orderCoupons = $couponSvc->getCouponList($orderId);
+        $tmp = array();
+        foreach($orderCoupons as $coupon){
+            
+            if($coupon->getCoupon()->coup_product_assign){
+                $coupon->getCoupon()->discountedBasket = $couponSvc->getCouponDiscountedBasketItems($coupon->getCoupon()->coup_id, $orderId);
+            }
+            $tmp[] = $coupon;
+        }
+        
+        $orderCoupons = $tmp;
+        
         if (!empty($clientOrderDetails))
         {
             switch ($clientOrderDetails->ord_status)
@@ -109,9 +121,36 @@ class MelisCommerceCheckoutConfirmPlugin extends MelisTemplatingPlugin
             $clientOrderId = $clientOrderDetails->ord_id;
             
             $orderBasket = $orderSvc->getOrderBasketByOrderId($clientOrderId);
+            
             $currency = null;
+            $totalProductDiscount  = 0;
             foreach ($orderBasket As $key => $val)
             {
+                $val->discount = 0;
+                if(!empty($orderCoupons)){
+                    
+                    foreach($orderCoupons as $coupon){
+                    
+                        if($coupon->getCoupon()->coup_product_assign){
+                    
+                            foreach($coupon->getCoupon()->discountedBasket as $item){
+                                
+                                if ($item->cord_basket_id == $val->obas_id){
+                                    
+                                    if(!empty($coupon->getCoupon()->coup_percentage)){
+                                    
+                                        $val->discount = ($coupon->getCoupon()->coup_percentage / 100) * ($val->obas_price_net * $item->cord_quantity_used);
+                                        
+                                    } elseif (!empty($coupon->getCoupon()->coup_discount_value)){
+                                        
+                                        $val->discount = $coupon->getCoupon()->coup_discount_value * $item->cord_quantity_used;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
                 if (is_null($currency))
                 {
                     $prdCurrency = $currencyTbl->getEntryById($val->obas_currency)->current();
@@ -126,18 +165,25 @@ class MelisCommerceCheckoutConfirmPlugin extends MelisTemplatingPlugin
                     $orderBasket[$key]->cur_symbol = $currency;
                 }
                 
+                $totalProductDiscount += $val->discount;
+                $orderBasket[$key] = $val;
                 $orderBasket[$key]->final_image = $variantSvc->getFinalVariantImage($val->obas_variant_id, array($imageType), $customImage);
             }
             
-            $couponDetails = null;
-            if ($clientOrderDetails->coup_code)
-            {
-                $couponDetails = array(
-                    'couponCode' => $clientOrderDetails->coup_code,
-                    'couponIsInPercentage' => ($clientOrderDetails->coup_percentage) ? true : false,
-                    'couponValue' => ($clientOrderDetails->coup_percentage) ? $clientOrderDetails->coup_percentage.'%' : $clientOrderDetails->coup_discount_value,
-                    'couponDiscount' => ($clientOrderDetails->coup_percentage) ? ($clientOrderDetails->coup_percentage / 100) * $clientOrderDetails->opay_price_order : $clientOrderDetails->coup_discount_value,
-                );
+            $couponDetails = array();
+            if(!empty($orderCoupons)){
+            
+                foreach($orderCoupons as $coupon){
+            
+                    if(!$coupon->getCoupon()->coup_product_assign){
+                        $couponDetails[] = array(
+                            'couponCode' => $coupon->getCoupon()->coup_code,
+                            'couponIsInPercentage' => ($coupon->getCoupon()->coup_percentage) ? true : false,
+                            'couponValue' => ($coupon->getCoupon()->coup_percentage) ? $coupon->getCoupon()->coup_percentage.'%' : $coupon->getCoupon()->coup_discount_value,
+                            'couponDiscount' => ($coupon->getCoupon()->coup_percentage) ? ($coupon->getCoupon()->coup_percentage / 100) * $coupon->getCoupon()->opay_price_order : $coupon->getCoupon()->coup_discount_value,
+                        );
+                    }
+                }
             }
             
             $clientOrder = array(
@@ -145,7 +191,7 @@ class MelisCommerceCheckoutConfirmPlugin extends MelisTemplatingPlugin
                 'orderStatus' => $clientOrderDetails->ostt_status_name,
                 'orderReference' => $clientOrderDetails->ord_reference,
                 'orderDate' => $clientOrderDetails->ord_date_creation,
-                'orderSubtotal' => $clientOrderDetails->opay_price_order,
+                'orderSubtotal' => $clientOrderDetails->opay_price_order - $totalProductDiscount,
                 'orderCouponDetails' => $couponDetails,
                 'orderSippingTotal' => $clientOrderDetails->opay_price_shipping,
                 'orderTotal' => $clientOrderDetails->opay_price_total,

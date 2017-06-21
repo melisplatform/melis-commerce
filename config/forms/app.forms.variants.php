@@ -76,6 +76,16 @@ return array(
                                     ),
                                 ),
                             ),
+//                             array(
+//                                 'spec' => array(
+//                                     'name' => 'stock_org_qty',
+//                                     'type' => 'Hidden',
+//                                     'options' => array(
+//                                     ),
+//                                     'attributes' => array(
+//                                     ),
+//                                 ),
+//                             ),
                             array(
                                 'spec' => array(
                                     'name' => 'stock_country_id',

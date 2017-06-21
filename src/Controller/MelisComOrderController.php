@@ -558,6 +558,7 @@ class MelisComOrderController extends AbstractActionController
         $coupons = array();
         $pays = array();
         $couponSvc = $this->getServiceLocator()->get('MelisComCouponService');
+        $couponOrderTable = $this->getServiceLocator()->get('MelisEcomCouponOrderTable');
         $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
         foreach($payments as $payment){
             $payment->opay_date_payment = $this->getTool()->dateFormatLocale($payment->opay_date_payment);
@@ -570,7 +571,13 @@ class MelisComOrderController extends AbstractActionController
             $payment->cur_symbol = $currency->cur_symbol;
             
             foreach($couponSvc->getCouponList($payment->opay_order_id, null, null, null, 'coup_id asc', null) as $coupon){
-                $coupons[] = $coupon->getCoupon();
+                $tmp = $coupon->getCoupon();
+                $qty = 0;
+                foreach($couponOrderTable->getCouponDiscountedBasketItems($tmp->coup_id, $payment->opay_order_id) as $coup){
+                    $qty += $coup->cord_quantity_used;
+                }
+                $tmp->qty_used = $qty;
+                $coupons[] = $tmp;
             }
             $payment->{'coupons'} = $coupons;
             $pays[] = $payment;
@@ -1198,8 +1205,8 @@ class MelisComOrderController extends AbstractActionController
         $data = array();
         $orderId = null;
         $orderMsgId = null;
-        $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_order_message_save_fail');
-        $textTitle = $this->getTool()->getTranslation('tr_meliscommerce_order_page');
+        $textMessage = 'tr_meliscommerce_order_message_save_fail';
+        $textTitle = 'tr_meliscommerce_order_page';
         $this->getEventManager()->trigger('meliscommerce_order_message_save_start', $this, array());
         $melisComOrderService = $this->getServiceLocator()->get('MelisComOrderService');
         
@@ -1232,7 +1239,7 @@ class MelisComOrderController extends AbstractActionController
                 $orderMsgId = $melisComOrderService->saveOrderMessage($orderMesasge);
                 if($orderMsgId){
                     $success = 1;
-                    $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_order_message_save_success');
+                    $textMessage = 'tr_meliscommerce_order_message_save_success';
                 }
             }
         }

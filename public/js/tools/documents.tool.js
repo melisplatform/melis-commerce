@@ -265,6 +265,12 @@ $(function(){
 		});
 
 	});
+	
+	$("body").on("click", "#btnDocFileAdd", function(){
+			var button = $(this);
+			var formId = '#'+button.attr("form");
+			$(formId).submit();
+	});
 
 });
 

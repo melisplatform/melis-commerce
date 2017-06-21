@@ -17,7 +17,7 @@ class ToolTipTableHelper extends AbstractHelper
     
     public function setTable($tableId, $tableClass, $style = 'width: 10px')
     {
-        $this->table = '<table id="' . $tableId . '" class="tooltiptext qtipTable ' . $tableClass . '" style="' . $style . '">';
+        $this->table = '<table id="' . $tableId . '" class="tooltiptext qtipTable ' . '" style="' . $style . '">';
     }
     
     /**
