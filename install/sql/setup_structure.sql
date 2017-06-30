@@ -835,6 +835,7 @@ CREATE TABLE IF NOT EXISTS `melis_ecom_coupon` (
   `coup_code` VARCHAR(45) NOT NULL COMMENT 'Code of the coupon',
   `coup_status` TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Active / Not active',
   `coup_type` INT NOT NULL COMMENT 'Type of coupon: for all or affected to a client',
+  `coup_product_assign` INT NOT NULL COMMENT 'Product id assign to coupon',
   `coup_percentage` FLOAT NULL COMMENT 'Percentage of discount',
   `coup_discount_value` FLOAT NULL COMMENT 'Value of discount',
   `coup_max_use_number` INT NULL DEFAULT NULL COMMENT 'Max number of use',
@@ -895,7 +896,6 @@ CREATE TABLE IF NOT EXISTS `melis_ecom_coupon_product` (
   INDEX `fk_melis_ecom_coupon_product_melis_ecom_coupon1_idx` (`cprod_coupon_id` ASC),
   INDEX `fk_melis_ecom_coupon_product_melis_ecom_product1_idx` (`cprod_product_id` ASC))
 ENGINE = InnoDB;
-COMMENT = 'This table stores the relation between assigned coupons and their product';
 
 -- -----------------------------------------------------
 -- Table `melis_ecom_stock_email_alert`
