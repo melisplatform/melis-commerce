@@ -1,8 +1,15 @@
 <?php 
 	return array(
 	    'tr_meliscommerce_order_checkout_title' => 'New order',
+	    'tr_meliscommerce_order_checkout_title_description' => 'Enter here the details of your order.',
+	    'tr_meliscommerce_order_checkout_title_description_new' => 'Create here a new order.',
 	    'tr_meliscommerce_order_checkout_add_order' => 'Create an order',
-	    
+	    'tr_meliscommerce_order_checkout_product_description' => 'Select the country to display the associated products then add the products to the order.',
+	    'tr_meliscommerce_order_checkout_contact_description' => 'Select the client of the order',
+	    'tr_meliscommerce_order_checkout_addresses_description' => 'Select or create the delivery and billing addresses',
+	    'tr_meliscommerce_order_checkout_recap_description' => 'Summary of the order. You can enter here discount coupons.',
+	    'tr_meliscommerce_order_checkout_payment_description' => 'Enter here the payment information.',
+	    'tr_meliscommerce_order_checkout_confirm_description' => 'If the order is successful find here its reference.',
 	    // Common Labels
 	    'tr_meliscommerce_order_checkout_common_action' => 'Action',
 	    'tr_meliscommerce_order_checkout_common_chooose' => 'Choose',

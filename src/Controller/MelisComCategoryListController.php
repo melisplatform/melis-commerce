@@ -204,7 +204,9 @@ class MelisComCategoryListController extends AbstractActionController
             $numProducts = ($idAndNameOnly) ? '' : ' <span title="'.$translator->translate('tr_meliscommerce_categories_list_tree_view_product_num').'">(%s)</span>';
             $numProducts = sprintf($numProducts, $melisEcomProductCategoryTable->getTotalData('pcat_cat_id', $val['cat_id']));
             
-            $categoryList[$key]['id'] = $val['cat_id'];
+            $numProds = $melisEcomProductCategoryTable->getTotalData('pcat_cat_id', $val['cat_id']);
+            
+            $categoryList[$key]['id'] = $val['cat_id'].'_categoryId';
             
             $checked = false;
             if (!empty($categoryChecked)){
@@ -223,20 +225,24 @@ class MelisComCategoryListController extends AbstractActionController
             
             // retrieves SEO page id
             $catSeo = $categorySvc->getCategorySeoById($val['cat_id'], $langId);
-            $seoPage = '';
-           
-            if(!empty($catSeo->eseo_page_id)){
-                $seoPage = ' - <span class="fa fa-file-o"></span> '.$catSeo->eseo_page_id;
-            }
-                
+            $cseoPageId = !empty($catSeo->eseo_page_id)? $catSeo->eseo_page_id : '';
+            $itemIcon = '';
             $categoryList[$key]['type'] = 'category';
             if ($val['cat_father_cat_id'] == -1){
                 $itemIcon = '<i class="fa fa-book"></i>';
                 $categoryList[$key]['type'] = 'catalog';
-                $categoryList[$key]['text'] = $itemIcon.' <b>'.$val['cat_id'].' - '.$categoryList[$key]['text'].' '.$numProducts.' '.$seoPage.'</b>';
+                $categoryList[$key]['text'] = $val['cat_id'].' - '.$categoryList[$key]['text'];
             }else{
-                $categoryList[$key]['text'] = $val['cat_id'].' - '.$categoryList[$key]['text'].$numProducts.' '.$seoPage;
+                $categoryList[$key]['text'] = $val['cat_id'].' - '.$categoryList[$key]['text'];
             }
+            
+            $categoryList[$key]['a_attr'] = array(
+                'data-seopage' => $cseoPageId,
+                'data-numprods' => $numProds,
+                'data-textlang' => $categoryList[$key]['textLang'],
+                'data-fathericon' => $itemIcon
+            );
+            
             unset($categoryList[$key]['cat_father_cat_id']);
             
             $selectedState = false;

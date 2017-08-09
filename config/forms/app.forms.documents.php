@@ -45,6 +45,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_documents_upload_doc_name',
+                                        'tooltip' => 'tr_meliscommerce_documents_upload_doc_name tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'doc_name',
@@ -58,12 +59,13 @@ return array(
                                     'type' => 'EcomDocumentFileSelect',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_documents_main_information_upload_select_type',
+                                        'tooltip' => 'tr_meliscommerce_documents_main_information_upload_select_type tooltip',
                                         'empty_option' => 'tr_meliscommerce_categories_common_label_choose',
                                         'disable_inarray_validator' => true,
                                     ),
                                     'attributes' => array(
                                         'id' => 'doc_type_id',
-                                        //'required' => 'required',
+                                        'required' => 'required',
                                     ),
                                 ),
                             ),
@@ -73,12 +75,13 @@ return array(
                                     'type' => 'EcomCountriesSelect',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_documents_main_information_update_file_country',
+                                        'tooltip' => 'tr_meliscommerce_documents_main_information_update_file_country tooltip',
                                         'empty_option' => 'tr_meliscommerce_categories_common_label_choose',
                                         'disable_inarray_validator' => true,
                                     ),
                                     'attributes' => array(
                                         'id' => 'rdoc_country_id',
-                                        //'required' => 'required',
+                                        'required' => 'required',
                                     ),
                                 ),
                             ),
@@ -199,6 +202,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_documents_upload_doc_name',
+                                        'tooltip' => 'tr_meliscommerce_documents_upload_doc_name tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'doc_name',
@@ -212,12 +216,14 @@ return array(
                                     'type' => 'EcomDocumentImageTypeSelect',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_documents_main_information_upload_select_type',
+                                        'tooltip' => 'tr_meliscommerce_documents_main_information_upload_select_type tooltip',
                                         'empty_option' => 'tr_meliscommerce_documents_common_label_choose',
                                         'disable_inarray_validator' => true,
                                     ),
                                     'attributes' => array(
                                         'id' => 'doc_subtype_id',
                                         'value' => '',
+                                        'required' => 'required',
                                     ),
                                 ),
                             ),
@@ -227,11 +233,13 @@ return array(
                                     'type' => 'EcomCountriesSelect',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_documents_main_information_update_file_country',
+                                        'tooltip' => 'tr_meliscommerce_documents_main_information_update_file_country tooltip',
                                         'empty_option' => 'tr_meliscommerce_categories_common_label_choose',
                                         'disable_inarray_validator' => true,
                                     ),
                                     'attributes' => array(
                                         'id' => 'rdoc_country_id',
+                                        'required' => 'required',
                                     ),
                                 ),
                             ),
@@ -337,10 +345,12 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_documents_image_type_code',
+                                        'tooltip' => 'tr_meliscommerce_documents_image_type_code tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'dtype_code',
                                         'value' => '',
+                                        'required' => 'required',
                                     ),
                                 ),
                             ),
@@ -350,10 +360,12 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_documents_image_type_name',
+                                        'tooltip' => 'tr_meliscommerce_documents_image_type_name tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'dtype_name',
                                         'value' => '',
+                                        'required' => 'required',
                                     ),
                                 ),
                             ),
@@ -389,7 +401,7 @@ return array(
                             ),
                             'dtype_name' => array(
                                 'name'     => 'dtype_name',
-                                'required' => false,
+                                'required' => true,
                                 'validators' => array(
                                     array(
                                         'name' => 'NotEmpty',
@@ -406,6 +418,124 @@ return array(
                                             'max'      => 45,
                                             'messages' => array(
                                                 \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_documents_image_type_name_long',
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                                'filters'  => array(
+                                    array('name' => 'StripTags'),
+                                    array('name' => 'StringTrim'),
+                                ),
+                            ),
+                        ),
+                    ),
+                    'custom_filters' => array(
+                        'file' => array(
+                           'dtype_name' => array(
+                                'name'     => 'dtype_name',
+                                'required' => true,
+                                'validators' => array(
+                                    array(
+                                        'name' => 'NotEmpty',
+                                        'options' => array(
+                                            'messages' => array(
+                                                \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_documents_image_type_name_empty_file',
+                                            ),
+                                        ),
+                                    ),
+                                    array(
+                                        'name'    => 'StringLength',
+                                        'options' => array(
+                                            'encoding' => 'UTF-8',
+                                            'max'      => 45,
+                                            'messages' => array(
+                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_documents_image_type_name_long',
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                                'filters'  => array(
+                                    array('name' => 'StripTags'),
+                                    array('name' => 'StringTrim'),
+                                ),
+                            ),
+                            'dtype_code' => array(
+                                'name'     => 'dtype_code',
+                                'required' => true,
+                                'validators' => array(
+                                   array(
+                                        'name' => 'NotEmpty',
+                                        'options' => array(
+                                            'messages' => array(
+                                                \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_documents_image_type_code_empty_file',
+                                            ),
+                                        ),
+                                    ),
+                                    array(
+                                        'name'    => 'StringLength',
+                                        'options' => array(
+                                            'encoding' => 'UTF-8',
+                                            'max'      => 10,
+                                            'messages' => array(
+                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_documents_image_type_code_long',
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                                'filters'  => array(
+                                    array('name' => 'StripTags'),
+                                    array('name' => 'StringTrim'),
+                                ),
+                            ),
+                        ),
+                        'image' => array(
+                            'dtype_name' => array(
+                                'name'     => 'dtype_name',
+                                'required' => true,
+                                'validators' => array(
+                                    array(
+                                        'name' => 'NotEmpty',
+                                        'options' => array(
+                                            'messages' => array(
+                                                \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_documents_image_type_name_empty_image',
+                                            ),
+                                        ),
+                                    ),
+                                    array(
+                                        'name'    => 'StringLength',
+                                        'options' => array(
+                                            'encoding' => 'UTF-8',
+                                            'max'      => 45,
+                                            'messages' => array(
+                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_documents_image_type_name_long',
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                                'filters'  => array(
+                                    array('name' => 'StripTags'),
+                                    array('name' => 'StringTrim'),
+                                ),
+                            ),
+                            'dtype_code' => array(
+                                'name'     => 'dtype_code',
+                                'required' => true,
+                                'validators' => array(
+                                    array(
+                                        'name' => 'NotEmpty',
+                                        'options' => array(
+                                            'messages' => array(
+                                                \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_documents_image_type_code_empty',
+                                            ),
+                                        ),
+                                    ),
+                                    array(
+                                        'name'    => 'StringLength',
+                                        'options' => array(
+                                            'encoding' => 'UTF-8',
+                                            'max'      => 10,
+                                            'messages' => array(
+                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_documents_image_type_code_long',
                                             ),
                                         ),
                                     ),

@@ -400,7 +400,7 @@ $(function(){
 		
 		$("#categoryTreeViewPanel").collapse("hide");
 		
-		var catId = $(this).attr("id");
+		var catId = parseInt($(this).attr("id"), 10);
     	
 		var zoneId = 'id_meliscommerce_categories_category';
 		var melisKey = 'meliscommerce_categories_category';
@@ -489,6 +489,24 @@ window.initCategoryTreeView = function(){
 		})
 		.on('loaded.jstree', function (e, data) {
 			melisCommerce.pendingZoneDone("meliscommerce_categories_list_search_input");
+			var temp = $('ul.jstree-container-ul > li > a');
+			temp.each(function(){
+				var father = $(this);
+				var fatherIcon = father.data('fathericon');
+				var temp = father.find('i');
+				father.html(temp.get(0).outerHTML + '<b>' + fatherIcon +' ' + father.text() + '</b>');
+			})
+
+		})
+		.on('refresh.jstree', function (e, data) {
+			var temp = $('ul.jstree-container-ul > li > a');
+			temp.each(function(){
+				var father = $(this);
+				var fatherIcon = father.data('fathericon');
+				var temp = father.find('i');
+				father.html(temp.get(0).outerHTML + '<b>' + fatherIcon +' ' + father.text() + '</b>');
+			})
+
 		})
 		.on('open_node.jstree', function (e, data) {
 			
@@ -509,6 +527,29 @@ window.initCategoryTreeView = function(){
 				}
 			}
 		})
+		.on('after_open.jstree', function (e, data) {
+			
+			$.each(data.node.children_d, function(k, v){
+				
+				var textlang = $('#'+v+'_anchor').data('textlang');
+				var products = $('#'+v+'_anchor').data('numprods');
+				var spanHtml = '<span title="' + translations.tr_meliscommerce_categories_list_tree_view_product_num + '">('+ products +')</span>';
+				var seoId = $('#'+v+'_anchor').data('seopage');
+				if(seoId){
+					spanHtml = spanHtml + ' - <span class="fa fa-file-o"></span> ' +  seoId ;
+				}
+				
+				if(textlang){
+					spanHtml = ' ' + textlang + spanHtml;
+				}
+				
+				if(!$('#'+v+'_anchor').hasClass('updatedText')){
+					$('#'+v+'_anchor').append(spanHtml);
+					$('#'+v+'_anchor').addClass('updatedText');
+				}
+				
+			});
+		 })
 		.on("move_node.jstree", function (e, data) {
 	        // Category Id
 	        var categoryId = data.node.id;
@@ -527,12 +568,12 @@ window.initCategoryTreeView = function(){
 			// get data from input
 	        dataString.push({
 				name: "cat_id",
-				value: categoryId
+				value: parseInt(categoryId, 10)
 			});
 			// get date data from param
 			dataString.push({
 				name: "cat_father_cat_id",
-				value: newParentId
+				value: parseInt(newParentId, 10)
 			});
 			// get date data from param
 			dataString.push({
@@ -542,7 +583,7 @@ window.initCategoryTreeView = function(){
 			// get date data from param
 			dataString.push({
 				name: "old_parent",
-				value: oldParent
+				value: parseInt(oldParent, 10)
 			});
 			
 			dataString = $.param(dataString);
@@ -595,7 +636,7 @@ window.initCategoryTreeView = function(){
 		                "icon"  : "fa fa-edit",
 		                "action" : function (obj) {
 		                	
-		            		var catId = node.id;
+		            		var catId = parseInt(node.id , 10);
 		                	
 		            		var zoneId = 'id_meliscommerce_categories_category';
 		            		var melisKey = 'meliscommerce_categories_category';
@@ -615,7 +656,7 @@ window.initCategoryTreeView = function(){
 		                	
 		                	// New category Parent ID
 		        	        // if value is '#', the Category is on the root of the list
-		        	        var parentId = (node.parent=='#') ? '-1' : node.parent;
+		        	        var parentId = (node.parent=='#') ? '-1' : parseInt(node.parent, 10);
 		        	        
 		        	        dataString.push({
 		        				name: "cat_father_cat_id",
@@ -654,7 +695,7 @@ window.initCategoryTreeView = function(){
 			        			}).done(function(data) {
 			        				if(data.success) {
 			        					var catTree = $('#categoryTreeView').jstree(true);
-			        	            	catTree.delete_node(cattId);
+			        					catTree.delete_node(cattId+'_categoryId_anchor');
 			        	            	
 			        	            	if($("#saveCategory").data("catid")==cattId){
 			        	            		var zoneId = "id_meliscommerce_categories_category";

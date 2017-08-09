@@ -103,7 +103,7 @@ class MelisComCurrencyController extends AbstractActionController
         $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id', ''));
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
-        $view->setTerminal(false);
+        $view->setTerminal(true);
         $view->melisKey = $melisKey;
         $view->id = $id;
         return $view;

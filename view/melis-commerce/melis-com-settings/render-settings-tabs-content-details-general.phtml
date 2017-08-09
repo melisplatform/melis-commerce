@@ -39,6 +39,14 @@ $id = $this->zoneconfig['conf']['id'];
                 emailList.fadeIn();
                 emailList.select2({
                     placeholder: '<?= $this->translate('tr_meliscommerce_settings_page_recepients'); ?>',
+                    tags: true,
+                    createTag: function (params) {
+                        return {
+                          id: -1,
+                          text: params.term,
+                          newOption: true
+                        }
+                      }
                 });
             });
         </script>

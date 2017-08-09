@@ -172,7 +172,7 @@ class MelisComOrderStatusController extends AbstractActionController
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view->melisKey = $melisKey;
         $view->id = $id;
-        $view->setTerminal(false);
+        $view->setTerminal(true);
         return $view;
     }
     
@@ -187,12 +187,14 @@ class MelisComOrderStatusController extends AbstractActionController
         $isPrime = 0;
         $status = '';
         $color = '#bd3131';
+        $modalName = 'tr_meliscommerce_order_status_form_new';
         
         $statusId = (int) $this->params()->fromQuery('ostaId', '');
         
         $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
         
         if(!empty($statusId)){
+            $modalName = 'tr_meliscommerce_order_status_form_edit';
             $orderStatus = $orderSvc->getOrderStatus($statusId);
             if(!empty($orderStatus)){
                 $color = $orderStatus->osta_color_code;
@@ -254,6 +256,7 @@ class MelisComOrderStatusController extends AbstractActionController
         $view->statusId = $statusId;
         $view->status = $status;
         $view->isPrime = $isPrime;
+        $view->modalName = $modalName;
         return $view;
     }
     

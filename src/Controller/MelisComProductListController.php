@@ -156,6 +156,7 @@ class MelisComProductListController extends AbstractActionController
         $docSvc = $this->getServiceLocator()->get('MelisComDocumentService');
         $viewHelperManager = $this->getServiceLocator()->get('ViewHelperManager');
         $toolTipTable = $viewHelperManager->get('ToolTipTable');
+        $langId = $this->getTool()->getCurrentLocaleID();
         
         $columns = array();
         $dataCount = 0;

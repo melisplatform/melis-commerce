@@ -13,7 +13,7 @@
                 <div class="widget-head">
                 	<ul class="nav nav-tabs">
                 		<li class="active"><a href="#<?php echo $this->zoneconfig['conf']['id'] ?>" class="glyphicons <?php echo ($this->attributeValueId) ? 'pencil' : 'plus'?>" data-toggle="tab" aria-expanded="true"><i></i> 
-                		<?= $this->zoneconfig['conf']['name'] ?></a></li>
+                		<?= $this->translate($this->modalName) ?></a></li>
             		</ul>
         		</div>
         		<div class="widget-body innerAll inner-2x">
@@ -21,6 +21,7 @@
         				<div class="tab-pane active" id="<?php echo $id ?>">
                             <div class="row">
                             	<div class="col-md-12">
+                            	<p><?= $this->translate('tr_meliscommerce_order_status_modal_text')?></p>
                                     <?php
                                         echo $this->form()->openTag($this->statusForm);
                                     ?>

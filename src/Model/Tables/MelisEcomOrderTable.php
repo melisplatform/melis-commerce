@@ -36,12 +36,12 @@ class MelisEcomOrderTable extends MelisEcomGenericTable
         $basketQuery = new \Zend\Db\Sql\Select ('melis_ecom_order_basket');
         $basketQuery->columns(array('obas_order_id', 'products' => new Expression('sum(melis_ecom_order_basket.obas_quantity)')));
         $basketQuery->group('obas_order_id');
-        
+
         //nested select for left join payments
         $paymentQuery = new \Zend\Db\Sql\Select ('melis_ecom_order_payment');
         $paymentQuery->columns(array('opay_order_id', 'price' => new Expression('sum(melis_ecom_order_payment.opay_price_total)')));
         $paymentQuery->group('opay_order_id');
-        
+
         $select->join(array('a' => $basketQuery), 'a.obas_order_id = melis_ecom_order.ord_id', array('products'), $select::JOIN_LEFT);
         $select->join(array('b' => $paymentQuery), 'b.opay_order_id = melis_ecom_order.ord_id', array('price'), $select::JOIN_LEFT);
         $select->join('melis_ecom_coupon_order', 'melis_ecom_coupon_order.cord_order_id = melis_ecom_order.ord_id', array(), $select::JOIN_LEFT);
@@ -53,42 +53,41 @@ class MelisEcomOrderTable extends MelisEcomGenericTable
         {
             $select->where('melis_ecom_order.ord_status ='.$orderStatusId);
         }
-        
+
         if (!is_null($onlyValid) && is_null($orderStatusId))
         {
             $select->where('melis_ecom_order.ord_status != -1');
-            $select->where('melis_ecom_order.ord_status != 6');
         }
-        
+
         if (!is_null($couponId))
         {
             $select->where('melis_ecom_coupon_order.cord_coupon_id ='.$couponId);
         }
-        
+
         if (!is_null($clientId))
         {
             $select->where('melis_ecom_order.ord_client_id ='.$clientId);
         }
-        
+
         if (!is_null($clientPersonId))
         {
             $select->where('melis_ecom_order.ord_client_person_id ='.$clientPersonId);
         }
-        
+
         if (!is_null($reference))
         {
             $reference = '%'.$reference.'%';
             $select->where->like('melis_ecom_order.ord_reference', $reference);
         }
-        
+
         if (!is_null($startDate)){
             $select->where->greaterThan('melis_ecom_order.ord_date_creation', $startDate);
         }
-        
+
         if (!is_null($endDate)){
             $select->where->lessThan('melis_ecom_order.ord_date_creation', $endDate);
         }
-        
+
         if(!is_null($search)){
             $search = '%'.$search.'%';
             $select->where->NEST->like('ord_id', $search)
@@ -98,22 +97,24 @@ class MelisEcomOrderTable extends MelisEcomGenericTable
             ->or->like('melis_ecom_client_person.cper_firstname', $search)
             ->or->like('melis_ecom_client_company.ccomp_name', $search);
         }
-        
+
         if (!is_null($start))
         {
             $select->offset($start);
         }
-        
+
         if (!is_null($limit)&&$limit!=-1)
         {
             $select->limit($limit);
         }
-        
+
         if (!is_null($order))
         {
             $select->order($order);
         }
         $select->group('melis_ecom_order.ord_id');
+
+
 
         $resultData = $this->tableGateway->selectWith($select);
         return $resultData;

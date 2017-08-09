@@ -7,6 +7,7 @@ return array(
     'tr_meliscommerce_product_text_lang_id' => 'ID',
     'tr_meliscommerce_product_text_lang' => 'Langage',
     'tr_meliscommerce_product_text_type' => 'Type',
+    'tr_meliscommerce_product_text_type tooltip' => 'Type de texte',
     'tr_meliscommerce_product_text_short' => 'Court',
     'tr_meliscommerce_product_text_long' => 'Long',
     'tr_meliscommerce_product_text_short_too_long' => 'Valeur du texte court trop longue, la valeur maximum est de 45 caractères',
@@ -21,8 +22,11 @@ return array(
     // Product Text Type
     'tr_meliscommerce_products_text_type' => 'Produit texte type',
     'tr_meliscommerce_product_text_type_code' => 'Code',
+    'tr_meliscommerce_product_text_type_code tooltip' => 'Code du type de texte',
     'tr_meliscommerce_product_text_type_name' => 'Nom',
+    'tr_meliscommerce_product_text_type_name tooltip' => 'Nom du type de texte',
     'tr_meliscommerce_product_text_type_field' => 'Taille de texte',
+    'tr_meliscommerce_product_text_type_field tooltip' => 'Sélectionnez entre un champ de texte court (limité à 255 caractères) ou un champ de texte long (textarea)',
     'tr_meliscommerce_product_text_type_code_empty' => 'Veuillez saisir le code du type de texte',
     'tr_meliscommerce_product_text_type_code_long' => 'Code du type de texte trop long, il doit être de moins de 45 caractères',
     'tr_meliscommerce_product_text_type_name_empty' => 'Veuillez saisir le nom du type de texte',
@@ -53,6 +57,7 @@ return array(
     
     // Product Reference
     'tr_meliscommerce_products_reference' => 'Référence',
+    'tr_meliscommerce_products_reference tooltip' => 'Référence du produit. Celle-ci fait office de nom si aucun titre n&#39;est saisi dans l&#39;onglet &#34;Texte&#34;',
     'tr_meliscommerce_products_reference_long' => 'Référence du produit trop longue, la valeur doit être de moins de 45 caractères',
     'tr_meliscommerce_products_reference_empty' => 'Pour sauvegarder le produit veuillez saisir la référence du produit',
     
@@ -65,4 +70,5 @@ return array(
     'tr_meliscommerce_products_attributes_save_failed' => 'Impossible de sauvegarder avec les attributs, veuillez vérifier les attributs du produit',
     
     'tr_meliscommerce_product_stock_low_field' => 'Alerte de stock',
+    'tr_meliscommerce_product_stock_low_field tooltip' => 'Sélectionnez un ou plusieurs destinataire(s) et définissez le stock pour chaque variant de ce produit à partir duquel un email d&#39;alerte est envoyé',
 );

@@ -224,38 +224,6 @@ $(document).ready(function() {
 		melisHelper.tabOpen(ordername, 'fa fa-ticket', id+'_id_meliscommerce_coupon_page', 'meliscommerce_coupon_page', { couponId : id});
 	}
 	
-	$("body").on("mouseenter mouseout", ".toolTipHoverEvent", function(e) {
-		var productId = $(this).data("productid");
-		var loaderText = '<div class="qtipLoader"><hr/><span class="text-center col-lg-12">Loading...</span><br/></div>';
-		$.each($("table.couponProductTable"+productId + " thead").nextAll(), function(i,v) {
-			$(v).remove();
-		});
-		$(loaderText).insertAfter("table.couponProductTable"+productId + " thead");
-		var xhr = $.ajax({
-	        type        : 'POST', 
-	        url         : 'melis/MelisCommerce/MelisComProductList/getToolTip',
-	        data		: {productId : productId},
-	        dataType    : 'json',
-	        encode		: true,
-	    }).success(function(data){
-    	 	$("div.qtipLoader").remove();
-		    if(data.content.length === 0) {
-		    	$('<div class="qtipLoader"><hr/><span class="text-center col-lg-12">'+translations.tr_meliscommerce_product_tooltip_no_variants+'</span><br/></div>').insertAfter("table.qtipTable thead");
-		    } else {
-		    	// make sure tbody is clear
-				$.each($("table.productTable"+productId + " thead").nextAll(), function(i,v) {
-					$(v).remove();
-				});
-    		    $.each(data.content.reverse(), function(i ,v) {
-    		    	$(v).insertAfter("table.couponProductTable"+productId + " thead")
-    		    });		    	 
-		    }
-	    });
-		if(e.type === "mouseout") {
-			xhr.abort();
-		}
-	});
-	
 	body.on("click", ".addCouponToProduct", function(){
  		melisCoreTool.pending(this);
  		var productId = $(this).closest('tr').attr('id');

@@ -131,6 +131,7 @@ return array(
                                         'type' => 'MelisText',
                                         'options' => array(
                                             'label' => 'tr_meliscommerce_currency_code',
+                                            'tooltip' => 'tr_meliscommerce_currency_code tooltip',
                                         ),
                                         'attributes' => array(
                                             'id' => 'id_cur_name',
@@ -145,6 +146,7 @@ return array(
                                         'type' => 'MelisText',
                                         'options' => array(
                                             'label' => 'tr_meliscommerce_currency_name',
+                                            'tooltip' => 'tr_meliscommerce_currency_name tooltip',
                                         ),
                                         'attributes' => array(
                                             'id' => 'id_cur_name',
@@ -159,6 +161,7 @@ return array(
                                         'type' => 'MelisText',
                                         'options' => array(
                                             'label' => 'tr_meliscommerce_currency_symbol',
+                                            'tooltip' => 'tr_meliscommerce_currency_symbol tooltip',
                                         ),
                                         'attributes' => array(
                                             'id' => 'id_cur_name',

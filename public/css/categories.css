@@ -136,5 +136,10 @@
     color: #7D7B7B;
 }
 
-
+.custom-category-desc{
+	display: block;
+    margin: 8px;
+    padding-left: 32px;
+    color: #686868 !important;
+}
 

@@ -38,7 +38,7 @@ return array(
                             'dir' => $_SERVER['DOCUMENT_ROOT'] . '/csv/'
                         ),     
                     ),  
-                    'permanent_order_status' => array(1,2,3,4,5,6),
+                    'permanent_order_status' => array(1,2,3,4,5,6,-1),
                 ),
             ),
             'interface' => array(

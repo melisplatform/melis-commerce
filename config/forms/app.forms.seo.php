@@ -34,6 +34,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_seo_Page_id',
+                                        'tooltip' => 'tr_meliscommerce_seo_Page_id tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'eseo_page_id',
@@ -46,6 +47,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_seo_Meta_title',
+                                        'tooltip' => 'tr_meliscommerce_seo_Meta_title tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'eseo_meta_title',
@@ -58,6 +60,7 @@ return array(
                                     'type' => 'Textarea',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_seo_Meta_description',
+                                        'tooltip' => 'tr_meliscommerce_seo_Meta_description tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'eseo_meta_description',
@@ -72,6 +75,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_seo_Url',
+                                        'tooltip' => 'tr_meliscommerce_seo_Url tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'eseo_url',
@@ -84,6 +88,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_seo_Url_redirect',
+                                        'tooltip' => 'tr_meliscommerce_seo_Url_redirect tooltip',
                                         'label_options' => array(
                                             'disable_html_escape' => true,
                                         ),
@@ -99,6 +104,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_seo_Url_301',
+                                        'tooltip' => 'tr_meliscommerce_seo_Url_301 tooltip',
                                         'label_options' => array(
                                             'disable_html_escape' => true,
                                         ),

@@ -1,7 +1,7 @@
 $(function(){
 
 	// Modal Save Button
-	$(document).on("submit", "form.frmDocAddFile", function(e) {
+	$("body").on("submit", "form.frmDocAddFile", function(e) {
 		var relationId = $("#" + activeTabId + " div.ecom-doc-container").data("doc-relation-id");
 		var relationType = $("#" + activeTabId + " div.ecom-doc-container").data("doc-relation-type");
 		var target = "form#"+relationId+"_"+relationType+"_frmDocUpload";
@@ -172,10 +172,10 @@ $(function(){
 		var dataString = $("form.frmDocAddImageType").serialize();
 		var relationId = $("#" + activeTabId + " div.ecom-doc-container").data("doc-relation-id");
 		var relationType = $("#" + activeTabId + " div.ecom-doc-container").data("doc-relation-type");
-		var saveType = $(this).parent().prev().parent().find("form.frmDocAddFile").data("savetype");
+		var saveType = $("form.frmDocAddImageType").data("upload-type");
 		var formData = $(this).parent().prev().parent().find("form.frmDocAddFile").serialize();
 		var image = $(this).parent().prev().parent().find("img.imgDocThumbnail").attr("src");
-		melisCommerce.postSave('melis/MelisCommerce/MelisComDocument/addImageType', dataString, function(data) {
+		melisCommerce.postSave('melis/MelisCommerce/MelisComDocument/addImageType?typeUpload='+saveType, dataString, function(data) {
 			if(data.success) {
 				melisHelper.zoneReload("id_meliscommerce_documents_modal_form", "meliscommerce_documents_modal_form", {typeUpload : "image", saveType : saveType, docRelationId : relationId, docRelationType :relationType});
 				melisHelper.melisOkNotification(data.textTitle, data.textMessage);
@@ -192,6 +192,7 @@ $(function(){
 			}
 			else {
 				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
+				melisCoreTool.highlightErrors(data.success, data.errors, "frmDocAddImageType");
 			}
 			melisCore.flashMessenger();
 		})
@@ -202,10 +203,10 @@ $(function(){
 		var dataString = $("form.frmDocAddImageType").serialize();
 		var relationId = $("#" + activeTabId + " div.ecom-doc-container").data("doc-relation-id");
 		var relationType = $("#" + activeTabId + " div.ecom-doc-container").data("doc-relation-type");
-		var saveType = $(this).parent().prev().parent().find("form.frmDocAddFile").data("savetype");
+		var saveType = $("form.frmDocAddImageType").data("upload-type");
 		var formData = $(this).parent().prev().parent().find("form.frmDocAddFile").serialize();
 
-		melisCommerce.postSave('melis/MelisCommerce/MelisComDocument/addFileType', dataString, function(data) {
+		melisCommerce.postSave('melis/MelisCommerce/MelisComDocument/addFileType?typeUpload='+saveType, dataString, function(data) {
 			if(data.success) {
 				melisHelper.zoneReload("id_meliscommerce_documents_modal_form", "meliscommerce_documents_modal_form", {typeUpload : "file", saveType : saveType, docRelationId : relationId, docRelationType :relationType});
 				melisHelper.melisOkNotification(data.textTitle, data.textMessage);
@@ -221,6 +222,7 @@ $(function(){
 			}
 			else {
 				melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
+				melisCoreTool.highlightErrors(data.success, data.errors, "frmDocAddImageType");
 			}
 			melisCore.flashMessenger();
 		})
@@ -266,10 +268,11 @@ $(function(){
 
 	});
 	
-	$("body").on("click", "#btnDocFileAdd", function(){
+	$("body").on("click", "#btnDocFileAdd", function(e){
 			var button = $(this);
 			var formId = '#'+button.attr("form");
-			$(formId).submit();
+			$(formId).trigger("submit");
+			e.preventDefault();
 	});
 
 });

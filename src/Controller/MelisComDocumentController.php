@@ -143,7 +143,7 @@ class MelisComDocumentController extends AbstractActionController
         $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id', ''));
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
-        $view->setTerminal(false);
+        $view->setTerminal(true);
         $view->melisKey = $melisKey;
         $view->id = $id;
         return $view;
@@ -153,17 +153,20 @@ class MelisComDocumentController extends AbstractActionController
         $typeUpload = $this->params()->fromQuery('typeUpload');
         $relationId = $this->params()->fromQuery('docRelationId');
         $relationType = $this->params()->fromQuery('docRelationType');
-
+        $modalText = '';
+        
         $docId = (int) $this->params()->fromQuery('docId');
         $saveType = $this->params()->fromQuery('saveType');
 
+        $translator = $this->getServiceLocator()->get('translator');
+        
         $docImageData = array();
         $fileData = array();
 
         $title = 'tr_meliscommerce_documents_attachment';
         $formUpload = 'meliscommerce_documents_file_upload_form';
         $fileTitle = 'tr_meliscommerce_documents_main_information_upload_file_select';
-
+        
         if($typeUpload=='image'){
             $title = 'tr_meliscommerce_documents_add_image_button';
             $formUpload = 'meliscommerce_documents_image_upload_form';
@@ -175,17 +178,17 @@ class MelisComDocumentController extends AbstractActionController
                 $docImageData = array_merge($docRelData, $document);
             }
         }
-
+        
         if($typeUpload == 'file') {
             if($docId) {
                 $docFileData = $this->getDocSvc()->getDocumentById($docId);
                 $docRelData = (array)$this->getDocSvc()->getDocumentRelationByDocumentId($docId);
                 $document = $docFileData->getDocument();
-
+        
                 $fileData = array_merge($docRelData, $document);
             }
         }
-
+        
         // Category Tree view Search Input
         $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_documents/'.$formUpload,$formUpload);
@@ -194,10 +197,32 @@ class MelisComDocumentController extends AbstractActionController
         $factory->setFormElementManager($formElements);
         $propertyForm = $factory->createForm($appConfigForm);
 
+        // modal texts
+        if($relationType == 'product'){
+            // product
+            if($typeUpload == 'file'){
+                $modalText = 'tr_meliscommerce_documents_modal_text_prod_file';
+            }else{
+                $propertyForm->get('doc_name')->setOption('tooltip', $translator->translate('tr_meliscommerce_documents_upload_doc_name_image tooltip'));
+                $propertyForm->get('doc_subtype_id')->setOption('tooltip', $translator->translate('tr_meliscommerce_documents_main_information_upload_select_type_image tooltip'));
+                $propertyForm->get('rdoc_country_id')->setOption('tooltip', $translator->translate('tr_meliscommerce_documents_main_information_update_file_country_image tooltip'));
+                
+                $modalText = 'tr_meliscommerce_documents_modal_text_prod_image';
+            }
+        }else{
+            // variant
+            if($typeUpload == 'file'){
+                $modalText = 'tr_meliscommerce_documents_modal_text_var_file';
+            }else{
+                $modalText = 'tr_meliscommerce_documents_modal_text_var_image';
+            }
+        }
+
         // Image Type Form
         $imageTypeFormConfig = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_documents/meliscommerce_documents_image_type_form','meliscommerce_documents_image_type_form');
         $imageTypeForm = $factory->createForm($imageTypeFormConfig);
-
+        $imageTypeForm->setAttribute('data-upload-type', $typeUpload);
+        
         $melisKey = $this->params()->fromRoute('melisKey', '');
 
         $view = new ViewModel();
@@ -213,6 +238,7 @@ class MelisComDocumentController extends AbstractActionController
         $view->docImageData = $docImageData;
         $view->docFileData = $fileData;
         $view->saveType = $saveType;
+        $view->modalText = $modalText;
         $view->setVariable('meliscommerce_documents_image_type_form', $imageTypeForm);
 
         return $view;
@@ -626,6 +652,7 @@ class MelisComDocumentController extends AbstractActionController
         $textTitle = 'tr_meliscommerce_documents_image_type_add';
         $textMessage = 'tr_meliscommerce_documents_image_type_add_failed';
         $request = $this->getRequest();
+        $typeUpload = $this->params()->fromQuery('typeUpload');
 
         if($request->isPost()) {
             $this->getEventManager()->trigger('meliscommerce_document_add_image_type_start', $this, $request->getPost());
@@ -637,6 +664,16 @@ class MelisComDocumentController extends AbstractActionController
 
             $factory->setFormElementManager($formElements);
             $form = $factory->createForm($appTextTypeForm);
+
+            $filter = $form->getInputFilter();
+            $filter->remove('dtype_name');
+            $filter->remove('dtype_code');
+            
+            // add update filters
+            $customFilters = $melisMelisCoreConfig->getItem('meliscommerce/forms/meliscommerce_documents/custom_filters');
+            $filter->add($customFilters[$typeUpload]['dtype_name']);
+            $filter->add($customFilters[$typeUpload]['dtype_code']);
+            $form->setInputFilter($filter);
 
             $postValues = get_object_vars($this->getRequest()->getPost());
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
@@ -692,7 +729,8 @@ class MelisComDocumentController extends AbstractActionController
         $textTitle = 'tr_meliscommerce_documents_file_add_banner_title';
         $textMessage = 'tr_meliscommerce_documents_File_type_add_failed';
         $request = $this->getRequest();
-
+        $typeUpload = $this->params()->fromQuery('typeUpload');
+        
         if($request->isPost()) {
             $this->getEventManager()->trigger('meliscommerce_document_add_file_type_start', $this, $request->getPost());
 
@@ -703,7 +741,17 @@ class MelisComDocumentController extends AbstractActionController
 
             $factory->setFormElementManager($formElements);
             $form = $factory->createForm($appTextTypeForm);
-
+            
+            $filter = $form->getInputFilter();
+            $filter->remove('dtype_name');
+            $filter->remove('dtype_code');
+            
+            // add update filters
+            $customFilters = $melisMelisCoreConfig->getItem('meliscommerce/forms/meliscommerce_documents/custom_filters');
+            $filter->add($customFilters[$typeUpload]['dtype_name']);
+            $filter->add($customFilters[$typeUpload]['dtype_code']);
+            $form->setInputFilter($filter);
+           
             $postValues = get_object_vars($this->getRequest()->getPost());
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
             $form->setData($postValues);

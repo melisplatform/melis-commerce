@@ -2,9 +2,11 @@
 return array(
     'tr_meliscommerce_country_ctry_id' => 'ID', 
     'tr_meliscommerce_country_ctry_name' => 'Name',
+    'tr_meliscommerce_country_ctry_name tooltip' => 'Country name',
     'tr_meliscommerce_country_ctry_flag' => 'Flag',
     'tr_meliscommerce_country_ctry_currency_id' => 'Currency',
-    'tr_meliscommerce_country_ctry_select_empty' => 'Select currency',
+    'tr_meliscommerce_country_ctry_select_empty' => 'Currency',
+    'tr_meliscommerce_country_ctry_select_empty tooltip' => 'Select the currency of the country',
     'tr_meliscommerce_country_ctry_flag_choose' => 'Choose flag icon',
     
     'tr_meliscommerce_country_add_country' => 'Add country',

@@ -5,6 +5,18 @@ if (!empty($this->zoneconfig['conf']['id'])){
 }
 
 $formText = $this->productTextForm;
+$options = $formText->get('ptxt_type')->getValueOptions();
+$prodTexts = $this->layout()->prodText;
+
+if(empty($prodTexts[0]->ptxt_id)){
+    foreach($options as $key => $value){
+        if($value == 'Title'){
+            unset($options[$key]);
+        }
+    }
+    $formText->get('ptxt_type')->setValueOptions($options);
+}
+
 $formText->setAttribute('data-modalForm', $this->productId.'_productTextForm');
 $formText->get('ptxt_id')->setAttribute('style', 'display: none')->setLabel('');
 $formText->get('ptxt_lang_id')->setAttribute('style', 'display: none')->setLabel('');
@@ -12,6 +24,7 @@ $formText->get('ptxt_field_short')->setAttribute('style', 'display: none')->setL
 $formText->get('ptxt_field_long')->setAttribute('style', 'display: none')->setLabel('');
 $content = '<div id="'.$id.'" data-melisKey="'.$this->melisKey.'">'.
     '<h4>'.$this->translate('tr_meliscommerce_products_add_product_text').'</h4>'.
+    '<p>' .$this->translate('tr_meliscommerce_products_add_product_text_description').'</p>'.
     '<div data-class="addTextFieldNotif"></div>'.
     $this->form()->openTag($formText).
     $this->melisFieldCollection($formText).

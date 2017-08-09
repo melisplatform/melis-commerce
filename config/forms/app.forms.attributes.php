@@ -19,10 +19,12 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_attribute_reference',
+                                        'tooltip' => 'tr_meliscommerce_attribute_reference tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => '',
                                         'max' => '45',
+                                        'required' => 'required',
                                     ),
                                 ),
                             ),
@@ -32,11 +34,13 @@ return array(
                                     'type' => 'EcomAttributeTypeSelect',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_attribute_type',
+                                        'tooltip' => 'tr_meliscommerce_attribute_type tooltip',
                                         'empty_option' => 'tr_meliscommerce_clients_common_label_choose',
                                         'disable_inarray_validator' => true,
                                     ),
                                     'attributes' => array(
                                         'id' => '',
+                                        'required' => 'required',
                                     )
                                 ),
                             ),
@@ -108,6 +112,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_attribute_label',
+                                        'tooltip' => 'tr_meliscommerce_attribute_label tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => '',
@@ -121,6 +126,7 @@ return array(
                                     'type' => 'TextArea',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_attribute_label_description',
+                                        'tooltip' => 'tr_meliscommerce_attribute_label_description tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => '',
@@ -605,7 +611,7 @@ return array(
                             array(
                                 'spec' => array(
                                     'name' => 'avt_v_datetime',
-                                    'type' => 'EcomDateField',
+                                    'type' => 'DateField',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_attribute_value_date',
                                     ),

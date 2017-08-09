@@ -313,7 +313,6 @@ return array(
             'EcomAddressTypeSelect' => 'MelisCommerce\Form\Factory\EcomAddressTypeSelectFactory',
             'EcomOrderStatusSelect' => 'MelisCommerce\Form\Factory\EcomOrderStatusSelectFactory',
             'EcomOrderStatusAllSelect' => 'MelisCommerce\Form\Factory\EcomOrderStatusAllSelectFactory',
-            'EcomDateField' => 'MelisCommerce\Form\Factory\EcomDateFieldFactory',
             'EcomAttributeTypeSelect' => 'MelisCommerce\Form\Factory\EcomAttributeTypeSelectFactory',
             'EcomCurrencySelect' => 'MelisCommerce\Form\Factory\EcomCurrencySelectFactory',
             'EcomCheckoutBillingAddressSelect' => 'MelisCommerce\Form\Factory\EcomCheckoutBillingAddressSelectFactory',

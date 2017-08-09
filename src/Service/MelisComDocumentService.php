@@ -222,7 +222,7 @@ class MelisComDocumentService extends MelisComGeneralService
         if($data) {
             $imgData = $data[0];
             $imagePath = $imgData->doc_path;
-            if(file_exists(HTTP_ROOT.$imagePath)) {
+            if(file_exists($_SERVER['DOCUMENT_ROOT'].$imagePath)) {
                 $protocol = strtolower(explode($_SERVER['SERVER_PROTOCOL'], 'HTTP')[0]).'://';
                 $defaultImageData = $protocol.$_SERVER['SERVER_NAME'].$imagePath;
             }
@@ -236,7 +236,7 @@ class MelisComDocumentService extends MelisComGeneralService
             if(!empty($data)) {               
                 $imgData = $data[0];
                 $imagePath = $imgData->doc_path;
-                if(file_exists(HTTP_ROOT.$imagePath)) {
+                if(file_exists($_SERVER['DOCUMENT_ROOT'].$imagePath)) {
                     $protocol = strtolower(explode($_SERVER['SERVER_PROTOCOL'], 'HTTP')[0]).'://';
                     $defaultImageData = $protocol.$_SERVER['SERVER_NAME'].$imagePath;
                 }

@@ -20,7 +20,6 @@
         $varId = (!empty($this->layout()->variantObj->getVariant()->var_id) ? $this->layout()->variantObj->getVariant()->var_id : "");
     }
 ?>
-<div <?= $id. ' '.$data_melisKey?> class="me-action-button-cont">							
 	<?php
     	$form = $this->meliscommerce_variants_information_form;    	
     	$form->prepare();
@@ -35,7 +34,6 @@
            <input type="checkbox" name="var_main_variant" id="<?= $varStatusId ?>" <?= $var_main_variant ?>>
         </div>
 						
-</div>
 <script type="text/javascript">
 	$("#<?= $this->variantId.'_'.$this->zoneconfig['conf']['id'].'_mainvar'?>").bootstrapSwitch();
 </script>

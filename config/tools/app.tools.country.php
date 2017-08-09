@@ -137,10 +137,12 @@ return array(
                                         'type' => 'MelisText',
                                         'options' => array(
                                             'label' => 'tr_meliscommerce_country_ctry_name',
+                                            'tooltip' => 'tr_meliscommerce_country_ctry_name tooltip',
                                         ),
                                         'attributes' => array(
                                             'id' => 'id_lang_name',
                                             'value' => '',
+                                            'required' => 'required',
                                         ),
                                     ),
                                 ),
@@ -150,6 +152,7 @@ return array(
                                         'type' => 'EcomCurrencyAllStatusSelect',
                                         'options' => array(
                                             'label' => 'tr_meliscommerce_country_ctry_select_empty',
+                                            'tooltip' => 'tr_meliscommerce_country_ctry_select_empty tooltip',
                                             'empty_option' => 'tr_meliscommerce_categories_common_label_choose',
                                             'disable_inarray_validator' => true,
                                         ),

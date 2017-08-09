@@ -47,6 +47,7 @@ return array(
                                     'type' => 'EcomProductTextTypeSelect',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_product_text_type',
+                                        'tooltip' => 'tr_meliscommerce_product_text_type tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'ptxt_type',
@@ -213,6 +214,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_product_text_type_code',
+                                        'tooltip' => 'tr_meliscommerce_product_text_type_code tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'ptt_code',
@@ -225,6 +227,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_product_text_type_name',
+                                        'tooltip' => 'tr_meliscommerce_product_text_type_name tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'ptt_name',
@@ -237,6 +240,7 @@ return array(
                                     'type' => 'Zend\Form\Element\Select',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_product_text_type_field',
+                                        'tooltip' => 'tr_meliscommerce_product_text_type_field tooltip',
                                         'value_options' => array(
                                             '1' => 'tr_meliscommerce_product_text_short',
                                             '2' => 'tr_meliscommerce_product_text_long',
@@ -322,6 +326,7 @@ return array(
                                     'name' => 'prd_reference',
                                     'type' => 'MelisText',
                                     'options' => array(
+                                        'tooltip' => 'tr_meliscommerce_products_reference tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'prd_reference',

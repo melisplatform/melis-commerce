@@ -1,6 +1,7 @@
 <?php 
 	return array(
 	    'tr_meliscommerce_attribute_list_page' => 'Attributes',
+	    'tr_meliscommerce_attribute_list_page_description' => 'Find here the different attributes. They correspond to the product characteristics.',
 	    'tr_meliscommerce_attribute_list_header_title' => 'Attribute list',
 	    'tr_meliscommerce_attribute_list_add_attribute' => 'Add attribute',
 	    
@@ -15,6 +16,7 @@
 	   
 	    //attribute page 
 	    'tr_meliscommerce_attribute_page' => 'Attribute',
+	    'tr_meliscommerce_attribute_page_description' => 'Enter here the details of your attributes.',
 	    'tr_meliscommerce_attribute_page_new_attribute' => 'New attribute',
 	    'tr_meliscommerce_attribute_header_right_save' => 'Save attribute',
 	    'tr_meliscommerce_attribute_tabs_content_main_header_title' => 'Properties',
@@ -28,7 +30,9 @@
 	    'tr_meliscommerce_attribute_page_tabs_yes' => 'Yes',
 	    'tr_meliscommerce_attribute_page_tabs_no' => 'No',
 	    'tr_meliscommerce_attribute_page_tabs_visible' => 'Visible',
+	    'tr_meliscommerce_attribute_page_tabs_visible tooltip' => 'Select if the attribute will be visible in Front',
 	    'tr_meliscommerce_attribute_page_tabs_searchable' => 'Searchable',
+	    'tr_meliscommerce_attribute_page_tabs_searchable tooltip' => 'Select if the attribute will be searchable in Front',
 	    'tr_meliscommerce_attribute_page_add_attribute_value' => 'Add value',
 	    
 	    //value table
@@ -36,6 +40,7 @@
 	    'tr_meliscommerce_attribute_col_value' => 'Value',
 	    
 	    //modal
+	    'tr_meliscommerce_attribute_value_modal_description' => 'Enter here one of your attribute value. <br>You can enter a same value for all of the languages that you are using from the upper field or a value adapted to each language.',
 	    'tr_meliscommerce_attribute_value_modal_each_language' => 'Or fill in individually for each language',
 	    'tr_meliscommerce_attribute_value_modal_value_form' => 'Value',
 	    'tr_meliscommerce_attribute_value_integer' => 'Integer',

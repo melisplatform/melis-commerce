@@ -7,6 +7,8 @@ return array(
     // Upload File Attachment Form
     'tr_meliscommerce_documents_main_information_upload_file_select' => 'Choisir un fichier',
     'tr_meliscommerce_documents_main_information_update_file_country' => 'Pays',
+    'tr_meliscommerce_documents_main_information_update_file_country tooltip' => 'Choix du pays pour lequel apparaît la pièce jointe',
+    'tr_meliscommerce_documents_main_information_update_file_country_image tooltip' => 'Choix du pays pour lequel apparaît l&#39;image',
     'tr_meliscommerce_documents_main_information_update_file_image' => 'Choisir un type d\'image',
     
     // Images Filter Dropdown
@@ -20,6 +22,8 @@ return array(
     // Upload Image Form
     'tr_meliscommerce_documents_main_information_upload_select_img' => 'Choisir une image',
     'tr_meliscommerce_documents_main_information_upload_select_type' => 'Type',
+    'tr_meliscommerce_documents_main_information_upload_select_type tooltip' => 'Choix du type de la pièce jointe',
+    'tr_meliscommerce_documents_main_information_upload_select_type_image tooltip' => 'Choix du type de l&#39;image',
     'tr_meliscommerce_documents_main_information_upload_select_type_default' => 'Défaut',
     'tr_meliscommerce_documents_main_information_upload_select_type_small' => 'Petit',
     'tr_meliscommerce_documents_main_information_upload_select_type_large' => 'Grand',
@@ -73,7 +77,10 @@ return array(
     'tr_meliscommerce_documents_image_update_success' => 'Image has been updated successfully',
     
     'tr_meliscommerce_documents_upload_doc_name' => 'Nom',
+    'tr_meliscommerce_documents_upload_doc_name tooltip' => 'Nom de la pièce jointe',
+    'tr_meliscommerce_documents_upload_doc_name_image tooltip' => 'Nom de l&#39;image',
     'tr_meliscommerce_documents_upload_doc_name_empty' => 'Please enter the name',
+    'tr_meliscommerce_documents_upload_doc_name_empty_file' => 'Veuillez saisir le nom du type de fichier',
     'tr_meliscommerce_documents_upload_doc_name_long' => 'Name too long, it should not be greater than 255 characters',
     
     // for Edting an Image
@@ -98,10 +105,15 @@ return array(
     // Image Type
     'tr_meliscommerce_documents_image_type_add' => 'Ajouter un type d\'image',
     'tr_meliscommerce_documents_image_type_code' => 'Code du type',
+    'tr_meliscommerce_documents_image_type_code tooltip' => 'Code du type',
     'tr_meliscommerce_documents_image_type_name' => 'Nom du type',
+    'tr_meliscommerce_documents_image_type_name tooltip' => 'Nom du type',
     'tr_meliscommerce_documents_image_type_code_empty' => 'Veuillez saisir le code du type d\'image',
+    'tr_meliscommerce_documents_image_type_code_empty_file' => 'Veuillez saisir le code du type de fichier',
     'tr_meliscommerce_documents_image_type_code_long' => ' Le code est trop long, il doit être de moins de 10 caractères',
     'tr_meliscommerce_documents_image_type_name_empty' => 'Veuillez saisir le nom du type d\'image',
+    'tr_meliscommerce_documents_image_type_name_empty_file' => 'Veuillez saisir le nom du type de fichier',
+    'tr_meliscommerce_documents_image_type_name_empty_image' => 'Veuillez saisir le nom du type d&#39;image',
     'tr_meliscommerce_documents_image_type_name_long' => 'Le nom est trop long, il doit être de moins de 45 caractères',
     'tr_meliscommerce_documents_image_type_add_success' => 'Le type d\'image a été ajouté avec succès',
     'tr_meliscommerce_documents_image_type_add_failed' => 'Impossible de rajouter le type d\'image, veuillez vérifier votre saisie.',

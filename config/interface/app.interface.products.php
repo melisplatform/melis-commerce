@@ -748,7 +748,7 @@ return array(
                                                                                             'module' => 'MelisCommerce',
                                                                                             'controller' => 'MelisComProduct',
                                                                                             'action' => 'render-products-page-content-tab-text-modal-form-type-text',
-                                                                                            'jscallback' => 'reInitProductTextTypeSelect();',
+//                                                                                             'jscallback' => 'reInitProductTextTypeSelect();',
                                                                                         ),
                                                                                     ),
                                                                                      'meliscommerce_products_page_content_tab_text_product_modal_close' => array(
@@ -761,7 +761,7 @@ return array(
                                                                                             'module' => 'MelisCommerce',
                                                                                             'controller' => 'MelisComProduct',
                                                                                             'action' => 'render-products-page-content-tab-text-modal-close',
-                                                                                            'jscallback' => 'reInitProductTextTypeSelect();',
+//                                                                                             'jscallback' => 'reInitProductTextTypeSelect();',
                                                                                         ),
                                                                                     ),
                                                                                 ),

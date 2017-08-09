@@ -13,7 +13,9 @@
     echo $this->form()->closeTag();
 ?>
 <div class="form-group">
-	<label class="label-block" for="" style="padding-top: 5px;"><?= $this->translate('tr_meliscommerce_attribute_page_tabs_visible')?></label>
+	<label class="label-block" for="" style="padding-top: 5px;"><?= $this->translate('tr_meliscommerce_attribute_page_tabs_visible')?>
+		<i class="fa fa-info-circle fa-lg" data-toggle="tooltip" data-placement="left" title="" data-original-title="<?= $this->translate('tr_meliscommerce_attribute_page_tabs_visible tooltip')?>"></i>
+	</label>
 	<div id="<?= $id ?>_visible" data-melisKey="<?= $this->melisKey; ?>" class="make-switch main_variant_switch" data-on-label="<?php echo $this->translate('tr_meliscommerce_attribute_page_tabs_yes')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_attribute_page_tabs_no')?>" data-text-label="<i class='fa fa-arrows-h'>">
         <input type="checkbox" name="attr_visible" id="coup_type"  <?= $this->visible ?>>
     </div>
@@ -22,7 +24,9 @@
     </script>	
 </div>
 <div class="form-group">
-	<label class="label-block" for="" style="padding-top: 5px;"><?= $this->translate('tr_meliscommerce_attribute_page_tabs_searchable')?></label>
+	<label class="label-block" for="" style="padding-top: 5px;"><?= $this->translate('tr_meliscommerce_attribute_page_tabs_searchable')?>
+	<i class="fa fa-info-circle fa-lg" data-toggle="tooltip" data-placement="left" title="" data-original-title="<?= $this->translate('tr_meliscommerce_attribute_page_tabs_searchable tooltip')?>"></i>
+	</label>
 	<div id="<?= $id ?>_searchable" data-melisKey="<?= $this->melisKey; ?>" class="make-switch main_variant_switch" data-on-label="<?php echo $this->translate('tr_meliscommerce_attribute_page_tabs_yes')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_attribute_page_tabs_no')?>" data-text-label="<i class='fa fa-arrows-h'>">
         <input type="checkbox" name="attr_searchable" id="coup_type"  <?= $this->searchable ?>>
     </div>

@@ -19,18 +19,21 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_coupon_code',
+                                        'tooltip' => 'tr_meliscommerce_coupon_code tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'coup_code',
+                                        'required' => 'required',
                                     ),
                                 ),
                             ),
                             array(
                                 'spec' => array(
                                     'name' => 'coup_date_valid_start',
-                                    'type' => 'EcomDateField',
+                                    'type' => 'DateField',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_coupon_date_start',
+                                        'tooltip' => 'tr_meliscommerce_coupon_date_start tooltip',
                                     ),
                                     'attributes' => array(
                                         'dateId' => 'couponStart',
@@ -52,9 +55,10 @@ return array(
                             array(
                                 'spec' => array(
                                     'name' => 'coup_date_valid_end',
-                                    'type' => 'EcomDateField',
+                                    'type' => 'DateField',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_coupon_date_end',
+                                        'tooltip' => 'tr_meliscommerce_coupon_date_end tooltip',
                                     ),
                                     'attributes' => array(
                                         'dateId' => 'couponEnd',
@@ -99,6 +103,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_coupon_percent',
+                                        'tooltip' => 'tr_meliscommerce_coupon_percent tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => '',
@@ -111,6 +116,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_coupon_discount',
+                                        'tooltip' => 'tr_meliscommerce_coupon_discount tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => '',
@@ -123,6 +129,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_coupon_used',
+                                        'tooltip' => 'tr_meliscommerce_coupon_used tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => '',
@@ -135,6 +142,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_coupon_max',
+                                        'tooltip' => 'tr_meliscommerce_coupon_max tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => '',

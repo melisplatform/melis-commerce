@@ -1,7 +1,9 @@
 <?php 
 	return array(
 	    'tr_meliscommerce_coupon_list_page' => 'Coupons',
+	    'tr_meliscommerce_coupon_list_page_description' => 'Find here the different discount coupons. <br>A coupon ca be deleted only if it has never been used.',
 	    'tr_meliscommerce_coupon_list_page_coupon' => 'Coupon',
+	    'tr_meliscommerce_coupon_list_page_coupon_description' => 'Enter here the details of your coupon.',
 	    'tr_meliscommerce_coupon_list_header_title' => 'Coupon list',
 	    'tr_meliscommerce_coupon_list_add_coupon' => 'Add coupon',
 	    
@@ -30,6 +32,7 @@
 	    'tr_meliscommerce_coupon_tabs_content_values_header_title' => 'Values',
 	    'tr_meliscommerce_coupon_page_tabs_assign' => 'Assign client',
 	    'tr_meliscommerce_coupon_page_tabs_assign_form' => 'Assign to clients',
+	    'tr_meliscommerce_coupon_page_tabs_assign_form tooltip' => 'Select if you whish to assign the coupon to only one or more client(s) in particular (this option is not available anymore once the coupon is created)',
 	    'tr_meliscommerce_coupon_page_tabs_assign_hover' => 'Assign',
 	    'tr_meliscommerce_coupon_page_table_assign_hover' => 'Assign',
 	    'tr_meliscommerce_coupon_page_tabs_yes' => 'Yes',
@@ -61,6 +64,7 @@
 	    'tr_meliscommerce_coupon_table_refresher' => 'Refresh',
 	    
 	    'tr_meliscommerce_coupon_page_tabs_assign_product' => 'Assign to products',
+	    'tr_meliscommerce_coupon_page_tabs_assign_product tooltip' => 'Select if you whish to assign the coupon to only one or more particular product(s) (this option is not available anymore once the coupon is created)',
 	    'tr_meliscommerce_coupon_page_tabs_assign_product_tab' => 'Assign product',
 	    'tr_meliscommerce_coupon_tabs_content_assigned_product_header_title' => 'Assigned products',
 	    'tr_meliscommerce_coupon_delete_confirm_remove_product' => 'Are you sure you want to remove the coupon from this product?',

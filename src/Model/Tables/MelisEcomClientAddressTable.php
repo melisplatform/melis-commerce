@@ -51,8 +51,11 @@ class MelisEcomClientAddressTable extends MelisEcomGenericTable
             array('*'),$select::JOIN_LEFT);
         $select->join('melis_ecom_civility', 'melis_ecom_civility.civ_id=melis_ecom_client_address.cadd_civility',
             array('*'), $select::JOIN_LEFT);
-    
-        $select->where('cadd_client_person ='.$personId);
+
+        if($personId) {
+            $select->where('cadd_client_person ='.$personId);
+        }
+
         
         if (!is_null($addressType)){
             $select->where('melis_ecom_client_address_type.catype_code = "'.$addressType.'"');

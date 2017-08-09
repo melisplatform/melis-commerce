@@ -1,6 +1,7 @@
 <?php 
 	return array(
         'tr_meliscommerce_orders_Orders' => 'Commandes',
+        'tr_meliscommerce_orders_Orders_description' => 'Retrouvez ici les différentes commandes effectuées par les clients de vos sites.<br>Vous pouvez créer une nouvelle commande depuis cet outil.',
 	    'tr_meliscommerce_orders_Order' => 'Commande',
         'tr_meliscommerce_orders_header_right_container_save' => 'Enregistrer la commande',
         'tr_meliscommerce_orders_header_right_container_cancel' => 'Annuler',
@@ -45,6 +46,8 @@
         'tr_meliscommerce_order_list_col_date' => 'Date',
         'tr_meliscommerce_order_list_col_last_update' => 'Dernière mise à jour du statut',
         'tr_meliscommerce_order_list_col_action' => 'Action',
+        'tr_meliscommerce_select_country_empty' => 'Choisissez un pays pour afficher les produits',
+        'tr_meliscommerce_search_empty_result' => 'Aucun produit ne correspond à la recherche',
 	    
 	    //order basket list table
 	    'tr_meliscommerce_order_basket_list_sku' => 'SKU',
@@ -89,11 +92,16 @@
 	    
 	    'tr_meliscommerce_order_status_tool_leftmenu' => 'Statuts commande',
 	    'tr_meliscommerce_order_status_header_title' => 'Statuts commande',
+	    'tr_meliscommerce_order_status_header_title_description' => 'Retrouvez ici les différents statuts de commande. Vous pouvez activer/désactiver, ajouter ou supprimer les statuts en fonction des besoins de vos sites.<br>Les statuts de base ne sont pas supprimables.',
 	    'tr_meliscommerce_order_status_add_order' => 'Ajouter un statut',
 	    'tr_meliscommerce_order_status_col_ord_status' => 'Nom',
+	    'tr_meliscommerce_order_status_col_ord_status tooltip' => 'Nom du statut',
 	    'tr_meliscommerce_order_status_col_color_code' => 'Code couleur',
+	    'tr_meliscommerce_order_status_col_color_code tooltip' => 'Code hexadécimal de la couleur',
 	    'tr_meliscommerce_order_status_col_color_preview' => 'Couleur',
-	    'tr_meliscommerce_order_status_form' => 'Formulaire du statut de la commande',
+	    'tr_meliscommerce_order_status_modal_text' => 'Saisissez ici les détails du statut. <br>Vous pouvez saisir un même nom pour tous les langages que vous utilisez depuis le champ "Nom" ou un nom adapté à chaque langage.',
+	    'tr_meliscommerce_order_status_form_new' => 'Nouveau statut',
+	    'tr_meliscommerce_order_status_form_edit' => 'Editer un statut',
 	    'tr_meliscommerce_order_status_save_failed' => 'Echec de la sauvegarde du statut',
 	    'tr_meliscommerce_order_status_save_success' => 'Le statut de la commande a été sauvegardé avec succès',
 	    'tr_meliscommerce_order_status_status_filled_all_error' => 'Veuillez remplir soit le champ pour tous les langages soit chaque langage individuellement',

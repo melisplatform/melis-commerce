@@ -1,6 +1,7 @@
 <?php 
 	return array(
         'tr_meliscommerce_orders_Orders' => 'Orders',
+        'tr_meliscommerce_orders_Orders_description' => 'Find here the different orders made by the clients of your sites.<br>You can create a new order from this tool.',
 	    'tr_meliscommerce_orders_Order' => 'Order',
 	    'tr_meliscommerce_orders_header_right_container_save' => 'Save order',
 	    'tr_meliscommerce_orders_header_right_container_cancel' => 'Cancel',
@@ -45,6 +46,8 @@
 	    'tr_meliscommerce_order_list_col_date' => 'Date',
 	    'tr_meliscommerce_order_list_col_last_update' => 'Last status update',
 	    'tr_meliscommerce_order_list_col_action' => 'Action',
+	    'tr_meliscommerce_select_country_empty' => 'Select a country to display the products',
+	    'tr_meliscommerce_search_empty_result' => 'No product correspond to the search',
 	    
 	    // order basket list table
 	    'tr_meliscommerce_order_basket_list_sku' => 'SKU',
@@ -89,11 +92,16 @@
 	    
 	    'tr_meliscommerce_order_status_tool_leftmenu' => 'Order status',
 	    'tr_meliscommerce_order_status_header_title' => 'Order status',
+	    'tr_meliscommerce_order_status_header_title_description' => 'Find here the different order statuses. You can activate/deactivate, add or delete statuses depending on the needs of your sites.<br>The basic statuses cannot be deleted.',
 	    'tr_meliscommerce_order_status_add_order' => 'Add status',
 	    'tr_meliscommerce_order_status_col_ord_status' => 'Name',
+	    'tr_meliscommerce_order_status_col_ord_status tooltip' => 'Status name',
 	    'tr_meliscommerce_order_status_col_color_code' => 'Color code',
+	    'tr_meliscommerce_order_status_col_color_code tooltip' => 'Hexadecimal color code',
 	    'tr_meliscommerce_order_status_col_color_preview' => 'Color',
-	    'tr_meliscommerce_order_status_form' => 'Order status form',
+	    'tr_meliscommerce_order_status_modal_text' => 'Enter here the details of the status.<br>You can enter a same name for all of the languages that you are using from the field "Name" or a name adapted to each language.',
+	    'tr_meliscommerce_order_status_form_new' => 'New status',
+	    'tr_meliscommerce_order_status_form_edit' => 'Edit a status',
 	    'tr_meliscommerce_order_status_save_failed' => 'Failed  to save order status',
 	    'tr_meliscommerce_order_status_save_success' => 'The order status has been saved successfully',
 	    'tr_meliscommerce_order_status_status_filled_all_error' => 'Please fill in either the field for all languages or each language individually',

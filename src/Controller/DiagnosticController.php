@@ -33,7 +33,7 @@ class DiagnosticController extends AbstractActionController
 
         if($request) {
             $label = $request['label'];
-            $mediaPath = HTTP_ROOT . 'media/'.$request['folder'];
+            $mediaPath = $_SERVER['DOCUMENT_ROOT'] . 'media/'.$request['folder'];
             if(file_exists($mediaPath)) {
                 $response['exists'] = $label .' is existing';
                 $success = 1;
@@ -81,7 +81,7 @@ class DiagnosticController extends AbstractActionController
 
         if($request) {
             $label = $request['label'];
-            $mediaPath = HTTP_ROOT . 'media/'.$request['folder'];
+            $mediaPath = $_SERVER['DOCUMENT_ROOT'] . 'media/'.$request['folder'];
             if(file_exists($mediaPath)) {
                 $response['exists'] = $label .' is existing';
                 $success = 1;
@@ -129,7 +129,7 @@ class DiagnosticController extends AbstractActionController
 
         if($request) {
             $label = $request['label'];
-            $mediaPath = HTTP_ROOT . 'media/'.$request['folder'];
+            $mediaPath = $_SERVER['DOCUMENT_ROOT'] . 'media/'.$request['folder'];
             if(file_exists($mediaPath)) {
                 $response['exists'] = $label .' is existing';
                 $success = 1;
@@ -177,7 +177,7 @@ class DiagnosticController extends AbstractActionController
 
         if($request) {
             $label = $request['label'];
-            $mediaPath = HTTP_ROOT . 'media/'.$request['folder'];
+            $mediaPath = $_SERVER['DOCUMENT_ROOT'] . 'media/'.$request['folder'];
             if(file_exists($mediaPath)) {
                 $response['exists'] = $label .' is existing';
                 $success = 1;

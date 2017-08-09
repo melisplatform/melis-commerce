@@ -7,6 +7,7 @@ return array(
     'tr_meliscommerce_product_text_lang_id' => 'ID',
     'tr_meliscommerce_product_text_lang' => 'Language',
     'tr_meliscommerce_product_text_type' => 'Type',
+    'tr_meliscommerce_product_text_type tooltip' => 'Text type',
     'tr_meliscommerce_product_text_short' => 'Short',
     'tr_meliscommerce_product_text_long' => 'Long',
     'tr_meliscommerce_product_text_short_too_long' => 'Valeur du texte court trop longue, la valeur maximum est de 45 caractères',
@@ -20,8 +21,11 @@ return array(
     // Product Text Type
     'tr_meliscommerce_products_text_type' => 'Product text type',
     'tr_meliscommerce_product_text_type_code' => 'Code',
+    'tr_meliscommerce_product_text_type_code tooltip' => 'Text type code',
     'tr_meliscommerce_product_text_type_name' => 'Name',
+    'tr_meliscommerce_product_text_type_name tooltip' => 'Text type name',
     'tr_meliscommerce_product_text_type_field' => 'Text size',
+    'tr_meliscommerce_product_text_type_field tooltip' => 'Select between a short text field (limited to 255 characters) or a long text field (textarea)',
     'tr_meliscommerce_product_text_type_code_empty' => 'Please enter the text type code',
     'tr_meliscommerce_product_text_type_code_long' => 'Text type code too long, it should be less than 45 characters',
     'tr_meliscommerce_product_text_type_name_empty' => 'Please enter the text type name',
@@ -52,6 +56,7 @@ return array(
     
     // Product Reference
     'tr_meliscommerce_products_reference' => 'Reference',
+    'tr_meliscommerce_products_reference tooltip' => 'Product reference. It becomes the name if no title is entered in the "Text" tab',
     'tr_meliscommerce_products_reference_form' => '<h4><i class="fa fa-asterisk"></i>Reference</h4>',
     'tr_meliscommerce_products_reference_long' => 'Product reference too long, value should be less than 45 characters',
     'tr_meliscommerce_products_reference_empty' => 'To save the product please enter the product reference',
@@ -66,4 +71,5 @@ return array(
     
     'tr_meliscommerce_products_category_save_failed' => 'Unable to save categories, please review product categories',
     'tr_meliscommerce_product_stock_low_field' => 'Stock alert',
+    'tr_meliscommerce_product_stock_low_field tooltip' => 'Select one or more recipient(s) and define the stock for each variant of this product from which an alert email is sent',
 );

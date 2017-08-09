@@ -38,15 +38,20 @@ class MelisEcomClientAddressTypeTransTable extends MelisEcomGenericTable
     public function getAddressTransByAddressTypeIdAndLangId($addTypeId, $langId = null)
     {
         $select = $this->tableGateway->getSql()->select();        
-        
-        $select->where('catypt_type_id ='.$addTypeId);
-        
+
+        if($addTypeId) {
+            $select->where('catypt_type_id ='.$addTypeId);
+        }
+
         if (!is_null($langId))
         {
             $select->where('catypt_lang_id ='.$langId);
         }
-        
+
+
         $resullData = $this->tableGateway->selectWith($select);
+
+
         return $resullData;
     }
 }

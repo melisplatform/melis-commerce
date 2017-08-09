@@ -104,17 +104,17 @@ return array(
                             'cper_status' => array(
                                 'text' => 'tr_meliscommerce_checkout_tbl_cper_status',
                                 'css' => array('width' => '5%'),
-                                'sortable' => false,
+                                'sortable' => true,
                             ),
                             'cper_contact' => array(
                                 'text' => 'tr_meliscommerce_checkout_tbl_cper_contact',
                                 'css' => array('width' => '25%'),
-                                'sortable' => false,
+                                'sortable' => true,
                             ),
                             'cper_email' => array(
                                 'text' => 'tr_meliscommerce_checkout_tbl_cper_email',
                                 'css' => array('width' => '25%'),
-                                'sortable' => false,
+                                'sortable' => true,
                             ),
                             'cper_num_orders' => array(
                                 'text' => '<i class="fa fa fa-cart-plus fa-lg checkoutSelectContactOrderHeader"></i>',
@@ -124,7 +124,7 @@ return array(
                             'cper_last_order' => array(
                                 'text' => 'tr_meliscommerce_checkout_tbl_cper_last_order',
                                 'css' => array('width' => '15%'),
-                                'sortable' => false,
+                                'sortable' => true,
                             ),
                         ),
                         // define what columns can be used in searching

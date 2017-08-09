@@ -199,6 +199,7 @@ class MelisComSettingsController extends AbstractActionController
         $userTable = $this->getServiceLocator()->get('MelisCoreTableUser');
         $stockEmailAlertSvc = $this->getServiceLocator()->get('MelisComStockEmailAlertService');
         $users = array();
+        $translator = $this->getServiceLocator()->get('translator');
         
         $stockLimit = '';
         $recipients = array();
@@ -215,6 +216,7 @@ class MelisComSettingsController extends AbstractActionController
         }else{
             $productId = null;
             $queryId = -1;
+            $alertForm->get('sea_stock_level_alert')->setOption('tooltip', $translator->translate('tr_meliscommerce_settings_alert_stock tooltip'));
         }
        
         $stockAlerts = $stockEmailAlertSvc->getStockEmailRecipients(array($queryId));
@@ -296,6 +298,7 @@ class MelisComSettingsController extends AbstractActionController
         
         $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
         $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_coupon');
+        $translator = $this->serviceLocator->get('translator');
         
         $logTypeCode = 'ECOM_SAVE_SETTINGS';
         
@@ -331,6 +334,17 @@ class MelisComSettingsController extends AbstractActionController
                             
                             $ids[] = $recipient['sea_id'];
                         }
+                        
+                        if(!filter_var($recipient['sea_email'], FILTER_VALIDATE_EMAIL)){
+                            if(empty($errors['sea_email'])){
+                                $errors['sea_email'] = array(
+                                    'inValidEmail' => $translator->translate('tr_meliscommerce_settings_save_add_recipients_failed'). ': '. $recipient['sea_email'],
+                                    'label' =>  $translator->translate('tr_meliscommerce_settings_label_recipients')
+                                );
+                            }else{
+                                $errors['sea_email']['inValidEmail'] = $errors['sea_email']['inValidEmail']. ', '. $recipient['sea_email'];
+                            }
+                        }
                     
                         $data[] = array(
                     
@@ -361,23 +375,24 @@ class MelisComSettingsController extends AbstractActionController
                     }
                 }
                 
-                
-                // insert data to db
-                foreach($data as $entry){
+                if(empty($errors)){
+                    // insert data to db
+                    foreach($data as $entry){
                     
-                    $id = $entry['sea_id'];
-                    unset($entry['sea_id']);
-                    $result = $stockEmailAlertSvc->SaveStockEmailAlert($entry, $id);
+                        $id = $entry['sea_id'];
+                        unset($entry['sea_id']);
+                        $result = $stockEmailAlertSvc->SaveStockEmailAlert($entry, $id);
                     
-                    if(empty($result)){
-                        
-                        $errors['failedInsert'] = array(
-                            'label' => $melisTool->getTranslation('tr_meliscommerce_settings_label_recipients'),
-                            'failedInsert' => $melisTool->getTranslation('tr_meliscommerce_settings_save_add_recipients_failed'),
-                        );
-                        
-                        $textMessage = 'tr_meliscommerce_settings_save_failed';
-                        break;
+                        if(empty($result)){
+                    
+                            $errors['failedInsert'] = array(
+                                'label' => $melisTool->getTranslation('tr_meliscommerce_settings_label_recipients'),
+                                'failedInsert' => $melisTool->getTranslation('tr_meliscommerce_settings_save_add_recipients_failed'),
+                            );
+                    
+                            $textMessage = 'tr_meliscommerce_settings_save_failed';
+                            break;
+                        }
                     }
                 }
                 

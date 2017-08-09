@@ -20,6 +20,48 @@ class MelisComOrderCheckoutController extends AbstractActionController
     const PLUGIN_INDEX = 'meliscommerce';
     const TOOL_KEY = '';
     const SITE_ID = -1;
+
+    /**
+     * Creates translations for table actions in tools
+     *
+     * @return \Zend\View\Model\JsonModel
+     */
+    public function getDataTableTranslationsAction()
+    {
+        // Get the current language
+        $container = new Container('meliscore');
+        $locale = $container['melis-lang-locale'];
+
+        $translator = $this->getServiceLocator()->get('translator');
+
+        $transData = array(
+            'sEmptyTable' => $translator->translate('tr_meliscommerce_select_country_empty'),
+            'sInfo' => $translator->translate('tr_meliscore_dt_sInfo'),
+            'sInfoEmpty' => $translator->translate('tr_meliscore_dt_sInfoEmpty'),
+            'sInfoFiltered' => $translator->translate('tr_meliscore_dt_sInfoFiltered'),
+            'sInfoPostFix' => $translator->translate('tr_meliscore_dt_sInfoPostFix'),
+            'sInfoThousands' => $translator->translate('tr_meliscore_dt_sInfoThousands'),
+            'sLengthMenu' => $translator->translate('tr_meliscore_dt_sLengthMenu'),
+            'sLoadingRecords' => $translator->translate('tr_meliscore_dt_sLoadingRecords'),
+            'sProcessing' => $translator->translate('tr_meliscore_dt_sProcessing'),
+            'sSearch' => $translator->translate('tr_meliscore_dt_sSearch'),
+            'sZeroRecords' => $translator->translate('tr_meliscommerce_search_empty_result'),
+            'oPaginate' => array(
+                'sFirst' => $translator->translate('tr_meliscore_dt_sFirst'),
+                'sLast' => $translator->translate('tr_meliscore_dt_sLast'),
+                'sNext' => $translator->translate('tr_meliscore_dt_sNext'),
+                'sPrevious' => $translator->translate('tr_meliscore_dt_sPrevious'),
+            ),
+            'oAria' => array(
+                'sSortAscending' => $translator->translate('tr_meliscore_dt_sSortAscending'),
+                'sSortDescending' => $translator->translate('tr_meliscore_dt_sSortDescending'),
+            ),
+
+
+        );
+
+        return new JsonModel($transData);
+    }
     
     /**
      * Render Order Checkout page
@@ -157,12 +199,15 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $melisTool->setMelisToolKey(self::PLUGIN_INDEX, 'meliscommerce_order_checkout_product_list');
         $columns = $melisTool->getColumns();
         $columns['actions'] = array('text' => $translator->translate('tr_meliscommerce_order_checkout_product_variant'));
-        
+
+        $container = new Container('meliscommerce');
+        $type = ($container['checkout'][self::SITE_ID]['countryId'] === NULL) ? '' : 'country';
+
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->tableColumns = $columns;
-        $view->getToolDataTableConfig = $melisTool->getDataTableConfiguration();
+        $view->getToolDataTableConfig = $melisTool->getDataTableConfiguration("#orderCheckoutProductListTbl", false,false, array(), $type);
         return $view;
     }
     
@@ -748,7 +793,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
                 'limit' => $length,
                 'columns' => $melisTool->getSearchableColumns(),
                 'date_filter' => array(),
-            ));
+            ), null , 1 , 1);
         
             // store fetched data for data modification (if needed)
             $contactData = $getData->toArray();
@@ -773,12 +818,8 @@ class MelisComOrderCheckoutController extends AbstractActionController
                 $contactOrderData = $melisEcomOrderTable->getEntryByField('ord_client_person_id', $val['cper_id']);
                 $contactOrder = $contactOrderData->toArray();
                 $contactNumOrders = count($contactOrder);
-                $contactLastDateOrderStr = '';
-                foreach ($contactOrder As $oVal)
-                {
-                    // Getting the Contact last Order date
-                    $contactLastDateOrderStr = mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($oVal['ord_date_creation'])), 0, 10);
-                }
+                $lastOrder = !empty($val['cper_last_order'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cper_last_order'])), 0, 10) : '';
+                
                 $rowdata = array(
                     'DT_RowId' => $val['cper_id'],
                     'cper_id' => $val['cper_id'],
@@ -786,7 +827,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
                     'cper_contact' => $contactName,
                     'cper_email' => $this->getTool()->sanitize($val['cper_email']),
                     'cper_num_orders' => $contactNumOrders,
-                    'cper_last_order' => $contactLastDateOrderStr,
+                    'cper_last_order' => $lastOrder,
                 );
                 
                 array_push($tableData, $rowdata);

@@ -4,14 +4,17 @@
         
         // variants information form
         'tr_meliscommerce_variant_main_information_main_variant_input_label' => 'SKU',
+        'tr_meliscommerce_variant_main_information_main_variant_input_label tooltip' => 'Code unique d&#39;identification',
         'tr_meliscommerce_variant_main_information_main_variant_input' => 'SKU du produit',
         'tr_meliscommerce_variant_main_information_main_variant_long_err' => 'SKU est trop long.',
         'tr_meliscommerce_variant_main_information_attribute_select' => 'Non sélectionné',
        
         // stocks form
         'tr_meliscommerce_variant_stocks_quantity_label' => 'Quantité',
+        'tr_meliscommerce_variant_stocks_quantity_label tooltip' => 'Quantité de ce variant disponible',
         'tr_meliscommerce_variant_stocks_quantity_holder' => 'Quantité restante',
         'tr_meliscommerce_variant_tab_stocks_fill_up' => 'Date de réapprovisionnement',
+        'tr_meliscommerce_variant_tab_stocks_fill_up tooltip' => 'Date à laquelle sera réapprovisionné le stock',
 
         //
         'tr_meliscommerce_variant_prices_variant_price_digit_invalid' => 'La saisie ne doit contenir que des chiffres',

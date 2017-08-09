@@ -248,7 +248,15 @@ class MelisComPriceController extends AbstractActionController
         
         $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
         $productSvc = $this->getServiceLocator()->get('MelisComProductService');
-        $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');        
+        $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');   
+        $translator = $this->serviceLocator->get('translator');
+        
+        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_prices/meliscommerce_prices_form','meliscommerce_prices_form');
+        $factory = new \Zend\Form\Factory();
+        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+        $pricesForm = $factory->createForm($appConfigForm);
         
         if($productId || $page = 'newprod'){
             $prefixId = $productId.'_product';
@@ -263,14 +271,14 @@ class MelisComPriceController extends AbstractActionController
             $tabIdGen = $variantId.'_variant_price_General';
             $tabId = $variantId.'_variant_price_';
             $priceList = $variantSvc->getVariantPricesById($variantId);
+            
+            $pricesForm->get('price_net')->setOption('tooltip', $translator->translate('tr_meliscommerce_variant_prices_variant_price_label_var tooltip'));
+            $pricesForm->get('price_gross')->setOption('tooltip', $translator->translate('tr_meliscommerce_variant_prices_variant_price_gross_label_var tooltip'));
+            $pricesForm->get('price_vat_percent')->setOption('tooltip', $translator->translate('tr_meliscommerce_variant_prices_variant_price_vat_percent_label_var tooltip'));
+            $pricesForm->get('price_vat_price')->setOption('tooltip', $translator->translate('tr_meliscommerce_variant_prices_variant_price_vat_price_label_var tooltip'));
+            $pricesForm->get('price_other_tax_price')->setOption('tooltip', $translator->translate('tr_meliscommerce_variant_prices_variant_price_other_tax_price_label_var tooltip'));
         }
         
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
-        $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_prices/meliscommerce_prices_form','meliscommerce_prices_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
-        $factory->setFormElementManager($formElements);
-        $pricesForm = $factory->createForm($appConfigForm);
         $countries = $countryTable->getCountries();
         $formatOnly = array('price_net', 'price_gross', 'price_vat_percent', 'price_vat_price', 'price_other_tax_price');
         $data = array();

@@ -1,7 +1,10 @@
 <?php 
 return array(
     'tr_meliscommerce_products_Products' => 'Products',
+    'tr_meliscommerce_products_Products_description' => 'Enter here the details of your product.',
     'tr_meliscommerce_products_Product_lists' => 'Product list',
+    'tr_meliscommerce_products_Product_lists_description' => 'Enter here the different product of your sites.',
+    'tr_meliscommerce_products_Product_categories_modal_text' => 'Select the categories to be associated to this product',
     'tr_meliscommerce_products_page_header_add_product' => 'Add product',
     'tr_meliscommerce_products_page_new_product' => 'New product',
     'tr_meliscommerce_products_page_header_save_product' => 'Save product',
@@ -68,6 +71,7 @@ return array(
     // Product Text
     'tr_meliscommerce_products_page_content_tab_main_header_add_button' => 'Text types',
     'tr_meliscommerce_products_add_product_text' => 'Add product text',
+    'tr_meliscommerce_products_add_product_text_description' => 'Add a text type on the product page',
     'tr_meliscommerce_products_text_tab_ptxt_short_field' => 'Product title here',
     'tr_meliscommerce_products_text_close' => 'Close',
     

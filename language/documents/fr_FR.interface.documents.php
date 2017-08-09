@@ -4,6 +4,10 @@
         'tr_meliscommerce_documents_Images' => 'Images',
 
         'tr_meliscommerce_documents_file_attachments' => 'Pièces jointes',
+	    'tr_meliscommerce_documents_modal_text_prod_file' => 'Ajoutez une pièce jointe à ce produit (ex: manuel d&#39;utilisateur).',
+        'tr_meliscommerce_documents_modal_text_prod_image' => 'Ajoutez une image à ce produit.',
+	    'tr_meliscommerce_documents_modal_text_var_file' => 'Ajoutez une pièce jointe à ce variant (ex: manuel d&#39;utilisateur).',
+        'tr_meliscommerce_documents_modal_text_var_image' => 'Ajoutez une image à ce variant.',
 	    'tr_meliscommerce_documents_file_attachments_lists' => 'Pièces jointes liste',
         'tr_meliscommerce_documents_product_imgs' => 'Images',
 	    'tr_meliscommerce_documents_image_lists' => 'Listes des images',

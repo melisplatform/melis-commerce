@@ -2,8 +2,11 @@
 return array(
     'tr_meliscommerce_currency_id' => 'ID',
     'tr_meliscommerce_currency_name' => 'Name',
+    'tr_meliscommerce_currency_name tooltip' => 'Currency name',
     'tr_meliscommerce_currency_code' => 'Code',
+    'tr_meliscommerce_currency_code tooltip' => 'Currency code',
     'tr_meliscommerce_currency_symbol' => 'Symbol',
+    'tr_meliscommerce_currency_symbol tooltip' => 'Currency symbol',
     'tr_meliscommerce_currency_default' => 'Default',
     'tr_meliscommerce_currency_make_default' => 'Set as default currenncy',
     

@@ -18,7 +18,7 @@ return array(
                                     'name' => 'var_sku',
                                     'type' => 'MelisText',
                                     'options' => array(
-                                        'label' => 'tr_meliscommerce_duplication_Var_sku'
+                                        'label' => 'tr_meliscommerce_duplication_Var_sku',
                                     ),
                                     'attributes' => array(
                                         'id' => 'var_sku',

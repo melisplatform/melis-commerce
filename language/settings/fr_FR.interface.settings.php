@@ -2,6 +2,7 @@
 
 return array(
     'tr_meliscommerce_settings' => 'Configuration commerce',
+    'tr_meliscommerce_settings_description' => 'Configurez ici les propriétés générales de la partie commerce.',
     'tr_meliscommerce_settings_header_right_container_save' => 'Enregistrer',
     'tr_meliscommerce_settings_page_tabs_main' => 'Propriétés',
     'tr_meliscommerce_settings_page_add_recepient' => 'Ajouter le destinataire',

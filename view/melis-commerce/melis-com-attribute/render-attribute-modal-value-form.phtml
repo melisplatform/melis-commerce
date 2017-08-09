@@ -23,6 +23,7 @@
                             	<div class="col-md-12">
                                     <?php
                                         echo '<h4>'.$this->translate('tr_meliscommerce_attribute_label_all').'</h4>';
+                                        echo '<p>'.$this->translate('tr_meliscommerce_attribute_value_modal_description').'</p>';
                                         echo $this->form()->openTag($this->fillAllForm);
                                         echo $this->melisFieldCollection($this->fillAllForm);
                                         echo $this->form()->closeTag();

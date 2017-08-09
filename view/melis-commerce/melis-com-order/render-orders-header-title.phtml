@@ -7,3 +7,4 @@
     $order = empty(!$this->layout()->order->ord_reference)? $this->layout()->order->ord_reference : $order;
 ?>
 <h1 id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="content-heading"><a href="#" class="orderList" style="color: #686868;"><?= $this->translate('tr_meliscommerce_orders_Order')?></a> / <?= $order ?></h1>
+<p><?= $this->translate('tr_meliscommerce_order_checkout_title_description')?></p>

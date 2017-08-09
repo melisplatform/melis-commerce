@@ -1,7 +1,9 @@
 <?php 
 	return array(
 	    'tr_meliscommerce_coupon_list_page' => 'Coupons',
+	    'tr_meliscommerce_coupon_list_page_description' => 'Retrouvez ici les différents coupons de réduction.<br>Un coupon peut être supprimé uniquement s&#39;il n&#39;a jamais été utilisé.',
 	    'tr_meliscommerce_coupon_list_page_coupon' => 'Coupon',
+	    'tr_meliscommerce_coupon_list_page_coupon_description' => 'Saisissez ici les détails de votre coupon.',
 	    'tr_meliscommerce_coupon_list_header_title' => 'Liste des coupons',
 	    'tr_meliscommerce_coupon_list_add_coupon' => 'Ajouter un coupon',
 	    
@@ -30,6 +32,7 @@
 	    'tr_meliscommerce_coupon_tabs_content_values_header_title' => 'Valeurs',
 	    'tr_meliscommerce_coupon_page_tabs_assign' => 'Assigner client',
 	    'tr_meliscommerce_coupon_page_tabs_assign_form' => 'Assigner aux clients',
+	    'tr_meliscommerce_coupon_page_tabs_assign_form tooltip' => 'Choisissez si vous souhaitez attribuer le coupon à seulement un ou plusieurs client(s) en particulier (cette option n&#39;est plus disponible une fois le coupon créé)',
 	    'tr_meliscommerce_coupon_page_tabs_assign_hover' => 'Assigné',
 	    'tr_meliscommerce_coupon_page_table_assign_hover' => 'Assigner',
 	    'tr_meliscommerce_coupon_page_tabs_yes' => 'Oui',
@@ -61,6 +64,7 @@
 	    'tr_meliscommerce_coupon_table_refresher' => 'Actualiser',
 	    
 	    'tr_meliscommerce_coupon_page_tabs_assign_product' => 'Assigner aux produits',
+	    'tr_meliscommerce_coupon_page_tabs_assign_product tooltip' => 'Choisissez si vous souhaitez attribuer le coupon à seulement un ou plusieurs produit(s) en particulier (cette option n&#39;est plus disponible une fois le coupon créé)',
 	    'tr_meliscommerce_coupon_page_tabs_assign_product_tab' => 'Assigner produit',
 	    'tr_meliscommerce_coupon_tabs_content_assigned_product_header_title' => 'Produits assignés',
 	    'tr_meliscommerce_coupon_delete_confirm_remove_product' => 'Etes-vous sûr de vouloir retirer le coupon de ce produit ?',

@@ -127,6 +127,7 @@ return array(
                                         'type' => 'MelisText',
                                         'options' => array(
                                             'label' => 'tr_meliscommerce_language_elang_name',
+                                            'tooltip' => 'tr_meliscommerce_language_elang_name tooltip',
                                         ),
                                         'attributes' => array(
                                             'id' => 'id_lang_name',
@@ -153,6 +154,7 @@ return array(
                                         'type' => 'MelisText',
                                         'options' => array(
                                             'label' => 'tr_meliscommerce_language_elang_locale',
+                                            'tooltip' => 'tr_meliscommerce_language_elang_locale tooltip',
                                         ),
                                         'attributes' => array(
                                             'id' => 'id_lang_locale',

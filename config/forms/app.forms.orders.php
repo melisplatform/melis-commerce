@@ -30,9 +30,11 @@ return array(
                                     'type' => 'EcomOrderStatusSelect',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_orders_status',
+                                        'tooltip' => 'tr_meliscommerce_orders_status tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => '',
+                                        'required' => 'required',
                                     ),
                                 ),
                             ),
@@ -83,7 +85,7 @@ return array(
                             array(
                                 'spec' => array(
                                     'name' => 'date_start',
-                                    'type' => 'EcomDateField',
+                                    'type' => 'DateField',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_orders_date_start',
                                     ),
@@ -96,7 +98,7 @@ return array(
                             array(
                                 'spec' => array(
                                     'name' => 'date_end',
-                                    'type' => 'EcomDateField',
+                                    'type' => 'DateField',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_orders_date_end',
                                     ),
@@ -195,6 +197,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_orders_code',
+                                        'tooltip' => 'tr_meliscommerce_orders_code tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => '',
@@ -875,10 +878,12 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_orders_tracking_code',
+                                        'tooltip' => 'tr_meliscommerce_orders_tracking_code tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => '',
                                         'maxlength' => 100,
+                                        'required' => 'required',
                                     ),
                                 ),
                             ),
@@ -888,6 +893,7 @@ return array(
                                     'type' => 'Textarea',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_orders_tracking_details',
+                                        'tooltip' => 'tr_meliscommerce_orders_tracking_details tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => '',
@@ -895,19 +901,22 @@ return array(
                                         'style' => 'max-width:100%;',
                                         'rows' => '4',
                                         'maxlength' => 1200,
+                                        'required' => 'required',
                                     ),
                                 ),
                             ),                            
                             array(
                                 'spec' => array(
                                     'name' => 'oship_date_sent',
-                                    'type' => 'EcomDateField',
+                                    'type' => 'DateField',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_orders_tracking_date',
+                                        'tooltip' => 'tr_meliscommerce_orders_tracking_date tooltip',
                                     ),
                                     'attributes' => array(
                                         'dateId' => 'shippingDate',
                                         'dateLabel' => 'tr_meliscommerce_orders_tracking_date',
+                                        'required' => 'required',
                                     ),
                                 ),
                             ),
@@ -1004,6 +1013,7 @@ return array(
                                     'type' => 'Textarea',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_orders_message_your',
+                                        'tooltip' => 'tr_meliscommerce_orders_message_your tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => '',
@@ -1074,9 +1084,11 @@ return array(
                                     'type' => 'EcomColorPicker',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_order_status_col_color_code',
+                                        'tooltip' => 'tr_meliscommerce_order_status_col_color_code tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => '',
+                                        'required' => 'required',
                                     ),
                                 ),
                             ),
@@ -1160,6 +1172,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_order_status_col_ord_status',
+                                        'tooltip' => 'tr_meliscommerce_order_status_col_ord_status tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => '',

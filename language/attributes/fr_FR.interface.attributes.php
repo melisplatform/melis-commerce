@@ -1,6 +1,7 @@
 <?php 
 	return array(
 	    'tr_meliscommerce_attribute_list_page' => 'Attributs',
+	    'tr_meliscommerce_attribute_list_page_description' => 'Retrouvez ici les différents attributs. Ils correspondent aux caractéristiques des produits.',
 	    'tr_meliscommerce_attribute_list_header_title' => 'Liste des attributs',
 	    'tr_meliscommerce_attribute_list_add_attribute' => 'Ajouter un attribut',
 	    
@@ -15,6 +16,7 @@
 	    
 	    //attribute page
 	    'tr_meliscommerce_attribute_page' => 'Attribut',
+	    'tr_meliscommerce_attribute_page_description' => 'Saisissez ici les détails de votre attributs.',
 	    'tr_meliscommerce_attribute_page_new_attribute' => 'Nouvel attribut',
 	    'tr_meliscommerce_attribute_header_right_save' => 'Enregistrer l\'attribut',
 	    'tr_meliscommerce_attribute_tabs_content_main_header_title' => 'Propriétés',
@@ -28,7 +30,9 @@
 	    'tr_meliscommerce_attribute_page_tabs_yes' => 'Oui',
 	    'tr_meliscommerce_attribute_page_tabs_no' => 'Non',
 	    'tr_meliscommerce_attribute_page_tabs_visible' => 'Visible',
+	    'tr_meliscommerce_attribute_page_tabs_visible tooltip' => 'Sélectionnez si l&#39;attribut sera visible en Front',
 	    'tr_meliscommerce_attribute_page_tabs_searchable' => 'Recherchable',
+	    'tr_meliscommerce_attribute_page_tabs_searchable tooltip' => 'Sélectionnez si l&#39;attribut sera recherchable en Front',
 	    'tr_meliscommerce_attribute_page_add_attribute_value' => 'Ajouter une valeur',
 	    
 	    //value table
@@ -36,6 +40,7 @@
 	    'tr_meliscommerce_attribute_col_value' => 'Valeur',
 	    
 	    //modal
+	    'tr_meliscommerce_attribute_value_modal_description' => 'Saisissez ici l&#39;une des valeurs de votre attribut. <br>Vous pouvez saisir une même valeur pour tous les langages que vous utilisez depuis le champ du haut ou une valeur adaptée à chaque langage.',
 	    'tr_meliscommerce_attribute_value_modal_each_language' => 'Ou saisir individuellement pour chaque langage',
 	    'tr_meliscommerce_attribute_value_modal_value_form' => 'Valeur',
 	    'tr_meliscommerce_attribute_value_integer' => 'Entier',

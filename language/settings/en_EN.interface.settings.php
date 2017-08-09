@@ -2,6 +2,7 @@
 
 return array(
     'tr_meliscommerce_settings' => 'Commerce settings',
+    'tr_meliscommerce_settings_description' => 'Configure here the general properties of the commerce part.',
     'tr_meliscommerce_settings_header_right_container_save' => 'Save',
     'tr_meliscommerce_settings_page_tabs_main' => 'Properties',
     'tr_meliscommerce_settings_page_add_recepient' => 'Add recipient',

@@ -22,28 +22,18 @@ class EcomProductTextTypeSelectFactory extends MelisSelectFactory
 		$serviceManager = $formElementManager->getServiceLocator();
 		$request = new HttpRequest();
 		$productId = isset($_GET['productId']) ? (int) $_GET['productId'] : null; //$request->get('cpath', null);
+		$textTypeId = isset($_GET['textTypes']) ? (int) $_GET['textTypes'] : null;
 		$productTextData = array();
 		$melisEcomProdTxtTypeTable = $serviceManager->get('MelisEcomProductTextTypeTable');
 		$melisEcomProdTxtTable     = $serviceManager->get('MelisEcomProductTextTable');
 		$ecomProdTxtType = $melisEcomProdTxtTypeTable->fetchAll();
 		
-		if($productId) {
-		    $productTextData = $melisEcomProdTxtTable->getProductTextById($productId);
-		}
-		
-
 		$valueoptions = array();
 		foreach($ecomProdTxtType as $prodTextType) {
+		    
 		    $valueoptions[$prodTextType->ptt_id] = $prodTextType->ptt_name;
 		}
 		
-// 		if($productTextData) {
-// 		    foreach($productTextData as $prodText) {
-// 		        if(isset($valueoptions[$prodText->ptt_id]))
-// 		            unset($valueoptions[$prodText->ptt_id]);
-// 		    }
-// 		}
-
 		return $valueoptions;
 	}
 

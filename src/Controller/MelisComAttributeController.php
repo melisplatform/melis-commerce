@@ -617,7 +617,7 @@ class MelisComAttributeController extends AbstractActionController
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view->melisKey = $melisKey;
         $view->id = $id;
-        $view->setTerminal(false);
+        $view->setTerminal(true);
         return $view;
     }
     

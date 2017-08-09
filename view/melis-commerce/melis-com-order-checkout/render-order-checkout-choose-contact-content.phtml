@@ -32,14 +32,4 @@
 </div>
 <script type="text/javascript">
 	<?php echo $this->getToolDataTableConfig; ?>
-	$(function(){
-		$(document).on('column-sizing.dt','#orderCheckoutContactListTbl', function(e, settings) {
-			$("#orderCheckoutContactListTbl thead tr").find("th:nth-child(1)").css({"width" : "1px","padding-left" : "10px","padding-right" : "10px"});
-			$("#orderCheckoutContactListTbl tbody tr").find("td:nth-child(1)").css({"width" : "1px","padding-left" : "30px","padding-right" : "10px"});
-			$("#orderCheckoutContactListTbl thead tr").find("th:nth-child(5)").css({"width" : "1px","padding-left" : "10px","padding-right" : "10px"});
-			$("#orderCheckoutContactListTbl tbody tr").find("td:nth-child(5)").css({"width" : "1px","padding-left" : "10px","padding-right" : "10px"});
-			$("#orderCheckoutContactListTbl thead tr").find("th:nth-child(7)").css({"width" : "1px","padding-left" : "10px","padding-right" : "10px"});
-			$("#orderCheckoutContactListTbl tbody tr").find("td:nth-child(7)").css({"width" : "1px","padding-left" : "10px","padding-right" : "10px"});
-		});
-	});
 </script>

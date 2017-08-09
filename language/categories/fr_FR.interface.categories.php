@@ -2,6 +2,7 @@
 	return array(
         'tr_meliscommerce_categories_Categories' => 'Catalogues',
 	    'tr_meliscommerce_categories_Categories_title' => 'Catalogues / Catégories',
+	    'tr_meliscommerce_categories_Categories_title_description' => 'Gérez ici vos catalogues et vos catégories. Vous pouvez définir leur ordre par glisser-déposer.',
         // Tool Title
         'tr_meliscommerce_categories_tool_title' => ' Outil categorie',
 
@@ -78,7 +79,9 @@
 	    // Main Category Information Form
 	    'tr_meliscommerce_categories_category_information_form_cat_id' => 'ID de la catégorie', // FORM
 	    'tr_meliscommerce_categories_category_information_form_cat_name' => 'Nom',
+	    'tr_meliscommerce_categories_category_information_form_cat_name tooltip' => 'Nom de la catégorie',
 	    'tr_meliscommerce_categories_category_information_form_cat_desc' => 'Description',
+	    'tr_meliscommerce_categories_category_information_form_cat_desc tooltip' => 'Description de la catégorie',
 
 	    // Add Catalog
 	    'tr_meliscommerce_categories_add_catalog' => 'Ajouter un catalogue',
@@ -156,7 +159,9 @@
 	    // Date Validity
 	    'tr_meliscommerce_categories_category_date_validity' => 'Dates de validité',
 	    'tr_meliscommerce_categories_category_valid_from' => 'Valide du',
+	    'tr_meliscommerce_categories_category_valid_from tooltip' => 'Date à partir de laquelle la catégorie sera valide à condition que celle-ci soit activée',
 	    'tr_meliscommerce_categories_category_valid_to' => 'Valide au',
+	    'tr_meliscommerce_categories_category_valid_to tooltip' => 'Date jusqu&#39;à laquelle catégorie sera valide à condition que celle-ci soit activée',
 	     
 	    'tr_meliscommerce_categories_category_valid_from_must_equal_high_current_date' => 'Valide du doit être égal ou supérieur à la date actuelle',
 	    'tr_meliscommerce_categories_category_valid_dates_invalid' => 'Valide au doit être supérieur à Valide du',

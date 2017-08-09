@@ -78,7 +78,7 @@ return array(
                             array(
                                 'spec' => array(
                                     'name' => 'date_start',
-                                    'type' => 'EcomDateField',
+                                    'type' => 'DateField',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_orders_date_start',
                                     ),
@@ -91,7 +91,7 @@ return array(
                             array(
                                 'spec' => array(
                                     'name' => 'date_end',
-                                    'type' => 'EcomDateField',
+                                    'type' => 'DateField',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_orders_date_end',
                                     ),
@@ -187,6 +187,7 @@ return array(
                                     'type' => 'EcomCivilitySelect',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_civility',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_civility tooltip',
                                         'empty_option' => 'tr_meliscommerce_clients_common_label_choose',
                                         'disable_inarray_validator' => true,
                                     ),
@@ -201,9 +202,11 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_fname',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_fname tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'cper_firstname',
+                                        'required' => 'required',
                                     )
                                 )
                             ),
@@ -213,9 +216,11 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_name',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_name tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'cper_name',
+                                        'required' => 'required',
                                     )
                                 )
                             ),
@@ -225,6 +230,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_mname',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_mname tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'cper_middle_name',
@@ -237,11 +243,13 @@ return array(
                                     'type' => 'EcomLanguageSelect',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_language',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_language tooltip',
                                         'empty_option' => 'tr_meliscommerce_clients_common_label_choose',
                                         'disable_inarray_validator' => true,
                                     ),
                                     'attributes' => array(
                                         'id' => 'cper_lang_id',
+                                        'required' => 'required',
                                     )
                                 )
                             ),
@@ -251,9 +259,11 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_email_address',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_email_address tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'cper_email',
+                                        'required' => 'required',
                                     )
                                 )
                             ),
@@ -270,7 +280,8 @@ return array(
                                     'attributes' => array(
                                         'id' => 'cper_password',
                                         'Type' => 'password',
-                                        'autocomplete' => 'off'
+                                        'autocomplete' => 'off',
+                                        'required' => 'required',
                                     )
                                 )
                             ),
@@ -287,7 +298,8 @@ return array(
                                     'attributes' => array(
                                         'id' => 'cper_confirm_password',
                                         'Type' => 'password',
-                                        'autocomplete' => 'off'
+                                        'autocomplete' => 'off',
+                                        'required' => 'required',
                                     )
                                 )
                             ),
@@ -297,6 +309,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_job_title',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_job_title tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'cper_job_title',
@@ -309,6 +322,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_job_service',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_job_service tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'cper_job_service',
@@ -321,6 +335,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_mobile_num',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_mobile_num tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'cper_tel_mobile',
@@ -333,6 +348,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_tp_num',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_tp_num tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'cper_tel_landline',
@@ -652,9 +668,11 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_address_name',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_address_name tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'cadd_address_name',
+                                        'required' => 'required',
                                     )
                                 )
                             ),
@@ -664,11 +682,13 @@ return array(
                                     'type' => 'EcomAddressTypeSelect',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_address_type',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_address_type tooltip',
                                         'empty_option' => 'tr_meliscommerce_clients_common_label_choose',
                                         'disable_inarray_validator' => true,
                                     ),
                                     'attributes' => array(
                                         'id' => 'cadd_type',
+                                        'required' => 'required',
                                     )
                                 )
                             ),
@@ -678,6 +698,7 @@ return array(
                                     'type' => 'EcomCivilitySelect',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_civility',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_civility tooltip',
                                         'empty_option' => 'tr_meliscommerce_clients_common_label_choose',
                                         'disable_inarray_validator' => true,
                                     ),
@@ -692,9 +713,11 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_fname',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_fname tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'cadd_firstname',
+                                        'required' => 'required', 
                                     )
                                 )
                             ),
@@ -704,9 +727,11 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_name',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_name tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'cadd_name',
+                                        'required' => 'required',
                                     )
                                 )
                             ),
@@ -716,6 +741,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_mname',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_mname tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'cadd_middle_name',
@@ -728,6 +754,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_address_street_num',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_address_street_num tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'cadd_num',
@@ -740,6 +767,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_address_street_name',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_address_street_name tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'cadd_street',
@@ -752,6 +780,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_address_building_name',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_address_building_name tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'cadd_building_name',
@@ -764,6 +793,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_address_stairs',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_address_stairs tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'cadd_stairs',
@@ -776,6 +806,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_address_city',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_address_city tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'cadd_city',
@@ -788,6 +819,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_address_state',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_address_state tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'cadd_state',
@@ -800,6 +832,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_address_country',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_address_country tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'cadd_country',
@@ -812,6 +845,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_address_zipcode',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_address_zipcode tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'cadd_zipcode',
@@ -824,6 +858,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_address_company_name',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_address_company_name tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'cadd_company',
@@ -836,6 +871,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_address_mobile_number',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_address_mobile_number tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'cadd_phone_mobile',
@@ -848,6 +884,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_address_phone_landline',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_address_phone_landline tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'cadd_phone_landline',
@@ -860,6 +897,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_client_Contact_address_additional_information',
+//                                         'tooltip' => 'tr_meliscommerce_client_Contact_address_additional_information tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'cadd_complementary',

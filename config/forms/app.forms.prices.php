@@ -50,6 +50,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_variant_prices_variant_price_label',
+                                        'tooltip' => 'tr_meliscommerce_variant_prices_variant_price_label tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => '',
@@ -63,6 +64,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_variant_prices_variant_price_gross_label',
+                                        'tooltip' => 'tr_meliscommerce_variant_prices_variant_price_gross_label tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => '',
@@ -76,6 +78,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_variant_prices_variant_price_vat_percent_label',
+                                        'tooltip' => 'tr_meliscommerce_variant_prices_variant_price_vat_percent_label tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => '',
@@ -89,6 +92,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_variant_prices_variant_price_vat_price_label',
+                                        'tooltip' => 'tr_meliscommerce_variant_prices_variant_price_vat_price_label tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => '',
@@ -102,6 +106,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_variant_prices_variant_price_other_tax_price_label',
+                                        'tooltip' => 'tr_meliscommerce_variant_prices_variant_price_other_tax_price_label tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => '',

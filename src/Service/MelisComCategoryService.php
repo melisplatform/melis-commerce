@@ -206,7 +206,7 @@ class MelisComCategoryService extends MelisComGeneralService
      * otherwise this will return first category name the available.
      * @return String||null
      */
-    public function getCategoryNameById($categoryId, $langId = null)
+    public function getCategoryNameById($categoryId, $langId = null, $exclude = false)
     {
         // Retrieve cache version if front mode to avoid multiple calls
         $cacheKey = 'category-' . $categoryId . '-getCategoryNameById_' . $categoryId . '_' . $langId;
@@ -238,9 +238,16 @@ class MelisComCategoryService extends MelisComGeneralService
                 foreach ($catTrans As $val)
                 {
                     // checking language id
-                    if ($val->catt_lang_id == $arrayParameters['langId'])
+                    if ($val->catt_lang_id == $arrayParameters['langId'] && !empty($val->catt_name))
                     {
-                        $catNameStr = $val->catt_name;
+                        if($exclude){
+                            $catNameStr = array(
+                                'text' => $val->catt_name,
+                                'lang' => ''
+                            );
+                        }else{
+                            $catNameStr = $val->catt_name . ' ('.$val->elang_name.')';
+                        }
                     }
                 }
             }
@@ -252,7 +259,16 @@ class MelisComCategoryService extends MelisComGeneralService
                 {
                     if (!ctype_space($val->catt_name)&&!empty($val->catt_name))
                     {
-                        $catNameStr = $val->catt_name.' ('.$val->elang_name.')';
+                        
+                        if($exclude){
+                            $catNameStr = array(
+                                'text' => $val->catt_name,
+                                'lang' => $val->elang_name
+                            );
+                        }else{
+                            $catNameStr = $val->catt_name . ' ('.$val->elang_name.')';
+                        }
+                        
                         break;
                     }
                 }
@@ -286,6 +302,13 @@ class MelisComCategoryService extends MelisComGeneralService
      */
     public function getCategoryProductsById($categoryId, $langId = null, $onlyValid = false)
     {
+        // Retrieve cache version if front mode to avoid multiple calls
+        $cacheKey = 'category-' . $categoryId . '-getCategoryProductsById_' . $categoryId . '_' . $langId . '_'.$onlyValid;
+        $cacheConfig = 'commerce_big_services';
+        $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+        if (!empty($results)) return $results;
+        
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $results = array();
@@ -313,6 +336,9 @@ class MelisComCategoryService extends MelisComGeneralService
         
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_products_byid_end', $arrayParameters);
+        
+        // Save cache key
+        $melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
 
         return $arrayParameters['results'];
     }
@@ -847,7 +873,10 @@ class MelisComCategoryService extends MelisComGeneralService
         foreach ($catData As $key => $val)
         {
             // getting category name
-            $catData[$key]['text'] = $tool->escapeHtml($this->getCategoryNameById($val['cat_id'], $langId));
+            $textData = $this->getCategoryNameById($val['cat_id'], $langId, true);
+           
+            $catData[$key]['text'] = $tool->escapeHtml($textData['text']);
+            $catData[$key]['textLang'] = !empty($textData['lang'])? '('.$textData['lang'].')' : '';
 
             $fatherId = $catData[$key]['cat_id'];
 

@@ -1297,6 +1297,7 @@ class MelisComProductController extends AbstractActionController
         $categorySvc = $this->getServiceLocator()->get('MelisComCategoryService');
         $melisEcomProductCategoryTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');
         $priceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');
+        $translator = $this->serviceLocator->get('translator');
 
         if($this->getRequest()->isPost()) {
 
@@ -1428,6 +1429,21 @@ class MelisComProductController extends AbstractActionController
                     }
                     array_push($errors, $stocksAlertError);
                 }else{
+
+                    if(!empty($requestData['recipients'])){
+                        foreach($requestData['recipients'] as $recipient){
+                            if(!filter_var($recipient['sea_email'], FILTER_VALIDATE_EMAIL)){
+                                if(empty($errors['sea_email'])){
+                                    $errors['sea_email'] = array(
+                                        'inValidEmail' => $translator->translate('tr_meliscommerce_settings_save_add_recipients_failed'). ': '. $recipient['sea_email'],
+                                        'label' =>  $translator->translate('tr_meliscommerce_settings_label_recipients')
+                                    );
+                                }else{
+                                    $errors['sea_email']['inValidEmail'] = $errors['sea_email']['inValidEmail']. ', '. $recipient['sea_email'];
+                                }
+                            }
+                        }
+                    }
                     $product['prd_stock_low'] = $stocksAlertForm->get('sea_stock_level_alert')->getValue();
                     $product['prd_stock_low'] = !empty($product['prd_stock_low'])? $product['prd_stock_low'] : null;
                 }
@@ -1844,7 +1860,7 @@ class MelisComProductController extends AbstractActionController
         $melisKey = $this->params()->fromQuery('melisKey');
     
         $view = new ViewModel();
-        $view->setTerminal(false);
+        $view->setTerminal(true);
         $view->id = $id;
         $view->melisKey = $melisKey;
         return $view;

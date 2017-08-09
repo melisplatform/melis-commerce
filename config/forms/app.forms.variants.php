@@ -19,6 +19,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_variant_main_information_main_variant_input_label',
+                                        'tooltip' => 'tr_meliscommerce_variant_main_information_main_variant_input_label tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => '',                                        
@@ -102,6 +103,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_variant_stocks_quantity_label',
+                                        'tooltip' => 'tr_meliscommerce_variant_stocks_quantity_label tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => '',                                        
@@ -111,8 +113,11 @@ return array(
                             array(
                                 'spec' => array(
                                     'name' => 'stock_next_fill_up',
-                                    'type' => 'EcomDateField',
-                                    'options' => array(),
+                                    'type' => 'DateField',
+                                    'options' => array(
+                                        'label' => 'tr_meliscommerce_variant_tab_stocks_fill_up',
+                                        'tooltip' => 'tr_meliscommerce_variant_tab_stocks_fill_up tooltip',
+                                    ),
                                     'attributes' => array(
                                         'dateId' => 'stocksDate',
                                         'dateLabel' => 'tr_meliscommerce_variant_tab_stocks_fill_up'

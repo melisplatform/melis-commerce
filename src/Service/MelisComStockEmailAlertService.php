@@ -36,7 +36,6 @@ class MelisComStockEmailAlertService extends MelisComGeneralService
          
         // Service implementation start
         $emailAlertTable = $this->getServiceLocator()->get('MelisEcomStockEmailAlertTable');
-        $userTable = $this->getServiceLocator()->get('MelisCoreTableUser');
         $emailAlerts = $emailAlertTable->getStockEmailRecipients($arrayParameters['productIds']);
 
         foreach($emailAlerts as $emailAlert){

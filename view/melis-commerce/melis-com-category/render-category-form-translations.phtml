@@ -44,7 +44,7 @@
                 		</div>
                 		<div class="product-text-tab-form-content" style="padding-bottom: 0px; padding-right: 0px;">
             				<?php
-                            	$form = $this->meliscommerce_categories_category_information_form;
+                            	$form = clone $this->meliscommerce_categories_category_information_form;
                             	$form->setData($this->formDefaultValues);
                             	$form->setAttribute('class','cat_trans_form');
                             	$form->setAttribute('data-langid', $val['elang_id']);

@@ -51,17 +51,17 @@ return array(
                             'cli_status' => array(
                                 'text' => 'tr_meliscommerce_clients_table_Client_status',
                                 'css' => array('width' => '5%', 'padding-right' => '0'),
-                                'sortable' => false,
+                                'sortable' => true,
                             ),
                             'cli_person' => array(
                                 'text' => 'tr_meliscommerce_clients_table_Client_person',
                                 'css' => array('width' => '20%', 'padding-right' => '0'),
-                                'sortable' => false,
+                                'sortable' => true,
                             ),
                             'cli_company' => array(
                                 'text' => 'tr_meliscommerce_clients_table_Client_company',
                                 'css' => array('width' => '20%', 'padding-right' => '0'),
-                                'sortable' => false,
+                                'sortable' => true,
                             ),
                             'cli_num_orders' => array(
                                 'text' => 'tr_meliscommerce_clients_table_Client_num_orders',
@@ -71,16 +71,22 @@ return array(
                             'cli_last_order' => array(
                                 'text' => 'tr_meliscommerce_clients_table_Client_last_order',
                                 'css' => array('width' => '15%', 'padding-right' => '0'),
-                                'sortable' => false,
+                                'sortable' => true,
                             ),
                             'cli_date_creation' => array(
                                 'text' => 'tr_meliscommerce_clients_table_Client_date_created',
                                 'css' => array('width' => '15%', 'padding-right' => '0'),
-                                'sortable' => false,
+                                'sortable' => true,
                             ),
                         ),
                         // define what columns can be used in searching
-                        'searchables' => array(),
+                        'searchables' => array(
+                            'cli_id',
+                            'cper_name',
+                            'cper_firstname',
+                            'ccomp_name',
+                            'cli_date_creation',
+                        ),
                         'actionButtons' => array(
                             'edit' => array(
                                 'module' => 'MelisCommerce',

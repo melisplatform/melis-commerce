@@ -96,7 +96,10 @@ class MelisCommerceOrderPlugin extends MelisTemplatingPlugin
                 $tmp[] = $coupon;
             }
             
+            
             $orderCoupons = $tmp;
+            
+            
             
             if(!empty($data->getClient())){
                 if($data->getClient()->cli_id == $clientId){
@@ -207,7 +210,7 @@ class MelisCommerceOrderPlugin extends MelisTemplatingPlugin
                                     'couponCode' => $coupon->getCoupon()->coup_code,
                                     'couponIsInPercentage' => ($coupon->getCoupon()->coup_percentage) ? true : false,
                                     'couponValue' => ($coupon->getCoupon()->coup_percentage) ? $coupon->getCoupon()->coup_percentage.'%' : $coupon->getCoupon()->coup_discount_value,
-                                    'couponDiscount' => ($coupon->getCoupon()->coup_percentage) ? ($coupon->getCoupon()->coup_percentage / 100) * $coupon->getCoupon()->opay_price_order : $coupon->getCoupon()->coup_discount_value,
+                                    'couponDiscount' => ($coupon->getCoupon()->coup_percentage) ? ($coupon->getCoupon()->coup_percentage / 100) * $subTotal : $coupon->getCoupon()->coup_discount_value,
                                 );
                             }
                         }

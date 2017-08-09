@@ -27,6 +27,14 @@ class MelisComSeoController extends AbstractActionController
         // Getting Type of the request
         $zoneConfig = $this->params()->fromRoute('zoneconfig', array());
         
+        // Category SEO Form
+        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_seo/meliscommerce_seo_form','meliscommerce_seo_form');
+        $factory = new \Zend\Form\Factory();
+        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+        $propertyForm = $factory->createForm($appConfigForm);
+        
         $type = null;
         $typeId = null;
         // Getting Type of Request from Config
@@ -39,12 +47,24 @@ class MelisComSeoController extends AbstractActionController
         switch ($type) {
             case 'category':
                 $typeId = $this->params()->fromQuery('catId');
+                $propertyForm->get('eseo_page_id')->setOption('tooltip', $translator->translate('tr_meliscommerce_seo_Page_id_seo tooltip'));
+                $propertyForm->get('eseo_meta_title')->setOption('tooltip', $translator->translate('tr_meliscommerce_seo_Meta_title_seo tooltip'));
+                $propertyForm->get('eseo_meta_description')->setOption('tooltip', $translator->translate('tr_meliscommerce_seo_Meta_description_seo tooltip'));
+                $propertyForm->get('eseo_url')->setOption('tooltip', $translator->translate('tr_meliscommerce_seo_Url_seo tooltip'));
+                $propertyForm->get('eseo_url_redirect')->setOption('tooltip', $translator->translate('tr_meliscommerce_seo_Url_redirect_seo tooltip'));
+                $propertyForm->get('eseo_url_301')->setOption('tooltip', $translator->translate('tr_meliscommerce_seo_Url_301_seo tooltip'));
                 break;
             case 'product':
                 $typeId = $this->params()->fromQuery('productId');
                 break;
             case 'variant':
                 $typeId = $this->params()->fromQuery('variantId');
+                $propertyForm->get('eseo_page_id')->setOption('tooltip', $translator->translate('tr_meliscommerce_seo_Page_id_var tooltip'));
+                $propertyForm->get('eseo_meta_title')->setOption('tooltip', $translator->translate('tr_meliscommerce_seo_Meta_title_var tooltip'));
+                $propertyForm->get('eseo_meta_description')->setOption('tooltip', $translator->translate('tr_meliscommerce_seo_Meta_description_var tooltip'));
+                $propertyForm->get('eseo_url')->setOption('tooltip', $translator->translate('tr_meliscommerce_seo_Url_var tooltip'));
+                $propertyForm->get('eseo_url_redirect')->setOption('tooltip', $translator->translate('tr_meliscommerce_seo_Url_redirect_var tooltip'));
+                $propertyForm->get('eseo_url_301')->setOption('tooltip', $translator->translate('tr_meliscommerce_seo_Url_301_var tooltip'));
                 break;
             default:
                 break;
@@ -65,14 +85,6 @@ class MelisComSeoController extends AbstractActionController
         // Getting Commerce Languages
         $ecomLangtable = $this->serviceLocator->get('MelisEcomLangTable');
         $ecomLang = $ecomLangtable->langOrderByName()->toArray();
-        
-        // Category SEO Form
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
-        $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_seo/meliscommerce_seo_form','meliscommerce_seo_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
-        $factory->setFormElementManager($formElements);
-        $propertyForm = $factory->createForm($appConfigForm);
         
         // Getting Form input and push to array with empty/null value as Default Value for multiple Form
         $appConfigFormElements = $appConfigForm['elements'];

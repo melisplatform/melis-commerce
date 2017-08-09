@@ -55,6 +55,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_categories_category_information_form_cat_name',
+                                        'tooltip' => 'tr_meliscommerce_categories_category_information_form_cat_name tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'catt_name',
@@ -67,6 +68,7 @@ return array(
                                     'type' => 'Textarea',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_categories_category_information_form_cat_desc',
+                                        'tooltip' => 'tr_meliscommerce_categories_category_information_form_cat_desc tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => 'catt_description',
@@ -109,9 +111,10 @@ return array(
                             array(
                                 'spec' => array(
                                     'name' => 'cat_date_valid_start',
-                                    'type' => 'EcomDateField',
+                                    'type' => 'DateField',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_categories_category_valid_from',
+                                        'tooltip' => 'tr_meliscommerce_categories_category_valid_from tooltip',
                                     ),
                                     'attributes' => array(
                                         'dateId' => 'categoryValidateDates',
@@ -122,9 +125,10 @@ return array(
                             array(
                                 'spec' => array(
                                     'name' => 'cat_date_valid_end',
-                                    'type' => 'EcomDateField',
+                                    'type' => 'DateField',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_categories_category_valid_to',
+                                        'tooltip' => 'tr_meliscommerce_categories_category_valid_to tooltip',
                                     ),
                                     'attributes' => array(
                                         'dateId' => 'categoryValidateDates',

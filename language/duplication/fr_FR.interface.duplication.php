@@ -10,8 +10,8 @@
         'tr_meliscommerce_duplication_common_no' => 'Non',
         'tr_meliscommerce_duplication_common_variant' => 'Variant',
     
-        'tr_meliscommerce_duplication_variant_note' => '*Saisir les informations suivantes pour dupliquer le variant sélectionné.',
-        'tr_meliscommerce_duplication_product_note' => '*Saisir les informations suivantes pour dupliquer le produit sélectionné.',
+        'tr_meliscommerce_duplication_variant_note' => 'Saisir les informations suivantes pour dupliquer le variant sélectionné.',
+        'tr_meliscommerce_duplication_product_note' => 'Saisir les informations suivantes pour dupliquer le produit sélectionné.',
         
         'tr_meliscommerce_duplication_Duplicate_images' => 'Dupliquer les images',
         'tr_meliscommerce_duplication_Duplicate_documents' => 'Dupliquer les documents',

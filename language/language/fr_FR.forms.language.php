@@ -2,7 +2,9 @@
 return array(
 	'tr_meliscommerce_language_elang_id' => 'ID',
     'tr_meliscommerce_language_elang_locale' => 'Locale',
+    'tr_meliscommerce_language_elang_locale tooltip' => 'Locale du langage',
     'tr_meliscommerce_language_elang_name' => 'Nom',
+    'tr_meliscommerce_language_elang_name tooltip' => 'Nom du langage',
     
     'tr_meliscommerce_language_add' => 'Nouveau langage',
     'tr_meliscommerce_language_edit' => 'Editer le langage',

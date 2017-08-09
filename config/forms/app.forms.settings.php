@@ -41,6 +41,7 @@ return array(
                                     'type' => 'MelisText',
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_product_stock_low_field',
+                                        'tooltip' => 'tr_meliscommerce_product_stock_low_field tooltip',
                                     ),
                                     'attributes' => array(
                                         'id' => '',
