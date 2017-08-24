@@ -12,14 +12,10 @@ return array(
                 'js' => array(
                     '/MelisCommerce/assets/jstree/dist/jstree.min.js',
                     '/MelisCommerce/assets/switch/bootstrap-switch.js',
-                    '/MelisCommerce/assets/switch/bootstrap-switch.init.js',
                     '/MelisCommerce/js/tools/category.tool.js',
                     '/MelisCommerce/js/tools/documents.tool.js',
                     '/MelisCommerce/js/tools/seo.tool.js',
                 ),
-                'css' => array(
-                    '/MelisCommerce/css/categories.css', 
-                )
             ),
             'datas' => array(
             

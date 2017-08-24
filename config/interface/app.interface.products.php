@@ -15,7 +15,6 @@ return array(
                     '/MelisCommerce/assets/select2/js/select2.min.js',
                 ),
                 'css' => array(
-                    '/MelisCommerce/css/products.css',
                     '/MelisCommerce/assets/select2/css/select2.min.css',
                 ),
             ),

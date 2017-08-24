@@ -1426,6 +1426,7 @@ span .fa-globe{
 }
 
 @media ( min-width: 1200px ) {
-.pays-country .form-control {
-	min-width: 120px;
+	.pays-country .form-control {
+		min-width: 120px;
+	}
 }

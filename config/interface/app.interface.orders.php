@@ -23,10 +23,8 @@ return array(
                     '/MelisCommerce/assets/bootstrap-colorpicker-master/dist/js/bootstrap-colorpicker.js',
                 ),
                 'css' => array(
-                    '/MelisCommerce/css/a-style.css', 
-                    '/MelisCommerce/css/orders.css', 
-                    '/MelisCommerce/assets/bootstrap-colorpicker-master/dist/css/bootstrap-colorpicker.css', 
-// 					'/MelisCommerce/css/order-steps.css', 
+                    '/MelisCommerce/assets/bootstrap-colorpicker-master/dist/css/bootstrap-colorpicker.css',
+// 					'/MelisCommerce/css/order-steps.css',
                 ),
             ),
             'datas' => array(

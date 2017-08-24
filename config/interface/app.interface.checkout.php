@@ -12,9 +12,6 @@ return array(
                 'js' => array(
                     '/MelisCommerce/js/tools/checkout.tool.js',
                 ),
-                'css' => array(
-                    '/MelisCommerce/css/checkout.css',
-                ),
             ),
             'datas' => array(
             
