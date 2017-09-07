@@ -427,9 +427,10 @@ $(function(){
             $(".saveClientInfo").button("reset");
 
             if(data.success){
+                var navTabsGroup = "id_meliscommerce_clients_list_page";
                 melisHelper.tabClose(clientId+"_id_meliscommerce_client_page");
                 melisHelper.melisOkNotification(data.textTitle, data.textMessage);
-                melisHelper.tabOpen(data.clientContactName, "fa fa-user", data.clientId+"_id_meliscommerce_client_page", "meliscommerce_client_page", {clientId:data.clientId});
+                melisHelper.tabOpen(data.clientContactName, "fa fa-user", data.clientId+"_id_meliscommerce_client_page", "meliscommerce_client_page", {clientId:data.clientId}, navTabsGroup);
                 melisHelper.zoneReload('id_meliscommerce_clients_list_content', 'meliscommerce_clients_list_content');
             }else{
                 melisClientKoNotification(data.textTitle, data.textMessage, data.errors);

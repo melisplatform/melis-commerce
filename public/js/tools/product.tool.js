@@ -448,8 +448,9 @@ $(document).ready(function() {
             encode		: true
         }).success(function(data) {
             if(data.success) {
+                var navTabsGroup = "id_meliscommerce_product_list_container";
                 melisCommerce.closeCurrentProductPage();
-                melisCommerce.openProductPage(data.chunk.productId, data.chunk.prodName);
+                melisCommerce.openProductPage(data.chunk.productId, data.chunk.prodName, navTabsGroup);
                 melisHelper.melisOkNotification( data.textTitle, data.textMessage );
                 melisHelper.zoneReload("id_meliscommerce_product_list_content", "meliscommerce_product_list_content");
                 melisCommerce.setUniqueId(data.chunk.productId);
