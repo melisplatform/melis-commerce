@@ -449,11 +449,18 @@ $(document).ready(function() {
         }).success(function(data) {
             if(data.success) {
                 var navTabsGroup = "id_meliscommerce_product_list_container";
+                var listParent = $('.tab-element[data-id="'+ data.chunk.productId +'_id_meliscommerce_products_page"]').parent();
+
                 melisCommerce.closeCurrentProductPage();
                 melisCommerce.openProductPage(data.chunk.productId, data.chunk.prodName, navTabsGroup);
                 melisHelper.melisOkNotification( data.textTitle, data.textMessage );
                 melisHelper.zoneReload("id_meliscommerce_product_list_content", "meliscommerce_product_list_content");
                 melisCommerce.setUniqueId(data.chunk.productId);
+
+                if(listParent.hasClass("has-sub")) {
+                    var subNav = listParent.find(".nav-group-dropdown").prop('outerHTML');
+                    $('.tab-element[data-id="'+ data.chunk.productId +'_id_meliscommerce_products_page"]').parent().addClass("has-sub").append(subNav);
+                }
             }
             else {
                 melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
