@@ -233,7 +233,7 @@ class MelisComProductSearchService extends MelisComGeneralService
 	public function searchProductFull($search, $fieldsTypeCodes = array(),
 	                                  $attributeValuesIds = array(), $priceMin = null, $priceMax = null,
 	                                  $langId = null, $categoryId = array(), $countryId = null, 
-	                                  $onlyValid = true, $start = 0, $limit = null, $sort = null, $docTypes)
+	                                  $onlyValid = true, $start = 0, $limit = null, $sort = null)
 	{
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -253,32 +253,26 @@ class MelisComProductSearchService extends MelisComGeneralService
         if($data) {
             foreach($data as $product){
                 unset($product->price);
+                unset($product->country);
                 $productData[] = $product;
             }
             
             $productData = array_unique($productData, SORT_REGULAR);
             
-            $categoryData = array();
-            $docData = array();
-            $prodTexts = array();
-            $prodPrice = array();
-             
-            foreach($productData as $searchedData) {
-                
-                $categories = array();
-                $texts = array();
-                $prices = array();
-                $documents = array(); 
-                $product = $prodTable->getProductCategoryPriceByProductId($searchedData->prd_id, $arrayParameters['categoryId'], 
-                    $arrayParameters['langId'], $arrayParameters['countryId'], 
-                    $arrayParameters['fieldsTypeCodes'] , $arrayParameters['docTypes']
-                )->current();
-                                               
-                $results[] = $product;
+            $prdSrv = $this->getServiceLocator()->get('MelisComProductService');
+            
+            foreach ($productData As $val)
+            {
+                /**
+                 * Retieving basic details of a single product
+                 * from Product service
+                 */
+                $results[] = $prdSrv->getProductBasicDetails($val->prd_id, $countryId, $langId);
             }
+            
         }
 	    // Service implementation end
-        
+	    
 	    // Adding results to parameters for events treatment if needed
 	    $arrayParameters['results'] = $results;
 	    // Sending service end event

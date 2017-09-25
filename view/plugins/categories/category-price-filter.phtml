@@ -1,0 +1,22 @@
+<?php 
+    $priceFilter = $this->filterMenuPriceValue;
+?>
+<form class="form-horizontal">
+  	<div class="form-group">
+        <label for="inputEmail3" class="col-sm-2 control-label">Min price</label>
+        <div class="col-sm-10">
+          	<input type="text" class="form-control" name="m_box_filter_price_min" placeholder="Min" value="<?= $priceFilter['defaultMin']?>">
+        </div>
+  	</div>
+  	<div class="form-group">
+        <label for="inputEmail3" class="col-sm-2 control-label">Max price</label>
+        <div class="col-sm-10">
+          	<input type="text" class="form-control" name="m_box_filter_price_max"  placeholder="Max" value="<?= $priceFilter['defaultMax']?>">
+        </div>
+  	</div>
+  	<div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          	<button type="submit" class="btn btn-default">Submit</button>
+        </div>
+  	</div>
+</form>

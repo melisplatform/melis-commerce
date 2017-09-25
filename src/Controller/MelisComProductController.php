@@ -1671,64 +1671,72 @@ class MelisComProductController extends AbstractActionController
         $prodName = '';
         $texts = '';
         $layoutVar = array();
-
-        if($product) {
+        
+        if($product) 
+        {
             $categories = $product->getCategories();
             $texts = $product->getTexts();
             $attributes = $product->getAttributes();
             $layoutVar['product'] = $product->getProduct();
         }
-
-        if($categories) {
-            foreach($categories as  $prodObjectVal) {
-                if($prodObjectVal->pcat_cat_id) {
-                    $prodCatData = $categorySvc->getCategoryById((int) $prodObjectVal->pcat_cat_id, $this->getTool()->getCurrentLocaleID());
-                    //if($prodCatData) {
-                    $prodCatTrans = $prodCatData->getTranslations();
-                    //if($prodCatTrans) {
+        
+        if($categories) 
+        {
+            foreach($categories as  $prodObjectVal) 
+            {
+                if($prodObjectVal->pcat_cat_id) 
+                {
+                    $categoryId = $prodObjectVal->pcat_cat_id;
+                    
                     $categoryText[] = array(
                         'pcat_id' => $prodObjectVal->pcat_id,
-                        'pcat_cat_id' => $prodCatData->getId(),
-                        'catt_name' => $categorySvc->getCategoryNameById($prodCatData->getId(), $this->getTool()->getCurrentLocaleID()),
+                        'pcat_cat_id' => $categoryId,
+                        'catt_name' => $categorySvc->getCategoryNameById($categoryId, $this->getTool()->getCurrentLocaleID()),
                         'pcat_order' => $prodObjectVal->pcat_order
                     );
-                    //}
-                    //}
                 }
             }
+            
             $layoutVar['prodCategories'] = $categoryText;
         }
-
+        
         $prodText = $prodSvc->getProductTextsById($productId);
-        if(empty($prodText)){
+        
+        if(empty($prodText))
+        {
             // set default title prodtext field
-            foreach($prodTextTypeTable->fetchAll()->toArray() as $textType){
-                if($textType['ptt_name'] == 'Title'){
-                    foreach($ecomLangTable->fetchAll()->toArray() as $lang){
+            foreach($prodTextTypeTable->fetchAll()->toArray() as $textType)
+            {
+                if($textType['ptt_name'] == 'Title')
+                {
+                    foreach($ecomLangTable->fetchAll()->toArray() as $lang)
+                    {
                         $textType['ptxt_lang_id'] = $lang['elang_id'];
                         $prodText[] = (object) $textType;
                     }
                 }
             }
-
         }
         
         $comLangTable = $this->getServiceLocator()->get('MelisEcomLangTable');
         $ctrText = 0;
         $localeCtr = array();
-        if($texts) {
-            foreach($texts as $text){
-                if($text->ptt_code == 'TITLE'){
+        if($texts) 
+        {
+            foreach($texts as $text)
+            {
+                if($text->ptt_code == 'TITLE')
+                {
                     $prodName = $text->ptxt_field_short;
                 }
             }
         }
+        
         $prodName = $prodSvc->getProductName($productId, $this->getTool()->getCurrentLocaleID());
         foreach($attributes as $attr){
             $attr->atrans_name = $attrSvc->getAttributeText($attr->patt_attribute_id, $this->getTool()->getCurrentLocaleID());
             $layoutVar['prodAttributes'][] = $attr;
         }
-
         
         $this->layout()->setVariables(array_merge(array(
             'productId' => $productId,

@@ -53,38 +53,47 @@ class MelisComCategoryController extends AbstractActionController
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $catId = $this->params()->fromQuery('catId');
         $catFatherId = $this->params()->fromQuery('catFatherId');
-
-        if (!empty($catId)){
-            $melisComCategoryService = $this->getServiceLocator()->get('MelisComCategoryService');
-            $categoryData = $melisComCategoryService->getCategoryById($catId);
-            $category = $categoryData->getTranslations();
-
+        
+        if (!empty($catId))
+        {
             // Getting Current Langauge ID
             $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
             $langId = $melisTool->getCurrentLocaleID();
-
+            
+            $melisComCategoryService = $this->getServiceLocator()->get('MelisComCategoryService');
+            $categoryData = $melisComCategoryService->getCategoryById($catId, $langId);
+            $category = $categoryData->getTranslations();
+            
             $catname = '';
-            foreach ($category As $val){
-                if ($langId==$val->catt_lang_id){
-                    $catname = $val->catt_name;
+            if (!empty($category[$langId]))
+            {
+                $catname = $category[$langId]->catt_name;
+            }
+            
+            if (empty($catname))
+            {
+                // Getting available Name concatinated with the Language Name
+                foreach ($category As $val)
+                {
+                    $catname = $val->catt_name.' ('.$val->elang_name.')';
+                    break;
                 }
             }
-
-            // Getting available Name concatinated with the Language Name
-            if (empty($catname)){
-                $catname = $category[0]->catt_name.' ('.$category[0]->elang_name.')';
-            }
-
+            
             $view->title = $translator->translate('tr_meliscommerce_categories_edit_category').' "'.$catname.'"';
-
-        }else{
-            if ($catFatherId == -1){
+        }
+        else
+        {
+            if ($catFatherId == -1)
+            {
                 $view->title = $translator->translate('tr_meliscommerce_categories_add_catalog');
-            }else{
+            }
+            else
+            {
                 $view->title = $translator->translate('tr_meliscommerce_categories_add_category');
             }
         }
-
+        
         $view->melisKey = $melisKey;
         return $view;
     }

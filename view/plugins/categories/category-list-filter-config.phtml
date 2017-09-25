@@ -1,0 +1,44 @@
+<?php
+    $form = $this->modalForm;
+    $form->prepare();
+    echo $this->form()->openTag($form);
+    echo $this->melisFieldCollection($form);
+    
+    $includeRootCat = '';
+    if ($this->formData['m_box_filter_include_root_category']){
+        $includeRootCat = 'checked';
+    }
+    
+    $onlyValid = '';
+    if ($this->formData['m_box_filter_only_valid']){
+        $onlyValid = 'checked';
+    }
+?>
+	<div class="form-group">
+        <label><?php echo $this->translate('tr_meliscommerce_plugin_filter_menu_category_list_include_root_category')?></label>
+        <div class="row">
+        	<div class="col-xs-12">
+                <div class="make-switch plugin-config-switch" data-label-icon="fa fa-arrows-h" data-on-label="<?php echo $this->translate('tr_meliscommerce_categories_common_label_yes')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_categories_common_label_no')?>">
+                    <input type="checkbox" name="m_box_filter_include_root_category" <?php echo $includeRootCat?>>
+                </div>
+        	</div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label><?php echo $this->translate('tr_meliscommerce_plugin_filter_menu_category_list_only_valid')?></label>
+        <div class="row">
+        	<div class="col-xs-12">
+                <div class="make-switch plugin-config-switch" data-label-icon="fa fa-arrows-h" data-on-label="<?php echo $this->translate('tr_meliscommerce_categories_common_label_yes')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_categories_common_label_no')?>">
+                    <input type="checkbox" name="m_box_filter_only_valid" <?php echo $onlyValid?>>
+                </div>
+        	</div>
+        </div>
+    </div>
+    
+<?php 
+    echo $this->form()->closeTag();
+?>
+
+<script>
+	$('.plugin-config-switch').bootstrapSwitch();
+</script>

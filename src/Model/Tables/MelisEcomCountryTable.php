@@ -131,4 +131,32 @@ class MelisEcomCountryTable extends MelisEcomGenericTable
         return $resultSet;
     }
     
+    
+    /**
+     * Get Category Country/Countries by Category ID
+     * @param int $categoryId, Id of category
+     * @param boolean $onlyValid, only return active country if true else return all
+     * 
+     * @return NULL|\Zend\Db\ResultSet\ResultSetInterface
+     */
+    public function getCategoryCountriesByCategoryId($categoryId, $onlyValid = false){
+        $select = $this->tableGateway->getSql()->select();
+        
+        $select->columns(array('*'));
+        
+        $select->join('melis_ecom_country_category', 'melis_ecom_country_category.ccat_country_id = melis_ecom_country.'.$this->idField, array(), $select::JOIN_RIGHT);
+        $select->join('melis_ecom_category', 'melis_ecom_category.cat_id = melis_ecom_country_category.ccat_category_id', array(), $select::JOIN_LEFT);
+        $select->group('ctry_id');
+        
+        if ($onlyValid)
+        {
+            $select->where('melis_ecom_country.ctry_status = 1');
+        }
+        
+        $select->where('melis_ecom_country_category.ccat_category_id ='.$categoryId);
+        
+        $dataCategory = $this->tableGateway->selectWith($select);
+        return $dataCategory;
+    }
+    
 }

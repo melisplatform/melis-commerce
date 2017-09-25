@@ -1,0 +1,229 @@
+<div class="row">
+	<div class="col-md-12" id="pluginCatTreeSearchZone">
+		<div class="form-group">
+        	<input type="text" class="form-control" name="pluginCatTreeSearchInput" id="pluginCatTreeSearchInput" placeholder="<?= $this->translate('tr_meliscommerce_categories_list_tree_view_search_input'); ?>">
+    	</div>
+    	<div class="row">
+    		<div class="col-xs-6 col-md-6 col-lg-3">
+    			<button class="btn btn-success btn-block margin-bottom-10" id="pluginCatTreeClear" title="<?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_clear')?>">
+    				<i class="fa fa-eraser"></i> 
+    				<span><?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_clear')?></span>
+    			</button>
+    		</div>
+    		<div class="col-xs-6 col-md-6 col-lg-3 margin-bottom-10">
+    			<button class="btn btn-success btn-block margin-bottom-10" id="pluginCatTreeCollapse" title="<?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_collapse_all')?>">
+    				<i class="fa fa-compress fa-flip-horizontal"></i> 
+    				<span><?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_collapse_all')?></span>
+    			</button>
+    		</div>
+    		<div class="col-xs-6 col-md-6 col-lg-3">
+    			<button class="btn btn-success btn-block margin-bottom-10" id="pluginCatTreeExpand" title="<?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_expand_all')?>">
+    				<i class="fa fa-expand fa-flip-horizontal"></i> 
+    				<span><?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_expand_all')?></span>
+    			</button>
+    		</div>
+    		<div class="col-xs-6 col-md-6 col-lg-3">
+    			<button class="btn btn-success btn-block margin-bottom-10" id="pluginCatTreeRefresh" title="<?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_refresh')?>">
+    				<i class="fa fa-refresh"></i> 
+    				<span><?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_refresh')?></span>
+    			</button>
+    		</div>
+    	</div>
+	</div>
+	<br>
+	<div class="col-md-12">
+		<div class="row">
+			<div class="col-md-6">
+        		<div class="pluginCatTreeLangSelect">
+                	<div class="filter-dropdown clearfix pluginCatTreeLangSelectDropdown">
+                		<a href="#" class="dropdown-toggle pluginCatTreeLangSelectActive" data-toggle="dropdown">
+                			<i class="fa fa-language"></i>
+                			<span class="filter-key"><?= $this->currentLangName; ?></span>
+                			<span class="caret"></span>
+                		</a>
+                		<ul class="dropdown-menu pluginCatTreeLangSelectList">
+						<?php 
+						    if($this->langData){ 
+						        foreach($this->langData as $lang){ ?>
+                        			<li>
+    									<?php
+        									$imageData = $lang->elang_flag;
+        									$image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="pluginCatTreeLangSelectListImg pull-right" width="24" height="24"/>' : '<i class="fa fa-globe"></i>';
+    									?>
+                        				<a data-locale="<?= $lang->elang_locale; ?>"><?= $lang->elang_name; ?><span class="pull-right"><?php echo $image; ?></span></a>
+                        			</li>
+            				<?php }?>
+    					<?php }?>
+                		</ul>
+                	</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<br>
+	<div class="col-md-12">
+		<div id="pluginCatTreeZone" data-langlocale="<?php echo $this->currentLangLocale ?>"></div>
+		<form id="pluginCatTreeForm">
+    		<?php if (!empty($this->formData['m_box_filter_categories_ids_selected'])){?>
+        		<?php foreach ($this->formData['m_box_filter_categories_ids_selected'] As $val){?>
+        			<input type="hidden" name="m_box_filter_categories_ids_selected[]" value="<?php echo $val?>">
+        		<?php }?>
+    		<?php }?>
+    	</form>
+	</div>
+</div>
+<style>
+    .pluginCatTreeLangSelectActive{
+        background: #ECEBEB;
+        border-radius: 4px;
+        color: #7D7B7B;
+    }
+    .pluginCatTreeLangSelectListImg {
+    	border: none !important;
+    	max-width:24px !important;
+    	max-height:24px !important;
+    }
+    #pluginCatTreeZone {
+    	overflow: auto;
+    	height: 300px;
+    	margin-top: 15px;
+    }
+    div.pluginCatTreeLangSelect > .filter-dropdown {
+        width: 100%;
+    }
+    .open>.dropdown-menu.pluginCatTreeLangSelectList {
+        display: block;
+        width: 100%;
+    }
+</style>
+<script>
+    window.initCatTree = function(){
+    	
+    	var categoryTree = $("#pluginCatTreeZone");
+    	
+        categoryTree.jstree({
+            "core" : {
+            	"multiple": false,
+                "check_callback": true,
+                "animation" : 500,
+                "themes": {
+                    "name": "proton",
+                    "responsive": false
+                },
+                "dblclick_toggle" : false,
+                "data" : {
+                	"cache" : false,
+                	"data": categoryTreeData(),
+                    "url" : "/melis/MelisCommerce/MelisComCategoryList/getCategoryTreeView",
+                },
+            },
+            "types" : {
+    			"default" : {
+    				"icon" : "fa fa-circle text-success",
+    			},
+    			"selected": {
+                    "select_node" : false
+                }
+    		},
+            "checkbox": {
+    	        "three_state" : false,
+    	        "whole_node" : false,
+    	        "tie_selection" : false,
+    	    },
+            "plugins": [
+                "search", // Plugins for Search of the Node(s) of the Tree View
+                "types", // Plugins for Customizing the Nodes
+                "checkbox",
+            ]
+        }).on("check_node.jstree uncheck_node.jstree", function(e, data) {
+      	  	//console.log(data.node.id + ' ' + data.node.text + (data.node.state.checked ? ' CHECKED': ' NOT CHECKED'))
+      	  	if(data.node.state.checked){
+    			$("#pluginCatTreeForm").append('<input type="hidden" name="m_box_filter_categories_ids_selected[]" value="'+data.node.id+'">');
+      	  	}else{
+          	  	$("#pluginCatTreeForm input[value='"+data.node.id+"']").remove();
+      	  	}
+    	}).on('loading.jstree', function (e, data) {
+			melisCommerce.pendingZoneStart("pluginCatTreeSearchZone");
+		}).on('loaded.jstree', function (e, data) {
+			melisCommerce.pendingZoneDone("pluginCatTreeSearchZone");
+		});
+    }
+    
+    window.categoryTreeData = function(){
+    	
+    	var categoryTree = $("#pluginCatTreeZone");
+    	
+    	var dataString = new Array;
+    	
+    	dataString.push({
+    		name : 'langlocale',
+    		value : categoryTree.data('langlocale')
+    	});
+    	
+    	dataString.push({
+    		name : 'idAndNameOnly',
+    		value : true
+    	});
+    
+    	var catIds = new Array;
+    	$("#pluginCatTreeForm input[name='m_box_filter_categories_ids_selected[]']").each(function(){
+    		catIds.push($(this).val());
+    	});
+    	var catIdsStr = '';
+    	if(catIds.length){
+    		catIdsStr = catIds.join()
+    	}
+    	
+    	dataString.push({
+    		name : 'categoriesChecked',
+    		value : catIdsStr
+    	});
+    
+    	return dataString;
+    }
+    
+    $(function(){
+        
+    	initCatTree();
+    	
+    	var categoryTree = $("#pluginCatTreeZone");
+    	
+    	$("#pluginCatTreeSearchInput").on("keyup", function(e){ 
+    		var searchString = $(this).val();
+    		categoryTree.jstree('search', searchString);
+    	});
+    	
+    	// Clear Input Search
+    	$("#pluginCatTreeClear").on("click", function(e){ 
+    		$("#pluginCatTreeSearchInput").val("");
+    		categoryTree.jstree('search', '');
+    	});
+    	
+    	// Toggle open Button for Category Tree View
+    	$("#pluginCatTreeExpand").on("click", function(e){ 
+    		categoryTree.jstree("open_all");
+    	});
+    	
+    	// Toggle close Button for Category Tree View
+    	$("#pluginCatTreeCollapse").on("click", function(e){ 
+    		categoryTree.jstree("close_all");
+    	});
+    	
+    	// Refrech Category Tree View
+    	$("#pluginCatTreeRefresh").on("click", function(e){ 
+    		categoryTree.jstree('search', '');
+    		$("#pluginCatTreeSearchInput").val("");
+    		categoryTree.jstree(true).refresh();
+    	});
+    	
+    	$(".pluginCatTreeLangSelectList li a").on("click", function(){
+    		var langText = $(this).text();
+    		var langLocale = $(this).data('locale');
+    		$('.pluginCatTreeLangSelectDropdown span.filter-key').text(langText);
+    		categoryTree.data('langlocale', langLocale);
+    		
+    		categoryTree.jstree(true).settings.core.data.data = categoryTreeData();
+    		categoryTree.jstree(true).refresh();
+    	});
+    });
+</script>

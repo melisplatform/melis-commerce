@@ -53,7 +53,7 @@ class MelisComProductService extends MelisComGeneralService
         $prodTable = $this->getServiceLocator()->get('MelisEcomProductTable');
 
         if($search) {
-            $productData = $prodTable->getProduct(null, $arrayParameters['onlyValid'], 0, null, $arrayParameters['order'], $arrayParameters['orderColumn']);
+            $productData = $prodTable->getProduct(null, $arrayParameters['categoryId'], $arrayParameters['onlyValid'], 0, null, $arrayParameters['order'], $arrayParameters['orderColumn']);
             if($productData) {
                 foreach($productData as $prod) {
                     $tmpData[] = $this->getProductById($prod->prd_id, $arrayParameters['langId']);
@@ -69,7 +69,7 @@ class MelisComProductService extends MelisComGeneralService
             }
         }
         else {
-            $productData = $prodTable->getProduct(null, $arrayParameters['onlyValid'], $arrayParameters['start'], $arrayParameters['limit'], $arrayParameters['order'], $arrayParameters['orderColumn']);
+            $productData = $prodTable->getProduct(null, $arrayParameters['categoryId'], $arrayParameters['onlyValid'], $arrayParameters['start'], $arrayParameters['limit'], $arrayParameters['order'], $arrayParameters['orderColumn']);
             if($productData) {
                 foreach($productData as $prod) {
                     // add searching statement here
@@ -585,6 +585,62 @@ class MelisComProductService extends MelisComGeneralService
 	    return $arrayParameters['results'];
 	}
 	
+	public function getProductsByCategoryId($categoryId, $onlyValid = false, $langId = null)
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = array();
+	     
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_products_by_category_id_start', $arrayParameters);
+	    
+	    // Service implementation start
+	    $melisEcomProductTable = $this->getServiceLocator()->get('MelisEcomProductTable');
+	    
+	    $product = $melisEcomProductTable->getProductsByCategoryId($arrayParameters['categoryId'], $arrayParameters['onlyValid'], $arrayParameters['langId']);
+	    
+	    foreach ($product As $val)
+	    {
+	        array_push($results, $val);
+	    }
+	    // Service implementation end
+	    
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_products_by_category_id_end', $arrayParameters);
+	    
+	    return $arrayParameters['results'];
+	}
+	
+	public function getProductVariants($productId, $onlyValid = false)
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = array();
+	    
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_pget_product_variants_start', $arrayParameters);
+	     
+	    // Service implementation start
+	    
+	    $variantTable = $this->getServiceLocator()->get('MelisEcomVariantTable');
+	    
+	    $prdVariants = $variantTable->getProductVariants($arrayParameters['productId'], $arrayParameters['onlyValid']);
+	    
+	    foreach ($prdVariants As $val)
+	    {
+	        array_push($results, $val);
+	    }
+	    
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $results;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_pget_product_variants_end', $arrayParameters);
+	     
+	    return $arrayParameters['results'];
+	}
+	
 	/**
 	 *
 	 * This method saves a product in database.
@@ -1064,6 +1120,68 @@ class MelisComProductService extends MelisComGeneralService
 
 	    // Save cache key
 		$melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
+	    
+	    return $arrayParameters['results'];
+	}
+	
+	public function getProductBasicDetails($productId, $countryId = null, $langId = null)
+	{
+	    // Event parameters prepare
+	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+	    $results = false;
+	    
+	    // Sending service start event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_get_product_basic_details_start', $arrayParameters);
+	     
+	    // Service implementation start
+	    
+	    /**
+	     * Product prices
+	     */
+	    $prdPrice = $this->getProductFinalPrice($arrayParameters['productId'], $arrayParameters['countryId']);
+	    
+	    $prdPriceDetails = array(
+	        'prd_currency_symbol' => (!empty($prdPrice->cur_symbol)) ? $prdPrice->cur_symbol : '',
+	        'prd_currency_code' => (!empty($prdPrice->cur_code)) ? $prdPrice->cur_code : '',
+	        'prd_price_net' => (!empty($prdPrice->price_net)) ? $prdPrice->price_net : '',
+	    );
+	    
+	    /**
+	     * Product image documents
+	     */
+	    $docSrv = $this->getServiceLocator()->get('MelisComDocumentService');
+	    $prdDocsImages = $docSrv->getFinalImageFilePath('product', $arrayParameters['productId'], array('DEFAULT'));
+	    
+	    /**
+	     * Product texts
+	     */
+	    $prdText = '';
+	    $prdTexts = $this->getProductTextsById($arrayParameters['productId'], 'TITLE', $arrayParameters['langId']);
+	    if (!empty($prdTexts))
+	    {
+	        $prdText = ($prdTexts[0]->ptxt_type == 1) ? $prdTexts[0]->ptxt_field_short : $prdTexts[0]->ptxt_field_long;
+	    }
+	    
+	    /**
+	     * Product categories
+	     */
+	    $catTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
+	    $prdCats = $catTable->getProductCategoriesWithFinalTransalations($arrayParameters['productId'], $arrayParameters['langId'])->toArray();
+	    
+	    $product = array(
+	        'prd_id' => $arrayParameters['productId'],
+	        'prd_text' => (!empty($prdText)) ? $prdText : $prd->prd_reference,
+	        'prd_price_details' => $prdPriceDetails,
+	        'prd_categories' => $prdCats,
+	        'prd_docs_image' => $prdDocsImages
+	    );
+	    
+	    // Service implementation end
+	    
+	    // Adding results to parameters for events treatment if needed
+	    $arrayParameters['results'] = $product;
+	    // Sending service end event
+	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_get_product_basic_details_end', $arrayParameters);
 	    
 	    return $arrayParameters['results'];
 	}

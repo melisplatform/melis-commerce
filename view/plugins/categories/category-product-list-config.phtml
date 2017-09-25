@@ -1,0 +1,31 @@
+<?php
+    $form = $this->modalForm;
+    $form->prepare();
+    echo $this->form()->openTag($form);
+    echo $this->melisFieldCollection($form);
+    
+    
+    $includeSubCatPrd = '';
+    if ($this->formData['m_include_sub_category_products']){
+        $includeSubCatPrd = 'checked';
+    }
+    
+?>
+	<div class="form-group">
+        <label><?php echo $this->translate('tr_meliscommerce_plugin_category_product_list_include_sub_cat_prds')?></label>
+        <div class="row">
+        	<div class="col-xs-12">
+                <div class="make-switch commerce-switch" id="catPrdSliderIncludeSubCat" data-label-icon="fa fa-arrows-h" data-on-label="<?php echo $this->translate('tr_meliscommerce_categories_common_label_yes')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_categories_common_label_no')?>">
+                    <input type="checkbox" name="m_include_sub_category_products" <?php echo $includeSubCatPrd?>>
+                </div>
+        	</div>
+        </div>
+    </div>
+    
+<?php 
+    echo $this->form()->closeTag();
+?>
+
+<script>
+	$('#catPrdSliderIncludeSubCat, #catPrdSliderOnlyValid').bootstrapSwitch();
+</script>

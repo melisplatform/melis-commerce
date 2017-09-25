@@ -159,12 +159,6 @@ class MelisComCategoryListController extends AbstractActionController
         $idAndNameOnly = $this->params()->fromQuery('idAndNameOnly');
         $categoriesChecked = $this->params()->fromQuery('categoriesChecked');
         
-        
-        $categoryChecked = array();
-        if (!empty($categoriesChecked)){
-            $categoryChecked = explode(',', $categoriesChecked);
-        }
-        
         if (!empty($openStateParent)){
             $openStateParent = explode(',', $openStateParent);
         }
@@ -177,8 +171,9 @@ class MelisComCategoryListController extends AbstractActionController
         $melisComCategoryService = $this->getServiceLocator()->get('MelisComCategoryService');
         $categoryListData = $melisComCategoryService->getCategoryTreeview(null, $currentLang->elang_id);
         
+//         print_r($categoryListData);
         // Category Tree View Preparation
-        $categoryList = $this->prepareCategoryDataForTreeView($categoryListData, $selected, $openStateParent, $idAndNameOnly, $categoryChecked, $currentLang->elang_id);
+        $categoryList = $this->prepareCategoryDataForTreeView($categoryListData, $selected, $openStateParent, $idAndNameOnly, $categoriesChecked, $currentLang->elang_id);
         
         return new JsonModel($categoryList);
     }
@@ -240,7 +235,8 @@ class MelisComCategoryListController extends AbstractActionController
                 'data-seopage' => $cseoPageId,
                 'data-numprods' => $numProds,
                 'data-textlang' => $categoryList[$key]['textLang'],
-                'data-fathericon' => $itemIcon
+                'data-fathericon' => $itemIcon,
+                'data-fathercateid' => $val['cat_father_cat_id'],
             );
             
             unset($categoryList[$key]['cat_father_cat_id']);
@@ -261,6 +257,7 @@ class MelisComCategoryListController extends AbstractActionController
                 }
             }
             
+            // Node State
             $categoryList[$key]['state'] = array(
                 'opened' => $openState,
                 'selected' =>  $selectedState,
@@ -269,8 +266,21 @@ class MelisComCategoryListController extends AbstractActionController
             
             if (!empty($val['children'])){
                 $categoryList[$key]['children'] = $this->prepareCategoryDataForTreeView($categoryList[$key]['children'], $selected, $openedStateParent, $idAndNameOnly, $categoryChecked, $langId);
+                
+                /**
+                 * Checking if the node children has a Open, Checked, Selected state
+                 * the parent will set Open state
+                 */
+                if (!empty($categoryList[$key]['children'])){
+                    foreach ($categoryList[$key]['children'] As $cKey => $cVal){
+                        if (!empty($cVal['state'])){
+                            if ($cVal['state']['opened'] || $cVal['state']['selected'] ||$cVal['state']['checked']){
+                                $categoryList[$key]['state']['opened'] = true;
+                            }
+                        }
+                    }
+                }
             }
-            
         }
         
         return $categoryList;

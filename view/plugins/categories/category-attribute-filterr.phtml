@@ -1,0 +1,46 @@
+<style>
+.cat-prd-attr-values{
+	margin-left: 20px;
+}
+input[name="m_box_filter_attribute_values_ids_selected[]"]{
+    height: initial;
+    width: inherit;
+}
+</style>
+<form>
+    <div class="form-group">
+    	<?php foreach ($this->filterMenuAttributeValue As $val){?>
+        	<div class="row">
+        		<div class="col-xs-12">
+        			<div class="pdc-heading clearfix">
+                        <h4>
+                        	<?php echo $val->atrans_name ?>
+                        </h4>
+                    </div>
+        		</div>
+        		<?php foreach ($val->attr_values As $vals){?>
+        			<?php
+        			    $checked = '';
+        			    if (!empty($this->formData['m_box_filter_attribute_values_ids_selected'])){
+        			        if(in_array($vals->atval_id, $this->formData['m_box_filter_attribute_values_ids_selected'])){
+        			            $checked = 'check';
+        			        }
+        			    }
+        			?>
+        			<div class="col-xs-2 cat-prd-attr-values">
+        				<label>
+                    		<input type="checkbox" name="m_box_filter_attribute_values_ids_selected[]" value="<?php echo $vals->atval_id ?>" <?php echo (in_array($vals->atval_id, $this->selectedAttributes)) ? 'checked' : ''?>>
+                			<?php 
+                    		    $valCol = 'avt_v_'.$vals->atype_column_value;
+                    		    echo $vals->$valCol
+                		    ?>
+                		</label>
+            		</div>
+        		<?php }?>
+        	</div>
+    	<?php }?>
+    </div>
+    <div class="form-group">
+    	<button class="btn btn-default">Submit</button>
+    </div>
+</form>

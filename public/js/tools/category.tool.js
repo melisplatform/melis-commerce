@@ -223,8 +223,8 @@ $(function(){
 		var langLocale = $(this).data('locale');
 		$('.cat-tree-view-languages span.filter-key').text(langText);		
 		$("#categoryTreeView").data('langlocale',langLocale);
-		$("#categoryTreeView").jstree('destroy');
-		initCategoryTreeView();
+		$("#categoryTreeView").jstree(true).settings.core.data.data = [{name : "langlocale", value: langLocale}];
+		$("#categoryTreeView").jstree(true).refresh();
 	});
 		
 	// Search Input
@@ -507,6 +507,12 @@ window.initCategoryTreeView = function(){
 				father.html(temp.get(0).outerHTML + '<b>' + fatherIcon +' ' + father.text() + '</b>');
 			})
 
+		})
+		.on('ready.jstree', function (e, data) {
+			console.log(data);
+		})
+		.on('load_node.jstree', function (e, data) {
+			console.log(data);
 		})
 		.on('open_node.jstree', function (e, data) {
 			

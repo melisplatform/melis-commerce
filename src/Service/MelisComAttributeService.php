@@ -390,6 +390,42 @@ class MelisComAttributeService extends MelisComGeneralService
     }
     
     /**
+     * This will return the Attribute list and its values
+     * @param int $attributeId, id of attribute if null this will get the list of attributes
+     * @param int $langId, lang id related to translations
+     * @return Array
+     */
+    public function getAttributeListAndValues($attributeId = null, $status = false, $searchable = false, $langId = null)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_attribute_list_and_values_start', $arrayParameters);
+        
+        // Service implementation start
+        $attrTable = $this->getServiceLocator()->get('MelisEcomAttributeTable');
+        $attrValTable = $this->getServiceLocator()->get('MelisEcomAttributeValueTable');
+        
+        $attributes = $attrTable->getAttributeListAndValues($arrayParameters['attributeId'], $arrayParameters['status'], $arrayParameters['searchable'], $arrayParameters['langId']);
+        foreach ($attributes As $val)
+        {
+            $val->attr_values = $this->getAttributeValuesByAttributeId($val->attr_id, $arrayParameters['langId']);
+            array_push($results, $val);
+        }
+        
+        // Service implementation end
+        
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_attribute_list_and_values_end', $arrayParameters);
+         
+        return $arrayParameters['results'];
+    }
+    
+    /**
      * This method saves the attribute and its translations values
      * 
      * @param array $attribute attribute reflecting the melis_ecom_attribute table

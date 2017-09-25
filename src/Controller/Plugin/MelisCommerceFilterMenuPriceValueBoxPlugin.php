@@ -11,6 +11,7 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
+use Zend\View\Model\ViewModel;
 /**
  * This plugin implements the business logic of the
  * "category price filter" plugin.
@@ -20,7 +21,6 @@ use MelisFront\Navigation\MelisFrontNavigation;
  * 
  * front() and back() are the only functions to create / update.
  * front() generates the website view
- * back() generates the plugin view in template edition mode (TODO)
  * 
  * Configuration can be found in $pluginConfig / $pluginFrontConfig / $pluginBackConfig
  * Configuration is automatically merged with the parameters provided when calling the plugin.
@@ -47,8 +47,12 @@ use MelisFront\Navigation\MelisFrontNavigation;
  */
 class MelisCommerceFilterMenuPriceValueBoxPlugin extends MelisTemplatingPlugin
 {
-    // the key of the configuration in the app.plugins.php
-    public $configPluginKey = 'meliscommerce';
+    public function __construct($updatesPluginConfig = array())
+    {
+        $this->configPluginKey = 'meliscommerce';
+        $this->pluginXmlDbKey = 'MelisCommerceFilterMenuPriceValueBoxPlugin';
+        parent::__construct($updatesPluginConfig);
+    }
     
     /**
      * This function gets the datas and create an array of variables
@@ -56,30 +60,26 @@ class MelisCommerceFilterMenuPriceValueBoxPlugin extends MelisTemplatingPlugin
      */
     public function front()
     {
-       $productSearchSvc = $this->getServiceLocator()->get('MelisComProductSearchService');
-       $categorySvc = $this->getServiceLocator()->get('MelisComCategoryService');
+        // Retrieving the default Values for Product prices
+        $productSearchSvc = $this->getServiceLocator()->get('MelisComProductSearchService');
+        $priceMin = $productSearchSvc->getPriceByColumn('ASC');
+        $priceMax = $productSearchSvc->getPriceByColumn('DESC');
        
-       $priceType = $this->pluginFrontConfig['price_type'];
-       $type = $this->pluginFrontConfig['type'];       
-       $categoryId = !empty($this->pluginFrontConfig['m_box_filter_categories_ids_selected']) ? $this->pluginFrontConfig['m_box_filter_categories_ids_selected'] : array();
+        $defaultMin =  ($priceMin)? $priceMin->price_net: 0;
+        $defaultMax =  ($priceMax)? $priceMax->price_net: 1000;
        
-       foreach($categoryId as $catId){
-           $categoryId = array_merge($categoryId, $this->categoryIdIterator($categorySvc->getAllSubCategoryIdById($catId)));
-       }
+        $data = $this->getFormData();
+        
+        $min = !empty($data['m_box_filter_price_min'])? $data['m_box_filter_price_min'] : $defaultMin;
+        $max = !empty($data['m_box_filter_price_max'])? $data['m_box_filter_price_max'] : $defaultMax;
        
-       $priceMin = $productSearchSvc->getPriceByColumn('ASC', $priceType, $categoryId);
-       $priceMax = $productSearchSvc->getPriceByColumn('DESC', $priceType, $categoryId);
-       $defaultMin =  ($priceMin)? $priceMin->$priceType: 0;
-       $defaultMax =  ($priceMax)? $priceMax->$priceType: 1000;
-       $min = !empty($this->pluginFrontConfig['m_box_filter_price_min'])? $this->pluginFrontConfig['m_box_filter_price_min'] : $defaultMin;
-       $max = !empty($this->pluginFrontConfig['m_box_filter_price_max'])? $this->pluginFrontConfig['m_box_filter_price_max'] : $defaultMax;
-        // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
-        $priceConfig = array(
+        $priceConfig = array(   
             'm_box_filter_price_min' =>  (int)$min,
             'm_box_filter_price_max' => (int)$max,
             'defaultMin' => (int)$defaultMin,
             'defaultMax' => (int)$defaultMax,
         );
+        
         // Create an array with the variables that will be available in the view
         $viewVariables = array(
             'filterMenuPriceValue' => $priceConfig
@@ -90,19 +90,159 @@ class MelisCommerceFilterMenuPriceValueBoxPlugin extends MelisTemplatingPlugin
     }
     
     /**
-     * Recurssive function to retrieve category ids
-     * @param [] $categories array of categories
-     * @return $categoryId[]
+     * This function generates the form displayed when editing the parameters of the plugin
      */
-    private function categoryIdIterator($categories)
+    public function createOptionsForms()
     {
-        $categoryId = array();
-        foreach($categories as $category){
-            $categoryId[] = $category['cat_id'];
-            if(is_array($category['cat_children'])){
-                $categoryId = array_merge($categoryId, $this->categoryIdIterator($category['cat_children']));
+        // construct form
+        $factory = new \Zend\Form\Factory();
+        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+        $formConfig = $this->pluginBackConfig['modal_form'];
+    
+        $response = [];
+        $render   = [];
+        if (!empty($formConfig))
+        {
+            $request = $this->getServiceLocator()->get('request');
+            $parameters = $request->getQuery()->toArray();
+            if (!isset($parameters['validate'])){
+                $formData = $this->getFormData();
+            }
+    
+            foreach ($formConfig as $formKey => $config)
+            {
+                $form = $factory->createForm($config);
+    
+                if (!isset($parameters['validate']))
+                {
+                    $form->setData($formData);
+                    $viewModelTab = new ViewModel();
+                    $viewModelTab->setTemplate($config['tab_form_layout']);
+                    $viewModelTab->modalForm = $form;
+                    $viewModelTab->formData   = $formData;
+    
+                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $html = $viewRender->render($viewModelTab);
+                    array_push($render, array(
+                        'name' => $config['tab_title'],
+                        'icon' => $config['tab_icon'],
+                        'html' => $html
+                    ));
+                }
+                else
+                {
+                    // validate the forms and send back an array with errors by tabs
+                    $success = false;
+                    $errors = array();
+    
+                    $post = get_object_vars($request->getPost());
+    
+                    $form->setData($post);
+    
+                    if ($form->isValid())
+                    {
+                        $success = true;
+                    }
+                    else
+                    {
+                        $errors = $form->getMessages();
+    
+                        foreach ($errors as $keyError => $valueError)
+                        {
+                            foreach ($config['elements'] as $keyForm => $valueForm)
+                            {
+                                if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
+                                {
+                                    $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                                }
+                            }
+                        }
+                    }
+    
+                    array_push($response, array(
+                        'name' => $this->pluginBackConfig['modal_form'][$formKey]['tab_title'],
+                        'success' => $success,
+                        'errors' => $errors,
+                        'message' => '',
+                    ));
+                }
             }
         }
-        return $categoryId;
+    
+        if (!isset($parameters['validate']))
+        {
+            return $render;
+        }
+        else
+        {
+            return $response;
+        }
     }
+    
+    /**
+     * Returns the data to populate the form inside the modals when invoked
+     * @return array|bool|null
+     */
+    public function getFormData()
+    {
+        return $this->pluginFrontConfig;
+    }
+    
+    /**
+     * This method will decode the XML in DB to make it in the form of the plugin config file
+     * so it can overide it. Only front key is needed to update.
+     * The part of the XML corresponding to this plugin can be found in $this->pluginXmlDbValue
+     */
+    public function loadDbXmlToPluginConfig()
+    {
+        $configValues = array();
+        
+        $xml = simplexml_load_string($this->pluginXmlDbValue);
+        
+        if ($xml)
+        {
+            if (!empty($xml->m_box_filter_price_min))
+            {
+                $configValues['m_box_filter_price_min'] = (string)$xml->m_box_filter_price_min;
+            }
+            
+            if (!empty($xml->m_box_filter_price_max))
+            {
+                $configValues['m_box_filter_price_max'] = (string)$xml->m_box_filter_price_max;
+            }
+        }
+        
+        return $configValues;
+    }
+    
+    /**
+     * This method saves the XML version of this plugin in DB, for this pageId
+     * Automatically called from savePageSession listenner in PageEdition
+     */
+    public function savePluginConfigToXml($parameters)
+    {
+        $xmlValueFormatted = '';
+        
+        // template_path is mendatory for all plugins
+        
+        if(!empty($parameters['m_box_filter_price_min']))
+        {
+            $xmlValueFormatted .= "\t\t" . '<m_box_filter_price_min><![CDATA[' . $parameters['m_box_filter_price_min'] . ']]></m_box_filter_price_min>';
+        }
+        
+        if(!empty($parameters['m_box_filter_price_max']))
+        {
+            $xmlValueFormatted .= "\t\t" . '<m_box_filter_price_max><![CDATA[' . $parameters['m_box_filter_price_max'] . ']]></m_box_filter_price_max>';
+        }
+        
+        // Something has been saved, let's generate an XML for DB
+        if (!empty($xmlValueFormatted))
+        {
+            $xmlValueFormatted = "\t".'<'.$this->pluginXmlDbKey.' id="'.$parameters['melisPluginId'].'">'.$xmlValueFormatted."\t".'</'.$this->pluginXmlDbKey.'>'."\n";
+        }
+        
+        return $xmlValueFormatted;
+    }
+    
 }

@@ -213,8 +213,9 @@ class Module
             include __DIR__ . '/../config/tools/app.tools.assoc_var.php',
 	    
     	    // categories plugin configs
-    	    include __DIR__ . '/../config/plugins/categories/MelisCommerceCategorySliderListProductsPlugin.php',
-    	    include __DIR__ . '/../config/plugins/categories/MelisCommerceCategoryListProductsPlugin.php',
+    	    include __DIR__ . '/../config/plugins/categories/MelisCommerceCategoryProductListPlugin.php',
+    	    include __DIR__ . '/../config/plugins/categories/MelisCommerceFullCategoryProductListPlugin.php',
+    	    
     	    include __DIR__ . '/../config/plugins/categories/MelisCommerceFilterMenuCategoryListPlugin.php',
     	    include __DIR__ . '/../config/plugins/categories/MelisCommerceFilterMenuProductSearchBoxPlugin.php',
     	    include __DIR__ . '/../config/plugins/categories/MelisCommerceFilterMenuPriceValueBoxPlugin.php',

@@ -15,4 +15,8 @@
 	    'tr_meliscommerce_general_text' => 'General',
 	    'tr_meliscommerce_general_permission_error_label' => 'Permission refusée',
 	    'tr_meliscommerce_general_csv_permission_error' => 'Vous n\'avez pas les droits pour écrire sur le serveur, veuillez vérifier vos droits (%s)',
+	
+	    // Plugins
+	    'tr_PluginSection_meliscommerce' => 'Melis Commerce',
+	    'tr_meliscommerce_plugin_template' => 'Template',
 	);

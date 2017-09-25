@@ -10,6 +10,7 @@
 namespace MelisCommerce\Model\Tables;
 
 use Zend\Db\TableGateway\TableGateway;
+use Zend\Db\Sql\Expression;
 
 class MelisEcomAttributeTable extends MelisEcomGenericTable 
 {
@@ -109,6 +110,33 @@ class MelisEcomAttributeTable extends MelisEcomGenericTable
         $select->where->equalTo('melis_ecom_variant.var_prd_id', $productId);
         $resultData = $this->tableGateway->selectWith($select);
     
+        return $resultData;
+    }
+    
+    public function getAttributeListAndValues($attributeId = null, $status = false, $searchable = false, $langId = null)
+    {
+        $select = $this->tableGateway->getSql()->select();
+        
+        if (!is_null($langId))
+            $join = new Expression('melis_ecom_attribute_trans.atrans_attribute_id = melis_ecom_attribute.'.$this->idField.' AND atrans_lang_id ='.$langId.' AND atrans_name != ""');
+        else
+            $join = new Expression('melis_ecom_attribute_trans.atrans_attribute_id = melis_ecom_attribute.'.$this->idField.' AND atrans_name IS NOT NULL AND atrans_name != ""');
+        
+        $select->join('melis_ecom_attribute_trans', $join, array('*'), $select::JOIN_LEFT);
+        
+        if (!is_null($attributeId))
+            $select->where($this->idField.' = '.$attributeId);
+        
+        if ($status)
+            $select->where('attr_status = 1');
+        
+        if ($searchable)
+            $select->where('attr_searchable = 1');
+        
+        $select->group($this->idField);
+        
+        $resultData = $this->tableGateway->selectWith($select);
+        
         return $resultData;
     }
     
