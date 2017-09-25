@@ -142,6 +142,9 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
                     // removing Input from form will also remove from the validation
                     $profile->getInputFilter()->remove('cper_password');
                     $profile->getInputFilter()->remove('cper_confirm_password');
+                    
+                    // Removing password to avoid password update
+                    unset($personData['cper_password']);
                 }
                 
                 if ($data['cper_email'] == $melisComAuthSrv->getClientPersonSessDataByField('cper_email'))
