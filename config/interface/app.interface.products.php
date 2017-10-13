@@ -12,10 +12,8 @@ return array(
                 'js' => array(
                     '/MelisCommerce/js/tools/product.tool.js',
                     '/MelisCommerce/js/tools/seo.tool.js',
-                    '/MelisCommerce/assets/select2/js/select2.min.js',
                 ),
                 'css' => array(
-                    '/MelisCommerce/assets/select2/css/select2.min.css',
                 ),
             ),
             'datas' => array(
