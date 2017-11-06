@@ -391,8 +391,19 @@ $(function(){
 		var productId   = $(this).closest("tr").data("productid");
 		//var productName = $(this).parents("tr").find(".toolTipHoverEvent").text();
 		var productName = $(this).closest("tr").data("productname");
-		melisCommerce.openProductPage(productId, productName);
-		melisCommerce.setUniqueId(productId);
+        var navTabsGroup = "id_meliscommerce_product_list_container";
+		// Open parent tab
+        melisHelper.tabOpen(translations.tr_meliscommerce_products_Products, 'fa icon-shippment fa-2x', 'id_meliscommerce_product_list_container', 'meliscommerce_product_list_container');
+        var alreadyOpen = $("body #melis-id-nav-bar-tabs li a.tab-element[data-id='"+navTabsGroup+"']");
+        // check if it exists
+        var checkProducts = setInterval(function() {
+            if(alreadyOpen.length){
+                melisCommerce.openProductPage(productId, productName, navTabsGroup);
+                melisCommerce.setUniqueId(productId);
+                clearInterval(checkProducts);
+            }
+        }, 500);
+        // melisCommerce.openProductPage(productId, productName, navTabsGroup);
 	});
 	
 	// Category Tree Double Click Item Action

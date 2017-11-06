@@ -12,9 +12,6 @@ return array(
                 'js' => array(
                     '/MelisCommerce/js/tools/client.tool.js',
                 ),
-                'css' => array(
-                    '/MelisCommerce/css/clients.css',
-                )
             ),
             'datas' => array(
                 'default' => array(

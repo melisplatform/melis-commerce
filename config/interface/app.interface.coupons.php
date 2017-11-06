@@ -12,9 +12,6 @@ return array(
                 'js' => array(
                     '/MelisCommerce/js/tools/coupon.tool.js',
                 ),
-                'css' => array(
-                    '/MelisCommerce/css/coupons.css',
-                ),
             ),
             'datas' => array(),
             'interface' => array(

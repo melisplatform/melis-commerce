@@ -12,9 +12,6 @@ return array(
                 'js' => array(
                     '/MelisCommerce/js/tools/duplication.tool.js',
                 ),
-                'css' => array(
-                    '/MelisCommerce/css/duplication.css',
-                ),
             ),
             'datas' => array(),
             'interface' => array(

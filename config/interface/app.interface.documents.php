@@ -21,7 +21,6 @@ return array(
                 ),
                 'css' => array(
                     '/MelisCommerce/assets/lightbox/css/lightbox.min.css',
-                    '/MelisCommerce/css/document.css',
                 ),
             ),
             'datas' => array(

@@ -1,7 +1,8 @@
 $(function(){
 	$('body').on("click", ".addNewOrder", function(){
-		melisHelper.tabOpen(translations.tr_meliscommerce_order_checkout_title, 'fa fa fa-plus fa-2x', 'id_meliscommerce_order_checkout', 'meliscommerce_order_checkout');
-	});
+		var navTabsGroup = "id_meliscommerce_order_list_page";
+        melisHelper.tabOpen(translations.tr_meliscommerce_order_checkout_title, 'fa fa fa-plus fa-2x', 'id_meliscommerce_order_checkout', 'meliscommerce_order_checkout', '', navTabsGroup);
+    });
 	// Add event listener for opening and closing details
 	// This event will create extra row on DataTable as Product Variant List container
     $('body').on('click', '.orderCheckoutProduListViewVariant', function () {

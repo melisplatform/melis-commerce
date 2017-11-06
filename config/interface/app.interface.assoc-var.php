@@ -10,10 +10,7 @@ return array(
             'ressources' => array(
                 'js' => array(
                     '/MelisCommerce/js/tools/ecomAssocVar.js',
-                ),
-                'css' => array(
-                    '/MelisCommerce/css/variant-assoc.css',
-                ),
+                )
             ),
             'datas' => array(),
             'interface' => array(

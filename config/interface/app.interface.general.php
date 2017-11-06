@@ -37,13 +37,9 @@ return array(
                 ),
                 
                 'css' => array(
-                    '/MelisCommerce/css/dataTables.uikit.min.css',
-                    '/MelisCommerce/css/jquery.qtip.min.css',
-                    '/MelisCommerce/css/bootstrap-datetimepicker.min.css',
                     '/MelisCommerce/assets/jstree/dist/themes/proton/style.min.css',
-                    '/MelisCommerce/css/awesomplete.css',   
-                    '/MelisCommerce/css/ecommerce-common.css',
                     '/MelisCommerce/plugins/css/common/category-jstree.css',
+                    '/MelisCommerce/css/commerce-style.css',
                 ),
             ),
             'datas' => array(
