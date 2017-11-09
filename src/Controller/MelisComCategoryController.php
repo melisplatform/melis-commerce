@@ -704,6 +704,21 @@ class MelisComCategoryController extends AbstractActionController
         return new JsonModel($result);
     }
 
+    public function getAllToolTipColumns()
+    {
+        $columns = array(
+            $this->getTranslation('tr_meliscommerce_product_tooltip_col_id') => array(
+                'class' => 'center thClassColId',
+                //'rowspan' => '2',
+                'style' => 'width:10px;',
+            ),
+            ' ' => array(
+            ),
+        );
+
+        return $columns;
+    }
+
     /**
      * This method get Category Coutnries for the Post Data
      *
@@ -1349,5 +1364,7 @@ class MelisComCategoryController extends AbstractActionController
         $tool =  $this->getServiceLocator()->get('MelisCoreTool');
         return $tool;
     }
+
+
 
 }

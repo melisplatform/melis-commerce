@@ -364,6 +364,26 @@ class MelisComClientListController extends AbstractActionController
             'data' => $tableData,
         ));
     }
+
+    public function sendExportToCsvAction()
+    {
+
+        $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+
+        $csvConfig = $melisCoreConfig->getItem('meliscommerce/datas/default/export/csv');
+        $csvFileName = $csvConfig['clientFileName'];
+        $dir = $csvConfig['dir'];
+
+        $csvData = file_get_contents($dir.$csvFileName);
+
+        // Getting Current Langauge ID
+        $response = new Response();
+        $headers  = $response->getHeaders();
+        $response->setContent($csvData);
+
+        return $response;
+
+    }
     
     public function clientsExportValidateAction()
     {
@@ -509,5 +529,6 @@ class MelisComClientListController extends AbstractActionController
         return $response;
 
     }
+
     
 }

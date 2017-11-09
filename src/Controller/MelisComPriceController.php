@@ -231,7 +231,20 @@ class MelisComPriceController extends AbstractActionController
         $view->prefixId = $prefixId;
         return $view;
     }
-    
+
+    private function trackPriceHistory()
+    {
+        $errors = array();
+        foreach ($form->getMessages() as $keyError => $valueError){
+            foreach ($formConfig['elements'] as $keyForm => $valueForm){
+                if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label'])){
+
+                }
+            }
+        }
+        return $errors;
+    }
+
     /**
      * renders the tab prices country form for prices
      * @return \Zend\View\Model\ViewModel
@@ -486,6 +499,7 @@ class MelisComPriceController extends AbstractActionController
         $tool = $this->getServiceLocator()->get('MelisCoreTool');
         return $tool;
     }
+
 
     
 }

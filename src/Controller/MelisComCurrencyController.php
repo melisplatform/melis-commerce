@@ -405,4 +405,24 @@ class MelisComCurrencyController extends AbstractActionController
     
         return $tool;
     }
+
+    public function getDefaultCurrencyAction()
+    {
+        $this->getEventManager()->trigger('meliscommerce_currency_set_default_start', $this, array());
+        $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+        $textMessage = 'tr_meliscommerce_currency_set_default_failed';
+
+        $id = null;
+        $success = 0;
+
+
+        $response = array(
+            'textTitle' => 'tr_meliscommerce_currency_set_default',
+            'textMessage' => $textMessage,
+            'success' => $success
+        );
+
+
+        return new JsonModel($response);
+    }
 }
