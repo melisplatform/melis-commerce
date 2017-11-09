@@ -829,7 +829,23 @@ class MelisComVariantController extends AbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
+    public function setSeoAction()
+    {
+        $seoResult = array(
+            'success' => array(),
+            'errors' => array(),
+            'datas' => array(
+                'seo_data' => array(),
+            ),
+        );
+        $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getTool()->sanitizeRecursive($postValues);
+        $melisComSeoService = $this->getServiceLocator()->get('MelisComSeoService');
+
+        return new JsonModel($seoResult);
+    }
+
     /**
      * process the form data before saving, checks if form data are valid
      * @return \Zend\View\Model\JsonModel
@@ -1233,5 +1249,7 @@ class MelisComVariantController extends AbstractActionController
         }
         return $errors;
     }
+
+
     
 }

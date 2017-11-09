@@ -665,7 +665,19 @@ class MelisComCouponController extends AbstractActionController
             'data' => $tableData,
         ));
     }
-    
+    private function getCouponVariables($couponId)
+    {
+        $layoutVar = array();
+        $couponSvc = $this->getServiceLocator()->get('MelisComCouponService');
+        if($couponId){
+            $resultData = $couponSvc->getCouponById($couponId);
+            $layoutVar['coupon'] = "";
+        }
+        $this->layout()->setVariables( array_merge( array(
+            'couponId' => 1,
+        ), $layoutVar));
+    }
+
     public function getAssignedCouponClientDataAction()
     {
         $success = 0;

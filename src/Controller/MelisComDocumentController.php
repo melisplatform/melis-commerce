@@ -947,6 +947,23 @@ class MelisComDocumentController extends AbstractActionController
 
     }
 
+
+    public function setDocFileAction()
+    {
+        $success = 0;
+        $files = array();
+
+        if($this->getRequest()->isPost()) {
+            $relation = $this->getRequest()->getPost('relation');
+            $uniqueId = (int) $this->getRequest()->getPost('id');
+        }
+
+        return new JsonModel(array(
+            'success' => $success,
+            'files' => $files
+        ));
+    }
+
     public function renameIfDuplicateName($name)
     {
 //         $docTable = $this->getServiceLocator()->get('MelisEcomDocumentTable');
@@ -1008,6 +1025,8 @@ class MelisComDocumentController extends AbstractActionController
             'docRelationId' => null
         ));
     }
+
+
 
 
 

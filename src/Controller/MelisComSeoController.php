@@ -101,4 +101,17 @@ class MelisComSeoController extends AbstractActionController
         $view->formDefaultValues = $formDefaultValues;
         return $view;
     }
+
+    public function  getAllSeoKeywordsAction()
+    {
+        $view = new ViewModel();
+        $translator = $this->serviceLocator->get('translator');
+        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_seo/meliscommerce_seo_form','meliscommerce_seo_form');
+
+        $view->setVariable('meliscommerce_seo_form', $propertyForm);
+        $view->formDefaultValues = $formDefaultValues;
+        return $view;
+
+    }
 }
