@@ -606,6 +606,12 @@ window.initClientOrderList = function(data, tblSettings){
 
 }
 
+//table client custom title on icon
+window.initClientListTitle = function(){
+    $('#'+clientId+'_tableClientOrderList .icon-shippment').parent('th').attr('title', translations.tr_meliscommerce_clients_list_col_products);
+    $('#'+clientId+'_tableClientOrderList .fa-usd').parent('th').attr('title', translations.tr_meliscommerce_clients_list_col_price_title);
+}
+
 window.initClientContactAddressForm = function(){
     var tabId = $("#saveClientContactAddress").data("tabid");
     $("#melisCommerceClientContactAddressFormModal").find("#cadd_civility").val($("#"+tabId+"_contact_form").find("#cper_civility").val());

@@ -101,7 +101,7 @@ return array(
                         'target' => '',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComOrderList/getOrderListData',
                         'dataFunction' => 'initClientOrderList',
-                        'ajaxCallback' => '',
+                        'ajaxCallback' => 'initClientListTitle()',
                         'filters' => array(
                             'left' => array(
                                 'meliscommerce-clients-tbl-limit' => array(

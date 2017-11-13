@@ -28,6 +28,8 @@
 	    'tr_meliscommerce_clients_common_label_new' => 'New',
 	    'tr_meliscommerce_clients_common_label_loading' => 'Loading',
 	    'tr_meliscommerce_clients_common_label_client' => 'Client',
+        'tr_meliscommerce_clients_list_col_products' => 'Products',
+        'tr_meliscommerce_clients_list_col_price_title' => 'Amount',
 	    
 	    //Client list widgets
 	    'tr_meliscommerce_client_list_widgets_num_client' => 'Total number of clients',
