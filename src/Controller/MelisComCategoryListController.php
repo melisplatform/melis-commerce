@@ -194,7 +194,8 @@ class MelisComCategoryListController extends AbstractActionController
         
         $melisEcomProductCategoryTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');
         $categorySvc = $this->getServiceLocator()->get('MelisComCategoryService');
-        foreach ($categoryList As $key => $val){
+        foreach ($categoryList As $key => $val)
+        {
             
             $numProducts = ($idAndNameOnly) ? '' : ' <span title="'.$translator->translate('tr_meliscommerce_categories_list_tree_view_product_num').'">(%s)</span>';
             $numProducts = sprintf($numProducts, $melisEcomProductCategoryTable->getTotalData('pcat_cat_id', $val['cat_id']));
@@ -204,30 +205,47 @@ class MelisComCategoryListController extends AbstractActionController
             $categoryList[$key]['id'] = $val['cat_id'].'_categoryId';
             
             $checked = false;
-            if (!empty($categoryChecked)){
-                if (in_array($val['cat_id'], $categoryChecked)){
+            if (!empty($categoryChecked))
+            {
+                if (in_array($val['cat_id'], $categoryChecked))
+                {
                     $checked = true;
                 }
             }
             
             // Setting the Status of Category
-            if ($val['cat_status']){
+            if ($val['cat_status'])
+            {
                 $categoryList[$key]['icon'] = 'fa fa-circle text-success';
-            }else{
+            }
+            else
+            {
                 $categoryList[$key]['icon'] = 'fa fa-circle text-danger';
             }
             unset($categoryList[$key]['cat_status']);
             
             // retrieves SEO page id
             $catSeo = $categorySvc->getCategorySeoById($val['cat_id'], $langId);
-            $cseoPageId = !empty($catSeo->eseo_page_id)? $catSeo->eseo_page_id : '';
+            $cseoPageId = '';
+            foreach ($catSeo As $sVal)
+            {
+                if ($sVal->eseo_lang_id == $langId)
+                {
+                    $cseoPageId = $sVal->eseo_page_id;
+                    break;
+                }
+            }
+            
             $itemIcon = '';
             $categoryList[$key]['type'] = 'category';
-            if ($val['cat_father_cat_id'] == -1){
+            if ($val['cat_father_cat_id'] == -1)
+            {
                 $itemIcon = '<i class="fa fa-book"></i>';
                 $categoryList[$key]['type'] = 'catalog';
                 $categoryList[$key]['text'] = $val['cat_id'].' - '.$categoryList[$key]['text'];
-            }else{
+            }
+            else
+            {
                 $categoryList[$key]['text'] = $val['cat_id'].' - '.$categoryList[$key]['text'];
             }
             
@@ -242,16 +260,21 @@ class MelisComCategoryListController extends AbstractActionController
             unset($categoryList[$key]['cat_father_cat_id']);
             
             $selectedState = false;
-            if (!is_null($selected)){
-                if ($selected==$val['cat_id']){
+            if (!is_null($selected))
+            {
+                if ($selected==$val['cat_id'])
+                {
                     $selectedState = true;
                 }
             }
             
             $openState = false;
-            if (!empty($openedStateParent)){
-                if (is_array($openedStateParent)){
-                    if(in_array($val['cat_id'], $openedStateParent)){
+            if (!empty($openedStateParent))
+            {
+                if (is_array($openedStateParent))
+                {
+                    if(in_array($val['cat_id'], $openedStateParent))
+                    {
                         $openState = true;
                     }
                 }
@@ -264,17 +287,22 @@ class MelisComCategoryListController extends AbstractActionController
                 'checked' =>  $checked,
             );
             
-            if (!empty($val['children'])){
+            if (!empty($val['children']))
+            {
                 $categoryList[$key]['children'] = $this->prepareCategoryDataForTreeView($categoryList[$key]['children'], $selected, $openedStateParent, $idAndNameOnly, $categoryChecked, $langId);
                 
                 /**
                  * Checking if the node children has a Open, Checked, Selected state
                  * the parent will set Open state
                  */
-                if (!empty($categoryList[$key]['children'])){
-                    foreach ($categoryList[$key]['children'] As $cKey => $cVal){
-                        if (!empty($cVal['state'])){
-                            if ($cVal['state']['opened'] || $cVal['state']['selected'] ||$cVal['state']['checked']){
+                if (!empty($categoryList[$key]['children']))
+                {
+                    foreach ($categoryList[$key]['children'] As $cKey => $cVal)
+                    {
+                        if (!empty($cVal['state']))
+                        {
+                            if ($cVal['state']['opened'] || $cVal['state']['selected'] ||$cVal['state']['checked'])
+                            {
                                 $categoryList[$key]['state']['opened'] = true;
                             }
                         }

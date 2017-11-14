@@ -154,7 +154,6 @@ class MelisComProductListController extends AbstractActionController
     public function getProductsListAction()
     {
         $success = 0;
-        $prodTable = $this->getServiceLocator()->get('MelisEcomProductTable');
         $prodSvc = $this->getServiceLocator()->get('MelisComProductService');
         $categorySvc = $this->getServiceLocator()->get('MelisComCategoryService');
         $docSvc = $this->getServiceLocator()->get('MelisComDocumentService');
@@ -185,8 +184,8 @@ class MelisComProductListController extends AbstractActionController
         
             $search = $this->getRequest()->getPost('search');
             $search = $search['value'];
-
-            $prodData = $prodSvc->getProductList(null, null, null, null, $start, $length, $search, $order[0]['dir'], $selColOrder);
+            
+            $prodData = $prodSvc->getProductList(null, null, null, null, $start, $length, $selColOrder, $order[0]['dir'], $search);
             $checkBox = '<div class="checkbox checkbox-single margin-none" data-product-id="%s">
 							<label class="checkbox-custom">
 								<i class="fa fa-fw fa-square-o"></i>
@@ -201,7 +200,7 @@ class MelisComProductListController extends AbstractActionController
             // PRODUCT DETAILS
             $ctr = 0;
             $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
-            $dataCount = $prodTable->getTotalData();
+            $dataCount = $prodSvc->getProductList(null, null, null, null, null, null, $selColOrder, $order[0]['dir'], $search);
             foreach($prodData as $prod) 
             {
                 $prodText = $prodSvc->getProductName($prod->getProduct()->prd_id, $this->getTool()->getCurrentLocaleID());
@@ -246,8 +245,8 @@ class MelisComProductListController extends AbstractActionController
         
         return new JsonModel(array(
             'draw' => (int) $draw,
-            'recordsTotal' => $dataCount,
-            'recordsFiltered' => $dataCount, //$prodSvc->getTotalFiltered(),
+            'recordsTotal' => count($prodData),
+            'recordsFiltered' => count($dataCount),
             'data' => $tableData,
         ));
     }

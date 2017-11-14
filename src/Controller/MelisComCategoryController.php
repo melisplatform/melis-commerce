@@ -65,16 +65,16 @@ class MelisComCategoryController extends AbstractActionController
             $category = $categoryData->getTranslations();
             
             $catname = '';
-            if (!empty($category[$langId]))
+            foreach ($category As $val)
             {
-                $catname = $category[$langId]->catt_name;
-            }
-            
-            if (empty($catname))
-            {
-                // Getting available Name concatinated with the Language Name
-                foreach ($category As $val)
+                if ($val->elang_id == $langId)
                 {
+                    $catname = $val->catt_name;
+                    break;
+                }
+                else 
+                {
+                    // Getting available Name concatinated with the Language Name
                     $catname = $val->catt_name.' ('.$val->elang_name.')';
                     break;
                 }

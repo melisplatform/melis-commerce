@@ -82,7 +82,6 @@ return array(
     'tr_meliscommerce_products_page_attributes_remove_fail' => 'Unable to remove attribute',
     'tr_meliscommerce_products_page_attributes_note' => '***Note: If dropdown does not work, try typing anything and press <strong>"&larr;</strong> backspace" on your keyboard.',
     'tr_meliscommerce_products_page_tinymce_load_notif' => 'Please wait while product texts components are still initializing...',
-
     
     'tr_meliscommerce_products_no_attributes' => 'No attribute',
     'tr_meliscommerce_products_no_categories' => 'No category',
@@ -95,4 +94,10 @@ return array(
     'tr_meliscommerce_products_plugins_no_stock' => "Product is not available",
     'tr_meliscommerce_products_plugins_cart_error' => "Something is wrong, please contact administrator for assistance",
     'tr_meliscommerce_products_plugins_quantity_error' => 'Quantity must be numeric',
+    
+    'tr_meliscommerce_products_plugins_prd_id' => 'Product Id',
+    'tr_meliscommerce_products_plugins_prd_reference' => 'Product reference',
+    'tr_meliscommerce_products_plugins_ptxt_field_short' => 'Product text',
+    'tr_meliscommerce_products_plugins_pcat_order' => 'Product order',
+    'tr_meliscommerce_products_plugins_prd_date_creation' => 'Product creation date',
 );

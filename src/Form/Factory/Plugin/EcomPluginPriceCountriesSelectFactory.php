@@ -2,10 +2,10 @@
 
 /**
  * Melis Technology (http://www.melistechnology.com)
-*
-* @copyright Copyright (c) 2016 Melis Technology (http://www.melistechnology.com)
-*
-*/
+ *
+ * @copyright Copyright (c) 2016 Melis Technology (http://www.melistechnology.com)
+ *
+ */
 
 namespace MelisCommerce\Form\Factory\Plugin;
 
@@ -13,18 +13,21 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 use MelisCommerce\Form\Factory\EcomSelectFactory;
 
 /**
- * MelisCommerce Plugin Countries select factory
+ * MelisCommerce Plugin Price Countries select factory
  */
-class EcomPluginCountriesSelectFactory extends EcomSelectFactory
+class EcomPluginPriceCountriesSelectFactory extends EcomSelectFactory
 {
     protected function loadValueOptions(ServiceLocatorInterface $formElementManager)
     {
         $serviceManager = $formElementManager->getServiceLocator();
-
+        
+        $translator = $serviceManager->get('translator');
+        
         $melisEcomCountryTable = $serviceManager->get('MelisEcomCountryTable');
         $ecomCountries = $melisEcomCountryTable->getCountries();
-
+        
         $valueoptions = array();
+        array_push($valueoptions, $translator->translate('tr_meliscommerce_general_text'));
         
         $max = $ecomCountries->count();
         for ($i = 0; $i < $max; $i++)
@@ -34,8 +37,7 @@ class EcomPluginCountriesSelectFactory extends EcomSelectFactory
             $ecomCountries->next();
         }
         
-        
         return $valueoptions;
     }
-
+    
 }

@@ -67,16 +67,17 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
         $data = $this->getFormData();
         
         $categoryIds    =   !empty($data['m_category_ids'])                 ? $data['m_category_ids'] : array();
-        $countryId      =   !empty($data['m_country_id'])                   ? $data['m_country_id'] : null;
-        $includeSubCats =   !empty($data['m_include_sub_category_products'])? $data['m_include_sub_category_products'] : false;
+        $includeSubCats =   $data['m_include_sub_category_products']        ? true : false;
         
         $onlyValid = true;
         
         $catOrderColumn = !empty($data['m_cat_col_name'])   ? $data['m_cat_col_name'] : 'catt_name';
         $catOrder       = !empty($data['m_cat_order'])      ? $data['m_cat_order'] : 'ASC';
         
+        $countryId      =   !empty($data['m_country_id'])                   ? $data['m_country_id'] : null;
         $prdOrderColumn = !empty($data['m_prd_col_name'])   ? $data['m_prd_col_name'] : 'pcat_order';
         $prdOrder       = !empty($data['m_prd_order'])      ? $data['m_prd_order'] : 'ASC';
+        $prdLimit       = !empty($data['m_prd_limit'])      ? $data['m_prd_limit'] : null;
         
         $catSrv = $this->getServiceLocator()->get('MelisComCategoryService');
         $prdSrv = $this->getServiceLocator()->get('MelisComProductService');
@@ -102,9 +103,7 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
                     $categoryIds = $this->getCategorySubCategoriesIds($categoryTreeIds, $categoryIds);
                 }
                 
-                $products = $prdSrv->getProductList($langId, $categoryIds, $countryId, $onlyValid, null, null, null, $prdOrder, $prdOrderColumn);
-                
-                $val->products = $products;
+                $val->products = $prdSrv->getProductList($langId, $categoryIds, $countryId, $onlyValid, null, $prdLimit, $prdOrderColumn, $prdOrder);
             }
         }
         
@@ -134,42 +133,6 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
         return $categoryIds;
     }
     
-    private function prepareProductsDetails($categoryProducts, $countryId, $langId)
-    {
-        $docSrv = $this->getServiceLocator()->get('MelisComDocumentService');
-        $prdSrv = $this->getServiceLocator()->get('MelisComProductService');
-        
-        $catPrds = array();
-        foreach ($categoryProducts As $val)
-        {
-            $catProducts = array();
-            foreach ($val->cat_products As $prd){
-                /**
-                 * Retieving basic details of a single product 
-                 * from Product service 
-                 */
-                $product = $prdSrv->getProductBasicDetails($prd->prd_id, $countryId, $langId);
-                array_push($catProducts, $product);
-            }
-            
-            /**
-             * Category image documents
-             */
-            $catDocsImages = $docSrv->getFinalImageFilePath('category', $val->cat_id);
-    
-            array_push($catPrds, array(
-                'cat_id' => $val->cat_id,
-                'cat_name' => $val->catt_name,
-                'cat_desc' => $val->catt_description,
-                'cat_status' => $val->cat_status,
-                'cat_docs_image' => $catDocsImages,
-                'cat_products' => $catProducts,
-            ));
-        }
-    
-        return $catPrds;
-    }
-    
     /**
      * This function generates the form displayed when editing the parameters of the plugin
      */
@@ -193,6 +156,8 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
                 
                 if (!isset($parameters['validate']))
                 {
+                    print_r($this->getFormData());
+                    
                     $form->setData($this->getFormData());
                     $viewModelTab = new ViewModel();
                     $viewModelTab->setTemplate($config['tab_form_layout']);
@@ -250,23 +215,11 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
                         
                         if ($form->isValid()) 
                         {
-                            
                             $success = true;
                         } 
                         else 
                         {
                             $errors = $form->getMessages();
-                            
-                            foreach ($errors as $keyError => $valueError) 
-                            {
-                                foreach ($config['elements'] as $keyForm => $valueForm) 
-                                {
-                                    if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
-                                    {
-                                        $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
-                                    }
-                                }
-                            }
                         }
                     }
                     elseif ($formKey == 'melis_commerce_plugin_category_product_list_tree_config')
@@ -283,11 +236,7 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
                         
                         $form->setData($post);
                         
-                        if ($form->isValid())
-                        {
-                            $success = true;
-                        }
-                        else
+                        if (!$form->isValid())
                         {
                             if (empty($errors))
                             {
@@ -297,22 +246,25 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
                             {
                                 $errors = ArrayUtils::merge($errors, $form->getMessages());
                             }
-                            
-                            foreach ($errors as $keyError => $valueError)
-                            {
-                                foreach ($config['elements'] as $keyForm => $valueForm)
-                                {
-                                    if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
-                                    {
-                                        $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
-                                    }
-                                }
-                            }
                         }
                         
                         if (empty($errors)) 
                         {
                             $success = true;
+                        }
+                    }
+                    
+                    if (!empty($errors))
+                    {
+                        foreach ($errors as $keyError => $valueError)
+                        {
+                            foreach ($config['elements'] as $keyForm => $valueForm)
+                            {
+                                if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
+                                {
+                                    $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                                }
+                            }
                         }
                     }
                     
@@ -339,12 +291,13 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
     
     /**
      * Returns the data to populate the form inside the modals when invoked
-     * @return array|bool|null
+     * @return array
      */
     public function getFormData()
     {
         $data = parent::getFormData();
-        $data['m_category_ids'] = $this->pluginFrontConfig['m_category_ids'];
+        $data['m_category_ids'] = $this->pluginFrontConfig['m_category_option']['m_category_ids'];
+        
         return $data;
     }
     
@@ -366,46 +319,51 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
                 $configValues['template_path'] = (string)$xml->template_path;
             }
             
-            if (!empty($xml->m_country_id))
-            {
-                $configValues['m_country_id'] = (string)$xml->m_country_id;
-            }
-            
-            if (!empty($xml->m_include_sub_category_products))
-            {
-                $configValues['m_include_sub_category_products'] = (string)$xml->m_include_sub_category_products;
-            }
-            
             if (!empty($xml->m_category_ids))
             {
-                $configValues['m_category_ids'] = json_decode((string)$xml->m_category_ids);
+                $configValues['m_category_option']['m_category_ids'] = json_decode((string)$xml->m_category_ids);
             }
             
             if (!empty($xml->m_cat_col_name))
             {
-                $configValues['m_category_sorter']['m_cat_col_name'] = (string)$xml->m_cat_col_name;
+                $configValues['m_category_option']['m_cat_col_name'] = (string)$xml->m_cat_col_name;
             }
             
             if (!empty($xml->m_cat_order))
             {
-                $configValues['m_category_sorter']['m_cat_order'] = (string)$xml->m_cat_order;
+                $configValues['m_category_option']['m_cat_order'] = (string)$xml->m_cat_order;
+            }
+            
+            if (!empty($xml->m_include_sub_category_products))
+            {
+                $configValues['m_category_option']['m_include_sub_category_products'] = (string)$xml->m_include_sub_category_products;
+            }
+            
+            if (!empty($xml->m_country_id))
+            {
+                $configValues['m_product_option']['m_country_id'] = (string)$xml->m_country_id;
             }
             
             if (!empty($xml->m_prd_col_name))
             {
-                $configValues['m_product_sorter']['m_prd_col_name'] = (string)$xml->m_prd_col_name;
+                $configValues['m_product_option']['m_prd_col_name'] = (string)$xml->m_prd_col_name;
             }
             
             if (!empty($xml->m_prd_order))
             {
-                $configValues['m_product_sorter']['m_prd_order'] = (string)$xml->m_prd_order;
+                $configValues['m_product_option']['m_prd_order'] = (string)$xml->m_prd_order;
+            }
+            
+            if (!empty($xml->m_prd_limit))
+            {
+                $configValues['m_product_option']['m_prd_limit'] = (string)$xml->m_prd_limit;
             }
         }
        
         return $configValues;
     }
     
-    public function loadPostDataPluginConfig()
+    /* public function loadPostDataPluginConfig()
     {
         $request = $this->getServiceLocator()->get('request');
         $parameters = $request->getPost()->toArray();
@@ -413,18 +371,20 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
         
         if (!empty($parameters['m_cat_col_name']) && !empty($parameters['m_cat_order']))
         {
-            $parameters['m_category_sorter'] = array(
+            $parameters['m_category_option'] = array(
+                'm_include_sub_category_products' => $parameters['m_include_sub_category_products'],
                 'm_cat_col_name' => $parameters['m_cat_col_name'],
                 'm_cat_order' => $parameters['m_cat_order'],
             );
             
+            unset($parameters['m_include_sub_category_products']);
             unset($parameters['m_cat_col_name']);
             unset($parameters['m_cat_order']);
         }
         
         if (!empty($parameters['m_prd_col_name']) && !empty($parameters['m_prd_order']))
         {
-            $parameters['m_product_sorter'] = array(
+            $parameters['m_product_option'] = array(
                 'm_prd_col_name' => $parameters['m_prd_col_name'],
                 'm_prd_order' => $parameters['m_prd_order'],
             );
@@ -434,7 +394,7 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
         }
         
         return $parameters;
-    }
+    } */
     
     /**
      * This method saves the XML version of this plugin in DB, for this pageId
@@ -450,15 +410,8 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
             $xmlValueFormatted .= "\t\t" . '<template_path><![CDATA[' . $parameters['template_path'] . ']]></template_path>';
         }
         
-        if(!empty($parameters['m_country_id']))
-        {
-            $xmlValueFormatted .= "\t\t" . '<m_country_id><![CDATA[' . $parameters['m_country_id'] . ']]></m_country_id>';
-        }
-        
-        if(!empty($parameters['m_include_sub_category_products']))
-        {
-            $xmlValueFormatted .= "\t\t" . '<m_include_sub_category_products><![CDATA[' . $parameters['m_include_sub_category_products'] . ']]></m_include_sub_category_products>';
-        }
+        $data = (!empty($parameters['m_include_sub_category_products'])) ? 1 : 0;
+        $xmlValueFormatted .= "\t\t" . '<m_include_sub_category_products><![CDATA[' . $parameters['m_include_sub_category_products'] . ']]></m_include_sub_category_products>';
         
         if(!empty($parameters['m_category_ids']))
         {
@@ -475,6 +428,11 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
             $xmlValueFormatted .= "\t\t" . '<m_cat_order><![CDATA[' . $parameters['m_cat_order'] . ']]></m_cat_order>';
         }
         
+        if(is_numeric($parameters['m_country_id']))
+        {
+            $xmlValueFormatted .= "\t\t" . '<m_country_id><![CDATA[' . $parameters['m_country_id'] . ']]></m_country_id>';
+        }
+        
         if(!empty($parameters['m_prd_col_name']))
         {
             $xmlValueFormatted .= "\t\t" . '<m_prd_col_name><![CDATA[' . $parameters['m_prd_col_name'] . ']]></m_prd_col_name>';
@@ -483,6 +441,11 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
         if(!empty($parameters['m_prd_order']))
         {
             $xmlValueFormatted .= "\t\t" . '<m_prd_order><![CDATA[' . $parameters['m_prd_order'] . ']]></m_prd_order>';
+        }
+        
+        if(!empty($parameters['m_prd_limit']))
+        {
+            $xmlValueFormatted .= "\t\t" . '<m_prd_limit><![CDATA[' . $parameters['m_prd_limit'] . ']]></m_prd_limit>';
         }
         
         // Something has been saved, let's generate an XML for DB

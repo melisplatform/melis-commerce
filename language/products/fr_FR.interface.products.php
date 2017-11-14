@@ -77,6 +77,7 @@ return array(
     'tr_meliscommerce_products_text_close' => 'Close',
 
     // Product Attribute
+    'tr_meliscommerce_products_main_tab_attributes_container' => 'Attributs',
     'tr_meliscommerce_products_page_attributes_refresh_list' => 'Actualiser',
     'tr_meliscommerce_products_page_attributes_remove_success' => 'Attribut supprimé avec succès',
     'tr_meliscommerce_products_page_attributes_remove_fail' => 'Impossible de supprimer l\'attribut',
@@ -94,4 +95,10 @@ return array(
     'tr_meliscommerce_products_plugins_no_stock' => "Le produit est indisponible",
     'tr_meliscommerce_products_plugins_cart_error' => "Une erreur est survenue, veuillez contacter l'administrateur",
 	'tr_meliscommerce_products_plugins_quantity_error' => 'La quantité doit être un nombre',
+    
+    'tr_meliscommerce_products_plugins_prd_id' => 'ID du produit',
+    'tr_meliscommerce_products_plugins_prd_reference' => 'Référence du produit',
+    'tr_meliscommerce_products_plugins_ptxt_field_short' => 'Texte du produit',
+    'tr_meliscommerce_products_plugins_pcat_order' => 'Commande du produit',
+    'tr_meliscommerce_products_plugins_prd_date_creation' => 'Date de création du produit',
 );

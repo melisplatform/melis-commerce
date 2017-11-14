@@ -39,7 +39,7 @@ return array(
                         ),
                         'modal_form' => array(
                             'melis_commerce_plugin_category_product_search_box_config' => array(
-                                'tab_title' => 'tr_meliscommerce_plugin_common_configuration',
+                                'tab_title' => 'tr_meliscommerce_general_common_configuration',
                                 'tab_icon'  => 'fa fa-cogs',
                                 'tab_form_layout' => 'MelisCommerce/category-product-search-box-config',
                                 'elements' => array(

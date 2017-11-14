@@ -11,6 +11,12 @@
         'tr_meliscommerce_general_common_close' => 'Fermer',
         'tr_meliscommerce_general_common_cancel' => 'Annuler',
 	    'tr_meliscommerce_general_common_loading' => 'Loading...',
+	    'tr_meliscommerce_general_common_ascending' => 'Ascendant',
+	    'tr_meliscommerce_general_common_descending' => 'Descendant',
+	    'tr_meliscommerce_general_common_column_order' => 'Ordre de colonne',
+	    'tr_meliscommerce_general_common_order' => 'Ordre',
+	    'tr_meliscommerce_general_common_limit' => 'Limite',
+	    'tr_meliscommerce_general_common_configuration' => 'Configuration',
 	    
 	    'tr_meliscommerce_general_text' => 'General',
 	    'tr_meliscommerce_general_permission_error_label' => 'Permission refusée',
@@ -19,4 +25,8 @@
 	    // Plugins
 	    'tr_PluginSection_meliscommerce' => 'Melis Commerce',
 	    'tr_meliscommerce_plugin_template' => 'Template',
+	    
+	    // Plugins validations messages
+	    'tr_meliscommerce_plugin_no_column_order' => 'Veuillez choisir un nom d\'ordre de colonne',
+        'tr_meliscommerce_plugin_no_order' => 'Veuillez choisir un ordre',
 	);

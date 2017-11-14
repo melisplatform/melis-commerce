@@ -168,15 +168,17 @@ class MelisComAssociateVariantController extends AbstractActionController
             // Getting Current Langauge ID
             $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
             $langId = $melisTool->getCurrentLocaleID();
-    
+            
+            $columns = array_keys($this->getTool2()->getColumns());
+            
             $productTable = $this->getServiceLocator()->get('MelisEcomProductTable');
     
             $prodSvc = $this->getServiceLocator()->get('MelisComProductService');
             $docSvc = $this->getServiceLocator()->get('MelisComDocumentService');
     
-            $sortOrder = $this->getRequest()->getPost('order');
-            $sortOrder = $sortOrder[0]['dir'];
-    
+            $order = $this->getRequest()->getPost('order');
+            $selColOrder = $columns[$order[0]['column']];
+            
             $sortOrder = $this->getRequest()->getPost('order');
             $sortOrder = $sortOrder[0]['dir'];
     
@@ -188,22 +190,22 @@ class MelisComAssociateVariantController extends AbstractActionController
             $search = $this->getRequest()->getPost('search');
             $search = $search['value'];
     
-            $productList = $productTable->getProductList(null, null, true,  $start, $length, $sortOrder, $search);
-    
-            $productFilter = $productTable->getProductList(null, null, true,  null, null, $sortOrder, $search)->toArray();
+            $productList = $prodSvc->getProductList(null, null, null, null, $start, $length, $selColOrder, $sortOrder, $search);
+            $dataCount = $prodSvc->getProductList(null, null, null, null, null, null, $selColOrder, $sortOrder, $search);
     
             $activeDom     = '<span class="text-success"><i class="fa fa-fw fa-circle"></i></span>';
             $inactiveDom   = '<span class="text-danger"><i class="fa fa-fw fa-circle"></i></span>';
             $prodImage = '<img src="%s" width="60" height="60" class="img-rounded img-responsive"/>';
     
             foreach($productList as $val) {
-                $productId = $val->prd_id;
+                $productId = $val->getId();
                 
+                $product = $val->getProduct();
                 $rowData = array(
                     'DT_RowId' => $productId,
                     'DT_RowClass' => 'showPrdVariants',
                     'prd_id' => $productId,
-                    'var_status' => $val->prd_status ? $activeDom : $inactiveDom,
+                    'var_status' => $product->prd_status ? $activeDom : $inactiveDom,
                     'prd_name' => $prodSvc->getProductName($productId, $langId),
                 );
                 array_push($tableData, $rowData);
@@ -213,7 +215,7 @@ class MelisComAssociateVariantController extends AbstractActionController
         return new JsonModel(array(
             'draw' => (int) $draw,
             'recordsTotal' => count($productList),
-            'recordsFiltered' =>  count($productFilter),
+            'recordsFiltered' =>  count($dataCount),
             'data' => $tableData,
         ));
     }

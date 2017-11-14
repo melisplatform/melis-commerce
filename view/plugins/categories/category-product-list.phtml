@@ -1,9 +1,12 @@
-<div >
+<div>
     <!-- Nav tabs -->
   	<ul class="nav nav-tabs" role="tablist">
   		<?php foreach ($this->categoryProducts As $key => $val){?>
   			<?php 
-  			    $catName = $val->getTranslations()->catt_name;
+  			    foreach ($val->getTranslations() As $tVal)
+  			    {
+  			        $catName = $tVal->catt_name;
+  			    }
   			?>
   			<li role="presentation" class="<?php echo (!$key) ? 'active' : ''?>"><a href="#<?php echo $val->getId().'-cat-prd-lst-plugin'?>" aria-controls="<?php echo $val->getId().'-cat-prd-lst-plugin'?>" role="tab" data-toggle="tab"><?php echo $catName ?></a></li>
   		<?php }?>
@@ -13,53 +16,57 @@
   		<?php foreach ($this->categoryProducts As $key => $val){?>
   			<div role="tabpanel" class="tab-pane <?php echo (!$key) ? 'active' : ''?>" id="<?php echo $val->getId().'-cat-prd-lst-plugin'?>">
 				<div class="row">
-					<?php foreach ($val->products As $prd){?>
-						<?php 
-						    $product = $prd;
-						    
-						    // Getting Product Default Image
-						    $productImg = '';
-						    foreach ($product->getDocuments() As $dKey => $dVal)
-						    {
-						        if ($dVal->dtype_sub_code == 'DEFAULT')
-						        {
-						            $productImg = $dVal->doc_path;
-						        }
-						    }
-						    
-						    // Gettking Product Name
-						    $productName = '';
-						    foreach ($product->getTexts() As $tKey => $tVal)
-						    {
-						        if ($tVal->ptt_code == 'TITLE')
-						        {
-						            $productName = $tVal->ptxt_field_short;
-						        }
-						    }
-    					?>
-                      	<div class="col-xs-4 col-sm-3 col-md-2">
-                        	<div class="thumbnail">
-                              	<img src="<?php echo $productImg ?>">
-                              	<div class="caption">
-                                    <h4>
-                                    	<?php 
-                                    	    // Getting Product Price
-                                    	    $prdPriceStr = 'N/A';
-                                    	    
-                                    	    echo '<pre>';
-                                    	    print_r($product->getPrice());
-                                    	    echo '</pre>';
-                                    	    foreach ($product->getPrice() As $pKey => $pVal)
-                                    	    {
-                                    	        $prdPriceStr = number_format($pVal->price_net);
-                                    	    }
-                                    	?>
-                                    	<a href="<?php echo $this->MelisCommerceLink('product', $product->getId(), $this->langId, true)?>"><?php echo $productName .' ('.$prdPriceStr.')' ?></a>
-                                	</h4>
-                                    <p class="label label-primary"><?php echo $productName ?></p>
-                              	</div>
-                        	</div>
-                      	</div>
+					<?php if ($val->products){?>
+    					<?php foreach ($val->products As $prd){?>
+    						<?php 
+    						    $product = $prd;
+    						    
+    						    // Getting Product Default Image
+    						    $productImg = '';
+    						    foreach ($product->getDocuments() As $dKey => $dVal)
+    						    {
+    						        if ($dVal->dtype_sub_code == 'DEFAULT')
+    						        {
+    						            $productImg = $dVal->doc_path;
+    						        }
+    						    }
+    						    
+    						    // Gettking Product Name
+    						    $productName = '';
+    						    foreach ($product->getTexts() As $tKey => $tVal)
+    						    {
+    						        if ($tVal->ptt_code == 'TITLE')
+    						        {
+    						            $productName = $tVal->ptxt_field_short;
+    						        }
+    						    }
+        					?>
+                          	<div class="col-xs-4 col-sm-3 col-md-2">
+                            	<div class="thumbnail">
+                                  	<img src="<?php echo $productImg ?>">
+                                  	<div class="caption">
+                                        <h4>
+                                        	<?php 
+                                        	    // Getting Product Price
+                                        	    $prdPriceStr = null;
+                                        	    foreach ($product->getPrice() As $pKey => $pVal)
+                                        	    {
+                                        	        $prdPriceStr = ' ('.number_format($pVal->price_net).')';
+                                        	    }
+                                        	?>
+                                        	<a href="<?php echo $this->MelisCommerceLink('product', $product->getId(), $this->langId, true)?>"><?php echo $productName .$prdPriceStr ?></a>
+                                    	</h4>
+                                    	<?php foreach ($product->getCategories() As $cKey => $cVal){?>
+                                        	<p class="label label-primary"><?php echo $cVal->catt_name ?></p>
+                                        <?php }?>
+                                  	</div>
+                            	</div>
+                          	</div>
+    					<?php }?>
+					<?php }else{?>
+						<div class="alert alert-warning">
+							No result
+						</div>
 					<?php }?>
 				</div>
   			</div>

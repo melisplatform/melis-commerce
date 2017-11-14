@@ -334,6 +334,7 @@ return array(
             'EcomPluginBillingAddressSelect'        => 'MelisCommerce\Form\Factory\Plugin\EcomPluginBillingAddressSelectFactory',
             'EcomPluginCategoryListSelect'          => 'MelisCommerce\Form\Factory\Plugin\EcomPluginCategoryListSelectFactory',
             'EcomPluginAttributeSelectFactory'      => 'MelisCommerce\Form\Factory\Plugin\EcomPluginAttributeSelectFactory',
+            'EcomPluginPriceCountriesSelect'        => 'MelisCommerce\Form\Factory\Plugin\EcomPluginPriceCountriesSelectFactory',
         )
     ),
     'view_helpers' => array(

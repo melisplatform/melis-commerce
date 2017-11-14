@@ -68,7 +68,7 @@ class Module
             
             $module = explode('/', $routeName);
             
-            $this->createTranslations($e, $module);
+            $this->createTranslations($e, $routeMatch);
              
             if (!empty($module[0]))
             {
@@ -272,13 +272,26 @@ class Module
         );
     }
     
-    public function createTranslations($e, $module)
+    public function createTranslations($e, $routeMatch)
     {
         $sm = $e->getApplication()->getServiceManager();
         $translator = $sm->get('translator');
         
         // Checking if the Request is from Melis-BackOffice or Front
-        if ($module[0] == 'melis-backoffice')
+//         if ($module[0] == 'melis-backoffice')
+//         {
+//             $container = new Container('meliscore');
+//             $locale = $container['melis-lang-locale'];
+//         }
+//         else
+//         {
+//             $container = new Container('melisplugins');
+//             $locale = $container['melis-plugins-lang-locale'];
+//         }
+        
+        $param = $routeMatch->getParams();
+        // Checking if the Request is from Melis-BackOffice or Front
+        if ($param['renderMode'] = 'melis')
         {
             $container = new Container('meliscore');
             $locale = $container['melis-lang-locale'];

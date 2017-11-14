@@ -457,7 +457,7 @@ class MelisComCategoryService extends MelisComGeneralService
                     
                     foreach ($melisCategoryCountry As $val)
                     {
-                        $results[$val->ctry_id] = $val;
+                        array_push($results, $val);
                     }
                 }
                 else
@@ -466,7 +466,7 @@ class MelisComCategoryService extends MelisComGeneralService
                     $melisCategoryCountry = $melisEcomCountryTable->getCategoryCountriesByCategoryId($arrayParameters['categoryId'], $arrayParameters['onlyValid']);
                     foreach ($melisCategoryCountry As $val)
                     {
-                        $results[$val->ctry_id] = $val;
+                        array_push($results, $val);
                     }
                 }
             }
@@ -489,11 +489,11 @@ class MelisComCategoryService extends MelisComGeneralService
      * This method gets the affected translations of a category
      * 
      * @param int $categoryId, id of the category
-     * @param int $langId, langauge id of the category match on melis_ecom_category_trans.catt_lang_id
+     * @param int $langId, langauge id of the category match on melis_ecom_category_trans.catt_lang_id else this will return available translation
      * @param boolean $onlyValid, true return only active status else return all
      * @return MelisEcomCategory[]|null MelisEcomCategory object
      */
-    public function getCategoryTranslationById($categoryId , $langId = null, $onlyValid = false)
+    public function getCategoryTranslationById($categoryId, $langId = null, $onlyValid = false)
     {
         // Retrieve cache version if front mode to avoid multiple calls
         $cacheKey = 'category-' . $categoryId . '-getCategoryTranslationById_' . $categoryId . '_' . $langId;
@@ -515,7 +515,7 @@ class MelisComCategoryService extends MelisComGeneralService
         
         foreach ($melisCategoryTranslation As $val)
         {
-            $results[$val->elang_id] = $val;
+            array_push($results, $val);
         }
         
         if (empty($results))
@@ -524,7 +524,7 @@ class MelisComCategoryService extends MelisComGeneralService
             
             if (!empty($catText))
             {
-                $results[$catText->elang_id] = $catText;
+                array_push($results, $catText);
             }
         }
         // Service implementation end
@@ -911,13 +911,8 @@ class MelisComCategoryService extends MelisComGeneralService
         {
             $ecomSeotable = $this->serviceLocator->get('MelisEcomSeoTable');
             $data = $ecomSeotable->getCategorySeoById($arrayParameters['categoryId'], $arrayParameters['langId']);
-            // if language id is null then return all seo corresponding to the category id, else return sepcific seo
-            if(is_null($arrayParameters['langId'])){
-                foreach($data as $seo){
-                    $results[] = $seo;
-                }
-            }else{
-                $results = $data->current();
+            foreach($data as $seo){
+                array_push($results, $seo);
             }
         }
         // Service implementation end
@@ -960,21 +955,18 @@ class MelisComCategoryService extends MelisComGeneralService
             $categoryData = $this->getCategoryById($val['cat_id'], $langId, $onlyValid);
             $category = $categoryData->getTranslations();
             
-//             print_r($category);
-            
             $catName = '';
             $catNameLangName = '';
-            if (!empty($category[$langId]))
+            foreach ($category As $val)
             {
-                $catName = $category[$langId]->catt_name;
-            }
-            
-            
-            if (empty($catName))
-            {
-                // Getting available Name concatinated with the Language Name
-                foreach ($category As $val)
+                if ($val->elang_id == $langId)
                 {
+                    $catName = $val->catt_name;
+                    break;
+                }
+                else
+                {
+                    // Getting available Name concatinated with the Language Name
                     $catName = $val->catt_name;
                     $catNameLangName = $val->elang_name;
                     break;

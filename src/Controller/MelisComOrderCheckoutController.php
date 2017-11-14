@@ -336,16 +336,18 @@ class MelisComOrderCheckoutController extends AbstractActionController
             $container = new Container('meliscommerce');
             if (!empty($container['checkout'][self::SITE_ID]['countryId']))
             {
-                $dataCount = $productTable->getTotalData();
                 // Getting Current Langauge ID
                 $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
                 $langId = $melisTool->getCurrentLocaleID();
                 
+                $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_order_checkout_product_list');
+                $columns =  array_keys($melisTool->getColumns());
+                
                 $prodSvc = $this->getServiceLocator()->get('MelisComProductService');
                 $docSvc = $this->getServiceLocator()->get('MelisComDocumentService');
                 
-                $sortOrder = $this->getRequest()->getPost('order');
-                $sortOrder = $sortOrder[0]['dir'];
+                $order = $this->getRequest()->getPost('order');
+                $selColOrder = $columns[$order[0]['column']];
                 
                 $sortOrder = $this->getRequest()->getPost('order');
                 $sortOrder = $sortOrder[0]['dir'];
@@ -354,19 +356,18 @@ class MelisComOrderCheckoutController extends AbstractActionController
                 
                 $start = (int) $this->getRequest()->getPost('start');
                 $length =  (int) $this->getRequest()->getPost('length');
-
+                
                 $search = $this->getRequest()->getPost('search');
                 $search = $search['value'];
                 
-                $productList = $productTable->getProductList(null, null, true,  $start, $length, $sortOrder, $search);
-
-                $productFilter = $productTable->getProductList(null, null, true,  null, null, $sortOrder, $search)->toArray();
+                $productList = $prodSvc->getProductList(null, null, null, null, $start, $length, $selColOrder, $sortOrder, $search);
+                $dataCount = $prodSvc->getProductList(null, null, null, null, null, null, $selColOrder, $sortOrder, $search);
                 
                 $prodImage = '<img src="%s" width="60" height="60" class="img-rounded img-responsive"/>';
                 
                 foreach($productList as $val) {
-                    $productId = $val->prd_id;
-                
+                    $productId = $val->getId();
+                    
                     $rowData = array(
                         'DT_RowId' => $productId,
                         'prd_id' => $productId,
@@ -380,8 +381,8 @@ class MelisComOrderCheckoutController extends AbstractActionController
         
         return new JsonModel(array(
             'draw' => (int) $draw,
-            'recordsTotal' => $dataCount,
-            'recordsFiltered' => count($productFilter),
+            'recordsTotal' => count($productList),
+            'recordsFiltered' => count($dataCount),
             'data' => $tableData,
         ));
     }

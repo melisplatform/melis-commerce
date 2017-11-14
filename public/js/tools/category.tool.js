@@ -520,10 +520,10 @@ window.initCategoryTreeView = function(){
 
 		})
 		.on('ready.jstree', function (e, data) {
-			console.log(data);
+			/*console.log(data);*/
 		})
 		.on('load_node.jstree', function (e, data) {
-			console.log(data);
+			/*console.log(data);*/
 		})
 		.on('open_node.jstree', function (e, data) {
 			

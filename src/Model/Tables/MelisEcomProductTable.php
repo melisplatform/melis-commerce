@@ -67,24 +67,25 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         
         $resultSet = $this->tableGateway->selectwith($select);
         
-//         echo $this->getRawSql($select);
-        
         return $resultSet;
     }
     
-    public function getProductList($langId = null, $categoryId, 
-                        $onlyValid = null,  $start = null, $limit = null, $order, $search = '')
+    public function getProductList($categoryIds = array(), $countryId = null, $onlyValid = null,  $start = null, $limit = null, $orderColumn = 'prd_id', $order = 'ASC', $search = '')
     {
         $select = $this->tableGateway->getSql()->select();
-        $clause = array();
+        
         $select->quantifier('DISTINCT');
         $select->join('melis_ecom_product_text', 'melis_ecom_product_text.ptxt_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT);
         $select->join('melis_ecom_product_category', 'melis_ecom_product_category.pcat_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT);
         $select->join('melis_ecom_variant', 'melis_ecom_variant.var_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT);
+        $select->join('melis_ecom_price', 'melis_ecom_price.price_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT);
+       
+        if(is_array($categoryIds) && !empty($categoryIds)) {
+            $select->where->and->in('melis_ecom_product_category.pcat_cat_id', $categoryIds);
+        }
         
-        if (!is_null($categoryId))
-        {
-            $select->where('melis_ecom_product_category.pcat_cat_id ='.$categoryId);
+        if(!is_null($countryId)) {
+            $select->where('melis_ecom_price.price_country_id = '.$countryId);
         }
         
         if (!is_null($onlyValid))
@@ -105,13 +106,15 @@ class MelisEcomProductTable extends MelisEcomGenericTable
             $select->offset($start);
         }
         
-        if (!is_null($limit)&&$limit!=-1)
+        if (!is_null($limit) && $limit != -1)
         {
-            $select->limit($limit);
+            $select->limit((int) $limit);
         }
         
-        $select->order('prd_id '.$order);
+        $select->order($orderColumn .' '. $order);
         
+//         echo $this->getRawSql($select);
+
         $resultData = $this->tableGateway->selectWith($select);
         return $resultData;
     }
@@ -640,7 +643,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         if(is_null($productId)){
             $select->order('pcat_order ASC');
         }
-//         echo $this->getRawSql($select); die();
+        
         $resultSet = $this->tableGateway->selectWith($select);
         
         return $resultSet;

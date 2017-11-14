@@ -37,8 +37,8 @@ class MelisComProductService extends MelisComGeneralService
 	 *
 	 * @return MelisProduct[] Product object
 	 */
-	public function getProductList($langId = null, $categoryId = array(), $countryId = null, 
-	                               $onlyValid = null, $start = 0, $limit = null, $search = '', $order = 'ASC', $orderColumn = 'prd_id')
+    public function getProductList($langId = null, $categoryIds = array(), $countryId = null, 
+	       $onlyValid = null, $start = 0, $limit = null,  $orderColumn = 'prd_id', $order = 'ASC', $search = '')
 	{ 
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -48,11 +48,11 @@ class MelisComProductService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_list_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $entProd = new MelisProduct();
+	    /*$entProd = new MelisProduct();
 	    $tmpData = array();
         $prodTable = $this->getServiceLocator()->get('MelisEcomProductTable');
 
-        if($search) {
+         if($search) {
             $productData = $prodTable->getProduct(null, $arrayParameters['categoryId'], $arrayParameters['onlyValid'], 0, null, $arrayParameters['order'], $arrayParameters['orderColumn']);
             if($productData) {
                 foreach($productData as $prod) {
@@ -61,9 +61,7 @@ class MelisComProductService extends MelisComGeneralService
             }
             $search = strtolower($search);
             foreach($tmpData as $pData) {
-                if((strpos(strtolower($this->getProductName($pData->getId(), $langId)), $search) !== false) ||
-                   ((int) $pData->getId() == (int) $search)
-                ) {
+                if((strpos(strtolower($this->getProductName($pData->getId(), $langId)), $search) !== false) || ((int) $pData->getId() == (int) $search)) {
                     $results[] = $pData;
                 }
             }
@@ -76,7 +74,19 @@ class MelisComProductService extends MelisComGeneralService
                     $results[] = $this->getProductById($prod->prd_id, $arrayParameters['langId']);
                 }
             }
+        } */
+        
+        $prodTable = $this->getServiceLocator()->get('MelisEcomProductTable');
+        $products = $prodTable->getProductList($arrayParameters['categoryIds'], $arrayParameters['countryId'], $arrayParameters['onlyValid'], $arrayParameters['start'], 
+                                                 $arrayParameters['limit'], $arrayParameters['orderColumn'], $arrayParameters['order'], $arrayParameters['search']);
+        
+        foreach ($products As $val)
+        {
+            $product = $this->getProductById($val->prd_id, $arrayParameters['langId']);
+            
+            array_push($results, $product);
         }
+        
 	    // Service implementation end
 
         // Adding results to parameters for events treatment if needed
@@ -873,25 +883,9 @@ class MelisComProductService extends MelisComGeneralService
 	    // Service implementation start
         $productPriceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');
         unset($arrayParameters['prices']['price_id']);
+        
         try {
-            // if comma (,) is used for grouping the price digit, then this process forcefuly replace comma to dot so it will 
-            // still be saved in the database
-//             $columns = array('price_net', 'price_gross', 'price_vat_percent', 'price_vat_price', 'price_other_tax_price');
-
-//             for($x = 0; $x <= count($arrayParameters['prices']); $x++) {
-//                 foreach($columns as $column) {
-//                     if(!empty(trim($arrayParameters['prices'][$column]))) {
-//                         // force format to en_US so it will be accepted by MySql Decimal Data Type
-//                         //$arrayParameters['prices'][$column] = $this->formatPrice( (float) $arrayParameters['prices'][$column], 'en_US');
-//                         //$arrayParameters['prices'][$column] = number_format($arrayParameters['prices'][$column], 2, '.', '');
-//                     }
-//                     else {
-//                         $arrayParameters['prices'][$column] = 0;
-//                     }
-
-//                 }
-//             }
-
+            
             $results = (bool) $productPriceTable->save($arrayParameters['prices'], $arrayParameters['priceId']);
             
             if (!empty($arrayParameters['prices']['price_prd_id']))
@@ -899,7 +893,6 @@ class MelisComProductService extends MelisComGeneralService
                 $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
                 $melisEngineCacheSystem->deleteCacheByPrefix('product-' . $arrayParameters['prices']['price_prd_id'], 'commerce_big_services');
             }
-            
             
         }catch(\Exception $e) {
             $results = false;
