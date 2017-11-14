@@ -148,7 +148,15 @@ class MelisComCouponListController extends AbstractActionController
     {
         return new ViewModel();
     }
-    
+    private function getMelisKeyTool()
+    {
+        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_coupon_list');
+
+        return $melisTool;
+
+    }
+
     /**
      * renders the coupon list content table action delete
      * @return \Zend\View\Model\ViewModel
@@ -299,4 +307,6 @@ class MelisComCouponListController extends AbstractActionController
         print_r($result);
         echo '</pre>';die();
     }
+
+
 }

@@ -222,6 +222,63 @@ class MelisComLanguageController extends AbstractActionController
             'data' => $tableData,
         ));
     }
+    public function getAllComLangDataAction()
+    {
+        $langTable = $this->getServiceLocator()->get('MelisEcomLang');
+
+        $colId = array();
+        $dataCount = 0;
+        $draw = 0;
+        $tableData = array();
+
+        if($this->getRequest()->isPost()) {
+
+            $colId = array_keys($this->getTool()->getColumns());
+
+            $sortOrder = $this->getRequest()->getPost('order');
+            $sortOrder = $sortOrder[0]['dir'];
+
+            $selCol = $this->getRequest()->getPost('order');
+            $selCol = $colId[$selCol[0]['column']];
+
+            $draw = $this->getRequest()->getPost('draw');
+
+            $start = $this->getRequest()->getPost('start');
+            $length =  $this->getRequest()->getPost('length');
+
+            $search = $this->getRequest()->getPost('search');
+            $search = $search['value'];
+
+            $dataCount = $langTable->getTotalData();
+
+            $getData = $langTable->getPagedData(array(
+                'where' => array(
+                    'key' => 'elang_id',
+                    'value' => $search,
+                ),
+                'order' => array(
+                    'key' => $selCol,
+                    'dir' => $sortOrder,
+                ),
+                'start' => $start,
+                'limit' => $length,
+                'columns' => $this->getTool()->getSearchableColumns(),
+                'date_filter' => array()
+            ));
+
+
+
+
+        }
+
+
+        return new JsonModel(array(
+            'draw' => (int) $draw,
+            'recordsTotal' => $dataCount,
+            'recordsFiltered' =>  $langTable->getTotalFiltered(),
+            'data' => $tableData,
+        ));
+    }
     
     public function saveAction()
     {
@@ -402,6 +459,7 @@ class MelisComLanguageController extends AbstractActionController
         
 //         return $isAccessible;
 //     }
+
 
     
 }

@@ -370,6 +370,17 @@ class MelisComAssociateVariantController extends AbstractActionController
         ));
     }
 
+
+    public function getVarAttributeId($variantId)
+    {
+        $assocVarTable = $this->getServiceLocator()->get('MelisComVariantService');
+        $data = $assocVarTable->getVariantAttributesValuesById($variantId, $this->getTool2()->getCurrentLocaleID());
+        $text = array();
+        $ctr = 0;
+
+        return $text;
+    }
+
     public function getAssocVariantListAction()
     {
         $variantsTable = $this->getServiceLocator()->get('MelisEcomAssocVariantTable');
@@ -613,6 +624,7 @@ class MelisComAssociateVariantController extends AbstractActionController
         $variantAssocTable = $this->getServiceLocator()->get('MelisEcomAssocVariantTable');
         return $variantAssocTable->getVariantAssociationData($var_one, $var_two)->toArray();
     }
+
 
 
 }

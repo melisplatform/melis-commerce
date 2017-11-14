@@ -1930,7 +1930,46 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $view->melisKey = $melisKey;
         return $view;
     }
-    
+
+    public function removeContactAction()
+    {
+        $translator = $this->getServiceLocator()->get('translator');
+
+        $request = $this->getRequest();
+
+        // Default Values
+        $success = 0;
+        $errors  = array();
+        $textTitle = $translator->translate('tr_meliscommerce_order_checkout_Choose_contact');
+        $textMessage = $translator->translate('tr_meliscore_error_message');
+        $cat_id = 0;
+        $catParents = '';
+
+        if($request->isPost())
+        {
+            $postValues = get_object_vars($request->getPost());
+
+            // Getting the contact details from database
+            $melisEcomClientPersonTable = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
+            $contactData = $melisEcomClientPersonTable->getEntryById($postValues['contactId']);
+            $contact = $contactData->current();
+
+            // Checkout session initialization for contact details
+            $container = new Container('meliscommerce');
+            $container['checkout'][self::SITE_ID]['contactId'] = $contact->cper_id;
+            $container['checkout'][self::SITE_ID]['clientId'] = $contact->cper_client_id;
+
+        }
+
+        $response = array(
+            'success' => $success,
+            'textTitle' => $textTitle,
+            'textMessage' => $textMessage,
+            'errors' => $errors,
+        );
+
+        return new JsonModel($response);
+    }
     /**
      * Render Order Checkout Payment Content
      * 
@@ -2098,4 +2137,5 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $tool = $this->getServiceLocator()->get('MelisCoreTool');
         return $tool;
     }
+
 }

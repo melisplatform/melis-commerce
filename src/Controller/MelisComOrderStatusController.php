@@ -259,7 +259,28 @@ class MelisComOrderStatusController extends AbstractActionController
         $view->modalName = $modalName;
         return $view;
     }
-    
+
+    public function deleteAllOrderStatusAction()
+    {
+        $response = array();
+        $success = 0;
+        $errors  = array();
+        $data = array();
+
+        $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
+
+        $response = array(
+            'success' => $success,
+            'textTitle' => $textTitle,
+            'textMessage' => $textMessage,
+            'errors' => $errors,
+            'chunk' => $data,
+        );
+
+
+        return new JsonModel($response);
+    }
+
     public function getOrderStatusDataAction()
     {
         $success = 0;
@@ -564,4 +585,5 @@ class MelisComOrderStatusController extends AbstractActionController
     
         return $melisTool;
     }
+
 }

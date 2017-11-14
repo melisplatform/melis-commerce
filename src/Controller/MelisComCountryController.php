@@ -246,7 +246,17 @@ class MelisComCountryController extends AbstractActionController
         echo $this->getCountryCurrency(6);
         die;
     }
-    
+
+    private function getAllCurrency($currencyId)
+    {
+        $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+        $data = $currencyTable->getEntryById($currencyId)->current();
+        $currency = '';
+
+
+        return $currency;
+
+    }
     public function saveAction()
     {
         $success = 0;
@@ -412,6 +422,7 @@ class MelisComCountryController extends AbstractActionController
         
 //         return $isAccessible;
 //     }
+
 
     
 }

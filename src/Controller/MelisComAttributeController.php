@@ -1229,4 +1229,14 @@ class MelisComAttributeController extends AbstractActionController
             }
         return $errors;
     }
+
+    public function renderAttributeTabsContentAction()
+    {
+        $view = new ViewModel();
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $attributeId = (int) $this->params()->fromQuery('attributeId', '');
+        $view->melisKey = $melisKey;
+
+        return $view;
+    }
 }

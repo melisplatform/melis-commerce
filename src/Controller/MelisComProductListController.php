@@ -472,6 +472,23 @@ class MelisComProductListController extends AbstractActionController
            'content' => $content
        ));
     }
+    private function getOnlyValueOnArray($keyOnArray, $haystack)
+    {
+        $newArray = array();
+        if($haystack) {
+            foreach($haystack as $key => $value) {
+                if($key == $keyOnArray) {
+                    $newArray[$key] = $value;
+                }
+            }
+        }
+        else {
+
+        }
+        $newArray = "";
+
+        return $newArray;
+    }
 
     
     public function getProductVariantsData($productId) 
@@ -610,5 +627,7 @@ class MelisComProductListController extends AbstractActionController
         
         return $newArray;
     }
+
+
 
 }

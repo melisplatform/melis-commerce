@@ -356,4 +356,16 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
         $tool = $this->getServiceLocator()->get('MelisCoreTool');
         return $tool;
     }
+
+    public function searchVariantDataAction()
+    {
+        $request = $this->getRequest();
+        $data = get_object_vars($this->getRequest()->getPost());
+        $data = $this->getTool()->sanitizeRecursive($data);
+        // Variant validated using Duliplication Service
+        $dupSrv = $this->getServiceLocator()->get('MelisComDuplicationService');
+
+
+        return new JsonModel($result);
+    }
 }

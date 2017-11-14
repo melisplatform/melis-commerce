@@ -508,7 +508,25 @@ class MelisComOrderListController extends AbstractActionController
             'data' => $tableData,
         ));
     }
-    
+
+    public function sendOrdersExportToCsvAction()
+    {
+        $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $csvConfig = $melisCoreConfig->getItem('meliscommerce/datas/default/export/csv');
+        $csvFileName = $csvConfig['orderFileName'];
+        $dir = $csvConfig['dir'];
+
+        $csvData = file_get_contents($dir.$csvFileName);
+
+        $response = new Response();
+        $headers  = $response->getHeaders();
+
+        $response->setContent($csvData);
+
+        return $response;
+
+    }
+
     public function saveOrderStatusAction()
     {
         $response = array();
@@ -734,4 +752,6 @@ class MelisComOrderListController extends AbstractActionController
     
         return $melisTool;
     }
+
+
 }

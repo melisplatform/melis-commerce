@@ -51,7 +51,32 @@ class MelisComAttributeListController extends AbstractActionController
         $view->melisKey = $melisKey;
         return $view;
     }
-    
+    public function searchAttributeAction()
+    {
+        $response = array();
+        $success = false;
+        $errors  = array();
+        $data = array();
+        $attributeId = null;
+
+        $textMessage = 'tr_meliscommerce_attribute_delete_fail';
+        $textTitle = 'tr_meliscommerce_attribute_list_page';
+        $this->getEventManager()->trigger('meliscommerce_attribute_delete_start', $this, array());
+
+        $attributeSvc = $this->getServiceLocator()->get('MelisComAttributeService');
+
+        $response = array(
+            'success' => $success,
+            'textTitle' => $textTitle,
+            'textMessage' => $textMessage,
+            'errors' => $errors,
+            'chunk' => $data,
+        );
+
+
+        return new JsonModel($response);
+    }
+
     /**
      * renders the attribute list page left header container
      * @return \Zend\View\Model\ViewModel
@@ -301,5 +326,6 @@ class MelisComAttributeListController extends AbstractActionController
         return $melisTool;
     
     }
-    
+
+
 }

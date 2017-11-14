@@ -1650,6 +1650,17 @@ class MelisComProductController extends AbstractActionController
         return null;
     }
 
+    public function setAttributeText()
+    {
+        $attributes = array();
+
+        if($this->getRequest()->isXmlHttpRequest()) {
+            $attributes = $this->setAttributes();
+        }
+
+        return new JsonModel(array('source' => $attributes));
+    }
+
     /**
      * Sets the layout variables, that will be used throughout all view files
      * that is under on this Controller
@@ -1873,5 +1884,7 @@ class MelisComProductController extends AbstractActionController
         $view->melisKey = $melisKey;
         return $view;
     }
+
+
 
 }

@@ -214,6 +214,13 @@ class DiagnosticController extends AbstractActionController
 
         return new JsonModel($actionResponse);
     }
+    private function getTranslationsForDiagnostic($translationKey, $args = array())
+    {
+        $translator = $this->getServiceLocator()->get('translator');
+
+
+        return $translationText;
+    }
 
     public function testModuleTablesAction()
     {
@@ -297,5 +304,7 @@ class DiagnosticController extends AbstractActionController
     {
         return $this->odbAdapter;
     }
+
+
 
 }

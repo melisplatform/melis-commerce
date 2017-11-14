@@ -39,7 +39,20 @@ class MelisComCategoryListController extends AbstractActionController
     	$view->melisKey = $melisKey;
     	return $view;
     }
-    
+
+    public function searchCategoryTreeViewAction($categoryData, $fatherId, $newParent){
+        $datas = $categoryData;
+        $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
+        $catData = $melisEcomCategoryTable->getChildrenCategoriesOrderedByOrder($fatherId);
+        $catDatas = $catData->toArray();
+
+        if (empty($catDatas)){
+            // Parent Category doesn't have yet Children
+            $melisEcomCategoryTable->save($datas,$datas['cat_id']);
+        }else{
+        }
+    }
+
     /**
      * Render Category List Header
      * 
@@ -403,4 +416,5 @@ class MelisComCategoryListController extends AbstractActionController
             }
         }
     }
+
 }

@@ -19,6 +19,10 @@
     				<td><label><?= $this->translate('tr_meliscommerce_order_payment_price')?></label></td>
     				<td><?= $payment->cur_symbol.number_format($payment->opay_price_order, 2) ?></td>
     			</tr>
+                <tr>
+                    <td><label><?= $this->translate('tr_meliscommerce_order_payment_shipment')?></label></td>
+                    <td><?= $payment->cur_symbol.number_format($payment->opay_price_shipping, 2) ?></td>
+                </tr>
     			<tr>
     				<td><label><?= $this->translate('tr_meliscommerce_order_payment_price_with_discount')?></label></td>
     				<td><?= $payment->cur_symbol.number_format($payment->opay_price_total, 2) ?></td>
@@ -26,10 +30,6 @@
     			<tr>
     				<td><label><?= $this->translate('tr_meliscommerce_order_payment_paid')?></label></td>
     				<td><?= $payment->cur_symbol.number_format($payment->opay_transac_price_paid_confirm, 2) ?></td>
-    			</tr>
-    			<tr>
-    				<td><label><?= $this->translate('tr_meliscommerce_order_payment_shipment')?></label></td>
-    				<td><?= $payment->cur_symbol.number_format($payment->opay_price_shipping, 2) ?></td>
     			</tr>
     			<tr>
     				<td><label><?= $this->translate('tr_meliscommerce_order_payment_type')?></label></td>
