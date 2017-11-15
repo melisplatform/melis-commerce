@@ -945,9 +945,13 @@ class MelisComCategoryService extends MelisComGeneralService
         $onlyValid= $arrayParameters['onlyValid'];
         
         $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
-        $tool                   = $this->getServiceLocator()->get('MelisCoreTool');
         $categoryData = $melisEcomCategoryTable->getCategoryByFatherId($fatherId);
         $catData = $categoryData->toArray();
+        
+        /**
+         * TEMPORARY, NEED TO CREATE GENERAL HELPER FOR THIS
+         */
+        $escaper = new \Zend\Escaper\Escaper('utf-8');
         
         foreach ($catData As $key => $val)
         {
@@ -973,7 +977,7 @@ class MelisComCategoryService extends MelisComGeneralService
                 }
             }
             
-            $catData[$key]['text'] = $tool->escapeHtml($catName);
+            $catData[$key]['text'] = $escaper->escapeHtml($catName); //$tool->escapeHtml($catName);
             $catData[$key]['textLang'] = (!empty($catNameLangName)) ? '('.$catNameLangName.')' : '';
             
             $fatherId = $catData[$key]['cat_id'];
