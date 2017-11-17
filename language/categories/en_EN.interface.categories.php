@@ -180,7 +180,7 @@
 	    'tr_meliscommerce_plugin_category_product_list_category' => 'Catalogs / Categories',
 	    'tr_meliscommerce_plugin_category_product_list_category_no_category' => 'Please select at least one category',
 	    'tr_meliscommerce_plugin_category_product_list_country' => 'Country',
-	    'tr_meliscommerce_plugin_category_product_list_country tooltip' => 'The price country of the product ',
+	    'tr_meliscommerce_plugin_category_product_list_country tooltip' => 'Select the country to assign the corresponding currency and price of the products',
 	    'tr_meliscommerce_plugin_category_product_list_no_country' => 'Please choose a country',
 	    'tr_meliscommerce_plugin_category_product_list_include_sub_cat_prds' => 'Include Sub Category Products',
 	    'tr_meliscommerce_plugin_category_product_list_only_valid' => 'Only valid',

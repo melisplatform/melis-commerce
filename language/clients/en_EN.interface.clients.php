@@ -227,7 +227,7 @@
 	    // Plugin MelisCommerceLoginPlugin
 	    'tr_meliscommerce_plugin_login_login' => 'Login',
 	    'tr_meliscommerce_plugin_login_redirect_url' => 'Redirect url',
-	    'tr_meliscommerce_plugin_login_redirect_url tooltip' => 'Url redirected after form submitted',
+	    'tr_meliscommerce_plugin_login_redirect_url tooltip' => 'Enter the url of the destination page in which the user will be redirected after a successful authentication. It can be an internal or external url',
 	    'tr_meliscommerce_plugin_login_redirect_url_empty' => 'The input is required and can\'t be empty',
 	    'tr_meliscommerce_plugin_login_email' => 'Email Address',
 	    'tr_meliscommerce_plugin_login_password' => 'Password',

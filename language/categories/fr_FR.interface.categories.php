@@ -179,6 +179,7 @@
 	    'tr_meliscommerce_plugin_category_product_list_category' => 'Catalogues / Catégories',
 	    'tr_meliscommerce_plugin_category_product_list_category_no_category' => 'Veuillez choisir au moins une catégorie',
 	    'tr_meliscommerce_plugin_category_product_list_country' => 'Pays',
+	    'tr_meliscommerce_plugin_category_product_list_country tooltip' => 'Choisissez le pays pour assigner la devise et le prix correspondant des produits',
 	    'tr_meliscommerce_plugin_category_product_list_no_country' => 'Veuillez choisir un pays',
 	    'tr_meliscommerce_plugin_category_product_list_include_sub_cat_prds' => 'Inclure les sous-catégories de produits',
 	    'tr_meliscommerce_plugin_category_product_list_only_valid' => 'Valide uniquement',
@@ -212,5 +213,6 @@
 	    'tr_meliscommerce_plugin_filter_product_attribute_name' => 'Attribute list',
 	    'tr_meliscommerce_plugin_filter_product_attribute_description' => 'Le plugin affiche l\'attribut et ses valeurs',
 	    
-        'tr_meliscommerce_plugin_category_product_list_product' => 'Produits'
+        'tr_meliscommerce_plugin_category_product_list_product' => 'Produits',
+	    
 	);
