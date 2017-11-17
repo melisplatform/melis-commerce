@@ -29,4 +29,7 @@
 	    // Plugins validations messages
 	    'tr_meliscommerce_plugin_no_column_order' => 'Veuillez choisir un nom d\'ordre de colonne',
         'tr_meliscommerce_plugin_no_order' => 'Veuillez choisir un ordre',
+	    
+	    // Common validation messages
+	    'tr_meliscommerce__input_empty' => 'Le champ ne peut être vide',
 	);

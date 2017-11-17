@@ -29,4 +29,12 @@
 	    // Plugins validations messages
 	    'tr_meliscommerce_plugin_no_column_order' => 'Please select an order column name',
 	    'tr_meliscommerce_plugin_no_order' => 'Please select an order',
+	    
+	    // Tooltips
+	    'tr_meliscommerce_general_common_column_order tooltip' => 'Database table column use to sort the result',
+	    'tr_meliscommerce_general_common_order tooltip' => 'To sort the result-set in Ascending or Descending order',
+	    'tr_meliscommerce_general_common_limit tooltip' => 'Limiting the number of result(s)',
+	    
+	    // Common validation messages
+	    'tr_meliscommerce__input_empty' => 'The input is required and can\'t be empty',
 	);

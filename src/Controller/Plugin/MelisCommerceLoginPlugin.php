@@ -13,6 +13,7 @@ use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
 
 use Zend\Mvc\Controller\Plugin\Redirect;
+use Zend\View\Model\ViewModel;
 /**
  * This plugin implements the business logic of the
  * "Login" plugin.
@@ -49,8 +50,13 @@ use Zend\Mvc\Controller\Plugin\Redirect;
  */
 class MelisCommerceLoginPlugin extends MelisTemplatingPlugin
 {
-    // the key of the configuration in the app.plugins.php
-    public $configPluginKey = 'meliscommerce';
+    public function __construct($updatesPluginConfig = array())
+    {
+        // the key of the configuration in the app.plugins.php
+        $this->configPluginKey = 'meliscommerce';
+        $this->pluginXmlDbKey = 'MelisCommerceLoginPlugin';
+        parent::__construct($updatesPluginConfig);
+    }
     
     /**
      * This function gets the datas and create an array of variables
@@ -71,7 +77,7 @@ class MelisCommerceLoginPlugin extends MelisTemplatingPlugin
         $m_password = (!empty($this->pluginFrontConfig['m_password'])) ? $this->pluginFrontConfig['m_password'] : '';
         $m_remeber_me = (!empty($this->pluginFrontConfig['m_remember_me'])) ? $this->pluginFrontConfig['m_remember_me'] : false;
         
-        $is_submit = (!empty($this->pluginFrontConfig['m_is_submit'])) ? $this->pluginFrontConfig['m_is_submit'] : false;
+        $is_submit = (!empty($this->pluginFrontConfig['m_login_is_submit'])) ? $this->pluginFrontConfig['m_login_is_submit'] : false;
         
         // Redirection key after login authentication success
         $redirection_link  = (!empty($this->pluginFrontConfig['m_redirection_link_ok'])) ? $this->pluginFrontConfig['m_redirection_link_ok'] : '';
@@ -101,6 +107,15 @@ class MelisCommerceLoginPlugin extends MelisTemplatingPlugin
                     $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
                     // Preparing the client Basket, which is added to Persistent basket
                     $melisComBasketService->getBasket($clientId, $clientKey);
+                    
+                    /**
+                     * This will redirect to the $redirection_link url 
+                     * if the request is not from ajax request
+                     */
+                    if (!$this->getController()->getRequest()->isXmlHttpRequest())
+                    {
+                        $this->getController()->redirect()->toUrl($redirection_link);
+                    }
                 }
                 
                 $message = $result['message'];
@@ -111,6 +126,11 @@ class MelisCommerceLoginPlugin extends MelisTemplatingPlugin
                 $errors = $loginForm->getMessages();
             }
         }
+        else
+        {
+            $loginForm->get('m_login_is_submit')->setValue(true);
+        }
+        
         
         // Create an array with the variables that will be available in the view
         $viewVariables = array(
@@ -123,5 +143,167 @@ class MelisCommerceLoginPlugin extends MelisTemplatingPlugin
         
         // return the variable array and let the view be created
         return $viewVariables;
+    }
+    
+    /**
+     * This function generates the form displayed when editing the parameters of the plugin
+     */
+    public function createOptionsForms()
+    {
+        // construct form
+        $factory = new \Zend\Form\Factory();
+        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+        $formConfig = $this->pluginBackConfig['modal_form'];
+        
+        $response = [];
+        $render   = [];
+        if (!empty($formConfig))
+        {
+            foreach ($formConfig as $formKey => $config)
+            {
+                $form = $factory->createForm($config);
+                $request = $this->getServiceLocator()->get('request');
+                $parameters = $request->getQuery()->toArray();
+                
+                if (!isset($parameters['validate']))
+                {
+                    $form->setData($this->getFormData());
+                    $viewModelTab = new ViewModel();
+                    $viewModelTab->setTemplate($config['tab_form_layout']);
+                    $viewModelTab->modalForm = $form;
+                    $viewModelTab->formData   = $this->getFormData();
+                    
+                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $html = $viewRender->render($viewModelTab);
+                    array_push($render, array(
+                        'name' => $config['tab_title'],
+                        'icon' => $config['tab_icon'],
+                        'html' => $html
+                    ));
+                }
+                else
+                {
+                    // validate the forms and send back an array with errors by tabs
+                    $success = false;
+                    $errors = array();
+                    
+                    $post = get_object_vars($request->getPost());
+                        
+                    $form->setData($post);
+                    
+                    if (!$form->isValid())
+                    {
+                        if (empty($errors))
+                        {
+                            $errors = $form->getMessages();
+                        }
+                        else
+                        {
+                            $errors = ArrayUtils::merge($errors, $form->getMessages());
+                        }
+                    }
+                    
+                    if (empty($errors))
+                    {
+                        $success = true;
+                    }
+                    
+                    if (!empty($errors))
+                    {
+                        foreach ($errors as $keyError => $valueError)
+                        {
+                            foreach ($config['elements'] as $keyForm => $valueForm)
+                            {
+                                if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
+                                {
+                                    $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                                }
+                            }
+                        }
+                    }
+                    
+                    array_push($response, array(
+                        'name' => $this->pluginBackConfig['modal_form'][$formKey]['tab_title'],
+                        'success' => $success,
+                        'errors' => $errors,
+                        'message' => '',
+                    ));
+                }
+            }
+        }
+        
+        if (!isset($parameters['validate']))
+        {
+            return $render;
+        }
+        else
+        {
+            return $response;
+        }
+    }
+    
+    /**
+     * Returns the data to populate the form inside the modals when invoked
+     * @return array
+     */
+    public function getFormData()
+    {
+        return parent::getFormData();
+    }
+    
+    /**
+     * This method will decode the XML in DB to make it in the form of the plugin config file
+     * so it can overide it. Only front key is needed to update.
+     * The part of the XML corresponding to this plugin can be found in $this->pluginXmlDbValue
+     */
+    public function loadDbXmlToPluginConfig()
+    {
+        $configValues = array();
+        
+        $xml = simplexml_load_string($this->pluginXmlDbValue);
+        
+        if ($xml)
+        {
+            if (!empty($xml->template_path))
+            {
+                $configValues['template_path'] = (string)$xml->template_path;
+            }
+            
+            if (!empty($xml->m_redirection_link_ok))
+            {
+                $configValues['m_redirection_link_ok'] = (string)$xml->m_redirection_link_ok;
+            }
+        }
+        
+        return $configValues;
+    }
+    
+    /**
+     * This method saves the XML version of this plugin in DB, for this pageId
+     * Automatically called from savePageSession listenner in PageEdition
+     */
+    public function savePluginConfigToXml($parameters)
+    {
+        $xmlValueFormatted = '';
+        
+        // template_path is mendatory for all plugins
+        if (!empty($parameters['template_path']))
+        {
+            $xmlValueFormatted .= "\t\t" . '<template_path><![CDATA[' . $parameters['template_path'] . ']]></template_path>';
+        }
+        
+        if (!empty($parameters['m_redirection_link_ok']))
+        {
+            $xmlValueFormatted .= "\t\t" . '<m_redirection_link_ok><![CDATA[' . $parameters['m_redirection_link_ok'] . ']]></m_redirection_link_ok>';
+        }
+        
+        // Something has been saved, let's generate an XML for DB
+        if (!empty($xmlValueFormatted))
+        {
+            $xmlValueFormatted = "\t".'<'.$this->pluginXmlDbKey.' id="'.$parameters['melisPluginId'].'">'.$xmlValueFormatted."\t".'</'.$this->pluginXmlDbKey.'>'."\n";
+        }
+        
+        return $xmlValueFormatted;
     }
 }

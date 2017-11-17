@@ -171,7 +171,8 @@
 	    
 	    
 	    // PLUGINS
-	    'tr_MelisFrontSubcategoryPageCategory_Title' => 'Categories',
+	    'tr_meliscommerce_plugin_sub_categories_title' => 'Categories',
+	    'tr_meliscommerce_plugin_sub_clientss_title' => 'Clients',
 	    
 	    'tr_meliscommerce_plugin_category_product_list_name' => 'Simple product list',
 	    'tr_meliscommerce_plugin_category_product_list_description' => 'The plugin display the Product list by Category',
@@ -179,6 +180,7 @@
 	    'tr_meliscommerce_plugin_category_product_list_category' => 'Catalogs / Categories',
 	    'tr_meliscommerce_plugin_category_product_list_category_no_category' => 'Please select at least one category',
 	    'tr_meliscommerce_plugin_category_product_list_country' => 'Country',
+	    'tr_meliscommerce_plugin_category_product_list_country tooltip' => 'The price country of the product ',
 	    'tr_meliscommerce_plugin_category_product_list_no_country' => 'Please choose a country',
 	    'tr_meliscommerce_plugin_category_product_list_include_sub_cat_prds' => 'Include Sub Category Products',
 	    'tr_meliscommerce_plugin_category_product_list_only_valid' => 'Only valid',
@@ -212,5 +214,9 @@
 	    'tr_meliscommerce_plugin_filter_product_attribute_name' => 'Filter menu Product attributes',
 	    'tr_meliscommerce_plugin_filter_product_attribute_description' => 'The plugin display the attribute and its values',
 	    
-	    'tr_meliscommerce_plugin_category_product_list_product' => 'Products'
+	    'tr_meliscommerce_plugin_category_product_list_product' => 'Products',
+	    
+	    // Login plugin
+	    'tr_meliscommerce_plugin_login_name' => 'Login',
+	    'tr_meliscommerce_plugin_login_description' => 'Commerce user login',
 	);

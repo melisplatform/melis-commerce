@@ -46,7 +46,7 @@ return array(
                     'melis' => array(
                         'subcategory' => array(
                             'id' => 'CATEGORIES',
-                            'title' => 'tr_MelisFrontSubcategoryPageCategory_Title'
+                            'title' => 'tr_meliscommerce_plugin_sub_categories_title'
                         ),
                         'name' => 'tr_meliscommerce_plugin_category_product_list_name',
                         'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceCategoryProductListPlugin.jpg',
@@ -60,7 +60,6 @@ return array(
                             'js' => array(
                             ),
                         ),
-                        'js_initialization' => array(),
                         'modal_form' => array(
                             'melis_commerce_plugin_category_product_list_config' => array(
                                 'tab_title' => 'tr_melis_Plugins_Template',
@@ -73,12 +72,14 @@ return array(
                                             'type' => 'MelisEnginePluginTemplateSelect',
                                             'options' => array(
                                                 'label' => 'tr_melis_Plugins_Template',
+                                                'tooltip' => 'tr_melis_Plugins_Template tooltip',
                                                 'empty_option' => 'tr_melis_Plugins_Choose',
                                                 'disable_inarray_validator' => true,
                                             ),
                                             'attributes' => array(
                                                 'id' => 'id_page_tpl_id',
                                                 'class' => 'form-control',
+                                                'required' => 'required',
                                             ),
                                         ),
                                     ),
@@ -113,6 +114,7 @@ return array(
                                             'type' => 'Select',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_general_common_column_order',
+                                                'tooltip' => 'tr_meliscommerce_general_common_column_order tooltip',
                                                 'empty_option' => 'tr_melis_Plugins_Choose',
                                                 'disable_inarray_validator' => true,
                                                 'value_options' => array(
@@ -125,6 +127,7 @@ return array(
                                             'attributes' => array(
                                                 'id' => 'm_cat_col_name',
                                                 'class' => 'form-control',
+                                                'required' => 'required',
                                             ),
                                         ),
                                     ),
@@ -134,6 +137,7 @@ return array(
                                             'type' => 'Select',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_general_common_order',
+                                                'tooltip' => 'tr_meliscommerce_general_common_order tooltip',
                                                 'empty_option' => 'tr_melis_Plugins_Choose',
                                                 'disable_inarray_validator' => true,
                                                 'value_options' => array(
@@ -144,6 +148,7 @@ return array(
                                             'attributes' => array(
                                                 'id' => 'm_cat_order',
                                                 'class' => 'form-control',
+                                                'required' => 'required',
                                             ),
                                         ),
                                     ),
@@ -221,12 +226,15 @@ return array(
                                             'type' => 'EcomPluginPriceCountriesSelect',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_plugin_category_product_list_country',
+                                                'tooltip' => 'tr_meliscommerce_plugin_category_product_list_country tooltip',
+                                                'tooltip' => 'tr_meliscommerce_plugin_category_product_list_country tooltip',
                                                 'empty_option' => 'tr_melis_Plugins_Choose',
                                                 'disable_inarray_validator' => true,
                                             ),
                                             'attributes' => array(
                                                 'id' => 'm_country_id',
                                                 'class' => 'form-control',
+                                                'required' => 'required',
                                             ),
                                         ),
                                     ),
@@ -236,6 +244,7 @@ return array(
                                             'type' => 'Select',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_general_common_column_order',
+                                                'tooltip' => 'tr_meliscommerce_general_common_column_order tooltip',
                                                 'empty_option' => 'tr_melis_Plugins_Choose',
                                                 'disable_inarray_validator' => true,
                                                 'value_options' => array(
@@ -249,6 +258,7 @@ return array(
                                             'attributes' => array(
                                                 'id' => 'm_prd_col_name',
                                                 'class' => 'form-control',
+                                                'required' => 'required',
                                             ),
                                         ),
                                     ),
@@ -258,6 +268,7 @@ return array(
                                             'type' => 'Select',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_general_common_order',
+                                                'tooltip' => 'tr_meliscommerce_general_common_order tooltip',
                                                 'empty_option' => 'tr_melis_Plugins_Choose',
                                                 'disable_inarray_validator' => true,
                                                 'value_options' => array(
@@ -268,6 +279,7 @@ return array(
                                             'attributes' => array(
                                                 'id' => 'm_prd_order',
                                                 'class' => 'form-control',
+                                                'required' => 'required',
                                             ),
                                         ),
                                     ),
@@ -277,32 +289,13 @@ return array(
                                             'type' => 'MelisText',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_general_common_limit',
+                                                'tooltip' => 'tr_meliscommerce_general_common_limit tooltip',
                                             ),
                                             'attributes' => array(
                                                 'id' => 'm_prd_limit',
                                             ),
                                         ),
                                     ),
-                                    /* array(
-                                        'spec' => array(
-                                            'name' => 'm_prd_include_price',
-                                            'type' => 'checkbox',
-                                            'options' => array(
-                                                'label' => 'Include without price',
-                                                'tooltip' => 'Include without price',
-                                                'checked_value' => 1,
-                                                'unchecked_value' => 0,
-                                                'switchOptions' => array(
-                                                    'label-on' => 'Yes',
-                                                    'label-off' => 'No',
-                                                    'label' => "<i class='glyphicon glyphicon-resize-horizontal'></i>",
-                                                )
-                                            ),
-                                            'attributes' => array(
-                                                'id' => 'm_prd_include_price',
-                                            ),
-                                        ),
-                                    ), */
                                 ),
                                 'input_filter' => array(
                                     'm_country_id' => array(
@@ -353,14 +346,6 @@ return array(
                                         'filters'  => array(
                                         ),
                                     ),
-                                    /* 'm_prd_include_price' => array(
-                                        'name'     => 'm_prd_include_price',
-                                        'required' => false,
-                                        'validators' => array(
-                                        ),
-                                        'filters'  => array(
-                                        ),
-                                    ), */
                                 )
                             ),
                         )

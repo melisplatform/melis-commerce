@@ -223,4 +223,14 @@
 	    'tr_meliscommerce_client_refresh' => 'Refresh',
 	    
 	    'tr_meliscommerce_clients_table_Client_date_created' => 'Created',
+	    
+	    // Plugin MelisCommerceLoginPlugin
+	    'tr_meliscommerce_plugin_login_login' => 'Login',
+	    'tr_meliscommerce_plugin_login_redirect_url' => 'Redirect url',
+	    'tr_meliscommerce_plugin_login_redirect_url tooltip' => 'Url redirected after form submitted',
+	    'tr_meliscommerce_plugin_login_redirect_url_empty' => 'The input is required and can\'t be empty',
+	    'tr_meliscommerce_plugin_login_email' => 'Email Address',
+	    'tr_meliscommerce_plugin_login_password' => 'Password',
+	    'tr_meliscommerce_plugin_login_remember_me' => 'Remember me',
+	    'tr_meliscommerce_plugin_login_invalid_email' => 'Invalid email address',
 	);
