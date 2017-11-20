@@ -7,6 +7,7 @@ return array(
                 'MelisCommerceLoginPlugin' => array(
                     'front' => array(
                         'template_path' => array('MelisCommerce/ClientLogin'),
+                        'id' => 'userLogin',
                         
                         // form fields
                         'm_login' => '',
@@ -191,8 +192,8 @@ return array(
                                             'name' => 'm_redirection_link_ok',
                                             'type' => 'MelisText',
                                             'options' => array(
-                                                'label' => 'tr_meliscommerce_plugin_login_redirect_url',
-                                                'tooltip' => 'tr_meliscommerce_plugin_login_redirect_url tooltip',
+                                                'label' => 'tr_meliscommerce_general_common_destination_page_link',
+                                                'tooltip' => 'tr_meliscommerce_general_common_destination_page_link tooltip',
                                             ),
                                             'attributes' => array(
                                                 'id' => 'm_redirection_link_ok',
@@ -230,7 +231,7 @@ return array(
                                                 'name' => 'NotEmpty',
                                                 'options' => array(
                                                     'messages' => array(
-                                                        \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_plugin_login_redirect_url_empty',
+                                                        \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce__input_empty',
                                                     ),
                                                 ),
                                             ),
