@@ -226,11 +226,13 @@
 	    
 	    // Plugin MelisCommerceLoginPlugin
 	    'tr_meliscommerce_plugin_login_login' => 'Login',
-	    'tr_meliscommerce_plugin_login_redirect_url' => 'Redirect url',
-	    'tr_meliscommerce_plugin_login_redirect_url tooltip' => 'Enter the url of the destination page in which the user will be redirected after a successful authentication. It can be an internal or external url',
-	    'tr_meliscommerce_plugin_login_redirect_url_empty' => 'The input is required and can\'t be empty',
 	    'tr_meliscommerce_plugin_login_email' => 'Email Address',
 	    'tr_meliscommerce_plugin_login_password' => 'Password',
 	    'tr_meliscommerce_plugin_login_remember_me' => 'Remember me',
 	    'tr_meliscommerce_plugin_login_invalid_email' => 'Invalid email address',
+	    
+	    // Plugin MelisCommerceRegistrationPlugin
+	    'tr_meliscommerce_plugin_registration_name' => 'Registration',
+	    'tr_meliscommerce_plugin_registration_name_description' => 'The plugin provide a user registration form',
+	    'tr_meliscommerce_plugin_registration_reg_button' => 'Register',
 	);
