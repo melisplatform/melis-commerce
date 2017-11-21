@@ -17,8 +17,9 @@ return array(
                         'cper_firstname' => '',
                         'cper_name' => '',
                         'm_country' => 1,
-                        'm_autologin' => true,
+                        
                         'm_redirection_link_ok' => 'http://www.test.com',
+                        'm_autologin' => false,
                         
                         // flag true if a form is submitted
                         'm_registration_is_submit' => false,
@@ -423,6 +424,26 @@ return array(
                                             ),
                                         ),
                                     ), 
+                                    array(
+                                        'spec' => array(
+                                            'name' => 'm_autologin',
+                                            'type' => 'Checkbox',
+                                            'options' => array(
+                                                'label' => 'tr_meliscommerce_general_common_autologin',
+                                                'tooltip' => 'tr_meliscommerce_general_common_autologin tooltip',
+                                                'checked_value' => 1,
+                                                'unchecked_value' => 0,
+                                                'switchOptions' => array(
+                                                    'label-on' => 'tr_meliscommerce_categories_common_label_yes',
+                                                    'label-off' => 'tr_meliscommerce_categories_common_label_no',
+                                                    'label' => "<i class='glyphicon glyphicon-resize-horizontal'></i>",
+                                                )
+                                            ),
+                                            'attributes' => array(
+                                                'id' => 'm_autologin',
+                                            ),
+                                        ),
+                                    ),
                                 ),
                                 'input_filter' => array(
                                     'template_path' => array(
@@ -453,6 +474,14 @@ return array(
                                                     ),
                                                 ),
                                             ),
+                                        ),
+                                        'filters'  => array(
+                                        ),
+                                    ),
+                                    'm_autologin' => array(
+                                        'name'     => 'm_autologin',
+                                        'required' => false,
+                                        'validators' => array(
                                         ),
                                         'filters'  => array(
                                         ),

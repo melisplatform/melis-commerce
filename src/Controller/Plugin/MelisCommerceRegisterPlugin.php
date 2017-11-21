@@ -319,6 +319,11 @@ class MelisCommerceRegisterPlugin extends MelisTemplatingPlugin
             {
                 $configValues['m_redirection_link_ok'] = (string)$xml->m_redirection_link_ok;
             }
+            
+            if (!empty($xml->m_autologin))
+            {
+                $configValues['m_autologin'] = (string)$xml->m_autologin;
+            }
         }
         
         return $configValues;
@@ -341,6 +346,11 @@ class MelisCommerceRegisterPlugin extends MelisTemplatingPlugin
         if (!empty($parameters['m_redirection_link_ok']))
         {
             $xmlValueFormatted .= "\t\t" . '<m_redirection_link_ok><![CDATA[' . $parameters['m_redirection_link_ok'] . ']]></m_redirection_link_ok>';
+        }
+        
+        if (!empty($parameters['m_autologin']))
+        {
+            $xmlValueFormatted .= "\t\t" . '<m_autologin><![CDATA[' . $parameters['m_autologin'] . ']]></m_autologin>';
         }
         
         // Something has been saved, let's generate an XML for DB
