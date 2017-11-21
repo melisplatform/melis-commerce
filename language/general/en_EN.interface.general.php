@@ -18,10 +18,13 @@
 	    'tr_meliscommerce_general_common_limit' => 'Limit',
 	    'tr_meliscommerce_general_common_configuration' => 'Configuration',
 	    'tr_meliscommerce_general_common_destination_page_link' => 'Destination page',
+	    'tr_meliscommerce_general_common_submit' => 'Submit',
 	    
 	    'tr_meliscommerce_general_text' => 'General', 
 	    'tr_meliscommerce_general_permission_error_label' => 'Permission denied',
 	    'tr_meliscommerce_general_csv_permission_error' => 'You don\'t have the rights to write on the server, please check your rights (%s)',
+	    'tr_meliscommerce_general_unable_to_send_email' => 'Unable to send email',
+	    'tr_meliscommerce_general_send_email_success' => 'The email has been sent successfully',
 	    
 	    // Plugins
 	    'tr_PluginSection_meliscommerce' => 'Melis Commerce',

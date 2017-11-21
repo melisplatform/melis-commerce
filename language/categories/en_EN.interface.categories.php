@@ -172,7 +172,6 @@
 	    
 	    // PLUGINS
 	    'tr_meliscommerce_plugin_sub_categories_title' => 'Categories',
-	    'tr_meliscommerce_plugin_sub_clientss_title' => 'Clients',
 	    
 	    'tr_meliscommerce_plugin_category_product_list_name' => 'Simple product list',
 	    'tr_meliscommerce_plugin_category_product_list_description' => 'The plugin display the Product list by Category',
@@ -215,8 +214,4 @@
 	    'tr_meliscommerce_plugin_filter_product_attribute_description' => 'The plugin display the attribute and its values',
 	    
 	    'tr_meliscommerce_plugin_category_product_list_product' => 'Products',
-	    
-	    // Login plugin
-	    'tr_meliscommerce_plugin_login_name' => 'Login',
-	    'tr_meliscommerce_plugin_login_description' => 'Commerce user login',
 	);

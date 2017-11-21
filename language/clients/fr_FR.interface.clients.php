@@ -223,7 +223,8 @@
 	    'tr_meliscommerce_clients_table_Client_date_created' => 'Création',
 	    
 	    // Plugin MelisCommerceLoginPlugin
-	    'tr_meliscommerce_plugin_login_login' => 'Login',
+	    'tr_meliscommerce_plugin_login' => 'Login',
+	    'tr_meliscommerce_plugin_login_description' => 'Le plugin de login affiche le formulaire pour que l\'utilisateur se connecte',
 	    'tr_meliscommerce_plugin_login_email' => 'Adresse email',
 	    'tr_meliscommerce_plugin_login_password' => 'Mot de passe',
 	    'tr_meliscommerce_plugin_login_remember_me' => 'Se rappeler de moi',
@@ -233,5 +234,15 @@
 	    'tr_meliscommerce_plugin_registration_name' => 'Inscription',
 	    'tr_meliscommerce_plugin_registration_name_description' => 'The plugin provide a user registration form : Le plugin fournit un formulaire d\'inscription',
 	    'tr_meliscommerce_plugin_registration_reg_button' => 'S\'inscrire',
-
+	    
+	    //Plugin MelisCommerceLostPasswordGetEmailPlugin
+	    'tr_meliscommerce_plugin_lost_password_get_email_name' => 'Mot de passe oublié',
+	    'tr_meliscommerce_plugin_lost_password_get_email_name_description' => 'Le plugin de mot de passe oublié affiche le formulaire, vérifie l\'adresse email et envoie un lien pour réinitialiser le mot de passe',
+        'tr_meliscommerce_plugin_lost_password_reset_page' => 'Page de réinitialisation du mot de passe[Destination page] ',
+        'tr_meliscommerce_plugin_lost_password_reset_page tooltip' => 'Page sur laquelle sera redirigé l\'utilisateur pour réinitialiser son mot de passe',
+	    'tr_meliscommerce_plugin_lost_password_message' => 'Veuillez saisir votre email, un lien vous sera envoyé pour réinitialiser votre mot de passe',
+	    
+	    // Email deatils
+	    'tr_meliscommerce_plugin_lost_password_email_default_subject' => 'Mot de passe oublié',
+	    'tr_meliscommerce_plugin_lost_password_email_default_content' => 'Veuillez cliquer sur le lien suivant pour réinitialiser votre mot de passe.<br><a href="[lostPasswordLink]?m_recovery_key=[recoveryKey]">Lien</a><br>',
 	);

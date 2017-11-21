@@ -368,7 +368,7 @@ return array(
                     'melis' => array(
                         'subcategory' => array(
                             'id' => 'CLIENTS',
-                            'title' => 'tr_meliscommerce_plugin_sub_clientss_title'
+                            'title' => 'tr_meliscommerce_clients_Clients'
                         ),
                         'name' => 'tr_meliscommerce_plugin_registration_name',
                         'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceRegistrationPlugin.jpg',
