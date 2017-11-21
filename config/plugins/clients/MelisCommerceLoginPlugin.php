@@ -150,9 +150,9 @@ return array(
                     'melis' => array(
                         'subcategory' => array(
                             'id' => 'CLIENTS',
-                            'title' => 'tr_meliscommerce_plugin_sub_clientss_title'
+                            'title' => 'tr_meliscommerce_clients_Clients'
                         ),
-                        'name' => 'tr_meliscommerce_plugin_login_name',
+                        'name' => 'tr_meliscommerce_plugin_login',
                         'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceLoginPlugin.jpg',
                         'description' => 'tr_meliscommerce_plugin_login_description',
                         // List the files to be automatically included for the correct display of the plugin
