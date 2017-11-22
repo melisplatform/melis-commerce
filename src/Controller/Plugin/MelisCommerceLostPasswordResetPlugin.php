@@ -155,8 +155,8 @@ class MelisCommerceLostPasswordResetPlugin extends MelisTemplatingPlugin
         }
         
         /**
-         * As default form will created with the "m_lost_password_reset_is_submit" input having value of "1"
-         * so that after form render this will ready for submission
+         * This input field set value in order to validate 
+         * after submission of the form proivided of this plugin
          */
         $lostPasswordReset->get('m_lost_password_reset_is_submit')->setValue('1');
         
@@ -300,10 +300,15 @@ class MelisCommerceLostPasswordResetPlugin extends MelisTemplatingPlugin
                 $configValues['template_path'] = (string)$xml->template_path;
             }
             
-//             if (!empty($xml->lost_password_reset_page_link))
-//             {
-//                 $configValues['lost_password_reset_page_link'] = (string)$xml->lost_password_reset_page_link;
-//             }
+            if (!empty($xml->m_redirection_link_ok))
+            {
+                $configValues['m_redirection_link_ok'] = (string)$xml->m_redirection_link_ok;
+            }
+            
+            if (!empty($xml->m_autologin))
+            {
+                $configValues['m_autologin'] = (string)$xml->m_autologin;
+            }
         }
         
         return $configValues;
@@ -323,10 +328,15 @@ class MelisCommerceLostPasswordResetPlugin extends MelisTemplatingPlugin
             $xmlValueFormatted .= "\t\t" . '<template_path><![CDATA[' . $parameters['template_path'] . ']]></template_path>';
         }
         
-//         if (!empty($parameters['lost_password_reset_page_link']))
-//         {
-//             $xmlValueFormatted .= "\t\t" . '<lost_password_reset_page_link><![CDATA[' . $parameters['lost_password_reset_page_link'] . ']]></lost_password_reset_page_link>';
-//         }
+        if (!empty($parameters['m_redirection_link_ok']))
+        {
+            $xmlValueFormatted .= "\t\t" . '<m_redirection_link_ok><![CDATA[' . $parameters['m_redirection_link_ok'] . ']]></m_redirection_link_ok>';
+        }
+        
+        if (!empty($parameters['m_autologin']))
+        {
+            $xmlValueFormatted .= "\t\t" . '<m_autologin><![CDATA[' . $parameters['m_autologin'] . ']]></m_autologin>';
+        }
         
         // Something has been saved, let's generate an XML for DB
         if (!empty($xmlValueFormatted))

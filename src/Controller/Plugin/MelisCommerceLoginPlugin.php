@@ -126,10 +126,13 @@ class MelisCommerceLoginPlugin extends MelisTemplatingPlugin
                 $errors = $loginForm->getMessages();
             }
         }
-        else
-        {
-            $loginForm->get('m_login_is_submit')->setValue(true);
-        }
+        
+        /**
+         * This input field set value in order to validate
+         * after submission of the form proivided of this plugin
+         */
+        $loginForm->get('m_login_is_submit')->setValue(true);
+        
         
         
         // Create an array with the variables that will be available in the view

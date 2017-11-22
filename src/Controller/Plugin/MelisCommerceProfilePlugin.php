@@ -51,8 +51,13 @@ use Zend\Stdlib\ArrayUtils;
  */
 class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
 {
-    // the key of the configuration in the app.plugins.php
-    public $configPluginKey = 'meliscommerce';
+    public function __construct($updatesPluginConfig = array())
+    {
+        // the key of the configuration in the app.plugins.php
+        $this->configPluginKey = 'meliscommerce';
+        $this->pluginXmlDbKey = 'MelisCommerceProfilePlugin';
+        parent::__construct($updatesPluginConfig);
+    }
     
     /**
      * This function gets the datas and create an array of variables
@@ -213,6 +218,12 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
                     $errors = ArrayUtils::merge($errors, $profile->getMessages());
                 }
             }
+            
+            /**
+             * This input field set value in order to validate 
+             * after submission of the form proivided of this plugin
+             */
+            $profile->get('profile_is_submit')->setValue(true);
         }
         
         /**
