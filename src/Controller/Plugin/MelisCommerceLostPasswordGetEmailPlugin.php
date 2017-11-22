@@ -157,7 +157,7 @@ class MelisCommerceLostPasswordGetEmailPlugin extends MelisTemplatingPlugin
         }
         
         /**
-         * As default form will created with the "m_is_submit" input having value of "1"
+         * As default form will created with the "m_lost_password_reset_is_submit" input having value of "1"
          * so that after form render this will ready for submission
          */
         $lostPassword->get('m_lost_password_get_email_is_submit')->setValue('1');
@@ -282,7 +282,6 @@ class MelisCommerceLostPasswordGetEmailPlugin extends MelisTemplatingPlugin
     {
         $data = parent::getFormData();
         $data['email'] = $this->pluginFrontConfig['email'];
-        
         return $data;
     }
     
