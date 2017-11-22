@@ -237,7 +237,7 @@
 	    'tr_meliscommerce_plugin_registration_name_description' => 'The plugin provide a user registration form',
 	    'tr_meliscommerce_plugin_registration_reg_button' => 'Register',
 	    
-	    //Plugin MelisCommerceLostPasswordGetEmailPlugin
+	    // Plugin MelisCommerceLostPasswordGetEmailPlugin
 	    'tr_meliscommerce_plugin_lost_password_get_email_name' => 'Lost password',
 	    'tr_meliscommerce_plugin_lost_password_get_email_name_description' => 'The lost password plugin displays the form, verifies the email and send a link by email to reset the password',
 	    'tr_meliscommerce_plugin_lost_password_reset_page' => 'Password reset page',
@@ -247,4 +247,8 @@
 	    // Email deatils
 	    'tr_meliscommerce_plugin_lost_password_email_default_subject' => 'Lost Password',
 	    'tr_meliscommerce_plugin_lost_password_email_default_content' => 'Please click the following link to reset your password.<br><a href="[lostPasswordLink]?m_recovery_key=[recoveryKey]">Link</a><br>',
+	
+	    // MelisCommerceLostPasswordResetPlugin
+	    'tr_meliscommerce_plugin_password_reset_name' => 'Password reset',
+	    'tr_meliscommerce_plugin_password_reset_description' => 'This plugin display the form to reset the current password',
 	);
