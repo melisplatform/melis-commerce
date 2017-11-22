@@ -19,7 +19,7 @@
 	    'tr_meliscommerce_general_common_configuration' => 'Configuration',
 	    'tr_meliscommerce_general_common_destination_page_link' => 'Page de destination',
 	    'tr_meliscommerce_general_common_submit' => 'Envoyer',
-	    'tr_meliscommerce_general_common_autologin' => 'Auto login',
+	    'tr_meliscommerce_general_common_autologin' => 'L\'auto-login',
 	    
 	    'tr_meliscommerce_general_text' => 'General',
 	    'tr_meliscommerce_general_permission_error_label' => 'Permission refusée',
@@ -40,7 +40,7 @@
 	    'tr_meliscommerce_general_common_order tooltip' => 'Ce filtre permet de régler l&#39;ordre par défaut (ex: pour un titre, &#34;Ascendant&#34; trie de A à Z, &#34;Descendant&#34; trie de Z à A)',
 	    'tr_meliscommerce_general_common_limit tooltip' => 'Ce filtre permet de régler le nombre listées',
 	    'tr_meliscommerce_general_common_destination_page_link tooltip' => 'Saisissez l\'url de la page de destination sur laquelle l\'utilisateur sera redirigé. Ce peut être une url interne ou externe',
-	    'tr_meliscommerce_general_common_autologin tooltip' => 'Auto login',
+	    'tr_meliscommerce_general_common_autologin tooltip' => 'Connecte l\'utilisateur directement après la validation du formulaire',
 	    
 	    // Common validation messages
 	    'tr_meliscommerce__input_empty' => 'Le champ ne peut être vide',

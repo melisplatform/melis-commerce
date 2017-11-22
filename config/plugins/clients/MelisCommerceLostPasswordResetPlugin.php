@@ -196,7 +196,7 @@ return array(
                             'melis_commerce_plugin_lost_password_reset_config' => array(
                                 'tab_title' => 'tr_front_plugin_common_tab_properties',
                                 'tab_icon'  => 'fa fa-cogs',
-                                'tab_form_layout' => 'MelisCommerce/common-form-config',
+                                'tab_form_layout' => 'MelisCommerce/plugin-common-form-config',
                                 'elements' => array(
                                     array(
                                         'spec' => array(

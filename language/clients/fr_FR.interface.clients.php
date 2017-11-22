@@ -232,7 +232,7 @@
 	    
 	    // Plugin MelisCommerceRegistrationPlugin
 	    'tr_meliscommerce_plugin_registration_name' => 'Inscription',
-	    'tr_meliscommerce_plugin_registration_name_description' => 'The plugin provide a user registration form : Le plugin fournit un formulaire d\'inscription',
+	    'tr_meliscommerce_plugin_registration_description' => 'The plugin provide a user registration form : Le plugin fournit un formulaire d\'inscription',
 	    'tr_meliscommerce_plugin_registration_reg_button' => 'S\'inscrire',
 	    
 	    // Plugin MelisCommerceLostPasswordGetEmailPlugin
@@ -247,6 +247,10 @@
 	    'tr_meliscommerce_plugin_lost_password_email_default_content' => 'Veuillez cliquer sur le lien suivant pour réinitialiser votre mot de passe.<br><a href="[lostPasswordLink]?m_recovery_key=[recoveryKey]">Lien</a><br>',
 	    
 	    // MelisCommerceLostPasswordResetPlugin
-	    'tr_meliscommerce_plugin_password_reset_name' => 'Password reset',
-	    'tr_meliscommerce_plugin_password_reset_description' => 'This plugin display the form to reset the current password',
+	    'tr_meliscommerce_plugin_password_reset_name' => 'Réinitialisation du mot de passe',
+	    'tr_meliscommerce_plugin_password_reset_description' => 'Ce plugin affiche le formulaire pour réinitialiser le mot de passe',
+	    
+	    // MelisCommerceProfilePlugin
+	    'tr_meliscommerce_plugin_profile_name' => 'Profile',
+	    'tr_meliscommerce_plugin_profile_description' => 'This plugin display the form of the user profile',
 	);
