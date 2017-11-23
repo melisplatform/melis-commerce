@@ -251,7 +251,7 @@
 	    'tr_meliscommerce_plugin_password_reset_description' => 'Ce plugin affiche le formulaire pour réinitialiser le mot de passe',
 	    
 	    // MelisCommerceProfilePlugin
-	    'tr_meliscommerce_plugin_profile_name' => 'Profile',
-	    'tr_meliscommerce_plugin_profile_description' => 'This plugin display the form of the user profile',
-	    'tr_meliscommerce_plugin_profile_save_success' => 'Profile has been successfully saved',
+	    'tr_meliscommerce_plugin_profile_name' => 'Profil',
+	    'tr_meliscommerce_plugin_profile_description' => 'Ce plugin affiche le formulaire du profil d\'utilisateur',
+	    'tr_meliscommerce_plugin_profile_save_success' => 'Le profil a été enregistré avec succès',
 	);
