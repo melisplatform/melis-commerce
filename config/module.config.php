@@ -400,7 +400,7 @@ return array(
             'MelisCommerce/category-product-search-box-config'      => __DIR__ . '/../view/plugins/categories/category-product-search-box-config.phtml',
             
             // Plugin common form config layout
-            'MelisCommerce/common-form-config'                      => __DIR__ . '/../view/plugins/common/plugin-common-form-config.phtml',
+            'MelisCommerce/plugin-common-form-config'                      => __DIR__ . '/../view/plugins/common/plugin-common-form-config.phtml',
         ),
         'template_path_stack' => array(
             __DIR__ . '/../view',

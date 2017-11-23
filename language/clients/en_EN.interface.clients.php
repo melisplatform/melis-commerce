@@ -234,7 +234,7 @@
 	    
 	    // Plugin MelisCommerceRegistrationPlugin
 	    'tr_meliscommerce_plugin_registration_name' => 'Registration',
-	    'tr_meliscommerce_plugin_registration_name_description' => 'The plugin provide a user registration form',
+	    'tr_meliscommerce_plugin_registration_description' => 'The plugin provide a user registration form',
 	    'tr_meliscommerce_plugin_registration_reg_button' => 'Register',
 	    
 	    // Plugin MelisCommerceLostPasswordGetEmailPlugin
@@ -251,4 +251,9 @@
 	    // MelisCommerceLostPasswordResetPlugin
 	    'tr_meliscommerce_plugin_password_reset_name' => 'Password reset',
 	    'tr_meliscommerce_plugin_password_reset_description' => 'This plugin display the form to reset the current password',
+	    
+	    // MelisCommerceProfilePlugin
+	    'tr_meliscommerce_plugin_profile_name' => 'Profile',
+	    'tr_meliscommerce_plugin_profile_description' => 'This plugin display the form of the user profile',
+	    'tr_meliscommerce_plugin_profile_save_success' => 'Profile has been successfully saved',
 	);

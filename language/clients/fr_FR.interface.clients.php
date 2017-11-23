@@ -253,4 +253,5 @@
 	    // MelisCommerceProfilePlugin
 	    'tr_meliscommerce_plugin_profile_name' => 'Profile',
 	    'tr_meliscommerce_plugin_profile_description' => 'This plugin display the form of the user profile',
+	    'tr_meliscommerce_plugin_profile_save_success' => 'Profile has been successfully saved',
 	);
