@@ -46,7 +46,11 @@ use MelisCommerce\Listener\MelisCommercePrdVarDuplicationListener;
 use MelisCommerce\Listener\MelisCommerceVariantCheckLowStockListener;
 use MelisCommerce\Listener\MelisCommerceVariantRestockListener;
 use MelisCommerce\Listener\MelisCommerceSaveProductStockEmailAlertListener;
-
+/**
+ * Class Module
+ * @package MelisCmsNews
+ * @require melis-core
+ */
 class Module
 {
     public function onBootstrap(MvcEvent $e)
