@@ -254,4 +254,14 @@
 	    'tr_meliscommerce_plugin_profile_name' => 'Profil',
 	    'tr_meliscommerce_plugin_profile_description' => 'Ce plugin affiche le formulaire du profil d\'utilisateur',
 	    'tr_meliscommerce_plugin_profile_save_success' => 'Le profil a été enregistré avec succès',
+	    
+	    // MelisCommerceBillingAddressPlugin
+	    'tr_meliscommerce_plugin_billing_address_name' => 'Adresse de facturation',
+	    'tr_meliscommerce_plugin_billing_address_description' => 'Ce plugin affiche le formulaire de l\'adresse de facturation de l\'utilisateur',
+	    'tr_meliscommerce_plugin_billing_address_delete_success' => 'Adresse de facturation supprimée avec succès',
+	    
+	    // MelisCommerceDeliveryAddressPlugin
+	    'tr_meliscommerce_plugin_delivery_address_name' => 'Adresse de livraison',
+	    'tr_meliscommerce_plugin_delivery_address_description' => 'Ce plugin affiche le formulaire de l\'adresse de livraison de l\'utilisateur',
+	    'tr_meliscommerce_plugin_delivery_address_delete_success' => 'Adresse de livraison supprimée avec succès',
 	);

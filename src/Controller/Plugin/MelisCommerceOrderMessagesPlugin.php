@@ -103,7 +103,7 @@ class MelisCommerceOrderMessagesPlugin extends MelisTemplatingPlugin
                     $success = 1;
                     if (empty($messageId)) {
                         $errors['genError'] = array(
-                            'genError' => $translator->translate('tr_meliscommerce_checkout_delivery_save_error')
+                            'genError' => $translator->translate('tr_meliscommerce_general_error')
                         );
                         $success = 0;
                     }

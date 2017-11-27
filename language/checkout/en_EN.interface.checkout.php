@@ -119,9 +119,7 @@
 	    'tr_meliscommerce_checkout_summary_label' => 'Checkout Summary',
 	    
 	    'tr_meliscommerce_checkout_delivery_save_success' => 'Delivery address has been successfully saved',
-	    'tr_meliscommerce_checkout_delivery_save_error' => 'Something is wrong, please contact administrator for assistance',
-	    'tr_meliscommerce_checkout_delivery_errors' => 'Error(s) occured',
-	    'tr_meliscommerce_checkout_billing_save_success' => 'Delivery address has been successfully saved',
+	    'tr_meliscommerce_checkout_billing_save_success' => 'Billing address has been successfully saved',
 
 	    'tr_meliscommerce_checkout_contact_refresh' => 'Refresh',
 	);

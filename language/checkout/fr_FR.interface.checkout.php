@@ -119,8 +119,6 @@
     	'tr_meliscommerce_checkout_summary_label' => 'Résumé',
     	
     	'tr_meliscommerce_checkout_delivery_save_success' => 'L\'adresse de livraison a été sauvegardée avec succès',
-    	'tr_meliscommerce_checkout_delivery_save_error' => 'Une erreur est survenue, veuillez contacter l\'administrateur',
-    	'tr_meliscommerce_checkout_delivery_errors' => 'Une erreur est survenue',
     	'tr_meliscommerce_checkout_billing_save_success' => 'L\'adresse de facturation a été sauvegardée avec succès',
 
     	'tr_meliscommerce_checkout_contact_refresh' => 'Actualiser',

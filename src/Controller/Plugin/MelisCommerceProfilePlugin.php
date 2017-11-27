@@ -157,11 +157,6 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
                 $personData[$column] = $data[$column];
             }
             
-//             if(empty($data['cper_confirm_password']))
-//             {
-//                 $data['cper_password'] = null;
-//             }
-            
             // Adding the Confirm password to Form data so this will include to the form validation
             $data['cper_confirm_password'] = (!empty($formData['cper_confirm_password'])) ? $formData['cper_confirm_password'] : '';
             
@@ -273,8 +268,8 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
         $profile->get('cper_confirm_password')->setLabel($profile->get('cper_confirm_password')->getLabel().' <i class="fa fa-info-circle fa-lg" title="'.$translator->translate('tr_meliscommerce_client_tooltip_password_2').'"></i>');
         
         /**
-         * As default form will created with the "profile_is_submit" input having value of "1"
-         * so that after form render this will ready for submission
+         * This input field set value in order to validate
+         * after submission of the form proivided of this plugin
          */
         $profile->get('profile_is_submit')->setValue('1');
         

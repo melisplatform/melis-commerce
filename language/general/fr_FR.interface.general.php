@@ -20,6 +20,7 @@
 	    'tr_meliscommerce_general_common_destination_page_link' => 'Page de destination',
 	    'tr_meliscommerce_general_common_submit' => 'Envoyer',
 	    'tr_meliscommerce_general_common_autologin' => 'L\'auto-login',
+	    'tr_meliscommerce_general_common_show_select_addresses' => 'Show select addresses',
 	    
 	    'tr_meliscommerce_general_text' => 'General',
 	    'tr_meliscommerce_general_permission_error_label' => 'Permission refusée',
@@ -41,7 +42,11 @@
 	    'tr_meliscommerce_general_common_limit tooltip' => 'Ce filtre permet de régler le nombre listées',
 	    'tr_meliscommerce_general_common_destination_page_link tooltip' => 'Saisissez l\'url de la page de destination sur laquelle l\'utilisateur sera redirigé. Ce peut être une url interne ou externe',
 	    'tr_meliscommerce_general_common_autologin tooltip' => 'Connecte l\'utilisateur directement après la validation du formulaire',
+	    'tr_meliscommerce_general_common_show_select_addresses tooltip' => 'This will show a form select option of addresses',
 	    
 	    // Common validation messages
+	    'tr_meliscommerce_general_error' => 'Une erreur est survenue, veuillez contacter l\'administrateur',
+	    'tr_meliscommerce_general_error_occured' => 'Une erreur est survenue',
 	    'tr_meliscommerce__input_empty' => 'Le champ ne peut être vide',
+	    
 	);

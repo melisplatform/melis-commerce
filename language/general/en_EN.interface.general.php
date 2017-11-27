@@ -20,6 +20,7 @@
 	    'tr_meliscommerce_general_common_destination_page_link' => 'Destination page',
 	    'tr_meliscommerce_general_common_submit' => 'Submit',
 	    'tr_meliscommerce_general_common_autologin' => 'Auto login',
+	    'tr_meliscommerce_general_common_show_select_addresses' => 'Show select addresses',
 	    
 	    'tr_meliscommerce_general_text' => 'General', 
 	    'tr_meliscommerce_general_permission_error_label' => 'Permission denied',
@@ -40,8 +41,12 @@
 	    'tr_meliscommerce_general_common_order tooltip' => 'This filter allows to set the default order (ex: for a title, &#34;Ascending&#34; sort from A to Z, &#34;Descending&#34; sort from Z to A)',
 	    'tr_meliscommerce_general_common_limit tooltip' => 'This filter allows to set the number displayed',
 	    'tr_meliscommerce_general_common_destination_page_link tooltip' => 'Enter the url of the destination page in which the user will be redirected. It can be an internal or external url',
-	    'tr_meliscommerce_general_common_autologin tooltip' => 'Auto login',
+	    'tr_meliscommerce_general_common_autologin tooltip' => 'Connect the user directly after validation of the form',
+	    'tr_meliscommerce_general_common_show_select_addresses tooltip' => 'This will show a form select option of addresses',
 	    
 	    // Common validation messages
+	    'tr_meliscommerce_general_error' => 'Something is wrong, please contact administrator for assistance',
+	    'tr_meliscommerce_general_error_occured' => 'Error(s) occured',
 	    'tr_meliscommerce__input_empty' => 'The input is required and can\'t be empty',
+	    
 	);

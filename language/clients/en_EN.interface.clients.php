@@ -256,4 +256,15 @@
 	    'tr_meliscommerce_plugin_profile_name' => 'Profile',
 	    'tr_meliscommerce_plugin_profile_description' => 'This plugin display the form of the user profile',
 	    'tr_meliscommerce_plugin_profile_save_success' => 'Profile has been successfully saved',
+	    
+	    // MelisCommerceBillingAddressPlugin
+	    'tr_meliscommerce_plugin_billing_address_name' => 'Billing address',
+	    'tr_meliscommerce_plugin_billing_address_description' => 'This plugin display the form of the user billing address',
+	    'tr_meliscommerce_plugin_billing_address_delete_success' => 'Billing address has been deleted successfully',
+	    
+	    // MelisCommerceDeliveryAddressPlugin
+	    'tr_meliscommerce_plugin_delivery_address_name' => 'Delivery address',
+	    'tr_meliscommerce_plugin_delivery_address_description' => 'This plugin display the form of the user delivery address',
+	    'tr_meliscommerce_plugin_delivery_address_delete_success' => 'Delivery address has been deleted successfully',
+	    
 	);
