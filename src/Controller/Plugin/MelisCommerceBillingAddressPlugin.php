@@ -231,6 +231,10 @@ class MelisCommerceBillingAddressPlugin extends MelisTemplatingPlugin
                 $selectBillingAddressForm = $this->pluginFrontConfig['forms']['select_billing_address'];
                 $selectBillingAddress = $factory->createForm($selectBillingAddressForm);
                 
+                if (is_null($billingAddressId))
+                {
+                    $billingAddressId = 'new_address';
+                }
                 // Selecting the default Address
                 $selectBillingAddress->get('select_billing_addresses')->setValue($billingAddressId);
                 
@@ -246,7 +250,7 @@ class MelisCommerceBillingAddressPlugin extends MelisTemplatingPlugin
          * This input field set value in order to validate
          * after submission of the form proivided of this plugin
          */
-        $billingAddress->get('billing_address_save_submit')->setValue('1');
+        $billingAddress->get('billing_address_save_submit')->setValue(1);
         
         // Checking of delete button is to show
         if ($showSelectAddresData && $billingAddressId != 'new_address')

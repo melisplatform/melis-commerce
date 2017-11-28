@@ -169,6 +169,7 @@ class MelisCommerceDeliveryAddressPlugin extends MelisTemplatingPlugin
             elseif (empty($clientAddress))
             {
                 $clientAddress = $formData;
+                $clientAddress['delivery_address_save_submit'] = 1;
             }
             
             if ($deletetAddress)
@@ -231,6 +232,10 @@ class MelisCommerceDeliveryAddressPlugin extends MelisTemplatingPlugin
                 $selectDeliveryAddressForm = $this->pluginFrontConfig['forms']['select_delivery_address'];
                 $selectDeliveryAddress = $factory->createForm($selectDeliveryAddressForm);
                 
+                if (is_null($deliveryAddressId))
+                {
+                    $deliveryAddressId = 'new_address';
+                }
                 // Selecting the default Address
                 $selectDeliveryAddress->get('select_delivery_addresses')->setValue($deliveryAddressId);
                 
@@ -246,7 +251,7 @@ class MelisCommerceDeliveryAddressPlugin extends MelisTemplatingPlugin
          * This input field set value in order to validate
          * after submission of the form proivided of this plugin
          */
-        $deliveryAddress->get('delivery_address_save_submit')->setValue('1');
+        $deliveryAddress->get('delivery_address_save_submit')->setValue(1);
         
         // Checking of delete button is to show
         if ($showSelectAddresData && $deliveryAddressId != 'new_address')
