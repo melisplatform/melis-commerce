@@ -137,23 +137,4 @@ class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
          
         return $address;
     }
-    
-    /**
-     * This method deleting the client person address
-     * $parma $addId, Id of the address
-     * 
-     * @return Boolean
-     */
-    public function deleteAddressAction($addId)
-    {
-        $success = false;
-        
-        $comClientSvc = $this->getServiceLocator()->get('MelisComClientService');
-        $success      = (int) $comClientSvc->deleteClientAddressByAddressId($addId);
-        if($success) {
-            $success = true;
-        }
-        
-        return $success;
-    }
 }
