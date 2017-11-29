@@ -1,4 +1,31 @@
-<?php echo $this->profile ?>
-<?php echo $this->deliveryAddress ?>
-<?php echo $this->billingAddress ?>
-<?php echo $this->myCart ?>
+<div>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Profile</a></li>
+        <li role="presentation"><a href="#deliver-address" aria-controls="deliver-address" role="tab" data-toggle="tab">Delivery Address</a></li>
+        <li role="presentation"><a href="#billing-address" aria-controls="billing-address" role="tab" data-toggle="tab">Billing Address</a></li>
+        <li role="presentation"><a href="#cart" aria-controls="cart" role="tab" data-toggle="tab">Cart</a></li>
+        <li role="presentation"><a href="#order-list" aria-controls="order-list" role="tab" data-toggle="tab">Order List</a></li>
+    </ul>
+    <!-- Tab panes -->
+    <div class="tab-content">
+    	<br>
+    	<br>
+        <div role="tabpanel" class="tab-pane fade in active" id="profile">
+            <?php echo $this->profile ?>
+        </div>
+        <div role="tabpanel" class="tab-pane fade in" id="deliver-address">
+            <?php echo $this->deliveryAddress ?>
+        </div>
+        <div role="tabpanel" class="tab-pane fade in" id="billing-address">
+            <?php echo $this->billingAddress ?>
+        </div>
+        <div role="tabpanel" class="tab-pane fade in" id="cart">
+            <?php echo $this->myCart ?>
+        </div>
+        <div role="tabpanel" class="tab-pane fade in" id="order-list">
+            <?php echo $this->orderHistory ?>
+        </div>
+    </div>
+</div>
+
