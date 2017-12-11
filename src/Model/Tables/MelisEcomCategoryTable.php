@@ -59,7 +59,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
         {
             $select->where('cat_father_cat_id = '.$fatherId);
         }
-        
+
         if (is_bool($onlyValid) && $onlyValid)
         {
             $select->where('cat_status = 1');
@@ -78,7 +78,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
                 $select->limit($limit);
             }
         }
-        
+
         $select->order('cat_order ASC');
         
         $dataCategory = $this->tableGateway->selectWith($select);
@@ -212,9 +212,10 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
     /**
      * Get Category Data By father Id
      * @param int $fatherId
+     * @param boolean $onlyValid
      * @return MelisEcomCategory Object
      */
-    public function getCategoryByFatherId($fatherId = 0){
+    public function getCategoryByFatherId($fatherId = 0, $onlyValid = false){
         $select = $this->tableGateway->getSql()->select();
         
         $select->columns(array('cat_id', 'cat_status', 'cat_father_cat_id'));
@@ -224,7 +225,11 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
         }else{
             $select->where('cat_father_cat_id = '.$fatherId);
         }
-        
+
+        if(is_bool($onlyValid) && $onlyValid){
+            $select->where('cat_status = 1');
+        }
+
         $select->order('cat_order ASC');
         
         $dataCategory = $this->tableGateway->selectWith($select);

@@ -14,9 +14,9 @@ use MelisFront\Navigation\MelisFrontNavigation;
 use Zend\View\Model\ViewModel;
 /**
  * This plugin implements the business logic of the
- * "category price filter" plugin.
+ * "Product search box" plugin.
  * 
- * Please look inside app.plugins.php for possible awaited parameters
+ * Please look inside app.plugins.products.php for possible awaited parameters
  * in front and back function calls.
  * 
  * front() and back() are the only functions to create / update.
@@ -27,30 +27,30 @@ use Zend\View\Model\ViewModel;
  * Merge detects automatically from the route if rendering must be done for front or back.
  * 
  * How to call this plugin without parameters:
- * $plugin = $this->MelisCommerceFilterMenuPriceValueBoxPlugin();
+ * $plugin = $this->MelisCommerceProductSearchPlugin();
  * $pluginView = $plugin->render();
  *
  * How to call this plugin with custom parameters:
- * $plugin = $this->MelisCommerceFilterMenuPriceValueBoxPlugin();
+ * $plugin = $this->MelisCommerceProductSearchPlugin();
  * $parameters = array(
  *      'template_path' => 'MelisDemoCms/your-custom-template'
  * );
  * $pluginView = $plugin->render($parameters);
  * 
  * How to add to your controller's view:
- * $view->addChild($pluginView, 'filterMenuPriceValue');
+ * $view->addChild($pluginView, 'filterMenuProductSearch');
  * 
  * How to display in your controller's view:
- * echo $this->filterMenuPriceValue;
+ * echo $this->filterMenuProductSearch;
  * 
  * 
  */
-class MelisCommerceFilterMenuPriceValueBoxPlugin extends MelisTemplatingPlugin
+class MelisCommerceProductSearchPlugin extends MelisTemplatingPlugin
 {
     public function __construct($updatesPluginConfig = array())
     {
         $this->configPluginKey = 'meliscommerce';
-        $this->pluginXmlDbKey = 'MelisCommerceFilterMenuPriceValueBoxPlugin';
+        $this->pluginXmlDbKey = 'MelisCommerceProductSearchPlugin';
         parent::__construct($updatesPluginConfig);
     }
     
@@ -60,29 +60,12 @@ class MelisCommerceFilterMenuPriceValueBoxPlugin extends MelisTemplatingPlugin
      */
     public function front()
     {
-        // Retrieving the default Values for Product prices
-        $productSearchSvc = $this->getServiceLocator()->get('MelisComProductSearchService');
-        $priceMin = $productSearchSvc->getPriceByColumn('ASC');
-        $priceMax = $productSearchSvc->getPriceByColumn('DESC');
-       
-        $defaultMin =  ($priceMin)? $priceMin->price_net: 0;
-        $defaultMax =  ($priceMax)? $priceMax->price_net: 1000;
-       
         $data = $this->getFormData();
-        
-        $min = !empty($data['m_box_filter_price_min'])? $data['m_box_filter_price_min'] : $defaultMin;
-        $max = !empty($data['m_box_filter_price_max'])? $data['m_box_filter_price_max'] : $defaultMax;
-       
-        $priceConfig = array(   
-            'm_box_filter_price_min' =>  (int)$min,
-            'm_box_filter_price_max' => (int)$max,
-            'defaultMin' => (int)$defaultMin,
-            'defaultMax' => (int)$defaultMax,
-        );
+        $searchKey = !empty($data['m_box_filter_search']) ? $data['m_box_filter_search'] : '';
         
         // Create an array with the variables that will be available in the view
         $viewVariables = array(
-            'filterMenuPriceValue' => $priceConfig
+            'searchKey' => $searchKey
         );
         
         // return the variable array and let the view be created
@@ -202,14 +185,14 @@ class MelisCommerceFilterMenuPriceValueBoxPlugin extends MelisTemplatingPlugin
         
         if ($xml)
         {
-            if (!empty($xml->m_box_filter_price_min))
+            if (!empty($xml->template_path))
             {
-                $configValues['m_box_filter_price_min'] = (string)$xml->m_box_filter_price_min;
+                $configValues['template_path'] = (string)$xml->template_path;
             }
-            
-            if (!empty($xml->m_box_filter_price_max))
+
+            if (!empty($xml->m_box_filter_search))
             {
-                $configValues['m_box_filter_price_max'] = (string)$xml->m_box_filter_price_max;
+                $configValues['m_box_filter_search'] = (string)$xml->m_box_filter_search;
             }
         }
         
@@ -225,15 +208,14 @@ class MelisCommerceFilterMenuPriceValueBoxPlugin extends MelisTemplatingPlugin
         $xmlValueFormatted = '';
         
         // template_path is mendatory for all plugins
-        
-        if(!empty($parameters['m_box_filter_price_min']))
+        if (!empty($parameters['template_path']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_box_filter_price_min><![CDATA[' . $parameters['m_box_filter_price_min'] . ']]></m_box_filter_price_min>';
+            $xmlValueFormatted .= "\t\t" . '<template_path><![CDATA[' . $parameters['template_path'] . ']]></template_path>';
         }
-        
-        if(!empty($parameters['m_box_filter_price_max']))
+
+        if(!empty($parameters['m_box_filter_search']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_box_filter_price_max><![CDATA[' . $parameters['m_box_filter_price_max'] . ']]></m_box_filter_price_max>';
+            $xmlValueFormatted .= "\t\t" . '<m_box_filter_search><![CDATA[' . $parameters['m_box_filter_search'] . ']]></m_box_filter_search>';
         }
         
         // Something has been saved, let's generate an XML for DB
@@ -244,5 +226,4 @@ class MelisCommerceFilterMenuPriceValueBoxPlugin extends MelisTemplatingPlugin
         
         return $xmlValueFormatted;
     }
-    
 }

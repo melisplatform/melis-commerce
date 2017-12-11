@@ -85,7 +85,7 @@ class MelisComCategoryService extends MelisComGeneralService
         $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
         
         $dataCategoryData = $melisEcomCategoryTable->getCategoryChildrenListById($categoryId, $langId, $onlyValid, $start, $limit, $fatherId);
-        
+
         foreach ($dataCategoryData As $val){
             
             // Retrieving category entity
@@ -138,33 +138,33 @@ class MelisComCategoryService extends MelisComGeneralService
         // Getting Categories under Category ID
         $melisCategoryDataRes = $melisEcomCategoryTable->getEntryById($arrayParameters['categoryId']);
         $category = $melisCategoryDataRes->current();
-        
+
         if (!empty($category))
         {
             // Id
             $melisCategory->setId($category->cat_id);
-            
+
             // category
             $melisCategory->setCategory($category);
-            
+
             // trasnalations
             $catTrans = $this->getCategoryTranslationById($category->cat_id, $arrayParameters['langId'], $arrayParameters['onlyValid']);
             $melisCategory->setTranslations($catTrans);
-            
+
             // seo
-            $catSeo = $this->getCategorySeoById($category->cat_id,  $arrayParameters['langId']);
+            $catSeo = $this->getCategorySeoById($category->cat_id, $arrayParameters['langId']);
             $melisCategory->setSeo($catSeo);
-            
+
             // countries
             $catCountries = $this->getCategoryCountriesById($category->cat_id, $arrayParameters['onlyValid']);
             $melisCategory->setCountries($catCountries);
-            
+
             // children
             $catChildren = $this->getCategoryListByIdRecursive(null, $arrayParameters['langId'], $arrayParameters['onlyValid'], null, null, $category->cat_id);
-            
+
             $melisCategory->setChildren($catChildren);
         }
-        
+
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $melisCategory;
         // Service implementation end
@@ -945,9 +945,10 @@ class MelisComCategoryService extends MelisComGeneralService
         $onlyValid= $arrayParameters['onlyValid'];
         
         $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
-        $categoryData = $melisEcomCategoryTable->getCategoryByFatherId($fatherId);
+        $categoryData = $melisEcomCategoryTable->getCategoryByFatherId($fatherId, $onlyValid);
+
         $catData = $categoryData->toArray();
-        
+
         /**
          * TEMPORARY, NEED TO CREATE GENERAL HELPER FOR THIS
          */
@@ -958,7 +959,7 @@ class MelisComCategoryService extends MelisComGeneralService
             // Getting Category Name
             $categoryData = $this->getCategoryById($val['cat_id'], $langId, $onlyValid);
             $category = $categoryData->getTranslations();
-            
+
             $catName = '';
             $catNameLangName = '';
             foreach ($category As $val)
@@ -976,20 +977,22 @@ class MelisComCategoryService extends MelisComGeneralService
                     break;
                 }
             }
-            
+
             $catData[$key]['text'] = $escaper->escapeHtml($catName); //$tool->escapeHtml($catName);
             $catData[$key]['textLang'] = (!empty($catNameLangName)) ? '('.$catNameLangName.')' : '';
-            
+
             $fatherId = $catData[$key]['cat_id'];
-            
-            $catData[$key]['children'] = $this->getCategoryTreeview($fatherId, $langId);
+
+            $catData[$key]['children'] = $this->getCategoryTreeview($fatherId, $langId, $onlyValid);
+
         }
-        
+
         $results = $catData;
         // Service implementation end
         
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $results;
+
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_get_category_tree_view_end', $arrayParameters);
         

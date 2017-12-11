@@ -156,8 +156,6 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
                 
                 if (!isset($parameters['validate']))
                 {
-                    print_r($this->getFormData());
-                    
                     $form->setData($this->getFormData());
                     $viewModelTab = new ViewModel();
                     $viewModelTab->setTemplate($config['tab_form_layout']);
@@ -297,7 +295,6 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
     {
         $data = parent::getFormData();
         $data['m_category_ids'] = $this->pluginFrontConfig['m_category_option']['m_category_ids'];
-        
         return $data;
     }
     

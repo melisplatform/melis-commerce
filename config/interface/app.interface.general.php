@@ -33,6 +33,7 @@ return array(
                     '/MelisCommerce/assets/common/bootstrap-datetimepicker.min.js',
                     '/MelisCommerce/assets/common/bootstrap3-typeahead.min.js',
                     '/MelisCommerce/assets/common/awesomplete.min.js',
+                    '/MelisCommerce/plugins/js/MelisCommerceCategoryTreePlugin.js',
                     '/MelisCommerce/plugins/js/common/category-jstree.js',
                 ),
                 

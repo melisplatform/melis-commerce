@@ -82,7 +82,9 @@ return array(
     'tr_meliscommerce_products_page_attributes_remove_fail' => 'Unable to remove attribute',
     'tr_meliscommerce_products_page_attributes_note' => '***Note: If dropdown does not work, try typing anything and press <strong>"&larr;</strong> backspace" on your keyboard.',
     'tr_meliscommerce_products_page_tinymce_load_notif' => 'Please wait while product texts components are still initializing...',
-    
+    'tr_meliscommerce_products_attribute_name' => 'Attribute',
+    'tr_meliscommerce_products_attribute_name_tooltip' => 'Product attribute to display',
+
     'tr_meliscommerce_products_no_attributes' => 'No attribute',
     'tr_meliscommerce_products_no_categories' => 'No category',
     'tr_meliscommerce_product_confirm_remove_title' => 'Remove text type',
@@ -100,4 +102,36 @@ return array(
     'tr_meliscommerce_products_plugins_ptxt_field_short' => 'Product text',
     'tr_meliscommerce_products_plugins_pcat_order' => 'Product order',
     'tr_meliscommerce_products_plugins_prd_date_creation' => 'Product creation date',
+
+    //Product List Plugin
+    'tr_meliscommerce_plugin_product_list_name' => 'Product list',
+    'tr_meliscommerce_plugin_product_list_description' => 'The plugin display the Product list by Category',
+    'tr_meliscommerce_plugin_product_list_category_config' => 'Catalogs / Categories',
+    'tr_meliscommerce_plugin_product_list_no_country' => 'Please choose a country',
+    'tr_meliscommerce_plugin_product_list_only_valid' => 'Only valid',
+    'tr_meliscommerce_plugin_product_list_price_config' => 'Price',
+    'tr_meliscommerce_plugin_product_list_attributes_config' => 'Attributes',
+    'tr_meliscommerce_plugin_product_list_pagination_config' => 'Pagination',
+    'tr_meliscommerce_plugin_product_list_product_search_config' => 'Product search',
+    'tr_meliscommerce_plugin_product_list_no_result_found' => 'No result found',
+    'tr_meliscommerce_plugin_product_list_column_to_order' => 'Sort',
+    'tr_meliscommerce_plugin_product_list_result_order' => 'Order',
+    'tr_meliscommerce_plugin_product_list_search' => 'Search',
+    'tr_meliscommerce_plugin_product_list_default_page_number' => 'Default page number',
+    'tr_meliscommerce_plugin_product_list_product_per_page' => 'Number of product',
+    'tr_meliscommerce_plugin_product_list_number_of_pages' => 'No. of pagination link before & after',
+    'tr_meliscommerce_plugin_product_list_column_product_ref' => 'Product Reference',
+    'tr_meliscommerce_plugin_product_list_column_product_text_title' => 'Product title',
+    'tr_meliscommerce_plugin_product_list_column_product_price' => 'Product Price',
+    'tr_meliscommerce_plugin_product_list_column_to_order_tooltip' => 'This filter allows to sort the product by default',
+    'tr_meliscommerce_plugin_product_list_result_order_tooltip' => 'This filter allows to set the default order of the products (ex: for a title, &#34;Ascending&#34; sort from A to Z, &#34;Descending&#34; sort from Z to A)\',',
+    'tr_meliscommerce_plugin_product_list_country_tooltip' => 'Get the product price and stock base on the selected country',
+    'tr_meliscommerce_plugin_product_list_pagination_default_page_number_tooltip' => 'Default result page the user lands on',
+    'tr_meliscommerce_plugin_product_list_product_per_page_tooltip' => 'Number of product to list in a page',
+
+    'tr_meliscommerce_plugin_product_search_name' => 'Search Product',
+    'tr_meliscommerce_plugin_product_search_description' => 'The plugin display the search input for Product search',
+
+    'tr_meliscommerce_plugin_product_attribute_name' => 'Product Attributes',
+    'tr_meliscommerce_plugin_product_attribute_description' => 'The plugin display the attribute and its values',
 );

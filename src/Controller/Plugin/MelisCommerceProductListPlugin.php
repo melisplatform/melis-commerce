@@ -31,11 +31,11 @@ use Zend\Stdlib\ArrayUtils;
  * Merge detects automatically from the route if rendering must be done for front or back.
  * 
  * How to call this plugin without parameters:
- * $plugin = $this->MelisCommerceFullCategoryProductListPlugin();
+ * $plugin = $this->MelisCommerceProductListPlugin();
  * $pluginView = $plugin->render();
  *
  * How to call this plugin with custom parameters:
- * $plugin = $this->MelisCommerceFullCategoryProductListPlugin();
+ * $plugin = $this->MelisCommerceProductListPlugin();
  * $parameters = array(
  *      'template_path' => 'MySiteTest/melis-demo-cms'
  * );
@@ -47,12 +47,12 @@ use Zend\Stdlib\ArrayUtils;
  * How to display in your controller's view:
  * echo $this->categoryListProducts;
  */
-class MelisCommerceFullCategoryProductListPlugin extends MelisTemplatingPlugin
+class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
 {
     public function __construct($updatesPluginConfig = array())
     {
         $this->configPluginKey = 'meliscommerce';
-        $this->pluginXmlDbKey = 'MelisCommerceFullCategoryProductListPlugin';
+        $this->pluginXmlDbKey = 'MelisCommerceProductListPlugin';
         parent::__construct($updatesPluginConfig);
     }
     
@@ -64,21 +64,18 @@ class MelisCommerceFullCategoryProductListPlugin extends MelisTemplatingPlugin
     {
         $categorySvc = $this->getServiceLocator()->get('MelisComCategoryService');
         $productSearchSvc = $this->getServiceLocator()->get('MelisComProductSearchService');
-        $productSvc = $this->getServiceLocator()->get('MelisComProductService');
-        $currencySvc = $this->getServiceLocator()->get('MelisComCurrencyService');
         
         $container = new Container('melisplugins');
         $lang = $container['melis-plugins-lang-id'];
         
         // Plugin config data
         $data = $this->getFormData();
-        
         // Sorter config
         $sortColName    = !empty($data['m_col_name'])   ? $data['m_col_name'] : 'prd_reference';
         $sortOrder      = !empty($data['m_order'])      ? $data['m_order'] : 'ASC';
         $sort           = $sortColName. ' ' . $sortOrder;
-        
-        //$priceColumn = !empty($this->pluginFrontConfig['priceColumn']) ? $this->pluginFrontConfig['priceColumn'] : 'price_net';
+
+        $priceColumn = !empty($this->pluginFrontConfig['m_box_filter_price_column']) ? $this->pluginFrontConfig['m_box_filter_price_column'] : 'price_net';
         
         // Filters config
         $onlyValid          = true;
@@ -98,7 +95,7 @@ class MelisCommerceFullCategoryProductListPlugin extends MelisTemplatingPlugin
         foreach($categoryId as $catId){
             $categoryId = array_merge($categoryId, $this->categoryIdIterator($categorySvc->getAllSubCategoryIdById($catId, $onlyValid)));
         }
-        
+
         $categoryProductList = $productSearchSvc->searchProductFull(
             $search,                        // $search
             $fieldType,                     // $fieldsTypeCodes           
@@ -111,9 +108,9 @@ class MelisCommerceFullCategoryProductListPlugin extends MelisTemplatingPlugin
             $onlyValid,                     // $onlyValid
             null,                           // $start
             null,                           // $limit
-            $sort
+            $sort,
+            $priceColumn                    //price column (price_net, price_gross, etc.)
         );
-        
         // Pagination
         $paginator = new Paginator(new ArrayAdapter($categoryProductList));
         $paginator->setCurrentPageNumber($pageCurrent)
@@ -125,6 +122,9 @@ class MelisCommerceFullCategoryProductListPlugin extends MelisTemplatingPlugin
             'nbPageBeforeAfter' => $pageNbBeforeAfter,
             'langId' => $lang,
             'template' => $this->pluginFrontConfig['template_path'],
+            'hasData' => (sizeof($categoryProductList) > 0) ? true : false,
+            'sort_config' => $sort,
+
         );
         
         // return the variable array and let the view be created
@@ -283,10 +283,14 @@ class MelisCommerceFullCategoryProductListPlugin extends MelisTemplatingPlugin
     public function getFormData()
     {
         $data['template_path'] = $this->pluginFrontConfig['template_path'];
+        $data['m_box_filter_categories_ids_selected'] = $this->pluginFrontConfig['m_box_filter_categories_ids_selected'];
+        $data['m_box_filter_price_column'] = $this->pluginFrontConfig['m_box_filter_price_column'];
         $data = ArrayUtils::merge($data, $this->pluginFrontConfig['sorter']);
         $data = ArrayUtils::merge($data, $this->pluginFrontConfig['filters']);
         $data = ArrayUtils::merge($data, $this->pluginFrontConfig['pagination']);
-        
+        if(isset($this->pluginFrontConfig['m_col_name'])){
+            $data['m_col_name'] = $this->pluginFrontConfig['m_col_name'];
+        }
         return $data;
     }
     
@@ -303,6 +307,11 @@ class MelisCommerceFullCategoryProductListPlugin extends MelisTemplatingPlugin
     
         if ($xml)
         {
+            if (!empty($xml->template_path))
+            {
+                $configValues['template_path'] = (string)$xml->template_path;
+            }
+
             if (!empty($xml->m_col_name))
             {
                 $configValues['sorter']['m_col_name'] = (string)$xml->m_col_name;
@@ -321,6 +330,11 @@ class MelisCommerceFullCategoryProductListPlugin extends MelisTemplatingPlugin
             if (!empty($xml->m_box_filter_field_type))
             {
                 $configValues['filters']['m_box_filter_field_type'] = json_decode((string)$xml->m_box_filter_field_type, true);
+            }
+
+            if (!empty($xml->m_box_filter_price_column))
+            {
+                $configValues['m_box_filter_price_column'] = (string)$xml->m_box_filter_price_column;
             }
             
             if (!empty($xml->m_box_filter_price_min))
@@ -373,7 +387,6 @@ class MelisCommerceFullCategoryProductListPlugin extends MelisTemplatingPlugin
                 $configValues['pagination']['m_pag_nb_page_before_after'] = (string)$xml->m_pag_nb_page_before_after;
             }
         }
-        
         return $configValues;
     }
     
@@ -386,7 +399,11 @@ class MelisCommerceFullCategoryProductListPlugin extends MelisTemplatingPlugin
         $xmlValueFormatted = '';
     
         // template_path is mendatory for all plugins
-    
+        if (!empty($parameters['template_path']))
+        {
+            $xmlValueFormatted .= "\t\t" . '<template_path><![CDATA[' . $parameters['template_path'] . ']]></template_path>';
+        }
+
         if(!empty($parameters['m_box_filter_search']))
         {
             $xmlValueFormatted .= "\t\t" . '<m_box_filter_search><![CDATA[' . $parameters['m_box_filter_search'] . ']]></m_box_filter_search>';
@@ -395,6 +412,11 @@ class MelisCommerceFullCategoryProductListPlugin extends MelisTemplatingPlugin
         if(!empty($parameters['m_box_filter_field_type']))
         {
             $xmlValueFormatted .= "\t\t" . '<m_box_filter_field_type><![CDATA[' . json_encode($parameters['m_box_filter_field_type']) . ']]></m_box_filter_field_type>';
+        }
+
+        if(!empty($parameters['m_box_filter_price_column']))
+        {
+            $xmlValueFormatted .= "\t\t" . '<m_box_filter_price_column><![CDATA[' . $parameters['m_box_filter_price_column'] . ']]></m_box_filter_price_column>';
         }
     
         if(!empty($parameters['m_box_filter_price_min']))

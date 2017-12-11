@@ -187,31 +187,19 @@
 	    'tr_meliscommerce_plugin_category_product_list_cat_order_cat_date_creation' => 'Category creation date',
 	    'tr_meliscommerce_plugin_category_product_list_cat_order_catt_name' => 'Category name',
 	    'tr_meliscommerce_plugin_category_product_list_cat_order_cat_order' => 'Category order',
-	    
-	    'tr_meliscommerce_plugin_full_category_product_list_name' => 'Full Category product list',
-	    'tr_meliscommerce_plugin_full_category_product_list_description' => 'The plugin display the Product list by Category',
-	    'tr_meliscommerce_plugin_full_category_product_list_config' => 'Configuration',
-	    'tr_meliscommerce_plugin_full_category_product_list_category' => 'Catalogs / Categories',
-	    'tr_meliscommerce_plugin_full_category_product_list_no_country' => 'Please choose a country',
-	    'tr_meliscommerce_plugin_full_category_product_list_only_valid' => 'Only valid',
-	    
-	    'tr_meliscommerce_plugin_filter_menu_category_list_name' => 'Filter Menu Category List',
-	    'tr_meliscommerce_plugin_filter_menu_category_list_description' => 'The plugin display the Category list',
-	    'tr_meliscommerce_plugin_filter_menu_category_list_config' => 'Configuration',
+
+        'tr_meliscommerce_plugin_include_root_category' => 'Include Parent Category / Catalog',
+        'tr_meliscommerce_plugin_category_tree_name' => 'Category List',
+	    'tr_meliscommerce_plugin_category_tree_description' => 'The plugin display the Category list',
+	    'tr_meliscommerce_plugin_category_tree_template' => 'Template',
 	    'tr_meliscommerce_plugin_filter_menu_category_list_root_category' => 'Catalog / Category',
 	    'tr_meliscommerce_plugin_filter_menu_category_list_root_category_empty' => 'Please choose a parent Catalog / Category ',
 	    'tr_meliscommerce_plugin_filter_menu_category_list_root_category_tree' => 'Catalogs / Categories',
 	    'tr_meliscommerce_plugin_filter_menu_category_list_only_valid' => 'Only valid',
 	    'tr_meliscommerce_plugin_filter_menu_category_list_include_root_category' => 'Include Parent Category',
-	    
-	    'tr_meliscommerce_plugin_filter_menu_product_search_input_name' => 'Filter Menu product search',
-	    'tr_meliscommerce_plugin_filter_menu_product_search_input_description' => 'The plugin display the search input for Product search',
-	    
-	    'tr_meliscommerce_plugin_category_price_filter_name' => 'Filter Menu product price',
-	    'tr_meliscommerce_plugin_category_price_filter_description' => 'The plugin display the minimun and maximum product prices',
-	    
-	    'tr_meliscommerce_plugin_filter_product_attribute_name' => 'Filter menu Product attributes',
-	    'tr_meliscommerce_plugin_filter_product_attribute_description' => 'The plugin display the attribute and its values',
+	    'tr_meliscommerce_plugin_include_root_category_tooltip' => 'Include parent category / catalog in the list',
+        'tr_meliscommerce_plugin_highlighted_category_note' => 'The highlighted category is displayed with its sub-categories.',
+        'tr_meliscommerce_plugin_checked_category_note' => 'The checked categories pre-filter the result.',
 	    
 	    'tr_meliscommerce_plugin_category_product_list_product' => 'Products',
 	);

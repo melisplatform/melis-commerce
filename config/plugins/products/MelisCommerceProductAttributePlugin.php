@@ -4,9 +4,10 @@ return array(
     'plugins' => array(
         'meliscommerce' => array(
             'plugins' => array(
-                'MelisCommerceFilterMenuAttributeValueBoxPlugin' => array(
+                'MelisCommerceProductAttributePlugin' => array(
                     'front' => array(
-                        'template_path' => array('MelisCommerceCategory/category-attribute-filter'),
+                        'template_path' => array('MelisCommerce/product-attribute'),
+                        'id' => null,
                         // the ID of the attribute to be fetch
                         'attribute_id' => null,
                         // filtering
@@ -15,12 +16,12 @@ return array(
                     ),
                     'melis' => array(
                         'subcategory' => array(
-                            'id' => 'CATEGORIES',
-                            'title' => 'tr_MelisCommerceFilterMenuCategoryListPlugin_Title'
+                            'id' => 'PRODUCTS',
+                            'title' => 'tr_meliscommerce_products_Products'
                         ),
-                        'name' => 'tr_meliscommerce_plugin_filter_product_attribute_name',
-                        'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceFilterMenuAttributeValueBoxPlugin.jpg',
-                        'description' => 'tr_meliscommerce_plugin_filter_product_attribute_description',
+                        'name' => 'tr_meliscommerce_plugin_product_attribute_name',
+                        'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceProductAttributePlugin.jpg',
+                        'description' => 'tr_meliscommerce_plugin_product_attribute_description',
                         // List the files to be automatically included for the correct display of the plugin
                         // To overide a key, just add it again in your site module
                         // To delete an entry, use the keyword "disable" instead of the file path for the same key
@@ -31,10 +32,10 @@ return array(
                             ),
                         ),
                         'modal_form' => array(
-                            'melis_commerce_plugin_category_product_search_box_config' => array(
-                                'tab_title' => 'tr_meliscommerce_general_common_configuration',
+                            'melis_commerce_plugin_product_attribute_config' => array(
+                                'tab_title' => 'tr_front_plugin_common_tab_properties',
                                 'tab_icon'  => 'fa fa-cogs',
-                                'tab_form_layout' => 'MelisCommerce/category-product-search-box-config',
+                                'tab_form_layout' => 'MelisCommerce/product-attribute-config',
                                 'elements' => array(
                                     array(
                                         'spec' => array(
@@ -44,6 +45,7 @@ return array(
                                                 'label' => 'tr_melis_Plugins_Template',
                                                 'empty_option' => 'tr_melis_Plugins_Choose',
                                                 'disable_inarray_validator' => true,
+                                                'tooltip' => 'tr_meliscommerce_plugin_template_tooltip',
                                             ),
                                             'attributes' => array(
                                                 'id' => 'id_page_tpl_id',
@@ -56,9 +58,10 @@ return array(
                                             'name' => 'attribute_id',
                                             'type' => 'EcomPluginAttributeSelect',
                                             'options' => array(
-                                                'label' => 'Attribute',
+                                                'label' => 'tr_meliscommerce_products_attribute_name',
                                                 'empty_option' => 'tr_melis_Plugins_Choose',
                                                 'disable_inarray_validator' => true,
+                                                'tooltip' => 'tr_meliscommerce_products_attribute_name_tooltip',
                                             ),
                                             'attributes' => array(
                                                 'id' => 'attribute_id',

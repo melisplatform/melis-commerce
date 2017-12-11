@@ -1,9 +1,10 @@
 var commerceCategoryTree = (function(){
-	
-	function initCategoryTree(targetId){
-		
+
+	function initCategoryTree(targetId, loaded){
+		loaded = (loaded == undefined) ? null : loaded;
+
 		var categoryTree = $("#"+targetId);
-		
+
 	    categoryTree.jstree({
 	        "core" : {
 	        	"multiple": false,
@@ -36,19 +37,22 @@ var commerceCategoryTree = (function(){
 	        "plugins": [
 	            "search", // Plugins for Search of the Node(s) of the Tree View
 	            "types", // Plugins for Customizing the Nodes
-	            "checkbox",
+				"checkbox",
 	        ]
 		    
 	    }).on("check_node.jstree uncheck_node.jstree", function(e, data) {
-	    	
-	  	  	//console.log(data.node.id + ' ' + data.node.text + (data.node.state.checked ? ' CHECKED': ' NOT CHECKED'))
-	  	  	if(data.node.state.checked){
-				$("#"+targetId+"_form").append('<input type="hidden" name="m_category_ids[]" value="'+data.node.original.cat_id+'">');
-	  	  	}else{
-	      	  	$("#"+targetId+"_form input[value='"+data.node.original.cat_id+"']").remove();
-	  	  	}
-	  	  	
-	    }).on('after_open.jstree', function (e, data) {
+            var inputField = $("#" + targetId + "_form").data("input-field-selected");
+			if (data.node.state.checked) {
+				$("#" + targetId + "_form").append('<input type="hidden" name="' + inputField + '[]" value="' + data.node.original.cat_id + '">');
+			} else {
+				$("#" + targetId + "_form input[name='"+inputField+"[]'][value='" + data.node.original.cat_id + "']").remove();
+			}
+	    }).on("select_node.jstree deselect_node.jstree ", function(e, data){
+            var inputField = $("#" + targetId + "_form").data("input-field-root");
+            if (data.node.state.selected) {
+                $("#" + targetId + "_form input[name='"+inputField+"']").val(data.node.original.cat_id);
+            }
+        }).on('after_open.jstree', function (e, data) {
 			
 	    	setCheckCategoryTreeNodes(targetId);
 	    	setCustomNodeText(targetId);
@@ -56,7 +60,14 @@ var commerceCategoryTree = (function(){
 	    }).on('loaded.jstree', function (e, data) {
 	    	
 			categoryTreeEvents(targetId);
-			
+
+            /**
+			 * Check if loaded callback is existing function
+			 *
+             */
+            if(loaded !== null)
+				loaded(e, data, categoryTree);
+
 		}).on('refresh.jstree', function (e, data) {
 			
 			setCheckCategoryTreeNodes(targetId);
@@ -64,8 +75,8 @@ var commerceCategoryTree = (function(){
 			
 		});
 	}
-	
-	function setCheckCategoryTreeNodes(targetId){
+
+    function setCheckCategoryTreeNodes(targetId){
 		
 		$("form#"+targetId+"_form input[name='m_category_ids[]']").each(function(){
     		$("#"+$(this).val()+"_categoryId_anchor").addClass("jstree-checked");
