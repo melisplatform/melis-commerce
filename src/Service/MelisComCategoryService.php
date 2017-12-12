@@ -386,9 +386,9 @@ class MelisComCategoryService extends MelisComGeneralService
         
         foreach ($subCats As $key => $val)
         {
-            $catProducts = $prdSrv->getProductsByCategoryId($val->cat_id, $arrayParameters['onlyvalid'], $langId);
+            $relProducts = $prdSrv->getProductsByCategoryId($val->cat_id, $arrayParameters['onlyvalid'], $langId);
             
-            $products = ArrayUtils::merge($products, $catProducts);
+            $products = ArrayUtils::merge($products, $relProducts);
             
             $products = $this->getSubCategoriesProducts($val->cat_id, $products, $arrayParameters['langId']);
         }
@@ -1021,23 +1021,23 @@ class MelisComCategoryService extends MelisComGeneralService
         try
         {
             
-            $catProducts = $arrayParameters['categoryProducts'];
+            $relProducts = $arrayParameters['categoryProducts'];
             
             // Getting category Product Order
-            $categoryId = $catProducts['pcat_cat_id'];
+            $categoryId = $relProducts['pcat_cat_id'];
             $categoryProductsOrder = $this->getCategoryProductsById($categoryId);
             
             // only increment pcat_order if it is not set
-            if(!$catProducts['pcat_order']) {
-                $catProducts['pcat_order'] = count($categoryProductsOrder) + 1;
+            if(!$relProducts['pcat_order']) {
+                $relProducts['pcat_order'] = count($categoryProductsOrder) + 1;
             }
             
             if((int) $arrayParameters['categoryProductsId']) {
-                $successFlag = $melisEcomProductCategoryTable->save($catProducts, $arrayParameters['categoryProductsId']);
+                $successFlag = $melisEcomProductCategoryTable->save($relProducts, $arrayParameters['categoryProductsId']);
             }
             else {
-                unset($catProducts['pcat_id']);
-                $successFlag = $melisEcomProductCategoryTable->save($catProducts);
+                unset($relProducts['pcat_id']);
+                $successFlag = $melisEcomProductCategoryTable->save($relProducts);
             }
             
             
@@ -1089,11 +1089,11 @@ class MelisComCategoryService extends MelisComGeneralService
                 }
             }
             
-            $catProductsOrder = array(
+            $relProductsOrder = array(
                 'pcat_order' => $orderNum
             );
             
-            $melisEcomProductCategoryTable->save($catProductsOrder, $catProdId);
+            $melisEcomProductCategoryTable->save($relProductsOrder, $catProdId);
             $successFlag = true;
         }
         catch(\Exception $e)
@@ -1139,7 +1139,7 @@ class MelisComCategoryService extends MelisComGeneralService
                 $categoryProducts = $melisEcomProductCategoryTable->getCategoryProductsByCategoryId($categoryId)->toArray();
                 
                 $ctr = 1;
-                $catProducts = array();
+                $relProducts = array();
                 foreach ($categoryProducts As $key => $val)
                 {
                     // Saving new Category Product Order

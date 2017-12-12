@@ -270,15 +270,13 @@ return array(
             'MelisCommerceProductSearchPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceProductSearchPlugin',
             'MelisCommerceProductPriceRangePlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceProductPriceRangePlugin',
             'MelisCommerceProductAttributePlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceProductAttributePlugin',
-
-
             'MelisCommerceProductListPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceProductListPlugin',
+            'MelisCommerceRelatedProductsPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceRelatedProductsPlugin',
             
             'MelisCommerceRegisterPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceRegisterPlugin',
             'MelisCommerceLoginPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceLoginPlugin',
             'MelisCommerceProductShowPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceProductShowPlugin',
             'MelisCommerceAttributesShowPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceAttributesShowPlugin',
-            'MelisCommerceProductsRelatedPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceProductsRelatedPlugin',
             'MelisCommerceCartAddPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCartAddPlugin',
             'MelisCommerceAccountPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceAccountPlugin',
             'MelisCommerceProfilePlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceProfilePlugin',
@@ -336,6 +334,7 @@ return array(
             'EcomPluginCategoryListSelect'          => 'MelisCommerce\Form\Factory\Plugin\EcomPluginCategoryListSelectFactory',
             'EcomPluginAttributeSelect'             => 'MelisCommerce\Form\Factory\Plugin\EcomPluginAttributeSelectFactory',
             'EcomPluginPriceCountriesSelect'        => 'MelisCommerce\Form\Factory\Plugin\EcomPluginPriceCountriesSelectFactory',
+            'EcomPluginProductListSelect'           => 'MelisCommerce\Form\Factory\Plugin\EcomPluginProductListSelectFactory',
         )
     ),
     'view_helpers' => array(
@@ -369,7 +368,7 @@ return array(
             'MelisCommerceProduct/show-product'                     => __DIR__ . '/../view/plugins/products/show-product.phtml',
             'MelisCommerceProduct/show-attributes'                  => __DIR__ . '/../view/plugins/products/show-attributes.phtml',
             'MelisCommerceProduct/show-add-to-cart'                 => __DIR__ . '/../view/plugins/products/show-add-to-cart.phtml',
-            'MelisCommerceProduct/show-related-products'            => __DIR__ . '/../view/plugins/products/show-related-products.phtml',
+            'MelisCommerceProduct/related-products'                 => __DIR__ . '/../view/plugins/products/related-products.phtml',
             'MelisCommerce/product-list'                            => __DIR__ . '/../view/plugins/products/product-list.phtml',
             'MelisCommerce/product-list-config'                     => __DIR__ . '/../view/plugins/products/product-list-config.phtml',
             'MelisCommerce/product-list-pagination-config'          => __DIR__ . '/../view/plugins/products/product-list-pagination-config.phtml',
@@ -382,6 +381,7 @@ return array(
             'MelisCommerce/product-attribute-config'                => __DIR__ . '/../view/plugins/products/product-attribute-config.phtml',
             'MelisCommerce/product-search'                          => __DIR__ . '/../view/plugins/products/product-search.phtml',
             'MelisCommerce/product-search-config'                   => __DIR__ . '/../view/plugins/products/product-search-config.phtml',
+            'MelisCommerce/related-products-config'                 => __DIR__ . '/../view/plugins/products/related-products-config.phtml',
             //checkout
             'MelisCommerceCheckout/show-check-out'                  => __DIR__ . '/../view/plugins/checkout/show-check-out.phtml',
             'MelisCommerceCheckout/show-check-out-cart'             => __DIR__ . '/../view/plugins/checkout/show-check-out-cart.phtml',

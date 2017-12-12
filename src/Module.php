@@ -250,7 +250,7 @@ class Module
             include __DIR__ . '/../config/plugins/products/MelisCommerceProductSearchPlugin.php',
     	    include __DIR__ . '/../config/plugins/products/MelisCommerceProductShowPlugin.php',
     	    include __DIR__ . '/../config/plugins/products/MelisCommerceAttributesShowPlugin.php',
-    	    include __DIR__ . '/../config/plugins/products/MelisCommerceProductsRelatedPlugin.php',
+    	    include __DIR__ . '/../config/plugins/products/MelisCommerceRelatedProductsPlugin.php',
             include __DIR__ . '/../config/plugins/products/MelisCommerceProductListPlugin.php',
             include __DIR__ . '/../config/plugins/products/MelisCommerceProductPriceRangePlugin.php',
             include __DIR__ . '/../config/plugins/products/MelisCommerceProductAttributePlugin.php',
