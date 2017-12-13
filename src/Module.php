@@ -236,7 +236,7 @@ class Module
     	    include __DIR__ . '/../config/plugins/clients/MelisCommerceBillingAddressPlugin.php',
     	    
     	    // order plugin configs
-    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCartAddPlugin.php',
+    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceAddToCartPlugin.php',
     	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutPlugin.php',
     	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutCartPlugin.php',
     	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutCouponAddPlugin.php',

@@ -79,6 +79,7 @@ class MelisComVariantService extends MelisComGeneralService
 	 */
 	public function getVariantById($variantId, $langId = null, $countryId = null, $docType = null, $docSubType = array())
 	{
+	    
         // Retrieve cache version if front mode to avoid multiple calls
         $tmp = '';
 	    foreach($docSubType as $type)
@@ -111,7 +112,7 @@ class MelisComVariantService extends MelisComGeneralService
 	           $entVariant->setVariant($result);
 	           $entVariant->setAttributeValues($this->getVariantAttributesValuesById($arrayParameters['variantId'], $arrayParameters['langId']));
 	           $entVariant->setStocks($this->getVariantStocksById($arrayParameters['variantId']), $arrayParameters['countryId']);
-	           $entVariant->setPrices($this->getVariantPricesById($arrayParameters['variantId']), $arrayParameters['countryId']);
+	           $entVariant->setPrices($this->getVariantPricesById($arrayParameters['variantId']), $countryId);
 	           $entVariant->setDocuments($docService->getDocumentsByRelationAndTypes('variant', $arrayParameters['variantId'], $arrayParameters['docType'], $arrayParameters['docSubType']));
 	           $data = $entVariant;
 	       }
@@ -193,7 +194,7 @@ class MelisComVariantService extends MelisComGeneralService
 	    $mainVariant = $variantTable->getMainVariantById($arrayParameters['productId'], $arrayParameters['langId'])->current();
 	    
     	if($mainVariant) { 
-    	    $results = $this->getVariantById($mainVariant->var_id, $arrayParameters['langId'], $arrayParameters['countryId']);
+    	    $results = $this->getVariantById($mainVariant->var_id, $arrayParameters['langId'], $countryId);
 	    }
 	    // Service implementation end
 	    
@@ -299,8 +300,8 @@ class MelisComVariantService extends MelisComGeneralService
 	    $isCountryStockFound = false;
 	    foreach ($variantStocks As $val)
 	    {
-	        // Getting the General Stocks which is CountryId is 0 (Zero)
-	        if ($val->stock_country_id == 0)
+	        // Getting the General Stocks which is CountryId is -1
+	        if ($val->stock_country_id == -1)
 	        {
 	            $generalStocks = $val;
 	        }
@@ -430,11 +431,15 @@ class MelisComVariantService extends MelisComGeneralService
 	    // Service implementation start	  
 	    
         $priceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');
-        if($arrayParameters['variantId']){
+        if($arrayParameters['variantId'])
+        {
             $datas = $priceTable->getPricesByVariantId($arrayParameters['variantId'], $arrayParameters['countryId']);
         }        
-        if($datas){
-            foreach($datas as $data){                
+        
+        if($datas)
+        {
+            foreach($datas as $data)
+            {                
                 $results[] = $data;
             }
         }        
@@ -469,7 +474,7 @@ class MelisComVariantService extends MelisComGeneralService
         
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
-	    $results = null;
+	    $results = array();
 	    // Sending service start event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_variant_final_prices_start', $arrayParameters);
 	     
@@ -485,27 +490,15 @@ class MelisComVariantService extends MelisComGeneralService
                 $results = $variantPrice;
             }
 	    }
-	     
-	    if (is_null($results))
+	    
+	    /**
+	     * If the Variant Country price has no data
+	     * this will try to get the General price of the Variant
+	     */
+	    if ($arrayParameters['countryId'] != -1 && empty($variantPrice))
 	    {
-	        $variantPrice = $priceTable->getVariantGeneralPrice($arrayParameters['variantId'])->current();
-	        
-	        if (!empty($variantPrice))
-	        {
-	            // Just to be sure that data on Price is in Numeric data type
-	            if (is_numeric($variantPrice->price_net))
-	            {
-	                // Getting the default currency
-	                $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
-	                $generalCurrency = $currencyTable->getEntryByField('cur_default', 1)->current();
-	                
-	                if(!empty($generalCurrency))
-	                {
-	                    // Merging results and cast as Object
-	                    $results = (object) array_merge((array)$variantPrice, (array)$generalCurrency);
-	                }
-	            }
-	        }
+	        // Retreiving the General price of the Variant
+	        $results = $this->getVariantFinalPrice($arrayParameters['variantId'], -1);
 	    }
 	    // Service implementation end
 	    

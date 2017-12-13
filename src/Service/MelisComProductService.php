@@ -47,35 +47,6 @@ class MelisComProductService extends MelisComGeneralService
 	    // Sending service start event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_list_start', $arrayParameters);
 	    
-	    // Service implementation start
-	    /*$entProd = new MelisProduct();
-	    $tmpData = array();
-        $prodTable = $this->getServiceLocator()->get('MelisEcomProductTable');
-
-         if($search) {
-            $productData = $prodTable->getProduct(null, $arrayParameters['categoryId'], $arrayParameters['onlyValid'], 0, null, $arrayParameters['order'], $arrayParameters['orderColumn']);
-            if($productData) {
-                foreach($productData as $prod) {
-                    $tmpData[] = $this->getProductById($prod->prd_id, $arrayParameters['langId']);
-                }
-            }
-            $search = strtolower($search);
-            foreach($tmpData as $pData) {
-                if((strpos(strtolower($this->getProductName($pData->getId(), $langId)), $search) !== false) || ((int) $pData->getId() == (int) $search)) {
-                    $results[] = $pData;
-                }
-            }
-        }
-        else {
-            $productData = $prodTable->getProduct(null, $arrayParameters['categoryId'], $arrayParameters['onlyValid'], $arrayParameters['start'], $arrayParameters['limit'], $arrayParameters['order'], $arrayParameters['orderColumn']);
-            if($productData) {
-                foreach($productData as $prod) {
-                    // add searching statement here
-                    $results[] = $this->getProductById($prod->prd_id, $arrayParameters['langId']);
-                }
-            }
-        } */
-        
         $prodTable = $this->getServiceLocator()->get('MelisEcomProductTable');
         $products = $prodTable->getProductList($arrayParameters['categoryIds'], $arrayParameters['countryId'], $arrayParameters['onlyValid'], $arrayParameters['start'], 
                                                  $arrayParameters['limit'], $arrayParameters['orderColumn'], $arrayParameters['order'], $arrayParameters['search']);
@@ -86,9 +57,8 @@ class MelisComProductService extends MelisComGeneralService
             
             array_push($results, $product);
         }
-        
 	    // Service implementation end
-
+	    
         // Adding results to parameters for events treatment if needed
 	    $arrayParameters['results'] = $results;	    
 	    // Sending service end event
@@ -409,7 +379,7 @@ class MelisComProductService extends MelisComGeneralService
 	    
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
-	    $results = null;
+	    $results = array();
 	    // Sending service start event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_final_price_start', $arrayParameters);
 	
@@ -425,27 +395,15 @@ class MelisComProductService extends MelisComGeneralService
                 $results = $productPrice;
             }
 	    }
-	     
-	    if (is_null($results))
+	    
+	    /**
+	     * If the Product Country price has no data
+	     * this will try to get the General price of the Product
+	     */
+	    if ($arrayParameters['countryId'] != -1 && empty($variantPrice))
 	    {
-	        $productPrice = $priceTable->getProductGeneralPrice($arrayParameters['productId'])->current();
-	        
-	        if (!empty($productPrice))
-	        {
-	            // Just to be sure that data on Price is in Numeric data type
-	            if (is_numeric($productPrice->price_net))
-	            {
-	                // Getting the default currency
-	                $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
-	                $generalCurrency = $currencyTable->getEntryByField('cur_default', 1)->current();
-	                
-	                if(!empty($generalCurrency))
-	                {
-	                    // Merging results and cast as Object
-	                    $results = (object) array_merge((array)$productPrice, (array)$generalCurrency);
-	                }
-	            }
-	        }
+	        // Retreiving the General price of the Product
+	        $results = $this->getProductFinalPrice($arrayParameters['productId'], -1);
 	    }
 	    // Service implementation end
 	     

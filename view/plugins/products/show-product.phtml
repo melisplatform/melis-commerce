@@ -1,24 +1,80 @@
-<div>
-	<?php 
-	
-    	$product = $this->product;
-    	$variants = $this->product_variants;
-//     	echo '<pre>'; print_r($product); echo '</pre>'; die();
-        foreach($product->getTexts() as $prodText){
-                echo "<p>$prodText->ptxt_field_short</p>";
-                echo "<p>$prodText->ptxt_field_long</p>";
-        }
-        
-       // images defualt display
-       foreach($product->getDocuments() as $document){
-    	   // check if document type is image and default
-    	    if($document->doc_type_id == 1){
-    	       echo '<img src="'.$document->doc_path.'" height="300" width="300"/>';
-    	    }
-    	    
-        }
-        echo $this->attributes_view;
-        echo $this->add_to_cart_view;
-    ?>
+<div class="container">
+	<?php if($this->product->getId()){?>
+    	<div class="row">
+    		<div class="col-md-6">
+    			<div class="">
+    				<?php 
+    				    foreach($this->product->getDocuments() as $document)
+    				    {
+    					    // check if document type is image and default
+    					    if($document->dtype_sub_code == 'DEFAULT' && $document->dtype_code == 'IMG')
+    					    {
+    					        echo '<img class="img" src="'.$document->doc_path.'" />';
+    					        break;
+    					    }
+    					}
+    				?>
+    			</div>
+    			<div class="">
+    				<?php 
+    				    foreach($this->product->getDocuments() as $document)
+    				    {
+    					    // check if document type is image and default
+    					    if($document->dtype_code == 'IMG')
+    					    {
+    					        echo '<div class="col-md-3">';
+    					           echo '<img class="img" src="'.$document->doc_path.'" />';
+    					        echo '</div>';
+    					    }
+    					}
+    				?>
+    			</div>
+    		</div>
+    		<div class="col-md-6">
+    			<?php 
+    			    $reference = '';
+    			    $product = $this->product->getProduct();
+    			    if (!empty($product))
+    			    {
+    			        $reference = $product->prd_reference;
+    			    }
+    			    
+    			    $title = '';
+    			    foreach($this->product->getTexts() as $prodText)
+    			    {
+    			        if($prodText->ptt_code == 'TITLE')
+    			        {
+    			            $title = $prodText->ptxt_field_short;
+    			        }
+    			    }
+    			?>
+    			<div class="page-header">
+                    <h1><?php echo $title?></h1>
+                    <p class="lead"><?php echo $reference?></p>
+                    <h3>
+                        <?php
+                            foreach ($this->product->getcategories() As $val)
+                            {
+                                echo '<span class="label label-success">'.$val->catt_name.'</span>';
+                            }
+                        ?>
+                    </h3>
+              	</div>
+              	<?php 
+              	    foreach($this->product->getTexts() as $prodText)
+              	    {
+    				    if(!empty($prodText->ptxt_field_long))
+    				    {
+    				        echo '<p>'.$prodText->ptxt_field_long.'</p>';
+    				    }
+    				}
+    			?>
+    		</div>
+    	</div>
+	<?php }else{?>
+		<div class="alert alert-warning">
+			No result
+		</div>
+	<?php }?>
 </div>
-           
+<br>

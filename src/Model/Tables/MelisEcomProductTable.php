@@ -26,7 +26,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         $this->idField = 'prd_id';
     }
     
-    public function getProduct($productId = null, $categoriId = array(), $onlyValid = null, 
+    public function getProduct($productId, $categoriId = array(), $onlyValid = null, 
                         $start = 0, $limit = null, $order = 'ASC', $column = 'prd_id')
     {
         $select = $this->tableGateway->getSql()->select();
@@ -39,9 +39,8 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         $clause = array();
         
         // parameter validations
-        if(!is_null($productId))
-            $clause['melis_ecom_product.prd_id'] = (int) $productId;
-
+        $clause['melis_ecom_product.prd_id'] = (int) $productId;
+        
         if(!is_null($onlyValid))
             $clause['melis_ecom_product.prd_status'] = $onlyValid;
             
