@@ -276,7 +276,7 @@ return array(
             'MelisCommerceProductShowPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceProductShowPlugin',
             'MelisCommerceAttributesShowPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceAttributesShowPlugin',
             'MelisCommerceProductsRelatedPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceProductsRelatedPlugin',
-            'MelisCommerceCartAddPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCartAddPlugin',
+            'MelisCommerceAddToCartPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceAddToCartPlugin',
             'MelisCommerceFilterMenuProductSearchBoxPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceFilterMenuProductSearchBoxPlugin',
             'MelisCommerceFilterMenuCategoryListPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceFilterMenuCategoryListPlugin',
             'MelisCommerceAccountPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceAccountPlugin',
@@ -365,8 +365,10 @@ return array(
             'MelisCommerce/ClientMyCart'                            => __DIR__ . '/../view/plugins/clients/my-cart.phtml',
             'MelisCommerceProduct/show-product'                     => __DIR__ . '/../view/plugins/products/show-product.phtml',
             'MelisCommerceProduct/show-attributes'                  => __DIR__ . '/../view/plugins/products/show-attributes.phtml',
-            'MelisCommerceProduct/show-add-to-cart'                 => __DIR__ . '/../view/plugins/products/show-add-to-cart.phtml',
             'MelisCommerceProduct/show-related-products'            => __DIR__ . '/../view/plugins/products/show-related-products.phtml',
+            
+            'MelisCommerceOrder/add-to-cart'                         => __DIR__ . '/../view/plugins/order/add-to-cart.phtml',
+            
             'MelisCommerceCheckout/show-check-out'                  => __DIR__ . '/../view/plugins/checkout/show-check-out.phtml',
             'MelisCommerceCheckout/show-check-out-cart'             => __DIR__ . '/../view/plugins/checkout/show-check-out-cart.phtml',
             'MelisCommerceCheckout/show-check-out-coupon'           => __DIR__ . '/../view/plugins/checkout/show-check-out-coupon.phtml',
@@ -374,13 +376,16 @@ return array(
             'MelisCommerceCheckout/show-check-out-summary'          => __DIR__ . '/../view/plugins/checkout/show-check-out-summary.phtml',
             'MelisCommerceCheckout/show-check-out-confirm-summary'  => __DIR__ . '/../view/plugins/checkout/show-check-out-confirm-summary.phtml',
             'MelisCommerceCheckout/show-check-out-confirm'          => __DIR__ . '/../view/plugins/checkout/show-check-out-confirm.phtml',
+            
             'MelisCommerceCartMenuPlugin/show-cart-menu'            => __DIR__ . '/../view/plugins/checkout/show-cart-menu.phtml',
+            
             'MelisCommerceCategory/category-product-list'           => __DIR__ . '/../view/plugins/categories/category-product-list.phtml',
             'MelisCommerceCategory/category-list-filter'            => __DIR__ . '/../view/plugins/categories/category-list-filter.phtml',
             'MelisCommerceCategory/category-product-search-input'   => __DIR__ . '/../view/plugins/categories/category-product-search-input.phtml',
             'MelisCommerceCategory/category-price-filter'           => __DIR__ . '/../view/plugins/categories/category-price-filter.phtml',
             'MelisCommerceCategory/category-attribute-filter'       => __DIR__ . '/../view/plugins/categories/category-attribute-filterr.phtml',
             'MelisCommerceCategory/full-category-product-list'      => __DIR__ . '/../view/plugins/categories/full-category-product-list.phtml',
+            
             'MelisCommerceOrder/show-client-order-list'             => __DIR__ . '/../view/plugins/order/show-client-order-list.phtml',
             'MelisCommerceOrder/show-client-order'                  => __DIR__ . '/../view/plugins/order/show-client-order.phtml',
             'MelisCommerceOrder/show-client-order-address'          => __DIR__ . '/../view/plugins/order/show-client-order-address.phtml',

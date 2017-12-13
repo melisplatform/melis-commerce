@@ -4,18 +4,18 @@ return array(
     'plugins' => array(
         'meliscommerce' => array(
             'plugins' => array(
-                'MelisCommerceCartAddPlugin' => array(
+                'MelisCommerceAddToCartPlugin' => array(
                     'front' => array(
-                        'template_path' => 'MelisCommerceAddToCartShowPlugin/show-add-to-cart',
-                        
+                        'template_path' => array('MelisCommerceOrder/add-to-cart'),
+                        'id' => 'addToCart',
                         // Id of the variant
-                        'm_v_id' => null,
+                        'm_variant_id' => null,
                         // country id of the variant,
-                        'm_v_country' => 1,
+                        'm_variant_country' => -1,
                         // Quantity of the variant added
-                        'm_v_quantity' => 1,
+                        'm_variant_quantity' => 1,
                         // flag true if a form is submitted
-                        'm_is_submit' => false,
+                        'm_add_to_cart_is_submit' => false,
                         
                         // Form setup, elements and validators
                         'forms' => array(
@@ -31,33 +31,39 @@ return array(
                                 'elements' => array(
                                     array(
                                         'spec' => array(
-                                            'name' => 'm_v_id',
+                                            'name' => 'm_add_to_cart_is_submit',
                                             'type' => 'hidden',
                                         )
                                     ),
                                     array(
                                         'spec' => array(
-                                            'name' => 'm_v_country',
+                                            'name' => 'm_variant_id',
                                             'type' => 'hidden',
                                         )
                                     ),
                                     array(
                                         'spec' => array(
-                                            'name' => 'm_v_quantity',
+                                            'name' => 'm_variant_country',
+                                            'type' => 'hidden',
+                                        )
+                                    ),
+                                    array(
+                                        'spec' => array(
+                                            'name' => 'm_variant_quantity',
                                             'type' => 'Text',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_add_to_cart_quantity',
                                             ),
                                             'attributes' => array(
-                                                'id' => 'm_v_quantity',
+                                                'id' => 'm_variant_quantity',
+                                                'class' => 'form-control',
                                             )
                                         )
                                     ),
-                
                                 ),
                                 'input_filter' => array(
-                                    'm_v_id' => array(
-                                        'name'     => 'm_v_id',
+                                    'm_variant_id' => array(
+                                        'name'     => 'm_variant_id',
                                         'required' => true,
                                         'validators' => array(
                                             array(
@@ -74,8 +80,8 @@ return array(
                                             array('name' => 'StringTrim'),
                                         ),
                                     ),
-                                    'm_v_country' => array(
-                                        'name'     => 'm_v_country',
+                                    'm_variant_country' => array(
+                                        'name'     => 'm_variant_country',
                                         'required' => true,
                                         'validators' => array(
                                             array(
@@ -92,8 +98,8 @@ return array(
                                             array('name' => 'StringTrim'),
                                         ),
                                     ),
-                                    'm_v_quantity' => array(
-                                        'name'     => 'm_v_quantity',
+                                    'm_variant_quantity' => array(
+                                        'name'     => 'm_variant_quantity',
                                         'required' => true,
                                         'validators' => array(
                                             array(
@@ -123,7 +129,68 @@ return array(
                             )
                         )
                     ),
-                    'melis' => array(),
+                    'melis' => array(
+                        'subcategory' => array(
+                            'id' => 'CART',
+                            'title' => 'tr_meliscommerce_car_Cart'
+                        ),
+                        'name' => 'tr_meliscommerce_plugin_add_cart_name',
+                        'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceAddToCartPlugin.jpg',
+                        'description' => 'tr_meliscommerce_plugin_add_cart_description',
+                        // List the files to be automatically included for the correct display of the plugin
+                        // To overide a key, just add it again in your site module
+                        // To delete an entry, use the keyword "disable" instead of the file path for the same key
+                        'files' => array(
+                            'css' => array(
+                            ),
+                            'js' => array(
+                            ),
+                        ),
+                        'modal_form' => array(
+                            'melis_commerce_plugin_account_config' => array(
+                                'tab_title' => 'tr_front_plugin_common_tab_properties',
+                                'tab_icon'  => 'fa fa-cogs',
+                                'tab_form_layout' => 'MelisCommerce/plugin-common-form-config',
+                                'elements' => array(
+                                    array(
+                                        'spec' => array(
+                                            'name' => 'template_path',
+                                            'type' => 'MelisEnginePluginTemplateSelect',
+                                            'options' => array(
+                                                'label' => 'tr_melis_Plugins_Template',
+                                                'tooltip' => 'tr_melis_Plugins_Template tooltip',
+                                                'empty_option' => 'tr_melis_Plugins_Choose',
+                                                'disable_inarray_validator' => true,
+                                            ),
+                                            'attributes' => array(
+                                                'id' => 'id_page_tpl_id',
+                                                'class' => 'form-control',
+                                                'required' => 'required',
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                                'input_filter' => array(
+                                    'template_path' => array(
+                                        'name'     => 'template_path',
+                                        'required' => true,
+                                        'validators' => array(
+                                            array(
+                                                'name' => 'NotEmpty',
+                                                'options' => array(
+                                                    'messages' => array(
+                                                        \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_front_template_path_empty',
+                                                    ),
+                                                ),
+                                            ),
+                                        ),
+                                        'filters'  => array(
+                                        ),
+                                    ),
+                                )
+                            ),
+                        )
+                    ),
                 ),
             ),
         ),
