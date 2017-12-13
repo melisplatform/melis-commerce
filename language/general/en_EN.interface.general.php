@@ -47,6 +47,6 @@
 	    // Common validation messages
 	    'tr_meliscommerce_general_error' => 'Something is wrong, please contact administrator for assistance',
 	    'tr_meliscommerce_general_error_occured' => 'Error(s) occured',
-	    'tr_meliscommerce__input_empty' => 'The input is required and can\'t be empty',
+	    'tr_meliscommerce_input_empty' => 'The input is required and can\'t be empty',
 	    
 	);

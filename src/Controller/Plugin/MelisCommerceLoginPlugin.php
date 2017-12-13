@@ -23,7 +23,6 @@ use Zend\View\Model\ViewModel;
  * 
  * front() and back() are the only functions to create / update.
  * front() generates the website view
- * back() generates the plugin view in template edition mode (TODO)
  * 
  * Configuration can be found in $pluginConfig / $pluginFrontConfig / $pluginBackConfig
  * Configuration is automatically merged with the parameters provided when calling the plugin.

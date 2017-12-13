@@ -96,8 +96,17 @@ return array(
     'tr_meliscommerce_products_plugins_quantity_error' => 'Quantity must be numeric',
     
     'tr_meliscommerce_products_plugins_prd_id' => 'Product Id',
+    'tr_meliscommerce_products_plugins_prd_id tooltip' => 'The ID number of the product to be displayed',
     'tr_meliscommerce_products_plugins_prd_reference' => 'Product reference',
     'tr_meliscommerce_products_plugins_ptxt_field_short' => 'Product text',
     'tr_meliscommerce_products_plugins_pcat_order' => 'Product order',
     'tr_meliscommerce_products_plugins_prd_date_creation' => 'Product creation date',
+    
+    // MelisCommerceProductShowPlugin
+    'tr_meliscommerce_plugin_product_show_name' => 'Product show',
+    'tr_meliscommerce_plugin_product_show_description' => 'This plugin display the details of a particular product',
+    
+    // MelisCommerceAttributesShowPlugin
+    'tr_meliscommerce_plugin_attribute_show_name' => 'Attributes',
+    'tr_meliscommerce_plugin_attribute_show_description' => 'This plugin display the attributes of a particular product',
 );

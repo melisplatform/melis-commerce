@@ -47,6 +47,6 @@
 	    // Common validation messages
 	    'tr_meliscommerce_general_error' => 'Une erreur est survenue, veuillez contacter l\'administrateur',
 	    'tr_meliscommerce_general_error_occured' => 'Une erreur est survenue',
-	    'tr_meliscommerce__input_empty' => 'Le champ ne peut être vide',
+	    'tr_meliscommerce_input_empty' => 'Le champ ne peut être vide',
 	    
 	);

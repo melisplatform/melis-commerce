@@ -101,4 +101,12 @@ return array(
     'tr_meliscommerce_products_plugins_ptxt_field_short' => 'Texte du produit',
     'tr_meliscommerce_products_plugins_pcat_order' => 'Commande du produit',
     'tr_meliscommerce_products_plugins_prd_date_creation' => 'Date de création du produit',
+    
+    // MelisCommerceProductShowPlugin
+    'tr_meliscommerce_plugin_product_show_name' => 'Product show',
+    'tr_meliscommerce_plugin_product_show_description' => 'This plugin display the details of a particular product',
+    
+    // MelisCommerceAttributesShowPlugin
+    'tr_meliscommerce_plugin_attribute_show_name' => 'Attributes',
+    'tr_meliscommerce_plugin_attribute_show_description' => 'This plugin display the attributes of a particular product',
 );

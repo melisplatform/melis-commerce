@@ -264,4 +264,8 @@
 	    'tr_meliscommerce_plugin_delivery_address_name' => 'Adresse de livraison',
 	    'tr_meliscommerce_plugin_delivery_address_description' => 'Ce plugin affiche le formulaire de l\'adresse de livraison de l\'utilisateur',
 	    'tr_meliscommerce_plugin_delivery_address_delete_success' => 'Adresse de livraison supprimée avec succès',
+	    
+	    // MelisCommerceAccountPlugin
+	    'tr_meliscommerce_plugin_account_name' => 'Account',
+	    'tr_meliscommerce_plugin_account_description' => 'This plugin display the forms of the account, this plugin include forms of profile, billing address, delivery address, cart list, and order history of the account',
 	);

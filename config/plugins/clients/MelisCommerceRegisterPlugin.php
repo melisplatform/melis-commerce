@@ -470,7 +470,7 @@ return array(
                                                 'name' => 'NotEmpty',
                                                 'options' => array(
                                                     'messages' => array(
-                                                        \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce__input_empty',
+                                                        \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_input_empty',
                                                     ),
                                                 ),
                                             ),
