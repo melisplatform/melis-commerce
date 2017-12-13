@@ -269,6 +269,6 @@
 	    
 	    // MelisCommerceAccountPlugin
 	    'tr_meliscommerce_plugin_account_name' => 'Account',
-	    'tr_meliscommerce_plugin_account_description' => 'This plugin display the forms of the account, this plugin include forms of profile, billing address, delivery address, cart list, and order history of the account',
+	    'tr_meliscommerce_plugin_account_description' => 'Display the forms of the account, it includes the profile, billing address, delivery address, cart list and order history of the account',
 	    
 	);

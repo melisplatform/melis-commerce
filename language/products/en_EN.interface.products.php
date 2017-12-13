@@ -105,12 +105,12 @@ return array(
     'tr_meliscommerce_products_plugins_prd_date_creation' => 'Product creation date',
     
     // MelisCommerceProductShowPlugin
-    'tr_meliscommerce_plugin_product_show_name' => 'Product show',
-    'tr_meliscommerce_plugin_product_show_description' => 'This plugin display the details of a particular product',
+    'tr_meliscommerce_plugin_product_show_name' => 'Product display',
+    'tr_meliscommerce_plugin_product_show_description' => 'Display the details of a specific product',
     
     // MelisCommerceAttributesShowPlugin
     'tr_meliscommerce_plugin_attribute_show_name' => 'Attributes',
-    'tr_meliscommerce_plugin_attribute_show_description' => 'This plugin display the attributes of a particular product',
+    'tr_meliscommerce_plugin_attribute_show_description' => 'Display the attributes of a specific product',
 
     //Product List Plugin
     'tr_meliscommerce_plugin_product_list_name' => 'Product list',

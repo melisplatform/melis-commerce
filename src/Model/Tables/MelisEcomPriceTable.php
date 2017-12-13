@@ -11,7 +11,6 @@ namespace MelisCommerce\Model\Tables;
 
 use Zend\Db\Sql\Predicate\Expression;
 use Zend\Db\TableGateway\TableGateway;
-use Zend\Db\Sql\Predicate\Expression;
 
 class MelisEcomPriceTable extends MelisEcomGenericTable 
 {

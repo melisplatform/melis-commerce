@@ -126,5 +126,5 @@
 	    
 	    // MelisCommerceAddToCartPlugin
 	    'tr_meliscommerce_plugin_add_cart_name' => 'Add to cart',
-	    'tr_meliscommerce_plugin_add_cart_description' => 'This plugin allowing to add a product variant to the cart',
+	    'tr_meliscommerce_plugin_add_cart_description' => 'Give the possibility to add a variant to the cart',
 	);
