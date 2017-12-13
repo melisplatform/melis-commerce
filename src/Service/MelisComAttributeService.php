@@ -215,7 +215,7 @@ class MelisComAttributeService extends MelisComGeneralService
         return $arrayParameters['results'];
     }
     
-    public function getUsedAttributeValuesByProductId($productId, $langId = null)
+    public function getUsedAttributeValuesByProductId($productId, $status = false, $langId = null)
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -231,26 +231,27 @@ class MelisComAttributeService extends MelisComGeneralService
         $attrValueTable = $this->getServiceLocator()->get('MelisEcomAttributeValueTable');
         $attrTable = $this->getServiceLocator()->get('MelisEcomAttributeTable');
         $attrTransTable = $this->getServiceLocator()->get('MelisEcomAttributeTransTable');
-        $attributes = $attrTable->getUsedAttributeByProduct($arrayParameters['productId'], $arrayParameters['langId']);
+        $attributes = $attrTable->getUsedAttributeByProduct($arrayParameters['productId'], $arrayParameters['status'], $arrayParameters['langId']);
         
-        foreach($attributes as $data){
+        foreach($attributes as $data)
+        {
             $entAttribute = new MelisAttribute();
-            $data->{'attr_trans'} = array();
-            
-            $attributeValues = array();
             $entAttribute->setId($data->attr_id);
             
-            foreach($attrTransTable->getAttributeTransByAtributeId( $data->attr_id, $arrayParameters['langId']) as $attrTrans){
-                $data->{'attr_trans'} = array_merge($this->getAttributeTransById($attrTrans->atrans_id, $arrayParameters['langId']), $data->{'attr_trans'});
+            $data->{'attr_trans'} = array();
+            foreach($attrTransTable->getAttributeTransByAtributeId( $data->attr_id, $arrayParameters['langId']) as $attrTrans)
+            {
+                $data->{'attr_trans'}[] = $attrTrans; //array_merge($this->getAttributeTransById($attrTrans->atrans_id, $arrayParameters['langId']), $data->{'attr_trans'});
             }
-            
             $entAttribute->setAttribute($data);
-            foreach($attrValueTable->getUsedAttributeValuesByProduct($productId, $data->attr_id) as $attrVal){
+            
+            $attributeValues = array();
+            foreach($attrValueTable->getUsedAttributeValuesByProduct($productId, $data->attr_id) as $attrVal)
+            {
                 $attributeValues = array_merge($attributeValues, $this->getAttributeValuesById($attrVal->atval_id, $arrayParameters['langId']));
             }
             $entAttribute->setAttributeValues($attributeValues);
             $results[] = $entAttribute;
-           
         }        
         // Service implementation end
         

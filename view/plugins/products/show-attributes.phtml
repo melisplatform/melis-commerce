@@ -1,19 +1,25 @@
 <?php
-
-foreach($this->attributes as $attribute){
-    echo '<br>';
-    echo $attribute->getAttribute()->attr_trans[0]->atrans_name;
-    echo "<select>";
-
-    foreach($attribute->getAttributeValues() as $value){
-
-        $column = 'avt_v_'.$value->atype_column_value;
-        echo "<option>";
-        echo $value->atval_trans[0]->$column;
-        echo "</option>";
-
+    foreach($this->attributes as $attribute)
+    {
+        echo '<div class="form-group">';
+            echo '<label>';
+            echo $attribute->getAttribute()->attr_trans[0]->atrans_name;
+            echo '</label>';
+            echo '<select class="form-control" name="prd_attr_'.$attribute->getId().'">';
+            foreach($attribute->getAttributeValues() as $value)
+            {
+                $selected = '';
+                if(in_array($value->atval_id, $this->selectedAttr))
+                {
+                    $selected = 'selected';
+                }
+                
+                $column = 'avt_v_'.$value->atype_column_value;
+                echo '<option '.$selected.' value="'.$value->atval_id.'">';
+                echo $value->atval_trans[0]->$column;
+                echo '</option>';
+            }
+            echo '</select>';
+        echo '</div>';
     }
-
-    echo "</select>";
-}
 ?>
