@@ -4,10 +4,11 @@ return array(
     'plugins' => array(
         'meliscommerce' => array(
             'plugins' => array(
-                'MelisCommerceFullCategoryProductListPlugin' => array(
+                'MelisCommerceProductListPlugin' => array(
                     'front' => array(
-                        'template_path' => array('MelisCommerceCategory/full-category-product-list'),
-                        'id' => 'fullCategoryProductList',
+                        'template_path' => array('MelisCommerce/product-list' ),
+                        'id' => 'productList',
+                        'm_box_filter_categories_ids_selected' => array(),
                         
                         'sorter' => array(
                             /**
@@ -17,9 +18,8 @@ return array(
                             'm_col_name' => 'prd_id',
                             'm_order'   => 'ASC',
                         ),
-                        
-                        //'priceColumn' => 'price_net',// X
-                        
+                        'm_box_filter_price_column' => null,// X
+
                         // List filters
                         'filters' => array(
                             //search box filter
@@ -51,16 +51,17 @@ return array(
                             'm_pag_current' => 1,
                             'm_pag_nb_per_page' => 10,
                             'm_pag_nb_page_before_after' => 3,
+
                         ),
                     ),
                     'melis' => array(
                         'subcategory' => array(
-                            'id' => 'CATEGORIES',
-                            'title' => 'tr_MelisFrontSubcategoryPageCategory_Title'
+                            'id' => 'PRODUCTS',
+                            'title' => 'tr_meliscommerce_products_Products'
                         ),
-                        'name' => 'tr_meliscommerce_plugin_full_category_product_list_name',
-                        'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceFullCategoryProductListPlugin.jpg',
-                        'description' => 'tr_meliscommerce_plugin_full_category_product_list_description',
+                        'name' => 'tr_meliscommerce_plugin_product_list_name',
+                        'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceProductListPlugin.jpg',
+                        'description' => 'tr_meliscommerce_plugin_product_list_description',
                         // List the files to be automatically included for the correct display of the plugin
                         // To overide a key, just add it again in your site module
                         // To delete an entry, use the keyword "disable" instead of the file path for the same key
@@ -72,10 +73,10 @@ return array(
                         ),
                         'js_initialization' => array(),
                         'modal_form' => array(
-                            'melis_commerce_plugin_full_category_product_list_config' => array(
-                                'tab_title' => 'tr_meliscommerce_plugin_full_category_product_list_config',
+                            'melis_commerce_plugin_product_list_config' => array(
+                                'tab_title' => 'tr_meliscommerce_general_common_configuration',
                                 'tab_icon'  => 'fa fa-cogs',
-                                'tab_form_layout' => 'MelisCommerce/full-category-product-list-config',
+                                'tab_form_layout' => 'MelisCommerce/product-list-config',
                                 'elements' => array(
                                     array(
                                         'spec' => array(
@@ -85,6 +86,7 @@ return array(
                                                 'label' => 'tr_melis_Plugins_Template',
                                                 'empty_option' => 'tr_melis_Plugins_Choose',
                                                 'disable_inarray_validator' => true,
+                                                'tooltip' => 'tr_meliscommerce_plugin_template_tooltip',
                                             ),
                                             'attributes' => array(
                                                 'id' => 'id_page_tpl_id',
@@ -97,14 +99,15 @@ return array(
                                             'name' => 'm_col_name',
                                             'type' => 'Select',
                                             'options' => array(
-                                                'label' => 'Default Column order',
+                                                'label' => 'tr_meliscommerce_plugin_product_list_column_to_order',
                                                 'empty_option' => 'tr_melis_Plugins_Choose',
                                                 'disable_inarray_validator' => true,
                                                 'value_options' => array(
-                                                    'prd_reference' => 'Product Reference',
-                                                    'ptxt_field_short' => 'Product Text Title',
-                                                    'price' => 'Product Price',
+                                                    'prd_reference' => 'tr_meliscommerce_plugin_product_list_column_product_ref',
+                                                    'ptxt_field_short' => 'tr_meliscommerce_plugin_product_list_column_product_text_title',
+                                                    'price' => 'tr_meliscommerce_plugin_product_list_column_product_price',
                                                 ),
+                                                'tooltip' => 'tr_meliscommerce_plugin_product_list_column_to_order_tooltip',
                                             ),
                                             'attributes' => array(
                                                 'id' => 'm_col_name',
@@ -117,42 +120,17 @@ return array(
                                             'name' => 'm_order',
                                             'type' => 'Select',
                                             'options' => array(
-                                                'label' => 'Default Column order',
+                                                'label' => 'tr_meliscommerce_plugin_product_list_result_order',
                                                 'empty_option' => 'tr_melis_Plugins_Choose',
                                                 'disable_inarray_validator' => true,
                                                 'value_options' => array(
                                                     'ASC' => 'Ascending',
                                                     'DESC' => 'Descending',
                                                  ),
+                                                'tooltip' => 'tr_meliscommerce_plugin_product_list_result_order_tooltip',
                                             ),
                                             'attributes' => array(
                                                 'id' => 'm_order',
-                                                'class' => 'form-control',
-                                            ),
-                                        ),
-                                    ),
-                                    array(
-                                        'spec' => array(
-                                            'name' => 'm_box_filter_price_min',
-                                            'type' => 'Text',
-                                            'options' => array(
-                                                'label' => 'Min Price',
-                                            ),
-                                            'attributes' => array(
-                                                'id' => 'm_box_filter_price_min',
-                                                'class' => 'form-control',
-                                            ),
-                                        ),
-                                    ),
-                                    array(
-                                        'spec' => array(
-                                            'name' => 'm_box_filter_price_max',
-                                            'type' => 'Text',
-                                            'options' => array(
-                                                'label' => 'Max Price',
-                                            ),
-                                            'attributes' => array(
-                                                'id' => 'm_box_filter_price_max',
                                                 'class' => 'form-control',
                                             ),
                                         ),
@@ -165,6 +143,7 @@ return array(
                                                 'label' => 'tr_meliscommerce_plugin_category_product_list_country',
                                                 'empty_option' => 'tr_melis_Plugins_Choose',
                                                 'disable_inarray_validator' => true,
+                                                'tooltip' => 'tr_meliscommerce_plugin_product_list_country_tooltip',
                                             ),
                                             'attributes' => array(
                                                 'id' => 'm_box_filter_country',
@@ -214,7 +193,7 @@ return array(
                                                 'name' => 'NotEmpty',
                                                 'options' => array(
                                                     'messages' => array(
-                                                        \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_plugin_full_category_product_list_no_country',
+                                                        \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_plugin_product_list_no_country',
                                                     ),
                                                 ),
                                             ),
@@ -224,22 +203,105 @@ return array(
                                     ),
                                 )
                             ),
-                            'melis_commerce_plugin_full_category_product_list_tree_config' => array(
-                                'tab_title' => 'tr_meliscommerce_plugin_full_category_product_list_category',
-                                'tab_icon'  => 'fa fa-book',
-                                'tab_form_layout' => 'MelisCommerce/full-category-product-list-tree-config',
+                            'melis_commerce_plugin_product_list_price_config' => array(
+                                'tab_title' => 'tr_meliscommerce_plugin_product_list_price_config',
+                                'tab_icon'  => 'fa fa-money',
+                                'tab_form_layout' => 'MelisCommerce/product-list-price-config',
+                                'elements' => array(
+                                    array(
+                                        'spec' => array(
+                                            'name' => 'm_box_filter_price_column',
+                                            'type' => 'select',
+                                            'options' => array(
+                                                'label' => 'tr_meliscommerce_plugin_product_price_column',
+                                                'empty_option' => 'tr_melis_Plugins_Choose',
+                                                'disable_inarray_validator' => true,
+                                                'tooltip' => 'tr_meliscommerce_plugin_product_price_column_tooltip',
+                                                'value_options' => array(
+                                                    'price_net' => 'tr_meliscommerce_plugin_product_price_column_price_net',
+                                                    'price_gross' => 'tr_meliscommerce_plugin_product_price_column_price_gross',
+                                                    'price_vat_price' => 'tr_meliscommerce_plugin_product_price_column_price_vat_price',
+                                                    'price_other_tax_price' => 'tr_meliscommerce_plugin_product_price_column_price_other_tax_price',
+                                                ),
+                                            ),
+                                            'attributes' => array(
+                                                'id' => 'price_type_id',
+                                                'class' => 'form-control',
+                                            ),
+                                        ),
+                                    ),
+                                    array(
+                                        'spec' => array(
+                                            'name' => 'm_box_filter_price_min',
+                                            'type' => 'Text',
+                                            'options' => array(
+                                                'label' => 'tr_meliscommerce_plugin_product_price_range_min',
+                                                'tooltip' => 'tr_meliscommerce_plugin_product_price_column_min_price_tooltip',
+                                            ),
+                                            'attributes' => array(
+                                                'id' => 'm_box_filter_price_min',
+                                                'class' => 'form-control',
+                                            ),
+                                        ),
+                                    ),
+                                    array(
+                                        'spec' => array(
+                                            'name' => 'm_box_filter_price_max',
+                                            'type' => 'Text',
+                                            'options' => array(
+                                                'label' => 'tr_meliscommerce_plugin_product_price_range_max',
+                                                'tooltip' => 'tr_meliscommerce_plugin_product_price_column_max_price_tooltip',
+                                            ),
+                                            'attributes' => array(
+                                                'id' => 'm_box_filter_price_max',
+                                                'class' => 'form-control',
+                                            ),
+                                        ),
+                                    ),
+                                ),
                             ),
-                            'melis_commerce_plugin_full_category_product_list_pagination_config' => array(
-                                'tab_title' => 'Pagination',
+                            'melis_commerce_plugin_product_list_tree_config' => array(
+                                'tab_title' => 'tr_meliscommerce_plugin_product_list_category_config',
+                                'tab_icon'  => 'fa fa-book',
+                                'tab_form_layout' => 'MelisCommerce/product-list-tree-config',
+                            ),
+                            'melis_commerce_plugin_product_list_text_types_config' => array(
+                                'tab_title' => 'tr_meliscommerce_plugin_product_list_product_search_config',
+                                'tab_icon'  => 'fa fa-search',
+                                'tab_form_layout' => 'MelisCommerce/product-list-text-types-config',
+                                'elements' => array(
+                                    array(
+                                        'spec' => array(
+                                            'name' => 'm_box_filter_search',
+                                            'type' => 'Text',
+                                            'options' => array(
+                                                'label' => 'tr_meliscommerce_plugin_product_list_search',
+                                            ),
+                                            'attributes' => array(
+                                                'id' => 'm_box_filter_search',
+                                                'class' => 'form-control',
+                                            ),
+                                        ),
+                                    ),
+                                )
+                            ),
+                            'melis_commerce_plugin_product_list_attributes_config' => array(
+                                'tab_title' => 'tr_meliscommerce_plugin_product_list_attributes_config',
+                                'tab_icon'  => 'fa fa-cubes',
+                                'tab_form_layout' => 'MelisCommerce/product-list-attributes-config',
+                            ),
+                            'melis_commerce_plugin_product_list_pagination_config' => array(
+                                'tab_title' => 'tr_meliscommerce_plugin_product_list_pagination_config',
                                 'tab_icon'  => 'fa fa-fast-forward',
-                                'tab_form_layout' => 'MelisCommerce/full-category-product-list-pagination-config',
+                                'tab_form_layout' => 'MelisCommerce/product-list-pagination-config',
                                 'elements' => array(
                                     array(
                                         'spec' => array(
                                             'name' => 'm_pag_current',
                                             'type' => 'Text',
                                             'options' => array(
-                                                'label' => 'Default page number to show',
+                                                'label' => 'tr_meliscommerce_plugin_product_list_default_page_number',
+                                                'tooltip' => 'tr_meliscommerce_plugin_product_list_pagination_default_page_number_tooltip',
                                             ),
                                             'attributes' => array(
                                                 'id' => 'm_pag_current',
@@ -252,7 +314,8 @@ return array(
                                             'name' => 'm_pag_nb_per_page',
                                             'type' => 'Text',
                                             'options' => array(
-                                                'label' => 'Number of Products per page',
+                                                'label' => 'tr_meliscommerce_plugin_product_list_product_per_page',
+                                                'tooltip' => 'tr_meliscommerce_plugin_product_list_product_per_page_tooltip',
                                             ),
                                             'attributes' => array(
                                                 'id' => 'm_pag_nb_per_page',
@@ -265,7 +328,8 @@ return array(
                                             'name' => 'm_pag_nb_page_before_after',
                                             'type' => 'Text',
                                             'options' => array(
-                                                'label' => 'Number of pages in paginator before and after the current page',
+                                                'label' => 'tr_meliscommerce_plugin_product_list_number_of_pages',
+                                                'tooltip' => 'tr_meliscmsnews_plugin_pagination_nbPageBeforeAfter tooltip',
                                             ),
                                             'attributes' => array(
                                                 'id' => 'm_pag_nb_page_before_after',
@@ -274,31 +338,6 @@ return array(
                                         ),
                                     )
                                 )
-                            ),
-                            'melis_commerce_plugin_full_category_product_list_text_types_config' => array(
-                                'tab_title' => 'Product Search',
-                                'tab_icon'  => 'fa fa-search',
-                                'tab_form_layout' => 'MelisCommerce/full-category-product-list-text-types-config',
-                                'elements' => array(
-                                    array(
-                                        'spec' => array(
-                                            'name' => 'm_box_filter_search',
-                                            'type' => 'Text',
-                                            'options' => array(
-                                                'label' => 'Search',
-                                            ),
-                                            'attributes' => array(
-                                                'id' => 'm_box_filter_search',
-                                                'class' => 'form-control',
-                                            ),
-                                        ),
-                                    ),
-                                )
-                            ),
-                            'melis_commerce_plugin_full_category_product_list_attributes_config' => array(
-                                'tab_title' => 'Attributes',
-                                'tab_icon'  => 'fa fa-cubes',
-                                'tab_form_layout' => 'MelisCommerce/full-category-product-list-attributes-config',
                             ),
                         )
                     ),

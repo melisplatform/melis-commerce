@@ -1,0 +1,17 @@
+<?php
+    $priceFilter = $this->filterMenuPriceValue;
+?>
+<?php if($priceFilter['m_box_filter_price_min'] != 0 || $priceFilter['m_box_filter_price_max'] != 0) { ?>
+    <?php
+        $form = $this->product_price_range_form;
+        $form->prepare();
+        echo $this->form()->openTag($form);
+        echo $this->melisFieldCollection($form);
+        echo $this->form()->closeTag();
+    ?>
+<?php } else { ?>
+    <div>
+        <label class="alert alert-danger"><?= $this->translate('tr_meliscommerce_plugin_product_price_empty'); ?></label>
+    </div>
+<?php }?>
+

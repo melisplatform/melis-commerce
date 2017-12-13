@@ -31,7 +31,8 @@
 	    // Plugins
 	    'tr_PluginSection_meliscommerce' => 'Melis Commerce',
 	    'tr_meliscommerce_plugin_template' => 'Template',
-	    
+	    'tr_meliscommerce_plugin_template_tooltip' => 'Template used to display the plugin',
+
 	    // Plugins validations messages
 	    'tr_meliscommerce_plugin_no_column_order' => 'Please select an order column name',
 	    'tr_meliscommerce_plugin_no_order' => 'Please select an order',

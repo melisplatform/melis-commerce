@@ -373,7 +373,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         return $resultSet;
     }
     
-    public function getProductByNameTextTypeAttrIdsAndPrice($productSearchKey = null, $textTypeCode = array(), $attrValIds = array(), $categoryIds = array(), $minPrice, $maxPrice, $langId = null, $countryId = null, $status = 1, $start = 0, $limit = null, $order = null)
+    public function getProductByNameTextTypeAttrIdsAndPrice($productSearchKey = null, $textTypeCode = array(), $attrValIds = array(), $categoryIds = array(), $minPrice, $maxPrice, $langId = null, $countryId = null, $status = 1, $start = 0, $limit = null, $order = null, $priceColumn = null)
     {
         $variants = array();
         if(is_array($attrValIds) && !empty($attrValIds)) {
@@ -390,11 +390,15 @@ class MelisEcomProductTable extends MelisEcomGenericTable
                 array_push($variants, $val->vatv_variant_id);
             }
         }
+
+        if(empty($priceColumn)){
+            $priceColumn = 'price_net';
+        }
         
         $select = $this->tableGateway->getSql()->select();
         $select->columns(array(
             'prd_id',
-            'price' => new \Zend\Db\Sql\Expression('COALESCE(prod_price.price_net, var_price.price_net)'),
+            'price' => new \Zend\Db\Sql\Expression('COALESCE(prod_price.'.$priceColumn.', var_price.'.$priceColumn.')'),
             'country' => new \Zend\Db\Sql\Expression('COALESCE(prod_price.price_country_id, var_price.price_country_id)')
         ));
         $select->join('melis_ecom_product_text', 'melis_ecom_product_text.ptxt_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT)
@@ -463,8 +467,8 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         
         if($maxPrice) {
             $select->where->NEST->and
-            ->between('prod_price.price_net', (float) $minPrice, (float) $maxPrice)
-            ->or->between('var_price.price_net', (float) $minPrice, (float) $maxPrice);
+            ->between('prod_price.'.$priceColumn, (float) $minPrice, (float) $maxPrice)
+            ->or->between('var_price.'.$priceColumn, (float) $minPrice, (float) $maxPrice);
         }
         
         if(!is_null($order)){
@@ -484,7 +488,6 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         }
        
         $resultSet = $this->tableGateway->selectwith($select);
-//         echo $this->getRawSql($select);die();
 
         return $resultSet;
     }

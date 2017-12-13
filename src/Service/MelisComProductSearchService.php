@@ -233,7 +233,7 @@ class MelisComProductSearchService extends MelisComGeneralService
 	public function searchProductFull($search, $fieldsTypeCodes = array(),
 	                                  $attributeValuesIds = array(), $priceMin = null, $priceMax = null,
 	                                  $langId = null, $categoryId = array(), $countryId = null, 
-	                                  $onlyValid = true, $start = 0, $limit = null, $sort = null)
+	                                  $onlyValid = true, $start = 0, $limit = null, $sort = null, $priceColumn = null)
 	{
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -247,7 +247,7 @@ class MelisComProductSearchService extends MelisComGeneralService
 	    $productData = array();
 	    $data = $prodTable->getProductByNameTextTypeAttrIdsAndPrice($arrayParameters['search'], $arrayParameters['fieldsTypeCodes'], 
 	        $arrayParameters['attributeValuesIds'], $arrayParameters['categoryId'], (float) $arrayParameters['priceMin'], (float) $arrayParameters['priceMax'],  $arrayParameters['langId'],
-	        $arrayParameters['countryId'], (int) $arrayParameters['onlyValid'], $arrayParameters['start'], $arrayParameters['limit'], $arrayParameters['sort']
+	        $arrayParameters['countryId'], (int) $arrayParameters['onlyValid'], $arrayParameters['start'], $arrayParameters['limit'], $arrayParameters['sort'], $arrayParameters['priceColumn']
         );
        
         if($data) {

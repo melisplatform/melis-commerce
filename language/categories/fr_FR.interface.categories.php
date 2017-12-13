@@ -187,31 +187,19 @@
 	    'tr_meliscommerce_plugin_category_product_list_cat_order_cat_date_creation' => 'Date de création de la catégorie',
 	    'tr_meliscommerce_plugin_category_product_list_cat_order_catt_name' => 'Nom de la catégorie',
 	    'tr_meliscommerce_plugin_category_product_list_cat_order_cat_order' => 'Ordre de la catégorie',
-	    
-	    'tr_meliscommerce_plugin_full_category_product_list_name' => 'Advance product list',
-	    'tr_meliscommerce_plugin_full_category_product_list_description' => 'Le plugin affiche la liste des produits par catégorie',
-	    'tr_meliscommerce_plugin_full_category_product_list_config' => 'Configuration',
-	    'tr_meliscommerce_plugin_full_category_product_list_category' => 'Catalogues / Catégories',
-	    'tr_meliscommerce_plugin_full_category_product_list_no_country' => 'Veuillez choisir un pays',
-	    'tr_meliscommerce_plugin_full_category_product_list_only_valid' => 'Valide uniquement',
-	    
-	    'tr_meliscommerce_plugin_filter_menu_category_list_name' => 'Category tree',
-	    'tr_meliscommerce_plugin_filter_menu_category_list_description' => 'Le plugin affiche la liste des catégories',
-	    'tr_meliscommerce_plugin_filter_menu_category_list_config' => 'Configuration',
+
+        'tr_meliscommerce_plugin_include_root_category' => 'Inclure la catégorie ou le catalogue parent',
+        'tr_meliscommerce_plugin_category_tree_name' => 'Liste des catégories',
+	    'tr_meliscommerce_plugin_category_tree_description' => 'Le plugin affiche la liste des catégories',
+        'tr_meliscommerce_plugin_category_tree_template' => 'Template',
 	    'tr_meliscommerce_plugin_filter_menu_category_list_root_category' => 'Catalogue / Categorie',
 	    'tr_meliscommerce_plugin_filter_menu_category_list_root_category_empty' => 'Veuillez choisir un catalogue ou une catégorie parent',
 	    'tr_meliscommerce_plugin_filter_menu_category_list_root_category_tree' => 'Catalogues / Catégories',
 	    'tr_meliscommerce_plugin_filter_menu_category_list_only_valid' => 'Valide uniquement',
 	    'tr_meliscommerce_plugin_filter_menu_category_list_include_root_category' => 'Inclure la catégorie parente',
-	    
-	    'tr_meliscommerce_plugin_filter_menu_product_search_input_name' => 'Search field',
-	    'tr_meliscommerce_plugin_filter_menu_product_search_input_description' => 'Le plugin affiche la recherche saisie pour la recherche de produit',
-	    
-	    'tr_meliscommerce_plugin_category_price_filter_name' => 'Price range',
-	    'tr_meliscommerce_plugin_category_price_filter_description' => 'Le plugin affiche les prix minimum et maximum du produit',
-	    
-	    'tr_meliscommerce_plugin_filter_product_attribute_name' => 'Attribute list',
-	    'tr_meliscommerce_plugin_filter_product_attribute_description' => 'Le plugin affiche l\'attribut et ses valeurs',
+        'tr_meliscommerce_plugin_include_root_category_tooltip' => 'Inclut la catégorie / le catalogue parent dans la liste',
+        'tr_meliscommerce_plugin_highlighted_category_note' => 'La catégorie surlignée est affichée avec ses sous-catégories.',
+        'tr_meliscommerce_plugin_checked_category_note' => 'Les catégories cochées pré-filtrent le résulat.',
 	    
         'tr_meliscommerce_plugin_category_product_list_product' => 'Produits',
 	    

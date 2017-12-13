@@ -11,11 +11,10 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
-use Zend\Session\Container;
 use Zend\View\Model\ViewModel;
 /**
  * This plugin implements the business logic of the
- * "Filter menu attribute value" plugin.
+ * "Product search box" plugin.
  * 
  * Please look inside app.plugins.products.php for possible awaited parameters
  * in front and back function calls.
@@ -28,30 +27,30 @@ use Zend\View\Model\ViewModel;
  * Merge detects automatically from the route if rendering must be done for front or back.
  * 
  * How to call this plugin without parameters:
- * $plugin = $this->MelisCommerceFilterMenuAttributeValueBoxPlugin();
+ * $plugin = $this->MelisCommerceProductSearchPlugin();
  * $pluginView = $plugin->render();
  *
  * How to call this plugin with custom parameters:
- * $plugin = $this->MelisCommerceFilterMenuAttributeValueBoxPlugin();
+ * $plugin = $this->MelisCommerceProductSearchPlugin();
  * $parameters = array(
  *      'template_path' => 'MelisDemoCms/your-custom-template'
  * );
  * $pluginView = $plugin->render($parameters);
  * 
  * How to add to your controller's view:
- * $view->addChild($pluginView, 'filterMenuAttributeValue');
+ * $view->addChild($pluginView, 'filterMenuProductSearch');
  * 
  * How to display in your controller's view:
- * echo $this->filterMenuAttributeValue;
+ * echo $this->filterMenuProductSearch;
  * 
  * 
  */
-class MelisCommerceFilterMenuAttributeValueBoxPlugin extends MelisTemplatingPlugin
+class MelisCommerceProductSearchPlugin extends MelisTemplatingPlugin
 {
     public function __construct($updatesPluginConfig = array())
     {
         $this->configPluginKey = 'meliscommerce';
-        $this->pluginXmlDbKey = 'MelisCommerceFilterMenuAttributeValueBoxPlugin';
+        $this->pluginXmlDbKey = 'MelisCommerceProductSearchPlugin';
         parent::__construct($updatesPluginConfig);
     }
     
@@ -61,22 +60,12 @@ class MelisCommerceFilterMenuAttributeValueBoxPlugin extends MelisTemplatingPlug
      */
     public function front()
     {
-        $container = new Container('melisplugins');
-        $langId = $container['melis-plugins-lang-id'];
-        
         $data = $this->getFormData();
-        
-        $attributeId = !empty($data['attribute_id']) ? $data['attribute_id'] : null;
-        $selectedAttrVal = !empty($data['m_box_filter_attribute_values_ids_selected']) ? $data['m_box_filter_attribute_values_ids_selected'] : array();
-        
-        // Product Attributes Start
-        $attrSrv = $this->getServiceLocator()->get('MelisComAttributeService');
-        $attrs = $attrSrv->getAttributeListAndValues($attributeId, true, true, $langId);
+        $searchKey = !empty($data['m_box_filter_search']) ? $data['m_box_filter_search'] : '';
         
         // Create an array with the variables that will be available in the view
         $viewVariables = array(
-            'filterMenuAttributeValue' => $attrs,
-            'selectedAttributes' => $selectedAttrVal,
+            'searchKey' => $searchKey
         );
         
         // return the variable array and let the view be created
@@ -191,22 +180,22 @@ class MelisCommerceFilterMenuAttributeValueBoxPlugin extends MelisTemplatingPlug
     public function loadDbXmlToPluginConfig()
     {
         $configValues = array();
-    
+        
         $xml = simplexml_load_string($this->pluginXmlDbValue);
-    
+        
         if ($xml)
         {
-            if (!empty($xml->attribute_id))
+            if (!empty($xml->template_path))
             {
-                $configValues['attribute_id'] = (string)$xml->attribute_id;
+                $configValues['template_path'] = (string)$xml->template_path;
             }
-            
-            if (!empty($xml->m_box_filter_attribute_values_ids_selected))
+
+            if (!empty($xml->m_box_filter_search))
             {
-                $configValues['m_box_filter_attribute_values_ids_selected'] = json_decode((string)$xml->m_box_filter_attribute_values_ids_selected);
+                $configValues['m_box_filter_search'] = (string)$xml->m_box_filter_search;
             }
         }
-    
+        
         return $configValues;
     }
     
@@ -217,25 +206,24 @@ class MelisCommerceFilterMenuAttributeValueBoxPlugin extends MelisTemplatingPlug
     public function savePluginConfigToXml($parameters)
     {
         $xmlValueFormatted = '';
-    
+        
         // template_path is mendatory for all plugins
-    
-        if(!empty($parameters['attribute_id']))
+        if (!empty($parameters['template_path']))
         {
-            $xmlValueFormatted .= "\t\t" . '<attribute_id><![CDATA[' . $parameters['attribute_id'] . ']]></attribute_id>';
+            $xmlValueFormatted .= "\t\t" . '<template_path><![CDATA[' . $parameters['template_path'] . ']]></template_path>';
+        }
+
+        if(!empty($parameters['m_box_filter_search']))
+        {
+            $xmlValueFormatted .= "\t\t" . '<m_box_filter_search><![CDATA[' . $parameters['m_box_filter_search'] . ']]></m_box_filter_search>';
         }
         
-        if(!empty($parameters['m_box_filter_attribute_values_ids_selected']))
-        {
-            $xmlValueFormatted .= "\t\t" . '<m_box_filter_attribute_values_ids_selected><![CDATA[' . json_encode($parameters['m_box_filter_attribute_values_ids_selected']) . ']]></m_box_filter_attribute_values_ids_selected>';
-        }
-    
         // Something has been saved, let's generate an XML for DB
         if (!empty($xmlValueFormatted))
         {
             $xmlValueFormatted = "\t".'<'.$this->pluginXmlDbKey.' id="'.$parameters['melisPluginId'].'">'.$xmlValueFormatted."\t".'</'.$this->pluginXmlDbKey.'>'."\n";
         }
-    
+        
         return $xmlValueFormatted;
     }
 }

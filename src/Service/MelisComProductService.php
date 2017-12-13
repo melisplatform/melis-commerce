@@ -386,7 +386,7 @@ class MelisComProductService extends MelisComGeneralService
 	    // Service implementation start
 	    $priceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');
 	    $productPrice = $priceTable->getProductFinalPrice($arrayParameters['productId'], $arrayParameters['countryId'])->current();
-	    
+
 	    if(!empty($productPrice))
 	    {
 	        // Just to be sure that data on Price is in Numeric data type
@@ -1090,7 +1090,7 @@ class MelisComProductService extends MelisComGeneralService
 	     * Product prices
 	     */
 	    $prdPrice = $this->getProductFinalPrice($arrayParameters['productId'], $arrayParameters['countryId']);
-	    
+
 	    $prdPriceDetails = array(
 	        'prd_currency_symbol' => (!empty($prdPrice->cur_symbol)) ? $prdPrice->cur_symbol : '',
 	        'prd_currency_code' => (!empty($prdPrice->cur_code)) ? $prdPrice->cur_code : '',
@@ -1136,6 +1136,34 @@ class MelisComProductService extends MelisComGeneralService
 	    
 	    return $arrayParameters['results'];
 	}
+
+    /**
+     * Function to get Maximum / Minimum Price
+     * Depending on price column and the table (Product, Variant)
+     *
+     * @param null $type
+     * @param string $priceColumn
+     * @param string $from
+     * @return mixed
+     */
+    public function getMaximumMinimumPrice($type = null, $priceColumn = "price_net", $from = "product")
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_product_get_maximum_minimum_price_start', $arrayParameters);
+
+        $priceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');
+        $result = $priceTable->getMaximumMinimumPrice($arrayParameters['type'], $arrayParameters['priceColumn'], $arrayParameters['from'])->current();
+
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $result;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_product_get_maximum_minimum_price_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
 	
 	/**
 	 * Returns true if the OS is Windows

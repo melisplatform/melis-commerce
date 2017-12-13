@@ -9,6 +9,7 @@
 
 namespace MelisCommerce\Model\Tables;
 
+use Zend\Db\Sql\Predicate\Expression;
 use Zend\Db\TableGateway\TableGateway;
 use Zend\Db\Sql\Predicate\Expression;
 
@@ -133,6 +134,35 @@ class MelisEcomPriceTable extends MelisEcomGenericTable
         }
         
         $select->order($column.' '.$order);
+        $resultSet = $this->tableGateway->selectwith($select);
+        return $resultSet;
+    }
+
+    /**
+     *
+     * Function to get the minimum or maximum value
+     * of product price.
+     * Price will depend on the $priceType value
+     *
+     * @param $type - Maximum or Minimum
+     * @param $priceColumn - price type of the product(price_net, price_gross, price_vat_price, etc.)
+     * @param $from - specify where do we get the price (product or from variant)
+     * @return mixed
+     */
+    public function getMaximumMinimumPrice($type, $priceColumn = "price_net", $from = "product")
+    {
+        $select = $this->tableGateway->getSql()->select();
+        if($type == "max") {
+            $select->columns(array('max_price' => new Expression('MAX(' . $priceColumn . ')')));
+        }elseif($type == "min"){
+            $select->columns(array('min_price' => new Expression('MIN(' . $priceColumn . ')')));
+        }
+        if($from == "product") {
+            $select->where->isNotNull('price_prd_id');
+        }else if($from == "variant"){
+            $select->where->isNotNull('price_var_id');
+        }
+
         $resultSet = $this->tableGateway->selectwith($select);
         return $resultSet;
     }

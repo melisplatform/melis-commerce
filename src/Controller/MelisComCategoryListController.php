@@ -171,7 +171,7 @@ class MelisComCategoryListController extends AbstractActionController
         
         $idAndNameOnly = $this->params()->fromQuery('idAndNameOnly');
         $categoriesChecked = $this->params()->fromQuery('categoriesChecked');
-        
+
         if (!empty($openStateParent)){
             $openStateParent = explode(',', $openStateParent);
         }
@@ -183,8 +183,7 @@ class MelisComCategoryListController extends AbstractActionController
         // Getting Category Tree View form the Category Service
         $melisComCategoryService = $this->getServiceLocator()->get('MelisComCategoryService');
         $categoryListData = $melisComCategoryService->getCategoryTreeview(null, $currentLang->elang_id);
-        
-//         print_r($categoryListData);
+
         // Category Tree View Preparation
         $categoryList = $this->prepareCategoryDataForTreeView($categoryListData, $selected, $openStateParent, $idAndNameOnly, $categoriesChecked, $currentLang->elang_id);
         
@@ -202,7 +201,7 @@ class MelisComCategoryListController extends AbstractActionController
      * @return int Array[]
      */
     public function prepareCategoryDataForTreeView($categoryList, $selected = false, $openedStateParent = array(), $idAndNameOnly = false, $categoryChecked = array(), $langId = null){
-        
+
         $translator = $this->getServiceLocator()->get('translator');
         
         $melisEcomProductCategoryTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');

@@ -218,13 +218,8 @@ class Module
 	    
     	    // categories plugin configs
     	    include __DIR__ . '/../config/plugins/categories/MelisCommerceCategoryProductListPlugin.php',
-    	    include __DIR__ . '/../config/plugins/categories/MelisCommerceFullCategoryProductListPlugin.php',
-    	    
-    	    include __DIR__ . '/../config/plugins/categories/MelisCommerceFilterMenuCategoryListPlugin.php',
-    	    include __DIR__ . '/../config/plugins/categories/MelisCommerceFilterMenuProductSearchBoxPlugin.php',
-    	    include __DIR__ . '/../config/plugins/categories/MelisCommerceFilterMenuPriceValueBoxPlugin.php',
-    	    include __DIR__ . '/../config/plugins/categories/MelisCommerceFilterMenuAttributeValueBoxPlugin.php',
-    	    
+            include __DIR__ . '/../config/plugins/categories/MelisCommerceCategoryTreePlugin.php',
+
     	    // clients plugin configs
     	    include __DIR__ . '/../config/plugins/clients/MelisCommerceLoginPlugin.php',
     	    include __DIR__ . '/../config/plugins/clients/MelisCommerceLostPasswordGetEmailPlugin.php',
@@ -252,9 +247,13 @@ class Module
     	    include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderMessagesPlugin.php',
     	    
     	    // products plugin configs
+            include __DIR__ . '/../config/plugins/products/MelisCommerceProductSearchPlugin.php',
     	    include __DIR__ . '/../config/plugins/products/MelisCommerceProductShowPlugin.php',
     	    include __DIR__ . '/../config/plugins/products/MelisCommerceAttributesShowPlugin.php',
-    	    include __DIR__ . '/../config/plugins/products/MelisCommerceProductsRelatedPlugin.php',
+    	    include __DIR__ . '/../config/plugins/products/MelisCommerceRelatedProductsPlugin.php',
+            include __DIR__ . '/../config/plugins/products/MelisCommerceProductListPlugin.php',
+            include __DIR__ . '/../config/plugins/products/MelisCommerceProductPriceRangePlugin.php',
+            include __DIR__ . '/../config/plugins/products/MelisCommerceProductAttributePlugin.php',
     	    
     	);
     	

@@ -85,7 +85,7 @@ class MelisComCategoryService extends MelisComGeneralService
         $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
         
         $dataCategoryData = $melisEcomCategoryTable->getCategoryChildrenListById($categoryId, $langId, $onlyValid, $start, $limit, $fatherId);
-        
+
         foreach ($dataCategoryData As $val){
             
             // Retrieving category entity
@@ -138,33 +138,33 @@ class MelisComCategoryService extends MelisComGeneralService
         // Getting Categories under Category ID
         $melisCategoryDataRes = $melisEcomCategoryTable->getEntryById($arrayParameters['categoryId']);
         $category = $melisCategoryDataRes->current();
-        
+
         if (!empty($category))
         {
             // Id
             $melisCategory->setId($category->cat_id);
-            
+
             // category
             $melisCategory->setCategory($category);
-            
+
             // trasnalations
             $catTrans = $this->getCategoryTranslationById($category->cat_id, $arrayParameters['langId'], $arrayParameters['onlyValid']);
             $melisCategory->setTranslations($catTrans);
-            
+
             // seo
-            $catSeo = $this->getCategorySeoById($category->cat_id,  $arrayParameters['langId']);
+            $catSeo = $this->getCategorySeoById($category->cat_id, $arrayParameters['langId']);
             $melisCategory->setSeo($catSeo);
-            
+
             // countries
             $catCountries = $this->getCategoryCountriesById($category->cat_id, $arrayParameters['onlyValid']);
             $melisCategory->setCountries($catCountries);
-            
+
             // children
             $catChildren = $this->getCategoryListByIdRecursive(null, $arrayParameters['langId'], $arrayParameters['onlyValid'], null, null, $category->cat_id);
-            
+
             $melisCategory->setChildren($catChildren);
         }
-        
+
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $melisCategory;
         // Service implementation end
@@ -386,9 +386,9 @@ class MelisComCategoryService extends MelisComGeneralService
         
         foreach ($subCats As $key => $val)
         {
-            $catProducts = $prdSrv->getProductsByCategoryId($val->cat_id, $arrayParameters['onlyvalid'], $langId);
+            $relProducts = $prdSrv->getProductsByCategoryId($val->cat_id, $arrayParameters['onlyvalid'], $langId);
             
-            $products = ArrayUtils::merge($products, $catProducts);
+            $products = ArrayUtils::merge($products, $relProducts);
             
             $products = $this->getSubCategoriesProducts($val->cat_id, $products, $arrayParameters['langId']);
         }
@@ -945,9 +945,10 @@ class MelisComCategoryService extends MelisComGeneralService
         $onlyValid= $arrayParameters['onlyValid'];
         
         $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
-        $categoryData = $melisEcomCategoryTable->getCategoryByFatherId($fatherId);
+        $categoryData = $melisEcomCategoryTable->getCategoryByFatherId($fatherId, $onlyValid);
+
         $catData = $categoryData->toArray();
-        
+
         /**
          * TEMPORARY, NEED TO CREATE GENERAL HELPER FOR THIS
          */
@@ -958,7 +959,7 @@ class MelisComCategoryService extends MelisComGeneralService
             // Getting Category Name
             $categoryData = $this->getCategoryById($val['cat_id'], $langId, $onlyValid);
             $category = $categoryData->getTranslations();
-            
+
             $catName = '';
             $catNameLangName = '';
             foreach ($category As $val)
@@ -976,20 +977,22 @@ class MelisComCategoryService extends MelisComGeneralService
                     break;
                 }
             }
-            
+
             $catData[$key]['text'] = $escaper->escapeHtml($catName); //$tool->escapeHtml($catName);
             $catData[$key]['textLang'] = (!empty($catNameLangName)) ? '('.$catNameLangName.')' : '';
-            
+
             $fatherId = $catData[$key]['cat_id'];
-            
-            $catData[$key]['children'] = $this->getCategoryTreeview($fatherId, $langId);
+
+            $catData[$key]['children'] = $this->getCategoryTreeview($fatherId, $langId, $onlyValid);
+
         }
-        
+
         $results = $catData;
         // Service implementation end
         
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $results;
+
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_get_category_tree_view_end', $arrayParameters);
         
@@ -1018,23 +1021,23 @@ class MelisComCategoryService extends MelisComGeneralService
         try
         {
             
-            $catProducts = $arrayParameters['categoryProducts'];
+            $relProducts = $arrayParameters['categoryProducts'];
             
             // Getting category Product Order
-            $categoryId = $catProducts['pcat_cat_id'];
+            $categoryId = $relProducts['pcat_cat_id'];
             $categoryProductsOrder = $this->getCategoryProductsById($categoryId);
             
             // only increment pcat_order if it is not set
-            if(!$catProducts['pcat_order']) {
-                $catProducts['pcat_order'] = count($categoryProductsOrder) + 1;
+            if(!$relProducts['pcat_order']) {
+                $relProducts['pcat_order'] = count($categoryProductsOrder) + 1;
             }
             
             if((int) $arrayParameters['categoryProductsId']) {
-                $successFlag = $melisEcomProductCategoryTable->save($catProducts, $arrayParameters['categoryProductsId']);
+                $successFlag = $melisEcomProductCategoryTable->save($relProducts, $arrayParameters['categoryProductsId']);
             }
             else {
-                unset($catProducts['pcat_id']);
-                $successFlag = $melisEcomProductCategoryTable->save($catProducts);
+                unset($relProducts['pcat_id']);
+                $successFlag = $melisEcomProductCategoryTable->save($relProducts);
             }
             
             
@@ -1086,11 +1089,11 @@ class MelisComCategoryService extends MelisComGeneralService
                 }
             }
             
-            $catProductsOrder = array(
+            $relProductsOrder = array(
                 'pcat_order' => $orderNum
             );
             
-            $melisEcomProductCategoryTable->save($catProductsOrder, $catProdId);
+            $melisEcomProductCategoryTable->save($relProductsOrder, $catProdId);
             $successFlag = true;
         }
         catch(\Exception $e)
@@ -1136,7 +1139,7 @@ class MelisComCategoryService extends MelisComGeneralService
                 $categoryProducts = $melisEcomProductCategoryTable->getCategoryProductsByCategoryId($categoryId)->toArray();
                 
                 $ctr = 1;
-                $catProducts = array();
+                $relProducts = array();
                 foreach ($categoryProducts As $key => $val)
                 {
                     // Saving new Category Product Order

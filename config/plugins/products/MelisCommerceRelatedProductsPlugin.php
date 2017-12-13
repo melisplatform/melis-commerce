@@ -4,30 +4,21 @@ return array(
     'plugins' => array(
         'meliscommerce' => array(
             'plugins' => array(
-                'MelisCommerceFilterMenuProductSearchBoxPlugin' => array(
+                'MelisCommerceRelatedProductsPlugin' => array(
                     'front' => array(
-                        'template_path' => array('MelisCommerceCategory/category-product-search-input'),
-                        'id' => 'porductSearchInput',
-                        // Search box filter
-                        'm_box_filter_search' => '',
-                        // List the files to be automatically included for the correct display of the plugin
-                        // To overide a key, just add it again in your site module
-                        // To delete an entry, use the keyword "disable" instead of the file path for the same key
-                        'files' => array(
-                            'css' => array(
-                            ),
-                            'js' => array(
-                            ),
-                        ),
+                        'template_path' => array('MelisCommerceProduct/related-products'),
+                        'id' => 'productRelatedPlugin',
+                        // product id
+                        'm_p_id' => NULl,
                     ),
                     'melis' => array(
                         'subcategory' => array(
-                            'id' => 'CATEGORIES',
-                            'title' => 'tr_MelisCommerceFilterMenuCategoryListPlugin_Title'
+                            'id' => 'PRODUCTS',
+                            'title' => 'tr_meliscommerce_products_Products'
                         ),
-                        'name' => 'tr_meliscommerce_plugin_filter_menu_product_search_input_name',
-                        'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceFilterMenuProductSearchBoxPlugin.jpg',
-                        'description' => 'tr_meliscommerce_plugin_filter_menu_product_search_input_description',
+                        'name' => 'tr_meliscommerce_plugin_related_product_name',
+                        'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceRelatedProducts.jpg',
+                        'description' => 'tr_meliscommerce_plugin_related_product_description',
                         // List the files to be automatically included for the correct display of the plugin
                         // To overide a key, just add it again in your site module
                         // To delete an entry, use the keyword "disable" instead of the file path for the same key
@@ -35,13 +26,15 @@ return array(
                             'css' => array(
                             ),
                             'js' => array(
+
                             ),
                         ),
+                        'js_initialization' => array(),
                         'modal_form' => array(
-                            'melis_commerce_plugin_category_product_search_box_config' => array(
+                            'melis_commerce_plugin_related_products_config' => array(
                                 'tab_title' => 'tr_meliscommerce_general_common_configuration',
                                 'tab_icon'  => 'fa fa-cogs',
-                                'tab_form_layout' => 'MelisCommerce/category-product-search-box-config',
+                                'tab_form_layout' => 'MelisCommerce/related-products-config',
                                 'elements' => array(
                                     array(
                                         'spec' => array(
@@ -51,9 +44,26 @@ return array(
                                                 'label' => 'tr_melis_Plugins_Template',
                                                 'empty_option' => 'tr_melis_Plugins_Choose',
                                                 'disable_inarray_validator' => true,
+                                                'tooltip' => 'tr_meliscommerce_plugin_template_tooltip',
                                             ),
                                             'attributes' => array(
                                                 'id' => 'id_page_tpl_id',
+                                                'class' => 'form-control',
+                                                'required' => true,
+                                            ),
+                                        ),
+                                    ),
+                                    array(
+                                        'spec' => array(
+                                            'name' => 'm_p_id',
+                                            'type' => 'EcomPluginProductListSelect',
+                                            'options' => array(
+                                                'label' => 'tr_meliscommerce_plugin_related_product_default_product',
+                                                'empty_option' => 'tr_melis_Plugins_Choose',
+                                                'tooltip' => 'tr_meliscommerce_plugin_related_product_default_product_tooltip',
+                                            ),
+                                            'attributes' => array(
+                                                'id' => 'm_p_id',
                                                 'class' => 'form-control',
                                             ),
                                         ),
@@ -76,10 +86,18 @@ return array(
                                         'filters'  => array(
                                         ),
                                     ),
+                                    'm_p_id' => array(
+                                        'name'     => 'm_p_id',
+                                        'required' => false,
+                                        'validators' => array(
+                                        ),
+                                        'filters'  => array(
+                                        ),
+                                    ),
                                 )
                             ),
-                        )
-                    ),
+                        ),
+                    )
                 ),
             ),
         ),
