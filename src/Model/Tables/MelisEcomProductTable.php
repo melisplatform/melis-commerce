@@ -454,11 +454,9 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         if(!empty($variants)){
             $select->where->in('melis_ecom_variant.var_id', $variants);
         }
-        
+
         if(!is_null($countryId)) {
             $select->where->and->equalTo(new \Zend\Db\Sql\Expression('COALESCE(prod_price.price_country_id, var_price.price_country_id)'), $countryId);
-        }else{
-            $select->where->and->equalTo(new \Zend\Db\Sql\Expression('COALESCE(prod_price.price_country_id, var_price.price_country_id)'), 0);
         }
         
         if(is_array($categoryIds) && !empty($categoryIds)) {
