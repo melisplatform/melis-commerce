@@ -80,7 +80,7 @@ return array(
                             'melis_commerce_plugin_filter_menu_category_list_tree_config' => array(
                                 'tab_title' => 'tr_meliscommerce_plugin_filter_menu_category_list_root_category_tree',
                                 'tab_icon'  => 'fa fa-book',
-                                'tab_form_layout' => 'MelisCommerce/category-list-filter-tree-config',
+                                'tab_form_layout' => 'MelisCommerce/category-tree-config',
                                 'elements' => array(
                                     array(
                                         'spec' => array(

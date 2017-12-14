@@ -16,6 +16,8 @@ class EcomPluginProductListSelectFactory extends MelisSelectFactory
 {
     protected function loadValueOptions(ServiceLocatorInterface $formElementManager)
     {
+        $valueoptions = array();
+
         $serviceManager = $formElementManager->getServiceLocator();
 
         $productTble = $serviceManager->get('MelisEcomProductTable');

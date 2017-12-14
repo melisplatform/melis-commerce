@@ -82,7 +82,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         if(is_array($categoryIds) && !empty($categoryIds)) {
             $select->where->and->in('melis_ecom_product_category.pcat_cat_id', $categoryIds);
         }
-        
+
         if(!is_null($countryId)) {
             $select->where('melis_ecom_price.price_country_id = '.$countryId);
         }
@@ -176,7 +176,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         
         $clause['melis_ecom_product.prd_id'] = (int) $productId;
         
-        if($countryId) {
+        if(!is_null($countryId)) {
             $clause['product_price.price_country_id'] = (int) $countryId;
         }
         
