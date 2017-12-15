@@ -294,7 +294,7 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
     public function getFormData()
     {
         $data = parent::getFormData();
-        $data['m_category_ids'] = $this->pluginFrontConfig['m_category_option']['m_category_ids'];
+        $data['m_category_ids'] = (!empty($this->pluginFrontConfig['m_category_option']['m_category_ids'])) ? $this->pluginFrontConfig['m_category_option']['m_category_ids'] : array();
         return $data;
     }
     
