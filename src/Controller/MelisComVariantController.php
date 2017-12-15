@@ -788,7 +788,7 @@ class MelisComVariantController extends AbstractActionController
         //set general stocks
         $emptyDate = '0000-00-00 00:00:00';
         foreach($stockList as $stock){
-            if($stock->stock_country_id == 0){
+            if($stock->stock_country_id == -1){
                 $checkDate = (string) $stock->stock_next_fill_up;
                 if($checkDate != $emptyDate) {
                     $stock->stock_next_fill_up = $this->getTool()->dateFormatLocale($stock->stock_next_fill_up);
@@ -801,7 +801,7 @@ class MelisComVariantController extends AbstractActionController
             }
         }
         $data[0]['name'] = 'General';
-        $data[0]['stock_country_id'] = 'a0';
+        $data[0]['stock_country_id'] = '-1';
         //set country stocks
         foreach($countries as $country){            
             foreach($stockList as $stock){
