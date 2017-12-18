@@ -68,7 +68,7 @@
 		<div class="form-group">
     		<div class="alert alert-warning hidden">"<strong></strong>" <?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_search_not_found')?></div>
     		<div id="catTreepluginConfig" data-langlocale="<?php echo $this->currentLangLocale ?>"></div>
-    		<form id="catTreepluginConfig_form" data-input-field="m_category_ids">
+    		<form id="catTreepluginConfig_form" data-input-field-selected="m_category_ids">
         		<?php if (!empty($this->formData['m_category_ids'])){?>
             		<?php foreach ($this->formData['m_category_ids'] As $val){?>
             			<input type="hidden" name="m_category_ids[]" value="<?php echo $val?>">

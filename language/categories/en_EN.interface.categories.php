@@ -173,7 +173,7 @@
 	    // PLUGINS
 	    'tr_meliscommerce_plugin_sub_categories_title' => 'Categories',
 	    
-	    'tr_meliscommerce_plugin_category_product_list_name' => 'Simple product list',
+	    'tr_meliscommerce_plugin_category_product_list_name' => 'Product list',
 	    'tr_meliscommerce_plugin_category_product_list_description' => 'The plugin display the Product list by Category',
 	    'tr_meliscommerce_plugin_category_product_list_config' => 'Configuration',
 	    'tr_meliscommerce_plugin_category_product_list_category' => 'Catalogs / Categories',
@@ -182,6 +182,7 @@
 	    'tr_meliscommerce_plugin_category_product_list_country tooltip' => 'Select the country to assign the corresponding currency and price of the products',
 	    'tr_meliscommerce_plugin_category_product_list_no_country' => 'Please choose a country',
 	    'tr_meliscommerce_plugin_category_product_list_include_sub_cat_prds' => 'Include Sub Category Products',
+	    'tr_meliscommerce_plugin_category_product_list_include_sub_cat_prds tooltip' => 'Include Sub Category Products',
 	    'tr_meliscommerce_plugin_category_product_list_only_valid' => 'Only valid',
 	    'tr_meliscommerce_plugin_category_product_list_cat_order_cat_id' => 'Category Id',
 	    'tr_meliscommerce_plugin_category_product_list_cat_order_cat_date_creation' => 'Category creation date',

@@ -74,7 +74,7 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
         $catOrderColumn = !empty($data['m_cat_col_name'])   ? $data['m_cat_col_name'] : 'catt_name';
         $catOrder       = !empty($data['m_cat_order'])      ? $data['m_cat_order'] : 'ASC';
         
-        $countryId      =   !empty($data['m_country_id'])                   ? $data['m_country_id'] : null;
+        $countryId      = !empty($data['m_country_id'])     ? $data['m_country_id'] : null;
         $prdOrderColumn = !empty($data['m_prd_col_name'])   ? $data['m_prd_col_name'] : 'pcat_order';
         $prdOrder       = !empty($data['m_prd_order'])      ? $data['m_prd_order'] : 'ASC';
         $prdLimit       = !empty($data['m_prd_limit'])      ? $data['m_prd_limit'] : null;
@@ -294,7 +294,7 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
     public function getFormData()
     {
         $data = parent::getFormData();
-        $data['m_category_ids'] = $this->pluginFrontConfig['m_category_option']['m_category_ids'];
+        $data['m_category_ids'] = (!empty($this->pluginFrontConfig['m_category_option']['m_category_ids'])) ? $this->pluginFrontConfig['m_category_option']['m_category_ids'] : array();
         return $data;
     }
     
@@ -360,39 +360,6 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
         return $configValues;
     }
     
-    /* public function loadPostDataPluginConfig()
-    {
-        $request = $this->getServiceLocator()->get('request');
-        $parameters = $request->getPost()->toArray();
-        
-        
-        if (!empty($parameters['m_cat_col_name']) && !empty($parameters['m_cat_order']))
-        {
-            $parameters['m_category_option'] = array(
-                'm_include_sub_category_products' => $parameters['m_include_sub_category_products'],
-                'm_cat_col_name' => $parameters['m_cat_col_name'],
-                'm_cat_order' => $parameters['m_cat_order'],
-            );
-            
-            unset($parameters['m_include_sub_category_products']);
-            unset($parameters['m_cat_col_name']);
-            unset($parameters['m_cat_order']);
-        }
-        
-        if (!empty($parameters['m_prd_col_name']) && !empty($parameters['m_prd_order']))
-        {
-            $parameters['m_product_option'] = array(
-                'm_prd_col_name' => $parameters['m_prd_col_name'],
-                'm_prd_order' => $parameters['m_prd_order'],
-            );
-            
-            unset($parameters['m_cat_col_name']);
-            unset($parameters['m_cat_order']);
-        }
-        
-        return $parameters;
-    } */
-    
     /**
      * This method saves the XML version of this plugin in DB, for this pageId
      * Automatically called from savePageSession listenner in PageEdition
@@ -407,8 +374,10 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
             $xmlValueFormatted .= "\t\t" . '<template_path><![CDATA[' . $parameters['template_path'] . ']]></template_path>';
         }
         
-        $data = (!empty($parameters['m_include_sub_category_products'])) ? 1 : 0;
-        $xmlValueFormatted .= "\t\t" . '<m_include_sub_category_products><![CDATA[' . $parameters['m_include_sub_category_products'] . ']]></m_include_sub_category_products>';
+        if (isset($parameters['m_include_sub_category_products']))
+        {
+            $xmlValueFormatted .= "\t\t" . '<m_include_sub_category_products><![CDATA[' . $parameters['m_include_sub_category_products'] . ']]></m_include_sub_category_products>';
+        }
         
         if(!empty($parameters['m_category_ids']))
         {
@@ -425,7 +394,7 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
             $xmlValueFormatted .= "\t\t" . '<m_cat_order><![CDATA[' . $parameters['m_cat_order'] . ']]></m_cat_order>';
         }
         
-        if(is_numeric($parameters['m_country_id']))
+        if(isset($parameters['m_country_id']))
         {
             $xmlValueFormatted .= "\t\t" . '<m_country_id><![CDATA[' . $parameters['m_country_id'] . ']]></m_country_id>';
         }

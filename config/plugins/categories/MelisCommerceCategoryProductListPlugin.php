@@ -158,6 +158,7 @@ return array(
                                             'type' => 'Checkbox',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_plugin_category_product_list_include_sub_cat_prds',
+                                                'tooltip' => 'tr_meliscommerce_plugin_category_product_list_include_sub_cat_prds tooltip',
                                                 'checked_value' => 1,
                                                 'unchecked_value' => 0,
                                                 'switchOptions' => array(
