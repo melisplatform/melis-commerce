@@ -228,7 +228,6 @@ return array(
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_plugin_category_product_list_country',
                                                 'tooltip' => 'tr_meliscommerce_plugin_category_product_list_country tooltip',
-                                                'tooltip' => 'tr_meliscommerce_plugin_category_product_list_country tooltip',
                                                 'empty_option' => 'tr_melis_Plugins_Choose',
                                                 'disable_inarray_validator' => true,
                                             ),
