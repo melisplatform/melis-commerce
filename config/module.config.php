@@ -422,7 +422,6 @@ return array(
             // Plugin config layout
             'MelisCommerce/category-product-list-config'            => __DIR__ . '/../view/plugins/categories/category-product-list-config.phtml',
             'MelisCommerce/category-product-list-tree-config'       => __DIR__ . '/../view/plugins/categories/category-product-list-tree-config.phtml',
-            'MelisCommerce/category-product-list-product-config'    => __DIR__ . '/../view/plugins/categories/category-product-list-product-config.phtml',
             'MelisCommerce/product-list-tree-config'                => __DIR__ . '/../view/plugins/products/product-list-tree-config.phtml',
             'MelisCommerce/category-list-filter-config'             => __DIR__ . '/../view/plugins/categories/category-list-filter-config.phtml',
             'MelisCommerce/category-list-filter-tree-config'        => __DIR__ . '/../view/plugins/categories/category-list-filter-tree-config.phtml',
