@@ -9,11 +9,11 @@ return array(
                         'template_path' => array('MelisCommerceProduct/product-price-range'),
                         'id' => 'productPriceRange',
                         // filtering
-                        'm_box_filter_price_min' => null,
-                        'm_box_filter_price_max' => null,
+                        'm_box_product_price_min' => null,
+                        'm_box_product_price_max' => null,
                 
                         // price column are : price_net, price_gross
-                        'm_box_filter_price_column' => 'price_net',
+                        'm_box_product_price_column' => 'price_net',
                     ),
                     'melis' => array(
                         'subcategory' => array(
@@ -56,7 +56,7 @@ return array(
                                     ),
                                     array(
                                         'spec' => array(
-                                            'name' => 'm_box_filter_price_column',
+                                            'name' => 'm_box_product_price_column',
                                             'type' => 'select',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_plugin_product_price_column',
@@ -71,7 +71,7 @@ return array(
                                                 ),
                                             ),
                                             'attributes' => array(
-                                                'id' => 'm_box_filter_price_column_id',
+                                                'id' => 'm_box_product_price_column',
                                                 'class' => 'form-control',
                                             ),
                                         ),
@@ -108,34 +108,34 @@ return array(
                                 'elements' => array(
                                     array(
                                         'spec' => array(
-                                            'name' => 'm_box_filter_price_min',
+                                            'name' => 'm_box_product_price_min',
                                             'type' => 'text',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_plugin_product_price_range_min',
                                             ),
                                             'attributes' => array(
-                                                'id' => 'm_box_filter_price_min',
+                                                'id' => 'm_box_product_price_min',
                                                 'class' => 'form-control',
                                             ),
                                         ),
                                     ),
                                     array(
                                         'spec' => array(
-                                            'name' => 'm_box_filter_price_max',
+                                            'name' => 'm_box_product_price_max',
                                             'type' => 'text',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_plugin_product_price_range_max',
                                             ),
                                             'attributes' => array(
-                                                'id' => 'm_box_filter_price_max',
+                                                'id' => 'm_box_product_price_max',
                                                 'class' => 'form-control',
                                             ),
                                         ),
                                     ),
                                 ),
                                 'input_filter' => array(
-                                    'm_box_filter_price_min' => array(
-                                        'name'     => 'm_box_filter_price_min',
+                                    'm_box_product_price_min' => array(
+                                        'name'     => 'm_box_product_price_min',
                                         'required' => true,
                                         'validators' => array(
                                             array(
@@ -150,8 +150,8 @@ return array(
                                         'filters'  => array(
                                         ),
                                     ),
-                                    'm_box_filter_price_max' => array(
-                                        'name'     => 'm_box_filter_price_max',
+                                    'm_box_product_price_max' => array(
+                                        'name'     => 'm_box_product_price_max',
                                         'required' => true,
                                         'validators' => array(
                                             array(

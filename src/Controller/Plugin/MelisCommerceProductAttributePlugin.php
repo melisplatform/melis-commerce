@@ -67,7 +67,7 @@ class MelisCommerceProductAttributePlugin extends MelisTemplatingPlugin
         $data = $this->getFormData();
         
         $attributeId = !empty($data['attribute_id']) ? $data['attribute_id'] : null;
-        $selectedAttrVal = !empty($data['m_box_filter_attribute_values_ids_selected']) ? $data['m_box_filter_attribute_values_ids_selected'] : array();
+        $selectedAttrVal = !empty($data['m_box_product_attribute_values_ids_selected']) ? $data['m_box_product_attribute_values_ids_selected'] : array();
         
         // Product Attributes Start
         $attrSrv = $this->getServiceLocator()->get('MelisComAttributeService');
@@ -206,9 +206,9 @@ class MelisCommerceProductAttributePlugin extends MelisTemplatingPlugin
                 $configValues['attribute_id'] = (string)$xml->attribute_id;
             }
             
-            if (!empty($xml->m_box_filter_attribute_values_ids_selected))
+            if (!empty($xml->m_box_product_attribute_values_ids_selected))
             {
-                $configValues['m_box_filter_attribute_values_ids_selected'] = json_decode((string)$xml->m_box_filter_attribute_values_ids_selected);
+                $configValues['m_box_product_attribute_values_ids_selected'] = json_decode((string)$xml->m_box_product_attribute_values_ids_selected);
             }
         }
     
@@ -235,9 +235,9 @@ class MelisCommerceProductAttributePlugin extends MelisTemplatingPlugin
             $xmlValueFormatted .= "\t\t" . '<attribute_id><![CDATA[' . $parameters['attribute_id'] . ']]></attribute_id>';
         }
         
-        if(!empty($parameters['m_box_filter_attribute_values_ids_selected']))
+        if(!empty($parameters['m_box_product_attribute_values_ids_selected']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_box_filter_attribute_values_ids_selected><![CDATA[' . json_encode($parameters['m_box_filter_attribute_values_ids_selected']) . ']]></m_box_filter_attribute_values_ids_selected>';
+            $xmlValueFormatted .= "\t\t" . '<m_box_product_attribute_values_ids_selected><![CDATA[' . json_encode($parameters['m_box_product_attribute_values_ids_selected']) . ']]></m_box_product_attribute_values_ids_selected>';
         }
     
         // Something has been saved, let's generate an XML for DB

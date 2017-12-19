@@ -76,14 +76,14 @@
         <div class="form-group">
             <div class="alert alert-warning hidden">"<strong></strong>" <?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_search_not_found')?></div>
             <div id="catTreeFilterPluginConfig" data-langlocale="<?php echo $this->currentLangLocale ?>"></div>
-            <form id="catTreeFilterPluginConfig_form" data-input-field-selected="m_box_filter_categories_ids_selected" data-input-field-root="m_box_filter_root_category_id">
-                <?php if (!empty($this->formData['m_box_filter_categories_ids_selected'])){?>
-                    <?php foreach ($this->formData['m_box_filter_categories_ids_selected'] As $val){?>
-                        <input type="hidden" name="m_box_filter_categories_ids_selected[]" value="<?php echo $val?>">
+            <form id="catTreeFilterPluginConfig_form" data-input-field-selected="m_box_category_tree_ids_selected" data-input-field-root="m_box_root_category_tree_id">
+                <?php if (!empty($this->formData['m_box_category_tree_ids_selected'])){?>
+                    <?php foreach ($this->formData['m_box_category_tree_ids_selected'] As $val){?>
+                        <input type="hidden" name="m_box_category_tree_ids_selected[]" value="<?php echo $val?>">
                     <?php }?>
                 <?php }?>
-                <input type="hidden" name="m_box_filter_root_category_id" value="<?=$this->formData['m_box_filter_root_category_id'];?> ">
-                <input type="hidden" name="m_box_filter_include_root_category" value="<?=$this->formData['m_box_filter_include_root_category'];?> ">
+                <input type="hidden" name="m_box_root_category_tree_id" value="<?=$this->formData['m_box_root_category_tree_id'];?> ">
+                <input type="hidden" name="m_box_include_root_category_tree" value="<?=$this->formData['m_box_include_root_category_tree'];?> ">
             </form>
         </div>
     </div>
@@ -102,8 +102,8 @@
     //get the selected node and pass to the tree to update
 
     //convert php array to json
-    $selected_tree_ids = json_encode(array_unique($this->formData['m_box_filter_categories_ids_selected']));
-    $selected_root_id = $this->formData['m_box_filter_root_category_id'];
+    $selected_tree_ids = json_encode(array_unique($this->formData['m_box_category_tree_ids_selected']));
+    $selected_root_id = $this->formData['m_box_root_category_tree_id'];
 ?>
 <script>
     commerceCategoryTree.initCategoryTree("catTreeFilterPluginConfig", function(e, data, categoryTree){

@@ -9,10 +9,10 @@ return array(
                         'template_path' => array('MelisCommerceCategory/category-tree'),
                         'id' =>'categoryTree',
                         // Category option
-                        'm_category_tree_filter_option' => array(
-                            'm_box_filter_root_category_id' => null,
-                            'm_box_filter_categories_ids_selected' => array(),
-                            'm_box_filter_include_root_category' => null,
+                        'm_category_tree_option' => array(
+                            'm_box_root_category_tree_id' => null,
+                            'm_box_category_tree_ids_selected' => array(),
+                            'm_box_include_root_category_tree' => null,
                         ),
                     ),
                     'melis' => array(
@@ -36,10 +36,10 @@ return array(
                         ),
 
                         'modal_form' => array(
-                            'melis_commerce_plugin_category_tree_config' => array(
+                            'melis_commerce_plugin_category_tree_template_config' => array(
                                 'tab_title' => 'tr_meliscommerce_plugin_category_tree_template',
                                 'tab_icon'  => 'fa fa-cogs',
-                                'tab_form_layout' => 'MelisCommerce/category-list-filter-config',
+                                'tab_form_layout' => 'MelisCommerce/category-tree-template-config',
                                 'elements' => array(
                                     array(
                                         'spec' => array(
@@ -77,14 +77,14 @@ return array(
                                     ),
                                 )
                             ),
-                            'melis_commerce_plugin_filter_menu_category_list_tree_config' => array(
+                            'melis_commerce_plugin_category_tree_config' => array(
                                 'tab_title' => 'tr_meliscommerce_plugin_filter_menu_category_list_root_category_tree',
                                 'tab_icon'  => 'fa fa-book',
                                 'tab_form_layout' => 'MelisCommerce/category-tree-config',
                                 'elements' => array(
                                     array(
                                         'spec' => array(
-                                            'name' => 'm_box_filter_include_root_category',
+                                            'name' => 'm_box_include_root_category_tree',
                                             'type' => 'Checkbox',
                                             'options' => array(
                                                 'tooltip' => 'tr_meliscommerce_plugin_include_root_category_tooltip',
@@ -98,14 +98,14 @@ return array(
                                                 )
                                             ),
                                             'attributes' => array(
-                                                'id' => 'm_box_filter_include_root_category',
+                                                'id' => 'm_box_include_root_category_tree',
                                             ),
                                         ),
                                     ),
                                 ),
                                 'input_filter' => array(
-                                    'm_box_filter_include_root_category' => array(
-                                        'name'     => 'm_box_filter_include_root_category',
+                                    'm_box_include_root_category_tree' => array(
+                                        'name'     => 'm_box_include_root_category_tree',
                                         'required' => false,
                                         'validators' => array(
                                         ),

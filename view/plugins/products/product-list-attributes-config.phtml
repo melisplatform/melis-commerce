@@ -12,8 +12,8 @@
         		<?php foreach ($val->attr_values As $vals){?>
         			<?php
         			    $checked = '';
-        			    if (!empty($this->formData['m_box_filter_attribute_values_ids_selected'])){
-        			        if(in_array($vals->atval_id, $this->formData['m_box_filter_attribute_values_ids_selected'])){
+        			    if (!empty($this->formData['m_box_product_attribute_values_ids_selected'])){
+        			        if(in_array($vals->atval_id, $this->formData['m_box_product_attribute_values_ids_selected'])){
         			            $checked = 'check';
         			        }
         			    }
@@ -22,7 +22,7 @@
                     	<label class="full-category-product-list-attr-config-checkbox">
                     		<?php $valCol = 'avt_v_'.$vals->atype_column_value;?>
                     		<i class="fa fa-<?php echo ($checked) ? $checked.'-' : '' ?>square-o fa-lg"></i> <?php echo $vals->$valCol?>
-                    		<input type="checkbox" name="m_box_filter_attribute_values_ids_selected[]" value="<?php echo $vals->atval_id ?>" <?php echo ($checked) ? $checked.'ed' : '' ?> style="display: none">
+                    		<input type="checkbox" name="m_box_product_attribute_values_ids_selected[]" value="<?php echo $vals->atval_id ?>" <?php echo ($checked) ? $checked.'ed' : '' ?> style="display: none">
                     	</label>
             		</div>
         		<?php }?>

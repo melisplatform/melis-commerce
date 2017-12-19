@@ -223,7 +223,7 @@ class MelisCommerceRelatedProductsPlugin extends MelisTemplatingPlugin
         $xmlValueFormatted = '';
 
         // template_path is mendatory for all plugins
-
+        print_r($parameters);
         if (!empty($parameters['template_path']))
         {
             $xmlValueFormatted .= "\t\t" . '<template_path><![CDATA[' . $parameters['template_path'] . ']]></template_path>';
@@ -235,10 +235,10 @@ class MelisCommerceRelatedProductsPlugin extends MelisTemplatingPlugin
         }
 
         // Something has been saved, let's generate an XML for DB
-        if (!empty($xmlValueFormatted))
-        {
+        //if (!empty($xmlValueFormatted))
+        //{
             $xmlValueFormatted = "\t".'<'.$this->pluginXmlDbKey.' id="'.$parameters['melisPluginId'].'">'.$xmlValueFormatted."\t".'</'.$this->pluginXmlDbKey.'>'."\n";
-        }
+        //}
 
         return $xmlValueFormatted;
     }

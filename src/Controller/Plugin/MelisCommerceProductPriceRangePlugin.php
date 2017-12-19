@@ -62,7 +62,7 @@ class MelisCommerceProductPriceRangePlugin extends MelisTemplatingPlugin
     {
 
         $data = $this->getFormData();
-        $priceColumn = $data['m_box_filter_price_column'];
+        $priceColumn = $data['m_box_product_price_column'];
 
         // Retrieving the default Values for Product prices
         $proService = $this->getServiceLocator()->get('MelisComProductService');
@@ -72,15 +72,15 @@ class MelisCommerceProductPriceRangePlugin extends MelisTemplatingPlugin
         $defaultMin =  $priceMin->min_price;
         $defaultMax =  $priceMax->max_price;
 
-        $min = !empty($data['m_box_filter_price_min'])? $data['m_box_filter_price_min'] : $defaultMin;
-        $max = !empty($data['m_box_filter_price_max'])? $data['m_box_filter_price_max'] : $defaultMax;
+        $min = !empty($data['m_box_product_price_min'])? $data['m_box_product_price_min'] : $defaultMin;
+        $max = !empty($data['m_box_product_price_max'])? $data['m_box_product_price_max'] : $defaultMax;
 
         $priceConfig = array(   
-            'm_box_filter_price_min' =>  (int)$min,
-            'm_box_filter_price_max' => (int)$max,
+            'm_box_product_price_min' =>  (int)$min,
+            'm_box_product_price_max' => (int)$max,
             'default_min_price' => (int) $defaultMin,
             'default_max_price' => (int) $defaultMax,
-            'm_box_filter_price_column' => $priceColumn,
+            'm_box_product_price_column' => $priceColumn,
         );
 
         // Create an array with the variables that will be available in the view
@@ -233,9 +233,9 @@ class MelisCommerceProductPriceRangePlugin extends MelisTemplatingPlugin
                 $configValues['template_path'] = (string)$xml->template_path;
             }
 
-            if (!empty($xml->m_box_filter_price_min))
+            if (!empty($xml->m_box_product_price_min))
             {
-                $configValues['m_box_filter_price_min'] = (string)$xml->m_box_filter_price_min;
+                $configValues['m_box_product_price_min'] = (string)$xml->m_box_product_price_min;
             }
 
             if (!empty($xml->m_box_filter_price_column))
@@ -243,9 +243,9 @@ class MelisCommerceProductPriceRangePlugin extends MelisTemplatingPlugin
                 $configValues['m_box_filter_price_column'] = (string)$xml->m_box_filter_price_column;
             }
             
-            if (!empty($xml->m_box_filter_price_max))
+            if (!empty($xml->m_box_product_price_max))
             {
-                $configValues['m_box_filter_price_max'] = (string)$xml->m_box_filter_price_max;
+                $configValues['m_box_product_price_max'] = (string)$xml->m_box_product_price_max;
             }
         }
         
@@ -272,14 +272,14 @@ class MelisCommerceProductPriceRangePlugin extends MelisTemplatingPlugin
             $xmlValueFormatted .= "\t\t" . '<m_box_filter_price_column><![CDATA[' . $parameters['m_box_filter_price_column'] . ']]></m_box_filter_price_column>';
         }
         
-        if(!empty($parameters['m_box_filter_price_min']))
+        if(!empty($parameters['m_box_product_price_min']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_box_filter_price_min><![CDATA[' . $parameters['m_box_filter_price_min'] . ']]></m_box_filter_price_min>';
+            $xmlValueFormatted .= "\t\t" . '<m_box_product_price_min><![CDATA[' . $parameters['m_box_product_price_min'] . ']]></m_box_product_price_min>';
         }
         
-        if(!empty($parameters['m_box_filter_price_max']))
+        if(!empty($parameters['m_box_product_price_max']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_box_filter_price_max><![CDATA[' . $parameters['m_box_filter_price_max'] . ']]></m_box_filter_price_max>';
+            $xmlValueFormatted .= "\t\t" . '<m_box_product_price_max><![CDATA[' . $parameters['m_box_product_price_max'] . ']]></m_box_product_price_max>';
         }
         
         // Something has been saved, let's generate an XML for DB

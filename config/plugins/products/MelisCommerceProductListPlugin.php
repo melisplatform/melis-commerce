@@ -8,7 +8,7 @@ return array(
                     'front' => array(
                         'template_path' => array('MelisCommerce/product-list' ),
                         'id' => 'productList',
-                        'm_box_filter_categories_ids_selected' => array(),
+                        'm_box_category_tree_ids_selected' => array(),
                         
                         'sorter' => array(
                             /**
@@ -23,27 +23,27 @@ return array(
                         // List filters
                         'filters' => array(
                             //search box filter
-                            'm_box_filter_search' => '',
+                            'm_box_product_search' => '',
                             /**
                              * Product text type to be searched for,
                              * ex. TITLE, DESCRIPTION etc...
                              * if empty all types are included for search criteria
                              */
-                            'm_box_filter_field_type' => array(),
+                            'm_box_product_field_type' => array(),
                             //array of categories selected
-                            'm_box_filter_categories_ids_selected' => array(),
+                            'm_box_category_tree_ids_selected' => array(),
                             // minimum price
-                            'm_box_filter_price_min' => null,
+                            'm_box_product_price_min' => null,
                             // maximum price
-                            'm_box_filter_price_max' => null,
+                            'm_box_product_price_max' => null,
                             // array of attribute ids selected
-                            'm_box_filter_attribute_values_ids_selected' => array(),
+                            'm_box_product_attribute_values_ids_selected' => array(),
                             // country id
-                            'm_box_filter_country' => null,
+                            'm_box_product_country' => null,
                             // language filter
-                            'm_box_filter_lang' => null,
+                            'm_box_product_lang' => null,
                             // product validity
-                            'm_box_filter_only_valid' => false,
+                            'm_box_product_only_valid' => false,
                         ),
                         
                         // pagination config
@@ -137,7 +137,7 @@ return array(
                                     ),
                                     array(
                                         'spec' => array(
-                                            'name' => 'm_box_filter_country',
+                                            'name' => 'm_box_product_country',
                                             'type' => 'EcomPluginCountriesSelect',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_plugin_category_product_list_country',
@@ -146,7 +146,7 @@ return array(
                                                 'tooltip' => 'tr_meliscommerce_plugin_product_list_country_tooltip',
                                             ),
                                             'attributes' => array(
-                                                'id' => 'm_box_filter_country',
+                                                'id' => 'm_box_product_country',
                                                 'class' => 'form-control',
                                             ),
                                         ),
@@ -185,8 +185,8 @@ return array(
                                         'filters'  => array(
                                         ),
                                     ),
-                                    'm_box_filter_country' => array(
-                                        'name'     => 'm_box_filter_country',
+                                    'm_box_product_country' => array(
+                                        'name'     => 'm_box_product_country',
                                         'required' => false,
                                         'validators' => array(
                                             array(
@@ -232,28 +232,28 @@ return array(
                                     ),
                                     array(
                                         'spec' => array(
-                                            'name' => 'm_box_filter_price_min',
+                                            'name' => 'm_box_product_price_min',
                                             'type' => 'Text',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_plugin_product_price_range_min',
                                                 'tooltip' => 'tr_meliscommerce_plugin_product_price_column_min_price_tooltip',
                                             ),
                                             'attributes' => array(
-                                                'id' => 'm_box_filter_price_min',
+                                                'id' => 'm_box_product_price_min',
                                                 'class' => 'form-control',
                                             ),
                                         ),
                                     ),
                                     array(
                                         'spec' => array(
-                                            'name' => 'm_box_filter_price_max',
+                                            'name' => 'm_box_product_price_max',
                                             'type' => 'Text',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_plugin_product_price_range_max',
                                                 'tooltip' => 'tr_meliscommerce_plugin_product_price_column_max_price_tooltip',
                                             ),
                                             'attributes' => array(
-                                                'id' => 'm_box_filter_price_max',
+                                                'id' => 'm_box_product_price_max',
                                                 'class' => 'form-control',
                                             ),
                                         ),
@@ -272,13 +272,13 @@ return array(
                                 'elements' => array(
                                     array(
                                         'spec' => array(
-                                            'name' => 'm_box_filter_search',
+                                            'name' => 'm_box_product_search',
                                             'type' => 'Text',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_plugin_product_list_search',
                                             ),
                                             'attributes' => array(
-                                                'id' => 'm_box_filter_search',
+                                                'id' => 'm_box_product_search',
                                                 'class' => 'form-control',
                                             ),
                                         ),

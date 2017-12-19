@@ -61,7 +61,7 @@ class MelisCommerceProductSearchPlugin extends MelisTemplatingPlugin
     public function front()
     {
         $data = $this->getFormData();
-        $searchKey = !empty($data['m_box_filter_search']) ? $data['m_box_filter_search'] : '';
+        $searchKey = !empty($data['m_box_product_search']) ? $data['m_box_product_search'] : '';
         
         // Create an array with the variables that will be available in the view
         $viewVariables = array(
@@ -190,9 +190,9 @@ class MelisCommerceProductSearchPlugin extends MelisTemplatingPlugin
                 $configValues['template_path'] = (string)$xml->template_path;
             }
 
-            if (!empty($xml->m_box_filter_search))
+            if (!empty($xml->m_box_product_search))
             {
-                $configValues['m_box_filter_search'] = (string)$xml->m_box_filter_search;
+                $configValues['m_box_product_search'] = (string)$xml->m_box_product_search;
             }
         }
         
@@ -213,9 +213,9 @@ class MelisCommerceProductSearchPlugin extends MelisTemplatingPlugin
             $xmlValueFormatted .= "\t\t" . '<template_path><![CDATA[' . $parameters['template_path'] . ']]></template_path>';
         }
 
-        if(!empty($parameters['m_box_filter_search']))
+        if(!empty($parameters['m_box_product_search']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_box_filter_search><![CDATA[' . $parameters['m_box_filter_search'] . ']]></m_box_filter_search>';
+            $xmlValueFormatted .= "\t\t" . '<m_box_product_search><![CDATA[' . $parameters['m_box_product_search'] . ']]></m_box_product_search>';
         }
         
         // Something has been saved, let's generate an XML for DB

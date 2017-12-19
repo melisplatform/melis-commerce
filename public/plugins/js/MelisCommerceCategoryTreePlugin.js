@@ -37,7 +37,7 @@ var catTreeConfig = (function(){
                     if (node.state.selected) {
                         categoryTree.jstree("deselect_node", node_id);
                         processNodeDisableState('disable', node_id, categoryTree);
-                        $(selectorId + "_form input[name='m_box_filter_root_category_id']").val('');
+                        $(selectorId + "_form input[name='m_box_root_category_tree_id']").val('');
                     } else {
                         processNodeDisableState('enable', node_id, categoryTree, function () {
                             categoryTree.jstree("select_node", node_id);
