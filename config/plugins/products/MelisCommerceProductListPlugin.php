@@ -48,9 +48,9 @@ return array(
                         
                         // pagination config
                         'pagination' => array(
-                            'm_pag_current' => 1,
-                            'm_pag_nb_per_page' => 10,
-                            'm_pag_nb_page_before_after' => 3,
+                            'm_page_current' => 1,
+                            'm_page_nb_per_page' => 10,
+                            'm_page_nb_page_before_after' => 3,
 
                         ),
                     ),
@@ -297,42 +297,42 @@ return array(
                                 'elements' => array(
                                     array(
                                         'spec' => array(
-                                            'name' => 'm_pag_current',
+                                            'name' => 'm_page_current',
                                             'type' => 'Text',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_plugin_product_list_default_page_number',
                                                 'tooltip' => 'tr_meliscommerce_plugin_product_list_pagination_default_page_number_tooltip',
                                             ),
                                             'attributes' => array(
-                                                'id' => 'm_pag_current',
+                                                'id' => 'm_page_current',
                                                 'class' => 'form-control',
                                             ),
                                         ),
                                     ),
                                     array(
                                         'spec' => array(
-                                            'name' => 'm_pag_nb_per_page',
+                                            'name' => 'm_page_nb_per_page',
                                             'type' => 'Text',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_plugin_product_list_product_per_page',
                                                 'tooltip' => 'tr_meliscommerce_plugin_product_list_product_per_page_tooltip',
                                             ),
                                             'attributes' => array(
-                                                'id' => 'm_pag_nb_per_page',
+                                                'id' => 'm_page_nb_per_page',
                                                 'class' => 'form-control',
                                             ),
                                         ),
                                     ),
                                     array(
                                         'spec' => array(
-                                            'name' => 'm_pag_nb_page_before_after',
+                                            'name' => 'm_page_nb_page_before_after',
                                             'type' => 'Text',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_plugin_product_list_number_of_pages',
                                                 'tooltip' => 'tr_meliscmsnews_plugin_pagination_nbPageBeforeAfter tooltip',
                                             ),
                                             'attributes' => array(
-                                                'id' => 'm_pag_nb_page_before_after',
+                                                'id' => 'm_page_nb_page_before_after',
                                                 'class' => 'form-control',
                                             ),
                                         ),

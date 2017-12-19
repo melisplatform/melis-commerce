@@ -88,9 +88,9 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
         $categoryId         = !empty($data['m_box_category_tree_ids_selected'])         ? $data['m_box_category_tree_ids_selected'] : array();
         
         // Pagination config
-        $pageCurrent        = !empty($data['m_pag_current'])                ? $data['m_pag_current'] : 1;
-        $pageNbPerPage      = !empty($data['m_pag_nb_per_page'])            ? $data['m_pag_nb_per_page'] : null;
-        $pageNbBeforeAfter  = !empty($data['m_pag_nb_page_before_after'])   ? $data['m_pag_nb_page_before_after'] : 3;
+        $pageCurrent        = !empty($data['m_page_current'])                ? $data['m_page_current'] : 1;
+        $pageNbPerPage      = !empty($data['m_page_nb_per_page'])            ? $data['m_page_nb_per_page'] : null;
+        $pageNbBeforeAfter  = !empty($data['m_page_nb_page_before_after'])   ? $data['m_page_nb_page_before_after'] : 3;
          
         foreach($categoryId as $catId){
             $categoryId = array_merge($categoryId, $this->categoryIdIterator($categorySvc->getAllSubCategoryIdById($catId, $onlyValid)));
@@ -126,7 +126,7 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
             'sort_config' => $sort,
 
         );
-        
+
         // return the variable array and let the view be created
         return $viewVariables;
     }
@@ -291,6 +291,7 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
         if(isset($this->pluginFrontConfig['m_col_name'])){
             $data['m_col_name'] = $this->pluginFrontConfig['m_col_name'];
         }
+
         return $data;
     }
     
@@ -372,19 +373,19 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
                 $configValues['filters']['m_box_category_tree_ids_selected'] = json_decode((string)$xml->m_box_category_tree_ids_selected, true);
             }
             
-            if (!empty($xml->m_pag_current))
+            if (!empty($xml->m_page_current))
             {
-                $configValues['pagination']['m_pag_current'] = (string)$xml->m_pag_current;
+                $configValues['pagination']['m_page_current'] = (string)$xml->m_page_current;
             }
             
-            if (!empty($xml->m_pag_nb_per_page))
+            if (!empty($xml->m_page_nb_per_page))
             {
-                $configValues['pagination']['m_pag_nb_per_page'] = (string)$xml->m_pag_nb_per_page;
+                $configValues['pagination']['m_page_nb_per_page'] = (string)$xml->m_page_nb_per_page;
             }
             
-            if (!empty($xml->m_pag_nb_page_before_after))
+            if (!empty($xml->m_page_nb_page_before_after))
             {
-                $configValues['pagination']['m_pag_nb_page_before_after'] = (string)$xml->m_pag_nb_page_before_after;
+                $configValues['pagination']['m_page_nb_page_before_after'] = (string)$xml->m_page_nb_page_before_after;
             }
         }
         return $configValues;
@@ -444,19 +445,19 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
             $xmlValueFormatted .= "\t\t" . '<m_box_product_only_valid><![CDATA[' . $parameters['m_box_product_only_valid'] . ']]></m_box_product_only_valid>';
         }
         
-        if(!empty($parameters['m_pag_current']))
+        if(!empty($parameters['m_page_current']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_pag_current><![CDATA[' . $parameters['m_pag_current'] . ']]></m_pag_current>';
+            $xmlValueFormatted .= "\t\t" . '<m_page_current><![CDATA[' . $parameters['m_page_current'] . ']]></m_page_current>';
         }
         
-        if(!empty($parameters['m_pag_nb_per_page']))
+        if(!empty($parameters['m_page_nb_per_page']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_pag_nb_per_page><![CDATA[' . $parameters['m_pag_nb_per_page'] . ']]></m_pag_nb_per_page>';
+            $xmlValueFormatted .= "\t\t" . '<m_page_nb_per_page><![CDATA[' . $parameters['m_page_nb_per_page'] . ']]></m_page_nb_per_page>';
         }
         
-        if(!empty($parameters['m_pag_nb_page_before_after']))
+        if(!empty($parameters['m_page_nb_page_before_after']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_pag_nb_page_before_after><![CDATA[' . $parameters['m_pag_nb_page_before_after'] . ']]></m_pag_nb_page_before_after>';
+            $xmlValueFormatted .= "\t\t" . '<m_page_nb_page_before_after><![CDATA[' . $parameters['m_page_nb_page_before_after'] . ']]></m_page_nb_page_before_after>';
         }
         
         if(!empty($parameters['m_box_product_attribute_values_ids_selected']))

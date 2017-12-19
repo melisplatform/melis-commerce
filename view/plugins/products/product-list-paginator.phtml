@@ -14,7 +14,7 @@
             <?php 
             if (isset($this->previous)){
                 $firstPageDisabled = '';
-                $firstPageUrl = $this->MelisLink($this->idPage, true).'?'.http_build_query(array_merge($urlQryStr, array('m_pag_current' => $this->first)));
+                $firstPageUrl = $this->MelisLink($this->idPage, true).'?'.http_build_query(array_merge($urlQryStr, array('m_page_current' => $this->first)));
             }else{
                 $firstPageDisabled = 'disabled';
                 $firstPageUrl = '#';
@@ -28,7 +28,7 @@
             <!-- Previous page link -->
             <?php if (isset($this->previous)): ?>
                 <li>
-                	<a href="<?php echo $this->MelisLink($this->idPage, true).'?'.http_build_query(array_merge($urlQryStr, array('m_pag_current' => $this->previous))); ?>" class="previous page-numbers">
+                	<a href="<?php echo $this->MelisLink($this->idPage, true).'?'.http_build_query(array_merge($urlQryStr, array('m_page_current' => $this->previous))); ?>" class="previous page-numbers">
             			<i class="zmdi zmdi-long-arrow-left"></i>
         			</a>
     			</li>
@@ -47,7 +47,7 @@
         	    ?>
                     <?php if ($page != $this->current): ?>
                         <li>
-                        	<a href="<?php echo $this->MelisLink($this->idPage, true).'?'.http_build_query(array_merge($urlQryStr, array('m_pag_current' => $page))); ?>" class="page-numbers">
+                        	<a href="<?php echo $this->MelisLink($this->idPage, true).'?'.http_build_query(array_merge($urlQryStr, array('m_page_current' => $page))); ?>" class="page-numbers">
                         		<?php echo $page; ?>
                         	</a>
                     	</li>
@@ -60,7 +60,7 @@
              <!-- Previous page link -->
             <?php if (isset($this->next)): ?>
                 <li>
-                	<a href="<?php echo $this->MelisLink($this->idPage, true).'?'.http_build_query(array_merge($urlQryStr, array('m_pag_current' => $this->next))); ?>" class="next page-numbers">
+                	<a href="<?php echo $this->MelisLink($this->idPage, true).'?'.http_build_query(array_merge($urlQryStr, array('m_page_current' => $this->next))); ?>" class="next page-numbers">
             			<i class="zmdi zmdi-long-arrow-right"></i>
         			</a>
     			</li>
@@ -74,7 +74,7 @@
             
             if (isset($this->next)){
                 $lastPageDisabled = '';
-                $lastPageUrl = $this->MelisLink($this->idPage, true).'?'.http_build_query(array_merge($urlQryStr, array('m_pag_current' => $this->last)));
+                $lastPageUrl = $this->MelisLink($this->idPage, true).'?'.http_build_query(array_merge($urlQryStr, array('m_page_current' => $this->last)));
             }else{
                 $lastPageDisabled = 'disabled';
                 $lastPageUrl = '#';
