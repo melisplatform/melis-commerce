@@ -1957,10 +1957,11 @@ textarea {
         float: left;
         width: 100%;
     }
+    /* commented to check, affecting all modules filter bar
     .dataTables_wrapper .dataTables_length {
         width: 120px;
         float: left;
-    }
+    }*/
 
 }
 @media ( max-width: 956px ) {
