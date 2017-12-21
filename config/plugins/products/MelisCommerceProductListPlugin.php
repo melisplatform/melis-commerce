@@ -76,7 +76,7 @@ return array(
                             'melis_commerce_plugin_product_list_config' => array(
                                 'tab_title' => 'tr_meliscommerce_general_common_configuration',
                                 'tab_icon'  => 'fa fa-cogs',
-                                'tab_form_layout' => 'MelisCommerce/product-list-config',
+                                'tab_form_layout' => 'MelisCommerce/plugin-common-form-config',
                                 'elements' => array(
                                     array(
                                         'spec' => array(
@@ -206,7 +206,7 @@ return array(
                             'melis_commerce_plugin_product_list_price_config' => array(
                                 'tab_title' => 'tr_meliscommerce_plugin_product_list_price_config',
                                 'tab_icon'  => 'fa fa-money',
-                                'tab_form_layout' => 'MelisCommerce/product-list-price-config',
+                                'tab_form_layout' => 'MelisCommerce/plugin-common-form-config',
                                 'elements' => array(
                                     array(
                                         'spec' => array(
@@ -293,7 +293,7 @@ return array(
                             'melis_commerce_plugin_product_list_pagination_config' => array(
                                 'tab_title' => 'tr_meliscommerce_plugin_product_list_pagination_config',
                                 'tab_icon'  => 'fa fa-fast-forward',
-                                'tab_form_layout' => 'MelisCommerce/product-list-pagination-config',
+                                'tab_form_layout' => 'MelisCommerce/plugin-common-form-config',
                                 'elements' => array(
                                     array(
                                         'spec' => array(

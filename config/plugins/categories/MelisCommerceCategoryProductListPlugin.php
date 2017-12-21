@@ -64,7 +64,7 @@ return array(
                             'melis_commerce_plugin_category_product_list_config' => array(
                                 'tab_title' => 'tr_melis_Plugins_Template',
                                 'tab_icon'  => 'fa fa-cogs',
-                                'tab_form_layout' => 'MelisCommerce/category-product-list-config',
+                                'tab_form_layout' => 'MelisCommerce/plugin-common-form-config',
                                 'elements' => array(
                                     array(
                                         'spec' => array(
@@ -218,7 +218,7 @@ return array(
                             'melis_commerce_plugin_category_product_list_product_config' => array(
                                 'tab_title' => 'tr_meliscommerce_plugin_category_product_list_product',
                                 'tab_icon'  => 'fa icon-shippment',
-                                'tab_form_layout' => 'MelisCommerce/category-product-list-product-config',
+                                'tab_form_layout' => 'MelisCommerce/plugin-common-form-config',
                                 'elements' => array(
                                     array(
                                         'spec' => array(
