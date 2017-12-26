@@ -72,24 +72,42 @@ var catTreeConfig = (function(){
         root_node_id = "#"+selected_root_id+"_categoryId";
         selectorId = categoryTree['selector'];
 
-        var pre_id_text = "_categoryId";
+        var post_id_text = "_categoryId";
         if(!jQuery.isEmptyObject(selected_category_id)) {
             //open node
             $.each(selected_category_id, function (i, id) {
-                var node_id = "#" + id + pre_id_text;
+                var node_id = "#" + id + post_id_text;
                 categoryTree.jstree("open_node", node_id);
                 categoryTree.jstree("check_node", node_id);
+                setTimeout(function(){
+                    changeNodeTextColor(node_id);
+                },50);
+
             });
         }
         //highlight the root node
         if(selected_root_id != 0){
-            var root_node = "#" + selected_root_id + pre_id_text;
+            var root_node = "#" + selected_root_id + post_id_text;
             categoryTree.jstree("select_node", root_node);
         }
 
         if(disableNodeOnLoad) {
             //process the disable and enable of the node
             getAllNode("disable", categoryTree);
+        }
+    }
+
+    /**
+     * Function to change the text color of node on first load
+     * @param node_id
+     */
+    function changeNodeTextColor(node_id){
+        var node = categoryTree.jstree().get_node( node_id );
+        if(node) {
+            $('#'+node.id).css('color','#72af46');
+            node.children.forEach(function (child_id) {
+                changeNodeTextColor(child_id);
+            });
         }
     }
 
@@ -112,16 +130,17 @@ var catTreeConfig = (function(){
      * @param type
      * @param node_id
      * @param categoryTree
-     * @param fn
+     * @param fn - callback
      */
-    function processNodeDisableState(type, node_id, categoryTree, fn) {
-        fn = (fn === undefined) ? null : fn;
+    function processNodeDisableState(type, node_id, categoryTree, callback) {
+        callback = (callback === undefined) ? null : callback;
 
         var node = categoryTree.jstree().get_node( node_id );
         if(node) {
             //node is not selected
             if (!node.state.selected) {
                 if (type == "enable") {
+                    $('#'+node.id).css('color','#72af46');
                     categoryTree.jstree('enable_node', node);
                 } else {
                     categoryTree.jstree('disable_node', node);
@@ -133,8 +152,8 @@ var catTreeConfig = (function(){
                 });
             }
         }
-        if(fn !== null)
-            fn();
+        if(callback !== null)
+            callback();
     }
 
     /**
@@ -161,6 +180,7 @@ var catTreeConfig = (function(){
         var cleanParentText = nodeParent.parent.replace('#', '');
         if(cleanParentText == ""){
             processNodeDisableState('enable', currentNode, categoryTree);
+            categoryTree.jstree('uncheck_node', currentNode);
         }else{
             processNodeDisableState('disable', currentNode, categoryTree);
         }
