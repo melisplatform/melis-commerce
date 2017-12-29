@@ -126,4 +126,10 @@
     	// MelisCommerceAddToCartPlugin
 	    'tr_meliscommerce_plugin_add_cart_name' => 'Ajouter au panier',
 	    'tr_meliscommerce_plugin_add_cart_description' => 'Donne la possibilité d\'ajouter un variant au panier',
+
+        //Cart Plugin
+        'tr_meliscommerce_plugin_cart_name' => 'Cart',
+        'tr_meliscommerce_plugin_cart_description' => 'The plugin display all the products that has been added to cart',
+        'tr_meliscommerce_plugin_cart_no_item' => 'NO ITEMS IN CART',
+        'tr_meliscommerce_plugin_cart_view' => 'View Cart / Checkout',
 	);

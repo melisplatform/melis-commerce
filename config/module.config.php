@@ -300,8 +300,8 @@ return array(
             'MelisCommerceCheckoutSummaryPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutSummaryPlugin',
             'MelisCommerceCheckoutConfirmSummaryPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutConfirmSummaryPlugin',
             'MelisCommerceCheckoutConfirmPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutConfirmPlugin',
-            'MelisCommerceCartMenuPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCartMenuPlugin',
-            'MelisCommerceOrderListPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceOrderListPlugin',
+            'MelisCommerceCartPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCartPlugin',
+            'MelisCommerceOrderHistoryPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceOrderHistoryPlugin',
             'MelisCommerceOrderPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceOrderPlugin',
             'MelisCommerceOrderAddressPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceOrderAddressPlugin',
             'MelisCommerceOrderShippingDetailsPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceOrderShippingDetailsPlugin',
@@ -396,7 +396,7 @@ return array(
             'MelisCommerceCheckout/show-check-out-confirm-summary'  => __DIR__ . '/../view/plugins/checkout/show-check-out-confirm-summary.phtml',
             'MelisCommerceCheckout/show-check-out-confirm'          => __DIR__ . '/../view/plugins/checkout/show-check-out-confirm.phtml',
             
-            'MelisCommerceCartMenuPlugin/show-cart-menu'            => __DIR__ . '/../view/plugins/checkout/show-cart-menu.phtml',
+            'MelisCommerceCart/show-cart'                           => __DIR__ . '/../view/plugins/checkout/show-cart.phtml',
             
             'MelisCommerceCategory/category-product-list'           => __DIR__ . '/../view/plugins/categories/category-product-list.phtml',
             'MelisCommerceCategory/category-list-filter'            => __DIR__ . '/../view/plugins/categories/category-list-filter.phtml',
@@ -407,7 +407,8 @@ return array(
             'MelisCommerceCategory/category-tree'                   => __DIR__ . '/../view/plugins/categories/category-tree.phtml',
 
             //category
-            'MelisCommerceOrder/show-client-order-list'             => __DIR__ . '/../view/plugins/order/show-client-order-list.phtml',
+            'MelisCommerceOrder/order-history'                      => __DIR__ . '/../view/plugins/order/order-history.phtml',
+            'MelisCommerceOrder/order-history-paginator'            => __DIR__ . '/../view/plugins/order/order-history-paginator.phtml',
             'MelisCommerceOrder/show-client-order'                  => __DIR__ . '/../view/plugins/order/show-client-order.phtml',
             'MelisCommerceOrder/show-client-order-address'          => __DIR__ . '/../view/plugins/order/show-client-order-address.phtml',
             'MelisCommerceOrder/show-client-shipping-details'       => __DIR__ . '/../view/plugins/order/show-client-shipping-details.phtml',

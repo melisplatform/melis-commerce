@@ -15,9 +15,9 @@ return array(
                         'delivery_address_parameter' => array(),
                         // Parameters for the MelisCommerceBillingAddressPlugin()
                         'billing_address_parameter' => array(),
-                        // Parameters for the MelisCommerceCartMenuPlugin()
+                        // Parameters for the MelisCommerceCartPlugin()
                         'cart_parameter' => array(),
-                        // Parameters for the MelisCommerceOrderListPlugin()
+                        // Parameters for the MelisCommerceOrderHistoryPlugin()
                         'order_list_paremeter' => array(),
                     ),
                     'melis' => array(
