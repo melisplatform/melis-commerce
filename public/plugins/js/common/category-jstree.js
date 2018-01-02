@@ -44,8 +44,6 @@ var commerceCategoryTree = (function(){
 	    }).on("check_node.jstree uncheck_node.jstree", function(e, data) {
             var inputField = $("#" + targetId + "_form").data("input-field-selected");
             
-            console.log(targetId,inputField);
-            
 			if (data.node.state.checked) {
 				$("#" + targetId + "_form").append('<input type="hidden" name="' + inputField + '[]" value="' + data.node.original.cat_id + '">');
 			} else {

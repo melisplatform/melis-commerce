@@ -11,6 +11,9 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
+use Zend\Paginator\Adapter\ArrayAdapter;
+use Zend\Paginator\Paginator;
+use Zend\Stdlib\ArrayUtils;
 use Zend\View\Model\ViewModel;
 /**
  * This plugin implements the business logic of the
@@ -60,16 +63,60 @@ class MelisCommerceProductSearchPlugin extends MelisTemplatingPlugin
      */
     public function front()
     {
+        $categoryProductList = array();
         $data = $this->getFormData();
-        $searchKey = !empty($data['m_box_filter_search']) ? $data['m_box_filter_search'] : '';
-        
+
+        $productSearchSvc = $this->getServiceLocator()->get('MelisComProductSearchService');
+
+        $searchKey = !empty($data['m_box_product_search']) ? $data['m_box_product_search'] : null;
+
+        // Pagination config
+        $pageCurrent        = !empty($data['m_page_current'])                ? $data['m_page_current'] : 1;
+        $pageNbPerPage      = !empty($data['m_page_nb_per_page'])            ? $data['m_page_nb_per_page'] : 10;
+        $pageNbBeforeAfter  = !empty($data['m_page_nb_page_before_after'])   ? $data['m_page_nb_page_before_after'] : 3;
+
+        if(!is_null($searchKey)) {
+            $categoryProductList = $productSearchSvc->searchProductFull($searchKey);
+        }
+
+        // Pagination
+        $paginator = new Paginator(new ArrayAdapter($categoryProductList));
+        $paginator->setCurrentPageNumber($pageCurrent)
+            ->setItemCountPerPage($pageNbPerPage);
+
+        $formData = array(
+            'm_box_product_search' => $searchKey,
+        );
+
         // Create an array with the variables that will be available in the view
         $viewVariables = array(
-            'searchKey' => $searchKey
+            'productList' => $paginator,
+            'nbPageBeforeAfter' => $pageNbBeforeAfter,
+            'productSearchForm' => $this->loadProductSearchForm($formData),
         );
         
         // return the variable array and let the view be created
         return $viewVariables;
+    }
+
+    /**
+     * @param $data
+     * @return \Zend\Form\ElementInterface
+     */
+    private function loadProductSearchForm($data)
+    {
+        // construct form
+        $factory = new \Zend\Form\Factory();
+        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+        $formConfig = $this->pluginBackConfig['product_search_form'];
+        if (!empty($formConfig)) {
+            foreach($formConfig AS $key=>$config){
+                $form = $factory->createForm($config);
+                $form->setData($data);
+            }
+        }
+        return $form;
     }
     
     /**
@@ -169,7 +216,10 @@ class MelisCommerceProductSearchPlugin extends MelisTemplatingPlugin
      */
     public function getFormData()
     {
-        return $this->pluginFrontConfig;
+        $data = $this->pluginFrontConfig;
+        $data = ArrayUtils::merge($data, $this->pluginFrontConfig['pagination']);
+
+        return $data;
     }
     
     /**
@@ -190,9 +240,9 @@ class MelisCommerceProductSearchPlugin extends MelisTemplatingPlugin
                 $configValues['template_path'] = (string)$xml->template_path;
             }
 
-            if (!empty($xml->m_box_filter_search))
+            if (!empty($xml->m_box_product_search))
             {
-                $configValues['m_box_filter_search'] = (string)$xml->m_box_filter_search;
+                $configValues['m_box_product_search'] = (string)$xml->m_box_product_search;
             }
         }
         
@@ -213,9 +263,9 @@ class MelisCommerceProductSearchPlugin extends MelisTemplatingPlugin
             $xmlValueFormatted .= "\t\t" . '<template_path><![CDATA[' . $parameters['template_path'] . ']]></template_path>';
         }
 
-        if(!empty($parameters['m_box_filter_search']))
+        if(!empty($parameters['m_box_product_search']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_box_filter_search><![CDATA[' . $parameters['m_box_filter_search'] . ']]></m_box_filter_search>';
+            $xmlValueFormatted .= "\t\t" . '<m_box_product_search><![CDATA[' . $parameters['m_box_product_search'] . ']]></m_box_product_search>';
         }
         
         // Something has been saved, let's generate an XML for DB

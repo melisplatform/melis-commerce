@@ -12,7 +12,7 @@ return array(
                         'attribute_id' => null,
                         // filtering
                         // array of attribute values
-                        'm_box_filter_attribute_values_ids_selected' => array(),
+                        'm_box_product_attribute_values_ids_selected' => array(),
                     ),
                     'melis' => array(
                         'subcategory' => array(
@@ -35,7 +35,7 @@ return array(
                             'melis_commerce_plugin_product_attribute_config' => array(
                                 'tab_title' => 'tr_front_plugin_common_tab_properties',
                                 'tab_icon'  => 'fa fa-cogs',
-                                'tab_form_layout' => 'MelisCommerce/product-attribute-config',
+                                'tab_form_layout' => 'MelisCommerce/plugin-common-form-config',
                                 'elements' => array(
                                     array(
                                         'spec' => array(
@@ -84,12 +84,6 @@ return array(
                                                 ),
                                             ),
                                         ),
-                                        'filters'  => array(
-                                        ),
-                                    ),
-                                    'template_path' => array(
-                                        'name'     => 'template_path',
-                                        'required' => false,
                                         'filters'  => array(
                                         ),
                                     ),

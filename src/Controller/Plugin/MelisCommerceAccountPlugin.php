@@ -118,7 +118,7 @@ class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
         
         // Getting custom param for Cart Plugin
         $clientMyCartParam = (!empty($data['cart_parameter'])) ? $data['cart_parameter'] : array();
-        $clientMyCartPlugin = $pluginManager->get('MelisCommerceCartMenuPlugin');
+        $clientMyCartPlugin = $pluginManager->get('MelisCommerceCartPlugin');
         $clientMyCart = $clientMyCartPlugin->render($clientMyCartParam);
         /**
          * Need to render the View Model in-order to display
@@ -128,7 +128,7 @@ class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
         
         // Getting custom param for Order list Plugin
         $clientOrderParameter =(!empty($data['order_list_paremeter'])) ? $data['order_list_paremeter'] : array();
-        $clientOrderPlugin = $pluginManager->get('MelisCommerceOrderListPlugin');
+        $clientOrderPlugin = $pluginManager->get('MelisCommerceOrderHistoryPlugin');
         $clientOrderHistory = $clientOrderPlugin->render($clientOrderParameter);
         /**
          * Need to render the View Model in-order to display

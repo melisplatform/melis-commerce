@@ -65,9 +65,9 @@ class MelisCommerceCategoryTreePlugin extends MelisTemplatingPlugin
         $langId = $container['melis-plugins-lang-id'];
         
         $data = $this->getFormData();
-        $rootCategoryId = !empty($data['m_box_filter_root_category_id']) ?  $data['m_box_filter_root_category_id'] : null;
-        $includeRootCategory = !empty($data['m_box_filter_include_root_category']) ?  true : false;
-        $selectedCategories = !empty($data['m_box_filter_categories_ids_selected']) ?  $data['m_box_filter_categories_ids_selected'] : array();
+        $rootCategoryId = !empty($data['m_box_root_category_tree_id']) ?  $data['m_box_root_category_tree_id'] : null;
+        $includeRootCategory = !empty($data['m_box_include_root_category_tree']) ?  true : false;
+        $selectedCategories = !empty($data['m_box_category_tree_ids_selected']) ?  $data['m_box_category_tree_ids_selected'] : array();
         
         // Getting Category Tree View form the Category Service
         $melisComCategoryService = $this->getServiceLocator()->get('MelisComCategoryService');
@@ -343,9 +343,10 @@ class MelisCommerceCategoryTreePlugin extends MelisTemplatingPlugin
     public function getFormData()
     {
         $data = parent::getFormData();
-        $data['m_box_filter_root_category_id'] = $this->pluginFrontConfig['m_category_tree_filter_option']['m_box_filter_root_category_id'];
-        $data['m_box_filter_categories_ids_selected'] = (isset($this->pluginFrontConfig['m_category_tree_filter_option']['m_box_filter_categories_ids_selected']) ? $this->pluginFrontConfig['m_category_tree_filter_option']['m_box_filter_categories_ids_selected'] : array());
-        $data['m_box_filter_include_root_category'] = (isset($this->pluginFrontConfig['m_category_tree_filter_option']['m_box_filter_include_root_category']) ? $this->pluginFrontConfig['m_category_tree_filter_option']['m_box_filter_include_root_category'] : '');
+
+        $data['m_box_root_category_tree_id'] = (isset($this->pluginFrontConfig['m_category_tree_option']['m_box_root_category_tree_id']) ? $this->pluginFrontConfig['m_category_tree_option']['m_box_root_category_tree_id'] : null);
+        $data['m_box_category_tree_ids_selected'] = (isset($this->pluginFrontConfig['m_category_tree_option']['m_box_category_tree_ids_selected']) ? $this->pluginFrontConfig['m_category_tree_option']['m_box_category_tree_ids_selected'] : array());
+        $data['m_box_include_root_category_tree'] = (isset($this->pluginFrontConfig['m_category_tree_option']['m_box_include_root_category_tree']) ? $this->pluginFrontConfig['m_category_tree_option']['m_box_include_root_category_tree'] : null);
         return $data;
     }
     
@@ -367,19 +368,19 @@ class MelisCommerceCategoryTreePlugin extends MelisTemplatingPlugin
                 $configValues['template_path'] = (string)$xml->template_path;
             }
 
-            if (!empty($xml->m_box_filter_root_category_id))
+            if (!empty($xml->m_box_root_category_tree_id))
             {
-                $configValues['m_category_tree_filter_option']['m_box_filter_root_category_id'] = (string)$xml->m_box_filter_root_category_id;
+                $configValues['m_category_tree_option']['m_box_root_category_tree_id'] = (string)$xml->m_box_root_category_tree_id;
             }
 
-            if (!empty($xml->m_box_filter_categories_ids_selected))
+            if (!empty($xml->m_box_category_tree_ids_selected))
             {
-                $configValues['m_category_tree_filter_option']['m_box_filter_categories_ids_selected'] = json_decode((string)$xml->m_box_filter_categories_ids_selected, true);
+                $configValues['m_category_tree_option']['m_box_category_tree_ids_selected'] = json_decode((string)$xml->m_box_category_tree_ids_selected, true);
             }
 
-            if (!empty($xml->m_box_filter_include_root_category))
+            if (!empty($xml->m_box_include_root_category_tree))
             {
-                $configValues['m_category_tree_filter_option']['m_box_filter_include_root_category'] = (string)$xml->m_box_filter_include_root_category;
+                $configValues['m_category_tree_option']['m_box_include_root_category_tree'] = (string)$xml->m_box_include_root_category_tree;
             }
         }
 
@@ -401,19 +402,19 @@ class MelisCommerceCategoryTreePlugin extends MelisTemplatingPlugin
         }
 
 
-        if(!empty($parameters['m_box_filter_root_category_id']))
+        if(!empty($parameters['m_box_root_category_tree_id']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_box_filter_root_category_id><![CDATA[' . $parameters['m_box_filter_root_category_id'] . ']]></m_box_filter_root_category_id>';
+            $xmlValueFormatted .= "\t\t" . '<m_box_root_category_tree_id><![CDATA[' . $parameters['m_box_root_category_tree_id'] . ']]></m_box_root_category_tree_id>';
         }
 
-        if(!empty($parameters['m_box_filter_categories_ids_selected']))
+        if(!empty($parameters['m_box_category_tree_ids_selected']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_box_filter_categories_ids_selected><![CDATA[' . json_encode($parameters['m_box_filter_categories_ids_selected']) . ']]></m_box_filter_categories_ids_selected>';
+            $xmlValueFormatted .= "\t\t" . '<m_box_category_tree_ids_selected><![CDATA[' . json_encode($parameters['m_box_category_tree_ids_selected']) . ']]></m_box_category_tree_ids_selected>';
         }
 
-        if(!empty($parameters['m_box_filter_include_root_category']))
+        if(!empty($parameters['m_box_include_root_category_tree']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_box_filter_include_root_category><![CDATA[' . $parameters['m_box_filter_include_root_category'] . ']]></m_box_filter_include_root_category>';
+            $xmlValueFormatted .= "\t\t" . '<m_box_include_root_category_tree><![CDATA[' . $parameters['m_box_include_root_category_tree'] . ']]></m_box_include_root_category_tree>';
         }
     
         // Something has been saved, let's generate an XML for DB

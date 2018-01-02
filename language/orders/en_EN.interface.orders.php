@@ -115,4 +115,11 @@
 	    'tr_meliscommerce_orders_email_low_stock_subject' => 'Stock alert: Product %s SKU %s',
 	    'tr_meliscommerce_orders_email_low_stock_html' => '<p>Greetings,</p><p>The stock alert of the following product has been reached:</p><p>ID: [PRODUCT_ID]</p><p>Product name: [PRODUCT_TEXT] </p><p>SKU: [VARIANT_SKU]</p><p>Remaining stock: [STOCKS]</p>',
 	    'tr_meliscommerce_orders_email_low_stock_text' => 'Greetings, The stock alert of the following product has been reached ID: [PRODUCT_ID] Product name: [PRODUCT_TEXT] SKU: [VARIANT_SKU] Remaining stock: [STOCKS]',
-	);
+
+        //order history plugin
+        'tr_meliscommerce_order_history_name' => 'Order History',
+        'tr_meliscommerce_order_history_description' => 'The plugin displays all the orders made by the client',
+        'tr_meliscommerce_order_history_order_tooltip' => 'This filter allows to set the default order of client order history',
+        'tr_meliscommerce_order_history_order' => 'Order',
+        'tr_meliscommerce_order_history_empty_order' => 'No recent orders',
+    );

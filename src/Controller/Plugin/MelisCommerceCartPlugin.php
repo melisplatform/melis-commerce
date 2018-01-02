@@ -11,13 +11,17 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
+use Zend\Paginator\Adapter\ArrayAdapter;
+use Zend\Paginator\Paginator;
+use Zend\Session\Container;
+use Zend\Stdlib\ArrayUtils;
 use Zend\View\Model\ViewModel;
 
 /**
  * This plugin implements the business logic of the
- * "show related product plugin" plugin.
+ * "cart menu plugin" plugin.
  * 
- * Please look inside app.plugins.products.php for possible awaited parameters
+ * Please look inside app.plugins.orders.php for possible awaited parameters
  * in front and back function calls.
  * 
  * front() and back() are the only functions to create / update.
@@ -29,60 +33,159 @@ use Zend\View\Model\ViewModel;
  * Merge detects automatically from the route if rendering must be done for front or back.
  * 
  * How to call this plugin without parameters:
- * $plugin = $this->MelisCommerceRelatedProductsPlugin();
+ * $plugin = $this->MelisCommerceCartPlugin();
  * $pluginView = $plugin->render();
  *
  * How to call this plugin with custom parameters:
- * $plugin = $this->MelisCommerceRelatedProductsPlugin();
+ * $plugin = $this->MelisCommerceCartPlugin();
  * $parameters = array(
- *      'template_path' => 'MelisDemo/your-custom-template'
+ *      'template_path' => 'MelisDemoCommerce/your-custom-template'
  * );
  * $pluginView = $plugin->render($parameters);
  * 
  * How to add to your controller's view:
- * $view->addChild($pluginView, 'relatedProducts');
+ * $view->addChild($pluginView, 'cartMenu');
  * 
  * How to display in your controller's view:
- * echo $this->relatedProducts;
+ * echo $this->cartMenu;
  * 
  * 
  */
-class MelisCommerceRelatedProductsPlugin extends MelisTemplatingPlugin
+class MelisCommerceCartPlugin extends MelisTemplatingPlugin
 {
     public function __construct($updatesPluginConfig = array())
     {
         $this->configPluginKey = 'meliscommerce';
-        $this->pluginXmlDbKey = 'MelisCommerceRelatedProductsPlugin';
+        $this->pluginXmlDbKey = 'MelisCommerceCartPlugin';
         parent::__construct($updatesPluginConfig);
     }
-
     
     /**
-     * This function gets the data's and create an array of variables
+     * This function gets the datas and create an array of variables
      * that will be associated with the child view generated.
      */
     public function front()
     {
-               
+        $request = $this->getServiceLocator()->get('request');
+
         $data = $this->getFormData();
-        $productId = ($data['m_p_id']) ? $data['m_p_id'] : null;
+        // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
+//        $limit = !empty($data['cart_menu_limit'])? $data['cart_menu_limit'] : null;
+        $imageType = !empty($data['image_type'])? $data['image_type'] : array();
+        // Pagination config
+        $pageCurrent        = !empty($data['my_cart_current'])   ? $data['my_cart_current'] : 1;
+        $pagePerPage      = !empty($data['my_cart_per_page']) ? $data['my_cart_per_page'] : null;
         
-        $productSvc = $this->getServiceLocator()->get('MelisComProductService');
-        $assocProducts = $productSvc->getAssocProducts($productId);
-        $data = array();
+        $basket = array();
+        $total = 0;
+        $totalCurrency = '';
         
-        foreach($assocProducts as $productObj){
-            
-            // Retrieve display price, check MelisComProductService for available parameters
-            $productObj->display_price = $productSvc->getProductVariantPriceById($productObj->getId());
-            $data[]= $productObj;
+        $ecomAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
+        $basketSrv = $this->getServiceLocator()->get('MelisComBasketService');
+        $prodSvc = $this->getServiceLocator()->get('MelisComProductService');
+        $currencySvc = $this->getServiceLocator()->get('MelisComCurrencyService');
+        $container = new Container('melisplugins');
+        $lang = $container['melis-plugins-lang-id'];
+        
+        $clientKey = $ecomAuthSrv->getId();
+        $clientId = null;
+        if ($ecomAuthSrv->hasIdentity())
+        {
+            $clientId = $ecomAuthSrv->getClientId();
+            $clientKey = $ecomAuthSrv->getClientKey();
+        }
+
+        //remove item from cart/basket
+        if ($request->isPost())
+        {
+            $requestVar = get_object_vars($request->getPost());
+            $variantIdRemove = (isset($requestVar['cart_variant_id'])) ? $requestVar['cart_variant_id'] : null;
+            /**
+             * Removing Product from Cart
+             */
+            if ($variantIdRemove)
+            {
+                $basketSrv->removeVariantFromBasket($variantIdRemove, 0, $clientId, $clientKey);
+            }
         }
         
-        // Create an array with the variables that will be available in the view
-        $viewVariables = array(
-            'relatedProducts' => $data
-        );
+        $basketObj = $basketSrv->getBasket($clientId, $clientKey);
         
+        if($basketObj){
+            foreach($basketObj as $item){
+                
+                $itemTotal = 0;
+                $var = $item->getVariant();
+                
+                $product = $prodSvc->getProductById($var->getVariant()->var_prd_id, $lang, null, 'IMG', array('DEFAULT'));
+                
+                // Get the product name
+                foreach($product->getTexts() as $text){
+                    if($text->ptt_code == 'TITLE'){
+                        $tmp['name'] = $text->ptxt_field_short;
+                    }
+                }
+                // get product id
+                $tmp['product_id'] = $product->getId();
+                
+                // get variant sku
+                $tmp['var_sku'] = $var->getVariant()->var_sku;
+                
+                // get vriant id
+                $tmp['var_id'] = $var->getId();
+                
+                // get quantity
+                $tmp['quantity'] = $item->getQuantity();
+                
+                // get variant prices, if doesn't exist use the product price
+                if(!empty($var->getPrices()[0]->price_net)){
+                    $tmp['price'] = $var->getPrices()[0]->price_net;
+                    $tmp['cur_symbol'] = $var->getPrices()[0]->cur_symbol;
+                }else{
+                    $tmp['price'] = $product->getPrice()[0]->price_net;
+                    $tmp['cur_symbol'] = $product->getPrices()[0]->cur_symbol;
+                }
+                
+                // if no currency set from the prices, get the default site currency
+                if(empty($tmp['cur_symbol'])){
+                    $currency = $currencySvc->getDefaultCurrency();
+                    $tmp['cur_symbol'] = $currency->cur_symbol;
+                }
+                
+                // get the default image
+                if(!empty($var->getDocuments())){
+                    foreach($var->getDocuments() as $doc){
+                        if($doc->dtype_sub_code == 'DEFAULT'){
+                            $tmp['image'] = $doc->doc_path;
+                        }
+                    }
+                }else{
+                    foreach($product->getDocuments() as $doc){
+                        if($doc->dtype_sub_code == $imageType){
+                            $tmp['image'] = $doc->doc_path;
+                        }
+                    }
+                }
+                
+                $itemTotal = $tmp['price'] * $tmp['quantity'];
+                $totalCurrency = $tmp['cur_symbol'];
+                $total = $total + $itemTotal;
+                $basket[] = $tmp;
+            }
+        }
+
+        // Pagination
+        $paginator = new Paginator(new ArrayAdapter($basket));
+        $paginator->setCurrentPageNumber($pageCurrent)
+            ->setItemCountPerPage($pagePerPage);
+        
+        $viewVariables = array(
+            'basket' => $basket,
+            'basketTotal' => $total,
+            'currency' => $totalCurrency,
+            'paginator' => $paginator,
+            'myCartBeforeAfter' => 2,
+        );
         // return the variable array and let the view be created
         return $viewVariables;
     }
@@ -184,7 +287,9 @@ class MelisCommerceRelatedProductsPlugin extends MelisTemplatingPlugin
      */
     public function getFormData()
     {
-        return $this->pluginFrontConfig;
+        $data = parent::getFormData();
+        $data = ArrayUtils::merge($data, $this->pluginFrontConfig['pagination']);
+        return $data;
     }
 
     /**
@@ -195,7 +300,6 @@ class MelisCommerceRelatedProductsPlugin extends MelisTemplatingPlugin
     public function loadDbXmlToPluginConfig()
     {
         $configValues = array();
-
         $xml = simplexml_load_string($this->pluginXmlDbValue);
 
         if ($xml)
@@ -203,11 +307,6 @@ class MelisCommerceRelatedProductsPlugin extends MelisTemplatingPlugin
             if (!empty($xml->template_path))
             {
                 $configValues['template_path'] = (string)$xml->template_path;
-            }
-
-            if (!empty($xml->m_p_id))
-            {
-                $configValues['m_p_id'] = (string)$xml->m_p_id;
             }
         }
 
@@ -221,23 +320,17 @@ class MelisCommerceRelatedProductsPlugin extends MelisTemplatingPlugin
     public function savePluginConfigToXml($parameters)
     {
         $xmlValueFormatted = '';
-
         // template_path is mendatory for all plugins
         if (!empty($parameters['template_path']))
         {
             $xmlValueFormatted .= "\t\t" . '<template_path><![CDATA[' . $parameters['template_path'] . ']]></template_path>';
         }
 
-        if (!empty($parameters['m_p_id']))
-        {
-            $xmlValueFormatted .= "\t\t" . '<m_p_id><![CDATA[' . $parameters['m_p_id'] . ']]></m_p_id>';
-        }
-
         // Something has been saved, let's generate an XML for DB
         //if (!empty($xmlValueFormatted))
-        //{
+       // {
             $xmlValueFormatted = "\t".'<'.$this->pluginXmlDbKey.' id="'.$parameters['melisPluginId'].'">'.$xmlValueFormatted."\t".'</'.$this->pluginXmlDbKey.'>'."\n";
-        //}
+       // }
 
         return $xmlValueFormatted;
     }

@@ -1270,6 +1270,8 @@ class MelisComProductController extends AbstractActionController
         $priceClean = array();
         $attributes = array();
         $categories = array();
+        $priceId_arr = array();
+
         $seo = array();
 
         $factory = new \Zend\Form\Factory();
@@ -1388,7 +1390,7 @@ class MelisComProductController extends AbstractActionController
                         $priceClean[] = $prodPrice;
                     }else{
                         if(isset($prodPrice['price_id'])){
-                            $priceTable->deleteById($prodPrice['price_id']);
+                            array_push($priceId_arr, $prodPrice['price_id']);
                         }
                     }
                 }
@@ -1459,6 +1461,13 @@ class MelisComProductController extends AbstractActionController
             if($delCategories) {
                 foreach($delCategories as $delCat) {
                     $categorySvc->deleteCategoryProduct($delCat['pcat_id']);
+                }
+            }
+
+            //remove prices if the array is not empty
+            if(!empty($priceId_arr)){
+                foreach($priceId_arr AS $price_id){
+                    $priceTable->deleteById($price_id);
                 }
             }
             

@@ -16,8 +16,8 @@
 		<?php foreach ($this->prdTextTypes As $val):?>
 			<?php
 			    $checked = '';
-			    if (!empty($this->formData['m_box_filter_field_type'])){
-			        if(in_array($val['ptt_code'], $this->formData['m_box_filter_field_type'])){
+			    if (!empty($this->formData['m_box_product_field_type'])){
+			        if(in_array($val['ptt_code'], $this->formData['m_box_product_field_type'])){
 			            $checked = 'check';
 			        }
 			    }
@@ -25,7 +25,7 @@
 			<div class="col-xs-4">
             	<label class="full-category-product-list-prd-txt-types-config-checkbox">
             		<i class="fa fa-<?php echo ($checked) ? $checked.'-' : '' ?>square-o fa-lg"></i> <?php echo $val['ptt_name']?>
-            		<input type="checkbox" name="m_box_filter_field_type[]" value="<?php echo $val['ptt_code'] ?>" <?php echo ($checked) ? $checked.'ed' : '' ?> style="display: none">
+            		<input type="checkbox" name="m_box_product_field_type[]" value="<?php echo $val['ptt_code'] ?>" <?php echo ($checked) ? $checked.'ed' : '' ?> style="display: none">
             	</label>
     		</div>
 		<?php endforeach;?>

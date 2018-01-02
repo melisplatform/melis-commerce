@@ -300,8 +300,8 @@ return array(
             'MelisCommerceCheckoutSummaryPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutSummaryPlugin',
             'MelisCommerceCheckoutConfirmSummaryPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutConfirmSummaryPlugin',
             'MelisCommerceCheckoutConfirmPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutConfirmPlugin',
-            'MelisCommerceCartMenuPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCartMenuPlugin',
-            'MelisCommerceOrderListPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceOrderListPlugin',
+            'MelisCommerceCartPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCartPlugin',
+            'MelisCommerceOrderHistoryPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceOrderHistoryPlugin',
             'MelisCommerceOrderPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceOrderPlugin',
             'MelisCommerceOrderAddressPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceOrderAddressPlugin',
             'MelisCommerceOrderShippingDetailsPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceOrderShippingDetailsPlugin',
@@ -380,18 +380,12 @@ return array(
             
             'MelisCommerceProduct/related-products'                 => __DIR__ . '/../view/plugins/products/related-products.phtml',
             'MelisCommerce/product-list'                            => __DIR__ . '/../view/plugins/products/product-list.phtml',
-            'MelisCommerce/product-list-config'                     => __DIR__ . '/../view/plugins/products/product-list-config.phtml',
-            'MelisCommerce/product-list-pagination-config'          => __DIR__ . '/../view/plugins/products/product-list-pagination-config.phtml',
             'MelisCommerce/product-list-attributes-config'          => __DIR__ . '/../view/plugins/products/product-list-attributes-config.phtml',
             'MelisCommerce/product-list-text-types-config'          => __DIR__ . '/../view/plugins/products/product-list-text-types-config.phtml',
-            'MelisCommerce/product-list-price-config'               => __DIR__ . '/../view/plugins/products/product-list-price-config.phtml',
             'MelisCommerce/product-list-paginator'                  => __DIR__ . '/../view/plugins/products/product-list-paginator.phtml',
             'MelisCommerceProduct/product-price-range'              => __DIR__ . '/../view/plugins/products/product-price-range.phtml',
             'MelisCommerce/product-attribute'                       => __DIR__ . '/../view/plugins/products/product-attribute.phtml',
-            'MelisCommerce/product-attribute-config'                => __DIR__ . '/../view/plugins/products/product-attribute-config.phtml',
             'MelisCommerce/product-search'                          => __DIR__ . '/../view/plugins/products/product-search.phtml',
-            'MelisCommerce/product-search-config'                   => __DIR__ . '/../view/plugins/products/product-search-config.phtml',
-            'MelisCommerce/related-products-config'                 => __DIR__ . '/../view/plugins/products/related-products-config.phtml',
 
             //checkout
             'MelisCommerceCheckout/show-check-out'                  => __DIR__ . '/../view/plugins/checkout/show-check-out.phtml',
@@ -402,7 +396,7 @@ return array(
             'MelisCommerceCheckout/show-check-out-confirm-summary'  => __DIR__ . '/../view/plugins/checkout/show-check-out-confirm-summary.phtml',
             'MelisCommerceCheckout/show-check-out-confirm'          => __DIR__ . '/../view/plugins/checkout/show-check-out-confirm.phtml',
             
-            'MelisCommerceCartMenuPlugin/show-cart-menu'            => __DIR__ . '/../view/plugins/checkout/show-cart-menu.phtml',
+            'MelisCommerceCart/show-cart'                           => __DIR__ . '/../view/plugins/checkout/show-cart.phtml',
             
             'MelisCommerceCategory/category-product-list'           => __DIR__ . '/../view/plugins/categories/category-product-list.phtml',
             'MelisCommerceCategory/category-list-filter'            => __DIR__ . '/../view/plugins/categories/category-list-filter.phtml',
@@ -413,18 +407,17 @@ return array(
             'MelisCommerceCategory/category-tree'                   => __DIR__ . '/../view/plugins/categories/category-tree.phtml',
 
             //category
-            'MelisCommerceOrder/show-client-order-list'             => __DIR__ . '/../view/plugins/order/show-client-order-list.phtml',
+            'MelisCommerceOrder/order-history'                      => __DIR__ . '/../view/plugins/order/order-history.phtml',
+            'MelisCommerceOrder/order-history-paginator'            => __DIR__ . '/../view/plugins/order/order-history-paginator.phtml',
             'MelisCommerceOrder/show-client-order'                  => __DIR__ . '/../view/plugins/order/show-client-order.phtml',
             'MelisCommerceOrder/show-client-order-address'          => __DIR__ . '/../view/plugins/order/show-client-order-address.phtml',
             'MelisCommerceOrder/show-client-shipping-details'       => __DIR__ . '/../view/plugins/order/show-client-shipping-details.phtml',
             //end category
 
             // Plugin config layout
-            'MelisCommerce/category-product-list-config'            => __DIR__ . '/../view/plugins/categories/category-product-list-config.phtml',
             'MelisCommerce/category-product-list-tree-config'       => __DIR__ . '/../view/plugins/categories/category-product-list-tree-config.phtml',
             'MelisCommerce/product-list-tree-config'                => __DIR__ . '/../view/plugins/products/product-list-tree-config.phtml',
-            'MelisCommerce/category-list-filter-config'             => __DIR__ . '/../view/plugins/categories/category-list-filter-config.phtml',
-            'MelisCommerce/category-list-filter-tree-config'        => __DIR__ . '/../view/plugins/categories/category-list-filter-tree-config.phtml',
+            'MelisCommerce/category-tree-config'                    => __DIR__ . '/../view/plugins/categories/category-tree-config.phtml',
             
             // Plugin common form config layout
             'MelisCommerce/plugin-common-form-config'                      => __DIR__ . '/../view/plugins/common/plugin-common-form-config.phtml',

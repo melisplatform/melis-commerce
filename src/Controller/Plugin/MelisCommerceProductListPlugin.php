@@ -79,18 +79,18 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
         
         // Filters config
         $onlyValid          = true;
-        $search             = !empty($data['m_box_filter_search'])                          ? $data['m_box_filter_search'] : '';
-        $fieldType          = !empty($data['m_box_filter_field_type'])                      ? $data['m_box_filter_field_type'] : array();
-        $min                = !empty($data['m_box_filter_price_min'])                       ? $data['m_box_filter_price_min'] : null;
-        $max                = !empty($data['m_box_filter_price_max'])                       ? $data['m_box_filter_price_max'] : null;
-        $country            = !empty($data['m_box_filter_country'])                         ? $data['m_box_filter_country'] : null;
-        $attributeValueId   = !empty($data['m_box_filter_attribute_values_ids_selected'])   ? $data['m_box_filter_attribute_values_ids_selected'] : array();
-        $categoryId         = !empty($data['m_box_filter_categories_ids_selected'])         ? $data['m_box_filter_categories_ids_selected'] : array();
+        $search             = !empty($data['m_box_product_search'])                          ? $data['m_box_product_search'] : '';
+        $fieldType          = !empty($data['m_box_product_field_type'])                ? $data['m_box_product_field_type'] : array();
+        $min                = !empty($data['m_box_product_price_min'])                       ? $data['m_box_product_price_min'] : null;
+        $max                = !empty($data['m_box_product_price_max'])                       ? $data['m_box_product_price_max'] : null;
+        $country            = !empty($data['m_box_product_country'])                         ? $data['m_box_product_country'] : null;
+        $attributeValueId   = !empty($data['m_box_product_attribute_values_ids_selected'])   ? $data['m_box_product_attribute_values_ids_selected'] : array();
+        $categoryId         = !empty($data['m_box_category_tree_ids_selected'])         ? $data['m_box_category_tree_ids_selected'] : array();
         
         // Pagination config
-        $pageCurrent        = !empty($data['m_pag_current'])                ? $data['m_pag_current'] : 1;
-        $pageNbPerPage      = !empty($data['m_pag_nb_per_page'])            ? $data['m_pag_nb_per_page'] : null;
-        $pageNbBeforeAfter  = !empty($data['m_pag_nb_page_before_after'])   ? $data['m_pag_nb_page_before_after'] : 3;
+        $pageCurrent        = !empty($data['m_page_current'])                ? $data['m_page_current'] : 1;
+        $pageNbPerPage      = !empty($data['m_page_nb_per_page'])            ? $data['m_page_nb_per_page'] : null;
+        $pageNbBeforeAfter  = !empty($data['m_page_nb_page_before_after'])   ? $data['m_page_nb_page_before_after'] : 3;
          
         foreach($categoryId as $catId){
             $categoryId = array_merge($categoryId, $this->categoryIdIterator($categorySvc->getAllSubCategoryIdById($catId, $onlyValid)));
@@ -126,7 +126,7 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
             'sort_config' => $sort,
 
         );
-        
+
         // return the variable array and let the view be created
         return $viewVariables;
     }
@@ -283,7 +283,7 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
     public function getFormData()
     {
         $data['template_path'] = $this->pluginFrontConfig['template_path'];
-        $data['m_box_filter_categories_ids_selected'] = $this->pluginFrontConfig['m_box_filter_categories_ids_selected'];
+        $data['m_box_category_tree_ids_selected'] = $this->pluginFrontConfig['m_box_category_tree_ids_selected'];
         $data['m_box_filter_price_column'] = $this->pluginFrontConfig['m_box_filter_price_column'];
         $data = ArrayUtils::merge($data, $this->pluginFrontConfig['sorter']);
         $data = ArrayUtils::merge($data, $this->pluginFrontConfig['filters']);
@@ -291,6 +291,7 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
         if(isset($this->pluginFrontConfig['m_col_name'])){
             $data['m_col_name'] = $this->pluginFrontConfig['m_col_name'];
         }
+
         return $data;
     }
     
@@ -322,14 +323,14 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
                 $configValues['sorter']['m_order'] = (string)$xml->m_order;
             }
             
-            if (!empty($xml->m_box_filter_search))
+            if (!empty($xml->m_box_product_search))
             {
-                $configValues['filters']['m_box_filter_search'] = (string)$xml->m_box_filter_search;
+                $configValues['filters']['m_box_product_search'] = (string)$xml->m_box_product_search;
             }
             
-            if (!empty($xml->m_box_filter_field_type))
+            if (!empty($xml->m_box_product_field_type))
             {
-                $configValues['filters']['m_box_filter_field_type'] = json_decode((string)$xml->m_box_filter_field_type, true);
+                $configValues['filters']['m_box_product_field_type'] = json_decode((string)$xml->m_box_product_field_type, true);
             }
 
             if (!empty($xml->m_box_filter_price_column))
@@ -337,14 +338,14 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
                 $configValues['m_box_filter_price_column'] = (string)$xml->m_box_filter_price_column;
             }
             
-            if (!empty($xml->m_box_filter_price_min))
+            if (!empty($xml->m_box_product_price_min))
             {
-                $configValues['filters']['m_box_filter_price_min'] = (string)$xml->m_box_filter_price_min;
+                $configValues['filters']['m_box_product_price_min'] = (string)$xml->m_box_product_price_min;
             }
             
-            if (!empty($xml->m_box_filter_price_max))
+            if (!empty($xml->m_box_product_price_max))
             {
-                $configValues['filters']['m_box_filter_price_max'] = (string)$xml->m_box_filter_price_max;
+                $configValues['filters']['m_box_product_price_max'] = (string)$xml->m_box_product_price_max;
             }
             
             if (!empty($xml->m_box_filter_docs))
@@ -352,39 +353,39 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
                 $configValues['filters']['m_box_filter_docs'] = json_decode((string)$xml->m_box_filter_docs, true);
             }
             
-            if (!empty($xml->m_box_filter_country))
+            if (!empty($xml->m_box_product_country))
             {
-                $configValues['filters']['m_box_filter_country'] = (string)$xml->m_box_filter_country;
+                $configValues['filters']['m_box_product_country'] = (string)$xml->m_box_product_country;
             }
             
-            if (!empty($xml->m_box_filter_only_valid))
+            if (!empty($xml->m_box_product_only_valid))
             {
-                $configValues['filters']['m_box_filter_only_valid'] = (string)$xml->m_box_filter_only_valid;
+                $configValues['filters']['m_box_product_only_valid'] = (string)$xml->m_box_product_only_valid;
             }
             
-            if (!empty($xml->m_box_filter_attribute_values_ids_selected))
+            if (!empty($xml->m_box_product_attribute_values_ids_selected))
             {
-                $configValues['filters']['m_box_filter_attribute_values_ids_selected'] = json_decode((string)$xml->m_box_filter_attribute_values_ids_selected, true);
+                $configValues['filters']['m_box_product_attribute_values_ids_selected'] = json_decode((string)$xml->m_box_product_attribute_values_ids_selected, true);
             }
             
-            if (!empty($xml->m_box_filter_categories_ids_selected))
+            if (!empty($xml->m_box_category_tree_ids_selected))
             {
-                $configValues['filters']['m_box_filter_categories_ids_selected'] = json_decode((string)$xml->m_box_filter_categories_ids_selected, true);
+                $configValues['filters']['m_box_category_tree_ids_selected'] = json_decode((string)$xml->m_box_category_tree_ids_selected, true);
             }
             
-            if (!empty($xml->m_pag_current))
+            if (!empty($xml->m_page_current))
             {
-                $configValues['pagination']['m_pag_current'] = (string)$xml->m_pag_current;
+                $configValues['pagination']['m_page_current'] = (string)$xml->m_page_current;
             }
             
-            if (!empty($xml->m_pag_nb_per_page))
+            if (!empty($xml->m_page_nb_per_page))
             {
-                $configValues['pagination']['m_pag_nb_per_page'] = (string)$xml->m_pag_nb_per_page;
+                $configValues['pagination']['m_page_nb_per_page'] = (string)$xml->m_page_nb_per_page;
             }
             
-            if (!empty($xml->m_pag_nb_page_before_after))
+            if (!empty($xml->m_page_nb_page_before_after))
             {
-                $configValues['pagination']['m_pag_nb_page_before_after'] = (string)$xml->m_pag_nb_page_before_after;
+                $configValues['pagination']['m_page_nb_page_before_after'] = (string)$xml->m_page_nb_page_before_after;
             }
         }
         return $configValues;
@@ -404,14 +405,14 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
             $xmlValueFormatted .= "\t\t" . '<template_path><![CDATA[' . $parameters['template_path'] . ']]></template_path>';
         }
 
-        if(!empty($parameters['m_box_filter_search']))
+        if(!empty($parameters['m_box_product_search']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_box_filter_search><![CDATA[' . $parameters['m_box_filter_search'] . ']]></m_box_filter_search>';
+            $xmlValueFormatted .= "\t\t" . '<m_box_product_search><![CDATA[' . $parameters['m_box_product_search'] . ']]></m_box_product_search>';
         }
         
-        if(!empty($parameters['m_box_filter_field_type']))
+        if(!empty($parameters['m_box_product_field_type']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_box_filter_field_type><![CDATA[' . json_encode($parameters['m_box_filter_field_type']) . ']]></m_box_filter_field_type>';
+            $xmlValueFormatted .= "\t\t" . '<m_box_product_field_type><![CDATA[' . json_encode($parameters['m_box_product_field_type']) . ']]></m_box_product_field_type>';
         }
 
         if(!empty($parameters['m_box_filter_price_column']))
@@ -419,14 +420,14 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
             $xmlValueFormatted .= "\t\t" . '<m_box_filter_price_column><![CDATA[' . $parameters['m_box_filter_price_column'] . ']]></m_box_filter_price_column>';
         }
     
-        if(!empty($parameters['m_box_filter_price_min']))
+        if(!empty($parameters['m_box_product_price_min']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_box_filter_price_min><![CDATA[' . $parameters['m_box_filter_price_min'] . ']]></m_box_filter_price_min>';
+            $xmlValueFormatted .= "\t\t" . '<m_box_product_price_min><![CDATA[' . $parameters['m_box_product_price_min'] . ']]></m_box_product_price_min>';
         }
     
-        if(!empty($parameters['m_box_filter_price_max']))
+        if(!empty($parameters['m_box_product_price_max']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_box_filter_price_max><![CDATA[' . $parameters['m_box_filter_price_max'] . ']]></m_box_filter_price_max>';
+            $xmlValueFormatted .= "\t\t" . '<m_box_product_price_max><![CDATA[' . $parameters['m_box_product_price_max'] . ']]></m_box_product_price_max>';
         }
     
         if(!empty($parameters['m_box_filter_docs']))
@@ -434,39 +435,39 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
             $xmlValueFormatted .= "\t\t" . '<m_box_filter_docs><![CDATA[' . json_encode($parameters['m_box_filter_docs']) . ']]></m_box_filter_docs>';
         }
         
-        if(!empty($parameters['m_box_filter_country']))
+        if(!empty($parameters['m_box_product_country']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_box_filter_country><![CDATA[' . $parameters['m_box_filter_country'] . ']]></m_box_filter_country>';
+            $xmlValueFormatted .= "\t\t" . '<m_box_product_country><![CDATA[' . $parameters['m_box_product_country'] . ']]></m_box_product_country>';
         }
         
-        if(!empty($parameters['m_box_filter_only_valid']))
+        if(!empty($parameters['m_box_product_only_valid']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_box_filter_only_valid><![CDATA[' . $parameters['m_box_filter_only_valid'] . ']]></m_box_filter_only_valid>';
+            $xmlValueFormatted .= "\t\t" . '<m_box_product_only_valid><![CDATA[' . $parameters['m_box_product_only_valid'] . ']]></m_box_product_only_valid>';
         }
         
-        if(!empty($parameters['m_pag_current']))
+        if(!empty($parameters['m_page_current']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_pag_current><![CDATA[' . $parameters['m_pag_current'] . ']]></m_pag_current>';
+            $xmlValueFormatted .= "\t\t" . '<m_page_current><![CDATA[' . $parameters['m_page_current'] . ']]></m_page_current>';
         }
         
-        if(!empty($parameters['m_pag_nb_per_page']))
+        if(!empty($parameters['m_page_nb_per_page']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_pag_nb_per_page><![CDATA[' . $parameters['m_pag_nb_per_page'] . ']]></m_pag_nb_per_page>';
+            $xmlValueFormatted .= "\t\t" . '<m_page_nb_per_page><![CDATA[' . $parameters['m_page_nb_per_page'] . ']]></m_page_nb_per_page>';
         }
         
-        if(!empty($parameters['m_pag_nb_page_before_after']))
+        if(!empty($parameters['m_page_nb_page_before_after']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_pag_nb_page_before_after><![CDATA[' . $parameters['m_pag_nb_page_before_after'] . ']]></m_pag_nb_page_before_after>';
+            $xmlValueFormatted .= "\t\t" . '<m_page_nb_page_before_after><![CDATA[' . $parameters['m_page_nb_page_before_after'] . ']]></m_page_nb_page_before_after>';
         }
         
-        if(!empty($parameters['m_box_filter_attribute_values_ids_selected']))
+        if(!empty($parameters['m_box_product_attribute_values_ids_selected']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_box_filter_attribute_values_ids_selected><![CDATA[' . json_encode($parameters['m_box_filter_attribute_values_ids_selected']) . ']]></m_box_filter_attribute_values_ids_selected>';
+            $xmlValueFormatted .= "\t\t" . '<m_box_product_attribute_values_ids_selected><![CDATA[' . json_encode($parameters['m_box_product_attribute_values_ids_selected']) . ']]></m_box_product_attribute_values_ids_selected>';
         }
         
-        if(!empty($parameters['m_box_filter_categories_ids_selected']))
+        if(!empty($parameters['m_box_category_tree_ids_selected']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_box_filter_categories_ids_selected><![CDATA[' . json_encode($parameters['m_box_filter_categories_ids_selected']) . ']]></m_box_filter_categories_ids_selected>';
+            $xmlValueFormatted .= "\t\t" . '<m_box_category_tree_ids_selected><![CDATA[' . json_encode($parameters['m_box_category_tree_ids_selected']) . ']]></m_box_category_tree_ids_selected>';
         }
         
         if(!empty($parameters['m_col_name']))

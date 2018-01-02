@@ -190,7 +190,7 @@
 	    'tr_meliscommerce_plugin_category_product_list_cat_order_cat_order' => 'Ordre de la catégorie',
 
         'tr_meliscommerce_plugin_include_root_category' => 'Inclure la catégorie ou le catalogue parent',
-        'tr_meliscommerce_plugin_category_tree_name' => 'Liste des catégories',
+        'tr_meliscommerce_plugin_category_tree_name' => 'Arbre de catégorie',
 	    'tr_meliscommerce_plugin_category_tree_description' => 'Le plugin affiche la liste des catégories',
         'tr_meliscommerce_plugin_category_tree_template' => 'Template',
 	    'tr_meliscommerce_plugin_filter_menu_category_list_root_category' => 'Catalogue / Categorie',

@@ -190,7 +190,7 @@
 	    'tr_meliscommerce_plugin_category_product_list_cat_order_cat_order' => 'Category order',
 
         'tr_meliscommerce_plugin_include_root_category' => 'Include Parent Category / Catalog',
-        'tr_meliscommerce_plugin_category_tree_name' => 'Category List',
+        'tr_meliscommerce_plugin_category_tree_name' => 'Category tree',
 	    'tr_meliscommerce_plugin_category_tree_description' => 'The plugin display the Category list',
 	    'tr_meliscommerce_plugin_category_tree_template' => 'Template',
 	    'tr_meliscommerce_plugin_filter_menu_category_list_root_category' => 'Catalog / Category',
