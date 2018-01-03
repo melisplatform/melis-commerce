@@ -19,6 +19,18 @@ return array(
                         'cart_parameter' => array(),
                         // Parameters for the MelisCommerceOrderHistoryPlugin()
                         'order_list_paremeter' => array(),
+                        /**
+                         * Sub plugins parameters
+                         * this values will avoid overriding the sub plugin parameters 
+                         * during updating the Plugin configs
+                         */
+                        'sub_plugins_params' => array(
+                            'profile_parameter',
+                            'delivery_address_parameter',
+                            'billing_address_parameter',
+                            'cart_parameter',
+                            'order_list_paremeter',
+                        )
                     ),
                     'melis' => array(
                         'subcategory' => array(

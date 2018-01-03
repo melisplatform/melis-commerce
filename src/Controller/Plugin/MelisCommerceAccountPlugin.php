@@ -65,7 +65,6 @@ class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
      */
     public function front()
     {
-        $viewRender = $this->getServiceLocator()->get('ViewRenderer');
         $pluginManager = $this->getServiceLocator()->get('ControllerPluginManager');
         
         $data = $this->getFormData();
@@ -75,76 +74,32 @@ class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
         $clientProfilePlugin = $pluginManager->get('MelisCommerceProfilePlugin');
         $clientProfile = $clientProfilePlugin->render($profileParam);
         
-        /**
-         * Retrieving the variables from the resultview 
-         * of the plugin and add as new viewVariable to return to this plugin
-         */
-        $clientProfileVariables = $clientProfile->getVariables();
-        /**
-         * Need to render the View Model in-order to display
-         * after apply an update to the plugin properties
-         */
-        $clientProfile = $viewRender->render($clientProfile);
-        
         // Getting custom param for Delivery Address Plugin
         $clientDeliveryAddressParam = (!empty($data['delivery_address_parameter'])) ? $data['delivery_address_parameter'] : array();
         $clientDeliveryAddressPlugin = $pluginManager->get('MelisCommerceDeliveryAddressPlugin');
         $clientDeliveryAddress = $clientDeliveryAddressPlugin->render($clientDeliveryAddressParam);
-        /**
-         * Retrieving the variables from the resultview
-         * of the plugin and add as new viewVariable to return to this plugin
-         */
-        $clientDeliveryAddressVariables = $clientDeliveryAddress->getVariables();
-        /**
-         * Need to render the View Model in-order to display
-         * after apply an update to the plugin properties
-         */
-        $clientDeliveryAddress = $viewRender->render($clientDeliveryAddress);
         
         // Getting custom param for Billing Address Plugin
         $clientBillingAddressParam = (!empty($data['billing_address_parameter'])) ? $data['billing_address_parameter'] : array();
         $clientBillingAddressPlugin = $pluginManager->get('MelisCommerceBillingAddressPlugin');
         $clientBillingAddress = $clientBillingAddressPlugin->render($clientBillingAddressParam);
-        /**
-         * Retrieving the variables from the resultview
-         * of the plugin and add as new viewVariable to return to this plugin
-         */
-        $clientBillingAddressVariables = $clientBillingAddress->getVariables();
-        /**
-         * Need to render the View Model in-order to display
-         * after apply an update to the plugin properties
-         */
-        $clientBillingAddress = $viewRender->render($clientBillingAddress);
         
         // Getting custom param for Cart Plugin
-        $clientMyCartParam = (!empty($data['cart_parameter'])) ? $data['cart_parameter'] : array();
-        $clientMyCartPlugin = $pluginManager->get('MelisCommerceCartPlugin');
-        $clientMyCart = $clientMyCartPlugin->render($clientMyCartParam);
-        /**
-         * Need to render the View Model in-order to display
-         * after apply an update to the plugin properties
-         */
-        $clientMyCart = $viewRender->render($clientMyCart);
+        $clientCartParam = (!empty($data['cart_parameter'])) ? $data['cart_parameter'] : array();
+        $clientCartPlugin = $pluginManager->get('MelisCommerceCartPlugin');
+        $clientCart = $clientCartPlugin->render($clientCartParam);
         
         // Getting custom param for Order list Plugin
         $clientOrderParameter =(!empty($data['order_list_paremeter'])) ? $data['order_list_paremeter'] : array();
         $clientOrderPlugin = $pluginManager->get('MelisCommerceOrderHistoryPlugin');
         $clientOrderHistory = $clientOrderPlugin->render($clientOrderParameter);
-        /**
-         * Need to render the View Model in-order to display
-         * after apply an update to the plugin properties
-         */
-        $clientOrderHistory = $viewRender->render($clientOrderHistory);
         
         // Create an array with the variables that will be available in the view
         $viewVariables = array(
             'profile' => $clientProfile,
-            'profile_variables' => $clientProfileVariables,
             'deliveryAddress' => $clientDeliveryAddress,
-            'delivery_variables' => $clientDeliveryAddressVariables,
             'billingAddress' => $clientBillingAddress,
-            'billing_variables' => $clientBillingAddressVariables,
-            'myCart' => $clientMyCart,
+            'cart' => $clientCart,
             'orderHistory' => $clientOrderHistory,
         );
         
