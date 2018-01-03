@@ -1,0 +1,42 @@
+<table class="table table-striped">
+    <tr>
+    	<th>Variant</th>
+    	<th class="text-right">Unit Price</th>
+    	<th class="text-right">Quantity</th>
+    	<th class="text-right">Total</th>
+    	<th class="text-right">Remove</th>
+    </tr>
+    <?php foreach ($this->cartList As $val){?>
+    	<tr>
+    		<td><?php echo $val['var_sku']?></td>
+    		<td align="right"><?php echo $val['cur_symbol'].$val['price']?></td>
+    		<td align="right"><?php echo $val['quantity']?></td>
+    		<td align="right"><?php echo $val['cur_symbol'].number_format(($val['quantity']*$val['price']), 2)?></td>
+    		<td align="right">
+    			<form action="" method="post">
+                    <input type="hidden" name="cart_variant_remove" value="<?= $val['var_id']?>" />
+                    <button class="btn btn-danger" type="submit"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                </form>
+    		</td>
+    	</tr>
+    <?php }?>
+    <tr>
+    	<td colspan="3" align="right"><strong>Total</strong></td>
+    	<td align="right"><strong><?php echo $this->currency.number_format($this->total, 2)?></strong></td>
+    	<td></td>
+    </tr>
+</table>
+
+<!-- Pagination -->
+<?php 
+    // Generating Pagination Control using partial view
+    echo $this->paginationControl(
+            $this->cartList, 
+            'Sliding', 
+            'MelisCommerce/plugin-common-pagination',
+            array(
+                'currentUrlVar' => 'cart_current',
+                'nbPageBeforeAfter' => $this->nbPageBeforeAfter
+            )
+    ); 
+?>

@@ -21,6 +21,8 @@
 	    'tr_meliscommerce_general_common_submit' => 'Envoyer',
 	    'tr_meliscommerce_general_common_autologin' => 'L\'auto-login',
 	    'tr_meliscommerce_general_common_show_select_addresses' => 'Show select addresses',
+	    'tr_meliscommerce_general_common_per_page' => 'Résultats par page',
+	    'tr_meliscommerce_general_common_num_page_before_after' => 'Nombre de lien avant et après la page courante',
 	    
 	    'tr_meliscommerce_general_text' => 'General',
 	    'tr_meliscommerce_general_permission_error_label' => 'Permission refusée',
@@ -44,6 +46,8 @@
 	    'tr_meliscommerce_general_common_destination_page_link tooltip' => 'Saisissez l\'url de la page de destination sur laquelle l\'utilisateur sera redirigé. Ce peut être une url interne ou externe',
 	    'tr_meliscommerce_general_common_autologin tooltip' => 'Connecte l\'utilisateur directement après la validation du formulaire',
 	    'tr_meliscommerce_general_common_show_select_addresses tooltip' => 'This will show a form select option of addresses',
+	    'tr_meliscommerce_general_common_per_page tooltip' => 'Nombre de résultats s&#39;affichant sur une même page',
+	    'tr_meliscommerce_general_common_num_page_before_after tooltip' => 'L&#39;affichage de la pagination génére un certains nombre de liens avant et après la page en cours, ce champ permet de limiter ce nombe de liens',
 	    
 	    // Common validation messages
 	    'tr_meliscommerce_general_error' => 'Une erreur est survenue, veuillez contacter l\'administrateur',

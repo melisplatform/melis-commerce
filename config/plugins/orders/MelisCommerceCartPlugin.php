@@ -6,19 +6,20 @@ return array(
             'plugins' => array(
                 'MelisCommerceCartPlugin' => array(
                     'front' => array(
-                        'template_path' => array('MelisCommerceCart/show-cart'),
+                        'template_path' => array('MelisCommerceCart/cart'),
                         'id' => 'cartPlugin',
-                        // image type use for displaying products
-                        'image_type' => 'DEFAULT',
-
+                        // Country id
+                        'cart_country_id' => null,
                         // pagination config
                         'pagination' => array(
-                            'my_cart_current' => 1,
-                            'my_cart_per_page' => 10,
+                            'cart_current' => 1,
+                            'cart_per_page' => 10,
+                            'cart_nb_page_before_after' => 2,
                         ),
+                        // Cart item deletion
+                        'cart_variant_remove' => null
                     ),
                     'melis' => array(
-
                         'subcategory' => array(
                             'id' => 'CART',
                             'title' => 'tr_meliscommerce_car_Cart'
@@ -33,7 +34,6 @@ return array(
                             'css' => array(
                             ),
                             'js' => array(
-
                             ),
                         ),
                         'js_initialization' => array(),
@@ -80,6 +80,87 @@ return array(
                                     ),
                                 )
                             ),
+                            'melis_commerce_plugin_cart_pagination_config' => array(
+                                'tab_title' => 'tr_meliscmsnews_plugin_pagination',
+                                'tab_icon'  => 'fa fa-forward',
+                                'tab_form_layout' => 'MelisCommerce/plugin-common-form-config',
+                                'attributes' => array(
+                                    'name' => 'melis_commerce_plugin_cart_pagination_config',
+                                    'id' => 'melis_commerce_plugin_cart_pagination_config',
+                                    'method' => '',
+                                    'action' => '',
+                                ),
+                                'elements' => array(
+                                    array(
+                                        'spec' => array(
+                                            'name' => 'cart_per_page',
+                                            'type' => 'MelisText',
+                                            'options' => array(
+                                                'label' => 'tr_meliscommerce_general_common_per_page',
+                                                'tooltip' => 'tr_meliscommerce_general_common_per_page tooltip',
+                                            ),
+                                            'attributes' => array(
+                                                'id' => 'cart_per_page',
+                                                'class' => 'form-control',
+                                                'placeholder' => 'tr_meliscommerce_general_common_per_page',
+                                                'required' => 'required',
+                                            ),
+                                        ),
+                                    ),
+                                    array(
+                                        'spec' => array(
+                                            'name' => 'cart_nb_page_before_after',
+                                            'type' => 'MelisText',
+                                            'options' => array(
+                                                'label' => 'tr_meliscommerce_general_common_num_page_before_after',
+                                                'tooltip' => 'tr_meliscommerce_general_common_num_page_before_after tooltip',
+                                            ),
+                                            'attributes' => array(
+                                                'id' => 'cart_nb_page_before_after',
+                                                'class' => 'form-control',
+                                                'placeholder' => 'tr_meliscommerce_general_common_num_page_before_after',
+                                                'required' => 'required',
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                                'input_filter' => array(
+                                    'cart_per_page' => array(
+                                        'name'     => 'cart_per_page',
+                                        'required' => true,
+                                        'validators' => array(
+                                            array(
+                                                'name'    => 'Digits',
+                                                'options' => array(
+                                                    'messages' => array(
+                                                        \Zend\Validator\Digits::NOT_DIGITS => 'tr_front_common_input_not_digit',
+                                                        \Zend\Validator\Digits::STRING_EMPTY => 'tr_front_common_input_empty',
+                                                    ),
+                                                ),
+                                            ),
+                                        ),
+                                        'filters'  => array(
+                                        ),
+                                    ),
+                                    'cart_nb_page_before_after' => array(
+                                        'name'     => 'cart_nb_page_before_after',
+                                        'required' => true,
+                                        'validators' => array(
+                                            array(
+                                                'name'    => 'Digits',
+                                                'options' => array(
+                                                    'messages' => array(
+                                                        \Zend\Validator\Digits::NOT_DIGITS => 'tr_front_common_input_not_digit',
+                                                        \Zend\Validator\Digits::STRING_EMPTY => 'tr_front_common_input_empty',
+                                                    ),
+                                                ),
+                                            ),
+                                        ),
+                                        'filters'  => array(
+                                        ),
+                                    ),
+                                )
+                            )
                         ),
                     )
                 ),
