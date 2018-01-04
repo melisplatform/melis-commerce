@@ -7,7 +7,7 @@ return array(
                 'MelisCommerceProductAttributePlugin' => array(
                     'front' => array(
                         'template_path' => array('MelisCommerce/product-attribute'),
-                        'id' => null,
+                        'id' => 'productAttribute',
                         // the ID of the attribute to be fetch
                         'attribute_id' => null,
                         // filtering
