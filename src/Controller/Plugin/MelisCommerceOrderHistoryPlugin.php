@@ -79,7 +79,8 @@ class MelisCommerceOrderHistoryPlugin extends MelisTemplatingPlugin
         // Pagination config
         $pageCurrent        = !empty($data['order_history_current'])   ? $data['order_history_current'] : 1;
         $pagePerPage      = !empty($data['order_history_per_page']) ? $data['order_history_per_page'] : null;
-        
+        $nbPageBeforeAfter      = !empty($data['order_history_page_before_after']) ? $data['order_history_page_before_after'] : 2;
+
         $ecomAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
         $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
         $orderStatus = $orderSvc->getOrderStatusList($lang);
@@ -165,7 +166,7 @@ class MelisCommerceOrderHistoryPlugin extends MelisTemplatingPlugin
 
         $viewVariables = array(
             'orders' => $paginator,
-            'orderHistoryBeforeAfter' => 2,
+            'orderHistoryBeforeAfter' => $nbPageBeforeAfter,
             'hasData' => (sizeof($orders) > 0) ? true : false,
         );
         // return the variable array and let the view be created
@@ -295,6 +296,21 @@ class MelisCommerceOrderHistoryPlugin extends MelisTemplatingPlugin
             {
                 $configValues['m_order_sort'] = (string)$xml->m_order_sort;
             }
+
+            if (!empty($xml->order_history_current))
+            {
+                $configValues['order_history_current'] = (string)$xml->order_history_current;
+            }
+
+            if (!empty($xml->order_history_per_page))
+            {
+                $configValues['order_history_per_page'] = (string)$xml->order_history_per_page;
+            }
+
+            if (!empty($xml->order_history_page_before_after))
+            {
+                $configValues['order_history_page_before_after'] = (string)$xml->order_history_page_before_after;
+            }
         }
 
         return $configValues;
@@ -316,6 +332,21 @@ class MelisCommerceOrderHistoryPlugin extends MelisTemplatingPlugin
         if (!empty($parameters['m_order_sort']))
         {
             $xmlValueFormatted .= "\t\t" . '<m_order_sort><![CDATA[' . $parameters['m_order_sort'] . ']]></m_order_sort>';
+        }
+
+        if (!empty($parameters['order_history_current']))
+        {
+            $xmlValueFormatted .= "\t\t" . '<order_history_current><![CDATA[' . $parameters['order_history_current'] . ']]></order_history_current>';
+        }
+
+        if (!empty($parameters['order_history_per_page']))
+        {
+            $xmlValueFormatted .= "\t\t" . '<order_history_per_page><![CDATA[' . $parameters['order_history_per_page'] . ']]></order_history_per_page>';
+        }
+
+        if (!empty($parameters['order_history_page_before_after']))
+        {
+            $xmlValueFormatted .= "\t\t" . '<order_history_page_before_after><![CDATA[' . $parameters['order_history_page_before_after'] . ']]></order_history_page_before_after>';
         }
 
         // Something has been saved, let's generate an XML for DB

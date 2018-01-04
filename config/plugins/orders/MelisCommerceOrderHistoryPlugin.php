@@ -14,6 +14,7 @@ return array(
                         'pagination' => array(
                             'order_history_current' => 1,
                             'order_history_per_page' => 10,
+                            'order_history_page_before_after' => 2,
                         ),
                     ),
                     'melis' => array(
@@ -106,6 +107,87 @@ return array(
                                     ),
                                 )
                             ),
+                            'melis_commerce_plugin_order_history_pagination_config' => array(
+                                'tab_title' => 'tr_meliscmsnews_plugin_pagination',
+                                'tab_icon'  => 'fa fa-forward',
+                                'tab_form_layout' => 'MelisCommerce/plugin-common-form-config',
+                                'attributes' => array(
+                                    'name' => 'melis_commerce_plugin_cart_pagination_config',
+                                    'id' => 'melis_commerce_plugin_cart_pagination_config',
+                                    'method' => '',
+                                    'action' => '',
+                                ),
+                                'elements' => array(
+                                    array(
+                                        'spec' => array(
+                                            'name' => 'order_history_per_page',
+                                            'type' => 'MelisText',
+                                            'options' => array(
+                                                'label' => 'tr_meliscommerce_general_common_per_page',
+                                                'tooltip' => 'tr_meliscommerce_general_common_per_page tooltip',
+                                            ),
+                                            'attributes' => array(
+                                                'id' => 'order_history_per_page',
+                                                'class' => 'form-control',
+                                                'placeholder' => 'tr_meliscommerce_general_common_per_page',
+                                                'required' => 'required',
+                                            ),
+                                        ),
+                                    ),
+                                    array(
+                                        'spec' => array(
+                                            'name' => 'order_history_page_before_after',
+                                            'type' => 'MelisText',
+                                            'options' => array(
+                                                'label' => 'tr_meliscommerce_general_common_num_page_before_after',
+                                                'tooltip' => 'tr_meliscommerce_general_common_num_page_before_after tooltip',
+                                            ),
+                                            'attributes' => array(
+                                                'id' => 'order_history_page_before_after',
+                                                'class' => 'form-control',
+                                                'placeholder' => 'tr_meliscommerce_general_common_num_page_before_after',
+                                                'required' => 'required',
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                                'input_filter' => array(
+                                    'order_history_per_page' => array(
+                                        'name'     => 'order_history_per_page',
+                                        'required' => true,
+                                        'validators' => array(
+                                            array(
+                                                'name'    => 'Digits',
+                                                'options' => array(
+                                                    'messages' => array(
+                                                        \Zend\Validator\Digits::NOT_DIGITS => 'tr_front_common_input_not_digit',
+                                                        \Zend\Validator\Digits::STRING_EMPTY => 'tr_front_common_input_empty',
+                                                    ),
+                                                ),
+                                            ),
+                                        ),
+                                        'filters'  => array(
+                                        ),
+                                    ),
+                                    'order_history_page_before_after' => array(
+                                        'name'     => 'order_history_page_before_after',
+                                        'required' => true,
+                                        'validators' => array(
+                                            array(
+                                                'name'    => 'Digits',
+                                                'options' => array(
+                                                    'messages' => array(
+                                                        \Zend\Validator\Digits::NOT_DIGITS => 'tr_front_common_input_not_digit',
+                                                        \Zend\Validator\Digits::STRING_EMPTY => 'tr_front_common_input_empty',
+                                                    ),
+                                                ),
+                                            ),
+                                        ),
+                                        'filters'  => array(
+                                        ),
+                                    ),
+                                )
+                            )
                         ),
                     )
                 ),
