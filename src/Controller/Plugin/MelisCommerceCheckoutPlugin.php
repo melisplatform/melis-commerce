@@ -353,9 +353,8 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                 
                 $checkOutCartParameters = ArrayUtils::merge($checkOutCartParameters, 
                                                             array(
-                                                                'm_country_id' => $countryId,
-                                                                'm_v_remove_link' => $checkoutPage,
-                                                                'm_site_id' => $siteId
+                                                                'm_cc_country_id' => $countryId,
+                                                                'm_cc_site_id' => $siteId
                                                             ));
                 $checkout = $checkOutcartPlugin->render($checkOutCartParameters);
                 

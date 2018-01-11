@@ -27,11 +27,11 @@
                         }
                         echo    '</td>';
                         echo    '<td class="text-right">'.$item['var_currency_symbol'].' '.$item['var_price'].'</td>';
-                        echo    '<td><input type="text" name="m_v_quantity['.$item['var_id'].']" value="'.$item['var_quantity'].'" class="form-control">';
+                        echo    '<td><input type="text" name="m_cc_var_qty['.$item['var_id'].']" value="'.$item['var_quantity'].'" class="form-control">';
                         echo    (!empty($this->checkoutErrors[$item['var_id']])) ? '<p class="text-danger">'.$this->checkoutErrors[$item['var_id']].'</p>' : '';
                         echo    '</td>';
                         echo    '<td class="text-right">'.$item['var_currency_symbol'].' '.$item['var_total'].'</td>';
-                        echo    '<td class="text-right"><a class="btn btn-danger" href="'.$this->MelisLink($this->idPage, true).'?m_v_id_remove='.$item['var_id'].'"><i class="fa fa-trash-o"></i></a></td>';
+                        echo    '<td class="text-right"><a class="btn btn-danger" href="'.$this->MelisLink($this->idPage, true).'?m_cc_var_remove='.$item['var_id'].'"><i class="fa fa-trash-o"></i></a></td>';
                         echo '</tr>';
                     }
                 ?>                

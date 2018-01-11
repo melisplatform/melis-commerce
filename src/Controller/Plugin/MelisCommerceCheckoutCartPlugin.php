@@ -85,11 +85,11 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
         $variantSrv = $this->getServiceLocator()->get('MelisComVariantService');
         $couponSrv = $this->getServiceLocator()->get('MelisComCouponService');
         
-        $countryId                      = (!empty($this->pluginFrontConfig['m_country_id'])) ?                      $this->pluginFrontConfig['m_country_id'] : null;
-        $siteId                         = (!empty($this->pluginFrontConfig['m_site_id'])) ?                         $this->pluginFrontConfig['m_site_id'] : null;
-        $variantQuantities              = (!empty($this->pluginFrontConfig['m_v_quantity'])) ?                      $this->pluginFrontConfig['m_v_quantity'] : null;
-        $variantIdRemove                = (!empty($this->pluginFrontConfig['m_v_id_remove'])) ?                     $this->pluginFrontConfig['m_v_id_remove'] : null;
-        $checkoutCartCouponParameters   = (!empty($this->pluginFrontConfig['checkout_cart_coupon_parameters'])) ?   $this->pluginFrontConfig['checkout_cart_coupon_parameters'] : array();
+        $countryId                      = (!empty($this->pluginFrontConfig['m_cc_country_id']))                 ? $this->pluginFrontConfig['m_cc_country_id'] : null;
+        $siteId                         = (!empty($this->pluginFrontConfig['m_cc_site_id']))                    ? $this->pluginFrontConfig['m_cc_site_id'] : null;
+        $variantQuantities              = (!empty($this->pluginFrontConfig['m_cc_var_qty']))                    ? $this->pluginFrontConfig['m_cc_var_qty'] : null;
+        $variantIdRemove                = (!empty($this->pluginFrontConfig['m_cc_var_remove']))                 ? $this->pluginFrontConfig['m_cc_var_remove'] : null;
+        $checkoutCartCouponParameters   = (!empty($this->pluginFrontConfig['checkout_cart_coupon_parameters'])) ? $this->pluginFrontConfig['checkout_cart_coupon_parameters'] : array();
         
         $clientKey = $ecomAuthSrv->getId();
         $clientId = null;
@@ -468,14 +468,14 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                 $configValues['template_path'] = (string)$xml->template_path;
             }
             
-            if (!empty($xml->m_country_id))
+            if (!empty($xml->m_cc_country_id))
             {
-                $configValues['m_country_id'] = (string)$xml->m_country_id;
+                $configValues['m_cc_country_id'] = (string)$xml->m_cc_country_id;
             }
             
-            if (!empty($xml->m_site_id))
+            if (!empty($xml->m_cc_site_id))
             {
-                $configValues['m_site_id'] = (string)$xml->m_site_id;
+                $configValues['m_cc_site_id'] = (string)$xml->m_cc_site_id;
             }
         }
         
@@ -496,14 +496,14 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
             $xmlValueFormatted .= "\t\t" . '<template_path><![CDATA[' . $parameters['template_path'] . ']]></template_path>';
         }
         
-        if (!empty($parameters['m_country_id']))
+        if (!empty($parameters['m_cc_country_id']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_country_id><![CDATA[' . $parameters['m_country_id'] . ']]></m_country_id>';
+            $xmlValueFormatted .= "\t\t" . '<m_cc_country_id><![CDATA[' . $parameters['m_cc_country_id'] . ']]></m_cc_country_id>';
         }
         
-        if (!empty($parameters['m_site_id']))
+        if (!empty($parameters['m_cc_site_id']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_site_id><![CDATA[' . $parameters['m_site_id'] . ']]></m_site_id>';
+            $xmlValueFormatted .= "\t\t" . '<m_cc_site_id><![CDATA[' . $parameters['m_cc_site_id'] . ']]></m_cc_site_id>';
         }
         
         // Something has been saved, let's generate an XML for DB

@@ -9,11 +9,11 @@ return array(
                         'template_path' => array('MelisCommerceCheckout/checkout-cart'),
                         'id' => 'checkoutCart',
                         
-                        'm_country_id' => null,
-                        'm_site_id' => null,
+                        'm_cc_country_id' => null,
+                        'm_cc_site_id' => null,
                         
-                        'm_v_quantity' => array(),
-                        'm_v_id_remove' => null,
+                        'm_cc_var_qty' => array(),
+                        'm_cc_var_remove' => null,
                         
                         // Paramaters of MelisCommerceCheckoutCouponPlugin() plugin
                         'checkout_cart_coupon_parameters' => array(),
@@ -66,7 +66,7 @@ return array(
                                     ),
                                     array(
                                         'spec' => array(
-                                            'name' => 'm_country_id',
+                                            'name' => 'm_cc_country_id',
                                             'type' => 'EcomPluginPriceCountriesSelect',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_general_common_country',
@@ -75,7 +75,7 @@ return array(
                                                 'disable_inarray_validator' => true,
                                             ),
                                             'attributes' => array(
-                                                'id' => 'm_country_id',
+                                                'id' => 'm_cc_country_id',
                                                 'class' => 'form-control',
                                                 'required' => 'required',
                                             ),
@@ -83,7 +83,7 @@ return array(
                                     ),
                                     array(
                                         'spec' => array(
-                                            'name' => 'm_site_id',
+                                            'name' => 'm_cc_site_id',
                                             'type' => 'MelisCoreSiteSelect',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_general_common_site',
@@ -92,7 +92,7 @@ return array(
                                                 'disable_inarray_validator' => true,
                                             ),
                                             'attributes' => array(
-                                                'id' => 'm_site_id',
+                                                'id' => 'm_cc_site_id',
                                                 'class' => 'form-control',
                                                 'required' => 'required',
                                             ),
@@ -116,8 +116,8 @@ return array(
                                         'filters'  => array(
                                         ),
                                     ),
-                                    'm_country_id' => array(
-                                        'name'     => 'm_country_id',
+                                    'm_cc_country_id' => array(
+                                        'name'     => 'm_cc_country_id',
                                         'required' => true,
                                         'validators' => array(
                                             array(
@@ -132,8 +132,8 @@ return array(
                                         'filters'  => array(
                                         ),
                                     ),
-                                    'm_site_id' => array(
-                                        'name'     => 'm_site_id',
+                                    'm_cc_site_id' => array(
+                                        'name'     => 'm_cc_site_id',
                                         'required' => true,
                                         'validators' => array(
                                             array(
