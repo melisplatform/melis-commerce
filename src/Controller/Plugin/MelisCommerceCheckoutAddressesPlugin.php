@@ -13,6 +13,7 @@ use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
 use Zend\Session\Container;
 use Zend\Stdlib\ArrayUtils;
+use Zend\View\Model\ViewModel;
 /**
  * This plugin implements the business logic of the
  * "checkOutAddresses" plugin.
@@ -22,7 +23,6 @@ use Zend\Stdlib\ArrayUtils;
  * 
  * front() and back() are the only functions to create / update.
  * front() generates the website view
- * back() generates the plugin view in template edition mode (TODO)
  * 
  * Configuration can be found in $pluginConfig / $pluginFrontConfig / $pluginBackConfig
  * Configuration is automatically merged with the parameters provided when calling the plugin.
@@ -40,17 +40,22 @@ use Zend\Stdlib\ArrayUtils;
  * $pluginView = $plugin->render($parameters);
  * 
  * How to add to your controller's view:
- * $view->addChild($pluginView, 'checkOutAddresses');
+ * $view->addChild($pluginView, 'checkoutAddresses');
  * 
  * How to display in your controller's view:
- * echo $this->checkOutAddresses;
+ * echo $this->checkoutAddresses;
  * 
  * 
  */
 class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
 {
-    // the key of the configuration in the app.plugins.php
-    public $configPluginKey = 'meliscommerce';
+    public function __construct($updatesPluginConfig = array())
+    {
+        // the key of the configuration in the app.plugins.php
+        $this->configPluginKey = 'meliscommerce';
+        $this->pluginXmlDbKey = 'MelisCommerceCheckoutPlugin';
+        parent::__construct($updatesPluginConfig);
+    }
     
     /**
      * This function gets the datas and create an array of variables
@@ -60,17 +65,11 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
     {
         $success = 0;
         $errors = array();
-        $checkootErrorMsg = '';
-        $siteId = (!empty($this->pluginFrontConfig['m_site_id'])) ? $this->pluginFrontConfig['m_site_id'] : null;
-        
-        // Preparing the Container/Session of Commerce checkout
-        $container = new Container('meliscommerce');
-        if (!isset($container['checkout']))
-        {
-            $container['checkout'] = array();
-        }
+        $checkoutErrorMsg = '';
         
         $translator = $this->getServiceLocator()->get('translator');
+        
+        $siteId = (!empty($this->pluginFrontConfig['m_add_site_id'])) ? $this->pluginFrontConfig['m_add_site_id'] : null;
         
         // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
         $appConfigDeliveryAddForm = (!empty($this->pluginFrontConfig['forms']['delivery_address'])) ? $this->pluginFrontConfig['forms']['delivery_address'] : array();
@@ -84,6 +83,12 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
         $appConfigBillingAddForm = (!empty($this->pluginFrontConfig['forms']['billing_address'])) ? $this->pluginFrontConfig['forms']['billing_address'] : array();
         $billingAddForm = $factory->createForm($appConfigBillingAddForm);
         
+        // Preparing the Container/Session of Commerce checkout
+        $container = new Container('meliscommerce');
+        if (!isset($container['checkout']))
+        {
+            $container['checkout'] = array();
+        }
         
         $isSubmit = (!empty($this->pluginFrontConfig['m_add_is_submit'])) ? $this->pluginFrontConfig['m_add_is_submit'] : false;
         
@@ -166,7 +171,7 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
                     {
                         $personDelAdd[str_replace('cadd_', 'm_add_delivery_', $key)] = $val;
                     }
-            
+                    
                     $deliveryAddForm->setData(ArrayUtils::merge($this->pluginFrontConfig, $personDelAdd));
                 }
             }
@@ -224,21 +229,19 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
             $basketData = $melisComBasketService->getBasket($clientId, $clientKey);
             
             if (is_null($basketData)){
-                $checkootErrorMsg = $translator->translate('tr_meliscommerce_client_Checkout_cart_empty');
+                $checkoutErrorMsg = $translator->translate('tr_meliscommerce_client_Checkout_cart_empty');
             }
         }
         else 
         {
-            $checkootErrorMsg = $translator->translate('tr_meliscommerce_client_Checkout_no_identity');
+            $checkoutErrorMsg = $translator->translate('tr_meliscommerce_client_Checkout_no_identity');
         }
         
         if ($isSubmit)
         {
-            $scapeValidateBillingAddress = false;
-            if (!$deliveryAddForm->isValid())
+            if (!$deliveryAddForm->isValid() && !in_array($deliverySelectAddress, array('', 'new_address')))
             {
                 $errors = $deliveryAddForm->getMessages();
-                $scapeValidateBillingAddress = true;
             }
             else 
             {
@@ -264,9 +267,9 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
                 }
             }
             
-            if (!$scapeValidateBillingAddress)
+            if (!$sameAddress)
             {
-                if (!$billingAddForm->isValid())
+                if (!$billingAddForm->isValid() && !in_array($billingSelectAddress, array('', 'new_address')))
                 {
                     $errors = ArrayUtils::merge($errors, $billingAddForm->getMessages());
                 }
@@ -279,9 +282,14 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
                  * before validating addresses and adding to checkout container/session
                  */
                 $personDelAdd = array();
+                $personBilAdd = array();
                 foreach ($deliveryAddForm->getData() As $key => $val)
                 {
                     $personDelAdd[str_replace('m_add_delivery_', 'cadd_', $key)] = $val;
+                    if ($sameAddress)
+                    {
+                        $personBilAdd[str_replace('m_add_delivery_', 'cadd_', $key)] = $val;
+                    }
                 }
                 
                 if ($personDelAdd['cadd_id'] == 'new_address')
@@ -295,10 +303,12 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
                 unset($personDelAdd['m_checkout_step']);
                 unset($personDelAdd['m_add_is_submit']);
                 
-                $personBilAdd = array();
-                foreach ($billingAddForm->getData() As $key => $val)
+                if (!$sameAddress)
                 {
-                    $personBilAdd[str_replace('m_add_billing_', 'cadd_', $key)] = $val;
+                    foreach ($billingAddForm->getData() As $key => $val)
+                    {
+                        $personBilAdd[str_replace('m_add_billing_', 'cadd_', $key)] = $val;
+                    }
                 }
                 
                 if ($personBilAdd['cadd_id'] == 'new_address')
@@ -385,14 +395,188 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
         $billingAddForm->get('m_add_billing_type')->setvalue(1);
         
         $viewVariables = array(
-            'checkOutDeliveryAddress' => $deliveryAddForm,
-            'checkOutBillingAddress' => $billingAddForm,
+            'checkoutDeliveryAddress' => $deliveryAddForm,
+            'checkoutBillingAddress' => $billingAddForm,
             'sameAddress' => $sameAddress,
-            'checkootErrorMsg' => $checkootErrorMsg,
+            'checkoutErrorMsg' => $checkoutErrorMsg,
             'success' => $success,
-            'errors' => $errors
+            'errors' => $errors,
         );
         // return the variable array and let the view be created
         return $viewVariables;
+    }
+    
+    /**
+     * This function generates the form displayed when editing the parameters of the plugin
+     */
+    public function createOptionsForms()
+    {
+        // construct form
+        $factory = new \Zend\Form\Factory();
+        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+        $formConfig = $this->pluginBackConfig['modal_form'];
+        
+        $response = [];
+        $render   = [];
+        if (!empty($formConfig))
+        {
+            foreach ($formConfig as $formKey => $config)
+            {
+                $form = $factory->createForm($config);
+                $request = $this->getServiceLocator()->get('request');
+                $parameters = $request->getQuery()->toArray();
+                
+                if (!isset($parameters['validate']))
+                {
+                    $form->setData($this->getFormData());
+                    $viewModelTab = new ViewModel();
+                    $viewModelTab->setTemplate($config['tab_form_layout']);
+                    $viewModelTab->modalForm = $form;
+                    $viewModelTab->formData   = $this->getFormData();
+                    
+                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $html = $viewRender->render($viewModelTab);
+                    array_push($render, array(
+                        'name' => $config['tab_title'],
+                        'icon' => $config['tab_icon'],
+                        'html' => $html
+                    ));
+                }
+                else
+                {
+                    // validate the forms and send back an array with errors by tabs
+                    $success = false;
+                    $errors = array();
+                    
+                    $post = get_object_vars($request->getPost());
+                    
+                    $form->setData($post);
+                    
+                    if (!$form->isValid())
+                    {
+                        if (empty($errors))
+                        {
+                            $errors = $form->getMessages();
+                        }
+                        else
+                        {
+                            $errors = ArrayUtils::merge($errors, $form->getMessages());
+                        }
+                    }
+                    
+                    if (empty($errors))
+                    {
+                        $success = true;
+                    }
+                    
+                    if (!empty($errors))
+                    {
+                        foreach ($errors as $keyError => $valueError)
+                        {
+                            foreach ($config['elements'] as $keyForm => $valueForm)
+                            {
+                                if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
+                                {
+                                    $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                                }
+                            }
+                        }
+                    }
+                    
+                    array_push($response, array(
+                        'name' => $this->pluginBackConfig['modal_form'][$formKey]['tab_title'],
+                        'success' => $success,
+                        'errors' => $errors,
+                        'message' => '',
+                    ));
+                }
+            }
+        }
+        
+        if (!isset($parameters['validate']))
+        {
+            return $render;
+        }
+        else
+        {
+            return $response;
+        }
+    }
+    
+    /**
+     * Returns the data to populate the form inside the modals when invoked
+     * @return array
+     */
+    public function getFormData()
+    {
+        $data = $this->pluginFrontConfig;
+        
+        return $data;
+    }
+    
+    /**
+     * This method will decode the XML in DB to make it in the form of the plugin config file
+     * so it can overide it. Only front key is needed to update.
+     * The part of the XML corresponding to this plugin can be found in $this->pluginXmlDbValue
+     */
+    public function loadDbXmlToPluginConfig()
+    {
+        $configValues = array();
+        
+        $xml = simplexml_load_string($this->pluginXmlDbValue);
+        
+        if ($xml)
+        {
+            if (!empty($xml->template_path))
+            {
+                $configValues['template_path'] = (string)$xml->template_path;
+            }
+            
+            if (!empty($xml->m_add_site_id))
+            {
+                $configValues['m_add_site_id'] = (string)$xml->m_add_site_id;
+            }
+            
+            if (isset($xml->m_add_use_same_address))
+            {
+                $configValues['m_add_use_same_address'] = (string)$xml->m_add_use_same_address;
+            }
+        }
+        
+        return $configValues;
+    }
+    
+    /**
+     * This method saves the XML version of this plugin in DB, for this pageId
+     * Automatically called from savePageSession listenner in PageEdition
+     */
+    public function savePluginConfigToXml($parameters)
+    {
+        $xmlValueFormatted = '';
+        
+        // template_path is mendatory for all plugins
+        if (!empty($parameters['template_path']))
+        {
+            $xmlValueFormatted .= "\t\t" . '<template_path><![CDATA[' . $parameters['template_path'] . ']]></template_path>';
+        }
+        
+        if (!empty($parameters['m_add_site_id']))
+        {
+            $xmlValueFormatted .= "\t\t" . '<m_add_site_id><![CDATA[' . $parameters['m_add_site_id'] . ']]></m_add_site_id>';
+        }
+        
+        if (isset($parameters['m_add_use_same_address']))
+        {
+            $xmlValueFormatted .= "\t\t" . '<m_add_use_same_address><![CDATA[' . $parameters['m_add_use_same_address'] . ']]></m_add_use_same_address>';
+        }
+        
+        // Something has been saved, let's generate an XML for DB
+        if (!empty($xmlValueFormatted))
+        {
+            $xmlValueFormatted = "\t".'<'.$this->pluginXmlDbKey.' id="'.$parameters['melisPluginId'].'">'.$xmlValueFormatted."\t".'</'.$this->pluginXmlDbKey.'>'."\n";
+        }
+        
+        return $xmlValueFormatted;
     }
 }

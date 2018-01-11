@@ -122,4 +122,48 @@
         'tr_meliscommerce_order_history_order_tooltip' => 'This filter allows to set the default order of client order history',
         'tr_meliscommerce_order_history_order' => 'Order',
         'tr_meliscommerce_order_history_empty_order' => 'No recent orders',
+	    
+	    // MelisCommerceCheckoutPlugin()
+	    'tr_meliscommerce_plugin_checkout_name' => 'Checkout',
+	    'tr_meliscommerce_plugin_checkout_description' => 'This plugin displays all the steps of checkout',
+	    
+	    // MelisCommerceCheckoutCartPlugin()
+	    'tr_meliscommerce_plugin_checkout_cart_name' => 'Checkout cart',
+	    'tr_meliscommerce_plugin_checkout_cart_description' => 'This plugin displays the checkout cart list',
+	    
+	    // MelisCommerceCheckoutCouponPlugin()
+	    'tr_meliscommerce_plugin_checkout_coupon_name' => 'Checkout coupon',
+	    'tr_meliscommerce_plugin_checkout_coupon_description' => 'This plugin displays the checkout coupon form',
+	    
+	    // MelisCommerceCheckoutAddressesPlugin()
+	    'tr_meliscommerce_plugin_checkout_addresses_name' => 'Checkout addresses',
+	    'tr_meliscommerce_plugin_checkout_addresses_description' => 'This plugin displays the checkout addresses form suc as delivery and billing address',
+	    
+	    // MelisCommerceCheckoutSummaryPlugin()
+	    'tr_meliscommerce_plugin_checkout_summary_name' => 'Checkout summary',
+	    'tr_meliscommerce_plugin_checkout_summary_description' => 'This plugins displays the checkout summary',
+	    
+	    // MelisCommerceCheckoutConfirmSummaryPlugin()
+	    'tr_meliscommerce_plugin_checkout_confirm_summary_name' => 'Checkout confirm summary',
+	    'tr_meliscommerce_plugin_checkout_confirm_summary_description' => 'This plugin confirms the checkout summary and displays error messages',
+	    
+	    // MelisCommerceCheckoutConfirmPlugin()
+	    'tr_meliscommerce_plugin_checkout_confirmation_name' => 'Checkout confirmation',
+	    'tr_meliscommerce_plugin_checkout_confirmation_description' => 'This plugin displays the confirmation of the checkout',
+	    
+	    // MelisCommerceOrderAddressPlugin()
+	    'tr_meliscommerce_plugin_order_address_name' => 'Order address',
+	    'tr_meliscommerce_plugin_order_address_description' => 'This plugin displays the order delivery and billing address',
+	    
+	    // MelisCommerceOrderPlugin()
+	    'tr_meliscommerce_plugin_order_details_name' => 'Order details',
+	    'tr_meliscommerce_plugin_order_details_description' => 'This plugin displays the order details including order addresses, shipping details and order messages',
+	    
+	    // MelisCommerceOrderShippingDetailsPlugin()
+	    'tr_meliscommerce_plugin_order_shipping_details_name' => 'Order shipping details',
+	    'tr_meliscommerce_plugin_order_shipping_details_description' => 'This plugin displays order shipping details',
+	    
+	    // MelisCommerceOrderMessagesPlugin()
+	    'tr_meliscommerce_plugin_order_messages_name' => 'Order messages',
+	    'tr_meliscommerce_plugin_order_messages_description' => 'This plugin displays order messages',
     );

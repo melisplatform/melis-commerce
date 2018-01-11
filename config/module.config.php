@@ -295,7 +295,7 @@ return array(
             'MelisCommerceSelectAddressPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceSelectAddressPlugin',
             'MelisCommerceCheckoutPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutPlugin',
             'MelisCommerceCheckoutCartPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutCartPlugin',
-            'MelisCommerceCheckoutCouponAddPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutCouponAddPlugin',
+            'MelisCommerceCheckoutCouponPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutCouponPlugin',
             'MelisCommerceCheckoutAddressesPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutAddressesPlugin',
             'MelisCommerceCheckoutSummaryPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutSummaryPlugin',
             'MelisCommerceCheckoutConfirmSummaryPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutConfirmSummaryPlugin',
@@ -388,13 +388,13 @@ return array(
             'MelisCommerce/product-search'                          => __DIR__ . '/../view/plugins/products/product-search.phtml',
 
             //checkout
-            'MelisCommerceCheckout/show-check-out'                  => __DIR__ . '/../view/plugins/checkout/show-check-out.phtml',
-            'MelisCommerceCheckout/show-check-out-cart'             => __DIR__ . '/../view/plugins/checkout/show-check-out-cart.phtml',
-            'MelisCommerceCheckout/show-check-out-coupon'           => __DIR__ . '/../view/plugins/checkout/show-check-out-coupon.phtml',
-            'MelisCommerceCheckout/show-check-out-address'          => __DIR__ . '/../view/plugins/checkout/show-check-out-address.phtml',
-            'MelisCommerceCheckout/show-check-out-summary'          => __DIR__ . '/../view/plugins/checkout/show-check-out-summary.phtml',
-            'MelisCommerceCheckout/show-check-out-confirm-summary'  => __DIR__ . '/../view/plugins/checkout/show-check-out-confirm-summary.phtml',
-            'MelisCommerceCheckout/show-check-out-confirm'          => __DIR__ . '/../view/plugins/checkout/show-check-out-confirm.phtml',
+            'MelisCommerceCheckout/checkout'                        => __DIR__ . '/../view/plugins/checkout/checkout.phtml',
+            'MelisCommerceCheckout/checkout-cart'                   => __DIR__ . '/../view/plugins/checkout/checkout-cart.phtml',
+            'MelisCommerceCheckout/checkout-coupon'                 => __DIR__ . '/../view/plugins/checkout/checkout-coupon.phtml',
+            'MelisCommerceCheckout/checkout-addresses'              => __DIR__ . '/../view/plugins/checkout/checkout-addresses.phtml',
+            'MelisCommerceCheckout/checkout-summary'                => __DIR__ . '/../view/plugins/checkout/checkout-summary.phtml',
+            'MelisCommerceCheckout/checkout-confirm-summary'        => __DIR__ . '/../view/plugins/checkout/checkout-confirm-summary.phtml',
+            'MelisCommerceCheckout/checkout-confirm'                => __DIR__ . '/../view/plugins/checkout/checkout-confirm.phtml',
             
             'MelisCommerceCart/cart'                                => __DIR__ . '/../view/plugins/cart/cart.phtml',
             
@@ -409,9 +409,10 @@ return array(
             
             'MelisCommerceOrder/order-history'                      => __DIR__ . '/../view/plugins/order/order-history.phtml',
             'MelisCommerceOrder/order-history-paginator'            => __DIR__ . '/../view/plugins/order/order-history-paginator.phtml',
-            'MelisCommerceOrder/show-client-order'                  => __DIR__ . '/../view/plugins/order/show-client-order.phtml',
-            'MelisCommerceOrder/show-client-order-address'          => __DIR__ . '/../view/plugins/order/show-client-order-address.phtml',
-            'MelisCommerceOrder/show-client-shipping-details'       => __DIR__ . '/../view/plugins/order/show-client-shipping-details.phtml',
+            'MelisCommerceOrder/order-details'                      => __DIR__ . '/../view/plugins/order/order-details.phtml',
+            'MelisCommerceOrder/order-addresses'                    => __DIR__ . '/../view/plugins/order/order-addresses.phtml',
+            'MelisCommerceOrder/order-shipping-details'             => __DIR__ . '/../view/plugins/order/order-shipping-details.phtml',
+            'MelisCommerceOrder/order-messages'                     => __DIR__ . '/../view/plugins/order/order-messages.phtml',
             
 
             // Plugin config layout

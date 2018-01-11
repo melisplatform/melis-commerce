@@ -4,23 +4,50 @@ return array(
     'plugins' => array(
         'meliscommerce' => array(
             'plugins' => array(
-                'MelisCommerceCheckoutCartPlugin' => array(
+                'MelisCommerceCheckoutCouponPlugin' => array(
                     'front' => array(
-                        'template_path' => array('MelisCommerceCheckout/checkout-cart'),
-                        'id' => 'checkoutCart',
+                        'template_path' => array('MelisCommerceCheckout/checkout-coupon'),
+                        'id' => 'checkoutCoupon',
                         
-                        'm_country_id' => null,
-                        'm_site_id' => null,
+                        'm_coupon_code' => '',
+                        'm_coupon_multiple' => false,
+                        'm_coupon_site_id' => 1,
+                        'm_coupon_is_submit' => false,
                         
-                        'm_v_quantity' => array(),
-                        'm_v_id_remove' => null,
+                        'm_coupon_remove' => null,
                         
-                        // Paramaters of MelisCommerceCheckoutCouponPlugin() plugin
-                        'checkout_cart_coupon_parameters' => array(),
-                        
-                        // Sub plugins
-                        'sub_plugins_params' => array(
-                            'checkout_cart_coupon_parameters'
+                        'forms' => array(
+                            'meliscommerce_checkout_coupon_form' => array(
+                                'attributes' => array(
+                                    'name' => '',
+                                    'id' => '',
+                                    'method' => 'POST',
+                                    'action' => '',
+                                    'class' => '',
+                                ),
+                                'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
+                                'elements' => array(
+                                    array(
+                                        'spec' => array(
+                                            'name' => 'm_coupon_is_submit',
+                                            'type' => 'hidden',
+                                        ),
+                                    ),
+                                    array(
+                                        'spec' => array(
+                                            'name' => 'm_coupon_code',
+                                            'type' => 'Text',
+                                            'options' => array(
+                                                'label' => 'tr_meliscommerce_order_checkout_variant_coupon_code',
+                                            ),
+                                            'attributes' => array(
+                                                'id' => 'm_coupon_code',
+                                                'class' => 'form-control',
+                                            )
+                                        )
+                                    ),
+                                ),
+                            )
                         )
                     ),
                     'melis' => array(
@@ -28,9 +55,9 @@ return array(
                             'id' => 'ORDERS',
                             'title' => 'tr_meliscommerce_orders_Orders'
                         ),
-                        'name' => 'tr_meliscommerce_plugin_checkout_cart_name',
-                        'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceCheckoutCartPlugin.jpg',
-                        'description' => 'tr_meliscommerce_plugin_checkout_cart_description',
+                        'name' => 'tr_meliscommerce_plugin_checkout_coupon_name',
+                        'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceCheckoutCouponPlugin.jpg',
+                        'description' => 'tr_meliscommerce_plugin_checkout_coupon_description',
                         // List the files to be automatically included for the correct display of the plugin
                         // To overide a key, just add it again in your site module
                         // To delete an entry, use the keyword "disable" instead of the file path for the same key
@@ -42,7 +69,7 @@ return array(
                         ),
                         'js_initialization' => array(),
                         'modal_form' => array(
-                            'melis_commerce_plugin_checkout_cart_config' => array(
+                            'melis_commerce_plugin_checkout_coupon_config' => array(
                                 'tab_title' => 'tr_front_plugin_common_tab_properties',
                                 'tab_icon'  => 'fa fa-cogs',
                                 'tab_form_layout' => 'MelisCommerce/plugin-common-form-config',
@@ -66,24 +93,7 @@ return array(
                                     ),
                                     array(
                                         'spec' => array(
-                                            'name' => 'm_country_id',
-                                            'type' => 'EcomPluginPriceCountriesSelect',
-                                            'options' => array(
-                                                'label' => 'tr_meliscommerce_general_common_country',
-                                                'tooltip' => 'tr_meliscommerce_general_common_country tooltip',
-                                                'empty_option' => 'tr_melis_Plugins_Choose',
-                                                'disable_inarray_validator' => true,
-                                            ),
-                                            'attributes' => array(
-                                                'id' => 'm_country_id',
-                                                'class' => 'form-control',
-                                                'required' => 'required',
-                                            ),
-                                        ),
-                                    ),
-                                    array(
-                                        'spec' => array(
-                                            'name' => 'm_site_id',
+                                            'name' => 'm_coupon_site_id',
                                             'type' => 'MelisCoreSiteSelect',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_general_common_site',
@@ -92,9 +102,29 @@ return array(
                                                 'disable_inarray_validator' => true,
                                             ),
                                             'attributes' => array(
-                                                'id' => 'm_site_id',
+                                                'id' => 'm_coupon_site_id',
                                                 'class' => 'form-control',
                                                 'required' => 'required',
+                                            ),
+                                        ),
+                                    ),
+                                    array(
+                                        'spec' => array(
+                                            'name' => 'm_coupon_multiple',
+                                            'type' => 'Checkbox',
+                                            'options' => array(
+                                                'label' => 'Multiple coupons',
+                                                'tooltip' => 'Multiple coupon tooltip',
+                                                'checked_value' => 1,
+                                                'unchecked_value' => 0,
+                                                'switchOptions' => array(
+                                                    'label-on' => 'tr_meliscommerce_categories_common_label_yes',
+                                                    'label-off' => 'tr_meliscommerce_categories_common_label_no',
+                                                    'label' => "<i class='glyphicon glyphicon-resize-horizontal'></i>",
+                                                )
+                                            ),
+                                            'attributes' => array(
+                                                'id' => 'm_coupon_multiple',
                                             ),
                                         ),
                                     ),
@@ -116,8 +146,8 @@ return array(
                                         'filters'  => array(
                                         ),
                                     ),
-                                    'm_country_id' => array(
-                                        'name'     => 'm_country_id',
+                                    'm_coupon_site_id' => array(
+                                        'name'     => 'm_coupon_site_id',
                                         'required' => true,
                                         'validators' => array(
                                             array(
@@ -132,18 +162,10 @@ return array(
                                         'filters'  => array(
                                         ),
                                     ),
-                                    'm_site_id' => array(
-                                        'name'     => 'm_site_id',
-                                        'required' => true,
+                                    'm_coupon_multiple' => array(
+                                        'name'     => 'm_coupon_multiple',
+                                        'required' => false,
                                         'validators' => array(
-                                            array(
-                                                'name' => 'NotEmpty',
-                                                'options' => array(
-                                                    'messages' => array(
-                                                        \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_front_template_path_empty',
-                                                    ),
-                                                ),
-                                            ),
                                         ),
                                         'filters'  => array(
                                         ),
@@ -155,5 +177,5 @@ return array(
                 ),
             ),
         ),
-    ),
+     ),
 );

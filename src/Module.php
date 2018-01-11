@@ -234,7 +234,7 @@ class Module
     	    include __DIR__ . '/../config/plugins/orders/MelisCommerceAddToCartPlugin.php',
     	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutPlugin.php',
     	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutCartPlugin.php',
-    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutCouponAddPlugin.php',
+    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutCouponPlugin.php',
     	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutAddressesPlugin.php',
     	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutSummaryPlugin.php',
     	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutConfirmSummaryPlugin.php',

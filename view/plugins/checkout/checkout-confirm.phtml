@@ -1,4 +1,4 @@
-<?php if ($this->order):?>
+<?php if ($this->order){ ?>
     <div class="checkout-payment-area order-det">
     	<div class="checkout-total mt20 row clearfix">
     		<div>
@@ -8,7 +8,7 @@
     			<span class="o-ref-main clearfix">Reference : <?php echo $this->order['orderReference'] ?></span>				
     		</div>
     		<div class="pull-right o-ref-right">
-    			<span><?php echo date("m/d/Y " ,strtotime($this->order['orderDate'])) ?></span>
+    			<span> Placed on <?php echo date("F d, Y h:i " ,strtotime($this->order['orderDate'])) ?></span>
     		</div>
     	</div>
 		<div class="table-responsive">
@@ -18,34 +18,38 @@
 						<td class="ctg-type"> Product</td>
 						<td class="ctg-type"> Price</td>
 						<td class="ctg-type"> Qty</td>
+						<td class="ctg-type"> Discount</td>
 						<td class="cgt-des"> Total</td>
 					</tr>
 				</thead>
 				<tbody>
-					<?php foreach($this->orderBasket as $item):?>
+					<?php foreach($this->orderBasket as $item){ ?>
     					<tr class="cart_item check-item prd-name">
-    						<td class="ctg-type"> <?php echo $item->obas_product_name.' ('.$item->obas_sku.')' ?>)</td>
+    						<td class="ctg-type"> <?php echo $item->obas_product_name.' ('.$item->obas_sku.')' ?></td>
     						<td class="ctg-type"> <?php echo $item->cur_symbol.number_format($item->obas_price_net, 2) ?> </td>
     						<td class="ctg-type"> <?php echo $item->obas_quantity ?></td>
+    						<td class="ctg-type"> <?php echo ($item->discount) ? $item->cur_symbol.number_format($item->discount, 2) : ''?></td>
     						<td class="cgt-des"> <?php echo $item->cur_symbol.number_format($item->obas_price_net * $item->obas_quantity, 2)?></td>
     					</tr>
-					<?php endforeach;?>
+					<?php } ?>
 					<tr class="cart_item">
 						<td class="ctg-type"> Subtotal</td>
 						<td></td>
 						<td></td>
+						<td></td>
 						<td class="cgt-des"><?php echo $this->order['orderCurrency'].number_format($this->order['orderSubtotal'], 2) ?></td>
 					</tr>
-					<?php if (!empty($this->order['orderCouponDetails'])):?>
+					<?php if (!empty($this->order['orderCouponDetails'])){ ?>
     					<tr class="cart_item">
     						<td class="ctg-type"> Coupon</td>
     						<td></td>
     						<td><i><?php echo  $this->order['orderCouponDetails']['couponCode'] ?></i></td>
     						<td class="cgt-des"><?php echo '('.$this->order['orderCurrency'].number_format($this->order['orderCouponDetails']['couponDiscount'], 2).')' ?></td>
     					</tr>
-					<?php endif;?>
+					<?php } ?>
 					<tr class="cart_item">
 						<td class="ctg-type">Shipping</td>
+						<td></td>
 						<td></td>
 						<td></td>
 						<td class="cgt-des">
@@ -56,6 +60,7 @@
 						<td class="ctg-type crt-total"> Total</td>
 						<td></td>
 						<td></td>
+						<td></td>
 						<td class="cgt-des prc-total"> <?php echo  $this->order['orderCurrency'].number_format($this->order['orderTotal'], 2) ?> </td>
 					</tr>
 				</tbody>
@@ -64,6 +69,9 @@
     </div>
     <div class="clearfix">
     	<?php echo $this->orderAddressView ?>
-    	<?php echo $this->orderShippingDetailsView ?>
     </div>
-<?php endif;?>
+<?php }else{ ?>
+	<div class="alert alert-warning">
+		<p>No result</p>
+	</div>
+<?php } ?>

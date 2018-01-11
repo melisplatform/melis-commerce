@@ -131,8 +131,8 @@ return array(
                     ),
                     'melis' => array(
                         'subcategory' => array(
-                            'id' => 'ORDER',
-                            'title' => 'tr_meliscommerce_orders_Orders'
+                            'id' => 'CART',
+                            'title' => 'tr_meliscommerce_car_Cart'
                         ),
                         'name' => 'tr_meliscommerce_plugin_add_cart_name',
                         'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceAddToCartPlugin.jpg',

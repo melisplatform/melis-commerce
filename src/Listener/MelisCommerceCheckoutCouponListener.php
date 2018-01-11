@@ -25,7 +25,6 @@ class MelisCommerceCheckoutCouponListener implements ListenerAggregateInterface
                 'meliscommerce_service_checkout_order_computation_end'
             ),
         	function($e){
-        	    
         		$sm = $e->getTarget()->getServiceLocator();
         		$couponTable = $sm->get('MelisEcomCouponTable');
         		$variantTable = $sm->get('MelisEcomVariantTable');
@@ -148,6 +147,8 @@ class MelisCommerceCheckoutCouponListener implements ListenerAggregateInterface
     		                    }
     		                }
     		                
+    		                $val['discount'] += $val['discount'] + $totalDiscount;
+    		                
     		                $val['discount_details'] = !empty($val['discount_details'])? $val['discount_details'] : array();
     		                
     		                if(!empty($totalDiscount)){
@@ -158,7 +159,7 @@ class MelisCommerceCheckoutCouponListener implements ListenerAggregateInterface
     		                    $val['discount_details'][] = $discounts;
     		                }
     		                
-    		                $val['discount_price'] = $val['total_price'] - $totalDiscount;
+    		                $val['total_price'] -= $discount;
     		                $val['discount_total'] = !empty($val['discount_total'])? $val['discount_total'] + $totalDiscount : $totalDiscount;
     		                $discountedOrders[$key] = $val;
     		            }
@@ -174,7 +175,6 @@ class MelisCommerceCheckoutCouponListener implements ListenerAggregateInterface
     		        foreach($orders as $key => $val){
     		              
     		            $discount += !empty($val['discount_total'])? $val['discount_total'] : 0;
-    		            $price = !empty($val['discount_price'])? $val['discount_price'] : $val['total_price'];
     		            $totalWithoutCoupon += $val['total_price'];
     		            $params['results']['costs']['order']['totalWithoutCoupon'] = $totalWithoutCoupon;
     		            $params['results']['costs']['order']['totalWithProductCoupon'] = $totalWithoutCoupon - $discount;

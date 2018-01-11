@@ -27,7 +27,7 @@ class EcomPluginPriceCountriesSelectFactory extends EcomSelectFactory
         $ecomCountries = $melisEcomCountryTable->getCountries();
         
         $valueoptions = array();
-        array_push($valueoptions, $translator->translate('tr_meliscommerce_general_text'));
+        $valueoptions[-1] = $translator->translate('tr_meliscommerce_general_text');
         
         $max = $ecomCountries->count();
         for ($i = 0; $i < $max; $i++)

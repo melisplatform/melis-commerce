@@ -23,6 +23,7 @@
 	    'tr_meliscommerce_general_common_show_select_addresses' => 'Show select addresses',
 	    'tr_meliscommerce_general_common_per_page' => 'Résultats par page',
 	    'tr_meliscommerce_general_common_num_page_before_after' => 'Nombre de lien avant et après la page courante',
+	    'tr_meliscommerce_general_common_country' => 'Pays',
 	    
 	    'tr_meliscommerce_general_text' => 'General',
 	    'tr_meliscommerce_general_permission_error_label' => 'Permission refusée',
@@ -48,6 +49,7 @@
 	    'tr_meliscommerce_general_common_show_select_addresses tooltip' => 'This will show a form select option of addresses',
 	    'tr_meliscommerce_general_common_per_page tooltip' => 'Nombre de résultats s&#39;affichant sur une même page',
 	    'tr_meliscommerce_general_common_num_page_before_after tooltip' => 'L&#39;affichage de la pagination génére un certains nombre de liens avant et après la page en cours, ce champ permet de limiter ce nombe de liens',
+	    'tr_meliscommerce_general_common_country tooltip' => 'Choisissez le pays pour assigner la devise et le prix correspondant des produits',
 	    
 	    // Common validation messages
 	    'tr_meliscommerce_general_error' => 'Une erreur est survenue, veuillez contacter l\'administrateur',

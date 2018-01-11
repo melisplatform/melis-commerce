@@ -1507,27 +1507,18 @@ class MelisComOrderCheckoutController extends AbstractActionController
                         $productId = $variant->getVariant()->var_prd_id;
                         $varSku = $variant->getVariant()->var_sku;
                         
-                        // Getting the Variant price from Variant Service
-                        $varPrice = $melisComVariantService->getVariantFinalPrice($variantId, $countryId);
+                        // Product variant price details
+                        $currencySymbol = $val['price_details']['currency_symbol'];
                         
-                        if (is_null($varPrice))
-                        {
-                            // if Vairant Price is null this will try to get from Product Price
-                            $varPrice = $melisComProductService->getProductFinalPrice($productId, $countryId);
-                        }
-                        
-                        $quantity = $val['quantity'];
-                        
-                        $variantTotal = $quantity * $varPrice->price_net;
                         $data = array(
                             'var_id' => $variantId,
                             'var_sku' => $varSku,
-                            'var_quantity' => $quantity,
-                            'var_price' => $varPrice->cur_symbol.' '.number_format($varPrice->price_net, 2),
+                            'var_quantity' => $val['quantity'],
+                            'var_price' => $currencySymbol.number_format($val['unit_price'], 2),
                             'product_name' => $melisComProductService->getProductName($productId, $langId),
-                            'discount_price' => !empty($val['discount_price'])? $varPrice->cur_symbol.' '.number_format($val['discount_price'],2) : '',
-                            'discount' => !empty($val['discount'])? $varPrice->cur_symbol.' '.number_format($val['discount'],2) : '',
-                            'var_total' => $varPrice->cur_symbol.' '.number_format($variantTotal, 2),
+                            'discount_price' => $currencySymbol.number_format($val['unit_price'] - $val['discount'], 2),
+                            'discount' => $currencySymbol.number_format($val['discount'], 2),
+                            'var_total' => $currencySymbol.number_format($val['total_price'], 2),
                             'discount_details' => !empty($val['discount_details'])? $val['discount_details'] : array(),
                         );
                         
@@ -1556,7 +1547,6 @@ class MelisComOrderCheckoutController extends AbstractActionController
         }
 
         $couponCode = $this->params()->fromQuery('couponCode');
-//         $couponErr = '';
         
         // Getting the Country currency, depend on country selected during step 1
         $melisEcomCountryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');

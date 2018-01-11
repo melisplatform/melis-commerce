@@ -1,0 +1,75 @@
+<?php if (!empty($order)) {?>
+    <h3>Order details</h3>
+    
+    <p>Reference: <?php echo $order['reference']?></p>
+    
+    <p>Placed on <?php echo date("F, d Y" ,strtotime($order['date'])) . ' at ' .date("H:iA" ,strtotime($order['date'])) ?></p>
+    
+    <p>Status: <?php echo $order['status'] ?></p>
+    
+    <table class="table table-bordered">
+    	<thead>
+    		<tr>
+    			<th>Product</th>
+    			<th>Quantity</th>
+    			<th>Unit Price</th>
+    			<th>Discount</th>
+    			<th>Sub Total</th>
+    		</tr>
+    	</thead>
+    	<tbody>	
+    		<?php foreach ($order['items'] As $val){ ?>
+        		<tr>
+        			<td><?php echo $val['productName'].' ('.$val['sku'].')' ?></td>
+        			<td align="right"><?php echo $val['quantity']?></td>
+        			<td align="right"><?php echo $val['currency'].number_format($val['price'], 2) ?></td>
+        			<td align="right"><?php echo $val['currency'].$val['discount'] ?></td>
+        			<td align="right"><?php echo $val['currency'].$val['total'] ?></td>
+        		</tr>
+    		<?php } ?>
+    	</tbody>
+    	<tfoot>
+    		<tr>
+    			<th></th>
+    			<th style="text-align: right" colspan="2"></th>
+    			<th style="text-align: right">Sub Total</th>
+    			<th style="text-align: right"><?php echo $order['currency'].number_format($order['subTotal'], 2) ?></th>
+    		</tr>
+    		<tr>
+    			<th style="text-align: right" colspan="4">Discount</th>
+    			<th style="text-align: right">
+            	    <?php foreach($order['coupons'] as $coupon){ ?>
+    					<p>Code: <?php echo  $coupon['couponCode'].' - '.$order['currency'].number_format($coupon['couponDiscount'], 2)  ?></p>
+    				<?php } ?>
+    			</th>
+    		</tr>
+    		<tr>
+    			<th style="text-align: right" colspan="4">Shipping cost</th>
+    			<th style="text-align: right"><?php echo $order['currency'].number_format($order['shipping'], 2) ?></th>
+    		</tr>
+    		<tr>
+    			<th style="text-align: right" colspan="4">Total</th>
+    			<th style="text-align: right"><?php echo $order['currency'].number_format($order['total'], 2) ?></th>
+    		</tr>
+    	</tfoot>
+    </table>
+    <br>
+    <div class="row">
+    	<div class="col-md-6">
+    		<?php echo $this->orderAddress ?>  
+    	</div>
+    	<div class="col-md-6">
+    		<?php echo $this->orderShippingDetails ?> 
+    	</div>
+    </div>
+    <br>
+    <div class="row">
+    	<div class="col-md-12">
+    		<?php echo $this->orderMessages ?>  
+    	</div>
+    </div>
+<?php }else{ ?>
+	<div class="alert alert-warning">
+		No result
+	</div>
+<?php }?>

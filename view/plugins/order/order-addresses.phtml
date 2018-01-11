@@ -1,0 +1,47 @@
+<?php 
+    use Doctrine\DBAL\Tools\Console\Command\ImportCommand;
+
+    $delivery = $this->deliveryAddress;
+    $billing = $this->billingAddress;
+    
+    $addressIndex = array('oadd_num', 'oadd_stairs', 'oadd_building_name', 'oadd_company', 'oadd_street', 'oadd_city', 'oadd_state', 'oadd_country', 'oadd_zipcode');
+    
+    $deliveryData = array();
+    $billingyData = array();
+    foreach ($addressIndex As $key => $val)
+    {
+        if (!empty($delivery[$key]))
+        {
+            array_push($deliveryData, $delivery[$key]);
+        }
+        
+        if (!empty($billing[$key]))
+        {
+            array_push($billingyData, $billing[$key]);
+        }
+    }
+    
+    $deliveryStr = 'Address Not Set';
+    if (!empty($deliveryData))
+    {
+        $deliveryStr = implode(', ', $deliveryData);
+    }
+    
+    $billingStr = 'Address Not Set';
+    if (!empty($billingyData))
+    {
+        $billingStr = implode(', ', $billingyData);
+    }
+?>
+<div>
+	<div>
+		<h3>Delivery address</h3>
+		<div><i class="fa fa-user"></i> <?= $billing['oadd_firstname'].' '.$billing['oadd_middle_name'].' '.$billing['oadd_name']  ?></div>
+		<div><i class="fa fa-map-marker"></i><?php echo $deliveryStr ?></div>
+	</div>
+	<div>
+		<h3>Billing address</h3>
+		<div><i class="fa fa-user"></i> <?= $billing['oadd_firstname'].' '.$billing['oadd_middle_name'].' '.$billing['oadd_name']  ?></div>
+		<div><i class="fa fa-map-marker"></i><?php echo $billingStr ?></div>
+	</div>			
+</div>
