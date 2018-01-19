@@ -84,19 +84,29 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
         $pluginManager = $this->getServiceLocator()->get('ControllerPluginManager');
         $translator = $this->getServiceLocator()->get('translator');
         
-        // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
-        $checkOutCartParameters = (!empty($this->pluginFrontConfig['checkout_cart_parameters'])) ? $this->pluginFrontConfig['checkout_cart_parameters'] : array();
-        $checkOutAddressesParameters = (!empty($this->pluginFrontConfig['checkout_addresses_parameters'])) ? $this->pluginFrontConfig['checkout_addresses_parameters'] : array();
-        $checkOutSummaryParameters = (!empty($this->pluginFrontConfig['checkout_summary_parameters'])) ? $this->pluginFrontConfig['checkout_summary_parameters'] : array();
-        $checkOutConfirmSummaryParameters = (!empty($this->pluginFrontConfig['checkout_confirm_summary_parameters'])) ? $this->pluginFrontConfig['checkout_confirm_summary_parameters'] : array();
-        $checkOutConfirmParameters = (!empty($this->pluginFrontConfig['checkout_confirm_parameters'])) ? $this->pluginFrontConfig['checkout_confirm_parameters'] : array();
+        $data = $this->getFormData();
         
-        $countryId = (!empty($this->pluginFrontConfig['m_checkout_country_id'])) ? $this->pluginFrontConfig['m_checkout_country_id'] : 1;
-        $siteId = (!empty($this->pluginFrontConfig['m_checkout_site_id'])) ? $this->pluginFrontConfig['m_checkout_site_id'] : 1;
-        $steps = (!empty($this->pluginFrontConfig['m_checkout_step'])) ? $this->pluginFrontConfig['m_checkout_step'] : '';
+        $checkOutCartParameters = (!empty($data['checkout_cart_parameters'])) ? $data['checkout_cart_parameters'] : array();
+        $checkOutCartParameters = ArrayUtils::merge($checkOutCartParameters, array('id' => 'checkoutCart_'.$data['id'], 'pageId' => $data['pageId']));
         
-        $checkoutPage = (!empty($this->pluginFrontConfig['m_checkout_page_link'])) ? $this->pluginFrontConfig['m_checkout_page_link'] : 'http://www.test.com';
-        $loginPage = (!empty($this->pluginFrontConfig['m_login_page_link'])) ? $this->pluginFrontConfig['m_login_page_link'] : 'http://www.test.com';
+        $checkOutAddressesParameters = (!empty($data['checkout_addresses_parameters'])) ? $data['checkout_addresses_parameters'] : array();
+        $checkOutAddressesParameters = ArrayUtils::merge($checkOutAddressesParameters, array('id' => 'checkoutAddresses_'.$data['id'], 'pageId' => $data['pageId']));
+        
+        $checkOutSummaryParameters = (!empty($data['checkout_summary_parameters'])) ? $data['checkout_summary_parameters'] : array();
+        $checkOutSummaryParameters = ArrayUtils::merge($checkOutSummaryParameters, array('id' => 'checkoutSummary_'.$data['id'], 'pageId' => $data['pageId']));
+        
+        $checkOutConfirmSummaryParameters = (!empty($data['checkout_confirm_summary_parameters'])) ? $data['checkout_confirm_summary_parameters'] : array();
+        $checkOutConfirmSummaryParameters = ArrayUtils::merge($checkOutConfirmSummaryParameters, array('id' => 'checkoutConfirmSummary_'.$data['id'], 'pageId' => $data['pageId']));
+        
+        $checkOutConfirmParameters = (!empty($data['checkout_confirm_parameters'])) ? $data['checkout_confirm_parameters'] : array();
+        $checkOutConfirmParameters = ArrayUtils::merge($checkOutConfirmParameters, array('id' => 'checkoutConfirmation_'.$data['id'], 'pageId' => $data['pageId']));
+        
+        $countryId = (!empty($data['m_checkout_country_id'])) ? $data['m_checkout_country_id'] : null;
+        $siteId = (!empty($data['m_checkout_site_id'])) ? $data['m_checkout_site_id'] : null;
+        $steps = (!empty($data['m_checkout_step'])) ? $data['m_checkout_step'] : '';
+        
+        $checkoutPage = (!empty($data['m_checkout_page_link'])) ? $data['m_checkout_page_link'] : 'http://www.test.com';
+        $loginPage = (!empty($data['m_login_page_link'])) ? $data['m_login_page_link'] : 'http://www.test.com';
         
         // Preparing the Container/Session of Commerce checkout
         $container = new Container('meliscommerce');

@@ -24,18 +24,17 @@ use Zend\Stdlib\ArrayUtils;
  * 
  * front() and back() are the only functions to create / update.
  * front() generates the website view
- * back() generates the plugin view in template edition mode (TODO)
  * 
  * Configuration can be found in $pluginConfig / $pluginFrontConfig / $pluginBackConfig
  * Configuration is automatically merged with the parameters provided when calling the plugin.
  * Merge detects automatically from the route if rendering must be done for front or back.
  * 
  * How to call this plugin without parameters:
- * $plugin = $this->MelisCommerceClientAccountPlugin();
+ * $plugin = $this->MelisCommerceAccountPlugin();
  * $pluginView = $plugin->render();
  *
  * How to call this plugin with custom parameters:
- * $plugin = $this->MelisFrontBreadcrumbPlugin();
+ * $plugin = $this->MelisCommerceAccountPlugin();
  * $parameters = array(
  *      'template_path' => 'MySiteTest/client/account'
  * );
@@ -72,26 +71,31 @@ class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
         // Getting custom param for Profile Plugin
         $profileParam = (!empty($data['profile_parameter'])) ? $data['profile_parameter'] : array();
         $clientProfilePlugin = $pluginManager->get('MelisCommerceProfilePlugin');
+        $profileParam = ArrayUtils::merge($profileParam, array('id' => 'userProfile_'.$data['id'], 'pageId' => $data['pageId']));
         $clientProfile = $clientProfilePlugin->render($profileParam);
         
         // Getting custom param for Delivery Address Plugin
         $clientDeliveryAddressParam = (!empty($data['delivery_address_parameter'])) ? $data['delivery_address_parameter'] : array();
         $clientDeliveryAddressPlugin = $pluginManager->get('MelisCommerceDeliveryAddressPlugin');
+        $clientDeliveryAddressParam = ArrayUtils::merge($clientDeliveryAddressParam, array('id' => 'userDeliveryAddress_'.$data['id'], 'pageId' => $data['pageId']));
         $clientDeliveryAddress = $clientDeliveryAddressPlugin->render($clientDeliveryAddressParam);
         
         // Getting custom param for Billing Address Plugin
         $clientBillingAddressParam = (!empty($data['billing_address_parameter'])) ? $data['billing_address_parameter'] : array();
         $clientBillingAddressPlugin = $pluginManager->get('MelisCommerceBillingAddressPlugin');
+        $clientBillingAddressParam = ArrayUtils::merge($clientBillingAddressParam, array('id' => 'userBillingAddress_'.$data['id'], 'pageId' => $data['pageId']));
         $clientBillingAddress = $clientBillingAddressPlugin->render($clientBillingAddressParam);
         
         // Getting custom param for Cart Plugin
         $clientCartParam = (!empty($data['cart_parameter'])) ? $data['cart_parameter'] : array();
         $clientCartPlugin = $pluginManager->get('MelisCommerceCartPlugin');
+        $clientCartParam = ArrayUtils::merge($clientCartParam, array('id' => 'cartPlugin_'.$data['id'], 'pageId' => $data['pageId']));
         $clientCart = $clientCartPlugin->render($clientCartParam);
         
         // Getting custom param for Order list Plugin
         $clientOrderParameter =(!empty($data['order_list_paremeter'])) ? $data['order_list_paremeter'] : array();
         $clientOrderPlugin = $pluginManager->get('MelisCommerceOrderHistoryPlugin');
+        $clientOrderParameter = ArrayUtils::merge($clientOrderParameter, array('id' => 'cartPlugin_'.$data['id'], 'pageId' => $data['pageId']));
         $clientOrderHistory = $clientOrderPlugin->render($clientOrderParameter);
         
         // Create an array with the variables that will be available in the view
@@ -270,31 +274,6 @@ class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
             {
                 $configValues['template_path'] = (string)$xml->template_path;
             }
-            
-            if (!empty($xml->profile_parameter))
-            {
-                $configValues['profile_parameter'] = json_decode((string)$xml->profile_parameter);
-            }
-            
-            if (!empty($xml->delivery_address_parameter))
-            {
-                $configValues['delivery_address_parameter'] = json_decode((string)$xml->delivery_address_parameter);
-            }
-            
-            if (!empty($xml->billing_address_parameter))
-            {
-                $configValues['billing_address_parameter'] = json_decode((string)$xml->billing_address_parameter);
-            }
-            
-            if (!empty($xml->cart_parameter))
-            {
-                $configValues['cart_parameter'] = json_decode((string)$xml->cart_parameter);
-            }
-            
-            if (!empty($xml->order_list_paremeter))
-            {
-                $configValues['order_list_paremeter'] = json_decode((string)$xml->order_list_paremeter);
-            }
         }
         
         return $configValues;
@@ -312,31 +291,6 @@ class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
         if (!empty($parameters['template_path']))
         {
             $xmlValueFormatted .= "\t\t" . '<template_path><![CDATA[' . $parameters['template_path'] . ']]></template_path>';
-        }
-        
-        if (!empty($parameters['profile_parameter']))
-        {
-            $xmlValueFormatted .= "\t\t" . '<profile_parameter><![CDATA[' . json_encode($parameters['profile_parameter']) . ']]></profile_parameter>';
-        }
-        
-        if (!empty($parameters['delivery_address_parameter']))
-        {
-            $xmlValueFormatted .= "\t\t" . '<delivery_address_parameter><![CDATA[' . json_encode($parameters['delivery_address_parameter']) . ']]></delivery_address_parameter>';
-        }
-        
-        if (!empty($parameters['billing_address_parameter']))
-        {
-            $xmlValueFormatted .= "\t\t" . '<billing_address_parameter><![CDATA[' . json_encode($parameters['billing_address_parameter']) . ']]></billing_address_parameter>';
-        }
-        
-        if (!empty($parameters['cart_parameter']))
-        {
-            $xmlValueFormatted .= "\t\t" . '<cart_parameter><![CDATA[' . json_encode($parameters['cart_parameter']) . ']]></cart_parameter>';
-        }
-        
-        if (!empty($parameters['order_list_paremeter']))
-        {
-            $xmlValueFormatted .= "\t\t" . '<order_list_paremeter><![CDATA[' . json_encode($parameters['order_list_paremeter']) . ']]></order_list_paremeter>';
         }
         
         // Something has been saved, let's generate an XML for DB

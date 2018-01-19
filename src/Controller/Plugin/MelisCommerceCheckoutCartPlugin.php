@@ -85,11 +85,13 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
         $variantSrv = $this->getServiceLocator()->get('MelisComVariantService');
         $couponSrv = $this->getServiceLocator()->get('MelisComCouponService');
         
-        $countryId                      = (!empty($this->pluginFrontConfig['m_cc_country_id']))                 ? $this->pluginFrontConfig['m_cc_country_id'] : null;
-        $siteId                         = (!empty($this->pluginFrontConfig['m_cc_site_id']))                    ? $this->pluginFrontConfig['m_cc_site_id'] : null;
-        $variantQuantities              = (!empty($this->pluginFrontConfig['m_cc_var_qty']))                    ? $this->pluginFrontConfig['m_cc_var_qty'] : null;
-        $variantIdRemove                = (!empty($this->pluginFrontConfig['m_cc_var_remove']))                 ? $this->pluginFrontConfig['m_cc_var_remove'] : null;
-        $checkoutCartCouponParameters   = (!empty($this->pluginFrontConfig['checkout_cart_coupon_parameters'])) ? $this->pluginFrontConfig['checkout_cart_coupon_parameters'] : array();
+        $formData = $this->getFormData();
+        $countryId                      = (!empty($formData['m_cc_country_id']))                 ? $formData['m_cc_country_id'] : null;
+        $siteId                         = (!empty($formData['m_cc_site_id']))                    ? $formData['m_cc_site_id'] : null;
+        $variantQuantities              = (!empty($formData['m_cc_var_qty']))                    ? $formData['m_cc_var_qty'] : null;
+        $variantIdRemove                = (!empty($formData['m_cc_var_remove']))                 ? $formData['m_cc_var_remove'] : null;
+        $checkoutCartCouponParameters   = (!empty($formData['checkout_cart_coupon_parameters'])) ? $formData['checkout_cart_coupon_parameters'] : array();
+        $checkoutCartCouponParameters   = ArrayUtils::merge($checkoutCartCouponParameters, array('id' => 'checkoutCoupon_'.$formData['id'], 'pageId' => $formData['pageId']));
         
         $clientKey = $ecomAuthSrv->getId();
         $clientId = null;
@@ -446,7 +448,6 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
     public function getFormData()
     {
         $data = $this->pluginFrontConfig;
-        
         return $data;
     }
     

@@ -79,10 +79,17 @@ class MelisCommerceOrderPlugin extends MelisTemplatingPlugin
         $container = new Container('melisplugins');
         $langId = $container['melis-plugins-lang-id'];
         
-        $orderId                = !empty($this->pluginFrontConfig['m_order_id'])                        ? $this->pluginFrontConfig['m_order_id'] : null;
-        $addressParameters      = !empty($this->pluginFrontConfig['order_address_parameters'])          ? $this->pluginFrontConfig['order_address_parameters'] : array();
-        $shippingParameters     = !empty($this->pluginFrontConfig['order_shipping_details_parameters']) ? $this->pluginFrontConfig['order_shipping_details_parameters'] : array();
-        $messagesParamenters    = !empty($this->pluginFrontConfig['order_messages_parameters'])         ? $this->pluginFrontConfig['order_messages_parameters'] : null;
+        $formData = $this->getFormData();
+        
+        $orderId                = !empty($formData['m_order_id'])                        ? $formData['m_order_id'] : null;
+        $addressParameters      = !empty($formData['order_address_parameters'])          ? $formData['order_address_parameters'] : array();
+        $addressParameters      = ArrayUtils::merge($addressParameters, array('id' => 'orderAddresses_'.$formData['id'], 'pageId' => $formData['pageId']));
+        
+        $shippingParameters     = !empty($formData['order_shipping_details_parameters']) ? $formData['order_shipping_details_parameters'] : array();
+        $shippingParameters     = ArrayUtils::merge($shippingParameters, array('id' => 'orderShippingDetails_'.$formData['id'], 'pageId' => $formData['pageId']));
+        
+        $messagesParamenters    = !empty($formData['order_messages_parameters'])         ? $formData['order_messages_parameters'] : null;
+        $messagesParamenters    = ArrayUtils::merge($messagesParamenters, array('id' => 'orderMessages_'.$formData['id'], 'pageId' => $formData['pageId']));
         
         $orderStatus = $orderSvc->getOrderStatusList($langId);
 

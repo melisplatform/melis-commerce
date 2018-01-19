@@ -80,8 +80,11 @@ class MelisCommerceCheckoutConfirmPlugin extends MelisTemplatingPlugin
         $container = new Container('melisplugins');
         $langId = $container['melis-plugins-lang-id'];
         
-        $orderId            = !empty($this->pluginFrontConfig['m_conf_order_id'])       ? $this->pluginFrontConfig['m_conf_order_id'] : null;
-        $addressParameters  = !empty($this->pluginFrontConfig['address_parameters'])    ? $this->pluginFrontConfig['address_parameters'] : array();
+        $data = $this->getFormData();
+        
+        $orderId            = !empty($data['m_conf_order_id'])       ? $data['m_conf_order_id'] : null;
+        $addressParameters  = !empty($data['address_parameters'])    ? $data['address_parameters'] : array();
+        $addressParameters   = ArrayUtils::merge($addressParameters, array('id' => 'checkoutCoupon_'.$data['id'], 'pageId' => $data['pageId']));
         
         if ($orderId)
         {
