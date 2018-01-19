@@ -34,7 +34,7 @@ $(function(){
 		$("#checkout-"+type+"-address-default fieldset input:not([type='hidden']), #checkout-"+type+"-address-default fieldset select:not([name='m_add_"+type+"_id'])").next("ul").css("display", display)
 	}
 	
-	$("#checkout-billing-address-same-default").click(function(){
+	$('body').on('click', "#checkout-billing-address-same-default", function(){
 		if($(this).is(":checked")){
 			$(".checkout-billing-address-default-zone").css("display", "none");
 			$("#m_add_use_same_address").val(1);
@@ -42,5 +42,15 @@ $(function(){
 			$(".checkout-billing-address-default-zone").css("display", "block");
 			$("#m_add_use_same_address").val(0);
 		}
-	})
+	});
+
+    $('body').on('click', "#checkout-billing-address-same", function(){
+        if($(this).is(":checked")){
+            $(".checkout-billing-address-zone").addClass("hidden");
+            $("#m_add_use_same_address").val(1);
+        }else{
+            $(".checkout-billing-address-zone").removeClass("hidden");
+            $("#m_add_use_same_address").val(0);
+        }
+    });
 });

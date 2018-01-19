@@ -131,6 +131,12 @@
         //Cart Plugin
         'tr_meliscommerce_plugin_cart_name' => 'Cart',
         'tr_meliscommerce_plugin_cart_description' => 'The plugin display all the products that has been added to cart',
-        'tr_meliscommerce_plugin_cart_no_item' => 'NO ITEMS IN CART',
-        'tr_meliscommerce_plugin_cart_view' => 'View Cart / Checkout',
+        'tr_meliscommerce_plugin_cart_variant' => 'Variant',
+        'tr_meliscommerce_plugin_cart_unit_price' => 'Unit Price',
+        'tr_meliscommerce_plugin_cart_qty' => 'Quantity',
+        'tr_meliscommerce_plugin_cart_total' => 'Total',
+        'tr_meliscommerce_plugin_cart_remove' => 'Remove',
+
+        //checkout steps
+        'tr_meliscommerce_plugin_checkout_step tooltip' => 'Checkout step by step process',
 	);

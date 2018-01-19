@@ -8,7 +8,8 @@
                 $price = !empty($product->display_price)? $product->display_price : '';
                 $mainImage = '';
                 $hoverImage = '';
-                $productPageLink = $this->MelisLink($this->layout()->siteDatas['product_page_id'], false) . '?' . http_build_query(array('m_p_id' => $product->getId()));
+
+                $productPageLink = $this->MelisCommerceLink('product', $product->getId(), $this->langId, true);
 
                 if(!empty($product->getTexts())){
                     foreach($product->getTexts() as $text){

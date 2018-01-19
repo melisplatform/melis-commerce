@@ -1,5 +1,5 @@
 <?php if (!empty($order)) {?>
-    <h3>Order details</h3>
+    <h3><?= $this->translate('tr_meliscommerce_plugin_order_details_name');?></h3>
     
     <p>Reference: <?php echo $order['reference']?></p>
     
@@ -10,11 +10,11 @@
     <table class="table table-bordered">
     	<thead>
     		<tr>
-    			<th>Product</th>
-    			<th>Quantity</th>
-    			<th>Unit Price</th>
-    			<th>Discount</th>
-    			<th>Sub Total</th>
+    			<th><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_product');?></th>
+    			<th><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_qty')?></th>
+    			<th><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_unit_price'); ?></th>
+    			<th><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_discount'); ?></th>
+    			<th><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_sub_total'); ?></th>
     		</tr>
     	</thead>
     	<tbody>	
@@ -32,11 +32,11 @@
     		<tr>
     			<th></th>
     			<th style="text-align: right" colspan="2"></th>
-    			<th style="text-align: right">Sub Total</th>
+    			<th style="text-align: right"><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_sub_total'); ?></th>
     			<th style="text-align: right"><?php echo $order['currency'].number_format($order['subTotal'], 2) ?></th>
     		</tr>
     		<tr>
-    			<th style="text-align: right" colspan="4">Discount</th>
+    			<th style="text-align: right" colspan="4"><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_discount'); ?></th>
     			<th style="text-align: right">
             	    <?php foreach($order['coupons'] as $coupon){ ?>
     					<p>Code: <?php echo  $coupon['couponCode'].' - '.$order['currency'].number_format($coupon['couponDiscount'], 2)  ?></p>
@@ -44,11 +44,11 @@
     			</th>
     		</tr>
     		<tr>
-    			<th style="text-align: right" colspan="4">Shipping cost</th>
+    			<th style="text-align: right" colspan="4"><?= $this->translate('tr_meliscommerce_plugin_checkout_summary_shipping_cost'); ?></th>
     			<th style="text-align: right"><?php echo $order['currency'].number_format($order['shipping'], 2) ?></th>
     		</tr>
     		<tr>
-    			<th style="text-align: right" colspan="4">Total</th>
+    			<th style="text-align: right" colspan="4"><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_total'); ?></th>
     			<th style="text-align: right"><?php echo $order['currency'].number_format($order['total'], 2) ?></th>
     		</tr>
     	</tfoot>
@@ -70,6 +70,6 @@
     </div>
 <?php }else{ ?>
 	<div class="alert alert-warning">
-		No result
+		<?= $this->translate('tr_meliscommerce_general_common_no_result_found'); ?>
 	</div>
 <?php }?>

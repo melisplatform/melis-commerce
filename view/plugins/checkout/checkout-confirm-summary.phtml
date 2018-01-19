@@ -1,6 +1,6 @@
 <?php if (!$this->success){ ?>
 	
-	<h3>Error(s) occured. <small>Cannot proceed to payment, please check your checkout details before proceeding to payment</small></h3>
+	<h3><?=$this->translate('tr_meliscommerce_general_error_occured'); ?>. <small><?= $this->translate('tr_meliscommerce_plugin_checkout_confirm_summary_err_msg'); ?></small></h3>
 	
 	<?php foreach ($this->errors As $key => $val){ ?>
 		<?php if (!empty($val)) {?>
@@ -14,6 +14,6 @@
 		<?php } ?>
 	<?php } ?>
 	
-	<a class="btn btn-primary" href="<?php echo $this->prevStep_link?>">Previous</a>
+	<a class="btn btn-primary" href="<?php echo $this->prevStep_link?>"><?= $this->translate('tr_meliscommerce_order_checkout_common_prev'); ?></a>
 	
 <?php } ?>

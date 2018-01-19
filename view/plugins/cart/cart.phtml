@@ -1,10 +1,10 @@
 <table class="table table-striped">
     <tr>
-    	<th>Variant</th>
-    	<th class="text-right">Unit Price</th>
-    	<th class="text-right">Quantity</th>
-    	<th class="text-right">Total</th>
-    	<th class="text-right">Remove</th>
+    	<th><?= $this->translate('tr_meliscommerce_plugin_cart_variant'); ?></th>
+    	<th class="text-right"><?= $this->translate('tr_meliscommerce_plugin_cart_unit_price'); ?></th>
+    	<th class="text-right"><?= $this->translate('tr_meliscommerce_plugin_cart_qty'); ?></th>
+    	<th class="text-right"><?= $this->translate('tr_meliscommerce_plugin_cart_total'); ?></th>
+    	<th class="text-right"><?= $this->translate('tr_meliscommerce_plugin_cart_remove'); ?></th>
     </tr>
     <?php foreach ($this->cartList As $val){?>
     	<tr>

@@ -113,8 +113,8 @@ return array(
                                             'name' => 'm_coupon_multiple',
                                             'type' => 'Checkbox',
                                             'options' => array(
-                                                'label' => 'Multiple coupons',
-                                                'tooltip' => 'Multiple coupon tooltip',
+                                                'label' => 'tr_meliscommerce_plugin_checkout_coupon_multiple',
+                                                'tooltip' => 'tr_meliscommerce_plugin_checkout_coupon_multiple tooltip',
                                                 'checked_value' => 1,
                                                 'unchecked_value' => 0,
                                                 'switchOptions' => array(

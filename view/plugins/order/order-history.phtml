@@ -1,12 +1,12 @@
 <?php if($this->hasData) { ?>
-    <table class="table">
+    <table class="table table-striped">
         <thead>
             <tr>
-                <td><b>Date</b></td>
-                <td><b>Reference</b></td>
-                <td><b>Status</b></td>
-                <td><b>Items</b></td>
-                <td><b>Total</b></td>
+                <td><b><?= $this->translate('tr_meliscommerce_order_history_date'); ?></b></td>
+                <td><b><?= $this->translate('tr_meliscommerce_order_history_reference'); ?></b></td>
+                <td><b><?= $this->translate('tr_meliscommerce_order_history_status'); ?></b></td>
+                <td><b><?= $this->translate('tr_meliscommerce_order_history_items'); ?></b></td>
+                <td><b><?= $this->translate('tr_meliscommerce_order_history_total'); ?></b></td>
             </tr>
         </thead>
         <tbody>
@@ -34,6 +34,6 @@
     ?>
 <?php } else { ?>
     <div class="text-center">
-        <span><?= $this->translate('tr_meliscommerce_order_history_empty_order');?></span>
+        <span class="alert alert-warning"><?= $this->translate('tr_meliscommerce_order_history_empty_order');?></span>
     </div>
 <?php } ?>

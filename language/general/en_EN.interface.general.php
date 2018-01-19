@@ -14,6 +14,7 @@
 	    'tr_meliscommerce_general_common_ascending' => 'Ascending',
 	    'tr_meliscommerce_general_common_descending' => 'Descending',
 	    'tr_meliscommerce_general_common_column_order' => 'Sort by', 
+	    'tr_meliscommerce_general_common_search' => 'Search',
 	    'tr_meliscommerce_general_common_order' => 'Order',
 	    'tr_meliscommerce_general_common_limit' => 'Limit',
 	    'tr_meliscommerce_general_common_configuration' => 'Configuration',
@@ -25,7 +26,8 @@
 	    'tr_meliscommerce_general_common_num_page_before_after' => 'No. of pagination link before & after',
 	    'tr_meliscommerce_general_common_country' => 'Country',
 	    'tr_meliscommerce_general_common_site' => 'Site',
-	    
+	    'tr_meliscommerce_general_common_no_result_found' => 'No result found',
+
 	    'tr_meliscommerce_general_text' => 'General', 
 	    'tr_meliscommerce_general_permission_error_label' => 'Permission denied',
 	    'tr_meliscommerce_general_csv_permission_error' => 'You don\'t have the rights to write on the server, please check your rights (%s)',
@@ -47,7 +49,7 @@
 	    'tr_meliscommerce_general_common_limit tooltip' => 'This filter allows to set the number displayed',
 	    'tr_meliscommerce_general_common_destination_page_link tooltip' => 'Enter the url of the destination page in which the user will be redirected. It can be an internal or external url',
 	    'tr_meliscommerce_general_common_autologin tooltip' => 'Connect the user directly after validation of the form',
-	    'tr_meliscommerce_general_common_show_select_addresses tooltip' => 'This will show a form select option of addresses',
+	    'tr_meliscommerce_general_common_show_select_addresses tooltip' => 'Display a form to select an address',
 	    'tr_meliscommerce_general_common_per_page tooltip' => 'Number of results displayed on a single page',
 	    'tr_meliscommerce_general_common_num_page_before_after tooltip' => 'The display of the pagination generate a certain number of links before and after the current page, this field allows to limit this number of inks',
 	    'tr_meliscommerce_general_common_country tooltip' => 'Select the country to assign the corresponding currency and price of the products',

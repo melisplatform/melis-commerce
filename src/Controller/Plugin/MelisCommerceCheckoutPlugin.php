@@ -115,7 +115,7 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
             $container['checkout'] = array();
         }
         $container['checkout'][$siteId]['countryId'] = $countryId;
-        
+
         switch ($steps)
         {
             case 'checkout-addresses':
@@ -131,12 +131,15 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                  */
                 if (!$melisComAuthSrv->hasIdentity())
                 {
-                    $link_query = array(
-                        'm_redirection_link_ok' => $checkoutPage.'?'.http_build_query(array('m_checkout_step' => 'checkout-addresses')),
-                        'm_autologin' => 1
-                    );
-                    
-                    $redirect = $loginPage.'?'.http_build_query($link_query);
+                    if($this->renderMode != "melis")
+                    {
+                        $link_query = array(
+                            'm_redirection_link_ok' => $checkoutPage . '?' . http_build_query(array('m_checkout_step' => 'checkout-addresses')),
+                            'm_autologin' => 1
+                        );
+
+                        $redirect = $loginPage . '?' . http_build_query($link_query);
+                    }
                 }
                 else 
                 {
@@ -201,12 +204,15 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                  */
                 if (!$melisComAuthSrv->hasIdentity())
                 {
-                    $link_query = array(
-                        'm_redirection_link_ok' => $checkoutPage,
-                        'm_autologin' => 1
-                    );
-                    
-                    $redirect = $loginPage.'?'.http_build_query($link_query);
+                    if($this->renderMode != "melis")
+                    {
+                        $link_query = array(
+                            'm_redirection_link_ok' => $checkoutPage,
+                            'm_autologin' => 1
+                        );
+
+                        $redirect = $loginPage . '?' . http_build_query($link_query);
+                    }
                 }
                 else
                 {
@@ -238,12 +244,15 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                  */
                 if (!$melisComAuthSrv->hasIdentity())
                 {
-                    $link_query = array(
-                        'm_redirection_link_ok' => $checkoutPage,
-                        'm_autologin' => 1
-                    );
-                    
-                    $redirect = $loginPage.'?'.http_build_query($link_query);
+                    if($this->renderMode != "melis")
+                    {
+                        $link_query = array(
+                            'm_redirection_link_ok' => $checkoutPage,
+                            'm_autologin' => 1
+                        );
+
+                        $redirect = $loginPage . '?' . http_build_query($link_query);
+                    }
                 }
                 else 
                 {
@@ -293,13 +302,16 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                  */
                 if (!$melisComAuthSrv->hasIdentity())
                 {
-                    $link_query = array(
-                        'm_redirection_link_ok' => $checkoutPage,
-                        'm_autologin' => 1
-                    );
-                    
-                    $redirect = $loginPage.'?'.http_build_query($link_query);
-                    $checkout = null;
+                    if($this->renderMode != "melis")
+                    {
+                        $link_query = array(
+                            'm_redirection_link_ok' => $checkoutPage,
+                            'm_autologin' => 1
+                        );
+
+                        $redirect = $loginPage . '?' . http_build_query($link_query);
+                        $checkout = null;
+                    }
                 }
                 else 
                 {
@@ -376,7 +388,7 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                 
                 break;
         }
-        
+
         /**
          * if the plugin redturn a redirect url this should redirect to the return url
          * in-order to proceed the next step of the checkout

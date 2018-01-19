@@ -104,7 +104,8 @@
 	    'tr_meliscommerce_order_checkout_save_unable' => 'Impossible de sauvegarder La commande, veuillez réessayer',
 	    
 	    // Plugins
-	    
+        'tr_meliscommerce_car_Cart' => 'Cart',
+
 	    'tr_meliscommerce_add_to_cart_variant_id_empty' => 'L\'identifiant du variant ne peut être vide',
     	'tr_meliscommerce_add_to_cart_variant_country_empty' => 'Le pays du variant ne peut être vide',
     	'tr_meliscommerce_add_to_cart_quantity' => 'Quantité',
@@ -128,8 +129,14 @@
 	    'tr_meliscommerce_plugin_add_cart_description' => 'Donne la possibilité d\'ajouter un variant au panier',
 
         //Cart Plugin
-        'tr_meliscommerce_plugin_cart_name' => 'Cart',
-        'tr_meliscommerce_plugin_cart_description' => 'The plugin display all the products that has been added to cart',
-        'tr_meliscommerce_plugin_cart_no_item' => 'NO ITEMS IN CART',
-        'tr_meliscommerce_plugin_cart_view' => 'View Cart / Checkout',
+        'tr_meliscommerce_plugin_cart_name' => 'Panier',
+        'tr_meliscommerce_plugin_cart_description' => 'Le plugin affiche tous les produits ayant été ajoutés au panier',
+        'tr_meliscommerce_plugin_cart_variant' => 'Variant',
+        'tr_meliscommerce_plugin_cart_unit_price' => 'Prix unitaire',
+        'tr_meliscommerce_plugin_cart_qty' => 'Quantité',
+        'tr_meliscommerce_plugin_cart_total' => 'Total',
+        'tr_meliscommerce_plugin_cart_remove' => 'Retirer',
+
+        //checkout steps
+        'tr_meliscommerce_plugin_checkout_step tooltip' => 'Processus étape par étape de la commande',
 	);

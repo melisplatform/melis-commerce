@@ -249,7 +249,7 @@ class MelisComProductSearchService extends MelisComGeneralService
 	        $arrayParameters['attributeValuesIds'], $arrayParameters['categoryId'], (float) $arrayParameters['priceMin'], (float) $arrayParameters['priceMax'],  $arrayParameters['langId'],
 	        $arrayParameters['countryId'], (int) $arrayParameters['onlyValid'], $arrayParameters['start'], $arrayParameters['limit'], $arrayParameters['sort'], $arrayParameters['priceColumn']
         );
-       
+
         if($data) {
             foreach($data as $product){
                 unset($product->price);

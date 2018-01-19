@@ -9,7 +9,7 @@ return array(
                         'template_path' => array('MelisCommerceProduct/related-products'),
                         'id' => 'productRelatedPlugin',
                         // product id
-                        'm_p_id' => NULl,
+                        'm_product_id' => NULl,
                     ),
                     'melis' => array(
                         'subcategory' => array(
@@ -55,7 +55,7 @@ return array(
                                     ),
                                     array(
                                         'spec' => array(
-                                            'name' => 'm_p_id',
+                                            'name' => 'm_product_id',
                                             'type' => 'EcomPluginProductListSelect',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_plugin_related_product_default_product',
@@ -63,7 +63,7 @@ return array(
                                                 'tooltip' => 'tr_meliscommerce_plugin_related_product_default_product_tooltip',
                                             ),
                                             'attributes' => array(
-                                                'id' => 'm_p_id',
+                                                'id' => 'm_product_id',
                                                 'class' => 'form-control',
                                             ),
                                         ),
@@ -86,8 +86,8 @@ return array(
                                         'filters'  => array(
                                         ),
                                     ),
-                                    'm_p_id' => array(
-                                        'name'     => 'm_p_id',
+                                    'm_product_id' => array(
+                                        'name'     => 'm_product_id',
                                         'required' => false,
                                         'validators' => array(
                                         ),

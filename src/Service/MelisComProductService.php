@@ -1112,13 +1112,13 @@ class MelisComProductService extends MelisComGeneralService
 	    {
 	        $prdText = ($prdTexts[0]->ptxt_type == 1) ? $prdTexts[0]->ptxt_field_short : $prdTexts[0]->ptxt_field_long;
 	    }
-	    
+
 	    /**
 	     * Product categories
 	     */
 	    $catTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
 	    $prdCats = $catTable->getProductCategoriesWithFinalTransalations($arrayParameters['productId'], $arrayParameters['langId'])->toArray();
-	    
+
 	    $product = array(
 	        'prd_id' => $arrayParameters['productId'],
 	        'prd_text' => (!empty($prdText)) ? $prdText : $prd->prd_reference,

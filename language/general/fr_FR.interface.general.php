@@ -14,6 +14,7 @@
 	    'tr_meliscommerce_general_common_ascending' => 'Ascendant',
 	    'tr_meliscommerce_general_common_descending' => 'Descendant',
 	    'tr_meliscommerce_general_common_column_order' => 'Tri',
+        'tr_meliscommerce_general_common_search' => 'Recherche',
 	    'tr_meliscommerce_general_common_order' => 'Ordre',
 	    'tr_meliscommerce_general_common_limit' => 'Limite',
 	    'tr_meliscommerce_general_common_configuration' => 'Configuration',
@@ -24,6 +25,8 @@
 	    'tr_meliscommerce_general_common_per_page' => 'Résultats par page',
 	    'tr_meliscommerce_general_common_num_page_before_after' => 'Nombre de lien avant et après la page courante',
 	    'tr_meliscommerce_general_common_country' => 'Pays',
+        'tr_meliscommerce_general_common_site' => 'Site',
+        'tr_meliscommerce_general_common_no_result_found' => 'Aucun résultat trouvé',
 	    
 	    'tr_meliscommerce_general_text' => 'General',
 	    'tr_meliscommerce_general_permission_error_label' => 'Permission refusée',
@@ -50,6 +53,7 @@
 	    'tr_meliscommerce_general_common_per_page tooltip' => 'Nombre de résultats s&#39;affichant sur une même page',
 	    'tr_meliscommerce_general_common_num_page_before_after tooltip' => 'L&#39;affichage de la pagination génére un certains nombre de liens avant et après la page en cours, ce champ permet de limiter ce nombe de liens',
 	    'tr_meliscommerce_general_common_country tooltip' => 'Choisissez le pays pour assigner la devise et le prix correspondant des produits',
+        'tr_meliscommerce_general_common_site tooltip' => 'ID du site utilisé pour identifier où le checkout est conduit',
 	    
 	    // Common validation messages
 	    'tr_meliscommerce_general_error' => 'Une erreur est survenue, veuillez contacter l\'administrateur',

@@ -1321,6 +1321,7 @@ return array(
                             'css' => array(
                             ),
                             'js' => array(
+                                '/MelisCommerce/plugins/js/checkout.js'
                             ),
                         ),
                         'js_initialization' => array(),
@@ -1369,8 +1370,8 @@ return array(
                                             'name' => 'm_add_use_same_address',
                                             'type' => 'Checkbox',
                                             'options' => array(
-                                                'label' => 'Use same address',
-                                                'tooltip' => 'Use same address tooltip',
+                                                'label' => 'tr_meliscommerce_plugin_checkout_addresses_use_same_address',
+                                                'tooltip' => 'tr_meliscommerce_plugin_checkout_addresses_use_same_address tooltip',
                                                 'checked_value' => 1,
                                                 'unchecked_value' => 0,
                                                 'switchOptions' => array(

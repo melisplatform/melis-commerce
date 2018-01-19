@@ -36,7 +36,7 @@ return array(
                             'melis_commerce_plugin_category_product_price_config' => array(
                                 'tab_title' => 'tr_meliscommerce_general_common_configuration',
                                 'tab_icon'  => 'fa fa-cogs',
-                                'tab_form_layout' => 'MelisCommerce/product-list-price-config',
+                                'tab_form_layout' => 'MelisCommerce/plugin-common-form-config',
                                 'elements' => array(
                                     array(
                                         'spec' => array(

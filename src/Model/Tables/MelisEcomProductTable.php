@@ -385,7 +385,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
             $attrSelect->where->in('atval_id', $attrValIds);
             $attrSelect->group('vatv_variant_id');
             $attrResult = $this->tableGateway->selectwith($attrSelect);
-            
+
             foreach ($attrResult As $val){
                 array_push($variants, $val->vatv_variant_id);
             }
@@ -471,6 +471,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         
         if(!is_null($order)){
             $select->order($order);
+            $select->where->isNotNull('melis_ecom_product_text.ptxt_field_short');
         }        
         
         if(!is_null($limit)) {
@@ -484,7 +485,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         if ($status) {
             $select->where('prd_status = 1');
         }
-       
+
         $resultSet = $this->tableGateway->selectwith($select);
 
         return $resultSet;

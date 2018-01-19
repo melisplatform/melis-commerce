@@ -4,7 +4,7 @@
 }
 </style>
 <?php if ($this->orderMessages){ ?>
-	<h3>Message Area</h3>
+	<h3><?= $this->translate('tr_meliscommerce_plugin_order_messages_area' ); ?></h3>
     <?php foreach($this->orderMessages as $message){ ?>
     	<div class="media">
           	<div class="media-body">

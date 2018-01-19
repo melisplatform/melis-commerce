@@ -213,6 +213,8 @@
     	'tr_meliscommerce_client_common_error' => 'Une erreur est survenue, veuillez contacter l\'administrateur',
 	    
 	    'tr_meliscommerce_client_Contact_address_title' => 'Adresse titre',
+        'tr_meliscommerce_client_Checkout_cart_empty' => 'Panier vide',
+        'tr_meliscommerce_client_Checkout_no_identity' => 'User has no identity, please login/register before accessing this page',
 	    
 	    'tr_meliscommerce_client_export_success' => 'Les clients ont été exportés avec succès',
 	    'tr_meliscommerce_client_export_fail' => 'Echec de l\'export',
@@ -268,4 +270,9 @@
 	    // MelisCommerceAccountPlugin
 	    'tr_meliscommerce_plugin_account_name' => 'Compte',
 	    'tr_meliscommerce_plugin_account_description' => 'Affiche les formulaires du compte, il comprend le profil, l\'adresse de facturation, l\'adresse de livraison, la liste du panier et l\'historique des commandes du compte',
-	);
+        'tr_meliscommerce_plugin_account_profile_info' => 'Informations du profil',
+        'tr_meliscommerce_plugin_account_delivery_address' => 'Adresse de livraison',
+        'tr_meliscommerce_plugin_account_billing_address' => 'Adresse de facturation',
+        'tr_meliscommerce_plugin_account_my_cart' => 'Mon panier',
+        'tr_meliscommerce_plugin_account_order_history' => 'Historique des commandes',
+    );

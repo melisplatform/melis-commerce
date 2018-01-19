@@ -24,7 +24,6 @@ return array(
     'tr_meliscommerce_products_main_tab_categories_all' => 'Voir toutes les catégories',
     'tr_meliscommerce_products_main_tab_files_header' => 'Pièces jointes',
     'tr_meliscommerce_products_main_tab_files_header_attach' => 'Ajouter un fichier',
-    'tr_meliscommerce_products_main_tab_attributes_container' => 'Attributs',
     'tr_meliscommerce_products_main_tab_attributes_content' => 'Ajouter un attribut',
     'tr_meliscommerce_products_main_tab_attributes_content_label' => 'Ajouter un attribut',
     'tr_meliscommerce_products_main_tab_images_header' => 'Images du produit',
@@ -83,8 +82,8 @@ return array(
     'tr_meliscommerce_products_page_attributes_remove_fail' => 'Impossible de supprimer l\'attribut',
     'tr_meliscommerce_products_page_attributes_note' => '***Note: Si la liste déroulante ne fonctionne pas, essayez d\'écrire quelque chose et appuyez sur "← backspace" sur votre clavier.',
     'tr_meliscommerce_products_page_tinymce_load_notif' => 'Veuillez patienter, initialisation des composants textes en cours...',
-    'tr_meliscommerce_products_attribute_name' => 'Attribute',
-    'tr_meliscommerce_products_attribute_name_tooltip' => 'Product attribute to display',
+    'tr_meliscommerce_products_attribute_name' => 'Attribut',
+    'tr_meliscommerce_products_attribute_name_tooltip' => 'Attribut du produit à afficher',
 
     'tr_meliscommerce_products_no_attributes' => 'Aucun attribut',
     'tr_meliscommerce_products_no_categories' => 'Aucune catégorie',
@@ -99,6 +98,7 @@ return array(
 	'tr_meliscommerce_products_plugins_quantity_error' => 'La quantité doit être un nombre',
     
     'tr_meliscommerce_products_plugins_prd_id' => 'ID du produit',
+    'tr_meliscommerce_products_plugins_prd_id tooltip' => 'L\'identifiant du produit à afficher',
     'tr_meliscommerce_products_plugins_prd_reference' => 'Référence du produit',
     'tr_meliscommerce_products_plugins_ptxt_field_short' => 'Texte du produit',
     'tr_meliscommerce_products_plugins_pcat_order' => 'Commande du produit',
@@ -145,8 +145,8 @@ return array(
     'tr_meliscommerce_plugin_product_attribute_description' => 'Le plugin affiche l\'attribut et ses valeurs',
 
     //related product plugin
-    'tr_meliscommerce_plugin_related_product_name' => 'Related products',
-    'tr_meliscommerce_plugin_related_product_description' => 'The plugin display the products related to the selected product',
-    'tr_meliscommerce_plugin_related_product_default_product' => 'Default product',
+    'tr_meliscommerce_plugin_related_product_name' => 'Produits associés',
+    'tr_meliscommerce_plugin_related_product_description' => 'Le plugin affiche les produits associés au produit sélectionné',
+    'tr_meliscommerce_plugin_related_product_default_product' => 'Produit par défaut',
     'tr_meliscommerce_plugin_related_product_default_product_tooltip' => 'Default product is used to get it\'s related product to display',
 );

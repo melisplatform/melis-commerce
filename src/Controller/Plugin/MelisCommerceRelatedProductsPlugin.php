@@ -11,6 +11,7 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
+use Zend\Session\Container;
 use Zend\View\Model\ViewModel;
 
 /**
@@ -63,10 +64,12 @@ class MelisCommerceRelatedProductsPlugin extends MelisTemplatingPlugin
      */
     public function front()
     {
-               
+
+        $container = new Container('melisplugins');
+        $langId = $container['melis-plugins-lang-id'];
+
         $data = $this->getFormData();
-        $productId = ($data['m_p_id']) ? $data['m_p_id'] : null;
-        
+        $productId = ($data['m_product_id']) ? $data['m_product_id'] : null;
         $productSvc = $this->getServiceLocator()->get('MelisComProductService');
         $assocProducts = $productSvc->getAssocProducts($productId);
         $data = array();
@@ -77,10 +80,11 @@ class MelisCommerceRelatedProductsPlugin extends MelisTemplatingPlugin
             $productObj->display_price = $productSvc->getProductVariantPriceById($productObj->getId());
             $data[]= $productObj;
         }
-        
+
         // Create an array with the variables that will be available in the view
         $viewVariables = array(
-            'relatedProducts' => $data
+            'relatedProducts' => $data,
+            'langId' => $langId
         );
         
         // return the variable array and let the view be created
@@ -205,9 +209,9 @@ class MelisCommerceRelatedProductsPlugin extends MelisTemplatingPlugin
                 $configValues['template_path'] = (string)$xml->template_path;
             }
 
-            if (!empty($xml->m_p_id))
+            if (!empty($xml->m_product_id))
             {
-                $configValues['m_p_id'] = (string)$xml->m_p_id;
+                $configValues['m_product_id'] = (string)$xml->m_product_id;
             }
         }
 
@@ -228,9 +232,9 @@ class MelisCommerceRelatedProductsPlugin extends MelisTemplatingPlugin
             $xmlValueFormatted .= "\t\t" . '<template_path><![CDATA[' . $parameters['template_path'] . ']]></template_path>';
         }
 
-        if (!empty($parameters['m_p_id']))
+        if (!empty($parameters['m_product_id']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_p_id><![CDATA[' . $parameters['m_p_id'] . ']]></m_p_id>';
+            $xmlValueFormatted .= "\t\t" . '<m_product_id><![CDATA[' . $parameters['m_product_id'] . ']]></m_product_id>';
         }
 
         // Something has been saved, let's generate an XML for DB

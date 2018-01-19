@@ -387,7 +387,7 @@ return array(
                             'melis_commerce_plugin_login_config' => array(
                                 'tab_title' => 'tr_front_plugin_common_tab_properties',
                                 'tab_icon'  => 'fa fa-cogs',
-                                'tab_form_layout' => 'MelisCommerce/category-product-list-config',
+                                'tab_form_layout' => 'MelisCommerce/plugin-common-form-config',
                                 'elements' => array(
                                     array(
                                         'spec' => array(

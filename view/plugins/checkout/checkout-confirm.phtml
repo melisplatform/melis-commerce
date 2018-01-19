@@ -2,7 +2,7 @@
     <div class="checkout-payment-area order-det">
     	<div class="checkout-total mt20 row clearfix">
     		<div>
-    		<h3>Order Confirmation</h3>
+    		<h3><?= $this->translate('tr_meliscommerce_plugin_checkout_confirmation_order'); ?></h3>
     		</div>
     		<div class="o-ref-left">
     			<span class="o-ref-main clearfix">Reference : <?php echo $this->order['orderReference'] ?></span>				
@@ -15,11 +15,11 @@
 			<table class="checkout-area table">
 				<thead>
 					<tr class="cart_item check-heading">
-						<td class="ctg-type"> Product</td>
-						<td class="ctg-type"> Price</td>
-						<td class="ctg-type"> Qty</td>
-						<td class="ctg-type"> Discount</td>
-						<td class="cgt-des"> Total</td>
+						<td class="ctg-type"> <?= $this->translate('tr_meliscommerce_plugin_checkout_cart_product');?></td>
+						<td class="ctg-type"> <?= $this->translate('tr_meliscommerce_plugin_checkout_cart_unit_price');?></td>
+						<td class="ctg-type"> <?= $this->translate('tr_meliscommerce_plugin_checkout_cart_qty');?></td>
+						<td class="ctg-type"> <?= $this->translate('tr_meliscommerce_plugin_checkout_cart_discount');?></td>
+						<td class="cgt-des"> <?= $this->translate('tr_meliscommerce_plugin_checkout_cart_total');?></td>
 					</tr>
 				</thead>
 				<tbody>
@@ -33,7 +33,7 @@
     					</tr>
 					<?php } ?>
 					<tr class="cart_item">
-						<td class="ctg-type"> Subtotal</td>
+						<td class="ctg-type"> <?= $this->translate('tr_meliscommerce_plugin_checkout_cart_sub_total'); ?></td>
 						<td></td>
 						<td></td>
 						<td></td>
@@ -41,14 +41,14 @@
 					</tr>
 					<?php if (!empty($this->order['orderCouponDetails'])){ ?>
     					<tr class="cart_item">
-    						<td class="ctg-type"> Coupon</td>
+    						<td class="ctg-type"> <?= $this->translate('tr_meliscommerce_plugin_checkout_confirmation_coupon');?></td>
     						<td></td>
     						<td><i><?php echo  $this->order['orderCouponDetails']['couponCode'] ?></i></td>
     						<td class="cgt-des"><?php echo '('.$this->order['orderCurrency'].number_format($this->order['orderCouponDetails']['couponDiscount'], 2).')' ?></td>
     					</tr>
 					<?php } ?>
 					<tr class="cart_item">
-						<td class="ctg-type">Shipping</td>
+						<td class="ctg-type"><?= $this->translate('tr_meliscommerce_plugin_checkout_confirmation_shipping');?></td>
 						<td></td>
 						<td></td>
 						<td></td>
@@ -57,7 +57,7 @@
 					 	</td>
 					</tr>
 					<tr class="cart_item">
-						<td class="ctg-type crt-total"> Total</td>
+						<td class="ctg-type crt-total"> <?= $this->translate('tr_meliscommerce_plugin_checkout_cart_total');?></td>
 						<td></td>
 						<td></td>
 						<td></td>
@@ -72,6 +72,6 @@
     </div>
 <?php }else{ ?>
 	<div class="alert alert-warning">
-		<p>No result</p>
+		<p><?= $this->translate('tr_meliscommerce_general_common_no_result_found');?></p>
 	</div>
 <?php } ?>

@@ -1,17 +1,17 @@
 <div>
 	<div>
-		<h3>Shipping details</h3>
+		<h3><?= $this->translate('tr_meliscommerce_orders_tracking_details'); ?></h3>
 		<?php if (!empty($this->shippingDetails)){ ?>
         	<?php foreach($this->shippingDetails as $detail){ ?>
-        		<div><label>Tracking code:</label> <?php echo $detail['oship_tracking_code'] ?></div>
-        		<div><label>Date:</label> <?php echo date("m/d/Y h:i" ,strtotime($detail['oship_date_sent'])) ?></div>
-        		<div><label>Comments:</label> <?php echo $detail['oship_content']?></div>
+        		<div><label><?= $this->translate('tr_meliscommerce_orders_tracking_code'); ?>:</label> <?php echo $detail['oship_tracking_code'] ?></div>
+        		<div><label><?= $this->translate('tr_meliscommerce_plugin_order_shipping_date');?>:</label> <?php echo date("m/d/Y h:i" ,strtotime($detail['oship_date_sent'])) ?></div>
+        		<div><label><?= $this->translate('tr_meliscommerce_plugin_order_shipping_comments');?>:</label> <?php echo $detail['oship_content']?></div>
         		<br>
         	<?php } ?>
 		<?php }else{ ?>
-           	<div><label>Tracking code:</label> none</div>
-    		<div><label>Date:</label> none</div>
-    		<div><label>Comments:</label> none</div>
+           	<div><label><?= $this->translate('tr_meliscommerce_orders_tracking_code'); ?>:</label> none</div>
+    		<div><label><?= $this->translate('tr_meliscommerce_plugin_order_shipping_date');?>:</label> none</div>
+    		<div><label><?= $this->translate('tr_meliscommerce_plugin_order_shipping_comments');?>:</label> none</div>
         <?php }?>
 	</div>
 </div>

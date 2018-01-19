@@ -148,5 +148,5 @@ return array(
     'tr_meliscommerce_plugin_related_product_name' => 'Related products',
     'tr_meliscommerce_plugin_related_product_description' => 'The plugin display the products related to the selected product',
     'tr_meliscommerce_plugin_related_product_default_product' => 'Default product',
-    'tr_meliscommerce_plugin_related_product_default_product_tooltip' => 'Default product is used to get it\'s related product to display',
+    'tr_meliscommerce_plugin_related_product_default_product_tooltip' => 'Select a product to display its related products',
 );

@@ -84,7 +84,7 @@ return array(
                                             'type' => 'Select',
                                             'options' => array(
                                                 'label' => 'Step',
-                                                'tooltip' => 'Step tooltip',
+                                                'tooltip' => 'tr_meliscommerce_plugin_checkout_step tooltip',
                                                 'empty_option' => 'tr_melis_Plugins_Choose',
                                                 'disable_inarray_validator' => true,
                                                 'value_options' => array(

@@ -72,7 +72,7 @@ class MelisCommerceCheckoutConfirmSummaryPlugin extends MelisTemplatingPlugin
         
         // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
         $siteId = (!empty($this->pluginFrontConfig['m_conf_summary_site_id'])) ? $this->pluginFrontConfig['m_conf_summary_site_id'] : 1;
-        var_dump($siteId);
+
         /**
          * Login using the Commerce Athentication Service
          */

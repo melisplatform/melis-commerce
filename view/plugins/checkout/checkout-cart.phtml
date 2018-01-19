@@ -1,6 +1,6 @@
-<h1 align="center">Checkout Cart</h1>
+<h1 align="center"><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_name'); ?></h1>
 <?php if ($this->checkoutHasErr){ ?>
-	<h3>Product error(s) occured. <small>Error message appeared under the name of the Product.</small></h3>
+	<h3><?=$this->translate('tr_meliscommerce_plugin_checkout_cart_error');?> <small><?=$this->translate('tr_meliscommerce_plugin_checkout_cart_error_msg');?></small></h3>
 <?php } ?>
 
 <form>
@@ -8,11 +8,11 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>SKU</th>
-                    <th>Unit Price</th>
-                    <th>Quantity</th>
-                    <th>Total</th>
-                    <th>Remove</th>
+                    <th><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_sku'); ?></th>
+                    <th><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_unit_price'); ?></th>
+                    <th><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_qty'); ?></th>
+                    <th><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_total'); ?></th>
+                    <th><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_remove'); ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -37,10 +37,10 @@
                 ?>                
             </tbody>
         </table>
-	</div>
+	</div>  ,.
     <?php if (!empty($this->checkOutCart)){?>
         <div align="center">
-        	<button class="btn btn-primary">Update Cart</button>
+        	<button class="btn btn-primary"><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_update');?></button>
         </div>
     <?php } ?>
 </form>
@@ -56,17 +56,17 @@
                 </th>
             </tr>
             <tr>
-                <th colspan="1" class="text-right">Sub Total</th>
+                <th colspan="1" class="text-right"><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_sub_total'); ?></th>
                 <th class="text-right"><?php echo $this->checkOutCartSubTotal ?></th>
             </tr>
             <?php if ($this->checkoutHasCoupon){?>
                 <tr>
-                    <th colspan="1" class="text-right">Discount</th>
+                    <th colspan="1" class="text-right"><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_discount'); ?></th>
                     <th class="text-right">
                     	<?php 
                             if (!empty($this->checkOutCartDiscountInfo))
                          	{
-                         	    echo '<p>Order discount </p>';
+                         	    echo '<p>'.$this->translate("tr_meliscommerce_plugin_checkout_cart_order_discount").'</p>';
                          	    foreach($this->checkOutCartDiscountInfo as $discInfo){
                          	        echo '<p>';
                          	        echo '(-'.$discInfo['details'].')';
@@ -81,7 +81,7 @@
                 </tr>
             <?php }?>
             <tr>
-                <th colspan="1" class="text-right">Total</th>
+                <th colspan="1" class="text-right"><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_total'); ?></th>
                 <th class="text-right"><?php echo $this->checkOutCartTotal ?></th>
             </tr>
         </tfoot>
@@ -90,6 +90,6 @@
 
 <?php if ($this->nextStep_link){ ?>
 	<div align="right">
-		<a class="btn btn-primary" href="<?php echo $this->nextStep_link?>">Next</a>
+		<a class="btn btn-primary" href="<?php echo $this->nextStep_link?>"><?= $this->translate('tr_meliscommerce_order_checkout_common_next'); ?></a>
 	</div>
 <?php } ?>

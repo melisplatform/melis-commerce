@@ -77,7 +77,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         $clientBasket = $melisComBasketService->getBasket($arrayParameters['clientId']);
         
         $container = new Container('meliscommerce');
-        $clientCountryId = $container['checkout'][$this->siteId]['countryId'];
+        $clientCountryId = (isset($container['checkout'][$this->siteId]['countryId'])) ? $container['checkout'][$this->siteId]['countryId'] : null;
         
         // Validation results handler
         $okVariant = array();
