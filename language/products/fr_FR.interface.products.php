@@ -148,5 +148,5 @@ return array(
     'tr_meliscommerce_plugin_related_product_name' => 'Produits associés',
     'tr_meliscommerce_plugin_related_product_description' => 'Le plugin affiche les produits associés au produit sélectionné',
     'tr_meliscommerce_plugin_related_product_default_product' => 'Produit par défaut',
-    'tr_meliscommerce_plugin_related_product_default_product_tooltip' => 'Default product is used to get it\'s related product to display',
+    'tr_meliscommerce_plugin_related_product_default_product_tooltip' => 'Choisissez un produit pour afficher ses produits associés',
 );

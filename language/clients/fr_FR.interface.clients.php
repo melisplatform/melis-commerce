@@ -214,7 +214,7 @@
 	    
 	    'tr_meliscommerce_client_Contact_address_title' => 'Adresse titre',
         'tr_meliscommerce_client_Checkout_cart_empty' => 'Panier vide',
-        'tr_meliscommerce_client_Checkout_no_identity' => 'User has no identity, please login/register before accessing this page',
+        'tr_meliscommerce_client_Checkout_no_identity' => 'Veuillez vous connecter pour accéder à cette page',
 	    
 	    'tr_meliscommerce_client_export_success' => 'Les clients ont été exportés avec succès',
 	    'tr_meliscommerce_client_export_fail' => 'Echec de l\'export',

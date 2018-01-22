@@ -49,7 +49,7 @@
 	    'tr_meliscommerce_general_common_limit tooltip' => 'Ce filtre permet de régler le nombre listées',
 	    'tr_meliscommerce_general_common_destination_page_link tooltip' => 'Saisissez l\'url de la page de destination sur laquelle l\'utilisateur sera redirigé. Ce peut être une url interne ou externe',
 	    'tr_meliscommerce_general_common_autologin tooltip' => 'Connecte l\'utilisateur directement après la validation du formulaire',
-	    'tr_meliscommerce_general_common_show_select_addresses tooltip' => 'This will show a form select option of addresses',
+	    'tr_meliscommerce_general_common_show_select_addresses tooltip' => 'Affiche un formulaire pour sélectionner une adresse',
 	    'tr_meliscommerce_general_common_per_page tooltip' => 'Nombre de résultats s&#39;affichant sur une même page',
 	    'tr_meliscommerce_general_common_num_page_before_after tooltip' => 'L&#39;affichage de la pagination génére un certains nombre de liens avant et après la page en cours, ce champ permet de limiter ce nombe de liens',
 	    'tr_meliscommerce_general_common_country tooltip' => 'Choisissez le pays pour assigner la devise et le prix correspondant des produits',

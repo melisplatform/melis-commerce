@@ -146,7 +146,7 @@
         'tr_meliscommerce_plugin_checkout_cart_order_discount' => 'Remise commande',
         'tr_meliscommerce_plugin_checkout_cart_update' => 'Mettre à jour le panier',
         'tr_meliscommerce_plugin_checkout_cart_error' => 'Erreur de produit survenue',
-        'tr_meliscommerce_plugin_checkout_cart_error_msg' => 'Error message appeared under the name of the Product.',
+        'tr_meliscommerce_plugin_checkout_cart_error_msg' => 'Un message d\'erreur est apparu sous le nom du produit',
 
         // MelisCommerceCheckoutCouponPlugin()
         'tr_meliscommerce_plugin_checkout_coupon_name' => 'Coupon',
@@ -169,8 +169,8 @@
         'tr_meliscommerce_plugin_checkout_summary_shipping_cost' => 'Coûts de tansport',
 
         // MelisCommerceCheckoutConfirmSummaryPlugin()
-        'tr_meliscommerce_plugin_checkout_confirm_summary_name' => 'Checkout confirm summary',
-        'tr_meliscommerce_plugin_checkout_confirm_summary_description' => 'This plugin confirms the checkout summary and displays error messages',
+        'tr_meliscommerce_plugin_checkout_confirm_summary_name' => 'tr_meliscommerce_plugin_checkout_confirm_summary_name',
+        'tr_meliscommerce_plugin_checkout_confirm_summary_description' => 'Ce plugin affiche une erreur de résumé de commande',
         'tr_meliscommerce_plugin_checkout_confirm_summary_err_msg' => 'Cannot proceed to payment, please check your checkout details before proceeding to payment',
 
         // MelisCommerceCheckoutConfirmPlugin()
