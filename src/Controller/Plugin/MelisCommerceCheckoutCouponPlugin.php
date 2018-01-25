@@ -225,13 +225,13 @@ class MelisCommerceCheckoutCouponPlugin extends MelisTemplatingPlugin
             {
                $message = $translator->translate('tr_MELIS_COMMERCE_COUPON_DATE_VALIDITY_INVALID');
             }
+
+            $container['checkout'][$siteId]['coupons'] = $sessionCoupons;
         }
         else
         {
             $sessionCoupons = !empty($container['checkout'][$siteId]['coupons']) ? $container['checkout'][$siteId]['coupons'] : array();
         }
-        
-        $container['checkout'][$siteId]['coupons'] = $sessionCoupons;
         
         /**
          * This input field set value in order to validate

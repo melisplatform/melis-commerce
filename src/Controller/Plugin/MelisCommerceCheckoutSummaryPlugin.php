@@ -83,7 +83,7 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
         $langId = $container['melis-plugins-lang-id'];
         
         $siteId = (!empty($this->pluginFrontConfig['m_summary_site_id'])) ? $this->pluginFrontConfig['m_summary_site_id'] : null;
-        
+
         /**
          * Getting the User identity using Commerce Authentication Service
          */
@@ -145,7 +145,7 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
                 
                 if (isset($clientOrder['totalWithoutCoupon']))
                 {
-                    $subTotal = $clientOrder['totalWithProductCoupon'];
+                    $subTotal = $clientOrder['totalWithoutCoupon'];
                 }
                 
                 if (isset($clientOrderCost['costs']['total']))

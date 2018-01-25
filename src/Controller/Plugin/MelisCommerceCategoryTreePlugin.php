@@ -418,10 +418,10 @@ class MelisCommerceCategoryTreePlugin extends MelisTemplatingPlugin
         }
     
         // Something has been saved, let's generate an XML for DB
-        if (!empty($xmlValueFormatted))
-        {
+        //if (!empty($xmlValueFormatted))
+        //{
             $xmlValueFormatted = "\t".'<'.$this->pluginXmlDbKey.' id="'.$parameters['melisPluginId'].'">'.$xmlValueFormatted."\t".'</'.$this->pluginXmlDbKey.'>'."\n";
-        }
+        //}
 
         return $xmlValueFormatted;
     }
