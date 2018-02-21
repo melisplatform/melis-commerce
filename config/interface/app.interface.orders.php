@@ -24,7 +24,7 @@ return array(
                 ),
                 'css' => array(
                     '/MelisCommerce/assets/bootstrap-colorpicker-master/dist/css/bootstrap-colorpicker.css',
-// 					'/MelisCommerce/css/order-steps.css',
+ 					'/MelisCommerce/css/order-steps.css',
                 ),
             ),
             'datas' => array(
