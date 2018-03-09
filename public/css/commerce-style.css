@@ -398,11 +398,10 @@ table.dataTable.uk-table-condensed .sorting_desc:after {
 .cat-div {
     width: 100%;
     overflow-y: auto !important;
-    min-height: 500px;
     max-height: 500px;
     height: 100%;
+	overflow-y: scroll;
 }
-
 #id_meliscommerce_categories_list .panel-group{
     /* padding-bottom: 30px; */
 }
@@ -1364,11 +1363,6 @@ textarea {
 }
 .float-right {
     float: right;
-}
-.cat-div {
-    width: 100%;
-    overflow-y: scroll;
-    height: 279px;
 }
 .group-btn .btn {
     width: 120px;
