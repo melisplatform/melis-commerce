@@ -34,17 +34,22 @@ window.initProductCategoryList = function(productId, langLocale){
             value : target.data('langlocale')
         });
 
-        var categoriesChecked = new Array;
+//        var categoriesChecked = new Array;
         $("div#"+productId+"_product_category_area > span.prod-cat-values").each(function(){
-            categoriesChecked.push($(this).data('pcat-cat-id'))
+//            categoriesChecked.push($(this).data('pcat-cat-id'))
+            
+            dataString.push({
+                name : 'categoriesChecked[]',
+                value : $(this).data('pcat-cat-id')
+            });
         });
 
-        if(categoriesChecked.length){
-            dataString.push({
-                name : 'categoriesChecked',
-                value : categoriesChecked
-            });
-        }
+//        if(categoriesChecked.length){
+//            dataString.push({
+//                name : 'categoriesChecked',
+//                value : categoriesChecked
+//            });
+//        }
 
         dataString = $.param(dataString);
 
