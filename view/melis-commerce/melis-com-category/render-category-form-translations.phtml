@@ -53,13 +53,17 @@
                             	$form->setAttribute('data-langid', $val['elang_id']);
                             	$form->get('catt_lang_id')->setValue($val['elang_id']);
                             	
-                            	foreach ($this->categoryTrans As $cVal)
+                            	if (!empty($this->categoryTrans)) 
                             	{
-                            	    if ($cVal->elang_id == $val['elang_id'])
+                            	    foreach ($this->categoryTrans As $cVal)
                             	    {
-                            	        $form->bind($cVal);
+                            	        if ($cVal->elang_id == $val['elang_id'])
+                            	        {
+                            	            $form->bind($cVal);
+                            	        }
                             	    }
                             	}
+                            	
                             	
                             	$form->prepare();
                             	echo $this->form()->openTag($form); 
