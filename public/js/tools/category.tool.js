@@ -34,7 +34,11 @@ $(function(){
 		var catSelected = catTree.get_selected();
 		var catFatherId = '';
 		if(catSelected.length >= 1){
-			catFatherId = catSelected[0];
+			/**
+			 * using parseInt this will get only the
+			 * number value in a string value
+			 */
+			catFatherId = parseInt(catSelected[0]);
 		}
 		
 		$("#"+zoneId).removeClass("hidden");
