@@ -34,7 +34,7 @@
         			<?php
         			    $checked = '';
         			    if (!empty($this->categoryCountries)){
-        			        if(in_array($val['ctry_id'], $this->categoryCountries)){
+        			        if(in_array($val['ctry_id'], $this->categoryCountries) || in_array('-1', $this->categoryCountries)){
         			            $checked = 'check';
         			        }
         			    }
@@ -42,7 +42,7 @@
         			<div class="col-xs-4">
                     	<label class="ecom-coutries-checkbox">
                     		<i class="fa fa-<?php echo ($checked) ? $checked.'-' : '' ?>square-o fa-lg"></i> <?php echo $val['ctry_name']?>
-                    		<input type="checkbox" name="cat_country[]" value="<?php echo $val['ctry_id']?>" <?php echo ($checked) ? $checked.'ed' : '' ?>>
+                    		<input type="checkbox" name="cat_country[]" value="<?php echo $val['ctry_id']?>" <?php echo ($checked && !in_array('-1', $this->categoryCountries)) ? $checked.'ed' : '' ?>>
                     	</label>
             		</div>
         		<?php endforeach;?>
