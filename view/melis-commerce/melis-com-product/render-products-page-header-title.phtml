@@ -8,17 +8,17 @@
 	if (!empty($this->zoneconfig['conf']['name']))
 	    $name = $this->zoneconfig['conf']['name'];
 
-$prodName = '';
-if($this->productId == '0') {
-    $prodName = $this->translate('tr_meliscommerce_products_page_new_product');
-}
-else {
-    $prodName = $this->layout()->prodName;
-}
+    $prodName = '';
+    if($this->productId == '0') {
+        $prodName = $this->translate('tr_meliscommerce_products_page_new_product');
+    }
+    else {
+        $prodName = $this->layout()->prodName;
+    }
 ?>
 
 <h1 class="content-heading">
-	<?php echo $this->translate($name)?>
+	<a href="#" class="melis-opentools" data-tool-icon="icon-shippment" data-tool-name="<?= $this->translate($name);?>" data-tool-id="id_meliscommerce_product_list_container" data-tool-meliskey="meliscommerce_product_list_container" style="color: #686868;"><?= $this->translate($name);?></a>
 	 / <?= $this->escapeHtml($prodName); ?>
 </h1>
 <p><?= $this->translate('tr_meliscommerce_products_Products_description'); ?></p>
