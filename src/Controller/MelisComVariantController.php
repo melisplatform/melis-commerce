@@ -137,6 +137,7 @@ class MelisComVariantController extends AbstractActionController
         $prodTitle = empty($prodTitle[0]->ptxt_field_short)? $prd_reference : $prodTitle[0]->ptxt_field_short;
         $view = new ViewModel();
         $view->melisKey = $melisKey;
+        $view->productId = $this->getProductId();
         $view->prodTitle = $prodTitle;
         $view->variantId = $this->getVariantId();
         return $view;
