@@ -243,7 +243,10 @@ class MelisCommerceProductShowPlugin extends MelisTemplatingPlugin
             $xmlValueFormatted .= "\t\t" . '<m_product_id><![CDATA[' . $parameters['m_product_id'] . ']]></m_product_id>';
         }
         
-        $xmlValueFormatted .= "\t\t" . '<m_product_country><![CDATA[' . $parameters['m_product_country'] . ']]></m_product_country>';
+        if (!empty($parameters['m_product_country']))
+        {
+            $xmlValueFormatted .= "\t\t" . '<m_product_country><![CDATA[' . $parameters['m_product_country'] . ']]></m_product_country>';
+        }
         
         // Something has been saved, let's generate an XML for DB
         if (!empty($xmlValueFormatted))
