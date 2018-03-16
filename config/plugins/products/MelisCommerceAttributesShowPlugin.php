@@ -53,6 +53,21 @@ return array(
                                             ),
                                         ),
                                     ),
+                                    array(
+                                        'spec' => array(
+                                            'name' => 'm_product_id',
+                                            'type' => 'MelisText',
+                                            'options' => array(
+                                                'label' => 'tr_meliscommerce_products_plugins_prd_id',
+                                                'tooltip' => 'tr_meliscommerce_products_plugins_prd_id tooltip',
+                                            ),
+                                            'attributes' => array(
+                                                'id' => 'm_product_id',
+                                                'class' => 'form-control',
+                                                'required' => 'required',
+                                            ),
+                                        ),
+                                    ),
                                 ),
                                 'input_filter' => array(
                                     'template_path' => array(
@@ -64,6 +79,22 @@ return array(
                                                 'options' => array(
                                                     'messages' => array(
                                                         \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_front_template_path_empty',
+                                                    ),
+                                                ),
+                                            ),
+                                        ),
+                                        'filters'  => array(
+                                        ),
+                                    ),
+                                    'm_product_id' => array(
+                                        'name'     => 'm_product_id',
+                                        'required' => true,
+                                        'validators' => array(
+                                            array(
+                                                'name' => 'NotEmpty',
+                                                'options' => array(
+                                                    'messages' => array(
+                                                        \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_input_empty',
                                                     ),
                                                 ),
                                             ),

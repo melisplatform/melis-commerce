@@ -66,7 +66,7 @@ class MelisCommerceAttributesShowPlugin extends MelisTemplatingPlugin
     {
         $data = $this->getFormData();
         // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
-        $productId = (!empty($this->pluginFrontConfig['m_product_id']))? $this->pluginFrontConfig['m_product_id'] : NULL;    
+        $productId = (!empty($this->pluginFrontConfig['m_product_id']))? $this->pluginFrontConfig['m_product_id'] : null;    
         $selectedAttr = (!empty($this->pluginFrontConfig['m_selected_attr']))? $this->pluginFrontConfig['m_selected_attr'] : array();    
         
         $container = new Container('melisplugins');
@@ -213,6 +213,11 @@ class MelisCommerceAttributesShowPlugin extends MelisTemplatingPlugin
             {
                 $configValues['template_path'] = (string)$xml->template_path;
             }
+            
+            if (!empty($xml->m_product_id))
+            {
+                $configValues['m_product_id'] = (string)$xml->m_product_id;
+            }
         }
         
         return $configValues;
@@ -230,6 +235,11 @@ class MelisCommerceAttributesShowPlugin extends MelisTemplatingPlugin
         if (!empty($parameters['template_path']))
         {
             $xmlValueFormatted .= "\t\t" . '<template_path><![CDATA[' . $parameters['template_path'] . ']]></template_path>';
+        }
+        
+        if (!empty($parameters['m_product_id']))
+        {
+            $xmlValueFormatted .= "\t\t" . '<m_product_id><![CDATA[' . $parameters['m_product_id'] . ']]></m_product_id>';
         }
         
         // Something has been saved, let's generate an XML for DB

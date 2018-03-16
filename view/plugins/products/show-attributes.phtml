@@ -1,7 +1,9 @@
 <?php
-    foreach($this->attributes as $attribute)
+    if ($this->attributes)
     {
-        echo '<div class="form-group">';
+        foreach($this->attributes as $attribute)
+        {
+            echo '<div class="form-group">';
             echo '<label>';
             echo $attribute->getAttribute()->attr_trans[0]->atrans_name;
             echo '</label>';
@@ -20,6 +22,13 @@
                 echo '</option>';
             }
             echo '</select>';
-        echo '</div>';
+            echo '</div>';
+        }
     }
+    else 
+    {
 ?>
+<div class="alert alert-warning">
+	<?= $this->translate('tr_meliscommerce_plugin_sub_categories_product_list_no_result'); ?>
+</div>
+<?php }?>
