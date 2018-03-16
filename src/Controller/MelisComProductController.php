@@ -1894,6 +1894,54 @@ class MelisComProductController extends AbstractActionController
         return $view;
     }
 
+    /**
+     * Function to check if product attribute is being used by it's variant
+     * @return JsonModel
+     */
+    public function checkAttributeOnVariantAction()
+    {
+        $attr_is_used = false;
 
+        $productId = $this->params()->fromRoute('productId', $this->params()->fromQuery('productId', ''));
+        $patt_attr_id = $this->params()->fromRoute('patt_attr_id', $this->params()->fromQuery('patt_attr_id', ''));
+
+        $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
+        $attrService = $this->getServiceLocator()->get('MelisComAttributeService');
+        $variantAttrTable = $this->getServiceLocator()->get('MelisEcomProductVariantAttributeValueTable');
+
+        /**
+         * get attribute value by attribute id
+         */
+        $attributeValue = $attrService->getAttributeValuesList($patt_attr_id);
+        $attributeValueArr = [];
+
+        for($x = 0; $x < sizeof($attributeValue); $x++){
+            array_push($attributeValueArr, $attributeValue[$x]->atval_id);
+        }
+
+        $langId = $this->getTool()->getCurrentLocaleID();
+        $variantsData = $variantSvc->getVariantListByProductId($productId, $langId);
+        $variantIds = array();
+        //get all the variant id
+        foreach($variantsData as $var){
+            array_push($variantIds, $var->getId());
+        }
+        //get variant attribute value by variant id
+        $varAttr = $variantAttrTable->getVariantAttributeValueIdByVariantId($variantIds)->toArray();
+        /**
+         * check if attribute is being used by variants
+         * by checking if attribute value exist on variant attribute value
+         */
+        for($i = 0; $i < sizeof($varAttr); $i++){
+            if(in_array($varAttr[$i]['vatv_attribute_value_id'], $attributeValueArr)){
+                $attr_is_used = true;
+                break;
+            }
+        }
+
+        return new JsonModel(array(
+            'attribute_is_used' => $attr_is_used
+        ));
+    }
 
 }
