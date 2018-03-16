@@ -554,30 +554,25 @@ class MelisComProductListController extends AbstractActionController
             $generalStockData  = $variantSvc->getVariantStocksById($varData->var_id);
             $tmpData = array();
         
-//             $dataPricesAndStock[$this->getTool()->getTranslation('tr_meliscommerce_general_text')]['price'] = array();
-//             $dataPricesAndStock[$this->getTool()->getTranslation('tr_meliscommerce_general_text')]['stock'] = array();
-
             $genPrice = null;
             $genStock = null;
             foreach($generalPricesData as $genPriceData) {
                 if($genPriceData->price_country_id == -1) {
                     $genPriceData->price_net = $productSvc->formatPrice($genPriceData->price_net);
                     $genPrice = $genPriceData->price_net;
-//                     $dataPricesAndStock[$this->getTool()->getTranslation('tr_meliscommerce_general_text')]['price'] = $this->getOnlyKeyOnArray('price_net', $genPriceData);
                 }
             }
             foreach($generalStockData as $genStockData) {
                 if($genStockData->stock_country_id == -1) {
                     $genStock = $genStockData->stock_quantity;
-//                     $dataPricesAndStock[$this->getTool()->getTranslation('tr_meliscommerce_general_text')]['stock'] = $this->getOnlyKeyOnArray('stock_quantity', $genStockData);
                 }
             }
             
+            // Filtering variant that has only data of Price ar Stock
             if (!empty($genPrice) || !empty($genStock)) {
                 $dataPricesAndStock[$this->getTool()->getTranslation('tr_meliscommerce_general_text')]['price'] = $this->getOnlyKeyOnArray('price_net', $genPriceData);
                 $dataPricesAndStock[$this->getTool()->getTranslation('tr_meliscommerce_general_text')]['stock'] = $this->getOnlyKeyOnArray('stock_quantity', $genStockData);
             }
-            
             
             // Countries
             foreach($countries as $country) {
@@ -585,21 +580,19 @@ class MelisComProductListController extends AbstractActionController
                 $tmpPrice = null;
                 $tmpStock = null;
                 
-                
                 foreach($variantSvc->getVariantPricesById($varData->var_id, $country['ctry_id']) as $vData) {
                     if($vData->price_net) {
                         $vData->price_net = $productSvc->formatPrice($vData->price_net);
-//                         $dataPricesAndStock[$country['ctry_name']]['price'] = $this->getOnlyKeyOnArray('price_net', $vData);
                         $tmpPrice = $this->getOnlyKeyOnArray('price_net', $vData);
                     }
                 }
                 foreach($variantSvc->getVariantStocksById($varData->var_id, $country['ctry_id']) as $sData) {
                     if(is_numeric($sData->stock_quantity)) {
-//                         $dataPricesAndStock[$country['ctry_name']]['stock'] = $this->getOnlyKeyOnArray('stock_quantity', $sData);
                         $tmpStock = $this->getOnlyKeyOnArray('stock_quantity', $sData);
                     }
                 }
                 
+                // Filtering variant that has only data of Price ar Stock
                 if (!empty($tmpPrice) || !empty($tmpStock)) {
                     $dataPricesAndStock[$country['ctry_name']]['flag'] = $country['ctry_flag'];
                     $dataPricesAndStock[$country['ctry_name']]['price']['price_net'] = null;
@@ -609,6 +602,7 @@ class MelisComProductListController extends AbstractActionController
                     $dataPricesAndStock[$country['ctry_name']]['stock'] = $tmpStock;
                 }
             }
+            
             $dataPerCountry = $dataPricesAndStock;
             $image = $docSvc->getDocDefaultImageFilePath('variant', $varData->var_id);
             $variants[$varCtr] = array(
