@@ -1,46 +1,51 @@
-<?php
-    function recursiveCategoryListDisplay($categories, $firstLoop = true){    
-        $temp = '';
-        if($categories){
-            if (!$firstLoop){
-                $temp .= '<ul>';
-            }
-            
-            foreach($categories as $category){
-                
-                $temp_1 = array(); 
-                if(!empty($category['children'])){
-                    $temp_1 = recursiveCategoryListDisplay($category['children'], false);
-                }
-                
-                $opened = '';
-                if ($category['state']['opened']){
-                    $opened = 'opened';
-                }
-                
-                $selected = '';
-                if ($category['state']['selected']){
-                    $selected = 'selected';
-                }
-                
-                $temp .= '<li class="'.$opened.'"><span class="'.$selected.'" title="'.$category['text'].'">'.$category['cat_id'].' - '.$category['text'].'</span>';
-                $temp .= (!empty($temp_1['html'])) ? $temp_1['html'] : '';
-                $temp .= '</li>';
-            }
-            
-            if (!$firstLoop){
-                $temp .= '</ul>';
-            }
-        }
-        
-        return array('html' => $temp);
-    }
-?>
-
 <div class="row">
     <div class="col-md-12">
     	<ul id="<?= $this->pluginId; ?>" class="default-category-tree">
-    		<?php echo recursiveCategoryListDisplay($this->categoryList)['html'];?>
+    		<?php 
+    		    // recursive loop for displaying children, a simple loop can be done if category is a single dimension array
+    		    $renderCategoryList  = function($categoryList, $firstLoop = true) use (&$renderCategoryList)
+    		    {
+    		        $temp = '';
+    		        
+    		        if ($categoryList)
+    		        {
+    		            if (!$firstLoop){
+    		                $temp .= '<ul>';
+    		            }
+    		            
+    		            foreach($categoryList as $key => $items)
+    		            {
+    		                $data = array();
+    		                if(!empty($items['children']))
+    		                {
+    		                    $data = $renderCategoryList($items['children'], false);
+    		                }
+    		                
+    		                $opened = '';
+    		                if ($items['state']['opened']){
+    		                    $opened = 'opened';
+    		                }
+    		                
+    		                $selected = '';
+    		                if ($items['state']['selected']){
+    		                    $selected = 'selected';
+    		                }
+    		                
+    		                $temp .= '<li class="'.$opened.'"><span class="'.$items.'" title="'.$items['text'].'">'.$items['cat_id'].' - '.$items['text'].'</span>';
+    		                $temp .= (!empty($data['html'])) ? $data['html'] : '';
+    		                $temp .= '</li>';
+    		            }
+    		            
+    		            if (!$firstLoop){
+    		                $temp .= '</ul>';
+    		            }
+    		        }
+    		        
+    		        return array('html' => $temp);
+    		    };
+    		    
+    		    echo $renderCategoryList($this->categoryList)['html'];
+    		?>
         </ul>
     </div>
 </div>
