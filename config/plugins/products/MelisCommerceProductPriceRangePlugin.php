@@ -21,7 +21,7 @@ return array(
                             'title' => 'tr_meliscommerce_products_Products'
                         ),
                         'name' => 'tr_meliscommerce_plugin_product_price_range_name',
-                        'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceProductPriceRangePlugin.png',
+                        'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceProductPriceRangePlugin.jpg',
                         'description' => 'tr_meliscommerce_plugin_product_price_range_description',
                         // List the files to be automatically included for the correct display of the plugin
                         // To overide a key, just add it again in your site module
