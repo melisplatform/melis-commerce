@@ -1,5 +1,5 @@
 <?php
-    function recursiveListDisplay($categories, $firstLoop = true){    
+    function recursiveCategoryListDisplay($categories, $firstLoop = true){    
         $temp = '';
         if($categories){
             if (!$firstLoop){
@@ -10,7 +10,7 @@
                 
                 $temp_1 = array(); 
                 if(!empty($category['children'])){
-                    $temp_1 = recursiveListDisplay($category['children'], false);
+                    $temp_1 = recursiveCategoryListDisplay($category['children'], false);
                 }
                 
                 $opened = '';
@@ -40,7 +40,7 @@
 <div class="row">
     <div class="col-md-12">
     	<ul id="<?= $this->pluginId; ?>" class="default-category-tree">
-    		<?php echo recursiveListDisplay($this->categoryList)['html'];?>
+    		<?php echo recursiveCategoryListDisplay($this->categoryList)['html'];?>
         </ul>
     </div>
 </div>
