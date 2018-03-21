@@ -137,6 +137,8 @@ class MelisCommerceCheckoutCouponPlugin extends MelisTemplatingPlugin
         
         if ($isSubmit)
         {
+            $sessionCoupons = array();
+            
             if (!empty($couponCode))
             {
                 $couponForm->setData(array('m_coupon_code' => $couponCode));
