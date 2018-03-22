@@ -243,6 +243,9 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                 
                 $discount = 0;
                 $discountDetails = '';
+                $usableCouponQty = '';
+                $discountPercentage = '';
+                $discountValue = '';
                 $tmp = array();
                 // calculate final variant price with coupons applied
                 foreach($productCoupons as $productCoupon)
@@ -263,11 +266,13 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                             {
                                 $discount += ($productCoupon->coup_percentage / 100) * ($varPrice->price_net * $usableCouponQty);
                                 $discountDetails = $productCoupon->coup_percentage.'%';
+                                $discountPercentage = $productCoupon->coup_percentage;
                             } 
                             elseif (!empty($productCoupon->coup_discount_value))
                             {
                                 $discount += $productCoupon->coup_discount_value * $usableCouponQty;
                                 $discountDetails = $discount;
+                                $discountValue = $productCoupon->coup_discount_value;
                             }
                             
                             $productCoupon->coup_current_use_number = $productCoupon->coup_current_use_number + $usableCouponQty;
@@ -290,6 +295,9 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                     'var_err' => $variantErr,
                     'var_discount' => $discount,
                     'var_discount_details' => $discountDetails,
+                    'var_discount_usable_qty' => $usableCouponQty,
+                    'var_discount_percentage' => $discountPercentage,
+                    'var_discount_value' => $discountValue,
                 );
                 
                 // Setting the currency use of the cart
