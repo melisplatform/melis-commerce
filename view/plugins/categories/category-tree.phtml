@@ -3,7 +3,7 @@
     	<ul id="<?= $this->pluginId; ?>" class="default-category-tree">
     		<?php 
     		    // recursive loop for displaying children, a simple loop can be done if category is a single dimension array
-    		    $renderCategoryList  = function($categoryList, $firstLoop = true) use (&$renderCategoryList)
+    		    $renderCategoryList  = function($categoryList, $firstLoop, $renderCategoryList)
     		    {
     		        $temp = '';
     		        
@@ -18,7 +18,7 @@
     		                $data = array();
     		                if(!empty($items['children']))
     		                {
-    		                    $data = $renderCategoryList($items['children'], false);
+    		                    $data = $renderCategoryList($items['children'], false, $renderCategoryList);
     		                }
     		                
     		                $opened = '';
@@ -44,7 +44,7 @@
     		        return array('html' => $temp);
     		    };
     		    
-    		    echo $renderCategoryList($this->categoryList)['html'];
+    		    echo $renderCategoryList($this->categoryList, true, $renderCategoryList)['html'];
     		?>
         </ul>
     </div>
