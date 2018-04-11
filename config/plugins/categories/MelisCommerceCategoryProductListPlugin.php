@@ -110,6 +110,26 @@ return array(
                                 'elements' => array(
                                     array(
                                         'spec' => array(
+                                            'name' => 'm_include_sub_category_products',
+                                            'type' => 'Checkbox',
+                                            'options' => array(
+                                                'label' => 'tr_meliscommerce_plugin_category_product_list_include_sub_cat_prds',
+                                                'tooltip' => 'tr_meliscommerce_plugin_category_product_list_include_sub_cat_prds tooltip',
+                                                'checked_value' => 1,
+                                                'unchecked_value' => 0,
+                                                'switchOptions' => array(
+                                                    'label-on' => 'tr_meliscommerce_categories_common_label_yes',
+                                                    'label-off' => 'tr_meliscommerce_categories_common_label_no',
+                                                    'label' => "<i class='glyphicon glyphicon-resize-horizontal'></i>",
+                                                )
+                                            ),
+                                            'attributes' => array(
+                                                'id' => 'm_include_sub_category_products',
+                                            ),
+                                        ),
+                                    ),
+                                    array(
+                                        'spec' => array(
                                             'name' => 'm_cat_col_name',
                                             'type' => 'Select',
                                             'options' => array(
@@ -149,26 +169,6 @@ return array(
                                                 'id' => 'm_cat_order',
                                                 'class' => 'form-control',
                                                 'required' => 'required',
-                                            ),
-                                        ),
-                                    ),
-                                    array(
-                                        'spec' => array(
-                                            'name' => 'm_include_sub_category_products',
-                                            'type' => 'Checkbox',
-                                            'options' => array(
-                                                'label' => 'tr_meliscommerce_plugin_category_product_list_include_sub_cat_prds',
-                                                'tooltip' => 'tr_meliscommerce_plugin_category_product_list_include_sub_cat_prds tooltip',
-                                                'checked_value' => 1,
-                                                'unchecked_value' => 0,
-                                                'switchOptions' => array(
-                                                    'label-on' => 'tr_meliscommerce_categories_common_label_yes',
-                                                    'label-off' => 'tr_meliscommerce_categories_common_label_no',
-                                                    'label' => "<i class='glyphicon glyphicon-resize-horizontal'></i>",
-                                                )
-                                            ),
-                                            'attributes' => array(
-                                                'id' => 'm_include_sub_category_products',
                                             ),
                                         ),
                                     ),

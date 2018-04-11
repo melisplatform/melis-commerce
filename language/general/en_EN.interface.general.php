@@ -44,7 +44,7 @@
 	    'tr_meliscommerce_plugin_no_order' => 'Please select an order',
 	    
 	    // Tooltips
-	    'tr_meliscommerce_general_common_column_order tooltip' => 'This filter allows to sort the news by default',
+	    'tr_meliscommerce_general_common_column_order tooltip' => 'This filter allows to sort the category by default',
 	    'tr_meliscommerce_general_common_order tooltip' => 'This filter allows to set the default order (ex: for a title, &#34;Ascending&#34; sort from A to Z, &#34;Descending&#34; sort from Z to A)',
 	    'tr_meliscommerce_general_common_limit tooltip' => 'This filter allows to set the number displayed',
 	    'tr_meliscommerce_general_common_destination_page_link tooltip' => 'Enter the url of the destination page in which the user will be redirected. It can be an internal or external url',
