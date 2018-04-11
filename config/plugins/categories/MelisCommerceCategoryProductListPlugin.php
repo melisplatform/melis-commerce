@@ -23,7 +23,7 @@ return array(
                              * Options for including products of the Category
                              * sub-categories products
                              */
-                            'm_include_sub_category_products' => false,
+                            'm_include_sub_category_products' => true,
                         ),
                         // Product option
                         'm_product_option' => array(
