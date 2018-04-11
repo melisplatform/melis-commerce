@@ -31,12 +31,12 @@ return array(
                              * The country id where the products price retrieve,
                              * by default price will get from general price with default currency
                              */
-                            'm_country_id' => null,
+                            'm_country_id' => -1,
                             /**
                              * Sorting, by default it will retrieve
                              * product by Product translations in Ascending order
                              */
-                            'm_prd_col_name' => 'pcat_order',
+                            'm_prd_col_name' => 'prd_id',
                             'm_prd_order'   => 'ASC',
                             // Include products with no prices
                             /* 'm_prd_include_price' => true */
