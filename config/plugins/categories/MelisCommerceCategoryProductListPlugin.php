@@ -346,6 +346,22 @@ return array(
                                         'filters'  => array(
                                         ),
                                     ),
+                                    'm_prd_limit' => array(
+                                        'name'     => 'm_prd_limit',
+                                        'required' => false,
+                                        'validators' => array(
+                                            array(
+                                                'name' => 'Digits',
+                                                'options' => array(
+                                                    'messages' => array(
+                                                        \Zend\Validator\Digits::NOT_DIGITS => 'tr_meliscommerce_plugin_limit_num_only',
+                                                    ),
+                                                ),
+                                            ),
+                                        ),
+                                        'filters'  => array(
+                                        ),
+                                    ),
                                 )
                             ),
                         )

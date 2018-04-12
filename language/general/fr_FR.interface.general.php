@@ -42,6 +42,7 @@
 	    // Plugins validations messages
 	    'tr_meliscommerce_plugin_no_column_order' => 'Veuillez choisir un nom d\'ordre de colonne',
         'tr_meliscommerce_plugin_no_order' => 'Veuillez choisir un ordre',
+        'tr_meliscommerce_plugin_limit_num_only' => 'Doit contenir des nombres seulement',
 	    
         // Tooltips
 	    'tr_meliscommerce_general_common_column_order tooltip' => 'Choisissez le tri que vous souhaitez appliquer',
