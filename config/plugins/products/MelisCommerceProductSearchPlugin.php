@@ -105,7 +105,7 @@ return array(
                                             'attributes' => array(
                                                 'id' => 'm_box_product_search',
                                                 'class' => 'form-control',
-                                                'placeholder' => 'Search',
+                                                'placeholder' => 'tr_meliscommerce_general_common_search',
                                             ),
                                         ),
                                     ),

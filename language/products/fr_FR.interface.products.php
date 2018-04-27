@@ -138,7 +138,7 @@ return array(
     'tr_meliscommerce_plugin_product_list_pagination_default_page_number_tooltip' => 'Page de résultat par défault sur laquelle arrive l\'utilisateur',
     'tr_meliscommerce_plugin_product_list_product_per_page_tooltip' => 'Nombre de produits à afficher par page',
 
-    'tr_meliscommerce_plugin_product_search_name' => 'Search field',
+    'tr_meliscommerce_plugin_product_search_name' => 'Champ de recherche',
     'tr_meliscommerce_plugin_product_search_description' => 'Le plugin affiche la recherche saisie pour la recherche de produit',
 
     'tr_meliscommerce_plugin_product_attribute_name' => 'Product Attributes',
