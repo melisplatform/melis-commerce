@@ -238,9 +238,9 @@ class MelisCommerceProductPriceRangePlugin extends MelisTemplatingPlugin
                 $configValues['m_box_product_price_min'] = (string)$xml->m_box_product_price_min;
             }
 
-            if (!empty($xml->m_box_filter_price_column))
+            if (!empty($xml->m_box_product_price_column))
             {
-                $configValues['m_box_filter_price_column'] = (string)$xml->m_box_filter_price_column;
+                $configValues['m_box_product_price_column'] = (string)$xml->m_box_product_price_column;
             }
             
             if (!empty($xml->m_box_product_price_max))
@@ -267,9 +267,9 @@ class MelisCommerceProductPriceRangePlugin extends MelisTemplatingPlugin
             $xmlValueFormatted .= "\t\t" . '<template_path><![CDATA[' . $parameters['template_path'] . ']]></template_path>';
         }
 
-        if(!empty($parameters['m_box_filter_price_column']))
+        if(!empty($parameters['m_box_product_price_column']))
         {
-            $xmlValueFormatted .= "\t\t" . '<m_box_filter_price_column><![CDATA[' . $parameters['m_box_filter_price_column'] . ']]></m_box_filter_price_column>';
+            $xmlValueFormatted .= "\t\t" . '<m_box_product_price_column><![CDATA[' . $parameters['m_box_product_price_column'] . ']]></m_box_product_price_column>';
         }
         
         if(!empty($parameters['m_box_product_price_min']))
