@@ -471,7 +471,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         
         if(!is_null($order)){
             $select->order($order);
-            $select->where->isNotNull('melis_ecom_product_text.ptxt_field_short');
+            $select->where->notEqualTo('melis_ecom_product_text.ptxt_field_short', "");
         }        
         
         if(!is_null($limit)) {
