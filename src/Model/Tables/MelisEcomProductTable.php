@@ -10,6 +10,7 @@
 namespace MelisCommerce\Model\Tables;
 
 use MelisCommerce\Model\Tables\MelisEcomGenericTable;
+use Zend\Db\Sql\Where;
 use Zend\Db\TableGateway\TableGateway;
 use Zend\Db\Sql\Predicate\In;
 use Zend\Db\Sql\Expression;
@@ -78,13 +79,16 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         $select->join('melis_ecom_product_category', 'melis_ecom_product_category.pcat_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT);
         $select->join('melis_ecom_variant', 'melis_ecom_variant.var_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT);
         $select->join('melis_ecom_price', 'melis_ecom_price.price_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT);
+        //include product variant
+        $select->join(array("var_price" => "melis_ecom_price"), 'var_price.price_var_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT);
        
         if(is_array($categoryIds) && !empty($categoryIds)) {
             $select->where->and->in('melis_ecom_product_category.pcat_cat_id', $categoryIds);
         }
 
         if(!is_null($countryId)) {
-            $select->where('melis_ecom_price.price_country_id = '.$countryId);
+            $select->where->NEST->equalTo('melis_ecom_price.price_country_id', $countryId)
+            ->or->equalTo('var_price.price_country_id', $countryId);
         }
         
         if (!is_null($onlyValid))
@@ -111,8 +115,6 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         }
         
         $select->order($orderColumn .' '. $order);
-        
-//         echo $this->getRawSql($select);
 
         $resultData = $this->tableGateway->selectWith($select);
         return $resultData;
