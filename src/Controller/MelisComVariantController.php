@@ -251,6 +251,13 @@ class MelisComVariantController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
+
+        if(empty($this->getVariantId()) && $this->getVariantId() == ''){
+            $variantId = $this->params()->fromQuery('variantId', 0);
+            $this->setVariantId($variantId);
+            $this->setVariantVariables($variantId);
+        }
+
         $view->melisKey = $melisKey;
         $view->variantId = $this->getVariantId();
         return $view;

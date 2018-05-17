@@ -10,7 +10,7 @@ return array(
                         'target' => '#tableProductVariantList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComVariantList/renderProductsVariantData',
                         'dataFunction' => 'initProductVariant',
-                        'ajaxCallback' => 'melisCommerce.initTooltipVarTable();',
+                        'ajaxCallback' => 'melisCommerce.initTooltipVarTable();initVariantSwitch();',
                         'filters' => array(
                             'left' => array(
                                 'productvariant-limit' => array(
