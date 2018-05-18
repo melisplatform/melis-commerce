@@ -692,6 +692,13 @@ $(document).ready(function() {
         reInitProductTextTypeSelect(melisCommerce.getCurrentProductId());
     });
 
+    body.on("click", ".openVariant", function(){
+        var variantId = $(this).parent().siblings(":first").text();
+        var variantName = $(this).parent().parent().find("td:nth-child(4)").text();
+        var productId = $(this).attr("data-product-id");
+        melisHelper.tabOpen(variantName, 'icon-tag-2', variantId+'_id_meliscommerce_variants_page', 'meliscommerce_variants_page', { variantId : variantId, productId : productId});
+    });
+
     function getSelAttributes() {
         var strInt = [];
         var attribs = $("div#"+melisCommerce.getCurrentProductId()+"_attribute_area > span.attr-values");
