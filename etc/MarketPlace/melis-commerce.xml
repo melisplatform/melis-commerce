@@ -1,0 +1,59 @@
+<melis-commerce>
+	<package_info>
+		<mp_title>Melis Commerce</mp_title>
+		<mp_subtitle>MelisCommerce module helps you to manage your commerce site</mp_subtitle>
+		<mp_description>
+			<![CDATA[
+				<p>
+					MelisCommerce Module helps you to create, monitor or to manage: <br />
+					- a products<br />
+					- a variants<br />
+					- a catalogs<br />
+					- a clients<br />
+					- a orders<br />
+					- a coupons<br />
+					- and many more<br />
+				</p>
+			]]>
+		</mp_description>
+		<mp_maintainers>melisplatform</mp_maintainers>
+		<mp_group>Melis Cms</mp_group>
+	</package_info>
+	<package_images>
+		<img_1>
+			<mpi_image_title>MelisCommerce catalogues </mpi_image_title>
+			<mpi_image_file>melis-commerce_1.JPG</mpi_image_file>
+			<mpi_image_main>0</mpi_image_main>
+		</img_1>
+		<img_2>
+			<mpi_image_title>MelisCommerce edit catalogue</mpi_image_title>
+			<mpi_image_file>melis-commerce_2.JPG</mpi_image_file>
+			<mpi_image_main>0</mpi_image_main>
+		</img_2>
+		<img_3>
+			<mpi_image_title>MelisCommerce product list</mpi_image_title>
+			<mpi_image_file>melis-commerce_3.JPG</mpi_image_file>
+			<mpi_image_main>1</mpi_image_main>
+		</img_3>
+		<img_4>
+			<mpi_image_title>MelisCommerce clients list</mpi_image_title>
+			<mpi_image_file>melis-commerce_4.JPG</mpi_image_file>
+			<mpi_image_main>0</mpi_image_main>
+		</img_4>
+		<img_5>
+			<mpi_image_title>MelisCommerce orders list</mpi_image_title>
+			<mpi_image_file>melis-commerce_5.JPG</mpi_image_file>
+			<mpi_image_main>0</mpi_image_main>
+		</img_5>
+		<img_6>
+			<mpi_image_title>MelisCommerce product attributes list</mpi_image_title>
+			<mpi_image_file>melis-commerce_6.JPG</mpi_image_file>
+			<mpi_image_main>0</mpi_image_main>
+		</img_6>
+		<img_7>
+			<mpi_image_title>MelisCommerce country lists</mpi_image_title>
+			<mpi_image_file>melis-commerce_7.JPG</mpi_image_file>
+			<mpi_image_main>0</mpi_image_main>
+		</img_7>
+	</package_images>
+</melis-commerce>
