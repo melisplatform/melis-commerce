@@ -254,6 +254,9 @@ class Module
     	    include __DIR__ . '/../config/plugins/products/MelisCommerceProductShowPlugin.php',
     	    include __DIR__ . '/../config/plugins/products/MelisCommerceAttributesShowPlugin.php',
     	    include __DIR__ . '/../config/plugins/products/MelisCommerceProductsRelatedPlugin.php',
+
+            // order dashboard plugins
+            include __DIR__ . '/../config/dashboard-plugins/MelisCommerceDashboardPluginOrdersNumber.config.php',
     	    
     	);
     	

@@ -298,6 +298,8 @@ return array(
             'MelisCommerceOrderAddressPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceOrderAddressPlugin',
             'MelisCommerceOrderShippingDetailsPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceOrderShippingDetailsPlugin',
             'MelisCommerceOrderMessagesPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceOrderMessagesPlugin',
+            // Dashboard plugins
+            'MelisCommerceDashboardPluginOrdersNumber' => 'MelisCommerce\Controller\DashboardPlugins\MelisCommerceDashboardPluginOrdersNumber'
         )
     ),
     'form_elements' => array(
@@ -379,6 +381,8 @@ return array(
             'MelisCommerceOrder/show-client-order'                  => __DIR__ . '/../view/plugins/order/show-client-order.phtml',
             'MelisCommerceOrder/show-client-order-address'          => __DIR__ . '/../view/plugins/order/show-client-order-address.phtml',
             'MelisCommerceOrder/show-client-shipping-details'       => __DIR__ . '/../view/plugins/order/show-client-shipping-details.phtml',
+            // Dashboard plugins
+            'MelisCommerceDashboardPluginOrdersNumber/dashboard/commerce-orders'          => __DIR__ . '/../view/melis-commerce/dashboard-plugins/commerce-orders.phtml',
         ),
         'template_path_stack' => array(
             __DIR__ . '/../view',

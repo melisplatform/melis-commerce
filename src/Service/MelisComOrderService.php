@@ -1349,4 +1349,56 @@ class MelisComOrderService extends MelisComGeneralService
 	    
 	    return $arrayParameters['results'];
 	}
+
+	public function getOrdersDataByDate($type = 'daily', $date)
+    {
+        $commerceOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
+        $ordersData = $commerceOrderTable->getOrdersDataByDate('DESC');
+        $count = 0;
+        if (!empty($ordersData)){
+
+            $res = $ordersData->toArray();
+            if (!empty($res)){
+
+                switch ($type) {
+                    case 'hourly':
+                        for ($i = 0 ; $i < count($res); $i++){
+                            // Checking if Date is same as the Param data
+                            if (date('Y-m-d H',strtotime($date))==date('Y-m-d H',strtotime($res[$i]['ord_date_creation']))){
+                                $count++;
+                            }
+                        }
+                        break;
+                    case 'weekly':
+                        for ($i = 0 ; $i < count($res); $i++){
+                            // Checking if Date is same as the Param data
+                            if (date('W',strtotime($date))==date('W',strtotime($res[$i]['ord_date_creation']))){
+                                $count++;
+                            }
+                        }
+                        break;
+                    case 'daily':
+                        for ($i = 0 ; $i < count($res); $i++){
+                            // Checking if Date is same as the Param data
+                            if ($date==date('Y-m-d',strtotime($res[$i]['ord_date_creation']))){
+                                $count++;
+                            }
+                        }
+                        break;
+                    case 'monthly':
+                        for ($i = 0 ; $i < count($res); $i++){
+                            // Checking if Date is same as the Param data
+                            if (date('Y-m',strtotime($date))==date('Y-m',strtotime($res[$i]['ord_date_creation']))){
+                                $count++;
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        return $count;
+    }
 }

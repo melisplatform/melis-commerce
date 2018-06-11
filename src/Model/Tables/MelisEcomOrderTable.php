@@ -227,4 +227,16 @@ class MelisEcomOrderTable extends MelisEcomGenericTable
         $resultData = $this->tableGateway->selectWith($select);
         return $resultData;
     }
+
+    public function getOrdersDataByDate($order = 'ASC')
+    {
+        $select = $this->tableGateway->getSql()->select();
+        $select->order(array('ord_date_creation' => $order));
+
+        $resultSet = $this->tableGateway->selectWith($select);
+        return $resultSet;
+    }
+
+
+
 }

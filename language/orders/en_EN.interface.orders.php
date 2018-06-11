@@ -115,4 +115,28 @@
 	    'tr_meliscommerce_orders_email_low_stock_subject' => 'Stock alert: Product %s SKU %s',
 	    'tr_meliscommerce_orders_email_low_stock_html' => '<p>Greetings,</p><p>The stock alert of the following product has been reached:</p><p>ID: [PRODUCT_ID]</p><p>Product name: [PRODUCT_TEXT] </p><p>SKU: [VARIANT_SKU]</p><p>Remaining stock: [STOCKS]</p>',
 	    'tr_meliscommerce_orders_email_low_stock_text' => 'Greetings, The stock alert of the following product has been reached ID: [PRODUCT_ID] Product name: [PRODUCT_TEXT] SKU: [VARIANT_SKU] Remaining stock: [STOCKS]',
+
+        // Dashborad plugin
+
+        //number of orders plugin
+        'tr_PluginSection_meliscommerce' => 'Melis Commerce',
+        'tr_melis_commerce_dashboard_plugin_orders_number' => 'Orders',
+        'tr_melis_commerce_dashboard_plugin_orders_number_description' => 'This tool gives you an overview of the statistics of orders in the dashboard.',
+        'tr_melis_commerce_orders_dashboard_statistics_hourly' => 'Hourly',
+        'tr_melis_commerce_orders_dashboard_statistics_daily' => 'Daily',
+        'tr_melis_commerce_orders_dashboard_statistics_weekly' => 'Weekly',
+        'tr_melis_commerce_orders_dashboard_statistics_monthly' => 'Monthly',
+
+        //number of orders table
+        'tr_melis_commerce_orders_dashboard_table_header_id' => 'ID',
+        'tr_melis_commerce_orders_dashboard_table_header_reference' => 'Reference',
+        'tr_melis_commerce_orders_dashboard_table_header_status' => 'Status',
+        'tr_melis_commerce_orders_dashboard_table_header_numberofproducts' => '# of Products',
+        'tr_melis_commerce_orders_dashboard_table_header_price' => 'Price',
+        'tr_melis_commerce_orders_dashboard_table_header_name' => 'Name',
+        'tr_melis_commerce_orders_dashboard_table_header_firstname' => 'First Name',
+        'tr_melis_commerce_orders_dashboard_table_header_lastname' => 'last Name',
+        'tr_melis_commerce_orders_dashboard_table_header_date' => 'Date',
+
+
 	);
