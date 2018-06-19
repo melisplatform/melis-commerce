@@ -88,7 +88,7 @@ class MelisCommerceOrderPlugin extends MelisTemplatingPlugin
         $shippingParameters     = !empty($formData['order_shipping_details_parameters']) ? $formData['order_shipping_details_parameters'] : array();
         $shippingParameters     = ArrayUtils::merge($shippingParameters, array('id' => 'orderShippingDetails_'.$formData['id'], 'pageId' => $formData['pageId']));
 
-        $messagesParamenters    = !empty($formData['order_messages_parameters'])         ? $formData['order_messages_parameters'] : null;
+        $messagesParamenters    = !empty($formData['order_messages_parameters'])         ? $formData['order_messages_parameters'] : array();
         $messagesParamenters    = ArrayUtils::merge($messagesParamenters, array('id' => 'orderMessages_'.$formData['id'], 'pageId' => $formData['pageId']));
         
         $orderStatus = $orderSvc->getOrderStatusList($langId);
