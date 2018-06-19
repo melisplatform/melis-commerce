@@ -158,7 +158,7 @@
 
 	    // MelisCommerceCheckoutAddressesPlugin()
 	    'tr_meliscommerce_plugin_checkout_addresses_name' => 'Checkout addresses',
-	    'tr_meliscommerce_plugin_checkout_addresses_description' => 'This plugin displays the checkout addresses form suc as delivery and billing address',
+	    'tr_meliscommerce_plugin_checkout_addresses_description' => 'This plugin displays the checkout addresses form such as delivery and billing address',
 	    'tr_meliscommerce_plugin_checkout_addresses_use_same_address' => 'Use same address.',
 	    'tr_meliscommerce_plugin_checkout_addresses_use_same_address tooltip' => 'Specify whether to use the same address',
 	    'tr_meliscommerce_plugin_checkout_addresses_invalid_err_msg' => 'Something is wrong with the Checkout Addresses, Please check Addresses for Checkout before proceed to payment',
