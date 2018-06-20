@@ -14,7 +14,7 @@
 
         // Price
         'tr_meliscommerce_plugin_product_price_range_name' => 'Product Price Range',
-        'tr_meliscommerce_plugin_product_price_range_description' => 'The plugin display the minimun and maximum product prices',
+        'tr_meliscommerce_plugin_product_price_range_description' => 'The plugin display the minimum and maximum product prices',
         'tr_meliscommerce_plugin_product_price_range_min' => 'Min Price',
         'tr_meliscommerce_plugin_product_price_range_max' => 'Max Price',
         'tr_meliscommerce_plugin_product_price_empty' => 'There is no price to display',
