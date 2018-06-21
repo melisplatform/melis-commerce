@@ -1401,4 +1401,73 @@ class MelisComOrderService extends MelisComGeneralService
 
         return $count;
     }
+
+    public function getSalesRevenueDataByDate($type = 'hourly', $date)
+    {
+        $ordersData = $this->getOrderList(null,null,null,null,null,null,null,0,5,'ord_id DESC',null,null,null);
+
+        $value['totalOrderPrice'] = 0;
+        $value['totalShippingPrice'] = 0;
+        if (!empty($ordersData)){
+
+            $order = $ordersData;
+            if (!empty($order)){
+
+                switch ($type) {
+                    case 'hourly':
+                        for ($i = 0 ; $i < count($order); $i++){
+                            // Checking if Date is same as the Param data
+                            if (date('Y-m-d H',strtotime($date))==date('Y-m-d H',strtotime($order[$i]->getOrder()->ord_date_creation))){
+                                foreach($order[$i]->getPayment() as $payment)
+                                {
+                                    $value['totalOrderPrice'] += $payment->opay_price_order;
+                                    $value['totalShippingPrice'] += $payment->opay_price_shipping;
+                                }
+                            }
+                        }
+                        break;
+                    case 'weekly':
+                        for ($i = 0 ; $i < count($order); $i++){
+                            // Checking if Date is same as the Param data
+                            if (date('W',strtotime($date))==date('W',strtotime($order[$i]->getOrder()->ord_date_creation))){
+                                foreach($order[$i]->getPayment() as $payment)
+                                {
+                                    $value['totalOrderPrice'] += $payment->opay_price_order;
+                                    $value['totalShippingPrice'] += $payment->opay_price_shipping;
+                                }
+                            }
+                        }
+                        break;
+                    case 'daily':
+                        for ($i = 0 ; $i < count($order); $i++){
+                            // Checking if Date is same as the Param data
+                            if ($date==date('Y-m-d',strtotime($order[$i]->getOrder()->ord_date_creation))){
+                                foreach($order[$i]->getPayment() as $payment)
+                                {
+                                    $value['totalOrderPrice'] += $payment->opay_price_order;
+                                    $value['totalShippingPrice'] += $payment->opay_price_shipping;
+                                }
+                            }
+                        }
+                        break;
+                    case 'monthly':
+                        for ($i = 0 ; $i < count($order); $i++){
+                            // Checking if Date is same as the Param data
+                            if (date('Y-m',strtotime($date))==date('Y-m',strtotime($order[$i]->getOrder()->ord_date_creation))){
+                                foreach($order[$i]->getPayment() as $payment)
+                                {
+                                    $value['totalOrderPrice'] += $payment->opay_price_order;
+                                    $value['totalShippingPrice'] += $payment->opay_price_shipping;
+                                }
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        return $value;
+    }
 }

@@ -257,7 +257,8 @@ class Module
 
             // order dashboard plugins
             include __DIR__ . '/../config/dashboard-plugins/MelisCommerceDashboardPluginOrdersNumber.config.php',
-    	    
+            include __DIR__ . '/../config/dashboard-plugins/MelisCommerceDashboardPluginSalesRevenue.config.php',
+            include __DIR__ . '/../config/dashboard-plugins/MelisCommerceDashboardPluginOrderMessages.config.php',
     	);
     	
     	foreach ($configFiles as $file) {

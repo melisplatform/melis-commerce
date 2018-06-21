@@ -122,6 +122,7 @@
         'tr_PluginSection_meliscommerce' => 'Melis Commerce',
         'tr_melis_commerce_dashboard_plugin_orders_number' => 'Orders',
         'tr_melis_commerce_dashboard_plugin_orders_number_description' => 'This tool gives you an overview of the statistics of orders in the dashboard.',
+        //report / chart type
         'tr_melis_commerce_orders_dashboard_statistics_hourly' => 'Hourly',
         'tr_melis_commerce_orders_dashboard_statistics_daily' => 'Daily',
         'tr_melis_commerce_orders_dashboard_statistics_weekly' => 'Weekly',
@@ -138,5 +139,14 @@
         'tr_melis_commerce_orders_dashboard_table_header_lastname' => 'last Name',
         'tr_melis_commerce_orders_dashboard_table_header_date' => 'Date',
 
+        //sales revenue
+        'tr_melis_commerce_dashboard_plugin_sales_revenue' => 'Sales Revenue',
+        'tr_melis_commerce_dashboard_plugin_sales_revenue_description' => 'This tool gives you an overview of the statistics for the sales revene',
+
+        //order messages
+        'tr_melis_commerce_dashboard_plugin_order_messages' => 'Order Messages',
+        'tr_melis_commerce_dashboard_plugin_order_messages_description' => 'This tool gives you the list of messages',
+        'tr_melis_commerce_dashboard_plugin_order_messages_all' => 'All',
+        'tr_melis_commerce_dashboard_plugin_order_messages_unanswered' => 'Unanswered',
 
 	);

@@ -299,7 +299,9 @@ return array(
             'MelisCommerceOrderShippingDetailsPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceOrderShippingDetailsPlugin',
             'MelisCommerceOrderMessagesPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceOrderMessagesPlugin',
             // Dashboard plugins
-            'MelisCommerceDashboardPluginOrdersNumber' => 'MelisCommerce\Controller\DashboardPlugins\MelisCommerceDashboardPluginOrdersNumber'
+            'MelisCommerceDashboardPluginOrdersNumber' => 'MelisCommerce\Controller\DashboardPlugins\MelisCommerceDashboardPluginOrdersNumber',
+            'MelisCommerceDashboardPluginSalesRevenue' => 'MelisCommerce\Controller\DashboardPlugins\MelisCommerceDashboardPluginSalesRevenue',
+            'MelisCommerceDashboardPluginOrderMessages' => 'MelisCommerce\Controller\DashboardPlugins\MelisCommerceDashboardPluginOrderMessages',
         )
     ),
     'form_elements' => array(
@@ -382,7 +384,9 @@ return array(
             'MelisCommerceOrder/show-client-order-address'          => __DIR__ . '/../view/plugins/order/show-client-order-address.phtml',
             'MelisCommerceOrder/show-client-shipping-details'       => __DIR__ . '/../view/plugins/order/show-client-shipping-details.phtml',
             // Dashboard plugins
-            'MelisCommerceDashboardPluginOrdersNumber/dashboard/commerce-orders'          => __DIR__ . '/../view/melis-commerce/dashboard-plugins/commerce-orders.phtml',
+            'MelisCommerceDashboardPluginOrdersNumber/dashboard/commerce-orders'        => __DIR__ . '/../view/dashboard-plugins/commerce-orders.phtml',
+            'MelisCommerceDashboardPluginSalesRevenue/dashboard/commerce-sales-revenue' => __DIR__ . '/../view/dashboard-plugins/commerce-dashboard-plugin-sales-revenue.phtml',
+            'MelisCommerceDashboardPluginOrderMessages/commerce-orders-messages'         => __DIR__ . '/../view/dashboard-plugins/commerce-dashboard-plugin-order-messages.phtml',
         ),
         'template_path_stack' => array(
             __DIR__ . '/../view',
