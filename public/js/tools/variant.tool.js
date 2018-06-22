@@ -188,7 +188,7 @@ $(document).ready(function() {
         }
     });
 
-    body.on("switch-change", ".variantStatusChk", function(e, data){
+    body.on("switch-change", ".triggerVarUpdate", function(e, data){
         var obj = {};
         var val = "";
         var variantId   = $(this).closest('tr').attr('id');
@@ -219,12 +219,13 @@ $(document).ready(function() {
 window.initProductVariant = function(data, tblSettings) {
     var prodId = $("#" + tblSettings.sTableId ).data("prodid");
     data.prodId = prodId
-}
+};
 window.variantLoaded = function() {
     var productId = $(".tab-pane#" + activeTabId).data("prodid");
     var prodTabId   = productId+"_id_meliscommerce_products_page";
     melisCommerce.enableTab(prodTabId);
-}
+};
 window.initVariantSwitch = function(){
-    $('.variantStatusChk').bootstrapSwitch();
-}
+    var productId = melisCommerce.getCurrentProductId();
+    $('.'+productId+'_variantStatusChk').bootstrapSwitch();
+};
