@@ -108,7 +108,7 @@ return array(
                                 )
                             ),
                             'melis_commerce_plugin_order_history_pagination_config' => array(
-                                'tab_title' => 'tr_meliscmsnews_plugin_pagination',
+                                'tab_title' => 'tr_meliscommerce_general_common_pagination',
                                 'tab_icon'  => 'fa fa-forward',
                                 'tab_form_layout' => 'MelisCommerce/plugin-common-form-config',
                                 'attributes' => array(

@@ -27,6 +27,7 @@
 	    'tr_meliscommerce_general_common_country' => 'Pays',
         'tr_meliscommerce_general_common_site' => 'Site',
         'tr_meliscommerce_general_common_no_result_found' => 'Aucun résultat trouvé',
+        'tr_meliscommerce_general_common_pagination' => 'Pagination',
 	    
 	    'tr_meliscommerce_general_text' => 'General',
 	    'tr_meliscommerce_general_permission_error_label' => 'Permission refusée',
