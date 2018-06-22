@@ -7,7 +7,7 @@
 
                     ),
                     'js' => array(
-                        '/MelisCommerce/assets/flotchart/dashboard-line-chart.js',
+                        '/MelisCommerce/plugins/js/MelisCommerceDashboardPluginOrdersNumber.js',
                     ),
                 ),
                 'dashboard_plugins' => array(

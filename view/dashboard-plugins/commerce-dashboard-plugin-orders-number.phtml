@@ -1,0 +1,80 @@
+<div class="row row-merge">
+    <div class="col-sm-12 bg-white">
+        <div class="innerAll">
+            <div class="tab-content">
+                <div class="tab-pane active" id="chart-simple-lines-<?php echo $this->pluginConfig['plugin_id']?>">
+                    <div class="btn-group pull-right" data-toggle="buttons">
+                        <label class="btn btn-default btn-sm active">
+                            <input type="radio" class="com-orders-dash-chart-line" name="com-orders-dash-chart-line" value="hourly"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_hourly')?>
+                        </label>
+                        <label class="btn btn-default btn-sm">
+                            <input type="radio" class="com-orders-dash-chart-line" name="com-orders-dash-chart-line" value="daily"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_daily')?>
+                        </label>
+                        <label class="btn btn-default btn-sm">
+                            <input type="radio" class="com-orders-dash-chart-line" name="com-orders-dash-chart-line" value="weekly"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_weekly')?>
+                        </label>
+                        <label class="btn btn-default btn-sm">
+                            <input type="radio" class="com-orders-dash-chart-line" name="com-orders-dash-chart-line" value="monthly"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_monthly')?>
+                        </label>
+                    </div>
+                    <div class="separator bottom"></div>
+                    <div class="flotchart-holder commerce-dashboard-orders-chart-linegraph-placeholder" id="commerce-dashboard-orders-chart-linegraph-placeholder-<?php echo $this->pluginConfig['plugin_id']?>" ></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Table -->
+<div class="overflow-x ">
+    <table class="table table-condensed border-top margin-none">
+
+        <!-- Table heading -->
+        <thead class="bg-primary">
+        <tr>
+            <th class="center"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_table_header_id')?></th>
+            <th><?php echo $this->translate('tr_melis_commerce_orders_dashboard_table_header_reference')?></th>
+            <th><?php echo $this->translate('tr_melis_commerce_orders_dashboard_table_header_status')?></th>
+            <th><i class="fa icon-shippment fa-lg"></i></th>
+            <th><?php echo $this->translate('tr_melis_commerce_orders_dashboard_table_header_price')?></th>
+            <th><?php echo $this->translate('tr_melis_commerce_orders_dashboard_table_header_name')?></th>
+            <th><?php echo $this->translate('tr_melis_commerce_orders_dashboard_table_header_date')?></th>
+        </tr>
+        </thead>
+        <!-- // Table heading END -->
+        <!-- Table body -->
+        <?php if (!empty($this->orderDatas)) :?>
+            <!-- Table row -->
+            <?php
+                foreach($this->orderDatas as $orderData) {
+                    ?>
+
+                    <tr>
+                        <td class="center"><?php echo $orderData->getId(); ?></td>
+                        <td><?php echo $orderData->getOrder()->ord_reference; ?></td>
+                        <td><?php echo $orderData->getOrder()->status_trans; ?></td>
+                        <td><?php echo $orderData->getOrder()->numProducts; ?></td>
+                        <td><?php echo $orderData->getOrder()->total_price; ?></td>
+                        <td><?php echo $orderData->getPerson()->cper_firstname.' '.$orderData->getPerson()->cper_name; ?></td>
+                        <td><?php echo date('Y-m-d', strtotime($orderData->getOrder()->ord_date_creation)); ?></td>
+                    </tr>
+                    <?php
+                }
+            ?>
+        <?php else: ?>
+
+            <tr>
+                <td class="center" colspan="3">No Data</td>
+            </tr>
+        <?php endif;?>
+        <!-- // Table row END -->
+        <!-- Table body -->
+        <tbody>
+        <!-- Table row -->
+
+        <!-- // Table row END -->
+        </tbody>
+        <!-- // Table body END -->
+    </table>
+    <!-- // Table END -->
+</div>

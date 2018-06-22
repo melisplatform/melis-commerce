@@ -105,7 +105,6 @@ $(document).ready(function() {
             encode		: true
         }).success(function(data) {
             //the div where the messages will be appended
-            console.log(messagecountplaceholder);
             $(placeholder).empty();
             $(messagecountplaceholder).empty();
 

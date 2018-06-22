@@ -384,7 +384,7 @@ return array(
             'MelisCommerceOrder/show-client-order-address'          => __DIR__ . '/../view/plugins/order/show-client-order-address.phtml',
             'MelisCommerceOrder/show-client-shipping-details'       => __DIR__ . '/../view/plugins/order/show-client-shipping-details.phtml',
             // Dashboard plugins
-            'MelisCommerceDashboardPluginOrdersNumber/dashboard/commerce-orders'        => __DIR__ . '/../view/dashboard-plugins/commerce-orders.phtml',
+            'MelisCommerceDashboardPluginOrdersNumber/dashboard/commerce-orders'        => __DIR__ . '/../view/dashboard-plugins/commerce-dashboard-plugin-orders-number.phtml',
             'MelisCommerceDashboardPluginSalesRevenue/dashboard/commerce-sales-revenue' => __DIR__ . '/../view/dashboard-plugins/commerce-dashboard-plugin-sales-revenue.phtml',
             'MelisCommerceDashboardPluginOrderMessages/commerce-orders-messages'         => __DIR__ . '/../view/dashboard-plugins/commerce-dashboard-plugin-order-messages.phtml',
         ),
