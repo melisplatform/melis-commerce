@@ -116,7 +116,7 @@
 	    'tr_meliscommerce_orders_email_low_stock_html' => '<p>Bonjour,</p><p>L\'alerte de stock du produit suivant a été atteinte :</p><p>ID : [PRODUCT_ID]</p><p>Nom du produit : [PRODUCT_TEXT] </p><p>SKU : [VARIANT_SKU]</p><p>Stock restant : [STOCKS]</p>',
 	    'tr_meliscommerce_orders_email_low_stock_text' => 'Bonjour, L\'alerte de stock du produit suivant a été atteinte : ID : [PRODUCT_ID] Nom du produit : [PRODUCT_TEXT] SKU : [VARIANT_SKU] Stock restant : [STOCKS]',
 
-        // orders number dashboard plugin
+        //Dashboard Plugin
         //number of orders plugin
         'tr_PluginSection_meliscommerce' => 'Melis Commerce',
         'tr_melis_commerce_dashboard_plugin_orders_number' => 'Orders',
@@ -136,4 +136,14 @@
         'tr_melis_commerce_orders_dashboard_table_header_firstname' => 'First Name',
         'tr_melis_commerce_orders_dashboard_table_header_lastname' => 'last Name',
         'tr_melis_commerce_orders_dashboard_table_header_date' => 'Date',
+
+        //sales revenue
+        'tr_melis_commerce_dashboard_plugin_sales_revenue' => 'Sales Revenue',
+        'tr_melis_commerce_dashboard_plugin_sales_revenue_description' => 'This tool gives you an overview of the statistics for the sales revene',
+
+        //order messages
+        'tr_melis_commerce_dashboard_plugin_order_messages' => 'Order Messages',
+        'tr_melis_commerce_dashboard_plugin_order_messages_description' => 'This tool gives you the list of messages',
+        'tr_melis_commerce_dashboard_plugin_order_messages_all' => 'All',
+        'tr_melis_commerce_dashboard_plugin_order_messages_unanswered' => 'Unanswered',
 	);

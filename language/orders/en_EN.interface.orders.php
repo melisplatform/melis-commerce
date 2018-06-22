@@ -148,5 +148,4 @@
         'tr_melis_commerce_dashboard_plugin_order_messages_description' => 'This tool gives you the list of messages',
         'tr_melis_commerce_dashboard_plugin_order_messages_all' => 'All',
         'tr_melis_commerce_dashboard_plugin_order_messages_unanswered' => 'Unanswered',
-
 	);
