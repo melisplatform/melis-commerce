@@ -402,16 +402,19 @@ $(document).ready(function() {
 
 
         $('#'+productId +'_id_meliscommerce_products_page').find('.make-switch div').each(function(){
-            var field = 'product[0]['+$(this).find('input').attr('name')+']';
-            var status = $(this).hasClass('switch-on');
-            var saveStatus = 0;
-            if(status) {
-                saveStatus = 1;
+            var attr = $(this).find('input').attr('name');
+            if (typeof attr !== typeof undefined && attr !== false) {
+                var field = 'product[0]['+$(this).find('input').attr('name')+']';
+                var status = $(this).hasClass('switch-on');
+                var saveStatus = 0;
+                if(status) {
+                    saveStatus = 1;
+                }
+                dataString.push({
+                    name : field,
+                    value: saveStatus
+                })
             }
-            dataString.push({
-                name : field,
-                value: saveStatus
-            })
         });
 
         dataString.push({
