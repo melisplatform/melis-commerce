@@ -174,11 +174,11 @@ $(document).ready(function() {
                 //chart datas
                 charts.commerceDashboardPluginSalesRevenueChartStackedBars.data = new Array();
                 charts.commerceDashboardPluginSalesRevenueChartStackedBars.data.push({
-                    label: "Order Price",
+                    label: translations.tr_melis_commerce_dashboard_plugin_sales_revenue_order_price,
                     data: data1
                 });
                 charts.commerceDashboardPluginSalesRevenueChartStackedBars.data.push({
-                    label: "Shipping Price",
+                    label: translations.tr_melis_commerce_dashboard_plugin_sales_revenue_shipping_price,
                     data: data2
                 });
 
