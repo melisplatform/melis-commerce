@@ -759,34 +759,17 @@ class MelisComAttributeController extends AbstractActionController
             
             //check if fill all form is filled up
             if(!empty($allFormValue[$atype_column_value])){
-                //check if each language form is filled up
-                foreach($postValues['attributeValueTrans'] as $valueTrans){                    
-                    $data[] = $valueTrans;
-                    if(!empty($valueTrans[$atype_column_value])){
-                        $filledUp = 1;
+                $data = array();
+                $attributeValueForm->setData($allFormValue);
+                if(!$attributeValueForm->isValid()){
+                        $errors = $this->getFormErrors($attributeValueForm, $appConfigForm);
+                    }
+                else{
+                    foreach($langTable->fetchAll() as $lang){
+                        $allFormValue['avt_lang_id'] = $lang->elang_id;
+                        $data[] = $allFormValue;
                     }
                 }
-                
-                // if filled up throw error, else if empty, save fill up form to fill up all languages
-                if($filledUp){
-                    $title = $this->getTool()->getTranslation('tr_meliscommerce_attribute_page_tabs_values');
-                    $message = $this->getTool()->getTranslation('tr_meliscommerce_attribute_value_save_error');
-                    $errors[$atype_column_value] = array('bothFilled' => $message ,'label' => $title);
-                    $success = 0;
-                }else{
-                    $data = array();
-                    $attributeValueForm->setData($allFormValue);
-                    if(!$attributeValueForm->isValid()){
-                            $errors = $this->getFormErrors($attributeValueForm, $appConfigForm);
-                        }
-                    else{
-                        foreach($langTable->fetchAll() as $lang){
-                            $allFormValue['avt_lang_id'] = $lang->elang_id;
-                            $data[] = $allFormValue;
-                        }   
-                    }                    
-                }
-                
             }else{
                 //if fill all form is empty the fill up each form will be save                
                 
