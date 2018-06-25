@@ -142,10 +142,13 @@
         //sales revenue
         'tr_melis_commerce_dashboard_plugin_sales_revenue' => 'Sales Revenue',
         'tr_melis_commerce_dashboard_plugin_sales_revenue_description' => 'This tool gives you an overview of the statistics for the sales revene',
+        'tr_melis_commerce_dashboard_plugin_sales_revenue_order_price' => 'Order Price',
+        'tr_melis_commerce_dashboard_plugin_sales_revenue_shipping_price' => 'Shipping Price',
 
         //order messages
         'tr_melis_commerce_dashboard_plugin_order_messages' => 'Order Messages',
         'tr_melis_commerce_dashboard_plugin_order_messages_description' => 'This tool gives you the list of messages',
         'tr_melis_commerce_dashboard_plugin_order_messages_all' => 'All',
         'tr_melis_commerce_dashboard_plugin_order_messages_unanswered' => 'Unanswered',
+        'tr_melis_commerce_dashboard_plugin_order_messages_unanswered_messages' => 'You have <strong class="text-primary"> %d messages unanswered</strong>',
 	);
