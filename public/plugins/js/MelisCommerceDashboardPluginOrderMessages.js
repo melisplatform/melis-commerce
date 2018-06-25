@@ -104,12 +104,25 @@ $(document).ready(function() {
             dataType 	: 'json',
             encode		: true
         }).success(function(data) {
-            //the div where the messages will be appended
+            //empty divs first
             $(placeholder).empty();
             $(messagecountplaceholder).empty();
 
             //append the unanswered messages
-            $(messagecountplaceholder).append('You have <strong class="text-primary">' + data.unansweredMessages + ' messages unanswered</strong>');
+            if(data.unansweredMessages > 1) {
+                //get translation
+                var message = translations.tr_melis_commerce_dashboard_plugin_order_messages_unanswered_messages;
+                //replace x with the count of unanswered messages
+                var newMessage = message.replace("%d", data.unansweredMessages);
+                $(messagecountplaceholder).append(newMessage);
+            }else{
+                //get translation
+                var message = translations.tr_melis_commerce_dashboard_plugin_order_messages_unanswered_messages;
+                //replace messages with message because count is only one
+                //replace x with the count of unanswered messages
+                var newMessage = message.replace("messages", "message").replace("%d", data.unansweredMessages);
+                $(messagecountplaceholder).append(newMessage);
+            }
 
             //loop through messages
             $.each(data.messages, function(index, message){
