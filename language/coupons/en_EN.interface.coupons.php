@@ -1,7 +1,7 @@
 <?php 
 	return array(
 	    'tr_meliscommerce_coupon_list_page' => 'Coupons',
-	    'tr_meliscommerce_coupon_list_page_description' => 'Find here the different discount coupons. <br>A coupon ca be deleted only if it has never been used.',
+	    'tr_meliscommerce_coupon_list_page_description' => 'Find here the different discount coupons. <br>A coupon can be deleted only if it has never been used.',
 	    'tr_meliscommerce_coupon_list_page_coupon' => 'Coupon',
 	    'tr_meliscommerce_coupon_list_page_coupon_description' => 'Enter here the details of your coupon.',
 	    'tr_meliscommerce_coupon_list_header_title' => 'Coupon list',
