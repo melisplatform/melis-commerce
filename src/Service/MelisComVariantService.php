@@ -111,7 +111,7 @@ class MelisComVariantService extends MelisComGeneralService
 	           $entVariant->setId($arrayParameters['variantId']);
 	           $entVariant->setVariant($result);
 	           $entVariant->setAttributeValues($this->getVariantAttributesValuesById($arrayParameters['variantId'], $arrayParameters['langId']));
-	           $entVariant->setStocks($this->getVariantStocksById($arrayParameters['variantId']));
+	           $entVariant->setStocks($this->getVariantStocksById($arrayParameters['variantId'], $arrayParameters['countryId']));
 	           $entVariant->setPrices($this->getVariantPricesById($arrayParameters['variantId'], $arrayParameters['countryId']));
 	           $entVariant->setDocuments($docService->getDocumentsByRelationAndTypes('variant', $arrayParameters['variantId'], $arrayParameters['docType'], $arrayParameters['docSubType']));
 	           $data = $entVariant;
