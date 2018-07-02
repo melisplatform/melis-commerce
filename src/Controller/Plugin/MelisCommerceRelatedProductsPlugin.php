@@ -71,7 +71,7 @@ class MelisCommerceRelatedProductsPlugin extends MelisTemplatingPlugin
         $data = $this->getFormData();
         $productId = ($data['m_product_id']) ? $data['m_product_id'] : null;
         $productSvc = $this->getServiceLocator()->get('MelisComProductService');
-        $assocProducts = $productSvc->getAssocProducts($productId);
+        $assocProducts = $productSvc->getAssocProducts($productId, $langId);
         $data = array();
         
         foreach($assocProducts as $productObj){
