@@ -4,6 +4,7 @@
         // Page Title
         'tr_meliscommerce_clients_tool_title' => 'Client tool',
 	    'tr_meliscommerce_clients_Client_listing' => 'Client list',
+        'tr_meliscommerce_clients_Client_listing_description' => 'List of all acquired customers.',
 	    'tr_meliscommerce_clients_Client' => 'Client info',
 
         // Common labels
