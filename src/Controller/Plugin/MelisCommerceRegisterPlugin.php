@@ -67,7 +67,8 @@ class MelisCommerceRegisterPlugin extends MelisTemplatingPlugin
     {
         // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
         $appConfigForm = (!empty($this->pluginFrontConfig['forms']['meliscommerce_registration'])) ? $this->pluginFrontConfig['forms']['meliscommerce_registration'] : array();
-        
+        $appConfigForm = $this->getFormMergedAndOrdered($appConfigForm, 'meliscommerce_registration');
+
         $factory = new \Zend\Form\Factory();
         $formElements = $this->getServiceLocator()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
