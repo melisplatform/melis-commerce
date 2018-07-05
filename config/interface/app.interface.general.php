@@ -42,6 +42,20 @@ return array(
                     '/MelisCommerce/plugins/css/common/category-jstree.css',
                     '/MelisCommerce/css/commerce-style.css',
                 ),
+                /**
+                 * the "build" configuration compiles all assets into one file to make
+                 * lesser requests
+                 */
+                'build' => [
+                    // lists of assets that will be loaded in the layout
+                    'css' => [
+                        '/MelisCommerce/build/css/bundle.css',
+
+                    ],
+                    'js' => [
+                        '/MelisCommerce/build/js/bundle.js',
+                    ]
+                ]
             ),
             'datas' => array(
                 'seo_default_pages' => array(
