@@ -374,25 +374,26 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         
         return $resultSet;
     }
-    
-    public function getProductByNameTextTypeAttrIdsAndPrice($productSearchKey = null, $textTypeCode = array(), $attrValIds = array(), $categoryIds = array(), $minPrice, $maxPrice, $langId = null, $countryId = null, $status = 1, $start = 0, $limit = null, $order = null, $priceColumn = null)
+
+    public function getProductVariantByAttributesId($attrValIds = array())
     {
         $variants = array();
-        if(is_array($attrValIds) && !empty($attrValIds)) {
-            
-            $attrSelect = new \Zend\Db\Sql\Select;
-            $attrSelect->columns(array());
-            $attrSelect->from('melis_ecom_attribute_value');
-            $attrSelect->join('melis_ecom_variant_attribute_value','atval_id = vatv_attribute_value_id', array('vatv_variant_id'));
-            $attrSelect->where->in('atval_id', $attrValIds);
-            $attrSelect->group('vatv_variant_id');
-            $attrResult = $this->tableGateway->selectwith($attrSelect);
+        $attrSelect = new \Zend\Db\Sql\Select;
+        $attrSelect->columns(array());
+        $attrSelect->from('melis_ecom_attribute_value');
+        $attrSelect->join('melis_ecom_variant_attribute_value','atval_id = vatv_attribute_value_id', array('vatv_variant_id'));
+        $attrSelect->where->in('atval_id', $attrValIds);
+        $attrSelect->group('vatv_variant_id');
+        $attrResult = $this->tableGateway->selectwith($attrSelect);
 
-            foreach ($attrResult As $val){
-                array_push($variants, $val->vatv_variant_id);
-            }
+        foreach ($attrResult As $val){
+            array_push($variants, $val->vatv_variant_id);
         }
-
+        return $variants;
+    }
+    
+    public function getProductByNameTextTypeAttrIdsAndPrice($productSearchKey = null, $textTypeCode = array(), $selectedVariants = array(), $categoryIds = array(), $minPrice, $maxPrice, $langId = null, $countryId = null, $status = 1, $start = 0, $limit = null, $order = null, $priceColumn = null)
+    {
         if(empty($priceColumn)){
             $priceColumn = 'price_net';
         }
@@ -453,8 +454,8 @@ class MelisEcomProductTable extends MelisEcomGenericTable
             $select->where->and->equalTo('melis_ecom_product_text.ptxt_lang_id', $langId);
         }
         
-        if(!empty($variants)){
-            $select->where->in('melis_ecom_variant.var_id', $variants);
+        if(!empty($selectedVariants)){
+            $select->where->in('melis_ecom_variant.var_id', $selectedVariants);
         }
 
         if(!is_null($countryId)) {

@@ -243,10 +243,18 @@ class MelisComProductSearchService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_productsearch_full_pricerange_start', $arrayParameters);
 	     
 	    // Service implementation start
+        $selectedVariants = array();
 	    $prodTable = $this->getServiceLocator()->get('MelisEcomProductTable');
+	    if(!empty($arrayParameters['attributeValuesIds']) && is_array($arrayParameters['attributeValuesIds'])) {
+            $selectedVariants = $prodTable->getProductVariantByAttributesId($arrayParameters['attributeValuesIds']);
+            if(empty($selectedVariants)){
+                $selectedVariants = array('');
+            }
+        }
+
 	    $productData = array();
-	    $data = $prodTable->getProductByNameTextTypeAttrIdsAndPrice($arrayParameters['search'], $arrayParameters['fieldsTypeCodes'], 
-	        $arrayParameters['attributeValuesIds'], $arrayParameters['categoryId'], (float) $arrayParameters['priceMin'], (float) $arrayParameters['priceMax'],  $arrayParameters['langId'],
+	    $data = $prodTable->getProductByNameTextTypeAttrIdsAndPrice($arrayParameters['search'], $arrayParameters['fieldsTypeCodes'],
+            $selectedVariants, $arrayParameters['categoryId'], (float) $arrayParameters['priceMin'], (float) $arrayParameters['priceMax'],  $arrayParameters['langId'],
 	        $arrayParameters['countryId'], (int) $arrayParameters['onlyValid'], $arrayParameters['start'], $arrayParameters['limit'], $arrayParameters['sort'], $arrayParameters['priceColumn']
         );
 
