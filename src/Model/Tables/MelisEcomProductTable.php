@@ -375,19 +375,38 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         return $resultSet;
     }
 
+    /**
+     * Function to get the product variants lists
+     * by attribute value id
+     *
+     * This function is expecting to receive an array
+     * of attributes with the ff example array format:
+     * array(
+     *      array(1,2,3),   ---->   Let's say this array is came from "COLOR" attribute
+     *      array(4,5,6),           and the ID's inside it is came from selected attribute values
+     *      array(7),               which is let's say "RED" => 1, "BLUE" => 2 and "GREEN" => 3.
+     *      array(8,9,10,11,12),    It's the same with the other array. So basically every array
+     *      etc,                    is came from ONE attribute that consists of selected attribute
+     * )                            value ids.
+     *
+     * @param array $attrValIds
+     * @return array
+     */
     public function getProductVariantByAttributesId($attrValIds = array())
     {
         $variants = array();
         $attrSelect = new \Zend\Db\Sql\Select;
-        $attrSelect->columns(array());
-        $attrSelect->from('melis_ecom_attribute_value');
-        $attrSelect->join('melis_ecom_variant_attribute_value','atval_id = vatv_attribute_value_id', array('vatv_variant_id'));
-        $attrSelect->where->in('atval_id', $attrValIds);
-        $attrSelect->group('vatv_variant_id');
+        $attrSelect->columns(array(new Expression('DISTINCT(melis_ecom_variant_attribute_value.vatv_variant_id) AS variants')));
+        $attrSelect->from('melis_ecom_variant_attribute_value');
+        foreach($attrValIds as $key => $val){
+            $attrSelect->join(array($key.'_var_attr'=>'melis_ecom_variant_attribute_value'), $key.'_var_attr.'.'vatv_variant_id = melis_ecom_variant_attribute_value.vatv_variant_id', array());
+            $attrSelect->where->in($key.'_var_attr.'.'vatv_attribute_value_id', $val);
+        }
+
         $attrResult = $this->tableGateway->selectwith($attrSelect);
 
         foreach ($attrResult As $val){
-            array_push($variants, $val->vatv_variant_id);
+            array_push($variants, $val->variants);
         }
         return $variants;
     }

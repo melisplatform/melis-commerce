@@ -21,15 +21,17 @@ input[name="m_box_product_attribute_values_ids_selected[]"]{
         		<?php foreach ($val->attr_values As $vals){?>
         			<?php
         			    $checked = '';
-        			    if (!empty($this->formData['m_box_product_attribute_values_ids_selected'])){
-        			        if(in_array($vals->atval_id, $this->formData['m_box_product_attribute_values_ids_selected'])){
-        			            $checked = 'check';
-        			        }
-        			    }
+                        foreach($this->selectedAttributes as $k => $v) {
+                            if (in_array($val->atval_id, $v)) {
+                                $checked = 'check';
+                                //stop the searching if found
+                                break;
+                            }
+                        }
         			?>
         			<div class="col-xs-2 cat-prd-attr-values">
         				<label>
-                    		<input type="checkbox" name="m_box_product_attribute_values_ids_selected[]" value="<?php echo $vals->atval_id ?>" <?php echo (in_array($vals->atval_id, $this->selectedAttributes)) ? 'checked' : ''?>>
+                    		<input type="checkbox" name="m_box_product_attribute_values_ids_selected[]" value="<?php echo $vals->atval_id ?>" <?= $checked; ?>>
                 			<?php 
                     		    $valCol = 'avt_v_'.$vals->atype_column_value;
                     		    echo $vals->$valCol

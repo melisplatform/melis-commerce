@@ -67,11 +67,11 @@ class MelisCommerceProductAttributePlugin extends MelisTemplatingPlugin
         $data = $this->getFormData();
         
         $attributeId = !empty($data['attribute_id']) ? $data['attribute_id'] : null;
-        $selectedAttrVal = !empty($data['m_box_product_attribute_values_ids_selected']) ? $data['m_box_product_attribute_values_ids_selected'] : array();
-        
         // Product Attributes Start
         $attrSrv = $this->getServiceLocator()->get('MelisComAttributeService');
         $attrs = $attrSrv->getAttributeListAndValues($attributeId, true, true, $langId);
+
+        $selectedAttrVal = $attrSrv->checkSelectedAttributesFormat($data['m_box_product_attribute_values_ids_selected']);
         
         // Create an array with the variables that will be available in the view
         $viewVariables = array(

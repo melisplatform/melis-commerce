@@ -870,4 +870,55 @@ class MelisComAttributeService extends MelisComGeneralService
          
         return $arrayParameters['results'];
     }
+
+    /**
+     * Function to check the format of selected attribute ids
+     *
+     * If the function receive an already formatted array, then
+     * it will just return the array, else if it receive a query
+     * string, then the function will will convert the string
+     * into an array before returning, but of course if you
+     * pass a query string, make sure that it is an array
+     * that has been converted to query string
+     *
+     * @param $selectedAttributes
+     * @return array
+     */
+    public function checkSelectedAttributesFormat($selectedAttributes)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_check_selected_attr_format_start', $arrayParameters);
+
+        if(!empty($arrayParameters['selectedAttributes'])){
+            if(isset($arrayParameters['selectedAttributes'][0])){
+                //check the array first to make sure it is well formed
+                foreach ($arrayParameters['selectedAttributes'] as $key => $val) {
+                    //check if it is an array already
+                    if (!is_array($val)) {
+                        //we need to parse it if it is a string(query string)
+                        $temp = htmlspecialchars_decode($val);
+                        parse_str(htmlspecialchars_decode($temp), $attributes);
+                        $arrayParameters['selectedAttributes'] = $attributes;
+                    }
+                }
+            }else{
+                if(!is_array($arrayParameters['selectedAttributes'])) {
+                    //we need to parse it if it is a string(query string)
+                    $temp = htmlspecialchars_decode($arrayParameters['selectedAttributes']);
+                    parse_str(htmlspecialchars_decode($temp), $attributes);
+                    $arrayParameters['selectedAttributes'] = $attributes;
+                }
+            }
+        }else{
+            $arrayParameters['selectedAttributes'] = array();
+        }
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_check_selected_attr_format_end', $arrayParameters);
+
+        return $arrayParameters['selectedAttributes'];
+    }
 }

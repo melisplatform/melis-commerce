@@ -84,9 +84,16 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
         $min                = !empty($data['m_box_product_price_min'])                       ? $data['m_box_product_price_min'] : null;
         $max                = !empty($data['m_box_product_price_max'])                       ? $data['m_box_product_price_max'] : null;
         $country            = !empty($data['m_box_product_country'])                         ? $data['m_box_product_country'] : null;
-        $attributeValueId   = !empty($data['m_box_product_attribute_values_ids_selected'])   ? $data['m_box_product_attribute_values_ids_selected'] : array();
         $categoryId         = !empty($data['m_box_category_tree_ids_selected'])         ? $data['m_box_category_tree_ids_selected'] : array();
-        
+
+        /**
+         * $data['m_box_product_attribute_values_ids_selected'] are expecting to receive
+         * either an already formatted array or a query string
+         */
+        $selectedAttributes = $data['m_box_product_attribute_values_ids_selected'];
+        $attrSrv = $this->getServiceLocator()->get('MelisComAttributeService');
+        $attributeValueId = $attrSrv->checkSelectedAttributesFormat($selectedAttributes);
+
         // Pagination config
         $pageCurrent        = !empty($data['m_page_current'])                ? $data['m_page_current'] : 1;
         $pageNbPerPage      = !empty($data['m_page_nb_per_page'])            ? $data['m_page_nb_per_page'] : null;
@@ -291,7 +298,6 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
         if(isset($this->pluginFrontConfig['m_col_name'])){
             $data['m_col_name'] = $this->pluginFrontConfig['m_col_name'];
         }
-
         return $data;
     }
     
