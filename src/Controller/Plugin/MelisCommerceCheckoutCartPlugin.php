@@ -332,6 +332,11 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
             
             $total = $subTotalWithProdDiscount - $orderDiscount;
         }
+
+        //check if there is no error
+        if(!empty($errors)){
+            $hasErr = true;
+        }
         
         $viewVariables = array(
             'checkOutCart' => $checkOutCart,
