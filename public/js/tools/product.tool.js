@@ -210,7 +210,7 @@ $(document).ready(function() {
             if(uncheckedCategories.indexOf(catId) === -1){
                 if(addedCategories.indexOf(catId) === -1){
                     var catText = this.text.split(" - ")[1];
-                    $.get( "melis/MelisCommerce/MelisComProduct/getProductCategoryLastOrderNum", {catId : catId, prodId : productId}, function( data ) {
+                    $.get( "/melis/MelisCommerce/MelisComProduct/getProductCategoryLastOrderNum", {catId : catId, prodId : productId}, function( data ) {
                         $("#"+productId+"_product_category_area").append(
                             '<span class="prod-cat-values" data-pcat-id="'+data.id+'" data-pcat-cat-id="'+catId+'" data-pcat-order="'+data.order+'">' +
                             '<span class="ab-attr">' + catText +'<i class="prdDelCat fa fa-times"></i></span>' +
@@ -322,7 +322,7 @@ $(document).ready(function() {
         melisCoreTool.pending(this);
         $.ajax({
             type: "GET",
-            url : "melis/MelisCommerce/MelisComProduct/getEmptyProductTextForm?textTypeId=" + typeId + "&text="+typeText,
+            url : "/melis/MelisCommerce/MelisComProduct/getEmptyProductTextForm?textTypeId=" + typeId + "&text="+typeText,
             dataType : "json",
             encode		: true
         }).success(function(data) {
