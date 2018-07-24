@@ -92,7 +92,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
         $variantIdRemove                = (!empty($formData['m_cc_var_remove']))                 ? $formData['m_cc_var_remove'] : null;
         $checkoutCartCouponParameters   = (!empty($formData['checkout_cart_coupon_parameters'])) ? $formData['checkout_cart_coupon_parameters'] : array();
         $checkoutCartCouponParameters   = ArrayUtils::merge($checkoutCartCouponParameters, array('id' => 'checkoutCoupon_'.$formData['id'], 'pageId' => $formData['pageId']));
-        
+
         $clientKey = $ecomAuthSrv->getId();
         $clientId = null;
         if ($ecomAuthSrv->hasIdentity())
@@ -108,6 +108,10 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
         {
             $basketSrv->removeVariantFromBasket($variantIdRemove, 0, $clientId, $clientKey);
         }
+
+        $basketIsChanged = false;
+        // Getting the client basket list using Client key
+        $basketData = $basketSrv->getBasket($clientId, $clientKey);
         
         if (!empty($variantQuantities))
         {
@@ -126,6 +130,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                          * automatically remove from the use's cart
                          */
                         $basketSrv->removeVariantFromBasket($varId, 0, $clientId, $clientKey);
+                        $basketIsChanged = true;
                     }
                     else  
                     {
@@ -134,7 +139,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                          * else this will try to look Product Stock
                          */
                         $varStock = $variantSrv->getVariantFinalStocks($varId, $countryId);
-                        
+
                         if ($varStock)
                         {
                             $varStock = $varStock->stock_quantity;
@@ -145,7 +150,25 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                             }
                             else
                             {
-                                $errors[$varId] = sprintf($translator->translate('tr_meliscommerce_products_plugins_stock_left'), $varStock);
+                                /**
+                                 * get the quantity form the client basket
+                                 * to compute the remaining stock
+                                 */
+                                $currentQty = 0;
+                                if(!empty($basketData))
+                                {
+                                    foreach($basketData as $item)
+                                    {
+                                        if($item->getVariantId() == $varId)
+                                        {
+                                            $currentQty = $item->getQuantity();
+                                        }
+                                    }
+                                }
+                                $stockRemaining = $varStock - $currentQty;
+                                $stockRemaining = ($stockRemaining > 0) ? $stockRemaining : 0;
+
+                                $errors[$varId] = sprintf($translator->translate('tr_meliscommerce_products_plugins_stock_left'), $stockRemaining);
                             }
                         }
                         else 
@@ -160,9 +183,11 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                 }
             }
         }
-        
-        // Getting the client basket list using Client key
-        $basketData = $basketSrv->getBasket($clientId, $clientKey);
+
+        //if the basket is changed, get again the client basket
+        if($basketIsChanged) {
+            $basketData = $basketSrv->getBasket($clientId, $clientKey);
+        }
         
         /**
          * Validiting the Client basket
@@ -190,11 +215,11 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
             ));
             $couponView = $checkoutCouponPlugin->render($checkoutCartCouponParameters);
             $coupon = $couponView->getVariables();
-            
+
             $sessionCoupons = !empty($coupon['coupon'])? $coupon['coupon'] : array();
             $generalCoupons = !empty($sessionCoupons['generalCoupons'])? $sessionCoupons['generalCoupons'] : array();
             $productCoupons = !empty($sessionCoupons['productCoupons'])? $sessionCoupons['productCoupons'] : array();
-            
+
             $melisComVariantService = $this->getServiceLocator()->get('MelisComVariantService');
             $melisComProductService = $this->getServiceLocator()->get('MelisComProductService');
             
@@ -243,6 +268,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                 
                 $discount = 0;
                 $discountDetails = '';
+                $discountCouponCode = '';
                 $usableCouponQty = '';
                 $discountPercentage = '';
                 $discountValue = '';
@@ -274,7 +300,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                                 $discountDetails = $discount;
                                 $discountValue = $productCoupon->coup_discount_value;
                             }
-                            
+                            $discountCouponCode = $productCoupon->coup_code;
                             $productCoupon->coup_current_use_number = $productCoupon->coup_current_use_number + $usableCouponQty;
                         }
                     }
@@ -295,6 +321,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                     'var_err' => $variantErr,
                     'var_discount' => $discount,
                     'var_discount_details' => $discountDetails,
+                    'var_discount_coupon_code' => $discountCouponCode,
                     'var_discount_usable_qty' => $usableCouponQty,
                     'var_discount_percentage' => $discountPercentage,
                     'var_discount_value' => $discountValue,
