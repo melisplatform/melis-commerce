@@ -316,6 +316,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                     $discountInfo[] = array(
                         'details' => $generalCoupon->coup_percentage.'%',
                         'amount' => $currency.number_format($totalDiscount, 2),
+                        'code' => $generalCoupon->coup_code,
                     );
                 }
                 elseif (!empty($generalCoupon->coup_discount_value))
@@ -324,6 +325,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                     $discountInfo[] =  array(
                         'details' => $totalDiscount,
                         'amount' => $currency.number_format($totalDiscount,2),
+                        'code' => $generalCoupon->coup_code,
                     );
                 }
                 
