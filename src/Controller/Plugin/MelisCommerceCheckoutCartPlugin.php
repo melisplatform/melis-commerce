@@ -109,9 +109,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
             $basketSrv->removeVariantFromBasket($variantIdRemove, 0, $clientId, $clientKey);
         }
 
-        $basketIsChanged = false;
-        // Getting the client basket list using Client key
-        $basketData = $basketSrv->getBasket($clientId, $clientKey);
+        $basketData = array();
         
         if (!empty($variantQuantities))
         {
@@ -130,7 +128,6 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                          * automatically remove from the use's cart
                          */
                         $basketSrv->removeVariantFromBasket($varId, 0, $clientId, $clientKey);
-                        $basketIsChanged = true;
                     }
                     else  
                     {
@@ -150,6 +147,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                             }
                             else
                             {
+                                $basketData = $basketSrv->getBasket($clientId, $clientKey);
                                 /**
                                  * get the quantity form the client basket
                                  * to compute the remaining stock
@@ -184,8 +182,8 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
             }
         }
 
-        //if the basket is changed, get again the client basket
-        if($basketIsChanged) {
+        //if basketData is empty or null, get the client basket
+        if(empty($basketData) || is_null($basketData)) {
             $basketData = $basketSrv->getBasket($clientId, $clientKey);
         }
         
