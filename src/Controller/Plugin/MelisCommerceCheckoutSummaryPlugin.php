@@ -128,6 +128,7 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
                             
                             $data = array(
                                 'var_id' => $variantId,
+                                'var_prd_id' => $productId,
                                 'var_sku' => $varSku,
                                 'var_quantity' => $val['quantity'],
                                 'var_currency_symbol' => $currency,
