@@ -14,6 +14,7 @@ return array(
                         
                         // delivery form fields
                         'm_add_delivery_id' => '',
+                        'm_add_delivery_type' => '',
                         'm_add_delivery_address_name' => '',
                         'm_add_delivery_civility' => '',
                         'm_add_delivery_firstname' => '',
@@ -33,14 +34,25 @@ return array(
                         
                         // use same address flag
                         'm_add_use_same_address' => 1,
+
+                        /**
+                         * This field is used to determine which address
+                         * should the plugin will validate first (billing, delivery)
+                         * If this field is not include inside the form or in
+                         * ajax request, the default of this is delivery
+                         *
+                         * The value of this is either billing or delivery
+                         */
+                        'm_add_first_form_to_validate' => '',
                         
                         // billing form fields
                         'm_add_billing_id' => '',
+                        'm_add_billing_type' => '',
                         'm_add_billing_address_name' => '',
                         'm_add_billing_civility' => '',
                         'm_add_billing_firstname' => '',
                         'm_add_billing_name' => '',
-                        'm_add_delivery_middle_name' => '',
+                        'm_add_billing_middle_name' => '',
                         'm_add_billing_num' => '',
                         'm_add_billing_street' => '',
                         'm_add_billing_building_name' => '',
