@@ -1036,11 +1036,11 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child:before {
     content: "";
     display: block;
     width: 4px;
-    height: 7px;
+    height: 14px;
     background: #fff;
     position: absolute;
-    top: 3px;
-    left: 4px;
+    top: 4px;
+    left: 8px;
     z-index: -1;
 }
 .qtipTable th {
