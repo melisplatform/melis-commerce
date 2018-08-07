@@ -344,8 +344,12 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                         
                         $showSteps = false;
                         $melisEngineGeneralService = $this->getServiceLocator()->get('MelisEngineGeneralService');
+                        /**
+                         * You need to create a listener that will listen to this event
+                         * in order for you to process your own payment
+                         */
                         $checkoutPaymentEvent = $melisEngineGeneralService->sendEvent('meliscommerce_checkout_plugin_payment', $param, $this);
-                        $checkout = $checkoutPaymentEvent['chechout'];
+                        $checkout = $checkoutPaymentEvent['checkout'];
                     }
                 }
                 
