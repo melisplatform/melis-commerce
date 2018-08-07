@@ -333,7 +333,7 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                         }
                         
                         $param = array(
-                            'chechout' => null,
+                            'checkout' => null,
                             'orderDetails' => array(
                                 'countryId' => $countryId,
                                 'orderId' => $orderId,
@@ -346,7 +346,7 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                         $melisEngineGeneralService = $this->getServiceLocator()->get('MelisEngineGeneralService');
                         /**
                          * You need to create a listener that will listen to this event
-                         * in order for you to process your own payment
+                         * in order for you
                          */
                         $checkoutPaymentEvent = $melisEngineGeneralService->sendEvent('meliscommerce_checkout_plugin_payment', $param, $this);
                         $checkout = $checkoutPaymentEvent['checkout'];
