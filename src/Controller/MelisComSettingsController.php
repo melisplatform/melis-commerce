@@ -32,6 +32,7 @@ class MelisComSettingsController extends AbstractActionController
      * renders the page header container
      * @return \Zend\View\Model\ViewModel
      */
+
     public function renderSettingsHeaderContainerAction()
     {
         $view = new ViewModel();
@@ -269,7 +270,23 @@ class MelisComSettingsController extends AbstractActionController
         $view->melisKey = $melisKey;
         return $view;
     }
-    
+    private function getLogFormsError($form, $formConfig)
+    {
+        $appConfigFormElements = $formConfig['elements'];
+        $errors = $form;
+
+        foreach ($errors as $keyError => $valueError)
+        {
+            foreach ($appConfigFormElements as $keyForm => $valueForm)
+            {
+                if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
+                {
+                    $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                }
+            }
+        }
+        return $errors;
+    }
     /**
      * 
      */
@@ -449,4 +466,6 @@ class MelisComSettingsController extends AbstractActionController
         }
         return $errors;
     }
+
+
 }

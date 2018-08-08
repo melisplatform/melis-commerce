@@ -1108,13 +1108,13 @@ COMMIT;
 -- Data for table `melis_ecom_order_status`
 -- -----------------------------------------------------
 START TRANSACTION;
-INSERT INTO `melis_ecom_order_status` (`osta_id`, `osta_color_code`, `osta_status`) VALUES (1, '#0696cb', NULL);
-INSERT INTO `melis_ecom_order_status` (`osta_id`, `osta_color_code`, `osta_status`) VALUES (2, '#f08c17', NULL);
-INSERT INTO `melis_ecom_order_status` (`osta_id`, `osta_color_code`, `osta_status`) VALUES (3, '#06cb65', NULL);
-INSERT INTO `melis_ecom_order_status` (`osta_id`, `osta_color_code`, `osta_status`) VALUES (4, '#06cb65', NULL);
-INSERT INTO `melis_ecom_order_status` (`osta_id`, `osta_color_code`, `osta_status`) VALUES (5, '#ababab', NULL);
-INSERT INTO `melis_ecom_order_status` (`osta_id`, `osta_color_code`, `osta_status`) VALUES (6, '#ff3300', NULL);
-INSERT INTO `melis_ecom_order_status` (`osta_id`, `osta_color_code`, `osta_status`) VALUES (-1, '#00ccff', NULL);
+INSERT INTO `melis_ecom_order_status` (`osta_id`, `osta_color_code`, `osta_status`) VALUES (1, '#0696cb', 1);
+INSERT INTO `melis_ecom_order_status` (`osta_id`, `osta_color_code`, `osta_status`) VALUES (2, '#f08c17', 1);
+INSERT INTO `melis_ecom_order_status` (`osta_id`, `osta_color_code`, `osta_status`) VALUES (3, '#06cb65', 1);
+INSERT INTO `melis_ecom_order_status` (`osta_id`, `osta_color_code`, `osta_status`) VALUES (4, '#06cb65', 1);
+INSERT INTO `melis_ecom_order_status` (`osta_id`, `osta_color_code`, `osta_status`) VALUES (5, '#ababab', 1);
+INSERT INTO `melis_ecom_order_status` (`osta_id`, `osta_color_code`, `osta_status`) VALUES (6, '#ff3300', 1);
+INSERT INTO `melis_ecom_order_status` (`osta_id`, `osta_color_code`, `osta_status`) VALUES (-1, '#00ccff', 1);
 
 COMMIT;
 

@@ -1331,4 +1331,26 @@ class MelisComOrderController extends AbstractActionController
     
         return $melisTool;
     }
+
+    public function getOrderFormAction()
+    {
+        $data['order'] = array();
+        $errors = array();
+        $success = true;
+        $factory = new \Zend\Form\Factory();
+        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+
+        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $appConfigOrderForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_orders/meliscommerce_order_information_form','meliscommerce_order_information_form');
+
+
+
+        $results = array(
+            'success' => $success,
+            'errors' => $errors,
+            'datas' => $data,
+        );
+        return new JsonModel($results);
+    }
 }

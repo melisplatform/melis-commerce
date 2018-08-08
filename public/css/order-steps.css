@@ -102,7 +102,16 @@ tr.last-tr td {
 	display: block;
 }
 
- 
+ /*	Order checkout basket */
+.order-basket-checkout-summary h4 {
+	font-size: 14px;
+	letter-spacing: 0.1px;
+}
+.order-basket-checkout-summary .title {
+	font-size: 16px;
+	color: #981a1f;
+}
+
 /* Responsive */
 
 

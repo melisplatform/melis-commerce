@@ -1917,4 +1917,13 @@ class MelisComClientController extends AbstractActionController
         $tool = $this->getServiceLocator()->get('MelisCoreTool');
         return $tool;
     }
+
+    public function getClientBasketSaveAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $clientId = $this->params()->fromQuery('clientId', '');
+
+        $view->clientId = $clientId;
+        return $view;
+    }
 }

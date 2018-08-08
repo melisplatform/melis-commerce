@@ -4,6 +4,7 @@
         // Page Title
         'tr_meliscommerce_clients_tool_title' => 'Outil clients',
 	    'tr_meliscommerce_clients_Client_listing' => 'Liste des clients',
+        'tr_meliscommerce_clients_Client_listing_description' => 'List de l\'ensemble des clients acquis',
 	    'tr_meliscommerce_clients_Client' => 'Informations client',
 
         // Common labels
@@ -28,6 +29,8 @@
 	    'tr_meliscommerce_clients_common_label_new' => 'Nouveau',
 	    'tr_meliscommerce_clients_common_label_loading' => 'Chargement',
 	    'tr_meliscommerce_clients_common_label_client' => 'Client',
+        'tr_meliscommerce_clients_list_col_products' => 'Produits',
+        'tr_meliscommerce_clients_list_col_price_title' => 'Montant',
 
 	    //Client list widgets
 	    'tr_meliscommerce_client_list_widgets_num_client' => 'Nombre de clients',

@@ -1036,11 +1036,11 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child:before {
     content: "";
     display: block;
     width: 4px;
-    height: 7px;
+    height: 14px;
     background: #fff;
     position: absolute;
-    top: 3px;
-    left: 4px;
+    top: 4px;
+    left: 8px;
     z-index: -1;
 }
 .qtipTable th {
@@ -1957,10 +1957,11 @@ textarea {
         float: left;
         width: 100%;
     }
+    /* commented to check, affecting all modules filter bar
     .dataTables_wrapper .dataTables_length {
         width: 120px;
         float: left;
-    }
+    }*/
 
 }
 @media ( max-width: 956px ) {

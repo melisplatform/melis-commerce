@@ -259,7 +259,14 @@ class MelisComVariantListController extends AbstractActionController
             'data' => $tableData,
         ));
     }
-    
+    private function isLinux()
+    {
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'LINX') {
+            return true;
+        } else {
+            return false;
+        }
+    }
     
     /**
      * generates the tooltip table
@@ -467,4 +474,6 @@ class MelisComVariantListController extends AbstractActionController
         return $melisTool;
     
     }
+
+
 }

@@ -437,7 +437,7 @@ class MelisComProductListController extends AbstractActionController
                                    
                                    // label whole row with red if stock is set and it is zero
                                    if((int) $stockQty === 0) {
-                                       $warningDom = '<i class="fa fa-warning" style="color:#a94442;font-size:12px;"></i> ';
+                                       $warningDom = '<i class="fa fa-warning fa-2x pull-left" style="color:#981a1f; font-size: 20px;"></i> ';
                                    }else {
                                        $warningDom = '';
                                    }
@@ -469,6 +469,23 @@ class MelisComProductListController extends AbstractActionController
        return new JsonModel(array(
            'content' => $content
        ));
+    }
+    private function getOnlyValueOnArray($keyOnArray, $haystack)
+    {
+        $newArray = array();
+        if($haystack) {
+            foreach($haystack as $key => $value) {
+                if($key == $keyOnArray) {
+                    $newArray[$key] = $value;
+                }
+            }
+        }
+        else {
+
+        }
+        $newArray = "";
+
+        return $newArray;
     }
 
     
@@ -608,5 +625,7 @@ class MelisComProductListController extends AbstractActionController
         
         return $newArray;
     }
+
+
 
 }
