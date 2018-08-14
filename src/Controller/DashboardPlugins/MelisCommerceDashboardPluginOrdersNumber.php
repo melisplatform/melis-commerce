@@ -18,75 +18,75 @@ class MelisCommerceDashboardPluginOrdersNumber extends MelisCoreDashboardTemplat
 
     public function __construct()
     {
-        //set plugin. first index of plugin in dashboardplugin config.
         $this->pluginModule = 'meliscommerce';
         parent::__construct();
     }
-    /*
-     *Gets data for the plugin.
-     *for the table
-     * returns view for the plugin
+
+    /**
+     * Get the latest 5 orders
+     * @return ViewModel
      */
     public function commerceOrders()
     {
-        //get service
         $melisOrdersService = $this->getServiceLocator()->get('MelisComOrderService');
-
-        //use any tool to get langId
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
-        $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_order_list');
-        $langId = $melisTool->getCurrentLocaleID();
-
+        $langId = $this->getCurrentLocaleId('meliscommerce', 'meliscommerce_order_list');
+        $melisTranslation = $this->getServiceLocator()->get('MelisCoreTranslation');
         //get language locale
         $container = new Container('meliscore');
         $locale = $container['melis-lang-locale'];
 
-        //get order list with limit = 5 and on desc order
-        $orderDatas = $melisOrdersService->getOrderList(null,null,null,null,null,null,null,0,5,'ord_id DESC',null,null,null);
+        //$newDate = date('d/m/Y H:i:s',strtotime($tmpdate));
+//        setlocale(LC_TIME, 'de_DE.UTF8');
+        //var_dump(strftime( "%h %y",strtotime("2011-12-22")));
+//        exit;
 
-        $numProducts = 0;
-        $totalPrice = 0;
+        //get latest 5 orders
+        $orders = $melisOrdersService->getOrderList(null,null,null,null,null,null,null,0,5,'ord_id DESC',null,null,null);
 
-        //loop to every order
-        foreach($orderDatas as $orderData) {
+        foreach($orders as $order) {
+            $numProducts = 0;
+            $totalPrice = 0;
+
             //get status trans text
-            $statusTrans = $melisOrdersService->getOrderStatusByOrderId($orderData->getId());
+            $statusTrans = $melisOrdersService->getOrderStatusByOrderId($order->getId());
             foreach ($statusTrans as $trans) {
                 if ($trans->ostt_lang_id == $langId) {
                     $orderStatus = $trans;
+                } else {
+                    $orderStatus = "";
                 }
             }
 
             //get total price of an order
-            foreach($orderData->getPayment() as $payment){
+            foreach ($order->getPayment() as $payment) {
                 $totalPrice = $payment->opay_price_total;
             }
 
             //get total quantity of an order
-            foreach($orderData->getBasket() as $basket) {
+            foreach ($order->getBasket() as $basket) {
                 $numProducts += $basket->obas_quantity;
             }
+
             // insert order status to order object
-            $orderData->getOrder()->status_trans = $orderStatus->ostt_status_name;
+            $order->getOrder()->status_trans = $orderStatus->ostt_status_name;
             //insert order total price to order object
-            $orderData->getOrder()->total_price = number_format($totalPrice, 2);
+            $order->getOrder()->total_price = number_format($totalPrice, 2);
             // insert number of products to order object
-            $orderData->getOrder()->numProducts = $numProducts;
-
-            //set back to 0 for the other order
-            $numProducts = 0;
-            $totalPrice = 0;
+            $order->getOrder()->numProducts = $numProducts;
+            // change date format
+            $order->getOrder()->ord_date_creation = strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($order->getOrder()->ord_date_creation));
         }
-
-
         $view = new ViewModel();
-        //set view for the template
+
         $view->setTemplate('MelisCommerceDashboardPluginOrdersNumber/dashboard/commerce-orders');
-        $view->orderDatas = $orderDatas;
+        $view->orderDatas = $orders;
+
         return $view;
     }
-    /*
+
+    /**
      * Returns Json datas for the commerce orders graph on dashboard
+     * @return JsonModel
      */
     public function getDashboardOrdersData()
     {
@@ -95,7 +95,7 @@ class MelisCommerceDashboardPluginOrdersNumber extends MelisCoreDashboardTemplat
         $success = 0;
         $values = array();
 
-        if($this->getController()->getRequest()->isPost()) {
+        if ($this->getController()->getRequest()->isPost()) {
 
             $chartFor = get_object_vars($this->getController()->getRequest()->getPost());
             $chartFor = isset($chartFor['chartFor']) ? $chartFor['chartFor'] : 'monthly';
@@ -103,19 +103,16 @@ class MelisCommerceDashboardPluginOrdersNumber extends MelisCoreDashboardTemplat
             $melisCommerceOrdersService = $this->getServiceLocator()->get('MelisComOrderService');
 
             // Last Date/value of the Graph will be the Current Date
-            if($chartFor == 'hourly') {
+            if ($chartFor == 'hourly') {
                 $curdate = date('Y-m-d H:i');
-            }
-            else if($chartFor == 'monthly'){
+            } else if ($chartFor == 'monthly') {
                 $curdate = date('Y-m');
-            }
-            else {
+            } else {
                 $curdate = date('Y-m-d');
             }
 
             //loop the initial date to deduct it depending on the type of report
-            for ($ctr = $limit ; $ctr > 0 ;$ctr--)
-            {
+            for ($ctr = $limit ; $ctr > 0 ;$ctr--) {
                 // Retreve Prospects Values from database
                 $nb = $melisCommerceOrdersService->getOrdersDataByDate($chartFor,$curdate);
 
@@ -149,10 +146,34 @@ class MelisCommerceDashboardPluginOrdersNumber extends MelisCoreDashboardTemplat
             $success = 1;
         }
 
-        return new JsonModel(array(
-            'date' => date('Y-m-d'),
+        return new JsonModel([
+            'date'    => date('Y-m-d'),
             'success' => $success,
-            'values' => $values,
-        ));
+            'values'  => $values,
+        ]);
+    }
+
+    /**
+     * Gets the tool
+     * @param string $pluginKey
+     * @param string $toolKey
+     * @return array|object
+     */
+    private function getTool($pluginKey, $toolKey)
+    {
+        $tool = $this->getServiceLocator()->get('MelisCoreTool');
+        $tool->setMelisToolKey($pluginKey, $toolKey);
+        return $tool;
+    }
+
+    /**
+     * Gets the lang ID
+     * @param string $pluginKey
+     * @param string $toolKey
+     * @return mixed
+     */
+    private function getCurrentLocaleId($pluginKey, $toolKey)
+    {
+        return $this->getTool($pluginKey, $toolKey)->getCurrentLocaleID();
     }
 }

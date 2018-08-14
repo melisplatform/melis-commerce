@@ -56,7 +56,7 @@
                         <td><?php echo $orderData->getOrder()->numProducts; ?></td>
                         <td><?php echo $orderData->getOrder()->total_price; ?></td>
                         <td><?php echo $orderData->getPerson()->cper_firstname.' '.$orderData->getPerson()->cper_name; ?></td>
-                        <td><?php echo date('Y-m-d', strtotime($orderData->getOrder()->ord_date_creation)); ?></td>
+                        <td><?php echo $orderData->getOrder()->ord_date_creation; ?></td>
                     </tr>
                     <?php
                 }
