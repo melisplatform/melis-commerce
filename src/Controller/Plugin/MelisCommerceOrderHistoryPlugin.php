@@ -91,7 +91,7 @@ class MelisCommerceOrderHistoryPlugin extends MelisTemplatingPlugin
         {
             $clientId = $ecomAuthSrv->getClientId();
             $data = $orderSvc->getOrderList(null, true, $lang, $clientId, null, null, null, null, null, $sort);
-            
+
             foreach($data as $item){
                 
                 $status = '';
@@ -127,7 +127,8 @@ class MelisCommerceOrderHistoryPlugin extends MelisTemplatingPlugin
                     $details['currency'] = $currency;
                     $details['price'] = $basket->obas_price_net;
                     $details['quantity'] = $basket->obas_quantity;                   
-                    
+                    $details['attributes'] = $basket->obas_attributes;
+
                     $orderDetails['items'][] = $details;
                 }
                
@@ -154,7 +155,8 @@ class MelisCommerceOrderHistoryPlugin extends MelisTemplatingPlugin
                 $order['total'] = $total;
                 $order['currency'] = $currency;
                 $order['details'] = $orderDetails;
-                
+                $order['addresses'] = $item->getAddresses();
+
                 $orders[] = $order;
             }
         }
