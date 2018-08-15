@@ -6,7 +6,7 @@
  * Licensed under the MIT license.
  */
 
-(function($){
+$(function(){
 
 	var old = $.fn.checkbox;
 
@@ -126,4 +126,4 @@
 			});
 		});
 	});
-})(jQuery);
+});
