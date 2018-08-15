@@ -1004,12 +1004,10 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                     );
                     
                     $clientCountryId = $paymentData['transactionCountryId'];
-                    $clientCouponId = $paymentData['transactionCouponId'];
                     
                     // Unset data not requried to return as results
                     unset($arrayParameters['results']['payment_details']['transactionPricepaidConfirm']);
                     unset($arrayParameters['results']['payment_details']['transactionCountryId']);
-                    unset($arrayParameters['results']['payment_details']['transactionCouponId']);
                     
                     $melisEcomOrderPaymentTable = $this->getServiceLocator()->get('MelisEcomOrderPaymentTable');
                     $melisEcomOrderPaymentTable->save($payment);

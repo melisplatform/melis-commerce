@@ -174,10 +174,10 @@ class MelisCommerceCheckoutCouponListener implements ListenerAggregateInterface
                         foreach ($orders as $key => $val) {
 
                             $discount += !empty($val['discount_total']) ? $val['discount_total'] : 0;
-                            $totalWithoutCoupon += $val['total_price'];
-                            $params['results']['costs']['order']['totalWithoutCoupon'] = $totalWithoutCoupon;
+                            $totalWithoutCoupon += $val['unit_price'];
+                            $params['results']['costs']['order']['totalWithoutCoupon'] = $val['total_price'];
                             $params['results']['costs']['order']['totalWithProductCoupon'] = $totalWithoutCoupon - $discount;
-                            $params['results']['costs']['order']['total'] = $totalWithoutCoupon - $discount;
+                            $params['results']['costs']['order']['total'] = $val['total_price'];
 
                         }
 
