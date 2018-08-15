@@ -29,33 +29,38 @@ class MelisCommerceDashboardPluginOrdersNumber extends MelisCoreDashboardTemplat
     public function commerceOrders()
     {
         $melisOrdersService = $this->getServiceLocator()->get('MelisComOrderService');
-        $langId = $this->getCurrentLocaleId('meliscommerce', 'meliscommerce_order_list');
         $melisTranslation = $this->getServiceLocator()->get('MelisCoreTranslation');
-        //get language locale
+        $melisCoreConfig = $this->getServiceLocator()->get('MelisCoreConfig');
+
+        //get language locale and id
         $container = new Container('meliscore');
         $locale = $container['melis-lang-locale'];
+        $langId = $this->getCurrentLocaleId('meliscommerce', 'meliscommerce_order_list');;
 
-        //$newDate = date('d/m/Y H:i:s',strtotime($tmpdate));
-//        setlocale(LC_TIME, 'de_DE.UTF8');
-        //var_dump(strftime( "%h %y",strtotime("2011-12-22")));
-//        exit;
+        $confOrder = $melisCoreConfig->getItem('meliscommerce/conf/orderStatus');
+
+        $status = '<div>
+				        <span %s class="btn order-status-%s">%s</span>
+				   </div>';
 
         //get latest 5 orders
         $orders = $melisOrdersService->getOrderList(null,null,null,null,null,null,null,0,5,'ord_id DESC',null,null,null);
 
-        foreach($orders as $order) {
+        foreach ($orders as $order) {
             $numProducts = 0;
             $totalPrice = 0;
+            $class = '';
+            $disabled = '';
 
             //get status trans text
+            $orderStatus = null;
             $statusTrans = $melisOrdersService->getOrderStatusByOrderId($order->getId());
             foreach ($statusTrans as $trans) {
                 if ($trans->ostt_lang_id == $langId) {
                     $orderStatus = $trans;
-                } else {
-                    $orderStatus = "";
                 }
             }
+            $orderStatus = empty($orderStatus)? $statusTrans[0] : $orderStatus;
 
             //get total price of an order
             foreach ($order->getPayment() as $payment) {
@@ -67,8 +72,14 @@ class MelisCommerceDashboardPluginOrdersNumber extends MelisCoreDashboardTemplat
                 $numProducts += $basket->obas_quantity;
             }
 
+            if ($order->getOrder()->ord_status == $confOrder['cancelled']) {
+                $disabled = 'disabled';
+                $class = '';
+            }
+
             // insert order status to order object
-            $order->getOrder()->status_trans = $orderStatus->ostt_status_name;
+            //$order->getOrder()->status_trans = $orderStatus->ostt_status_name;
+            $order->getOrder()->status_trans = sprintf($status, $disabled, $orderStatus->osta_id, $orderStatus->ostt_status_name);
             //insert order total price to order object
             $order->getOrder()->total_price = number_format($totalPrice, 2);
             // insert number of products to order object
@@ -76,10 +87,19 @@ class MelisCommerceDashboardPluginOrdersNumber extends MelisCoreDashboardTemplat
             // change date format
             $order->getOrder()->ord_date_creation = strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($order->getOrder()->ord_date_creation));
         }
+
+        $status = [];
+        $orderStatusTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTable');
+
+        foreach($orderStatusTable->fetchAll() as $orderStatus){
+            $status[] = $orderStatus;
+        }
+
         $view = new ViewModel();
 
         $view->setTemplate('MelisCommerceDashboardPluginOrdersNumber/dashboard/commerce-orders');
         $view->orderDatas = $orders;
+        $view->status = $status;
 
         return $view;
     }
@@ -93,7 +113,7 @@ class MelisCommerceDashboardPluginOrdersNumber extends MelisCoreDashboardTemplat
         // Graph Range X-Axis Limit
         $limit = 10;
         $success = 0;
-        $values = array();
+        $values = [];
 
         if ($this->getController()->getRequest()->isPost()) {
 
@@ -119,22 +139,22 @@ class MelisCommerceDashboardPluginOrdersNumber extends MelisCoreDashboardTemplat
                 // Checking type of report
                 switch ($chartFor) {
                     case 'hourly':
-                        $values[] = array($curdate, $nb);
+                        $values[] = [$curdate, $nb];
                         // Deduct 1 Hour every loop
                         $curdate = date('Y-m-d H:i',strtotime($curdate.' -1 hour'));
                         break;
                     case 'daily':
-                        $values[] = array($curdate, $nb);
+                        $values[] = [$curdate, $nb];
                         // Deduct 1 Day every loop
                         $curdate = date('Y-m-d',strtotime($curdate.' -1 days'));
                         break;
                     case 'weekly':
-                        $values[] = array($curdate, $nb);
+                        $values[] =[$curdate, $nb];
                         // Deduct 1 Week / 7 Days every loop
                         $curdate = date('Y-m-d',strtotime($curdate.' -1 week'));
                         break;
                     case 'monthly':
-                        $values[] = array($curdate, $nb);
+                        $values[] = [$curdate, $nb];
                         // Deduct 1 Month every loop
                         $curdate = date('Y-m-d',strtotime($curdate.' -1 months'));
                         break;

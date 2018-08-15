@@ -27,7 +27,31 @@
 
 <!-- Table -->
 <div class="overflow-x ">
-    <table class="table table-condensed border-top margin-none">
+
+    <style>
+
+        <?php foreach($this->status as $status):
+         echo '.order-status-'.$status->osta_id.'{
+                border-color: '.$status->osta_color_code.' ;
+                color: '.$status->osta_color_code.';
+                border-radius: 4px;             
+                }
+                ';
+        echo '.order-status-'.$status->osta_id.':hover{
+                color : #fff;
+                background : '.$status->osta_color_code.';
+                }
+                ';
+
+        endforeach;
+        ?>
+
+        .melis-commerce-dashboard-plugin-orders-number-item:hover {
+            background-color: #f5f5f5;
+        }
+    </style>
+
+    <table class="table table-condensed border-top margin-none melis-commerce-dashboard-plugin-order-numbers-table">
 
         <!-- Table heading -->
         <thead class="bg-primary">
@@ -49,9 +73,9 @@
                 foreach($this->orderDatas as $orderData) {
                     ?>
 
-                    <tr>
-                        <td class="center"><?php echo $orderData->getId(); ?></td>
-                        <td><?php echo $orderData->getOrder()->ord_reference; ?></td>
+                    <tr class="melis-commerce-dashboard-plugin-orders-number-item" style="cursor:pointer;">
+                        <td class="center melis-commerce-dashboard-plugin-orders-number-item-id"><?php echo $orderData->getId(); ?></td>
+                        <td class="melis-commerce-dashboard-plugin-orders-number-item-ref"><?php echo $orderData->getOrder()->ord_reference; ?></td>
                         <td><?php echo $orderData->getOrder()->status_trans; ?></td>
                         <td><?php echo $orderData->getOrder()->numProducts; ?></td>
                         <td><?php echo $orderData->getOrder()->total_price; ?></td>
