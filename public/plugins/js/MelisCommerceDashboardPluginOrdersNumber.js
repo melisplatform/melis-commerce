@@ -5,6 +5,31 @@ $(document).ready(function() {
         commerceDashboardOrdersLineGraphInit($(this));
     });
 
+    //opening order tab when an order is clicked
+    $("body").on("click", ".melis-commerce-dashboard-plugin-orders-number-item", function(){
+        var orderId = $(this).find('.melis-commerce-dashboard-plugin-orders-number-item-id').text();
+        var orderReference = $(this).find('.melis-commerce-dashboard-plugin-orders-number-item-ref').text();
+
+        // Open parent tab
+        melisHelper.tabOpen(translations.tr_meliscommerce_orders_Orders, 'fa fa fa-cart-plus fa-2x', 'id_meliscommerce_order_list_page', 'meliscommerce_order_list_page');
+        var alreadyOpen = $("body #melis-id-nav-bar-tabs li a.tab-element[data-id='id_meliscommerce_order_list_page']");
+        // check if it exists
+        var checkOrders = setInterval(function() {
+            if(alreadyOpen.length){
+                var navTabsGroup = "id_meliscommerce_order_list_page";
+
+                melisHelper.tabOpen(
+                    translations.tr_meliscommerce_orders_Order+' '+orderReference,
+                    'fa fa fa-cart-plus fa-2x',
+                    orderId+'_id_meliscommerce_orders_page',
+                    'meliscommerce_orders_page',
+                    { orderId : orderId},
+                    navTabsGroup);
+                clearInterval(checkOrders);
+            }
+        }, 500);
+    });
+
     //set charts options
     charts.commerceDashboardOrdersLineGraph =
         {
