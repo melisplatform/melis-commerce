@@ -34,11 +34,24 @@ return array(
                     '/MelisCommerce/assets/common/bootstrap3-typeahead.min.js',
                     '/MelisCommerce/assets/common/awesomplete.min.js',
                 ),
-                
                 'css' => array(
                     '/MelisCommerce/assets/jstree/dist/themes/proton/style.min.css',
                     '/MelisCommerce/css/commerce-style.css',
                 ),
+                /**
+                 * the "build" configuration compiles all assets into one file to make
+                 * lesser requests
+                 */
+                'build' => [
+                    // lists of assets that will be loaded in the layout
+                    'css' => [
+                        '/MelisCommerce/build/css/bundle.css',
+
+                    ],
+                    'js' => [
+                        '/MelisCommerce/build/js/bundle.js',
+                    ]
+                ]
             ),
             'datas' => array(
                 'seo_default_pages' => array(
