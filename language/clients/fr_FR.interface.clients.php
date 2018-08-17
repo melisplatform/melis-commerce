@@ -169,7 +169,6 @@
 	    'tr_meliscommerce_client_Contact_invalid_email' => 'Adresse email invalide',
 	    'tr_meliscommerce_client_Contact_password_error_low' => 'Le mot de passe doit être d\'au moins 8 caractères',
 	    'tr_meliscommerce_client_Contact_password_regex_not_match' => 'Le mot de passe doit contenir au moins une lettre ET un chiffre',
-	    'tr_meliscommerce_client_Contact_password_regex_not_match' => 'Le mot de passe doit contenir au moins une lettre ET un chiffre',
 	    'tr_meliscommerce_client_Contact_unable_to_add_address' => 'Impossible d\'ajouter l\'adresse du contact, veuillez réessayer',
 	    // Contact Addreses Form
 	    'tr_meliscommerce_client_Contact_addresses' => 'Adresses',
@@ -232,6 +231,8 @@
 	    'tr_meliscommerce_plugin_login_password' => 'Mot de passe',
 	    'tr_meliscommerce_plugin_login_remember_me' => 'Se rappeler de moi',
 	    'tr_meliscommerce_plugin_login_invalid_email' => 'Adresse email invalide',
+        'tr_meliscommerce_plugin_login_invalid_email_or_password' => 'Invalid Email address or password',
+        'tr_meliscommerce_plugin_login_success' => 'Login success',
 	    
 	    // Plugin MelisCommerceRegistrationPlugin
 	    'tr_meliscommerce_plugin_registration_name' => 'Inscription',

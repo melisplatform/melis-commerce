@@ -64,68 +64,77 @@ class MelisComAuthenticationService extends Session
     {
         return $this->authenticationService->getStorage();
     }
-    
+
     /**
-     * 
-     * @param unknown $email
-     * @param unknown $password
-     * @param string $rememberMe
+     * @param $email
+     * @param $password
+     * @param bool $rememberMe
      * @return array
+     * @throws \Zend\Authentication\Exception\ExceptionInterface
      */
     public function login($email, $password, $rememberMe = false)
     {
         $success = 0;
-        $messages = array();
-        
-        $melisComClientService = $this->getServiceLocator()->get('MelisComClientService');
-        $password = $melisComClientService->crypt($password);
-        
-        $dbAdapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
-        $authAdapter = new AuthAdapter(
-            $dbAdapter,
-            'melis_ecom_client_person', // there is a method setTableName to do the same
-            'cper_email', // there is a method setIdentityColumn to do the same
-            'cper_password' // there is a method setCredentialColumn to do the same
-            );
-        
-        $authAdapter->setIdentity($email)->setCredential($password);
-        
-        $result = $this->authenticationService->authenticate($authAdapter);
-        
-        switch ($result->getCode()) 
+
+        $translator = $this->getServiceLocator()->get('translator');
+        $clientSrv = $this->getServiceLocator()->get('MelisComClientService');
+        $clientInfo = $clientSrv->getClientPersonByEmail($email);
+
+        //check if email exist
+        if(!empty($clientInfo))
         {
-            case Result::SUCCESS:
-                $storage = $this->getStorage();
-                
-                $personIdentity = $authAdapter->getResultRowObject(
-                    null,
-                    ['cper_password'] // removing the password from the result object
-                    );
-                
-                $personIdentity->clientKey = $this->getId();
-                    
-                $storage->write($personIdentity);
-                
-                $config = $this->getServiceLocator()->get('config');
-                $ecomClientConfig = $config['plugins']['meliscommerce']['datas']['default']['session'];
-                
-                /**
-                 * Getting the ttl for Session expiry from config
-                 * Ttl of session will depend on login option "remember me"
-                 */
-                $ecomDefaultTtl = ($rememberMe) ? $ecomClientConfig['remember_me_ttl'] : $ecomClientConfig['default_ttl'];
-                $this->sessionManager->rememberMe($ecomDefaultTtl);
-                
-                $message = 'Login success';
-                $success = 1;
-                
-                break;
-            default:
-                $message = 'Invalid Email address or password';
-                
-                break;
+            //check password
+            $isCorrect = $this->isPasswordCorrect($password, $clientInfo->cper_password);
+            if ($isCorrect)
+            {
+                $dbAdapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+                $authAdapter = new AuthAdapter(
+                    $dbAdapter,
+                    'melis_ecom_client_person', // there is a method setTableName to do the same
+                    'cper_email', // there is a method setIdentityColumn to do the same
+                    'cper_password' // there is a method setCredentialColumn to do the same
+                );
+
+                $authAdapter->setIdentity($email)->setCredential($clientInfo->cper_password);
+
+                $result = $this->authenticationService->authenticate($authAdapter);
+                switch ($result->getCode()) {
+                    case Result::SUCCESS:
+                        $storage = $this->getStorage();
+
+                        $personIdentity = $authAdapter->getResultRowObject(
+                            null,
+                            ['cper_password'] // removing the password from the result object
+                        );
+
+                        $personIdentity->clientKey = $this->getId();
+
+                        $storage->write($personIdentity);
+
+                        $config = $this->getServiceLocator()->get('config');
+                        $ecomClientConfig = $config['plugins']['meliscommerce']['datas']['default']['session'];
+
+                        /**
+                         * Getting the ttl for Session expiry from config
+                         * Ttl of session will depend on login option "remember me"
+                         */
+                        $ecomDefaultTtl = ($rememberMe) ? $ecomClientConfig['remember_me_ttl'] : $ecomClientConfig['default_ttl'];
+                        $this->sessionManager->rememberMe($ecomDefaultTtl);
+
+                        $message = $translator->translate('tr_meliscommerce_plugin_login_success');
+                        $success = 1;
+                        break;
+                    default:
+                        $message = $translator->translate('tr_meliscommerce_plugin_login_invalid_email_or_password');
+                        break;
+                }
+            }else{
+                $message = $translator->translate('tr_meliscommerce_plugin_login_invalid_email_or_password');
+            }
+        }else{
+            $message = $translator->translate('tr_meliscommerce_plugin_login_invalid_email_or_password');
         }
-        
+
         return array(
             'success' => $success,
             'message' => $message
@@ -216,5 +225,15 @@ class MelisComAuthenticationService extends Session
     {
         $this->authenticationService->clearIdentity();
         $this->sessionManager->forgetMe();
+    }
+
+    public function encryptPassword($password)
+    {
+        return password_hash($password, PASSWORD_DEFAULT);
+    }
+
+    public function isPasswordCorrect($providedPassword, $storedHashPassword)
+    {
+        return password_verify($providedPassword, $storedHashPassword);
     }
 }

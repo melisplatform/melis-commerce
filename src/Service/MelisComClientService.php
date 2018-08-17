@@ -10,7 +10,6 @@
 namespace MelisCommerce\Service;
 
 use MelisCommerce\Entity\MelisClientPerson;
-use Zend\Crypt\Key\Derivation\Pbkdf2;
 use Zend\Crypt\BlockCipher;
 use Zend\Crypt\Symmetric\Mcrypt;
 use Zend\Http\Response;
@@ -995,7 +994,7 @@ class MelisComClientService extends MelisComGeneralService
             {
                 $arrayParameters['person']['cper_password'] = $this->crypt($arrayParameters['person']['cper_password']);
             }
-            
+
             $arrayParameters['person']['cper_firstname'] = ucwords(mb_strtolower($arrayParameters['person']['cper_firstname']));
             $arrayParameters['person']['cper_name'] = mb_strtoupper($arrayParameters['person']['cper_name']);
             
@@ -1087,13 +1086,13 @@ class MelisComClientService extends MelisComGeneralService
 	     
 	    return $arrayParameters['results'];
 	}
-	
-	/**
-	 * Encryption of passwords for melis commerce
-	 *
-	 * @param String $data, String to encrypted
-	 * @return string
-	 */
+
+    /**
+     * Encryption of passwords for melis commerce
+     *
+     * @param $str
+     * @return mixed
+     */
 	public function crypt($str)
 	{
 	    // Event parameters prepare
@@ -1104,23 +1103,13 @@ class MelisComClientService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_passwordcryptdecrypt_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $melisConfig = $this->getServiceLocator()->get('config');
-	    $datasAccount = $melisConfig['plugins']['meliscommerce']['datas']['default']['accounts'];
-	
-	    $hashMethod = $datasAccount['hash_method'];
-	    $salt = $datasAccount['salt'];
-	    $length = $datasAccount['length'];
-	    
-	    $value  = Pbkdf2::calc($hashMethod, $arrayParameters['str'], $salt, 100, $length);
-	    // Decoding to UTF-8 format to make supported on varchar type in mysql
-	    $value = utf8_decode($value);
-	    // Service implementation end
-	    
+	    $authService = $this->getServiceLocator()->get('MelisComAuthenticationService');
+        $value = $authService->encryptPassword($arrayParameters['str']);
 	    // Adding results to parameters for events treatment if needed
 	    $arrayParameters['results'] = $value;
 	    // Sending service end event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_passwordcryptdecrypt_end', $arrayParameters);
-	    
+
 	    return $arrayParameters['results'];
 	}
 	
