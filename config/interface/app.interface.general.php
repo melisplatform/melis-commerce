@@ -36,7 +36,6 @@ return array(
                     '/MelisCommerce/plugins/js/MelisCommerceCategoryTreePlugin.js',
                     '/MelisCommerce/plugins/js/common/category-jstree.js',
                 ),
-                
                 'css' => array(
                     '/MelisCommerce/assets/jstree/dist/themes/proton/style.min.css',
                     '/MelisCommerce/plugins/css/common/category-jstree.css',

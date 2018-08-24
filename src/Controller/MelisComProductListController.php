@@ -439,10 +439,9 @@ class MelisComProductListController extends AbstractActionController
                                    
                                    // label whole row with red if stock is set and it is zero
                                    if(!is_null($stockQty) && $stockQty == 0) {
-                                       $warningDom = '<i class="fa fa-warning" style="color:#a94442;font-size:12px;"></i> ';
-                                   }else {
-                                       $warningDom = '';
+                                       $warningDom = '<i class="fa fa-warning fa-2x pull-left" style="color:#981a1f; font-size: 20px;"></i> ';
                                    }
+                                   
                                    $image = !empty($value['flag']) ? '<img src="data:image/jpeg;base64,'. ($value['flag']) .'" class="" width="16" height="16"/>' : '<i class="fa fa-globe"></i>';
                                    $price .= $priceNet .'<br/>';
                                    $country .= $image.' '.$countryKey  .'<br/>';

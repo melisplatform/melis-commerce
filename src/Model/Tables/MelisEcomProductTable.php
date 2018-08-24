@@ -303,7 +303,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
 
         $select->order('melis_ecom_category.cat_order ASC');
         $resultSet = $this->tableGateway->selectwith($select);
-        
+
         return $resultSet;
     }
     
@@ -604,10 +604,10 @@ class MelisEcomProductTable extends MelisEcomGenericTable
             $select->where->and->equalTo('melis_ecom_category_trans.catt_lang_id', (int) $langId);
         }
         
-        $select->group('melis_ecom_product_category.pcat_id');
+        // $select->group('melis_ecom_product_category.pcat_id');
         $select->order('melis_ecom_category.cat_order ASC');
         $resultSet = $this->tableGateway->selectwith($select);
-    
+
         return $resultSet;
     }
     
