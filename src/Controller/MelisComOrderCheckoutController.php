@@ -918,7 +918,8 @@ class MelisComOrderCheckoutController extends AbstractActionController
             $container = new Container('meliscommerce');
             $container['checkout'][self::SITE_ID]['contactId'] = $contact->cper_id;
             $container['checkout'][self::SITE_ID]['clientId'] = $contact->cper_client_id;
-    
+            $container['checkout'][self::SITE_ID]['clientEmail'] = $contact->cper_email;
+
             $clientId = $container['checkout'][self::SITE_ID]['clientId'];
             $clientKey = (!empty($container['checkout'][self::SITE_ID]['clientKey'])) ? $container['checkout'][self::SITE_ID]['clientKey'] : null;
     
@@ -1969,12 +1970,14 @@ class MelisComOrderCheckoutController extends AbstractActionController
     {
         $orderId = null;
         $totalCost = 0;
+        $clientEmail = '';
         
         $container = new Container('meliscommerce');
         if (!empty($container['checkout'][self::SITE_ID]['orderId']))
         {
             $orderId = $container['checkout'][self::SITE_ID]['orderId'];
-            
+            $clientEmail = $container['checkout'][self::SITE_ID]['clientEmail'];
+
             // Retrieving the Checkout total cost
             $melisComOrderCheckoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
             $melisComOrderCheckoutService->setSiteId(self::SITE_ID);
@@ -1987,20 +1990,25 @@ class MelisComOrderCheckoutController extends AbstractActionController
         {
             $couponId = $container['checkout'][self::SITE_ID]['couponId'];
         }
-        
+
         $param = array(
             'countryId' => $container['checkout'][self::SITE_ID]['countryId'],
             'orderId' => $orderId,
             'couponId' => $couponId,
             'totalCost' => $totalCost,
+            'email' => $clientEmail,
+            'siteId' => self::SITE_ID,
         );
-        
         $urlParam = http_build_query($param);
+        $param['content'] = '<iframe class="order-checkout-payment-iframe" src="/melis/MelisCommerce/MelisComOrderCheckout/renderOrderCheckoutPaymentIframe?'.$urlParam.'"></iframe>';
+
+        $melisCoreGeneralSrv = $this->getServiceLocator()->get('MelisCoreGeneralService');
+        $param = $melisCoreGeneralSrv->sendEvent('melis_commerce_order_checkout_payment_step', $param);
         
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
         $view->melisKey = $melisKey;
-        $view->urlParam = $urlParam;
+        $view->content = $param['content'];
         return $view;
     }
     

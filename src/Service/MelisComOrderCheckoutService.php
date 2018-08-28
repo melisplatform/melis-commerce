@@ -950,8 +950,8 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                     $order = $this->computeOrderTotalCosts($orderId);
                     
                     $totalCost = $order['costs']['total'];
-                    
-                    if ($totalCost == $arrayParameters['results']['payment_details']['transactionPricePaid'])
+
+                    if (bccomp($totalCost, $arrayParameters['results']['payment_details']['transactionPricePaid'], 3) == 0)
                     {
                         $orderData = array(
                             'ord_status' => 1 // Status new Order
@@ -963,7 +963,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                             'ord_status' => 6 // Payment total cost not equal to paid amount
                         );
                     }
-                    
+
                     $paymentData = $arrayParameters['results']['payment_details'];
                     
                     /**
