@@ -185,7 +185,7 @@ class MelisComProductListController extends AbstractActionController
             $search = $this->getRequest()->getPost('search');
             $search = $search['value'];
             
-            $prodData = $prodSvc->getProductList(null, null, null, null, $start, $length, $selColOrder, $order[0]['dir'], $search);
+            $prodData = $prodSvc->getProductList($langId, null, null, null, $start, $length, $selColOrder, $order[0]['dir'], $search);
             $checkBox = '<div class="checkbox checkbox-single margin-none" data-product-id="%s">
 							<label class="checkbox-custom">
 								<i class="fa fa-fw fa-square-o"></i>
@@ -200,10 +200,10 @@ class MelisComProductListController extends AbstractActionController
             // PRODUCT DETAILS
             $ctr = 0;
             $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
-            $dataCount = $prodSvc->getProductList(null, null, null, null, null, null, $selColOrder, $order[0]['dir'], $search);
+            $dataCount = $prodSvc->getProductList($langId, null, null, null, null, null, $selColOrder, $order[0]['dir'], $search);
             foreach($prodData as $prod) 
             {
-                $prodText = $prodSvc->getProductName($prod->getProduct()->prd_id, $this->getTool()->getCurrentLocaleID());
+                $prodText = $prodSvc->getProductName($prod->getProduct()->prd_id, $langId);
                 $prodText = $this->getTool()->escapeHtml($prodText);
 
                 $tableData[$ctr]['DT_RowData'] = array('productname', $prodText);
@@ -216,7 +216,7 @@ class MelisComProductListController extends AbstractActionController
                 $tableData[$ctr]['product_categories'] = '';
                 foreach($prod->getCategories() as $prodCat)
                 {                    
-                    $catName = $categorySvc->getCategoryNameById($prodCat->pcat_cat_id, $this->getTool()->getCurrentLocaleID());
+                    $catName = $categorySvc->getCategoryNameById($prodCat->pcat_cat_id, $prodCat->catt_lang_id);
                     $tableData[$ctr]['product_categories'] .= sprintf($categoryDom, $this->getTool()->escapeHtml($catName));
                 }
                 

@@ -28,7 +28,7 @@ class MelisComProductController extends AbstractActionController
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
 
-        $this->setProductVariables($productId);
+        $this->setProductVariables($productId, $this->getTool()->getCurrentLocaleID());
 
         $container = new Container('meliscommerce');
         $container['documents'] = array('docRelationType' => 'product', 'docRelationId' => $productId);
@@ -485,7 +485,7 @@ class MelisComProductController extends AbstractActionController
         $productId = (int) $this->params()->fromQuery('productId', '');
 
         $attributes = $this->getAttributesExceptAttributesOnProductId($productId);
-        $this->setProductVariables($productId);
+        $this->setProductVariables($productId, $this->getTool()->getCurrentLocaleID());
 
         $view = new ViewModel();
         $view->melisKey = $melisKey;
@@ -730,7 +730,7 @@ class MelisComProductController extends AbstractActionController
         $factory->setFormElementManager($formElements);
         $productTextForm = $factory->createForm($appConfigForm);
 
-        $this->setProductVariables($productId);
+        $this->setProductVariables($productId, $this->getTool()->getCurrentLocaleID());
 
         $view = new ViewModel();
         $view->melisKey = $melisKey;
@@ -1675,7 +1675,7 @@ class MelisComProductController extends AbstractActionController
      * that is under on this Controller
      * @param int $productId
      */
-    private function setProductVariables($productId)
+    private function setProductVariables($productId, $langId = null)
     {
         $categoryText = array();
         $categorySvc = $this->getServiceLocator()->get('MelisComCategoryService');
@@ -1684,14 +1684,14 @@ class MelisComProductController extends AbstractActionController
         $attrTransTable = $this->getServiceLocator()->get('MelisEcomAttributeTransTable');
         $prodTextTypeTable = $this->getServiceLocator()->get('MelisEcomProductTextTypeTable');
         $ecomLangTable = $this->getServiceLocator()->get('MelisEcomLangTable');
-        $product = $this->getProduct($productId, null);
+        $product = $this->getProduct($productId, $langId);
         $categories = array();
         $prodText = array();
         $attributes = array();
         $prodName = '';
         $texts = '';
         $layoutVar = array();
-        
+
         if($product) 
         {
             $categories = $product->getCategories();
@@ -1711,12 +1711,12 @@ class MelisComProductController extends AbstractActionController
                     $categoryText[] = array(
                         'pcat_id' => $prodObjectVal->pcat_id,
                         'pcat_cat_id' => $categoryId,
-                        'catt_name' => $categorySvc->getCategoryNameById($categoryId, $this->getTool()->getCurrentLocaleID()),
-                        'pcat_order' => $prodObjectVal->pcat_order
+                        'catt_name' => $categorySvc->getCategoryNameById($categoryId, $prodObjectVal->catt_lang_id),
+                        'pcat_order' => $prodObjectVal->pcat_order,
                     );
                 }
             }
-            
+
             $layoutVar['prodCategories'] = $categoryText;
         }
         
