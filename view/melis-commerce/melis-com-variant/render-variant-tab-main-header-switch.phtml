@@ -2,10 +2,8 @@
     $var_status = "checked";
 
     $id = 'id="';
-    if (!empty($this->variantId)){
-        $id .= $this->variantId;
-    }
-    
+    $id .= $this->variantId;
+
     $id .= '_'.$this->zoneconfig['conf']['id'].'"';
     $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
     
