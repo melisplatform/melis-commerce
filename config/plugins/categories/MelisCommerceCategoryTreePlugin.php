@@ -85,7 +85,7 @@ return array(
                                     array(
                                         'spec' => array(
                                             'name' => 'm_box_include_root_category_tree',
-                                            'type' => 'Checkbox',
+                                            'type' => 'Select',
                                             'options' => array(
                                                 'tooltip' => 'tr_meliscommerce_plugin_include_root_category_tooltip',
                                                 'label' => 'tr_meliscommerce_plugin_include_root_category',
@@ -95,7 +95,8 @@ return array(
                                                     'label-on' => 'tr_meliscommerce_categories_common_label_yes',
                                                     'label-off' => 'tr_meliscommerce_categories_common_label_no',
                                                     'label' => "<i class='glyphicon glyphicon-resize-horizontal'></i>",
-                                                )
+                                                ),
+                                                'disable_inarray_validator' => true,
                                             ),
                                             'attributes' => array(
                                                 'id' => 'm_box_include_root_category_tree',

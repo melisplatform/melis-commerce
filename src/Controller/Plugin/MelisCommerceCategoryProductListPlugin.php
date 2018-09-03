@@ -67,8 +67,8 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
         $data = $this->getFormData();
         
         $categoryIds    =   !empty($data['m_category_ids'])                 ? $data['m_category_ids'] : array();
-        $includeSubCats =   $data['m_include_sub_category_products']        ? true : false;
-        
+        $includeSubCats =   !empty($data['m_include_sub_category_products']) ? true : false;
+
         $onlyValid = true;
         
         $catOrderColumn = !empty($data['m_cat_col_name'])   ? $data['m_cat_col_name'] : 'catt_name';

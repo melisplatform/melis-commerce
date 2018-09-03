@@ -23,7 +23,7 @@ return array(
                              * Options for including products of the Category
                              * sub-categories products
                              */
-                            'm_include_sub_category_products' => true,
+                            'm_include_sub_category_products' => null,
                         ),
                         // Product option
                         'm_product_option' => array(
@@ -111,7 +111,7 @@ return array(
                                     array(
                                         'spec' => array(
                                             'name' => 'm_include_sub_category_products',
-                                            'type' => 'Checkbox',
+                                            'type' => 'Select',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_plugin_category_product_list_include_sub_cat_prds',
                                                 'tooltip' => 'tr_meliscommerce_plugin_category_product_list_include_sub_cat_prds tooltip',
@@ -121,7 +121,8 @@ return array(
                                                     'label-on' => 'tr_meliscommerce_categories_common_label_yes',
                                                     'label-off' => 'tr_meliscommerce_categories_common_label_no',
                                                     'label' => "<i class='glyphicon glyphicon-resize-horizontal'></i>",
-                                                )
+                                                ),
+                                                'disable_inarray_validator' => true,
                                             ),
                                             'attributes' => array(
                                                 'id' => 'm_include_sub_category_products',
