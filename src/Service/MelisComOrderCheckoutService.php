@@ -734,7 +734,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                 
                 $variantPrice = $melisComVariantService->getVariantFinalPrice($variant->var_id, $clientCountryId);
                 
-                if (is_null($variantPrice))
+                if (empty($variantPrice))
                 {
                     $variantPrice = $melisComProductService->getProductFinalPrice($productId, $clientCountryId);
                 }
@@ -1237,7 +1237,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         // Order service manager
         $orderService = $this->getServiceLocator()->get('MelisComOrderService');
         $basket = $orderService->getOrderBasketByOrderId($arrayParameters['orderId']);
-        
+
         // computation of variants based on price_net and quantity
         
         $variantDetails = array();
@@ -1281,7 +1281,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         $arrayParameters['results'] = $results;
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_checkout_post_order_computation_end', $arrayParameters);
-        
+
         if ($arrayParameters['results']['costs']['order']['total'] < 0)
         {
             $arrayParameters['results']['costs']['order']['total'] = 0;
