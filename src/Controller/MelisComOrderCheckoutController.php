@@ -275,7 +275,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
                 // Getting the Final Price of the variant
                 $varPrice = $melisComVariantService->getVariantFinalPrice($variantId, $countryId);
                 
-                if (is_null($varPrice))
+                if (empty($varPrice))
                 {
                     // If the variant price not set on variant page this will try to get from the Product Price
                     $varPrice = $melisComProductService->getProductFinalPrice($productId, $countryId);
@@ -427,7 +427,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
                 // Getting the Final Price of the variant
                 $varPrice = $melisComVariantService->getVariantFinalPrice($variantId, $countryId);
                 
-                if (is_null($varPrice))
+                if (empty($varPrice))
                 {
                     // If the variant price not set on variant page this will try to get from the Product Price
                     $varPrice = $melisComProductService->getProductFinalPrice($variant->var_prd_id, $countryId);
