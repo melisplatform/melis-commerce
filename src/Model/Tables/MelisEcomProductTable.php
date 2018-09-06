@@ -465,7 +465,9 @@ class MelisEcomProductTable extends MelisEcomGenericTable
                 }
                 
             }else{
-                $select->where->like('melis_ecom_product.prd_reference', '%'. $productSearchKey. '%');
+                $select->where->NEST->like('melis_ecom_product.prd_reference', '%'. $productSearchKey. '%')
+                    ->or->like('melis_ecom_product_text.ptxt_field_short', '%'. $productSearchKey. '%')
+                    ->or->like('melis_ecom_product_text.ptxt_field_long', '%'. $productSearchKey. '%');
             }
         }
         
