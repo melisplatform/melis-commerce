@@ -115,7 +115,15 @@ class MelisCommercePostCheckoutCouponListener implements ListenerAggregateInterf
         		            $params['results']['costs']['order']['total'] = $subTotal - $totalDiscount;
         		        }
         		    }
-        		    
+                    /**
+                     * lets check if the total price has 3 or more decimals
+                     * if it has, we need to round it to 2 decimals
+                     */
+                    $price = $params['results']['costs']['order']['total'];
+                    if(strlen(substr(strrchr($price, "."), 1)) > 2){
+                        $price = round($price, 2);
+                        $params['results']['costs']['order']['total'] = $price;
+                    }
         		}
         	},
         	

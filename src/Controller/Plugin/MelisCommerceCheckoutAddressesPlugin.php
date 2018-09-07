@@ -401,7 +401,7 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
                     foreach ($checkoutAddresses As $key => $val)
                     {
                         // checking if the entry is existing in db, else this will save to selected contact addresses
-                        if (empty($val['address']['cadd_id']))
+                        if (empty($val['address']['cadd_id']) || $val['address']['cadd_id'] == 'new_address')
                         {
 
                             $val['address']['cadd_client_id'] = $container['checkout'][$siteId]['clientId'];
@@ -559,45 +559,6 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
 
         return $data;
     }
-
-//    public function validateAddressForm($deliveryAddForm, $billingAddForm, $sameAddress)
-//    {
-//        $errors = array();
-//        if (!$deliveryAddForm->isValid())
-//        {
-//            $errors = $deliveryAddForm->getMessages();
-//        }else{
-//            // Checking if the Billing address will use the same with Delivery Address
-//            if ($sameAddress)
-//            {
-//                $deliveryAddData = $deliveryAddForm->getData();
-//                $billingAddData = array();
-//                foreach ($deliveryAddData As $dKey => $dVal)
-//                {
-//                    // Replacing index of delivery to billing index
-//                    $billingAddData[str_replace('m_add_delivery_', 'm_add_billing_', $dKey)] = $dVal;
-//                }
-//
-//                if (!empty($billingAddData['m_add_billing_type']))
-//                {
-//                    // Modifying the billing type id for billing type id
-//                    $billingAddData['m_add_billing_type'] = 1;
-//                }
-//
-//                $billingAddForm->setData($billingAddData);
-//            }else{
-//                if (!$billingAddForm->isValid())
-//                {
-//                    $errors = ArrayUtils::merge($errors, $billingAddForm->getMessages());
-//                }
-//            }
-//        }
-//        return array(
-//            'errors' => $errors,
-//            'deliveryAddForm' => $deliveryAddForm,
-//            'billingAddForm' => $billingAddForm
-//        );
-//    }
 
     /**
      * This method will decode the XML in DB to make it in the form of the plugin config file

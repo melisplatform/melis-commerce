@@ -33,7 +33,7 @@ return array(
                         'm_add_delivery_complementary' => '',
                         
                         // use same address flag
-                        'm_add_use_same_address' => 1,
+                        'm_add_use_same_address' => null,
 
                         /**
                          * This field is used to determine which address
@@ -1380,7 +1380,7 @@ return array(
                                     array(
                                         'spec' => array(
                                             'name' => 'm_add_use_same_address',
-                                            'type' => 'Checkbox',
+                                            'type' => 'Select',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_plugin_checkout_addresses_use_same_address',
                                                 'tooltip' => 'tr_meliscommerce_plugin_checkout_addresses_use_same_address tooltip',
@@ -1390,7 +1390,8 @@ return array(
                                                     'label-on' => 'tr_meliscommerce_categories_common_label_yes',
                                                     'label-off' => 'tr_meliscommerce_categories_common_label_no',
                                                     'label' => "<i class='glyphicon glyphicon-resize-horizontal'></i>",
-                                                )
+                                                ),
+                                                'disable_inarray_validator' => true
                                             ),
                                             'attributes' => array(
                                                 'id' => 'm_add_use_same_address',
