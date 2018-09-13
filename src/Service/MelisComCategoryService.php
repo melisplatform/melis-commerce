@@ -201,28 +201,32 @@ class MelisComCategoryService extends MelisComGeneralService
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_get_name_start', $arrayParameters);
         
-        // Service implementation start
+        // Service implementation
         
-        $category = $this->getCategoryById($arrayParameters['categoryId'], $arrayParameters['langId']);
+        $category = $this->getCategoryById($arrayParameters['categoryId']);
         
         $catTrans = $category->getTranslations();
         
         $catNameStr = null;
-        
+
         if (!empty($catTrans))
         {
-            
-            if (!is_null($arrayParameters['langId']))
+             // Getting the first available translation of the Category
+            foreach ($catTrans As $val)
             {
-                
-                if (!empty($catTrans[$arrayParameters['langId']]))
+                if (!empty($val->catt_name) && $val->elang_id == $arrayParameters['langId']) 
                 {
-                    $catNameStr = $catTrans[$arrayParameters['langId']]->catt_name;
+                    $catNameStr = $val->catt_name;
+                    break;
                 }
-                else 
+            }
+
+            if (empty($catNameStr)) 
+            {
+                // Getting the first available translation of the Category
+                foreach ($catTrans As $val)
                 {
-                    // Getting the first available translation of the Category
-                    foreach ($catTrans As $val)
+                    if (!empty($val->catt_name))
                     {
                         $catNameStr = $val->catt_name . ' ('.$val->elang_name.')';
                         break;
@@ -230,7 +234,7 @@ class MelisComCategoryService extends MelisComGeneralService
                 }
             }
         }
-        
+
         $results = $catNameStr;
         // Service implementation end
         

@@ -156,7 +156,7 @@ class MelisComProductService extends MelisComGeneralService
             foreach($productData as $prod) {
                 $entProd->setId($prod->prd_id);
                 $entProd->setProduct($prod);
-                foreach($prodTable->getProductCategoryByProductId($arrayParameters['productId'], $arrayParameters['langId']) as $prodCat){
+                foreach($prodTable->getProductCategoryByProductId($arrayParameters['productId']) as $prodCat){
                     $category[]= $prodCat;
                 }
                 $entProd->setCategories($category);
@@ -438,22 +438,28 @@ class MelisComProductService extends MelisComGeneralService
 	    $results = array();
 	     
 	    // Sending service start event
+	    $prodTextTable = $this->getServiceLocator()->get('MelisEcomProductTextTable');
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_get_product_name_start', $arrayParameters);
 	
-	    // Service implementation start
-	    $data = $this->getProductTextsById($arrayParameters['productId'], 'TITLE', $arrayParameters['langId']);
+	    // Service implementation start 
+	    $data = $this->getProductTextsById($arrayParameters['productId'], 'TITLE');
 	    $productName = '';
-
 	    foreach($data as $text) {
-	        if($text) {
-	            if(!empty($text->ptxt_field_short)) {
-	                $productName = $text->ptxt_field_short;
-	            }
-	        }
+            if(!empty($text->ptxt_field_short) && $text->ptxt_lang_id == $arrayParameters['langId']) {
+                $productName = $text->ptxt_field_short;
+            }
 	    }
+
+		if(empty($productName)) {
+			foreach($data as $text) {
+	            if(!empty($text->ptxt_field_short)) {
+	            	$produecText = $prodTextTable->getProductTextsWithLang($arrayParameters['productId'], $text->ptxt_lang_id)->current();
+	                $productName = $produecText->ptxt_field_short.' ('.$produecText->elang_name.')';
+	            }
+	    	}
+		}
 	
 	    if(empty($productName)) {
-
 	        $data = $this->getProductById($arrayParameters['productId'], $langId)->getProduct();
 	        if(isset($data->prd_reference) && $data->prd_reference) {
 	            $productName = $data->prd_reference;

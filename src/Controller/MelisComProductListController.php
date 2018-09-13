@@ -215,8 +215,8 @@ class MelisComProductListController extends AbstractActionController
                 
                 $tableData[$ctr]['product_categories'] = '';
                 foreach($prod->getCategories() as $prodCat)
-                {                    
-                    $catName = $categorySvc->getCategoryNameById($prodCat->pcat_cat_id, $prodCat->catt_lang_id);
+                {
+                    $catName = $categorySvc->getCategoryNameById($prodCat->pcat_cat_id, $langId);
                     $tableData[$ctr]['product_categories'] .= sprintf($categoryDom, $this->getTool()->escapeHtml($catName));
                 }
                 

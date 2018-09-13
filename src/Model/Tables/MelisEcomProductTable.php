@@ -593,7 +593,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         return $resultSet;
     }
     
-    public function getProductCategoryByProductId($productId, $langId = null)
+    public function getProductCategoryByProductId($productId)
     {
         $select = $this->tableGateway->getSql()->select();
         $select->columns(array());
@@ -602,10 +602,6 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         ->join('melis_ecom_category_trans', 'melis_ecom_category_trans.catt_category_id = melis_ecom_category.cat_id', array('*'), $select::JOIN_LEFT);
         $select->where->equalTo('melis_ecom_product_category.pcat_prd_id', $productId);
     
-        if(!is_null($langId)) {
-            $select->where->and->equalTo('melis_ecom_category_trans.catt_lang_id', (int) $langId);
-        }
-        
         // $select->group('melis_ecom_product_category.pcat_id');
         $select->order('melis_ecom_category.cat_order ASC');
         $resultSet = $this->tableGateway->selectwith($select);
