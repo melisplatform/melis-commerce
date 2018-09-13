@@ -38,10 +38,19 @@ class EcomPluginProductListSelectFactory extends MelisSelectFactory
                  * is migrated and the product don't have a reference,
                  * so if this will happen, we will used the product title
                  */
-                $productText = $productTble->getProductText($val->prd_id, $langIdBO, 'TITLE')->toArray();
+                $productText = $productTble->getProductText($val->prd_id, null, 'TITLE')->toArray();
                 if(!empty($productText)){
-                    if(isset($productText[0])){
-                        $valueoptions[$val->prd_id] = $productText[0]['ptxt_field_short'];
+                    foreach($productText as $key => $textVal){
+                        $flag = false;
+                        if($textVal['ptxt_lang_id'] == $langIdBO){
+                            $valueoptions[$val->prd_id] = $textVal['ptxt_field_short'];
+                            $flag = true;
+                            break;
+                        }
+
+                        if(!$flag){
+                            $valueoptions[$val->prd_id] = $textVal['ptxt_field_short'];
+                        }
                     }
                 }
             }
