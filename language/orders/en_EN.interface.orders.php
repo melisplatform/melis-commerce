@@ -151,4 +151,6 @@
         'tr_melis_commerce_dashboard_plugin_order_messages_all' => 'All',
         'tr_melis_commerce_dashboard_plugin_order_messages_unanswered' => 'Unanswered',
         'tr_melis_commerce_dashboard_plugin_order_messages_unanswered_messages' => 'You have <strong class="text-primary"> %d messages unanswered</strong>',
+        'tr_melis_commerce_dashboard_plugin_order_messages_message_order_amount' => 'Order Amount : ',
+        'tr_melis_commerce_dashboard_plugin_order_messages_message_placed_on' => 'Placed On : ',
 	);

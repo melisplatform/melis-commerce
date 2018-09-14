@@ -146,4 +146,6 @@
         'tr_melis_commerce_dashboard_plugin_order_messages_all' => 'Tout',
         'tr_melis_commerce_dashboard_plugin_order_messages_unanswered' => 'Sans réponse',
         'tr_melis_commerce_dashboard_plugin_order_messages_unanswered_messages' => 'Vous avez <strong class="text-primary"> %d messages sans réponse </strong>',
+        'tr_melis_commerce_dashboard_plugin_order_messages_message_order_amount' => 'Montant commande : ',
+        'tr_melis_commerce_dashboard_plugin_order_messages_message_placed_on' => 'Date commande : ',
 	);
