@@ -32,11 +32,11 @@ class MelisCommerceCheckoutCouponListener implements ListenerAggregateInterface
         		$couponSrv = $sm->get('MelisComCouponService');
         		$checkoutService = $sm->get('MelisComOrderCheckoutService');
         		$params = $e->getParams();
-        		
+
         		// Getting $_GET[] parameters for CouponCode
         		$getValues = $sm->get('request')->getQuery();
         		$getValues = get_object_vars($getValues);
-        		
+
         		if ($params['results']['success'])
         		{
         		    $clientId = $params['results']['clientId'];
@@ -171,13 +171,15 @@ class MelisCommerceCheckoutCouponListener implements ListenerAggregateInterface
                         $totalWithoutCoupon = 0;
                         $total = 0;
                         $discount = 0;
+
                         foreach ($orders as $key => $val) {
 
                             $discount += !empty($val['discount_total']) ? $val['discount_total'] : 0;
-                            $totalWithoutCoupon += $val['unit_price'];
-                            $params['results']['costs']['order']['totalWithoutCoupon'] = $val['total_price'];
+                            $varTotal = $val['unit_price'] * $val['quantity'];
+                            $totalWithoutCoupon += $varTotal;
+                            $params['results']['costs']['order']['totalWithoutCoupon'] = $totalWithoutCoupon;
                             $params['results']['costs']['order']['totalWithProductCoupon'] = $totalWithoutCoupon - $discount;
-                            $params['results']['costs']['order']['total'] = $val['total_price'];
+                            $params['results']['costs']['order']['total'] = $totalWithoutCoupon - $discount;
 
                         }
 
@@ -206,7 +208,6 @@ class MelisCommerceCheckoutCouponListener implements ListenerAggregateInterface
                         $params['results']['costs']['order']['orderDiscount'] = $orderDiscount;
                         $container['checkout'][$siteId]['coupons']['productCoupons'] = $productCoupons;
                         $container['checkout'][$siteId]['coupons']['generalCoupons'] = $generalCoupons;
-
                     }
         		}
         	},
