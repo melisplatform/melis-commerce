@@ -53,7 +53,7 @@
 	    'tr_meliscommerce_general_common_autologin tooltip' => 'Connect the user directly after validation of the form',
 	    'tr_meliscommerce_general_common_show_select_addresses tooltip' => 'This will show a form select option of addresses',
 	    'tr_meliscommerce_general_common_per_page tooltip' => 'Number of results displayed on a single page',
-	    'tr_meliscommerce_general_common_num_page_before_after tooltip' => 'The display of the pagination generate a certain number of links before and after the current page, this field allows to limit this number of inks',
+	    'tr_meliscommerce_general_common_num_page_before_after tooltip' => 'The display of the pagination generate a certain number of links before and after the current page, this field allows to limit this number of links',
 	    'tr_meliscommerce_general_common_country tooltip' => 'Select the country to assign the corresponding currency and price of the products',
 	    'tr_meliscommerce_general_common_site tooltip' => 'Site id use to identify where the checkout is conducted',
 	    
