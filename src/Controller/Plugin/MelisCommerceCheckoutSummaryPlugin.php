@@ -64,6 +64,7 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
     public function front()
     {
         $checkoutCart = array();
+        $clientOrderCost = array();
         $currency = '';
         $subTotal = 0;
         $totalDiscount = 0;
@@ -96,7 +97,7 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
             $melisComOrderCheckoutService->setSiteId($siteId);
             $clientOrderCost = $melisComOrderCheckoutService->computeAllCosts($clientId);
             $validatedBasket = $melisComOrderCheckoutService->validateBasket($clientId);
-            
+
             if (isset($clientOrderCost['costs']['order']))
             {
                 $clientOrder = $clientOrderCost['costs']['order'];
@@ -143,7 +144,7 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
                         }
                     }
                 }
-                
+
                 if (isset($clientOrder['totalWithoutCoupon']))
                 {
                     $subTotal = $clientOrder['totalWithoutCoupon'];
@@ -189,6 +190,7 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
             'checkoutCartTotal' => $currency.number_format($total, 2),
             'checkoutHasErr' => $hasErr,
             'checkoutErrorMsg' => $checkoutErrorMsg,
+            'checkoutClientOrderCost' => $clientOrderCost,
         );
         // return the variable array and let the view be created
         return $viewVariables;
