@@ -80,7 +80,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         $select->join('melis_ecom_variant', 'melis_ecom_variant.var_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT);
         $select->join('melis_ecom_price', 'melis_ecom_price.price_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT);
         //include product variant
-        $select->join(array("var_price" => "melis_ecom_price"), 'var_price.price_var_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT);
+        $select->join(array("var_price" => "melis_ecom_price"), 'var_price.price_var_id = melis_ecom_variant.var_id', array(), $select::JOIN_LEFT);
        
         if(is_array($categoryIds) && !empty($categoryIds)) {
             $select->where->and->in('melis_ecom_product_category.pcat_cat_id', $categoryIds);
