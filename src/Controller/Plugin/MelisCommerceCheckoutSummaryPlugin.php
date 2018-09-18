@@ -101,7 +101,7 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
             if (isset($clientOrderCost['costs']['order']))
             {
                 $clientOrder = $clientOrderCost['costs']['order'];
-                
+
                 if (isset($clientOrder['details']))
                 {
                     $clientOrderVariant =  $clientOrder['details'];
@@ -145,9 +145,9 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
                     }
                 }
 
-                if (isset($clientOrder['totalWithoutCoupon']))
+                if (isset($clientOrder['totalWithProductCoupon']))
                 {
-                    $subTotal = $clientOrder['totalWithoutCoupon'];
+                    $subTotal = $clientOrder['totalWithProductCoupon'];
                 }
                 
                 if (isset($clientOrderCost['costs']['total']))
