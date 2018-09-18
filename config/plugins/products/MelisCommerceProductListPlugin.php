@@ -329,7 +329,7 @@ return array(
                                             'type' => 'Text',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_plugin_product_list_number_of_pages',
-                                                'tooltip' => 'tr_meliscmsnews_plugin_pagination_nbPageBeforeAfter tooltip',
+                                                'tooltip' => 'tr_meliscommerce_general_common_num_page_before_after tooltip',
                                             ),
                                             'attributes' => array(
                                                 'id' => 'm_page_nb_page_before_after',
