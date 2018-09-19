@@ -927,12 +927,12 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         $arrayParameters['results'] = $results;
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_checkout_step2_postpayment_end', $arrayParameters);
-        
+
         if ($arrayParameters['results']['success'] && !empty($arrayParameters['results']['orderId']))
         {
             $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
             $orderDetails = $melisEcomOrderTable->getEntryById($arrayParameters['results']['orderId'])->current();
-            
+
             // Checking if the Order is existing
             // Just to be sure that the Order Id is existing on Order records
             if (!empty($orderDetails))
@@ -948,7 +948,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                     
                     $clientId = $arrayParameters['results']['clientId'];
                     $order = $this->computeOrderTotalCosts($orderId);
-                    
+
                     $totalCost = $order['costs']['total'];
 
                     if (bccomp($totalCost, $arrayParameters['results']['payment_details']['transactionPricePaid'], 3) == 0)
@@ -988,11 +988,12 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                     if (!empty($currency)){
                         $currencyId = $currency->cur_id;
                     }
-                    
+
+                    $priceOrder = isset($order['costs']['order']['totalWithProductCoupon']) ? $order['costs']['order']['totalWithProductCoupon']: $order['costs']['order']['totalWithoutCoupon'];
                     $payment = array(
                         'opay_order_id' => $orderId,
                         'opay_price_total' => $totalCost,
-                        'opay_price_order' => $order['costs']['order']['totalWithoutCoupon'],
+                        'opay_price_order' => $priceOrder,
                         'opay_price_shipping' => $order['costs']['shipment']['total'],
                         'opay_currency_id' => $currencyId,
                         'opay_payment_type_id' => $paymentTypeId,
@@ -1002,7 +1003,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                         'opay_transac_raw_response' => $paymentData['transactionFullRawResponse'],
                         'opay_date_payment' => date('Y-m-d H:i:s'),
                     );
-                    
+
                     $clientCountryId = $paymentData['transactionCountryId'];
                     
                     // Unset data not requried to return as results
