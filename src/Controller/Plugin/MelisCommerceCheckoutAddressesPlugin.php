@@ -164,24 +164,34 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
                 }
             }
 
-            /**
-             * Set form data of Delivery Address
-             */
-            $deliveryAddFormData = ($isSubmit) ? $this->pluginFrontConfig : $deliveryAddFormSessData;
-            $deliveryAddForm->setData($deliveryAddFormData);
-
             $clientSrv = $this->getServiceLocator()->get('MelisComClientService');
-            $personBilAddress = $clientSrv->getClientAddressesByClientPersonId($personId, 'BIL');
-            if (empty($personBilAddress))
-            {
-                $billingAddForm->get('m_add_billing_id')->setValue('new_address')->setAttribute('type', 'hidden');
-            }
-
             $personDelAddress = $clientSrv->getClientAddressesByClientPersonId($personId, 'DEL');
             if (empty($personDelAddress))
             {
                 $deliveryAddForm->get('m_add_delivery_id')->setValue('new_address')->setAttribute('type', 'hidden');
             }
+
+            /**
+             * This fill up the delivery form
+             * if delivery session is empty
+             */
+            $personFillDelAdd = array();
+            if(empty($deliveryAddFormSessData)){
+                if(!empty($personDelAddress)) {
+                    if(isset($personDelAddress[0])) {
+                        foreach ($personDelAddress[0] As $key => $val) {
+                            $personFillDelAdd[str_replace('cadd_', 'm_add_delivery_', $key)] = $val;
+                        }
+                        $deliveryAddFormSessData = $personFillDelAdd;
+                    }
+                }
+            }
+
+            /**
+             * Set form data of Delivery Address
+             */
+            $deliveryAddFormData = ($isSubmit) ? $this->pluginFrontConfig : $deliveryAddFormSessData;
+            $deliveryAddForm->setData($deliveryAddFormData);
 
             $deliverySelectAddress = (!empty($this->pluginFrontConfig['m_add_delivery_id'])) ? $this->pluginFrontConfig['m_add_delivery_id'] : null;
             if (!in_array($deliverySelectAddress, array('', 'new_address')))
@@ -200,8 +210,14 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
                         $personDelAdd[str_replace('cadd_', 'm_add_delivery_', $key)] = $val;
                     }
 
-                    $deliveryAddForm->setData(ArrayUtils::merge($this->pluginFrontConfig, $personDelAdd));
+                    $deliveryAddForm->setData(ArrayUtils::merge($personDelAdd, $this->pluginFrontConfig));
                 }
+            }
+
+            $personBilAddress = $clientSrv->getClientAddressesByClientPersonId($personId, 'BIL');
+            if (empty($personBilAddress))
+            {
+                $billingAddForm->get('m_add_billing_id')->setValue('new_address')->setAttribute('type', 'hidden');
             }
 
             /**
@@ -217,6 +233,22 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
                     foreach ($billingAddFormSessDataTmp As $key => $val)
                     {
                         $billingAddFormSessData[str_replace('cadd_', 'm_add_billing_', $key)] = $val;
+                    }
+                }
+            }
+
+            /**
+             * This fill up the billing form
+             * if billing session is empty
+             */
+            $personFillBillAdd = array();
+            if(empty($billingAddFormSessData)){
+                if(!empty($personBilAddress)) {
+                    if(isset($personBilAddress[0])) {
+                        foreach ($personBilAddress[0] As $key => $val) {
+                            $personFillBillAdd[str_replace('cadd_', 'm_add_billing_', $key)] = $val;
+                        }
+                        $billingAddFormSessData = $personFillBillAdd;
                     }
                 }
             }
@@ -244,7 +276,7 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
                         $personBilAdd[str_replace('cadd_', 'm_add_billing_', $key)] = $val;
                     }
 
-                    $billingAddForm->setData(ArrayUtils::merge($this->pluginFrontConfig, $personBilAdd));
+                    $billingAddForm->setData(ArrayUtils::merge($personBilAdd, $this->pluginFrontConfig));
                 }
             }
             // Getting the client basket list using Client key
