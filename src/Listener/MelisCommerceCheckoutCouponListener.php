@@ -158,8 +158,8 @@ class MelisCommerceCheckoutCouponListener implements ListenerAggregateInterface
                                     $val['discount_details'][] = $discounts;
                                 }
 
-                                $val['total_price'] -= $discount;
                                 $val['discount_total'] = !empty($val['discount_total']) ? $val['discount_total'] + $totalDiscount : $totalDiscount;
+                                $val['total_price'] -= $val['discount_total'];
                                 $discountedOrders[$key] = $val;
                             }
 
