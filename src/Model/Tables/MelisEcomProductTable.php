@@ -716,7 +716,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         
     }
     
-    public function getProductsByCategoryId($categoryId, $onlyValid = false, $langId = null)
+    public function getProductsByCategoryId($categoryId, $onlyValid = false, $langId = null, $order = null)
     {
         $select = $this->tableGateway->getSql()->select();
         
@@ -733,7 +733,11 @@ class MelisEcomProductTable extends MelisEcomGenericTable
             $select->where('prd_status = 1');
         
         $select->group($this->idField);
-            
+
+        if(!empty($order)){
+            $select->order($order);
+        }
+
         $resultSet = $this->tableGateway->selectWith($select);
         
         return $resultSet;

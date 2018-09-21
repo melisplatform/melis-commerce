@@ -559,7 +559,7 @@ class MelisComProductService extends MelisComGeneralService
 	    return $arrayParameters['results'];
 	}
 	
-	public function getProductsByCategoryId($categoryId, $onlyValid = false, $langId = null)
+	public function getProductsByCategoryId($categoryId, $onlyValid = false, $langId = null, $order = null)
 	{
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -571,7 +571,7 @@ class MelisComProductService extends MelisComGeneralService
 	    // Service implementation start
 	    $melisEcomProductTable = $this->getServiceLocator()->get('MelisEcomProductTable');
 	    
-	    $product = $melisEcomProductTable->getProductsByCategoryId($arrayParameters['categoryId'], $arrayParameters['onlyValid'], $arrayParameters['langId']);
+	    $product = $melisEcomProductTable->getProductsByCategoryId($arrayParameters['categoryId'], $arrayParameters['onlyValid'], $arrayParameters['langId'], $arrayParameters['order']);
 	    
 	    foreach ($product As $val)
 	    {

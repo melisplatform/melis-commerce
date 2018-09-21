@@ -83,7 +83,7 @@ class MelisCommerceCategoryTreePlugin extends MelisTemplatingPlugin
         {
             $categoryList = $this->includeParentCategory($categoryList, $langId);
         }
-        
+
         // Create an array with the variables that will be available in the view
         $viewVariables = array(
             'pluginId' => $data['id'],
