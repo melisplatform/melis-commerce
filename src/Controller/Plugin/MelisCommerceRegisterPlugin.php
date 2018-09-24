@@ -94,6 +94,22 @@ class MelisCommerceRegisterPlugin extends MelisTemplatingPlugin
         if ($is_submit)
         {
 
+            $isExist = false;
+            if(!empty($data['cper_email'])) {
+                // Checking if the Email entered is existing on the database
+                $clientPerson = $melisComClientService->getClientPersonByEmail($data['cper_email']);
+
+                if ($clientPerson)
+                {
+                    $isExist = true;
+                    $translator = $this->getServiceLocator()->get('translator');
+                    $errors['cper_email'] = array(
+                        'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
+                        'emailExist' => $translator->translate('tr_meliscommerce_client_Contact_email_address_exist'),
+                    );
+                }
+            }
+
             if($registrationForm->isValid())
             {
                 // Preparing the client data
@@ -120,45 +136,32 @@ class MelisCommerceRegisterPlugin extends MelisTemplatingPlugin
                 }
                 $person[] = $tmpData;
 
-                if(!empty($data['cper_email']))
+               
+                if (!$isExist)
                 {
-                    // Checking if the Email entered is existing on the database
-                    $clientPerson = $melisComClientService->getClientPersonByEmail($data['cper_email']);
-
-                    if ($clientPerson)
+                    // Saving Client data using Client Servive
+                    $success = (int) $melisComClientService->saveClient($client, $person);
+                    
+                    /**
+                     * if the autologgin has true/1 value 
+                     * this will automatically loggin after registration
+                     */
+                    if ($data['m_autologin'])
                     {
-                        $translator = $this->getServiceLocator()->get('translator');
-                        $errors['m_email'] = array(
-                            'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
-                            'emailExist' => $translator->translate('Email address is not available'),
-                        );
+                        /**
+                         * Login using Commerce Authentication Service
+                         */
+                        $melisComAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
+                        $melisComAuthSrv->login($data['cper_email'], $data['cper_password']);
                     }
-                    else 
+                    
+                    /**
+                     * This will redirect to the $redirection_link url
+                     * if the request is not from ajax request
+                     */
+                    if (!$this->getController()->getRequest()->isXmlHttpRequest())
                     {
-                        // Saving Client data using Client Servive
-                        $success = (int) $melisComClientService->saveClient($client, $person);
-                        
-                        /**
-                         * if the autologgin has true/1 value 
-                         * this will automatically loggin after registration
-                         */
-                        if ($data['m_autologin'])
-                        {
-                            /**
-                             * Login using Commerce Authentication Service
-                             */
-                            $melisComAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
-                            $melisComAuthSrv->login($data['cper_email'], $data['cper_password']);
-                        }
-                        
-                        /**
-                         * This will redirect to the $redirection_link url
-                         * if the request is not from ajax request
-                         */
-                        if (!$this->getController()->getRequest()->isXmlHttpRequest())
-                        {
-                            $this->getController()->redirect()->toUrl($redirection_link);
-                        }
+                        $this->getController()->redirect()->toUrl($redirection_link);
                     }
                 }
             }

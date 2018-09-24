@@ -1010,6 +1010,204 @@ return a=a||this.corner,c=a.precedance,b=b||this._calculateSize(a),e=[a.x,a.y],c
 !function(){function t(t){var e=Array.isArray(t)?{label:t[0],value:t[1]}:"object"==typeof t&&"label"in t&&"value"in t?t:{label:t,value:t};this.label=e.label||e.value,this.value=e.value}function e(t,e,i){for(var n in e){var s=e[n],r=t.input.getAttribute("data-"+n.toLowerCase());"number"==typeof s?t[n]=parseInt(r):s===!1?t[n]=null!==r:s instanceof Function?t[n]=null:t[n]=r,t[n]||0===t[n]||(t[n]=n in i?i[n]:s)}}function i(t,e){return"string"==typeof t?(e||document).querySelector(t):t||null}function n(t,e){return o.call((e||document).querySelectorAll(t))}function s(){n("input.awesomplete").forEach(function(t){new r(t)})}var r=function(t,n){var s=this;this.isOpened=!1,this.input=i(t),this.input.setAttribute("autocomplete","off"),this.input.setAttribute("aria-autocomplete","list"),n=n||{},e(this,{minChars:2,maxItems:10,autoFirst:!1,data:r.DATA,filter:r.FILTER_CONTAINS,sort:r.SORT_BYLENGTH,item:r.ITEM,replace:r.REPLACE},n),this.index=-1,this.container=i.create("div",{className:"awesomplete",around:t}),this.ul=i.create("ul",{hidden:"hidden",inside:this.container}),this.status=i.create("span",{className:"visually-hidden",role:"status","aria-live":"assertive","aria-relevant":"additions",inside:this.container}),i.bind(this.input,{input:this.evaluate.bind(this),blur:this.close.bind(this,{reason:"blur"}),keydown:function(t){var e=t.keyCode;s.opened&&(13===e&&s.selected?(t.preventDefault(),s.select()):27===e?s.close({reason:"esc"}):38!==e&&40!==e||(t.preventDefault(),s[38===e?"previous":"next"]()))}}),i.bind(this.input.form,{submit:this.close.bind(this,{reason:"submit"})}),i.bind(this.ul,{mousedown:function(t){var e=t.target;if(e!==this){for(;e&&!/li/i.test(e.nodeName);)e=e.parentNode;e&&0===t.button&&(t.preventDefault(),s.select(e,t.target))}}}),this.input.hasAttribute("list")?(this.list="#"+this.input.getAttribute("list"),this.input.removeAttribute("list")):this.list=this.input.getAttribute("data-list")||n.list||[],r.all.push(this)};r.prototype={set list(t){if(Array.isArray(t))this._list=t;else if("string"==typeof t&&t.indexOf(",")>-1)this._list=t.split(/\s*,\s*/);else if(t=i(t),t&&t.children){var e=[];o.apply(t.children).forEach(function(t){if(!t.disabled){var i=t.textContent.trim(),n=t.value||i,s=t.label||i;""!==n&&e.push({label:s,value:n})}}),this._list=e}document.activeElement===this.input&&this.evaluate()},get selected(){return this.index>-1},get opened(){return this.isOpened},close:function(t){this.opened&&(this.ul.setAttribute("hidden",""),this.isOpened=!1,this.index=-1,i.fire(this.input,"awesomplete-close",t||{}))},open:function(){this.ul.removeAttribute("hidden"),this.isOpened=!0,this.autoFirst&&this.index===-1&&this.goto(0),i.fire(this.input,"awesomplete-open")},next:function(){var t=this.ul.children.length;this.goto(this.index<t-1?this.index+1:t?0:-1)},previous:function(){var t=this.ul.children.length,e=this.index-1;this.goto(this.selected&&e!==-1?e:t-1)},goto:function(t){var e=this.ul.children;this.selected&&e[this.index].setAttribute("aria-selected","false"),this.index=t,t>-1&&e.length>0&&(e[t].setAttribute("aria-selected","true"),this.status.textContent=e[t].textContent,i.fire(this.input,"awesomplete-highlight",{text:this.suggestions[this.index]}))},select:function(t,e){if(t?this.index=i.siblingIndex(t):t=this.ul.children[this.index],t){var n=this.suggestions[this.index],s=i.fire(this.input,"awesomplete-select",{text:n,origin:e||t});s&&(this.replace(n),this.close({reason:"select"}),i.fire(this.input,"awesomplete-selectcomplete",{text:n}))}},evaluate:function(){var e=this,i=this.input.value;i.length>=this.minChars&&this._list.length>0?(this.index=-1,this.ul.innerHTML="",this.suggestions=this._list.map(function(n){return new t(e.data(n,i))}).filter(function(t){return e.filter(t,i)}).sort(this.sort).slice(0,this.maxItems),this.suggestions.forEach(function(t){e.ul.appendChild(e.item(t,i))}),0===this.ul.children.length?this.close({reason:"nomatches"}):this.open()):this.close({reason:"nomatches"})}},r.all=[],r.FILTER_CONTAINS=function(t,e){return RegExp(i.regExpEscape(e.trim()),"i").test(t)},r.FILTER_STARTSWITH=function(t,e){return RegExp("^"+i.regExpEscape(e.trim()),"i").test(t)},r.SORT_BYLENGTH=function(t,e){return t.length!==e.length?t.length-e.length:t<e?-1:1},r.ITEM=function(t,e){var n=""===e?t:t.replace(RegExp(i.regExpEscape(e.trim()),"gi"),"<mark>$&</mark>");return i.create("li",{innerHTML:n,"aria-selected":"false"})},r.REPLACE=function(t){this.input.value=t.value},r.DATA=function(t){return t},Object.defineProperty(t.prototype=Object.create(String.prototype),"length",{get:function(){return this.label.length}}),t.prototype.toString=t.prototype.valueOf=function(){return""+this.label};var o=Array.prototype.slice;return i.create=function(t,e){var n=document.createElement(t);for(var s in e){var r=e[s];if("inside"===s)i(r).appendChild(n);else if("around"===s){var o=i(r);o.parentNode.insertBefore(n,o),n.appendChild(o)}else s in n?n[s]=r:n.setAttribute(s,r)}return n},i.bind=function(t,e){if(t)for(var i in e){var n=e[i];i.split(/\s+/).forEach(function(e){t.addEventListener(e,n)})}},i.fire=function(t,e,i){var n=document.createEvent("HTMLEvents");n.initEvent(e,!0,!0);for(var s in i)n[s]=i[s];return t.dispatchEvent(n)},i.regExpEscape=function(t){return t.replace(/[-\\^$*+?.()|[\]{}]/g,"\\$&")},i.siblingIndex=function(t){for(var e=0;t=t.previousElementSibling;e++);return e},"undefined"!=typeof Document&&("loading"!==document.readyState?s():document.addEventListener("DOMContentLoaded",s)),r.$=i,r.$$=n,"undefined"!=typeof self&&(self.Awesomplete=r),"object"==typeof module&&module.exports&&(module.exports=r),r}();
 //# sourceMappingURL=awesomplete.min.js.map
 
+var catTreeConfig = (function(){
+
+    var categoryTree = "";
+    var root_node_id = "";
+    var selectorId = "";
+    var allowClickableNode = true;
+
+    /**
+     * we need to detect the click on li manually because
+     * if the node is disable the select_node and
+     * deselect_node event are not working
+     **/
+    $('body').on('click', '#catTreeFilterPluginConfig ul li', function (e) {
+        if(allowClickableNode) {
+            var id = $(this).find('a').attr('id');
+            var target_id = $(e.target).attr('id');
+            if (id === target_id) {
+                var node_id = '#' + $(this).attr('id');
+                if (root_node_id != node_id) {
+                    processNodeDisableState('enable', node_id, categoryTree, function () {
+                        //process the previous selected node
+                        categoryTree.jstree("deselect_node", root_node_id);
+                        checkNodeIfUnderParent(root_node_id, node_id);
+
+                        //enable our new root node
+                        categoryTree.jstree("select_node", node_id);
+                        categoryTree.jstree("open_node", node_id);
+                        categoryTree.jstree("check_node", node_id);
+                        processNodeDisableState('enable', node_id, categoryTree);
+
+                        //assign new root node
+                        root_node_id = node_id;
+                    });
+                } else {
+                    //this is the process where we deselect the selected(highlighted) category
+                    var node = categoryTree.jstree().get_node(node_id);
+                    if (node.state.selected) {
+                        categoryTree.jstree("deselect_node", node_id);
+                        processNodeDisableState('disable', node_id, categoryTree);
+                        $(selectorId + "_form input[name='m_box_root_category_tree_id']").val('');
+                    } else {
+                        processNodeDisableState('enable', node_id, categoryTree, function () {
+                            categoryTree.jstree("select_node", node_id);
+                            categoryTree.jstree("check_node", node_id);
+                        });
+                    }
+                }
+            }
+        }
+    });
+
+    /**
+     * Function to set category tree config
+     *
+     * @param treeInstance
+     * @param selected_category_id - array of selected category (checked category in the tree)
+     * @param selected_root_id - selected root category (highlighted category in the tree)
+     * @param clickableNode - set children in the tree if clickable
+     *                      (although all the tree node are clickable by default using select_node and deselect_node event
+     *                      of the jsTree, if the node are disable, this event are not fired, so we need to trigger the clicked
+     *                      on node manually.)
+     * @param disableNodeOnLoad - set if we disable all not selected(not highlighted) node in the tree
+     */
+    function setCategoryTreeConfig(treeInstance, selected_category_id, selected_root_id, clickableNode, disableNodeOnLoad){
+
+        clickableNode = (clickableNode == undefined) ? true : clickableNode;
+        disableNodeOnLoad = (disableNodeOnLoad == undefined) ? true : disableNodeOnLoad;
+
+        allowClickableNode = clickableNode;
+
+        categoryTree = treeInstance;
+        root_node_id = "#"+selected_root_id+"_categoryId";
+        selectorId = categoryTree['selector'];
+
+        var post_id_text = "_categoryId";
+        if(!jQuery.isEmptyObject(selected_category_id)) {
+            //open node
+            $.each(selected_category_id, function (i, id) {
+                var node_id = "#" + id + post_id_text;
+                categoryTree.jstree("open_node", node_id);
+                categoryTree.jstree("check_node", node_id);
+                setTimeout(function(){
+                    changeNodeTextColor(node_id);
+                },50);
+
+            });
+        }
+        //highlight the root node
+        if(selected_root_id != 0){
+            var root_node = "#" + selected_root_id + post_id_text;
+            categoryTree.jstree("select_node", root_node);
+        }
+
+        if(disableNodeOnLoad) {
+            //process the disable and enable of the node
+            getAllNode("disable", categoryTree);
+        }
+    }
+
+    /**
+     * Function to change the text color of node on first load
+     * @param node_id
+     */
+    function changeNodeTextColor(node_id){
+        var node = categoryTree.jstree().get_node( node_id );
+        if(node) {
+            $('#'+node.id).css('color','#72af46');
+            node.children.forEach(function (child_id) {
+                changeNodeTextColor(child_id);
+            });
+        }
+    }
+
+    /**
+     * Function to process the tree state
+     * on tree load
+     * @param type
+     * @param categoryTree
+     */
+    function getAllNode(type, categoryTree){
+        var nodes = categoryTree.jstree('get_json');
+        nodes.forEach( function(node_id) {
+            processNodeDisableState(type, node_id, categoryTree);
+        });
+    }
+
+    /**
+     * Function to change the disable state of the tree
+     *
+     * @param type
+     * @param node_id
+     * @param categoryTree
+     * @param fn - callback
+     */
+    function processNodeDisableState(type, node_id, categoryTree, callback) {
+        callback = (callback === undefined) ? null : callback;
+
+        var node = categoryTree.jstree().get_node( node_id );
+        if(node) {
+            //node is not selected
+            if (!node.state.selected) {
+                if (type == "enable") {
+                    $('#'+node.id).css('color','#72af46');
+                    categoryTree.jstree('enable_node', node);
+                } else {
+                    categoryTree.jstree('disable_node', node);
+                    categoryTree.jstree('uncheck_node', node);
+                }
+                //enable/disable the children also
+                node.children.forEach(function (child_id) {
+                    processNodeDisableState(type, child_id, categoryTree);
+                });
+            }
+        }
+        if(callback !== null)
+            callback();
+    }
+
+    /**
+     * Function to check if newly selected root node is
+     * under the previous root node, if it under the
+     * previous root node, don't close the tree
+     * It will also check if whether select the parent of
+     * all node, so that we can enable all its children
+     * @param currentNode
+     * @param selectedNode
+     */
+    function checkNodeIfUnderParent(currentNode, selectedNode){
+        var cleanStr = selectedNode.replace('#', '');
+        var node = categoryTree.jstree().get_node( currentNode );
+        //check if childNode is under the parentNode
+        if(jQuery.inArray(cleanStr, node.children) === -1 && jQuery.inArray(cleanStr, node.children_d) === -1){
+            categoryTree.jstree("close_node", currentNode);
+        }
+        /*
+            check if we select the parent of all node
+            so that we can enable all children
+        */
+        var nodeParent = categoryTree.jstree().get_node( selectedNode );
+        var cleanParentText = nodeParent.parent.replace('#', '');
+        if(cleanParentText == ""){
+            processNodeDisableState('enable', currentNode, categoryTree);
+            categoryTree.jstree('uncheck_node', currentNode);
+        }else{
+            processNodeDisableState('disable', currentNode, categoryTree);
+        }
+
+        //check if we select the parent of our previous node
+        if(jQuery.inArray(cleanStr, node.parents) !== -1){
+            processNodeDisableState('enable', currentNode, categoryTree);
+        }
+    }
+
+    return{
+        setCategoryTreeConfig	:	setCategoryTreeConfig
+    };
+
+})();
 var commerceCategoryTree = (function(){
 
 	function initCategoryTree(targetId, loaded){

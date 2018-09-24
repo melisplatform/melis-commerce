@@ -170,6 +170,7 @@
 	    'tr_meliscommerce_client_Contact_password_error_low' => 'Password should be greater than or equal to 8 characters',
 	    'tr_meliscommerce_client_Contact_password_regex_not_match' => 'The password must contain at least one letter AND one number',
 	    'tr_meliscommerce_client_Contact_unable_to_add_address' => 'Unable to add contact address, please try again',
+	    'tr_meliscommerce_client_Contact_email_address_exist' => 'Email address is not available',
 	    // Contact Addreses Form
 	    'tr_meliscommerce_client_Contact_addresses' => 'Addresses',
 	    'tr_meliscommerce_client_Contact_address_name' => 'Address name',
