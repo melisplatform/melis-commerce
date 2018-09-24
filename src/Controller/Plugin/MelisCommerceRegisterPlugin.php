@@ -153,6 +153,14 @@ class MelisCommerceRegisterPlugin extends MelisTemplatingPlugin
                          */
                         $melisComAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
                         $melisComAuthSrv->login($data['cper_email'], $data['cper_password']);
+
+                        // This will transfer basket items from anonymous to persistent basket if there is one
+                        $clientId = $melisComAuthSrv->getClientId();
+                        $clientKey = $melisComAuthSrv->getClientKey();
+
+                        $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
+                        // Preparing the client Basket, which is added to Persistent basket
+                        $melisComBasketService->getBasket($clientId, $clientKey);
                     }
                     
                     /**
