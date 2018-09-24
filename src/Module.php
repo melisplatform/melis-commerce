@@ -280,18 +280,6 @@ class Module
         $sm = $e->getApplication()->getServiceManager();
         $translator = $sm->get('translator');
         
-        // Checking if the Request is from Melis-BackOffice or Front
-//         if ($module[0] == 'melis-backoffice')
-//         {
-//             $container = new Container('meliscore');
-//             $locale = $container['melis-lang-locale'];
-//         }
-//         else
-//         {
-//             $container = new Container('melisplugins');
-//             $locale = $container['melis-plugins-lang-locale'];
-//         }
-        
         $param = $routeMatch->getParams();
 
         // Checking if the Request is from Melis-BackOffice or Front
