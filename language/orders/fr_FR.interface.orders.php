@@ -171,7 +171,7 @@
         // MelisCommerceCheckoutConfirmSummaryPlugin()
         'tr_meliscommerce_plugin_checkout_confirm_summary_name' => 'Erreur de paiement',
         'tr_meliscommerce_plugin_checkout_confirm_summary_description' => 'Ce plugin affiche une erreur de résumé de commande',
-        'tr_meliscommerce_plugin_checkout_confirm_summary_err_msg' => 'Cannot proceed to payment, please check your checkout details before proceeding to payment',
+        'tr_meliscommerce_plugin_checkout_confirm_summary_err_msg' => 'Impossible de procéder au paiement, veuillez vérifier vos détails de commande avant de procéder au paiement',
 
         // MelisCommerceCheckoutConfirmPlugin()
         'tr_meliscommerce_plugin_checkout_confirmation_name' => 'Confirmation de la commande',
