@@ -1102,6 +1102,9 @@ class MelisComProductService extends MelisComGeneralService
 	        'prd_currency_code' => (!empty($prdPrice->cur_code)) ? $prdPrice->cur_code : '',
 	        'prd_price_net' => (!empty($prdPrice->price_net)) ? $prdPrice->price_net : '',
 	    );
+
+	    $productTbl = $this->getServiceLocator()->get('MelisEcomProductTable');
+	    $product = $productTbl->getEntryById($arrayParameters['productId'])->current();
 	    
 	    /**
 	     * Product image documents
@@ -1127,7 +1130,7 @@ class MelisComProductService extends MelisComGeneralService
 
 	    $product = array(
 	        'prd_id' => $arrayParameters['productId'],
-	        'prd_text' => (!empty($prdText)) ? $prdText : $prd->prd_reference,
+	        'prd_text' => (!empty($prdText)) ? $prdText : $product->prd_reference,
 	        'prd_price_details' => $prdPriceDetails,
 	        'prd_categories' => $prdCats,
 	        'prd_docs_image' => $prdDocsImages
