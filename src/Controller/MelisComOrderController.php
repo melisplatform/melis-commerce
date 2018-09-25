@@ -26,6 +26,11 @@ class MelisComOrderController extends AbstractActionController
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $orderId = (int) $this->params()->fromQuery('orderId', '');
         $this->setOrderVariables($orderId);
+
+        // reference that will be used anywhere, for now it will be used in documents
+        $container = new Container('meliscommerce');
+        $container['documents'] = array('docRelationType' => 'order', 'docRelationId' => $orderId);
+
         $view->melisKey = $melisKey;
         $view->orderId = $orderId;
         return $view;
@@ -414,6 +419,16 @@ class MelisComOrderController extends AbstractActionController
         $view->currStatus = $currStatus;
         $view->statusButtons = $statusButtons;
         $view->setVariable($infoForm, $orderInfoForm);
+        return $view;
+    }
+
+    public function renderOrdersContentTabsContentFileAttachmentsAction()
+    {
+        $view = new ViewModel();
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $orderId = (int) $this->params()->fromQuery('orderId', '');
+        $view->melisKey = $melisKey;
+        $view->orderId = $orderId;
         return $view;
     }
     

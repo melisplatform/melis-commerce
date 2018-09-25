@@ -20,6 +20,7 @@ class MelisOrder
 	protected $payment; // array
 	protected $shipping; // array
 	protected $messages; // array
+	protected $documents; // array
 
 	public function getId()
 	{
@@ -109,6 +110,16 @@ class MelisOrder
 	public function setMessages($messages)
 	{
 	    $this->messages = $messages;
+	}
+
+	public function getDocuments()
+	{
+	    return $this->documents;
+	}
+	
+	public function setDocuments($documents)
+	{
+	    $this->documents = $documents;
 	}
 	
     public function getArrayCopy()

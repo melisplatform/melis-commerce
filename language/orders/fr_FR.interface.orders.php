@@ -6,6 +6,7 @@
         'tr_meliscommerce_orders_header_right_container_save' => 'Enregistrer la commande',
         'tr_meliscommerce_orders_header_right_container_cancel' => 'Annuler',
         'tr_meliscommerce_orders_content_tab_main' => 'Propriétés',
+        'tr_meliscommerce_orders_content_tab_main_invoice' => 'Facture',
         'tr_meliscommerce_orders_content_tab_basket' => 'Panier',
         'tr_meliscommerce_orders_content_tab_address' => 'Adresses',
         'tr_meliscommerce_orders_content_tab_paymnet' => 'Paiement',

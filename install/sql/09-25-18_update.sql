@@ -1,0 +1,1 @@
+ALTER TABLE `melis_ecom_doc_relations` ADD `rdoc_order_id` INT NULL DEFAULT NULL COMMENT 'Order Id' AFTER `rdoc_variant_id`;

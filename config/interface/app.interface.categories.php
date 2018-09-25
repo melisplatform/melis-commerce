@@ -13,7 +13,6 @@ return array(
                     '/MelisCommerce/assets/jstree/dist/jstree.min.js',
                     '/MelisCommerce/assets/switch/bootstrap-switch.js',
                     '/MelisCommerce/js/tools/category.tool.js',
-                    '/MelisCommerce/js/tools/documents.tool.js',
                     '/MelisCommerce/js/tools/seo.tool.js',
                 ),
             ),

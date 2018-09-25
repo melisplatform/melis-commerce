@@ -20,7 +20,7 @@ class MelisComDocumentController extends AbstractActionController
 {
 
     protected $formType;
-    protected $relationTypes = array('category', 'product', 'variant');
+    protected $relationTypes = array('category', 'product', 'variant', 'order');
     protected $docTypes = array('file', 'image');
 
     public function renderDocumentImagePluginAction(){

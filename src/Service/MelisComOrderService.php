@@ -92,6 +92,7 @@ class MelisComOrderService extends MelisComGeneralService
 	    $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
 	    $melisEcomClientTable = $this->getServiceLocator()->get('MelisEcomClientTable');
 	    $melisEcomClientSvc = $this->getServiceLocator()->get('MelisComClientService');
+	    $docSvc = $this->getServiceLocator()->get('MelisComDocumentService');
 	    
 	    $melisOrder = new \MelisCommerce\Entity\MelisOrder();
 	    
@@ -138,6 +139,10 @@ class MelisComOrderService extends MelisComGeneralService
 	            //Get Order Messages
 	            $orderMessages = $this->getOrderMessageByOrderId($orderId);
 	            $melisOrder->setMessages($orderMessages);
+
+	            // Get Order ducoments
+	    		$orderdDoc = $docSvc->getDocumentsByRelationAndTypes('order', $orderId, 'FILE');
+	            $melisOrder->setDocuments($orderdDoc);
 	        }
 	    }
 	    $results = $melisOrder;

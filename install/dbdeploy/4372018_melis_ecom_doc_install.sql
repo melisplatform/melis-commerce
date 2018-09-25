@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS `melis_ecom_doc_relations` (
   `rdoc_category_id` INT NULL COMMENT 'Category Id',
   `rdoc_product_id` INT NULL COMMENT 'Product Id',
   `rdoc_variant_id` INT NULL COMMENT 'Variant Id',
+  `rdoc_order_id` INT NULL COMMENT 'Order Id',
   `rdoc_country_id` INT NULL COMMENT 'Country Id',
   PRIMARY KEY (`rdoc_id`),
   INDEX `document_idx` (`rdoc_doc_id` ASC),
