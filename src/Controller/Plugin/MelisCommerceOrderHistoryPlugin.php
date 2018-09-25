@@ -156,6 +156,7 @@ class MelisCommerceOrderHistoryPlugin extends MelisTemplatingPlugin
                 $order['currency'] = $currency;
                 $order['details'] = $orderDetails;
                 $order['addresses'] = $item->getAddresses();
+                $order['documents'] = $item->getDocuments();
 
                 $orders[] = $order;
             }
