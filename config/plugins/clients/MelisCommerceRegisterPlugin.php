@@ -188,16 +188,6 @@ return array(
                                                     ),
                                                 ),
                                             ),
-                                            array(
-                                                'name'    => 'StringLength',
-                                                'options' => array(
-                                                    'encoding' => 'UTF-8',
-                                                    'max'      => 255,
-                                                    'messages' => array(
-                                                        \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_255',
-                                                    ),
-                                                ),
-                                            ),
                                         ),
                                         'filters'  => array(
                                             array('name' => 'StripTags'),
