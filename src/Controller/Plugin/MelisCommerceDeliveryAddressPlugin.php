@@ -86,6 +86,7 @@ class MelisCommerceDeliveryAddressPlugin extends MelisTemplatingPlugin
         $formElements = $this->getServiceLocator()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $deliveryAddressForm = $this->pluginFrontConfig['forms']['delivery_address'];
+        $deliveryAddressForm = $this->getFormMergedAndOrdered($deliveryAddressForm, 'delivery_address');
         $deliveryAddress = $factory->createForm($deliveryAddressForm);
         
         /**

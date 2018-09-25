@@ -81,7 +81,7 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
 
         // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
         $appConfigDeliveryAddForm = (!empty($this->pluginFrontConfig['forms']['delivery_address'])) ? $this->pluginFrontConfig['forms']['delivery_address'] : array();
-        $appConfigDeliveryAddForm = $this->getFormMergedAndOrdered($appConfigDeliveryAddForm, 'delivery_address');
+        $appConfigDeliveryAddForm = $this->getFormMergedAndOrdered($appConfigDeliveryAddForm, 'checkout_delivery_address');
 
         $factory = new \Zend\Form\Factory();
         $formElements = $this->getServiceLocator()->get('FormElementManager');
@@ -90,7 +90,7 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
 
         // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
         $appConfigBillingAddForm = (!empty($this->pluginFrontConfig['forms']['billing_address'])) ? $this->pluginFrontConfig['forms']['billing_address'] : array();
-        $appConfigBillingAddForm = $this->getFormMergedAndOrdered($appConfigBillingAddForm, 'billing_address');
+        $appConfigBillingAddForm = $this->getFormMergedAndOrdered($appConfigBillingAddForm, 'checkout_billing_address');
         $billingAddForm = $factory->createForm($appConfigBillingAddForm);
 
         // Preparing the Container/Session of Commerce checkout
