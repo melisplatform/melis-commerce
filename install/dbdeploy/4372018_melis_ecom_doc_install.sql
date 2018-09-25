@@ -48,9 +48,10 @@ CREATE TABLE IF NOT EXISTS `melis_ecom_doc_relations` (
   INDEX `category_idx` (`rdoc_category_id` ASC),
   INDEX `product_idx` (`rdoc_product_id` ASC),
   INDEX `variant_idx` (`rdoc_variant_id` ASC),
+  INDEX `order_idx` (`rdoc_order_id` ASC),
   INDEX `country_idx` (`rdoc_country_id` ASC))
   ENGINE = InnoDB
-  COMMENT = 'This table stores the relations between the documents and products, variants, categories, countries';
+  COMMENT = 'This table stores the relations between the documents and products, variants, categories, countries and orders';
 
 -- -----------------------------------------------------
 -- Data for table `melis_ecom_doc_type`
