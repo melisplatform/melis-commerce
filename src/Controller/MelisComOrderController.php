@@ -603,6 +603,10 @@ class MelisComOrderController extends AbstractActionController
         $view->payments = $pays;
         $view->melisKey = $melisKey;
         $view->orderId = $orderId;
+
+        $melisCoreGeneralService = $this->getServiceLocator()->get('MelisCoreGeneralService');
+        $melisCoreGeneralService->sendEvent('melisorder_payment_details_view', array('view' => $view));
+
         return $view;
     }
     
