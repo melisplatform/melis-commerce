@@ -206,6 +206,8 @@ class MelisCommerceCheckoutCouponListener implements ListenerAggregateInterface
                         }
 
                         $params['results']['costs']['order']['orderDiscount'] = $orderDiscount;
+                        $params['results']['costs']['order']['generalCoupons'] = $generalCoupons;
+                        $params['results']['costs']['order']['productCoupons'] = $productCoupons;
                         $container['checkout'][$siteId]['coupons']['productCoupons'] = $productCoupons;
                         $container['checkout'][$siteId]['coupons']['generalCoupons'] = $generalCoupons;
                     }

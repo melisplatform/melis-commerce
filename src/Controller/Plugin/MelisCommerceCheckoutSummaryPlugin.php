@@ -68,7 +68,7 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
         $currency = '';
         $subTotal = 0;
         $totalDiscount = 0;
-        $discountInfo = '';
+        $discountInfo = array();
         $couponMsg = '';
         $shippingTotal = 0;
         $couponCode = '';
@@ -163,6 +163,28 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
                 if (isset($clientOrderCost['costs']['order']['orderDiscount']))
                 {
                     $totalDiscount = $clientOrderCost['costs']['order']['orderDiscount'];
+                }
+
+                foreach($clientOrder['generalCoupons'] as $generalCoupon)
+                {
+                    if(!empty($generalCoupon->coup_percentage))
+                    {
+                        $totalDiscount = ($generalCoupon->coup_percentage / 100) * $subTotal;
+                        $discountInfo[] = array(
+                            'details' => $generalCoupon->coup_percentage.'%',
+                            'amount' => $currency.number_format($totalDiscount, 2),
+                            'code' => $generalCoupon->coup_code,
+                        );
+                    }
+                    elseif (!empty($generalCoupon->coup_discount_value))
+                    {
+                        $totalDiscount = $generalCoupon->coup_discount_value;
+                        $discountInfo[] =  array(
+                            'details' => $totalDiscount,
+                            'amount' => $currency.number_format($totalDiscount,2),
+                            'code' => $generalCoupon->coup_code,
+                        );
+                    }
                 }
             }
             
