@@ -822,7 +822,6 @@ window.initCategoryProducts = function(data, tblSettings) {
 
 	    for ( var i=0, ien=diff.length ; i<ien ; i++ ) {
 	        var rowData = $categoryProductListTbl.row( diff[i].node ).data();
-	        console.log('Bogo ', rowData);
 	         result += rowData[1]+' updated to be in position '+ diff[i].newData+' (was '+diff[i].oldData+')<br>';
 	    }
 		
