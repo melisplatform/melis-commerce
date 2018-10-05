@@ -193,7 +193,6 @@ function commerceDasboardPluginOrderMessagesDelete(element) {
     if (element.find(".melis-commerce-dashboard-plugin-order-messages-parent").length == 1) {
         commerceDashPluginorderMessagesInstanceCount--;
         if (commerceDashPluginorderMessagesInstanceCount == 0) {
-            console.log("clearing interval for order messages");
             clearInterval(appendMessagesInterval);
         }
     }
