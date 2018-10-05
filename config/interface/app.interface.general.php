@@ -6,7 +6,7 @@ return array(
             'interface' => array(
                 'meliscore_leftmenu' => array(
                     'interface' => array(
-                        'meliscore_toolstree' => array(
+                        'meliscommerce_toolstree_section' => array(
                             'interface' => array(
                                 'meliscommerce_leftmenu' =>  array(
                                     'conf' => array(
