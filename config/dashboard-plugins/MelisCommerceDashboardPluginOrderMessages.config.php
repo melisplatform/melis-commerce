@@ -20,6 +20,7 @@ return array(
                     'jscallback' => 'commerceDashboardPluginOrderMessagesInit()',
                     'height' => 6,
                     'width' => 4,
+                    'deleteCallback' => 'commerceDasboardPluginOrderMessagesDelete',
 
                     'interface' => array(
                         'melis_commerce_dashboard_plugin_order_messages' => array(

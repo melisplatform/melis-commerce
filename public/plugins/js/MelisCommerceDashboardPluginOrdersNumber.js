@@ -1,5 +1,4 @@
 $(document).ready(function() {
-
     //when changing for report type.
     $("body").on("change", '.com-orders-dash-chart-line', function() {
         commerceDashboardOrdersLineGraphInit($(this));
@@ -30,79 +29,70 @@ $(document).ready(function() {
         }, 500);
     });
 
-    //set charts options
-    charts.commerceDashboardOrdersLineGraph =
-        {
-            // data
-            data:
-                {
-                    d1: []
+    charts.commerceDashboardOrdersLineGraph = {
+        data: {
+            d1: []
+        },
+        plot: null, // will hold the chart object
+        options: {
+            grid: {
+                color: "#dedede",
+                borderWidth: 1,
+                borderColor: "#eee",
+                clickable: true,
+                hoverable: true,
+                labelMargin: 20,
+            },
+            series: {
+                lines: {
+                    show: true,
+                    fill: false,
+                    lineWidth: 2,
+                    steps: false
                 },
-
-            // will hold the chart object
-            plot: null,
-
-            // chart options
-            options:
-                {
-                    grid:
-                        {
-                            color: "#dedede",
-                            borderWidth: 1,
-                            borderColor: "#eee",
-                            clickable: true,
-                            hoverable: true,
-                            labelMargin: 20,
-                        },
-                    series: {
-                        lines: {
-                            show: true,
-                            fill: false,
-                            lineWidth: 2,
-                            steps: false
-                        },
-                        points: {
-                            show:true,
-                            radius: 5,
-                            lineWidth: 3,
-                            fill: true,
-                            fillColor: "#000"
-                        }
-                    },
-                    xaxis: {
-                        // we are not using any plugin for the xaxis, we use ticks instead.
-                        tickColor: '#eee',
-                    },
-                    yaxis: {
-                        show : true,
-                        tickColor: '#eee',
-                        min: 0,
-                        tickDecimals: 0,
-                    },
-                    legend: { position: "nw", noColumns: 2, backgroundColor: null, backgroundOpacity: 0 },
-                    shadowSize: 0,
-                    tooltip: true,
-                    tooltipOpts: {
-                        content: "%y %s - %x",
-                        shifts: {
-                            x: -30,
-                            y: -50
-                        },
-                        defaultTheme: false
-                    }
-                },
-
-            placeholder: ".commerce-dashboard-orders-chart-linegraph-placeholder",
-
-            // initialize
-            init: function()
-            {
-                if (this.plot == null){
-                    // hook the init function for plotting the chart
-                    commerceDashboardOrdersLineGraphInit();
+                points: {
+                    show:true,
+                    radius: 5,
+                    lineWidth: 3,
+                    fill: true,
+                    fillColor: "#000"
                 }
+            },
+            xaxis: {
+                // we are not using any plugin for the xaxis, we use ticks instead.
+                tickColor: '#eee',
+            },
+            yaxis: {
+                show : true,
+                tickColor: '#eee',
+                min: 0,
+                tickDecimals: 0,
+            },
+            legend: {
+                position: "nw",
+                noColumns: 2,
+                backgroundColor: null,
+                backgroundOpacity: 0
+            },
+            shadowSize: 0,
+            tooltip: true,
+            tooltipOpts: {
+                content: "%y %s - %x",
+                shifts: {
+                    x: -30,
+                    y: -50
+                },
+                defaultTheme: false
             }
-        };
+        },
+        placeholder: ".commerce-dashboard-orders-chart-linegraph-placeholder",
+        init: function() {
+            if (this.plot == null) {
+                // hook the init function for plotting the chart
+                commerceDashboardOrdersLineGraphInit();
+            }
+        }
+    };
 
     // INIT PLOTTING FUNCTION [also used as callback in the app.interface for when we refresh the chart]
     window.commerceDashboardOrdersLineGraphInit = function(target){
@@ -201,7 +191,9 @@ $(document).ready(function() {
         });
     }
 
-    setTimeout(function(){ commerceDashboardOrdersLineGraphInit(); }, 3000);
+    if ( $('.commerce-dashboard-orders-chart-linegraph-placeholder').length > 0) {
+        commerceDashboardOrdersLineGraphInit();
+    }
 });
 
 
