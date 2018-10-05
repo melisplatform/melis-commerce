@@ -135,22 +135,38 @@ $(document).ready(function() {
                 for (var i = 0; i < data.values.length; i++) {
                     if (chartFor == 'hourly')
                     {
-                        var dataString  = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH:mm');
+                        if ( $(window).width() <= 600 ) { // limit the changes on format to max 600px
+                            var dataString  = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH');
+                        } else {
+                            var dataString  = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH:mm');
+                        }
                     }
                     else if(chartFor == 'daily')
                     {
                         var date = moment(data.values[i][0], 'YYYY-MM-DD');
-                        var dataString = date.format("MMMM") + ' ' + date.format("DD");
+                        if ( $(window).width() <= 600 ) {
+                            var dataString = date.format("MMM") + '\n' + date.format("DD");    
+                        } else {
+                            var dataString = date.format("MMMM") + ' ' + date.format("DD");
+                        }
                     }
                     else if (chartFor == 'weekly')
                     {
                         var week = moment(data.values[i][0], 'YYYY-MM-DD').format('W');
                         var weekday = moment().day("Monday").week(week);
-                        var dataString = weekday.format("MMMM") + " " + weekday.format("DD");
+                        if ( $(window).width() <= 600 ) {
+                            var dataString = weekday.format("MMM") + "\n" + weekday.format("DD");
+                        } else {
+                            var dataString = weekday.format("MMMM") + " " + weekday.format("DD");
+                        }
                     }
                     else if (chartFor == 'monthly')
                     {
-                        var dataString = moment(data.values[i][0], 'YYYY-MM-DD').format("MMMM");
+                        if ( $(window).width() <= 600 ) {
+                            var dataString = moment(data.values[i][0], 'YYYY-MM-DD').format("MMM");
+                        } else {
+                            var dataString = moment(data.values[i][0], 'YYYY-MM-DD').format("MMMM");
+                        }
                     }
 
                     /*
