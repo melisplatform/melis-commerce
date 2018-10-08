@@ -5,96 +5,125 @@ $(document).ready(function() {
         commerceDashboardPluginSalesRevenueChartStackedBarsInit($(this));
     });
 
-    //chart options
-    charts.commerceDashboardPluginSalesRevenueChartStackedBars = {
-        data: null, // chart data
-        plot: null, // will hold the chart object
-        options: { // chart options
-            grid: {
-                color: "#dedede",
-                borderWidth: 1,
-                borderColor: "transparent",
-                clickable: true,
-                hoverable: true,
-                backgroundColor: {
-                    colors: [
-                        "#fff", "#fff"
-                    ],
-                },
-            },
-            series: {
-                stack: true,
-                grow: {
-                    active:false,
-                },
-                bars: {
-                    show: true,
-                    barWidth: 0.5,
-                    fill: 1,
-                    align: 'center',
-                },
-            },
-            xaxis: {
+        //chart options
+        charts.commerceDashboardPluginSalesRevenueChartStackedBars =
+            {
+                // chart data
+                data: null,
 
-            },
-            yaxis: {
-                min: 0,
-                tickDecimals: 0,
-            },
-            legend: {
-                position: "ne",
-                backgroundColor: null,
-                backgroundOpacity: 0,
-                noColumns: 2,
-            },
-            colors: [
-                "#7acc66",
-                "#66cccc",
-            ],
-            shadowSize: 0,
-            tooltip: true,
-            tooltipOpts: {
-                content: "%s : %y",
-                shifts:
+                // will hold the chart object
+                plot: null,
+
+                // chart options
+                options:
                     {
-                        x: -30,
-                        y: -50
+                        grid:
+                            {
+                                color: "#dedede",
+                                borderWidth: 1,
+                                borderColor: "transparent",
+                                clickable: true,
+                                hoverable: true,
+                                backgroundColor:
+                                    {
+                                        colors:
+                                            [
+                                                "#fff", "#fff"
+                                            ],
+                                    },
+                            },
+                        series:
+                            {
+                                stack: true,
+                                grow:
+                                    {
+                                        active:false,
+                                    },
+                                bars:
+                                    {
+                                        show: true,
+                                        barWidth: 0.5,
+                                        fill: 1,
+                                        align: 'center',
+                                    },
+                            },
+                        xaxis:
+                            {
+                                // we are not using any plugin for the xaxis, we use ticks instead.
+                            },
+                        yaxis:
+                            {
+                                min: 0,
+                                tickDecimals: 0,
+                            },
+                        legend:
+                            {
+                                position: "ne",
+                                backgroundColor: null,
+                                backgroundOpacity: 0,
+                                noColumns: 2,
+                            },
+                        colors:
+                            [
+                                "#7acc66",
+                                "#66cccc",
+                            ],
+                        shadowSize: 0,
+                        tooltip: true,
+                        tooltipOpts:
+                            {
+                                content: "%s : %y",
+                                shifts:
+                                    {
+                                        x: -30,
+                                        y: -50
+                                    },
+                                defaultTheme: false
+                            }
                     },
-                defaultTheme: false
-            }
-        },
-        placeholder: ".commerce-dashboard-plugin-sales-revenue-placeholder",
-        init: function() {
-            if (this.plot == null) {
-                commerceDashboardPluginSalesRevenueChartStackedBarsInit();
-            }
-        }
-    };
 
-    window.commerceDashboardPluginSalesRevenueChartStackedBarsInit = function(target){
-        var placeholder = "";
-        var chartFor = "";
+                placeholder: ".commerce-dashboard-plugin-sales-revenue-placeholder",
 
-        if (typeof target === "undefined") {
-            chartFor = 'hourly';
-            if (melisDashBoardDragnDrop.getCurrentPlugin() == null) {
-                placeholder = charts.commerceDashboardPluginSalesRevenueChartStackedBars.placeholder;
-            } else {
-                placeholder = "#"+melisDashBoardDragnDrop.getCurrentPlugin().find(".commerce-dashboard-plugin-sales-revenue-placeholder").attr("id");
+                // initialize
+                init: function()
+                {
+                    if(this.plot == null)
+                    {
+                        // hook the init function for plotting the chart
+                        commerceDashboardPluginSalesRevenueChartStackedBarsInit();
+                    }
+                }
+            };
+
+        window.commerceDashboardPluginSalesRevenueChartStackedBarsInit = function(target){
+            var placeholder = "";
+            var chartFor = "";
+
+            if(typeof target === "undefined")
+            {
+                //set default
+                chartFor = 'hourly';
+                if(melisDashBoardDragnDrop.getCurrentPlugin() == null)
+                {
+                    placeholder = charts.commerceDashboardPluginSalesRevenueChartStackedBars.placeholder;
+                }
+                else
+                {
+                    placeholder = "#"+melisDashBoardDragnDrop.getCurrentPlugin().find(".commerce-dashboard-plugin-sales-revenue-placeholder").attr("id");
+                }
+            }else
+            {
+                chartFor = target.val();
+                placeholder = "#"+target.closest(".tab-pane").find(".commerce-dashboard-plugin-sales-revenue-placeholder").attr("id");
             }
-        } else {
-            chartFor = target.val();
-            placeholder = "#"+target.closest(".tab-pane").find(".commerce-dashboard-plugin-sales-revenue-placeholder").attr("id");
-        }
 
-<<<<<<< HEAD
             // get data
             $.ajax({
                 type        : 'POST',
                 url         : '/melis/dashboard-plugin/MelisCommerceDashboardPluginSalesRevenue/getDashboardSalesRevenueData',
-                data		: {chartFor : chartFor},
-                dataType 	: 'json',
-                encode		: true
+                data        : {chartFor : chartFor},
+                dataType    : 'json',
+                encode      : true
             }).success(function(data){
                 // for total order price.
                 var data1 = [];
@@ -102,12 +131,14 @@ $(document).ready(function() {
                 var data2 = [];
                 var ticks = [];
                 var counter = data.values.length;
+                var window_width = $(window).width();
+
                 //the first value of the data.values is the current date / time.
                 for (var i = 0; i < data.values.length; i++) {
                     if (chartFor == 'hourly')
                     {
-                        if ( $(window).width() <= 600 ) { // limit the changes on format to max 600px
-                            var dataString  = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH');
+                        if ( window_width <= 767 ) { // limit the changes on format to max 600px
+                        var dataString  = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH');
                         } else {
                             var dataString  = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH:mm');
                         }
@@ -115,7 +146,7 @@ $(document).ready(function() {
                     else if(chartFor == 'daily')
                     {
                         var date = moment(data.values[i][0], 'YYYY-MM-DD');
-                        if ( $(window).width() <= 600 ) {
+                        if ( window_width <= 767 ) {
                             var dataString = date.format("MMM") + '\n' + date.format("DD");    
                         } else {
                             var dataString = date.format("MMMM") + ' ' + date.format("DD");
@@ -125,7 +156,7 @@ $(document).ready(function() {
                     {
                         var week = moment(data.values[i][0], 'YYYY-MM-DD').format('W');
                         var weekday = moment().day("Monday").week(week);
-                        if ( $(window).width() <= 600 ) {
+                        if ( window_width <= 767 ) {
                             var dataString = weekday.format("MMM") + "\n" + weekday.format("DD");
                         } else {
                             var dataString = weekday.format("MMMM") + " " + weekday.format("DD");
@@ -133,7 +164,7 @@ $(document).ready(function() {
                     }
                     else if (chartFor == 'monthly')
                     {
-                        if ( $(window).width() <= 600 ) {
+                        if ( window_width <= 767 ) {
                             var dataString = moment(data.values[i][0], 'YYYY-MM-DD').format("MMM");
                         } else {
                             var dataString = moment(data.values[i][0], 'YYYY-MM-DD').format("MMMM");
@@ -155,78 +186,31 @@ $(document).ready(function() {
                     */
                     ticks.push([counter, dataString]);
                     counter--;
-=======
-        $.ajax({
-            type        : 'POST',
-            url         : '/melis/dashboard-plugin/MelisCommerceDashboardPluginSalesRevenue/getDashboardSalesRevenueData',
-            data		: {chartFor : chartFor},
-            dataType 	: 'json',
-            encode		: true
-        }).success(function(data){
-            // for total order price.
-            var data1 = [];
-            // for total shipping fee.
-            var data2 = [];
-            var ticks = [];
-            var counter = data.values.length;
-            //the first value of the data.values is the current date / time.
-            for (var i = 0; i < data.values.length; i++) {
-                if (chartFor == 'hourly') {
-                    var dataString  = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH:mm');
-                } else if (chartFor == 'daily') {
-                    var date = moment(data.values[i][0], 'YYYY-MM-DD');
-                    var dataString = date.format("MMMM") + ' ' + date.format("DD");
-                } else if (chartFor == 'weekly') {
-                    var week = moment(data.values[i][0], 'YYYY-MM-DD').format('W');
-                    var weekday = moment().day("Monday").week(week);
-                    var dataString = weekday.format("MMMM") + " " + weekday.format("DD");
-                } else if (chartFor == 'monthly') {
-                    var dataString = moment(data.values[i][0], 'YYYY-MM-DD').format("MMMM");
->>>>>>> 1415e607dde9979799b1399f6d4fb13651d185d0
                 }
+                //insert the ticks to the charts object
+                charts.commerceDashboardPluginSalesRevenueChartStackedBars.options.xaxis.ticks = ticks;
+                //chart datas
+                charts.commerceDashboardPluginSalesRevenueChartStackedBars.data = new Array();
+                charts.commerceDashboardPluginSalesRevenueChartStackedBars.data.push({
+                    label: translations.tr_melis_commerce_dashboard_plugin_sales_revenue_order_price,
+                    data: data1
+                });
+                charts.commerceDashboardPluginSalesRevenueChartStackedBars.data.push({
+                    label: translations.tr_melis_commerce_dashboard_plugin_sales_revenue_shipping_price,
+                    data: data2
+                });
 
-                /*
-                 *  first parameter is for the xaxis. second param is the total order price/ shipping fee.
-                 *  we use counter so that the date / time would be ordered from left to right. The time / date
-                 *  on the right most is the current date / time.
-                 */
-                data1.push([counter, data.values[i][1]]);
-                data2.push([counter, data.values[i][2]]);
-               /*
-                *   first parameter is for the data identifier.
-                *   Example: data[0,1000] ticks[0,'June 11 2018']
-                *   y axis = 1000 and x axis = June 11 2018
-                *   the counter is the identifier for the x and y axis.
-                */
-                ticks.push([counter, dataString]);
-                counter--;
-            }
-            //insert the ticks to the charts object
-            charts.commerceDashboardPluginSalesRevenueChartStackedBars.options.xaxis.ticks = ticks;
-            //chart datas
-            charts.commerceDashboardPluginSalesRevenueChartStackedBars.data = [];
-            charts.commerceDashboardPluginSalesRevenueChartStackedBars.data.push({
-                label: translations.tr_melis_commerce_dashboard_plugin_sales_revenue_order_price,
-                data: data1
+                $(placeholder).each(function(){
+                    charts.commerceDashboardPluginSalesRevenueChartStackedBars.plot = $.plot(
+                        $(this),
+                        charts.commerceDashboardPluginSalesRevenueChartStackedBars.data,
+                        charts.commerceDashboardPluginSalesRevenueChartStackedBars.options
+                    );
+                });
+            }).error(function(xhr, textStatus, errorThrown){
+                console.log("ERROR !! Status = "+ textStatus + "\n Error = "+ errorThrown + "\n xhr = "+ xhr.statusText);
             });
-            charts.commerceDashboardPluginSalesRevenueChartStackedBars.data.push({
-                label: translations.tr_melis_commerce_dashboard_plugin_sales_revenue_shipping_price,
-                data: data2
-            });
+        }
 
-            $(placeholder).each(function() {
-                charts.commerceDashboardPluginSalesRevenueChartStackedBars.plot = $.plot(
-                    $(this),
-                    charts.commerceDashboardPluginSalesRevenueChartStackedBars.data,
-                    charts.commerceDashboardPluginSalesRevenueChartStackedBars.options
-                );
-            });
-        }).error(function(xhr, textStatus, errorThrown){
-            console.log("ERROR !! Status = "+ textStatus + "\n Error = "+ errorThrown + "\n xhr = "+ xhr.statusText);
-        });
-    }
-
-    if ($('.commerce-dashboard-plugin-sales-revenue-placeholder').length > 0) {
-        commerceDashboardPluginSalesRevenueChartStackedBarsInit();
-    }
+        setTimeout(function(){ commerceDashboardPluginSalesRevenueChartStackedBarsInit(); }, 3000);
 });

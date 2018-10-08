@@ -9382,12 +9382,13 @@ $(document).ready(function() {
             var finalData = [];
             var tick = [];
             var counter = data.values.length;
+            var window_width = $(window).width();
 
             for(var i = 0; i < data.values.length ; i++)
             {
                 if (chartFor == 'hourly')
                 {
-                    if ( $(window).width() <= 600 ) { // limit the changes on format to max 600px
+                    if ( window_width <= 767 ) { // limit the changes on format to max 600px
                         var dataString  = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH');
                     } else {
                         var dataString  = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH:mm');
@@ -9396,7 +9397,7 @@ $(document).ready(function() {
                 else if(chartFor == 'daily')
                 {
                     var date = moment(data.values[i][0], 'YYYY-MM-DD');
-                    if ( $(window).width() <= 600 ) {
+                    if ( window_width <= 767 ) {
                         var dataString = date.format("MMM") + '\n' + date.format("DD");    
                     } else {
                         var dataString = date.format("MMMM") + ' ' + date.format("DD");
@@ -9406,7 +9407,7 @@ $(document).ready(function() {
                 {
                     var week = moment(data.values[i][0], 'YYYY-MM-DD').format('W');
                     var weekday = moment().day("Monday").week(week);
-                    if ( $(window).width() <= 600 ) {
+                    if ( window_width <= 767 ) {
                         var dataString = weekday.format("MMM") + "\n" + weekday.format("DD");
                     } else {
                         var dataString = weekday.format("MMMM") + " " + weekday.format("DD");
@@ -9414,7 +9415,7 @@ $(document).ready(function() {
                 }
                 else if (chartFor == 'monthly')
                 {
-                    if ( $(window).width() <= 600 ) {
+                    if ( window_width <= 767 ) {
                         var dataString = moment(data.values[i][0], 'YYYY-MM-DD').format("MMM");
                     } else {
                         var dataString = moment(data.values[i][0], 'YYYY-MM-DD').format("MMMM");
@@ -9546,8 +9547,6 @@ $(document).ready(function() {
             chartFor = target.val();
             placeholder = "#"+target.closest(".tab-pane").find(".commerce-dashboard-plugin-sales-revenue-placeholder").attr("id");
         }
-
-<<<<<<< HEAD
             // get data
             $.ajax({
                 type        : 'POST',
@@ -9562,11 +9561,12 @@ $(document).ready(function() {
                 var data2 = [];
                 var ticks = [];
                 var counter = data.values.length;
+                var window_width = $(window).width();
                 //the first value of the data.values is the current date / time.
                 for (var i = 0; i < data.values.length; i++) {
                     if (chartFor == 'hourly')
                     {
-                        if ( $(window).width() <= 600 ) {
+                        if ( window_width <= 767 ) {
                             var dataString  = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH');
                         } else {
                             var dataString  = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH:mm');
@@ -9576,7 +9576,7 @@ $(document).ready(function() {
                     else if(chartFor == 'daily')
                     {
                         var date = moment(data.values[i][0], 'YYYY-MM-DD');
-                        if ( $(window).width() <= 600 ) {
+                        if ( window_width <= 767 ) {
                             var dataString = date.format("MMM") + '\n' + date.format("DD");    
                         } else {
                             var dataString = date.format("MMMM") + ' ' + date.format("DD");
@@ -9586,7 +9586,7 @@ $(document).ready(function() {
                     {
                         var week = moment(data.values[i][0], 'YYYY-MM-DD').format('W');
                         var weekday = moment().day("Monday").week(week);
-                        if ( $(window).width() <= 600 ) {
+                        if ( window_width <= 767 ) {
                             var dataString = weekday.format("MMM") + "\n" + weekday.format("DD");
                         } else {
                             var dataString = weekday.format("MMMM") + " " + weekday.format("DD");
@@ -9594,7 +9594,7 @@ $(document).ready(function() {
                     }
                     else if (chartFor == 'monthly')
                     {
-                        if ( $(window).width() <= 600 ) {
+                        if ( window_width <= 767 ) {
                             var dataString = moment(data.values[i][0], 'YYYY-MM-DD').format("MMM");
                         } else {
                             var dataString = moment(data.values[i][0], 'YYYY-MM-DD').format("MMMM");
@@ -9616,52 +9616,8 @@ $(document).ready(function() {
                     */
                     ticks.push([counter, dataString]);
                     counter--;
-=======
-        $.ajax({
-            type        : 'POST',
-            url         : '/melis/dashboard-plugin/MelisCommerceDashboardPluginSalesRevenue/getDashboardSalesRevenueData',
-            data		: {chartFor : chartFor},
-            dataType 	: 'json',
-            encode		: true
-        }).success(function(data){
-            // for total order price.
-            var data1 = [];
-            // for total shipping fee.
-            var data2 = [];
-            var ticks = [];
-            var counter = data.values.length;
-            //the first value of the data.values is the current date / time.
-            for (var i = 0; i < data.values.length; i++) {
-                if (chartFor == 'hourly') {
-                    var dataString  = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH:mm');
-                } else if (chartFor == 'daily') {
-                    var date = moment(data.values[i][0], 'YYYY-MM-DD');
-                    var dataString = date.format("MMMM") + ' ' + date.format("DD");
-                } else if (chartFor == 'weekly') {
-                    var week = moment(data.values[i][0], 'YYYY-MM-DD').format('W');
-                    var weekday = moment().day("Monday").week(week);
-                    var dataString = weekday.format("MMMM") + " " + weekday.format("DD");
-                } else if (chartFor == 'monthly') {
-                    var dataString = moment(data.values[i][0], 'YYYY-MM-DD').format("MMMM");
->>>>>>> 1415e607dde9979799b1399f6d4fb13651d185d0
                 }
-
-                /*
-                 *  first parameter is for the xaxis. second param is the total order price/ shipping fee.
-                 *  we use counter so that the date / time would be ordered from left to right. The time / date
-                 *  on the right most is the current date / time.
-                 */
-                data1.push([counter, data.values[i][1]]);
-                data2.push([counter, data.values[i][2]]);
-               /*
-                *   first parameter is for the data identifier.
-                *   Example: data[0,1000] ticks[0,'June 11 2018']
-                *   y axis = 1000 and x axis = June 11 2018
-                *   the counter is the identifier for the x and y axis.
-                */
-                ticks.push([counter, dataString]);
-                counter--;
-            }
+                
             //insert the ticks to the charts object
             charts.commerceDashboardPluginSalesRevenueChartStackedBars.options.xaxis.ticks = ticks;
             //chart datas
