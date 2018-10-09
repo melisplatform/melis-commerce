@@ -226,6 +226,6 @@ window.variantLoaded = function() {
     melisCommerce.enableTab(prodTabId);
 };
 window.initVariantSwitch = function(){
-    var productId = melisCommerce.getCurrentProductId();
+    var productId = $(".triggerVarUpdate").closest("table").attr("data-prodid");
     $('.'+productId+'_variantStatusChk').bootstrapSwitch();
 };
