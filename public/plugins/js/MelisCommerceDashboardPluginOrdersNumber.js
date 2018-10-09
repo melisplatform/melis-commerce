@@ -128,38 +128,26 @@ $(document).ready(function() {
             {
                 if (chartFor == 'hourly')
                 {
-                    if ( window_width <= 767 ) { // limit the changes on format to max 600px
-                        var dataString  = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH');
-                    } else {
-                        var dataString  = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH:mm');
-                    }
+                    // displays the hour only
+                    var dataString  = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH');
                 }
                 else if(chartFor == 'daily')
                 {
                     var date = moment(data.values[i][0], 'YYYY-MM-DD');
-                    if ( window_width <= 767 ) {
-                        var dataString = date.format("MMM") + '\n' + date.format("DD");    
-                    } else {
-                        var dataString = date.format("MMMM") + ' ' + date.format("DD");
-                    }
+                    // displays month name in 3 letters and the day is in another line
+                    var dataString = date.format("MMM") + '\n' + date.format("DD");    
                 }
                 else if (chartFor == 'weekly')
                 {
                     var week = moment(data.values[i][0], 'YYYY-MM-DD').format('W');
                     var weekday = moment().day("Monday").week(week);
-                    if ( window_width <= 767 ) {
-                        var dataString = weekday.format("MMM") + "\n" + weekday.format("DD");
-                    } else {
-                        var dataString = weekday.format("MMMM") + " " + weekday.format("DD");
-                    }
+                    // displays month name in 3 letters
+                    var dataString = weekday.format("MMM") + "\n" + weekday.format("DD");
                 }
                 else if (chartFor == 'monthly')
                 {
-                    if ( window_width <= 767 ) {
-                        var dataString = moment(data.values[i][0], 'YYYY-MM-DD').format("MMM");
-                    } else {
-                        var dataString = moment(data.values[i][0], 'YYYY-MM-DD').format("MMMM");
-                    }
+                    // displays month name in 3 letters
+                    var dataString = moment(data.values[i][0], 'YYYY-MM-DD').format("MMM");
                 }
 
                 //pushing the data to the finalData which will be used in the charts
