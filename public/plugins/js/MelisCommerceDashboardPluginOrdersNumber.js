@@ -122,27 +122,32 @@ $(document).ready(function() {
             var finalData = [];
             var tick = [];
             var counter = data.values.length;
+            var window_width = $(window).width();
 
             for(var i = 0; i < data.values.length ; i++)
             {
                 if (chartFor == 'hourly')
                 {
-                    var dataString  = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH:mm');
+                    // displays the hour only
+                    var dataString  = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH');
                 }
                 else if(chartFor == 'daily')
                 {
                     var date = moment(data.values[i][0], 'YYYY-MM-DD');
-                    var dataString = date.format("MMMM") + ' ' + date.format("DD");
+                    // displays month name in 3 letters and the day is in another line
+                    var dataString = date.format("MMM") + '\n' + date.format("DD");    
                 }
                 else if (chartFor == 'weekly')
                 {
                     var week = moment(data.values[i][0], 'YYYY-MM-DD').format('W');
                     var weekday = moment().day("Monday").week(week);
-                    var dataString = weekday.format("MMMM") + " " + weekday.format("DD");
+                    // displays month name in 3 letters
+                    var dataString = weekday.format("MMM") + "\n" + weekday.format("DD");
                 }
                 else if (chartFor == 'monthly')
                 {
-                    var dataString = moment(data.values[i][0], 'YYYY-MM-DD').format("MMMM");
+                    // displays month name in 3 letters
+                    var dataString = moment(data.values[i][0], 'YYYY-MM-DD').format("MMM");
                 }
 
                 //pushing the data to the finalData which will be used in the charts
