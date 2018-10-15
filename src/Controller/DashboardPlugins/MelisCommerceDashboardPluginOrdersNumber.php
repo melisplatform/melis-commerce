@@ -100,6 +100,7 @@ class MelisCommerceDashboardPluginOrdersNumber extends MelisCoreDashboardTemplat
         $view->setTemplate('MelisCommerceDashboardPluginOrdersNumber/dashboard/commerce-orders');
         $view->orderDatas = $orders;
         $view->status = $status;
+        $view->activeFilter = $this->pluginConfig['activeFilter'];
 
         return $view;
     }
@@ -195,5 +196,9 @@ class MelisCommerceDashboardPluginOrdersNumber extends MelisCoreDashboardTemplat
     private function getCurrentLocaleId($pluginKey, $toolKey)
     {
         return $this->getTool($pluginKey, $toolKey)->getCurrentLocaleID();
+    }
+
+    public function savePluginConfigToXml($config){
+        return "\t".'<activeFilter><![CDATA['.$config['activeFilter'].']]></activeFilter>'."\n";
     }
 }
