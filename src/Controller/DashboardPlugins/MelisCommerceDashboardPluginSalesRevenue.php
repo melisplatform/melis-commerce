@@ -28,6 +28,7 @@ class MelisCommerceDashboardPluginSalesRevenue extends MelisCoreDashboardTemplat
 
         $view = new ViewModel();
         $view->setTemplate('MelisCommerceDashboardPluginSalesRevenue/dashboard/commerce-sales-revenue');
+        $view->activeFilter = $this->pluginConfig['activeFilter'];
 
         return $view;
     }
@@ -41,7 +42,9 @@ class MelisCommerceDashboardPluginSalesRevenue extends MelisCoreDashboardTemplat
         if($this->getController()->getRequest()->isPost()) {
 
             $chartFor = get_object_vars($this->getController()->getRequest()->getPost());
-            $chartFor = isset($chartFor['chartFor']) ? $chartFor['chartFor'] : 'monthly';
+            $chartFor = ($chartFor['chartFor'] == "") ? $this->pluginConfig['activeFilter'] : $chartFor['chartFor'];
+
+            //$pluginConfig['activeFilter'] = $chartFor;
 
             $melisCommerceOrdersService = $this->getServiceLocator()->get('MelisComOrderService');
             // Last Date/value of the Graph will be the Current Date
@@ -92,8 +95,11 @@ class MelisCommerceDashboardPluginSalesRevenue extends MelisCoreDashboardTemplat
         return new JsonModel(array(
             'date' => date('Y-m-d'),
             'success' => $success,
-            'values' => $values,
+            'values' => $values
         ));
     }
 
+    public function savePluginConfigToXml($config){
+        return "\t".'<activeFilter><![CDATA['.$config['activeFilter'].']]></activeFilter>'."\n";
+    }
 }
