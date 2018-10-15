@@ -19,6 +19,7 @@
                         'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceOrdersPlugin.jpg',
                         'jscallback' => 'commerceDashboardOrdersLineGraphInit()',
                         'height' => 7,
+                        'activeFilter' => 'hourly',
 
                         'interface' => array(
                             'meliscommerce_dashboard_orders_number' => array(

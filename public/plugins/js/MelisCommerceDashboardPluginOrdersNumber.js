@@ -1,7 +1,19 @@
 $(document).ready(function() {
-    //when changing for report type.
+    //instance counter
+    var instanceCount = 0;
+
+    //when a filter is selected
     $("body").on("change", '.com-orders-dash-chart-line', function() {
         commerceDashboardOrdersLineGraphInit($(this));
+
+        //get the hidden plugin config
+        var $hiddenJsonConfig = $(this).closest('.grid-stack-item').find('.grid-stack-item-content .widget .widget-parent .widget-body .dashboard-plugin-json-config');
+        var pluginConfig = JSON.parse($hiddenJsonConfig.text());
+
+        //update the filter and save the plugin
+        pluginConfig.activeFilter = $(this).val();
+        $($hiddenJsonConfig).text(JSON.stringify(pluginConfig));
+        melisDashBoardDragnDrop.saveCurrentDashboard($(this));
     });
 
     //opening order tab when an order is clicked
@@ -14,7 +26,7 @@ $(document).ready(function() {
         var alreadyOpen = $("body #melis-id-nav-bar-tabs li a.tab-element[data-id='id_meliscommerce_order_list_page']");
         // check if it exists
         var checkOrders = setInterval(function() {
-            if(alreadyOpen.length){
+            if (alreadyOpen.length) {
                 var navTabsGroup = "id_meliscommerce_order_list_page";
 
                 melisHelper.tabOpen(
@@ -30,10 +42,12 @@ $(document).ready(function() {
     });
 
     charts.commerceDashboardOrdersLineGraph = {
+        //chart data
         data: {
             d1: []
         },
-        plot: null, // will hold the chart object
+        //will hold the chart object
+        plot: null,
         options: {
             grid: {
                 color: "#dedede",
@@ -95,18 +109,32 @@ $(document).ready(function() {
     };
 
     // INIT PLOTTING FUNCTION [also used as callback in the app.interface for when we refresh the chart]
-    window.commerceDashboardOrdersLineGraphInit = function(target){
-        var placeholder = "";
+    window.commerceDashboardOrdersLineGraphInit = function(target = null, placeholder = null) {
         var chartFor = "";
-        if(typeof target === "undefined"){
-            chartFor = 'hourly';
-            if(melisDashBoardDragnDrop.getCurrentPlugin() == null){
-                placeholder = charts.commerceDashboardOrdersLineGraph.placeholder;
-            }else{
-                placeholder = "#"+melisDashBoardDragnDrop.getCurrentPlugin().find(".commerce-dashboard-orders-chart-linegraph-placeholder").attr("id");
-            }
 
-        }else{
+        if (target === null) {
+            if (melisDashBoardDragnDrop.getCurrentPlugin() == null) {
+                //when dashboard tab is closed and opened again
+                var chartsArray = $body.find(".commerce-dashboard-orders-chart-linegraph-placeholder");
+                var pluginConfig = $(chartsArray[instanceCount]).closest('.grid-stack-item').find('.grid-stack-item-content .widget .widget-parent .widget-body .dashboard-plugin-json-config').text();
+                instanceCount++;
+
+                if (instanceCount == chartsArray.length) {
+                    instanceCount = 0;
+                }
+
+                chartFor = JSON.parse(pluginConfig).activeFilter;
+                placeholder = "#commerce-dashboard-orders-chart-linegraph-placeholder-" + JSON.parse(pluginConfig).plugin_id;
+            } else {
+                chartFor = 'hourly';
+                placeholder = "#"+$(melisDashBoardDragnDrop.getCurrentPlugin()).find(".commerce-dashboard-orders-chart-linegraph-placeholder").attr("id");
+            }
+        } else if (typeof target == "string") {
+            //when initializing the charts on the first load of dashboard
+            chartFor = target;
+            placeholder = "#commerce-dashboard-orders-chart-linegraph-placeholder-" + placeholder;
+        } else {
+            //when filter is selected
             chartFor = target.val();
             placeholder = "#"+target.closest(".tab-pane").find(".commerce-dashboard-orders-chart-linegraph-placeholder").attr("id");
         }
@@ -124,28 +152,20 @@ $(document).ready(function() {
             var counter = data.values.length;
             var window_width = $(window).width();
 
-            for(var i = 0; i < data.values.length ; i++)
-            {
-                if (chartFor == 'hourly')
-                {
+            for (var i = 0; i < data.values.length ; i++) {
+                if (chartFor == 'hourly') {
                     // displays the hour only
                     var dataString  = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH');
-                }
-                else if(chartFor == 'daily')
-                {
+                } else if(chartFor == 'daily') {
                     var date = moment(data.values[i][0], 'YYYY-MM-DD');
                     // displays month name in 3 letters and the day is in another line
                     var dataString = date.format("MMM") + '\n' + date.format("DD");    
-                }
-                else if (chartFor == 'weekly')
-                {
+                } else if (chartFor == 'weekly') {
                     var week = moment(data.values[i][0], 'YYYY-MM-DD').format('W');
                     var weekday = moment().day("Monday").week(week);
                     // displays month name in 3 letters
                     var dataString = weekday.format("MMM") + "\n" + weekday.format("DD");
-                }
-                else if (chartFor == 'monthly')
-                {
+                } else if (chartFor == 'monthly') {
                     // displays month name in 3 letters
                     var dataString = moment(data.values[i][0], 'YYYY-MM-DD').format("MMM");
                 }
@@ -161,28 +181,29 @@ $(document).ready(function() {
             charts.commerceDashboardOrdersLineGraph.options.xaxis.ticks = tick;
             charts.commerceDashboardOrdersLineGraph.options.tooltipOpts.content = "%y %s";
 
-            $(placeholder).each(function(){
-                charts.commerceDashboardOrdersLineGraph.plot = $.plot(
-                    $(this),
-                    [{
-                        label: translations.tr_melis_commerce_dashboard_plugin_orders_number,
-                        data: finalData,
-                        color: "#3997d4",
-                        lines: { fill: 0.2 },
-                        points: { fillColor: "#fff"}
-                    }],
-                    charts.commerceDashboardOrdersLineGraph.options
-                );
-            });
+            charts.commerceDashboardOrdersLineGraph.plot = $.plot(
+                $(placeholder),
+                [{
+                    label: translations.tr_melis_commerce_dashboard_plugin_orders_number,
+                    data: finalData,
+                    color: "#3997d4",
+                    lines: { fill: 0.2 },
+                    points: { fillColor: "#fff"}
+                }],
+                charts.commerceDashboardOrdersLineGraph.options
+            );
 
         }).error(function(xhr, textStatus, errorThrown){
             console.log("ERROR !! Status = "+ textStatus + "\n Error = "+ errorThrown + "\n xhr = "+ xhr.statusText);
         });
     }
 
-    if ( $('.commerce-dashboard-orders-chart-linegraph-placeholder').length > 0) {
-        commerceDashboardOrdersLineGraphInit();
-    }
+    //initialize all the charts on the dashboard on first load of dashboard.
+    $body.find(".commerce-dashboard-orders-chart-linegraph-placeholder").each(function(index, value){
+        var pluginConfig = $(value).closest('.grid-stack-item').find('.grid-stack-item-content .widget .widget-parent .widget-body .dashboard-plugin-json-config').text();
+        var filter = JSON.parse(pluginConfig).activeFilter;
+        var placeholder = JSON.parse(pluginConfig).plugin_id;
+
+        commerceDashboardOrdersLineGraphInit(filter, placeholder);
+    });
 });
-
-

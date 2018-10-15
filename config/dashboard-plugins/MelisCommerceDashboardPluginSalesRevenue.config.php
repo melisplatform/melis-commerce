@@ -19,6 +19,7 @@
                         'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceDashboardPluginSalesRevenue.jpg',
                         'jscallback' => 'commerceDashboardPluginSalesRevenueChartStackedBarsInit()',
                         'height' => 4,
+                        'activeFilter' => 'hourly',
 
                         'interface' => array(
                             'meliscommerce_dashboard_sales_revenue' => array(

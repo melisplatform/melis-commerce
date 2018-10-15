@@ -4,16 +4,16 @@
             <div class="tab-content">
                 <div class="tab-pane active" id="chart-simple-lines-<?php echo $this->pluginConfig['plugin_id']?>">
                     <div class="btn-group pull-right" data-toggle="buttons">
-                        <label class="btn btn-default btn-sm active">
+                        <label class="btn btn-default btn-sm <?= ($activeFilter == 'hourly') ? 'active' : '' ?>">
                             <input type="radio" class="com-orders-dash-chart-line" name="com-orders-dash-chart-line" value="hourly"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_hourly')?>
                         </label>
-                        <label class="btn btn-default btn-sm">
+                        <label class="btn btn-default btn-sm <?= ($activeFilter == 'daily') ? 'active' : '' ?>">
                             <input type="radio" class="com-orders-dash-chart-line" name="com-orders-dash-chart-line" value="daily"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_daily')?>
                         </label>
-                        <label class="btn btn-default btn-sm">
+                        <label class="btn btn-default btn-sm <?= ($activeFilter == 'weekly') ? 'active' : '' ?>">
                             <input type="radio" class="com-orders-dash-chart-line" name="com-orders-dash-chart-line" value="weekly"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_weekly')?>
                         </label>
-                        <label class="btn btn-default btn-sm">
+                        <label class="btn btn-default btn-sm <?= ($activeFilter == 'monthly') ? 'active' : '' ?>">
                             <input type="radio" class="com-orders-dash-chart-line" name="com-orders-dash-chart-line" value="monthly"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_monthly')?>
                         </label>
                     </div>
