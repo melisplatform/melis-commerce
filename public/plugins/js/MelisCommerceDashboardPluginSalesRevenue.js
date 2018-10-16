@@ -1,9 +1,9 @@
-$(document).ready(function() {
+$(document).ready(function () {
     //instance counter
     var instanceCount = 0;
 
     //when a filter is selected
-    $("body").on("change", '.commerce-dashboard-plugin-sales-revenue', function() {
+    $("body").on("change", '.commerce-dashboard-plugin-sales-revenue', function () {
         commerceDashboardPluginSalesRevenueChartStackedBarsInit($(this));
 
         //get the hidden plugin config
@@ -76,7 +76,7 @@ $(document).ready(function() {
         },
         placeholder: ".commerce-dashboard-plugin-sales-revenue-placeholder",
         // initialize
-        init: function() {
+        init: function () {
             if (this.plot == null) {
                 // hook the init function for plotting the chart
                 commerceDashboardPluginSalesRevenueChartStackedBarsInit();
@@ -84,7 +84,9 @@ $(document).ready(function() {
         }
     };
 
-    window.commerceDashboardPluginSalesRevenueChartStackedBarsInit = function(target = null, placeholder = null){
+    window.commerceDashboardPluginSalesRevenueChartStackedBarsInit = function (target, placeholder) {
+        var target = target || null;
+        var placeholder = placeholder || null;
         var chartFor = "";
 
         if (target == null) {
@@ -92,8 +94,8 @@ $(document).ready(function() {
             var emptyChartCount = 0;
 
             //count the number of empty charts
-            $body.find(".commerce-dashboard-plugin-sales-revenue-placeholder").each(function(index, value) {
-                if($(this).text() == "") {
+            $body.find(".commerce-dashboard-plugin-sales-revenue-placeholder").each(function (index, value) {
+                if ($(this).text() == "") {
                     emptyChartCount++;
                 }
             });
@@ -120,20 +122,20 @@ $(document).ready(function() {
         } else if (typeof target === "string") {
             //when initializing the charts on first load of dashboard
             chartFor = target;
-            placeholder = "#commerce-dashboard-plugin-sales-revenue-placeholder-"+placeholder;
+            placeholder = "#commerce-dashboard-plugin-sales-revenue-placeholder-" + placeholder;
         } else {
             //when a filter is selected
             chartFor = target.val();
-            placeholder = "#"+target.closest(".tab-pane").find(".commerce-dashboard-plugin-sales-revenue-placeholder").attr("id");
+            placeholder = "#" + target.closest(".tab-pane").find(".commerce-dashboard-plugin-sales-revenue-placeholder").attr("id");
         }
 
         $.ajax({
-            type        : 'POST',
-            url         : '/melis/dashboard-plugin/MelisCommerceDashboardPluginSalesRevenue/getDashboardSalesRevenueData',
-            data        : {chartFor : chartFor},
-            dataType    : 'json',
-            encode      : true
-        }).success(function(data){
+            type: 'POST',
+            url: '/melis/dashboard-plugin/MelisCommerceDashboardPluginSalesRevenue/getDashboardSalesRevenueData',
+            data: {chartFor: chartFor},
+            dataType: 'json',
+            encode: true
+        }).success(function (data) {
             // for total order price.
             var data1 = [];
             // for total shipping fee.
@@ -146,8 +148,8 @@ $(document).ready(function() {
             for (var i = 0; i < data.values.length; i++) {
                 if (chartFor == 'hourly') {
                     // displays the hour only
-                    var dataString  = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH');
-                } else if(chartFor == 'daily') {
+                    var dataString = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH');
+                } else if (chartFor == 'daily') {
                     var date = moment(data.values[i][0], 'YYYY-MM-DD');
                     // displays month name in 3 letters and the day is in another line
                     var dataString = date.format("MMM") + '\n' + date.format("DD");
@@ -195,13 +197,13 @@ $(document).ready(function() {
                 charts.commerceDashboardPluginSalesRevenueChartStackedBars.data,
                 charts.commerceDashboardPluginSalesRevenueChartStackedBars.options
             );
-        }).error(function(xhr, textStatus, errorThrown){
-            console.log("ERROR !! Status = "+ textStatus + "\n Error = "+ errorThrown + "\n xhr = "+ xhr.statusText);
+        }).error(function (xhr, textStatus, errorThrown) {
+            console.log("ERROR !! Status = " + textStatus + "\n Error = " + errorThrown + "\n xhr = " + xhr.statusText);
         });
     }
 
     //initialize all the charts on the dashboard on first load of dashboard.
-    $body.find(".commerce-dashboard-plugin-sales-revenue-placeholder").each(function(index, value){
+    $body.find(".commerce-dashboard-plugin-sales-revenue-placeholder").each(function (index, value) {
         var pluginConfig = $(value).closest('.grid-stack-item').find('.grid-stack-item-content .widget .widget-parent .widget-body .dashboard-plugin-json-config').text();
         var filter = JSON.parse(pluginConfig).activeFilter;
         var placeholder = JSON.parse(pluginConfig).plugin_id;
