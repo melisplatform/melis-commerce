@@ -9373,9 +9373,18 @@ $(document).ready(function() {
         var chartFor = "";
 
         if (target === null) {
-            if (melisDashBoardDragnDrop.getCurrentPlugin() == null) {
-                //when dashboard tab is closed and opened again
-                var chartsArray = $body.find(".commerce-dashboard-orders-chart-linegraph-placeholder");
+            var chartsArray = $body.find(".commerce-dashboard-orders-chart-linegraph-placeholder");
+            var emptyChartCount = 0;
+
+            //count the number of empty charts
+            $body.find(".commerce-dashboard-orders-chart-linegraph-placeholder").each(function(index, value) {
+                if($(this).text() == "") {
+                    emptyChartCount++;
+                }
+            });
+
+            if (emptyChartCount == $body.find(".commerce-dashboard-orders-chart-linegraph-placeholder").length) {
+                //when count of empty charts is equal to the count of charts then it mean the tab is closed and opened again.
                 var pluginConfig = $(chartsArray[instanceCount]).closest('.grid-stack-item').find('.grid-stack-item-content .widget .widget-parent .widget-body .dashboard-plugin-json-config').text();
                 instanceCount++;
 
@@ -9386,8 +9395,12 @@ $(document).ready(function() {
                 chartFor = JSON.parse(pluginConfig).activeFilter;
                 placeholder = "#commerce-dashboard-orders-chart-linegraph-placeholder-" + JSON.parse(pluginConfig).plugin_id;
             } else {
-                chartFor = 'hourly';
-                placeholder = "#"+$(melisDashBoardDragnDrop.getCurrentPlugin()).find(".commerce-dashboard-orders-chart-linegraph-placeholder").attr("id");
+                //when a new plugin is dragged to the grid stack
+                var lastItem = body.find(".commerce-dashboard-orders-chart-linegraph-placeholder").length - 1;
+                var pluginConfig = $(chartsArray[lastItem]).closest('.grid-stack-item').find('.grid-stack-item-content .widget .widget-parent .widget-body .dashboard-plugin-json-config').text();
+
+                chartFor = JSON.parse(pluginConfig).activeFilter;
+                placeholder = "#commerce-dashboard-orders-chart-linegraph-placeholder-" + JSON.parse(pluginConfig).plugin_id;
             }
         } else if (typeof target == "string") {
             //when initializing the charts on the first load of dashboard
@@ -9419,7 +9432,7 @@ $(document).ready(function() {
                 } else if(chartFor == 'daily') {
                     var date = moment(data.values[i][0], 'YYYY-MM-DD');
                     // displays month name in 3 letters and the day is in another line
-                    var dataString = date.format("MMM") + '\n' + date.format("DD");    
+                    var dataString = date.format("MMM") + '\n' + date.format("DD");
                 } else if (chartFor == 'weekly') {
                     var week = moment(data.values[i][0], 'YYYY-MM-DD').format('W');
                     var weekday = moment().day("Monday").week(week);
@@ -9516,7 +9529,7 @@ $(document).ready(function() {
                 },
             },
             xaxis: {
-                    // we are not using any plugin for the xaxis, we use ticks instead.
+                // we are not using any plugin for the xaxis, we use ticks instead.
             },
             yaxis: {
                 min: 0,
@@ -9557,9 +9570,18 @@ $(document).ready(function() {
         var chartFor = "";
 
         if (target == null) {
-            if (melisDashBoardDragnDrop.getCurrentPlugin() == null) {
-                //when dashboard tab is closed and opened again
-                var chartsArray = $body.find(".commerce-dashboard-plugin-sales-revenue-placeholder");
+            var chartsArray = $body.find(".commerce-dashboard-plugin-sales-revenue-placeholder");
+            var emptyChartCount = 0;
+
+            //count the number of empty charts
+            $body.find(".commerce-dashboard-plugin-sales-revenue-placeholder").each(function(index, value) {
+                if($(this).text() == "") {
+                    emptyChartCount++;
+                }
+            });
+
+            if (emptyChartCount == $body.find(".commerce-dashboard-plugin-sales-revenue-placeholder").length) {
+                //when count of empty charts is equal to the count of charts then it mean the tab is closed and opened again.
                 var pluginConfig = $(chartsArray[instanceCount]).closest('.grid-stack-item').find('.grid-stack-item-content .widget .widget-parent .widget-body .dashboard-plugin-json-config').text();
                 instanceCount++;
 
@@ -9570,9 +9592,12 @@ $(document).ready(function() {
                 chartFor = JSON.parse(pluginConfig).activeFilter;
                 placeholder = "#commerce-dashboard-plugin-sales-revenue-placeholder-" + JSON.parse(pluginConfig).plugin_id;
             } else {
-                //when adding the plugin in dashboard
-                chartFor = 'hourly';
-                placeholder = "#"+$(melisDashBoardDragnDrop.getCurrentPlugin()).find(".commerce-dashboard-plugin-sales-revenue-placeholder").attr("id");
+                //when a new plugin is dragged to the grid stack
+                var lastItem = body.find(".commerce-dashboard-plugin-sales-revenue-placeholder").length - 1;
+                var pluginConfig = $(chartsArray[lastItem]).closest('.grid-stack-item').find('.grid-stack-item-content .widget .widget-parent .widget-body .dashboard-plugin-json-config').text();
+
+                chartFor = JSON.parse(pluginConfig).activeFilter;
+                placeholder = "#commerce-dashboard-plugin-sales-revenue-placeholder-" + JSON.parse(pluginConfig).plugin_id;
             }
         } else if (typeof target === "string") {
             //when initializing the charts on first load of dashboard
@@ -9625,12 +9650,12 @@ $(document).ready(function() {
                  */
                 data1.push([counter, data.values[i][1]]);
                 data2.push([counter, data.values[i][2]]);
-               /*
-                *   first parameter is for the data identifier.
-                *   Example: data[0,1000] ticks[0,'June 11 2018']
-                *   y axis = 1000 and x axis = June 11 2018
-                *   the counter is the identifier for the x and y axis.
-                */
+                /*
+                 *   first parameter is for the data identifier.
+                 *   Example: data[0,1000] ticks[0,'June 11 2018']
+                 *   y axis = 1000 and x axis = June 11 2018
+                 *   the counter is the identifier for the x and y axis.
+                 */
                 ticks.push([counter, dataString]);
                 counter--;
             }
