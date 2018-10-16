@@ -254,7 +254,11 @@ class Module
             include __DIR__ . '/../config/plugins/products/MelisCommerceProductListPlugin.php',
             include __DIR__ . '/../config/plugins/products/MelisCommerceProductPriceRangePlugin.php',
             include __DIR__ . '/../config/plugins/products/MelisCommerceProductAttributePlugin.php',
-    	    
+
+            // order dashboard plugins
+            include __DIR__ . '/../config/dashboard-plugins/MelisCommerceDashboardPluginOrdersNumber.config.php',
+            include __DIR__ . '/../config/dashboard-plugins/MelisCommerceDashboardPluginSalesRevenue.config.php',
+            include __DIR__ . '/../config/dashboard-plugins/MelisCommerceDashboardPluginOrderMessages.config.php',
     	);
     	
     	foreach ($configFiles as $file) {

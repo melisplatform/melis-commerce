@@ -200,4 +200,37 @@
         'tr_meliscommerce_plugin_order_messages_name' => 'Messages de la commande',
         'tr_meliscommerce_plugin_order_messages_description' => 'Ce plugin affiche les messages de la commande',
         'tr_meliscommerce_plugin_order_messages_area' => 'Zone de messages',
-    );
+        
+        //Dashboard Plugin
+        //number of orders plugin
+        'tr_PluginSection_meliscommerce' => 'Melis Commerce',
+        'tr_melis_commerce_dashboard_plugin_orders_number' => ' Nombre de commandes',
+        'tr_melis_commerce_dashboard_plugin_orders_number_description' => 'Ce plugin affiche l\'aperçu du nombre de statistiques de commandes.',
+        'tr_melis_commerce_orders_dashboard_statistics_hourly' => 'Toutes les heures',
+        'tr_melis_commerce_orders_dashboard_statistics_daily' => 'Jours',
+        'tr_melis_commerce_orders_dashboard_statistics_weekly' => 'Chaque semaine',
+        'tr_melis_commerce_orders_dashboard_statistics_monthly' => 'Mois',
+
+        //number of orders table
+        'tr_melis_commerce_orders_dashboard_table_header_id' => 'ID',
+        'tr_melis_commerce_orders_dashboard_table_header_reference' => 'Référence',
+        'tr_melis_commerce_orders_dashboard_table_header_status' => 'Statut',
+        'tr_melis_commerce_orders_dashboard_table_header_price' => 'Prix',
+        'tr_melis_commerce_orders_dashboard_table_header_name' => 'Nom',
+        'tr_melis_commerce_orders_dashboard_table_header_date' => 'Date',
+
+        //sales revenue
+        'tr_melis_commerce_dashboard_plugin_sales_revenue' => 'Chiffre D\'affaire',
+        'tr_melis_commerce_dashboard_plugin_sales_revenue_description' => 'Ce plugin affiche l\'aperçu des statistiques sur les revenus des ventes.',
+        'tr_melis_commerce_dashboard_plugin_sales_revenue_order_price' => 'Prix de la commande',
+        'tr_melis_commerce_dashboard_plugin_sales_revenue_shipping_price' => 'Prix d\'expédition',
+
+        //order messages
+        'tr_melis_commerce_dashboard_plugin_order_messages' => 'Messages de commande',
+        'tr_melis_commerce_dashboard_plugin_order_messages_description' => 'Ce plugin affiche la liste des messages du client.',
+        'tr_melis_commerce_dashboard_plugin_order_messages_all' => 'Tout',
+        'tr_melis_commerce_dashboard_plugin_order_messages_unanswered' => 'Sans réponse',
+        'tr_melis_commerce_dashboard_plugin_order_messages_unanswered_messages' => 'Vous avez <strong class="text-primary"> %d messages sans réponse </strong>',
+        'tr_melis_commerce_dashboard_plugin_order_messages_message_order_amount' => 'Montant commande : ',
+        'tr_melis_commerce_dashboard_plugin_order_messages_message_placed_on' => 'Date commande : ',
+	);

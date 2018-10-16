@@ -200,4 +200,42 @@
 	    'tr_meliscommerce_plugin_order_messages_name' => 'Order messages',
 	    'tr_meliscommerce_plugin_order_messages_description' => 'This plugin displays order messages',
 	    'tr_meliscommerce_plugin_order_messages_area' => 'Message Area',
-    );
+
+	    // Dashborad plugin
+
+        //number of orders plugin
+        'tr_PluginSection_meliscommerce' => 'Melis Commerce',
+        'tr_melis_commerce_dashboard_plugin_orders_number' => 'Orders',
+        'tr_melis_commerce_dashboard_plugin_orders_number_description' => 'This tool gives you an overview of the statistics of orders in the dashboard.',
+        //report / chart type
+        'tr_melis_commerce_orders_dashboard_statistics_hourly' => 'Hourly',
+        'tr_melis_commerce_orders_dashboard_statistics_daily' => 'Daily',
+        'tr_melis_commerce_orders_dashboard_statistics_weekly' => 'Weekly',
+        'tr_melis_commerce_orders_dashboard_statistics_monthly' => 'Monthly',
+
+        //number of orders table
+        'tr_melis_commerce_orders_dashboard_table_header_id' => 'ID',
+        'tr_melis_commerce_orders_dashboard_table_header_reference' => 'Reference',
+        'tr_melis_commerce_orders_dashboard_table_header_status' => 'Status',
+        'tr_melis_commerce_orders_dashboard_table_header_numberofproducts' => '# of Products',
+        'tr_melis_commerce_orders_dashboard_table_header_price' => 'Price',
+        'tr_melis_commerce_orders_dashboard_table_header_name' => 'Name',
+        'tr_melis_commerce_orders_dashboard_table_header_firstname' => 'First Name',
+        'tr_melis_commerce_orders_dashboard_table_header_lastname' => 'last Name',
+        'tr_melis_commerce_orders_dashboard_table_header_date' => 'Date',
+
+        //sales revenue
+        'tr_melis_commerce_dashboard_plugin_sales_revenue' => 'Sales Revenue',
+        'tr_melis_commerce_dashboard_plugin_sales_revenue_description' => 'This tool gives you an overview of the statistics for the sales revenue',
+        'tr_melis_commerce_dashboard_plugin_sales_revenue_order_price' => 'Order Price',
+        'tr_melis_commerce_dashboard_plugin_sales_revenue_shipping_price' => 'Shipping Price',
+
+        //order messages
+        'tr_melis_commerce_dashboard_plugin_order_messages' => 'Order Messages',
+        'tr_melis_commerce_dashboard_plugin_order_messages_description' => 'This tool gives you the list of messages',
+        'tr_melis_commerce_dashboard_plugin_order_messages_all' => 'All',
+        'tr_melis_commerce_dashboard_plugin_order_messages_unanswered' => 'Unanswered',
+        'tr_melis_commerce_dashboard_plugin_order_messages_unanswered_messages' => 'You have <strong class="text-primary"> %d messages unanswered</strong>',
+        'tr_melis_commerce_dashboard_plugin_order_messages_message_order_amount' => 'Order Amount : ',
+        'tr_melis_commerce_dashboard_plugin_order_messages_message_placed_on' => 'Placed On : ',
+	);

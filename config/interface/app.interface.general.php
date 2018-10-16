@@ -30,7 +30,7 @@ return array(
                     '/MelisCommerce/js/ecommerce-common.js',
                     '/MelisCommerce/assets/common/fuelux-checkbox.js',
                     '/MelisCommerce/assets/common/jquery.qtip.min.js',
-                    '/MelisCommerce/assets/common/bootstrap-datetimepicker.min.js',
+//                    '/MelisCommerce/assets/common/bootstrap-datetimepicker.min.js',
                     '/MelisCommerce/assets/common/bootstrap3-typeahead.min.js',
                     '/MelisCommerce/assets/common/awesomplete.min.js',
                     '/MelisCommerce/plugins/js/MelisCommerceCategoryTreePlugin.js',
@@ -46,9 +46,7 @@ return array(
                  * lesser requests
                  */
                 'build' => [
-
                     'disable_bundle' => true,
-                    
                     // lists of assets that will be loaded in the layout
                     'css' => [
                         '/MelisCommerce/build/css/bundle.css',
