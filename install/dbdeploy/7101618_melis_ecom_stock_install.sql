@@ -12,8 +12,3 @@ CREATE TABLE IF NOT EXISTS `melis_ecom_stock_email_alert` (
   PRIMARY KEY (`sea_id`),
   INDEX `fk_melis_ecom_stock_email_alert_melis_ecom_product1_idx` (`sea_prd_id` ASC))
 ENGINE = InnoDB;
-
-
-SET SQL_MODE=@OLD_SQL_MODE;
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
