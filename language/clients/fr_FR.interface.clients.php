@@ -169,8 +169,7 @@
 	    'tr_meliscommerce_client_Contact_invalid_email' => 'Adresse email invalide',
 	    'tr_meliscommerce_client_Contact_password_error_low' => 'Le mot de passe doit être d\'au moins 8 caractères',
 	    'tr_meliscommerce_client_Contact_password_regex_not_match' => 'Le mot de passe doit contenir au moins une lettre ET un chiffre',
-	    'tr_meliscommerce_client_Contact_password_regex_not_match' => 'Le mot de passe doit contenir au moins une lettre ET un chiffre',
-	    'tr_meliscommerce_client_Contact_unable_to_add_address' => 'Impossible d\'ajouter l\'adresse du contact, veuillez réessayer',
+	    'tr_meliscommerce_client_Contact_email_address_exist' => 'Cet email est déjà utilisé, merci de vous connecter pour vous servir de ce compte',
 	    // Contact Addreses Form
 	    'tr_meliscommerce_client_Contact_addresses' => 'Adresses',
 	    'tr_meliscommerce_client_Contact_address_name' => 'Titre de l\'adresse',
@@ -214,6 +213,8 @@
     	'tr_meliscommerce_client_common_error' => 'Une erreur est survenue, veuillez contacter l\'administrateur',
 	    
 	    'tr_meliscommerce_client_Contact_address_title' => 'Adresse titre',
+        'tr_meliscommerce_client_Checkout_cart_empty' => 'Panier vide',
+        'tr_meliscommerce_client_Checkout_no_identity' => 'Veuillez vous connecter pour accéder à cette page',
 	    
 	    'tr_meliscommerce_client_export_success' => 'Les clients ont été exportés avec succès',
 	    'tr_meliscommerce_client_export_fail' => 'Echec de l\'export',
@@ -222,5 +223,58 @@
 	    'tr_meliscommerce_client_refresh' => 'Actualiser',
 	    
 	    'tr_meliscommerce_clients_table_Client_date_created' => 'Création',
-
-	);
+	    
+	    // Plugin MelisCommerceLoginPlugin
+	    'tr_meliscommerce_plugin_login' => 'Login',
+	    'tr_meliscommerce_plugin_login_description' => 'Le plugin de login affiche le formulaire pour que l\'utilisateur se connecte',
+	    'tr_meliscommerce_plugin_login_email' => 'Adresse email',
+	    'tr_meliscommerce_plugin_login_password' => 'Mot de passe',
+	    'tr_meliscommerce_plugin_login_remember_me' => 'Se rappeler de moi',
+	    'tr_meliscommerce_plugin_login_invalid_email' => 'Adresse email invalide',
+        'tr_meliscommerce_plugin_login_invalid_email_or_password' => 'Invalid Email address or password',
+        'tr_meliscommerce_plugin_login_success' => 'Login success',
+	    
+	    // Plugin MelisCommerceRegistrationPlugin
+	    'tr_meliscommerce_plugin_registration_name' => 'Inscription',
+	    'tr_meliscommerce_plugin_registration_description' => 'The plugin provide a user registration form : Le plugin fournit un formulaire d\'inscription',
+	    'tr_meliscommerce_plugin_registration_reg_button' => 'S\'inscrire',
+	    
+	    // Plugin MelisCommerceLostPasswordGetEmailPlugin
+	    'tr_meliscommerce_plugin_lost_password_get_email_name' => 'Mot de passe oublié',
+	    'tr_meliscommerce_plugin_lost_password_get_email_name_description' => 'Le plugin de mot de passe oublié affiche le formulaire, vérifie l\'adresse email et envoie un lien pour réinitialiser le mot de passe',
+        'tr_meliscommerce_plugin_lost_password_reset_page' => 'Page de réinitialisation du mot de passe[Destination page] ',
+        'tr_meliscommerce_plugin_lost_password_reset_page tooltip' => 'Page sur laquelle sera redirigé l\'utilisateur pour réinitialiser son mot de passe',
+	    'tr_meliscommerce_plugin_lost_password_message' => 'Veuillez saisir votre email, un lien vous sera envoyé pour réinitialiser votre mot de passe',
+	    
+	    // Email deatils
+	    'tr_meliscommerce_plugin_lost_password_email_default_subject' => 'Mot de passe oublié',
+	    'tr_meliscommerce_plugin_lost_password_email_default_content' => 'Veuillez cliquer sur le lien suivant pour réinitialiser votre mot de passe.<br><a href="[lostPasswordLink]?m_recovery_key=[recoveryKey]">Lien</a><br>',
+	    
+	    // MelisCommerceLostPasswordResetPlugin
+	    'tr_meliscommerce_plugin_password_reset_name' => 'Réinitialisation du mot de passe',
+	    'tr_meliscommerce_plugin_password_reset_description' => 'Ce plugin affiche le formulaire pour réinitialiser le mot de passe',
+	    
+	    // MelisCommerceProfilePlugin
+	    'tr_meliscommerce_plugin_profile_name' => 'Profil',
+	    'tr_meliscommerce_plugin_profile_description' => 'Ce plugin affiche le formulaire du profil d\'utilisateur',
+	    'tr_meliscommerce_plugin_profile_save_success' => 'Le profil a été enregistré avec succès',
+	    
+	    // MelisCommerceBillingAddressPlugin
+	    'tr_meliscommerce_plugin_billing_address_name' => 'Adresse de facturation',
+	    'tr_meliscommerce_plugin_billing_address_description' => 'Ce plugin affiche le formulaire de l\'adresse de facturation de l\'utilisateur',
+	    'tr_meliscommerce_plugin_billing_address_delete_success' => 'Adresse de facturation supprimée avec succès',
+	    
+	    // MelisCommerceDeliveryAddressPlugin
+	    'tr_meliscommerce_plugin_delivery_address_name' => 'Adresse de livraison',
+	    'tr_meliscommerce_plugin_delivery_address_description' => 'Ce plugin affiche le formulaire de l\'adresse de livraison de l\'utilisateur',
+	    'tr_meliscommerce_plugin_delivery_address_delete_success' => 'Adresse de livraison supprimée avec succès',
+	    
+	    // MelisCommerceAccountPlugin
+	    'tr_meliscommerce_plugin_account_name' => 'Compte',
+	    'tr_meliscommerce_plugin_account_description' => 'Affiche les formulaires du compte, il comprend le profil, l\'adresse de facturation, l\'adresse de livraison, la liste du panier et l\'historique des commandes du compte',
+        'tr_meliscommerce_plugin_account_profile_info' => 'Informations du profil',
+        'tr_meliscommerce_plugin_account_delivery_address' => 'Adresse de livraison',
+        'tr_meliscommerce_plugin_account_billing_address' => 'Adresse de facturation',
+        'tr_meliscommerce_plugin_account_my_cart' => 'Mon panier',
+        'tr_meliscommerce_plugin_account_order_history' => 'Historique des commandes',
+    );

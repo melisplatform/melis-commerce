@@ -34,7 +34,11 @@ $(function(){
 		var catSelected = catTree.get_selected();
 		var catFatherId = '';
 		if(catSelected.length >= 1){
-			catFatherId = catSelected[0];
+			/**
+			 * using parseInt this will get only the
+			 * number value in a string value
+			 */
+			catFatherId = parseInt(catSelected[0]);
 		}
 		
 		$("#"+zoneId).removeClass("hidden");
@@ -223,8 +227,8 @@ $(function(){
 		var langLocale = $(this).data('locale');
 		$('.cat-tree-view-languages span.filter-key').text(langText);		
 		$("#categoryTreeView").data('langlocale',langLocale);
-		$("#categoryTreeView").jstree('destroy');
-		initCategoryTreeView();
+		$("#categoryTreeView").jstree(true).settings.core.data.data = [{name : "langlocale", value: langLocale}];
+		$("#categoryTreeView").jstree(true).refresh();
 	});
 		
 	// Search Input
@@ -285,25 +289,44 @@ $(function(){
 	$("body").on("click", ".ecom-coutries-checkbox", function(evt){
 		
 		if($(this).find('.fa').hasClass('fa-check-square-o')){ // unchecking category Checkbox
-			if(!$(this).find('.fa').hasClass("check-all")){
-				$(this).find('.fa').removeClass('fa-check-square-o');
-				$(this).find('.fa').addClass('fa-square-o');
-				$(this).find('input[type="checkbox"]').removeAttr('checked');
-			}
-		}else{ // Checking Category Checkboxes
-			if($(this).find('.fa').hasClass("check-all")){ // Unchecking "All" Checkbox
-				$(".ecom-coutries-checkbox").find('.fa').removeClass('fa-check-square-o');
-				$(".ecom-coutries-checkbox").find('.fa').addClass('fa-square-o');
-				$(".ecom-coutries-checkbox").find('input[type="checkbox"]').removeAttr('checked');
-			}else{ // Checking "All" Checkbox
-				$(".ecom-coutries-checkbox").find('.check-all').removeClass('fa-check-square-o');
-				$(".ecom-coutries-checkbox").find('.check-all').addClass('fa-square-o');
-				$(".ecom-coutries-checkbox").find('.check-all').next('input[type="checkbox"]').removeAttr('checked'); // Unchecking "All" Checkbox
+			$(this).find('.fa').removeClass('fa-check-square-o');
+			$(this).find('.fa').addClass('fa-square-o');
+			$(this).find('input[type="checkbox"]').removeAttr('checked');
+			
+			// If the uncheck is check all checkbox
+			if($(this).find('.check-all').hasClass('fa-square-o')){
+				$(".ecom-coutries-checkbox .fa").not(".check-all").addClass('fa-square-o');
+				$(".ecom-coutries-checkbox .fa").not(".check-all").removeClass('fa-check-square-o');
+				$(".ecom-coutries-checkbox .fa").not(".check-all").next('input[type="checkbox"]').removeAttr('checked');
 			}
 			
+		}else{ // Checking Category Checkboxes
 			$(this).find('.fa').removeClass('fa-square-o');
 			$(this).find('.fa').addClass('fa-check-square-o');
 			$(this).find('input[type="checkbox"]').attr('checked','checked');
+		}
+		
+		// check all countries
+		if($(".ecom-coutries-checkbox .fa").not(".check-all").length == $(".ecom-coutries-checkbox .fa.fa-check-square-o").not(".check-all").next('input[type="checkbox"]:checked').length || $(this).find('.check-all').hasClass('fa-check-square-o')){
+			
+			// Keeping the check mark but removing the checkbox unchecked
+			$(".ecom-coutries-checkbox .fa").not(".check-all").removeClass('fa-square-o');
+			$(".ecom-coutries-checkbox .fa").not(".check-all").addClass('fa-check-square-o');
+			$(".ecom-coutries-checkbox .fa").not(".check-all").next('input[type="checkbox"]').removeAttr('checked');
+			
+			// Check mark on checkbox all ang its input checkbox
+			$(".ecom-coutries-checkbox .fa.check-all").removeClass('fa-square-o');
+			$(".ecom-coutries-checkbox .fa.check-all").addClass('fa-check-square-o');
+			$(".ecom-coutries-checkbox .fa.check-all").next('input[type="checkbox"]').attr('checked','checked');
+		}else{
+			
+			// puting back checkbox with check mark to input checkbox checked
+			$(".ecom-coutries-checkbox .fa.fa-check-square-o").not(".check-all").next('input[type="checkbox"]').attr('checked','checked');
+			
+			// Unchecking "check all" checkbox
+			$(".ecom-coutries-checkbox .fa.check-all").addClass('fa-square-o');
+			$(".ecom-coutries-checkbox .fa.check-all").removeClass('fa-check-square-o');
+			$(".ecom-coutries-checkbox .fa.check-all").next('input[type="checkbox"]').removeAttr('checked');
 		}
 		
 		evt.stopPropagation();
@@ -518,6 +541,12 @@ window.initCategoryTreeView = function(){
 				father.html(temp.get(0).outerHTML + '<b>' + fatherIcon +' ' + father.text() + '</b>');
 			})
 
+		})
+		.on('ready.jstree', function (e, data) {
+			/*console.log(data);*/
+		})
+		.on('load_node.jstree', function (e, data) {
+			/*console.log(data);*/
 		})
 		.on('open_node.jstree', function (e, data) {
 			
@@ -793,7 +822,6 @@ window.initCategoryProducts = function(data, tblSettings) {
 
 	    for ( var i=0, ien=diff.length ; i<ien ; i++ ) {
 	        var rowData = $categoryProductListTbl.row( diff[i].node ).data();
-	        console.log('Bogo ', rowData);
 	         result += rowData[1]+' updated to be in position '+ diff[i].newData+' (was '+diff[i].oldData+')<br>';
 	    }
 		

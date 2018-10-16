@@ -1,0 +1,17 @@
+<div>
+	<div>
+		<h3><?= $this->translate('tr_meliscommerce_orders_tracking_details'); ?></h3>
+		<?php if (!empty($this->shippingDetails)){ ?>
+        	<?php foreach($this->shippingDetails as $detail){ ?>
+        		<div><label><?= $this->translate('tr_meliscommerce_orders_tracking_code'); ?>:</label> <?php echo $detail['oship_tracking_code'] ?></div>
+        		<div><label><?= $this->translate('tr_meliscommerce_plugin_order_shipping_date');?>:</label> <?php echo date("m/d/Y h:i" ,strtotime($detail['oship_date_sent'])) ?></div>
+        		<div><label><?= $this->translate('tr_meliscommerce_plugin_order_shipping_comments');?>:</label> <?php echo $detail['oship_content']?></div>
+        		<br>
+        	<?php } ?>
+		<?php }else{ ?>
+           	<div><label><?= $this->translate('tr_meliscommerce_orders_tracking_code'); ?>:</label> none</div>
+    		<div><label><?= $this->translate('tr_meliscommerce_plugin_order_shipping_date');?>:</label> none</div>
+    		<div><label><?= $this->translate('tr_meliscommerce_plugin_order_shipping_comments');?>:</label> none</div>
+        <?php }?>
+	</div>
+</div>

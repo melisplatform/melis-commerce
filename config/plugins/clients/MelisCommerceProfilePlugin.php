@@ -6,14 +6,14 @@ return array(
             'plugins' => array(
                 'MelisCommerceProfilePlugin' => array(
                     'front' => array(
-                        'template_path' => 'MelisCommerce/ClientProfile',
-                        'cper_status' => '',
+                        'template_path' => array('MelisCommerce/ClientProfile'),
+                        'id' => 'userProfile',
+                        // User input fields
                         'cper_civility' => '',
                         'cper_firstname' => '',
                         'cper_name' => '',
                         'cper_middle_name' => '',
                         'cper_lang_id' => '',
-                        'cli_country_id' => '',
                         'cper_email' => '',
                         'cper_password' => '',
                         'cper_confirm_password' => '',
@@ -21,13 +21,14 @@ return array(
                         'cper_job_service' => '',
                         'cper_tel_mobile' => '',
                         'cper_tel_landline' => '',
+                        'cli_country_id' => '',
                         'profile_is_submit' => false,
                         'forms' => array(
                             'meliscommerce_profile' => array(
                                 'attributes' => array(
                                     'name' => '',
                                     'id' => '',
-                                    'method' => '',
+                                    'method' => 'POST',
                                     'action' => '',
                                     'class' => '',
                                 ),
@@ -36,12 +37,6 @@ return array(
                                     array(
                                         'spec' => array(
                                             'name' => 'profile_is_submit',
-                                            'type' => 'hidden',
-                                        )
-                                    ),
-                                    array(
-                                        'spec' => array(
-                                            'name' => 'cper_status',
                                             'type' => 'hidden',
                                         )
                                     ),
@@ -56,6 +51,7 @@ return array(
                                             ),
                                             'attributes' => array(
                                                 'id' => 'cper_civility',
+                                                'class' => 'form-control'
                                             )
                                         )
                                     ),
@@ -68,6 +64,7 @@ return array(
                                             ),
                                             'attributes' => array(
                                                 'id' => 'cper_firstname',
+                                                'class' => 'form-control'
                                             )
                                         )
                                     ),
@@ -80,6 +77,7 @@ return array(
                                             ),
                                             'attributes' => array(
                                                 'id' => 'cper_name',
+                                                'class' => 'form-control'
                                             )
                                         )
                                     ),
@@ -92,6 +90,7 @@ return array(
                                             ),
                                             'attributes' => array(
                                                 'id' => 'cper_middle_name',
+                                                'class' => 'form-control'
                                             )
                                         )
                                     ),
@@ -106,6 +105,7 @@ return array(
                                             ),
                                             'attributes' => array(
                                                 'id' => 'cper_lang_id',
+                                                'class' => 'form-control'
                                             )
                                         )
                                     ),
@@ -121,6 +121,7 @@ return array(
                                             'attributes' => array(
                                                 'id' => 'country',
                                                 'placeholder' => 'tr_meliscommerce_client_Client_country',
+                                                'class' => 'form-control'
                                             )
                                         )
                                     ),
@@ -133,6 +134,7 @@ return array(
                                             ),
                                             'attributes' => array(
                                                 'id' => 'cper_email',
+                                                'class' => 'form-control'
                                             )
                                         )
                                     ),
@@ -150,7 +152,8 @@ return array(
                                                 'id' => 'cper_password',
                                                 'Type' => 'password',
                                                 'autocomplete' => 'off',
-                                                'placeholder' => 'tr_meliscommerce_client_Contact_password_placeholder'
+                                                'placeholder' => 'tr_meliscommerce_client_Contact_password_placeholder',
+                                                'class' => 'form-control'
                                             )
                                         )
                                     ),
@@ -168,7 +171,8 @@ return array(
                                                 'id' => 'cper_confirm_password',
                                                 'Type' => 'password',
                                                 'autocomplete' => 'off',
-                                                'placeholder' => 'tr_meliscommerce_client_Contact_password_placeholder'
+                                                'placeholder' => 'tr_meliscommerce_client_Contact_password_placeholder',
+                                                'class' => 'form-control'
                                             )
                                         )
                                     ),
@@ -181,6 +185,7 @@ return array(
                                             ),
                                             'attributes' => array(
                                                 'id' => 'cper_job_title',
+                                                'class' => 'form-control'
                                             )
                                         )
                                     ),
@@ -193,6 +198,7 @@ return array(
                                             ),
                                             'attributes' => array(
                                                 'id' => 'cper_job_service',
+                                                'class' => 'form-control'
                                             )
                                         )
                                     ),
@@ -205,6 +211,7 @@ return array(
                                             ),
                                             'attributes' => array(
                                                 'id' => 'cper_tel_mobile',
+                                                'class' => 'form-control'
                                             )
                                         )
                                     ),
@@ -217,6 +224,7 @@ return array(
                                             ),
                                             'attributes' => array(
                                                 'id' => 'cper_tel_landline',
+                                                'class' => 'form-control'
                                             )
                                         )
                                     ),
@@ -520,7 +528,68 @@ return array(
                             )
                         )
                     ),
-                    'melis' => array(),
+                    'melis' => array(
+                        'subcategory' => array(
+                            'id' => 'CLIENTS',
+                            'title' => 'tr_meliscommerce_clients_Clients'
+                        ),
+                        'name' => 'tr_meliscommerce_plugin_profile_name',
+                        'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceProfilePlugin.jpg',
+                        'description' => 'tr_meliscommerce_plugin_profile_description',
+                        // List the files to be automatically included for the correct display of the plugin
+                        // To overide a key, just add it again in your site module
+                        // To delete an entry, use the keyword "disable" instead of the file path for the same key
+                        'files' => array(
+                            'css' => array(
+                            ),
+                            'js' => array(
+                            ),
+                        ),
+                        'modal_form' => array(
+                            'melis_commerce_plugin_profile_config' => array(
+                                'tab_title' => 'tr_front_plugin_common_tab_properties',
+                                'tab_icon'  => 'fa fa-cogs',
+                                'tab_form_layout' => 'MelisCommerce/plugin-common-form-config',
+                                'elements' => array(
+                                    array(
+                                        'spec' => array(
+                                            'name' => 'template_path',
+                                            'type' => 'MelisEnginePluginTemplateSelect',
+                                            'options' => array(
+                                                'label' => 'tr_melis_Plugins_Template',
+                                                'tooltip' => 'tr_melis_Plugins_Template tooltip',
+                                                'empty_option' => 'tr_melis_Plugins_Choose',
+                                                'disable_inarray_validator' => true,
+                                            ),
+                                            'attributes' => array(
+                                                'id' => 'id_page_tpl_id',
+                                                'class' => 'form-control',
+                                                'required' => 'required',
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                                'input_filter' => array(
+                                    'template_path' => array(
+                                        'name'     => 'template_path',
+                                        'required' => true,
+                                        'validators' => array(
+                                            array(
+                                                'name' => 'NotEmpty',
+                                                'options' => array(
+                                                    'messages' => array(
+                                                        \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_front_template_path_empty',
+                                                    ),
+                                                ),
+                                            ),
+                                        ),
+                                        'filters'  => array(
+                                        ),
+                                    ),
+                                )
+                            ),
+                        )
+                    ),
                 ),
             ),
         ),

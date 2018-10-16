@@ -275,7 +275,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
                 // Getting the Final Price of the variant
                 $varPrice = $melisComVariantService->getVariantFinalPrice($variantId, $countryId);
                 
-                if (is_null($varPrice))
+                if (empty($varPrice))
                 {
                     // If the variant price not set on variant page this will try to get from the Product Price
                     $varPrice = $melisComProductService->getProductFinalPrice($productId, $countryId);
@@ -336,16 +336,18 @@ class MelisComOrderCheckoutController extends AbstractActionController
             $container = new Container('meliscommerce');
             if (!empty($container['checkout'][self::SITE_ID]['countryId']))
             {
-                $dataCount = $productTable->getTotalData();
                 // Getting Current Langauge ID
                 $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
                 $langId = $melisTool->getCurrentLocaleID();
                 
+                $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_order_checkout_product_list');
+                $columns =  array_keys($melisTool->getColumns());
+                
                 $prodSvc = $this->getServiceLocator()->get('MelisComProductService');
                 $docSvc = $this->getServiceLocator()->get('MelisComDocumentService');
                 
-                $sortOrder = $this->getRequest()->getPost('order');
-                $sortOrder = $sortOrder[0]['dir'];
+                $order = $this->getRequest()->getPost('order');
+                $selColOrder = $columns[$order[0]['column']];
                 
                 $sortOrder = $this->getRequest()->getPost('order');
                 $sortOrder = $sortOrder[0]['dir'];
@@ -354,19 +356,18 @@ class MelisComOrderCheckoutController extends AbstractActionController
                 
                 $start = (int) $this->getRequest()->getPost('start');
                 $length =  (int) $this->getRequest()->getPost('length');
-
+                
                 $search = $this->getRequest()->getPost('search');
                 $search = $search['value'];
                 
-                $productList = $productTable->getProductList(null, null, true,  $start, $length, $sortOrder, $search);
-
-                $productFilter = $productTable->getProductList(null, null, true,  null, null, $sortOrder, $search)->toArray();
+                $productList = $prodSvc->getProductList(null, null, null, null, $start, $length, $selColOrder, $sortOrder, $search);
+                $dataCount = $prodSvc->getProductList(null, null, null, null, null, null, $selColOrder, $sortOrder, $search);
                 
                 $prodImage = '<img src="%s" width="60" height="60" class="img-rounded img-responsive"/>';
                 
                 foreach($productList as $val) {
-                    $productId = $val->prd_id;
-                
+                    $productId = $val->getId();
+                    
                     $rowData = array(
                         'DT_RowId' => $productId,
                         'prd_id' => $productId,
@@ -380,8 +381,8 @@ class MelisComOrderCheckoutController extends AbstractActionController
         
         return new JsonModel(array(
             'draw' => (int) $draw,
-            'recordsTotal' => $dataCount,
-            'recordsFiltered' => count($productFilter),
+            'recordsTotal' => count($productList),
+            'recordsFiltered' => count($dataCount),
             'data' => $tableData,
         ));
     }
@@ -426,7 +427,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
                 // Getting the Final Price of the variant
                 $varPrice = $melisComVariantService->getVariantFinalPrice($variantId, $countryId);
                 
-                if (is_null($varPrice))
+                if (empty($varPrice))
                 {
                     // If the variant price not set on variant page this will try to get from the Product Price
                     $varPrice = $melisComProductService->getProductFinalPrice($variant->var_prd_id, $countryId);
@@ -917,7 +918,8 @@ class MelisComOrderCheckoutController extends AbstractActionController
             $container = new Container('meliscommerce');
             $container['checkout'][self::SITE_ID]['contactId'] = $contact->cper_id;
             $container['checkout'][self::SITE_ID]['clientId'] = $contact->cper_client_id;
-    
+            $container['checkout'][self::SITE_ID]['clientEmail'] = $contact->cper_email;
+
             $clientId = $container['checkout'][self::SITE_ID]['clientId'];
             $clientKey = (!empty($container['checkout'][self::SITE_ID]['clientKey'])) ? $container['checkout'][self::SITE_ID]['clientKey'] : null;
     
@@ -1506,27 +1508,18 @@ class MelisComOrderCheckoutController extends AbstractActionController
                         $productId = $variant->getVariant()->var_prd_id;
                         $varSku = $variant->getVariant()->var_sku;
                         
-                        // Getting the Variant price from Variant Service
-                        $varPrice = $melisComVariantService->getVariantFinalPrice($variantId, $countryId);
+                        // Product variant price details
+                        $currencySymbol = $val['price_details']['currency_symbol'];
                         
-                        if (is_null($varPrice))
-                        {
-                            // if Vairant Price is null this will try to get from Product Price
-                            $varPrice = $melisComProductService->getProductFinalPrice($productId, $countryId);
-                        }
-                        
-                        $quantity = $val['quantity'];
-                        
-                        $variantTotal = $quantity * $varPrice->price_net;
                         $data = array(
                             'var_id' => $variantId,
                             'var_sku' => $varSku,
-                            'var_quantity' => $quantity,
-                            'var_price' => $varPrice->cur_symbol.' '.number_format($varPrice->price_net, 2),
+                            'var_quantity' => $val['quantity'],
+                            'var_price' => $currencySymbol.number_format($val['unit_price'], 2),
                             'product_name' => $melisComProductService->getProductName($productId, $langId),
-                            'discount_price' => !empty($val['discount_price'])? $varPrice->cur_symbol.' '.number_format($val['discount_price'],2) : '',
-                            'discount' => !empty($val['discount'])? $varPrice->cur_symbol.' '.number_format($val['discount'],2) : '',
-                            'var_total' => $varPrice->cur_symbol.' '.number_format($variantTotal, 2),
+                            'discount_price' => $currencySymbol.number_format($val['unit_price'] - $val['discount'], 2),
+                            'discount' => $currencySymbol.number_format($val['discount'], 2),
+                            'var_total' => $currencySymbol.number_format($val['total_price'], 2),
                             'discount_details' => !empty($val['discount_details'])? $val['discount_details'] : array(),
                         );
                         
@@ -1555,7 +1548,6 @@ class MelisComOrderCheckoutController extends AbstractActionController
         }
 
         $couponCode = $this->params()->fromQuery('couponCode');
-//         $couponErr = '';
         
         // Getting the Country currency, depend on country selected during step 1
         $melisEcomCountryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
@@ -1978,12 +1970,14 @@ class MelisComOrderCheckoutController extends AbstractActionController
     {
         $orderId = null;
         $totalCost = 0;
+        $clientEmail = '';
         
         $container = new Container('meliscommerce');
         if (!empty($container['checkout'][self::SITE_ID]['orderId']))
         {
             $orderId = $container['checkout'][self::SITE_ID]['orderId'];
-            
+            $clientEmail = $container['checkout'][self::SITE_ID]['clientEmail'];
+
             // Retrieving the Checkout total cost
             $melisComOrderCheckoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
             $melisComOrderCheckoutService->setSiteId(self::SITE_ID);
@@ -1996,20 +1990,25 @@ class MelisComOrderCheckoutController extends AbstractActionController
         {
             $couponId = $container['checkout'][self::SITE_ID]['couponId'];
         }
-        
+
         $param = array(
             'countryId' => $container['checkout'][self::SITE_ID]['countryId'],
             'orderId' => $orderId,
             'couponId' => $couponId,
             'totalCost' => $totalCost,
+            'email' => $clientEmail,
+            'siteId' => self::SITE_ID,
         );
-        
         $urlParam = http_build_query($param);
+        $param['content'] = '<iframe class="order-checkout-payment-iframe" src="/melis/MelisCommerce/MelisComOrderCheckout/renderOrderCheckoutPaymentIframe?'.$urlParam.'"></iframe>';
+
+        $melisCoreGeneralSrv = $this->getServiceLocator()->get('MelisCoreGeneralService');
+        $param = $melisCoreGeneralSrv->sendEvent('melis_commerce_order_checkout_payment_step', $param);
         
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
         $view->melisKey = $melisKey;
-        $view->urlParam = $urlParam;
+        $view->content = $param['content'];
         return $view;
     }
     

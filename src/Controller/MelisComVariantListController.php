@@ -9,6 +9,7 @@
 
 namespace MelisCommerce\Controller;
 
+use Zend\Json\Json;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
@@ -137,8 +138,8 @@ class MelisComVariantListController extends AbstractActionController
     
         //table layout
         $attrLayout     = '<span class="btn btn-default cell-val-table" style="border-radius: 4px;color: #7D7B7B;">%s</span>';
-        $varOnline      = '<span class="text-success"><i class="fa fa-fw fa-circle"></i></span>';
-        $varOffline     = '<span class="text-danger"><i class="fa fa-fw fa-circle"></i></span>';
+//        $varOnline      = '<span class="text-success"><i class="fa fa-fw fa-circle"></i></span>';
+//        $varOffline     = '<span class="text-danger"><i class="fa fa-fw fa-circle"></i></span>';
         $varMain        = '<span class="text-success"><i class="fa fa-fw fa-star"></i></span>';
         $prodImage      = '<img src="%s" width="60"/>';
         $toolTipTextTag = '<a id="row-%s" class="toolTipVarHoverEvent tooltipTableVar" data-variantId="%s" data-variantname="%s" data-hasqtip="1" aria-describedby="qtip-%s">%s</a>';
@@ -208,10 +209,15 @@ class MelisComVariantListController extends AbstractActionController
             }
             
             if($variant->var_status){
-                $variantStatus = $varOnline;
+                $variantStatus = "checked";
             }else{
-                $variantStatus = $varOffline;
+                $variantStatus = "";
             }
+
+            //switch for variant status
+            $varStatChk = '<div class="make-switch '.$productId.'_variantStatusChk triggerVarUpdate" data-on-label="'.$this->getTool()->getTranslation('tr_meliscore_common_active').'" data-off-label="'.$this->getTool()->getTranslation('tr_meliscore_common_inactive').'" data-text-label="'.$this->getTool()->getTranslation('tr_meliscommerce_product_list_col_status').'">
+                        <input type="checkbox" '.$variantStatus.' />
+                    </div>';
              
             if($variant->var_main_variant){
                 $mainVariant = $varMain;
@@ -243,7 +249,7 @@ class MelisComVariantListController extends AbstractActionController
                 'var_id' => $variant->var_id,
                 'var_main_variant' => $mainVariant,
                 'var_image' => $variantimg,
-                'var_status' => $variantStatus,
+                'var_status' => $varStatChk,
                 'var_sku' => $sku,
                 'var_attributes' => $attributes,
                 'DT_RowId' => $variant->var_id,
@@ -407,7 +413,29 @@ class MelisComVariantListController extends AbstractActionController
            'content' => $content
        ));
     }
-    
+
+    /**
+     * Function to update the status of the variant
+     *
+     * @return JsonModel
+     */
+    public function updateVariantStatusAction()
+    {
+        $varTbl = $this->getServiceLocator()->get('MelisEcomVariantTable');
+        $variantId = (int) $this->getRequest()->getPost('id');
+        $status = (int) $this->getRequest()->getPost('var_status');
+
+        $success = false;
+        $data = array("var_status" => $status);
+        $res = $varTbl->save($data, $variantId);
+
+        if($res){
+            $success = true;
+        }
+
+        return new JsonModel(array("success" => $success));
+    }
+
     private function formatPrice($price)
     {
         $sessionLocale = 'en_EN';

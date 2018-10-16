@@ -1,0 +1,42 @@
+.category-product-list-slider-plugin{
+    padding-top: 60px;
+}
+.category-product-list-slider-plugin .slick-arrow {
+    background: #f1f1f1 none repeat scroll 0 0;
+    border: 1px solid #f1f1f1;
+    cursor: pointer;
+    display: block;
+    font-size: 25px;
+    height: 45px;
+    line-height: 45px;
+    position: absolute;
+    right: -50px;
+    text-align: center;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+    -webkit-transition: all 0.3s ease 0s;
+    transition: all 0.3s ease 0s;
+    width: 45px;
+    z-index: 9;
+    opacity: 0;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)"
+}
+.category-product-list-slider-plugin .slick-arrow:hover {
+    border-color: #cc3333;
+    background: transparent;
+    color: #cc3333;
+	opacity: 1;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+}
+.category-product-list-slider-plugin .arrow-left.slick-arrow {
+    left: -50px;
+}
+.category-product-list-slider-plugin .slick-slider:hover .slick-arrow{
+	opacity: 1;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+}
+
+.category-product-list-slider-plugin .slick-prev:before {
+    content: '<';
+}

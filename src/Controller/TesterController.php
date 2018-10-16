@@ -15,7 +15,18 @@ use Zend\View\Model\ViewModel;
 use Zend\Db\Metadata\Metadata;
 class TesterController extends AbstractActionController
 {
-
+    public function testsAction(){
+        $catSrv = $this->getServiceLocator()->get('MelisComCategoryService');
+        
+//         $tmp = $catSrv->getSubCategoriesProducts(3, array(), 1);
+        $tmp = $catSrv->getCategoriesProductsByIds(array(3, 51, 52, 53), false, 1, true);
+        
+        echo '<pre>';
+        print_r($tmp);
+        echo '</pre>';
+        
+        return new JsonModel(array());
+    }
     public function displayTestAction()
     {
         $request = $this->getRequest();

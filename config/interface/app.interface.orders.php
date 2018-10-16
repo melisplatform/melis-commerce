@@ -735,6 +735,26 @@ return array(
                                                                                       ),
                                                                                       'interface' => array(),
                                                                                   ),
+                                                                                  'meliscommerce_orders_content_tabs_content_file_attachments' => array(
+                                                                                      'conf' => array(
+                                                                                          'id' => 'id_meliscommerce_orders_content_tabs_content_file_attachments',
+                                                                                          'melisKey' => 'meliscommerce_orders_content_tabs_content_file_attachments',
+                                                                                          'name' => 'tr_meliscommerce_orders_content_tabs_content_file_attachments',
+                                                                                      ),
+                                                                                      'forward' => array(
+                                                                                          'module' => 'MelisCommerce',
+                                                                                          'controller' => 'MelisComOrder',
+                                                                                          'action' => 'render-orders-content-tabs-content-file-attachments',
+                                                                                      ),
+                                                                                      'interface' => array(
+                                                                                           'meliscommerce_orders_content_tabs_content_file_attachments_plugin' => array(
+                                                                                               'conf' => array(
+                                                                                                   'type' => 'meliscommerce/interface/meliscommerce_documents_file_attachments_conf',
+                                                                                                   'docRelationType' => 'order',
+                                                                                               )
+                                                                                           )
+                                                                                      ),
+                                                                                   ),
                                                                               ),
                                                                           ),
                                                                       ),

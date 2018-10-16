@@ -215,7 +215,7 @@ class MelisComAttributeService extends MelisComGeneralService
         return $arrayParameters['results'];
     }
     
-    public function getUsedAttributeValuesByProductId($productId, $langId = null)
+    public function getUsedAttributeValuesByProductId($productId, $status = false, $langId = null)
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -231,26 +231,27 @@ class MelisComAttributeService extends MelisComGeneralService
         $attrValueTable = $this->getServiceLocator()->get('MelisEcomAttributeValueTable');
         $attrTable = $this->getServiceLocator()->get('MelisEcomAttributeTable');
         $attrTransTable = $this->getServiceLocator()->get('MelisEcomAttributeTransTable');
-        $attributes = $attrTable->getUsedAttributeByProduct($arrayParameters['productId'], $arrayParameters['langId']);
+        $attributes = $attrTable->getUsedAttributeByProduct($arrayParameters['productId'], $arrayParameters['status'], $arrayParameters['langId']);
         
-        foreach($attributes as $data){
+        foreach($attributes as $data)
+        {
             $entAttribute = new MelisAttribute();
-            $data->{'attr_trans'} = array();
-            
-            $attributeValues = array();
             $entAttribute->setId($data->attr_id);
             
-            foreach($attrTransTable->getAttributeTransByAtributeId( $data->attr_id, $arrayParameters['langId']) as $attrTrans){
-                $data->{'attr_trans'} = array_merge($this->getAttributeTransById($attrTrans->atrans_id, $arrayParameters['langId']), $data->{'attr_trans'});
+            $data->{'attr_trans'} = array();
+            foreach($attrTransTable->getAttributeTransByAtributeId( $data->attr_id, $arrayParameters['langId']) as $attrTrans)
+            {
+                $data->{'attr_trans'}[] = $attrTrans; //array_merge($this->getAttributeTransById($attrTrans->atrans_id, $arrayParameters['langId']), $data->{'attr_trans'});
             }
-            
             $entAttribute->setAttribute($data);
-            foreach($attrValueTable->getUsedAttributeValuesByProduct($productId, $data->attr_id) as $attrVal){
+            
+            $attributeValues = array();
+            foreach($attrValueTable->getUsedAttributeValuesByProduct($productId, $data->attr_id) as $attrVal)
+            {
                 $attributeValues = array_merge($attributeValues, $this->getAttributeValuesById($attrVal->atval_id, $arrayParameters['langId']));
             }
             $entAttribute->setAttributeValues($attributeValues);
             $results[] = $entAttribute;
-           
         }        
         // Service implementation end
         
@@ -385,6 +386,42 @@ class MelisComAttributeService extends MelisComGeneralService
         $arrayParameters['results'] = $results;
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_attributevaluetrans_byid_end', $arrayParameters);
+         
+        return $arrayParameters['results'];
+    }
+    
+    /**
+     * This will return the Attribute list and its values
+     * @param int $attributeId, id of attribute if null this will get the list of attributes
+     * @param int $langId, lang id related to translations
+     * @return Array
+     */
+    public function getAttributeListAndValues($attributeId = null, $status = false, $searchable = false, $langId = null)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_attribute_list_and_values_start', $arrayParameters);
+        
+        // Service implementation start
+        $attrTable = $this->getServiceLocator()->get('MelisEcomAttributeTable');
+        $attrValTable = $this->getServiceLocator()->get('MelisEcomAttributeValueTable');
+        
+        $attributes = $attrTable->getAttributeListAndValues($arrayParameters['attributeId'], $arrayParameters['status'], $arrayParameters['searchable'], $arrayParameters['langId']);
+        foreach ($attributes As $val)
+        {
+            $val->attr_values = $this->getAttributeValuesByAttributeId($val->attr_id, $arrayParameters['langId']);
+            array_push($results, $val);
+        }
+        
+        // Service implementation end
+        
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_attribute_list_and_values_end', $arrayParameters);
          
         return $arrayParameters['results'];
     }
@@ -832,5 +869,56 @@ class MelisComAttributeService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_delete_variant_attribute_value_end', $arrayParameters);
          
         return $arrayParameters['results'];
+    }
+
+    /**
+     * Function to check the format of selected attribute ids
+     *
+     * If the function receive an already formatted array, then
+     * it will just return the array, else if it receive a query
+     * string, then the function will will convert the string
+     * into an array before returning, but of course if you
+     * pass a query string, make sure that it is an array
+     * that has been converted to query string
+     *
+     * @param $selectedAttributes
+     * @return array
+     */
+    public function checkSelectedAttributesFormat($selectedAttributes)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_check_selected_attr_format_start', $arrayParameters);
+
+        if(!empty($arrayParameters['selectedAttributes'])){
+            if(isset($arrayParameters['selectedAttributes'][0])){
+                //check the array first to make sure it is well formed
+                foreach ($arrayParameters['selectedAttributes'] as $key => $val) {
+                    //check if it is an array already
+                    if (!is_array($val)) {
+                        //we need to parse it if it is a string(query string)
+                        $temp = htmlspecialchars_decode($val);
+                        parse_str(htmlspecialchars_decode($temp), $attributes);
+                        $arrayParameters['selectedAttributes'] = $attributes;
+                    }
+                }
+            }else{
+                if(!is_array($arrayParameters['selectedAttributes'])) {
+                    //we need to parse it if it is a string(query string)
+                    $temp = htmlspecialchars_decode($arrayParameters['selectedAttributes']);
+                    parse_str(htmlspecialchars_decode($temp), $attributes);
+                    $arrayParameters['selectedAttributes'] = $attributes;
+                }
+            }
+        }else{
+            $arrayParameters['selectedAttributes'] = array();
+        }
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_check_selected_attr_format_end', $arrayParameters);
+
+        return $arrayParameters['selectedAttributes'];
     }
 }

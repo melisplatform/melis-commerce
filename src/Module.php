@@ -72,7 +72,7 @@ class Module
             
             $module = explode('/', $routeName);
             
-            $this->createTranslations($e, $module);
+            $this->createTranslations($e, $routeMatch);
              
             if (!empty($module[0]))
             {
@@ -217,13 +217,9 @@ class Module
             include __DIR__ . '/../config/tools/app.tools.assoc_var.php',
 	    
     	    // categories plugin configs
-    	    include __DIR__ . '/../config/plugins/categories/MelisCommerceCategorySliderListProductsPlugin.php',
-    	    include __DIR__ . '/../config/plugins/categories/MelisCommerceCategoryListProductsPlugin.php',
-    	    include __DIR__ . '/../config/plugins/categories/MelisCommerceFilterMenuCategoryListPlugin.php',
-    	    include __DIR__ . '/../config/plugins/categories/MelisCommerceFilterMenuProductSearchBoxPlugin.php',
-    	    include __DIR__ . '/../config/plugins/categories/MelisCommerceFilterMenuPriceValueBoxPlugin.php',
-    	    include __DIR__ . '/../config/plugins/categories/MelisCommerceFilterMenuAttributeValueBoxPlugin.php',
-    	    
+    	    include __DIR__ . '/../config/plugins/categories/MelisCommerceCategoryProductListPlugin.php',
+            include __DIR__ . '/../config/plugins/categories/MelisCommerceCategoryTreePlugin.php',
+
     	    // clients plugin configs
     	    include __DIR__ . '/../config/plugins/clients/MelisCommerceLoginPlugin.php',
     	    include __DIR__ . '/../config/plugins/clients/MelisCommerceLostPasswordGetEmailPlugin.php',
@@ -235,26 +231,34 @@ class Module
     	    include __DIR__ . '/../config/plugins/clients/MelisCommerceBillingAddressPlugin.php',
     	    
     	    // order plugin configs
-    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCartAddPlugin.php',
+    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceAddToCartPlugin.php',
     	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutPlugin.php',
     	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutCartPlugin.php',
-    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutCouponAddPlugin.php',
+    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutCouponPlugin.php',
     	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutAddressesPlugin.php',
     	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutSummaryPlugin.php',
     	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutConfirmSummaryPlugin.php',
     	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutConfirmPlugin.php',
-    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCartMenuPlugin.php',
-    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderListPlugin.php',
+    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCartPlugin.php',
+    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderHistoryPlugin.php',
     	    include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderPlugin.php',
     	    include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderAddressPlugin.php',
     	    include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderShippingDetailsPlugin.php',
     	    include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderMessagesPlugin.php',
     	    
     	    // products plugin configs
+            include __DIR__ . '/../config/plugins/products/MelisCommerceProductSearchPlugin.php',
     	    include __DIR__ . '/../config/plugins/products/MelisCommerceProductShowPlugin.php',
     	    include __DIR__ . '/../config/plugins/products/MelisCommerceAttributesShowPlugin.php',
-    	    include __DIR__ . '/../config/plugins/products/MelisCommerceProductsRelatedPlugin.php',
-    	    
+    	    include __DIR__ . '/../config/plugins/products/MelisCommerceRelatedProductsPlugin.php',
+            include __DIR__ . '/../config/plugins/products/MelisCommerceProductListPlugin.php',
+            include __DIR__ . '/../config/plugins/products/MelisCommerceProductPriceRangePlugin.php',
+            include __DIR__ . '/../config/plugins/products/MelisCommerceProductAttributePlugin.php',
+
+            // order dashboard plugins
+            include __DIR__ . '/../config/dashboard-plugins/MelisCommerceDashboardPluginOrdersNumber.config.php',
+            include __DIR__ . '/../config/dashboard-plugins/MelisCommerceDashboardPluginSalesRevenue.config.php',
+            include __DIR__ . '/../config/dashboard-plugins/MelisCommerceDashboardPluginOrderMessages.config.php',
     	);
     	
     	foreach ($configFiles as $file) {
@@ -275,13 +279,17 @@ class Module
         );
     }
     
-    public function createTranslations($e, $module)
+    public function createTranslations($e, $routeMatch)
     {
         $sm = $e->getApplication()->getServiceManager();
         $translator = $sm->get('translator');
         
+        $param = $routeMatch->getParams();
+
         // Checking if the Request is from Melis-BackOffice or Front
-        if ($module[0] == 'melis-backoffice')
+        $renderMode = (isset($param['renderMode'])) ? $param['renderMode'] : 'melis';
+
+        if ($renderMode == 'melis')
         {
             $container = new Container('meliscore');
             $locale = $container['melis-lang-locale'];

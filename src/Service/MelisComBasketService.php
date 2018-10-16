@@ -28,12 +28,13 @@ class MelisComBasketService extends MelisComGeneralService
     /**
      * This service gets the basket of a user
      *
+     * @param int|null $langId
      * @param int|null $clientId The clientId to get the basket from
      * @param string|null $clientKey If clientId is null, then this key will make the relation until the client has an account
      * 
      * @return MelisBasket[]
      */
-    public function getBasket($clientId, $clientKey = null)
+    public function getBasket($clientId, $clientKey = null, $langId = null)
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -47,9 +48,9 @@ class MelisComBasketService extends MelisComGeneralService
             $this->transferAnonymousBasketToPersistentBasket($arrayParameters['clientKey'], $arrayParameters['clientId']);
             
         if ($arrayParameters['clientId'] != null)
-            $results = $this->getPersistentBasket($arrayParameters['clientId']);
+            $results = $this->getPersistentBasket($arrayParameters['clientId'], $arrayParameters['langId']);
         else
-            $results = $this->getAnonymousBasket($arrayParameters['clientKey']);
+            $results = $this->getAnonymousBasket($arrayParameters['clientKey'], $arrayParameters['langId']);
 
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $results;
@@ -62,11 +63,12 @@ class MelisComBasketService extends MelisComGeneralService
     /**
      * This service gets the persistent basket of a user
      *
-     * @param string|null $clientKey If clientId is null, then this key will make the relation until the client has an account
+     * @param int|null $langId
+     * @param string|null $clientId If clientId is null, then this key will make the relation until the client has an account
      *
      * @return MelisBasket[]
      */
-    public function getPersistentBasket($clientId)
+    public function getPersistentBasket($clientId, $langId = null)
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -90,7 +92,7 @@ class MelisComBasketService extends MelisComGeneralService
             $melisBasket->setType('persistent');
             $melisBasket->setVariantId($val->bper_variant_id);
             // Getting Variant Object from Variant Service
-            $melisBasket->setVariant($melisComVariantService->getVariantById($val->bper_variant_id));
+            $melisBasket->setVariant($melisComVariantService->getVariantById($val->bper_variant_id, $arrayParameters['langId']));
             $melisBasket->setQuantity($val->bper_quantity);
             $melisBasket->setDateAdded($val->bper_date_added);
             // Basket Object added to result
@@ -108,11 +110,12 @@ class MelisComBasketService extends MelisComGeneralService
     /**
      * This service gets the anonymous basket of a user
      *
+     * @param int $langId
      * @param string|null $clientKey If clientId is null, then this key will make the relation until the client has an account
      *
      * @return MelisBasket[]
      */
-    public function getAnonymousBasket($clientKey)
+    public function getAnonymousBasket($clientKey, $langId = null)
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -135,7 +138,7 @@ class MelisComBasketService extends MelisComGeneralService
             $melisBasket->setType('anonymous');
             $melisBasket->setVariantId($val->bano_variant_id);
             // Getting Variant Object from Variant Service
-            $melisBasket->setVariant($melisComVariantService->getVariantById($val->bano_variant_id));
+            $melisBasket->setVariant($melisComVariantService->getVariantById($val->bano_variant_id, $arrayParameters['langId']));
             $melisBasket->setQuantity($val->bano_quantity);
             $melisBasket->setDateAdded($val->bano_date_added);
             // Basket Object added to result

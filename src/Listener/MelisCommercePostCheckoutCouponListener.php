@@ -66,7 +66,6 @@ class MelisCommercePostCheckoutCouponListener implements ListenerAggregateInterf
         		                                $totalDiscount = $coupon->coup_discount_value * $qty;
         		                            }
         		                            
-        		                            $orderBaskets[$basket->obas_variant_id]['discount_price'] = $tmp['total_price'] - $totalDiscount;
         		                            $orderBaskets[$basket->obas_variant_id]['discount'] = !empty($tmp['discount'])? $tmp['discount'] + $totalDiscount : $totalDiscount;
         		                           
         		                            $usableQty -= $tmp['quantity'];
@@ -83,9 +82,7 @@ class MelisCommercePostCheckoutCouponListener implements ListenerAggregateInterf
         		        foreach($orderBaskets as $key => $val){
         		        
         		            $discount += $val['discount'];
-        		            $price = !empty($val['discount_price'])? $val['discount_price'] : $val['total_price'];
         		            $totalWithoutCoupon += $val['total_price'];
-        		            $params['results']['costs']['order']['totalWithoutCoupon'] = $totalWithoutCoupon;
         		            $params['results']['costs']['order']['totalWithProductCoupon'] = $totalWithoutCoupon - $discount;
         		            $params['results']['costs']['order']['total'] = $totalWithoutCoupon - $discount;
         		        
@@ -118,7 +115,15 @@ class MelisCommercePostCheckoutCouponListener implements ListenerAggregateInterf
         		            $params['results']['costs']['order']['total'] = $subTotal - $totalDiscount;
         		        }
         		    }
-        		    
+                    /**
+                     * lets check if the total price has 3 or more decimals
+                     * if it has, we need to round it to 2 decimals
+                     */
+                    $price = $params['results']['costs']['order']['total'];
+                    if(strlen(substr(strrchr($price, "."), 1)) > 2){
+                        $price = round($price, 2);
+                        $params['results']['costs']['order']['total'] = $price;
+                    }
         		}
         	},
         	

@@ -137,6 +137,7 @@ class MelisComVariantController extends AbstractActionController
         $prodTitle = empty($prodTitle[0]->ptxt_field_short)? $prd_reference : $prodTitle[0]->ptxt_field_short;
         $view = new ViewModel();
         $view->melisKey = $melisKey;
+        $view->productId = $this->getProductId();
         $view->prodTitle = $prodTitle;
         $view->variantId = $this->getVariantId();
         return $view;
@@ -250,6 +251,13 @@ class MelisComVariantController extends AbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
+
+        if(empty($this->getVariantId()) && $this->getVariantId() == ''){
+            $variantId = $this->params()->fromQuery('variantId', 0);
+            $this->setVariantId($variantId);
+            $this->setVariantVariables($variantId);
+        }
+
         $view->melisKey = $melisKey;
         $view->variantId = $this->getVariantId();
         return $view;
@@ -788,7 +796,7 @@ class MelisComVariantController extends AbstractActionController
         //set general stocks
         $emptyDate = '0000-00-00 00:00:00';
         foreach($stockList as $stock){
-            if($stock->stock_country_id == 0){
+            if($stock->stock_country_id == -1){
                 $checkDate = (string) $stock->stock_next_fill_up;
                 if($checkDate != $emptyDate) {
                     $stock->stock_next_fill_up = $this->getTool()->dateFormatLocale($stock->stock_next_fill_up);
@@ -801,7 +809,7 @@ class MelisComVariantController extends AbstractActionController
             }
         }
         $data[0]['name'] = 'General';
-        $data[0]['stock_country_id'] = 'a0';
+        $data[0]['stock_country_id'] = '-1';
         //set country stocks
         foreach($countries as $country){            
             foreach($stockList as $stock){

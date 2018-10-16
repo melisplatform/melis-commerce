@@ -25,6 +25,7 @@ class EcomPluginCountriesSelectFactory extends EcomSelectFactory
         $ecomCountries = $melisEcomCountryTable->getCountries();
 
         $valueoptions = array();
+        
         $max = $ecomCountries->count();
         for ($i = 0; $i < $max; $i++)
         {
@@ -32,6 +33,8 @@ class EcomPluginCountriesSelectFactory extends EcomSelectFactory
             $valueoptions[$data->ctry_id] = $data->ctry_name;
             $ecomCountries->next();
         }
+        
+        
         return $valueoptions;
     }
 

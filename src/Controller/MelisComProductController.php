@@ -28,7 +28,7 @@ class MelisComProductController extends AbstractActionController
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
 
-        $this->setProductVariables($productId);
+        $this->setProductVariables($productId, $this->getTool()->getCurrentLocaleID());
 
         $container = new Container('meliscommerce');
         $container['documents'] = array('docRelationType' => 'product', 'docRelationId' => $productId);
@@ -485,7 +485,7 @@ class MelisComProductController extends AbstractActionController
         $productId = (int) $this->params()->fromQuery('productId', '');
 
         $attributes = $this->getAttributesExceptAttributesOnProductId($productId);
-        $this->setProductVariables($productId);
+        $this->setProductVariables($productId, $this->getTool()->getCurrentLocaleID());
 
         $view = new ViewModel();
         $view->melisKey = $melisKey;
@@ -730,7 +730,7 @@ class MelisComProductController extends AbstractActionController
         $factory->setFormElementManager($formElements);
         $productTextForm = $factory->createForm($appConfigForm);
 
-        $this->setProductVariables($productId);
+        $this->setProductVariables($productId, $this->getTool()->getCurrentLocaleID());
 
         $view = new ViewModel();
         $view->melisKey = $melisKey;
@@ -1270,6 +1270,8 @@ class MelisComProductController extends AbstractActionController
         $priceClean = array();
         $attributes = array();
         $categories = array();
+        $priceId_arr = array();
+
         $seo = array();
 
         $factory = new \Zend\Form\Factory();
@@ -1388,7 +1390,7 @@ class MelisComProductController extends AbstractActionController
                         $priceClean[] = $prodPrice;
                     }else{
                         if(isset($prodPrice['price_id'])){
-                            $priceTable->deleteById($prodPrice['price_id']);
+                            array_push($priceId_arr, $prodPrice['price_id']);
                         }
                     }
                 }
@@ -1459,6 +1461,13 @@ class MelisComProductController extends AbstractActionController
             if($delCategories) {
                 foreach($delCategories as $delCat) {
                     $categorySvc->deleteCategoryProduct($delCat['pcat_id']);
+                }
+            }
+
+            //remove prices if the array is not empty
+            if(!empty($priceId_arr)){
+                foreach($priceId_arr AS $price_id){
+                    $priceTable->deleteById($price_id);
                 }
             }
             
@@ -1666,7 +1675,7 @@ class MelisComProductController extends AbstractActionController
      * that is under on this Controller
      * @param int $productId
      */
-    private function setProductVariables($productId)
+    private function setProductVariables($productId, $langId = null)
     {
         $categoryText = array();
         $categorySvc = $this->getServiceLocator()->get('MelisComCategoryService');
@@ -1675,7 +1684,7 @@ class MelisComProductController extends AbstractActionController
         $attrTransTable = $this->getServiceLocator()->get('MelisEcomAttributeTransTable');
         $prodTextTypeTable = $this->getServiceLocator()->get('MelisEcomProductTextTypeTable');
         $ecomLangTable = $this->getServiceLocator()->get('MelisEcomLangTable');
-        $product = $this->getProduct($productId, null);
+        $product = $this->getProduct($productId, $langId);
         $categories = array();
         $prodText = array();
         $attributes = array();
@@ -1683,63 +1692,71 @@ class MelisComProductController extends AbstractActionController
         $texts = '';
         $layoutVar = array();
 
-        if($product) {
+        if($product) 
+        {
             $categories = $product->getCategories();
             $texts = $product->getTexts();
             $attributes = $product->getAttributes();
             $layoutVar['product'] = $product->getProduct();
         }
-
-        if($categories) {
-            foreach($categories as  $prodObjectVal) {
-                if($prodObjectVal->pcat_cat_id) {
-                    $prodCatData = $categorySvc->getCategoryById((int) $prodObjectVal->pcat_cat_id, $this->getTool()->getCurrentLocaleID());
-                    //if($prodCatData) {
-                    $prodCatTrans = $prodCatData->getTranslations();
-                    //if($prodCatTrans) {
+        
+        if($categories) 
+        {
+            foreach($categories as  $prodObjectVal) 
+            {
+                if($prodObjectVal->pcat_cat_id) 
+                {
+                    $categoryId = $prodObjectVal->pcat_cat_id;
+                    
                     $categoryText[] = array(
                         'pcat_id' => $prodObjectVal->pcat_id,
-                        'pcat_cat_id' => $prodCatData->getId(),
-                        'catt_name' => $categorySvc->getCategoryNameById($prodCatData->getId(), $this->getTool()->getCurrentLocaleID()),
-                        'pcat_order' => $prodObjectVal->pcat_order
+                        'pcat_cat_id' => $categoryId,
+                        'catt_name' => $categorySvc->getCategoryNameById($categoryId, $prodObjectVal->catt_lang_id),
+                        'pcat_order' => $prodObjectVal->pcat_order,
                     );
-                    //}
-                    //}
                 }
             }
+
             $layoutVar['prodCategories'] = $categoryText;
         }
-
+        
         $prodText = $prodSvc->getProductTextsById($productId);
-        if(empty($prodText)){
+        
+        if(empty($prodText))
+        {
             // set default title prodtext field
-            foreach($prodTextTypeTable->fetchAll()->toArray() as $textType){
-                if($textType['ptt_name'] == 'Title'){
-                    foreach($ecomLangTable->fetchAll()->toArray() as $lang){
+            foreach($prodTextTypeTable->fetchAll()->toArray() as $textType)
+            {
+                if($textType['ptt_name'] == 'Title')
+                {
+                    foreach($ecomLangTable->fetchAll()->toArray() as $lang)
+                    {
                         $textType['ptxt_lang_id'] = $lang['elang_id'];
                         $prodText[] = (object) $textType;
                     }
                 }
             }
-
         }
         
         $comLangTable = $this->getServiceLocator()->get('MelisEcomLangTable');
         $ctrText = 0;
         $localeCtr = array();
-        if($texts) {
-            foreach($texts as $text){
-                if($text->ptt_code == 'TITLE'){
+        if($texts) 
+        {
+            foreach($texts as $text)
+            {
+                if($text->ptt_code == 'TITLE')
+                {
                     $prodName = $text->ptxt_field_short;
                 }
             }
         }
+        
         $prodName = $prodSvc->getProductName($productId, $this->getTool()->getCurrentLocaleID());
         foreach($attributes as $attr){
             $attr->atrans_name = $attrSvc->getAttributeText($attr->patt_attribute_id, $this->getTool()->getCurrentLocaleID());
             $layoutVar['prodAttributes'][] = $attr;
         }
-
         
         $this->layout()->setVariables(array_merge(array(
             'productId' => $productId,
@@ -1877,6 +1894,54 @@ class MelisComProductController extends AbstractActionController
         return $view;
     }
 
+    /**
+     * Function to check if product attribute is being used by it's variant
+     * @return JsonModel
+     */
+    public function checkAttributeOnVariantAction()
+    {
+        $attr_is_used = false;
 
+        $productId = $this->params()->fromRoute('productId', $this->params()->fromQuery('productId', ''));
+        $patt_attr_id = $this->params()->fromRoute('patt_attr_id', $this->params()->fromQuery('patt_attr_id', ''));
+
+        $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
+        $attrService = $this->getServiceLocator()->get('MelisComAttributeService');
+        $variantAttrTable = $this->getServiceLocator()->get('MelisEcomProductVariantAttributeValueTable');
+
+        /**
+         * get attribute value by attribute id
+         */
+        $attributeValue = $attrService->getAttributeValuesList($patt_attr_id);
+        $attributeValueArr = [];
+
+        for($x = 0; $x < sizeof($attributeValue); $x++){
+            array_push($attributeValueArr, $attributeValue[$x]->atval_id);
+        }
+
+        $langId = $this->getTool()->getCurrentLocaleID();
+        $variantsData = $variantSvc->getVariantListByProductId($productId, $langId);
+        $variantIds = array();
+        //get all the variant id
+        foreach($variantsData as $var){
+            array_push($variantIds, $var->getId());
+        }
+        //get variant attribute value by variant id
+        $varAttr = $variantAttrTable->getVariantAttributeValueIdByVariantId($variantIds)->toArray();
+        /**
+         * check if attribute is being used by variants
+         * by checking if attribute value exist on variant attribute value
+         */
+        for($i = 0; $i < sizeof($varAttr); $i++){
+            if(in_array($varAttr[$i]['vatv_attribute_value_id'], $attributeValueArr)){
+                $attr_is_used = true;
+                break;
+            }
+        }
+
+        return new JsonModel(array(
+            'attribute_is_used' => $attr_is_used
+        ));
+    }
 
 }

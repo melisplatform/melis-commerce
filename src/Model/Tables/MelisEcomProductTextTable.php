@@ -74,5 +74,18 @@ class MelisEcomProductTextTable extends MelisEcomGenericTable
         return $resultSet;
     }
     
+    public function getProductTextsWithLang($productId, $langId = 1) 
+    {
+        $select = $this->tableGateway->getSql()->select();
+        $select->columns(array('*'));
+
+        $select->join('melis_ecom_lang', 'melis_ecom_lang.elang_id = melis_ecom_product_text.ptxt_lang_id', array('*'), $select::JOIN_LEFT);
+
+        $select->where->equalTo('ptxt_prd_id', $productId)->and->equalTo('ptxt_lang_id', $langId);
+        
+        $resultSet = $this->tableGateway->selectwith($select);
+        
+        return $resultSet;
+    }
     
 }

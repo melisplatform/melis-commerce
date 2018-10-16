@@ -210,7 +210,6 @@ class MelisComDocumentService extends MelisComGeneralService
 	    
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
-	    $results = array();
 	    
 	    // Sending service start event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_document_get_doc_default_image_start', $arrayParameters);
@@ -276,14 +275,14 @@ class MelisComDocumentService extends MelisComGeneralService
 	public function getFinalImageFilePath($docRelation, $relationId, $docType = array('DEFAULT'), $customDefaultImg = null)
 	{
 	    // Retrieve cache version if front mode to avoid multiple calls
-// 	    $tmp = '';
-// 	    foreach ($docType as $tCode)
-// 	        $tmp .= '_' . $tCode;
-// 	    $cacheKey = $docRelation . '-' . $relationId . '-getFinalImageFilePath_' . $relationId . '_' . $tmp . '_' . $customDefaultImg;
-//         $cacheConfig = 'commerce_big_services';
-//         $melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
-//         $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-//         if (!empty($results)) return $results;
+	    $tmp = '';
+	    foreach ($docType as $tCode)
+	        $tmp .= '_' . $tCode;
+	    $cacheKey = $docRelation . '-' . $relationId . '-getFinalImageFilePath_' . $relationId . '_' . $tmp . '_' . $customDefaultImg;
+        $cacheConfig = 'commerce_big_services';
+        $melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
+        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+        if (!empty($results)) return $results;
 	    
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -332,7 +331,7 @@ class MelisComDocumentService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_document_get_doc_default_image_end', $arrayParameters);
 
 	    // Save cache key
-// 		$melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
+		$melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
 	    
 	    return $arrayParameters['results'];
 	}
