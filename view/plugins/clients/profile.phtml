@@ -1,17 +1,29 @@
+<style>
+.default-form-err-msg-plugin li{
+    display: inherit;
+}
+</style>
 <?php if ($this->message):?>
 	<h2><?php echo $this->message?></h2>
 <?php endif;?>
-<?php 
+
+<?php
     $form = $this->profile;
-    $form->add(array(
-        'name' => 'submit',
-        'attributes' => array(
-            'type' => 'submit',
-            'value' => 'Save',
-        ),
-    ));
     $form->prepare();
     echo $this->form()->openTag($form);
-    echo $this->formCollection($form);
-    echo $this->form()->closeTag();
+    
+    foreach ($form->getElements() As $key => $val)
+    {
+        echo '<div class="form-group">';
+        if ($val->getLabel())
+        {
+            echo $this->formLabel($val);
+        }
+        echo $this->formElement($val);
+        echo $this->formElementErrors($val, array('class' => 'default-form-err-msg-plugin text-danger'));
+        echo '</div>';
+    }
+    
+    echo '<button type="submit" class="btn btn-default">'.$this->translate('tr_meliscommerce_general_common_save').'</button>';
+    echo $this->form()->closeTag(); 
 ?>

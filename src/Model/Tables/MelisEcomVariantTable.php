@@ -290,7 +290,25 @@ class MelisEcomVariantTable extends MelisEcomGenericTable
         
         return $resultSet;
     }
-
+    
+    public function getProductVariants($productId, $onlyValid = false)
+    {
+        $select = $this->tableGateway->getSql()->select();
+        
+        $select->columns(array('*'));
+        
+        if ($onlyValid)
+            $select->where('var_status = 1');
+        
+        $select->where('var_prd_id = '.$productId);
+        
+        $select->group($this->idField);
+        
+        $resultSet = $this->tableGateway->selectWith($select);
+        
+        return $resultSet;
+    }
+    
     protected function setVarCurrentDataCount($dataCount)
     {
         $this->_currentVarDataCount = $dataCount;

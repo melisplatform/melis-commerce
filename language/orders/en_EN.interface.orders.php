@@ -6,6 +6,7 @@
 	    'tr_meliscommerce_orders_header_right_container_save' => 'Save order',
 	    'tr_meliscommerce_orders_header_right_container_cancel' => 'Cancel',
 	    'tr_meliscommerce_orders_content_tab_main' => 'Properties',
+	    'tr_meliscommerce_orders_content_tab_main_invoice' => 'Invoice',
 	    'tr_meliscommerce_orders_content_tab_basket' => 'Basket',	    
 	    'tr_meliscommerce_orders_content_tab_address' => 'Addresses',
 	    'tr_meliscommerce_orders_content_tab_paymnet' => 'Payment',
@@ -115,4 +116,126 @@
 	    'tr_meliscommerce_orders_email_low_stock_subject' => 'Stock alert: Product %s SKU %s',
 	    'tr_meliscommerce_orders_email_low_stock_html' => '<p>Greetings,</p><p>The stock alert of the following product has been reached:</p><p>ID: [PRODUCT_ID]</p><p>Product name: [PRODUCT_TEXT] </p><p>SKU: [VARIANT_SKU]</p><p>Remaining stock: [STOCKS]</p>',
 	    'tr_meliscommerce_orders_email_low_stock_text' => 'Greetings, The stock alert of the following product has been reached ID: [PRODUCT_ID] Product name: [PRODUCT_TEXT] SKU: [VARIANT_SKU] Remaining stock: [STOCKS]',
+
+        //order history plugin
+        'tr_meliscommerce_order_history_name' => 'Order History',
+        'tr_meliscommerce_order_history_description' => 'The plugin displays all the orders made by the client',
+        'tr_meliscommerce_order_history_order_tooltip' => 'This filter allows to set the default sorting',
+        'tr_meliscommerce_order_history_order' => 'Order',
+        'tr_meliscommerce_order_history_empty_order' => 'No recent orders',
+        'tr_meliscommerce_order_history_date' => 'Date',
+        'tr_meliscommerce_order_history_reference' => 'Reference',
+        'tr_meliscommerce_order_history_status' => 'Status',
+        'tr_meliscommerce_order_history_items' => 'Items',
+        'tr_meliscommerce_order_history_total' => 'Total',
+
+	    // MelisCommerceCheckoutPlugin()
+	    'tr_meliscommerce_plugin_checkout_name' => 'Checkout',
+	    'tr_meliscommerce_plugin_checkout_description' => 'This plugin displays all the steps of checkout',
+	    
+	    // MelisCommerceCheckoutCartPlugin()
+	    'tr_meliscommerce_plugin_checkout_cart_name' => 'Checkout cart',
+	    'tr_meliscommerce_plugin_checkout_cart_description' => 'This plugin displays the checkout cart list',
+        'tr_meliscommerce_plugin_checkout_cart_sku' => 'SKU',
+        'tr_meliscommerce_plugin_checkout_cart_product' => 'Product',
+        'tr_meliscommerce_plugin_checkout_cart_unit_price' => 'Unit price',
+        'tr_meliscommerce_plugin_checkout_cart_qty' => 'Quantity',
+        'tr_meliscommerce_plugin_checkout_cart_total' => 'Total',
+        'tr_meliscommerce_plugin_checkout_cart_sub_total' => 'Sub Total',
+        'tr_meliscommerce_plugin_checkout_cart_remove' => 'Remove',
+        'tr_meliscommerce_plugin_checkout_cart_discount' => 'Discount',
+        'tr_meliscommerce_plugin_checkout_cart_order_discount' => 'Order Discount',
+        'tr_meliscommerce_plugin_checkout_cart_update' => 'Update Cart',
+        'tr_meliscommerce_plugin_checkout_cart_error' => 'Product error(s) occured.',
+        'tr_meliscommerce_plugin_checkout_cart_error_msg' => 'Error message appeared under the name of the Product.',
+
+	    // MelisCommerceCheckoutCouponPlugin()
+	    'tr_meliscommerce_plugin_checkout_coupon_name' => 'Checkout coupon',
+	    'tr_meliscommerce_plugin_checkout_coupon_description' => 'This plugin displays the checkout coupon form',
+        'tr_meliscommerce_plugin_checkout_coupon_multiple' => 'Multiple coupons',
+        'tr_meliscommerce_plugin_checkout_coupon_multiple tooltip' => 'Multiple coupons',
+        'tr_meliscommerce_plugin_checkout_coupon_code' => 'Coupon code',
+        'tr_meliscommerce_plugin_checkout_coupon_value' => 'Coupon value',
+
+	    // MelisCommerceCheckoutAddressesPlugin()
+	    'tr_meliscommerce_plugin_checkout_addresses_name' => 'Checkout addresses',
+	    'tr_meliscommerce_plugin_checkout_addresses_description' => 'This plugin displays the checkout addresses form such as delivery and billing address',
+	    'tr_meliscommerce_plugin_checkout_addresses_use_same_address' => 'Use same address.',
+	    'tr_meliscommerce_plugin_checkout_addresses_use_same_address tooltip' => 'Specify whether to use the same address',
+	    'tr_meliscommerce_plugin_checkout_addresses_invalid_err_msg' => 'Something is wrong with the Checkout Addresses, Please check Addresses for Checkout before proceed to payment',
+
+	    // MelisCommerceCheckoutSummaryPlugin()
+	    'tr_meliscommerce_plugin_checkout_summary_name' => 'Checkout summary',
+	    'tr_meliscommerce_plugin_checkout_summary_description' => 'This plugins displays the checkout summary',
+	    'tr_meliscommerce_plugin_checkout_summary_shipping_cost' => 'Shipping cost',
+
+	    // MelisCommerceCheckoutConfirmSummaryPlugin()
+	    'tr_meliscommerce_plugin_checkout_confirm_summary_name' => 'Checkout summary error',
+	    'tr_meliscommerce_plugin_checkout_confirm_summary_description' => 'This plugin displays an error of the checkout summary',
+        'tr_meliscommerce_plugin_checkout_confirm_summary_err_msg' => 'Cannot proceed to payment, please check your checkout details before proceeding to payment',
+
+	    // MelisCommerceCheckoutConfirmPlugin()
+	    'tr_meliscommerce_plugin_checkout_confirmation_name' => 'Checkout confirmation',
+	    'tr_meliscommerce_plugin_checkout_confirmation_description' => 'This plugin displays the confirmation of the checkout',
+	    'tr_meliscommerce_plugin_checkout_confirmation_order' => 'Order Confirmation',
+	    'tr_meliscommerce_plugin_checkout_confirmation_coupon' => 'Coupon',
+	    'tr_meliscommerce_plugin_checkout_confirmation_shipping' => 'Shipping',
+
+	    // MelisCommerceOrderAddressPlugin()
+	    'tr_meliscommerce_plugin_order_address_name' => 'Order address',
+	    'tr_meliscommerce_plugin_order_address_description' => 'This plugin displays the order delivery and billing address',
+	    'tr_meliscommerce_plugin_order_address_not_set' => 'Address Not Set',
+
+	    // MelisCommerceOrderPlugin()
+	    'tr_meliscommerce_plugin_order_details_name' => 'Order details',
+	    'tr_meliscommerce_plugin_order_details_description' => 'This plugin displays the order details including order addresses, shipping details and order messages',
+	    
+	    // MelisCommerceOrderShippingDetailsPlugin()
+	    'tr_meliscommerce_plugin_order_shipping_details_name' => 'Order shipping details',
+	    'tr_meliscommerce_plugin_order_shipping_details_description' => 'This plugin displays order shipping details',
+	    'tr_meliscommerce_plugin_order_shipping_date' => 'Date',
+	    'tr_meliscommerce_plugin_order_shipping_comments' => 'Comments',
+
+	    // MelisCommerceOrderMessagesPlugin()
+	    'tr_meliscommerce_plugin_order_messages_name' => 'Order messages',
+	    'tr_meliscommerce_plugin_order_messages_description' => 'This plugin displays order messages',
+	    'tr_meliscommerce_plugin_order_messages_area' => 'Message Area',
+
+	    // Dashborad plugin
+
+        //number of orders plugin
+        'tr_PluginSection_meliscommerce' => 'Melis Commerce',
+        'tr_melis_commerce_dashboard_plugin_orders_number' => 'Orders',
+        'tr_melis_commerce_dashboard_plugin_orders_number_description' => 'This tool gives you an overview of the statistics of orders in the dashboard.',
+        //report / chart type
+        'tr_melis_commerce_orders_dashboard_statistics_hourly' => 'Hourly',
+        'tr_melis_commerce_orders_dashboard_statistics_daily' => 'Daily',
+        'tr_melis_commerce_orders_dashboard_statistics_weekly' => 'Weekly',
+        'tr_melis_commerce_orders_dashboard_statistics_monthly' => 'Monthly',
+
+        //number of orders table
+        'tr_melis_commerce_orders_dashboard_table_header_id' => 'ID',
+        'tr_melis_commerce_orders_dashboard_table_header_reference' => 'Reference',
+        'tr_melis_commerce_orders_dashboard_table_header_status' => 'Status',
+        'tr_melis_commerce_orders_dashboard_table_header_numberofproducts' => '# of Products',
+        'tr_melis_commerce_orders_dashboard_table_header_price' => 'Price',
+        'tr_melis_commerce_orders_dashboard_table_header_name' => 'Name',
+        'tr_melis_commerce_orders_dashboard_table_header_firstname' => 'First Name',
+        'tr_melis_commerce_orders_dashboard_table_header_lastname' => 'last Name',
+        'tr_melis_commerce_orders_dashboard_table_header_date' => 'Date',
+
+        //sales revenue
+        'tr_melis_commerce_dashboard_plugin_sales_revenue' => 'Sales Revenue',
+        'tr_melis_commerce_dashboard_plugin_sales_revenue_description' => 'This tool gives you an overview of the statistics for the sales revenue',
+        'tr_melis_commerce_dashboard_plugin_sales_revenue_order_price' => 'Order Price',
+        'tr_melis_commerce_dashboard_plugin_sales_revenue_shipping_price' => 'Shipping Price',
+
+        //order messages
+        'tr_melis_commerce_dashboard_plugin_order_messages' => 'Order Messages',
+        'tr_melis_commerce_dashboard_plugin_order_messages_description' => 'This tool gives you the list of messages',
+        'tr_melis_commerce_dashboard_plugin_order_messages_all' => 'All',
+        'tr_melis_commerce_dashboard_plugin_order_messages_unanswered' => 'Unanswered',
+        'tr_melis_commerce_dashboard_plugin_order_messages_unanswered_messages' => 'You have <strong class="text-primary"> %d messages unanswered</strong>',
+        'tr_melis_commerce_dashboard_plugin_order_messages_message_order_amount' => 'Order Amount : ',
+        'tr_melis_commerce_dashboard_plugin_order_messages_message_placed_on' => 'Placed On : ',
 	);

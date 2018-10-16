@@ -11,5 +11,5 @@
     $prod_name = empty($this->prodTitle) ? '' : $this->prodTitle;
 ?>
 <h1 class="content-heading" <?php echo $id. ' '. $data_melisKey;?>>
-<a href="products.php" style="color: #686868;"><?= $this->translate('tr_meliscommerce_variants_Products');?></a>
- / <a href="#" style="color: #686868;"><?= $this->escapeHtml($prod_name) ?></a>  / <?= $this->escapeHtml($var_sku) ?></h1>
+<a href="#" class="melis-opentools" data-tool-icon="icon-shippment" data-tool-name="<?= $this->translate('tr_meliscommerce_variants_Products');?>" data-tool-id="id_meliscommerce_product_list_container" data-tool-meliskey="meliscommerce_product_list_container" style="color: #686868;"><?= $this->translate('tr_meliscommerce_variants_Products');?></a>
+ / <a href="#" class="melis-opentools" data-tool-icon="icon-shippment" data-tool-name="<?= $this->escapeHtml($prod_name) ?>" data-tool-id="<?= $this->productId ?>_id_meliscommerce_products_page" data-tool-meliskey="meliscommerce_products_page" style="color: #686868;"><?= $this->escapeHtml($prod_name) ?></a>  / <?= $this->escapeHtml($var_sku) ?></h1>

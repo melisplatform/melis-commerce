@@ -1,0 +1,93 @@
+<div class="row">
+	<div class="col-md-12" id="productCategorySearchZone">
+		<div class="form-group">
+        	<input type="text" class="form-control" name="catPrdSliderPluginSearch" id="catPrdSliderPluginSearch" placeholder="<?= $this->translate('tr_meliscommerce_categories_list_tree_view_search_input'); ?>">
+    	</div>
+    	<div class="row">
+    		<div class="col-xs-6 col-md-6 col-lg-3">
+    			<button class="btn btn-success btn-block margin-bottom-10" id="catPrdSliderPluginClearBtn" title="<?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_clear')?>">
+    				<i class="fa fa-eraser"></i> 
+    				<span><?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_clear')?></span>
+    			</button>
+    		</div>
+    		<div class="col-xs-6 col-md-6 col-lg-3 margin-bottom-10">
+    			<button class="btn btn-success btn-block margin-bottom-10" id="catPrdSliderPluginCollapseBtn" title="<?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_collapse_all')?>">
+    				<i class="fa fa-compress fa-flip-horizontal"></i> 
+    				<span><?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_collapse_all')?></span>
+    			</button>
+    		</div>
+    		<div class="col-xs-6 col-md-6 col-lg-3">
+    			<button class="btn btn-success btn-block margin-bottom-10" id="catPrdSliderPluginExpandBtn" title="<?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_expand_all')?>">
+    				<i class="fa fa-expand fa-flip-horizontal"></i> 
+    				<span><?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_expand_all')?></span>
+    			</button>
+    		</div>
+    		<div class="col-xs-6 col-md-6 col-lg-3">
+    			<button class="btn btn-success btn-block margin-bottom-10" id="catPrdSliderPluginRefreshBtn" title="<?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_refresh')?>">
+    				<i class="fa fa-refresh"></i> 
+    				<span><?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_refresh')?></span>
+    			</button>
+    		</div>
+    	</div>
+	</div>
+	<br>
+	<div class="col-md-12">
+		<div class="row">
+			<div class="col-md-6">
+				<br>
+        		<div class="prodCatLangDropDownContainer">
+                	<div class="filter-dropdown clearfix categoryLangTreePluginDropdown" data-productid="<?= $this->productId; ?>">
+                		<a href="#" class="dropdown-toggle category-list-lang-dropdown" data-toggle="dropdown">
+                			<i class="fa fa-language"></i>
+                			<span class="filter-key"><?= $this->currentLangName; ?></span>
+                			<span class="caret"></span>
+                		</a>
+                		<ul class="dropdown-menu category-tree-view-lang-plugin">
+    						<?php 
+    						    if($this->langData){
+    						        foreach($this->langData as $lang){ ?>
+                            			<li>
+        									<?php
+        									$imageData = $lang->elang_flag;
+        									$image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay pull-right" width="24" height="24"/>' : '<i class="fa fa-globe"></i>';
+        									?>
+                            				<a data-locale="<?= $lang->elang_locale; ?>"><?= $lang->elang_name; ?><span class="pull-right"><?php echo $image; ?></span></a>
+                            			</li>
+                			<?php 
+    						        };
+    						    };
+    						?>
+                		</ul>
+                	</div>
+				</div>
+				<br>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-12">
+		<div class="form-group">
+    		<div class="alert alert-warning hidden">"<strong></strong>" <?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_search_not_found')?></div>
+    		<div id="catTreepluginConfig" data-langlocale="<?php echo $this->currentLangLocale ?>"></div>
+    		<form id="catTreepluginConfig_form" data-input-field-selected="m_category_ids">
+        		<?php if (!empty($this->formData['m_category_ids'])){?>
+            		<?php foreach ($this->formData['m_category_ids'] As $val){?>
+            			<input type="hidden" name="m_category_ids[]" value="<?php echo $val?>">
+            		<?php }?>
+        		<?php }?>
+        	</form>
+    	</div>
+	</div>
+	
+	<div class="col-md-12">
+    	<?php
+            $form = $this->modalForm;
+            $form->prepare();
+            echo $this->form()->openTag($form);
+            echo $this->melisFieldCollection($form);
+            echo $this->form()->closeTag();
+        ?>
+    </div>
+</div>
+<script>
+	commerceCategoryTree.initCategoryTree("catTreepluginConfig");
+</script>

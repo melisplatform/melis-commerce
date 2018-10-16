@@ -72,4 +72,7 @@
 	    'tr_meliscommerce_attribute_value_delete_success' => 'The attribute value has been successfully deleted',
 
 	    'tr_meliscommerce_attribute_table_refresher' => 'Refresh',
+
+        'tr_meliscommerce_attribute_delete_product_attr_title' => 'Product attribute',
+        'tr_meliscommerce_attribute_delete_product_attr_title_msg' => 'Cannot delete attribute, some variants are using this attribute.',
 	);

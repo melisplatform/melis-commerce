@@ -6,6 +6,7 @@
         'tr_meliscommerce_orders_header_right_container_save' => 'Enregistrer la commande',
         'tr_meliscommerce_orders_header_right_container_cancel' => 'Annuler',
         'tr_meliscommerce_orders_content_tab_main' => 'Propriétés',
+        'tr_meliscommerce_orders_content_tab_main_invoice' => 'Facture',
         'tr_meliscommerce_orders_content_tab_basket' => 'Panier',
         'tr_meliscommerce_orders_content_tab_address' => 'Adresses',
         'tr_meliscommerce_orders_content_tab_paymnet' => 'Paiement',
@@ -115,4 +116,121 @@
 	    'tr_meliscommerce_orders_email_low_stock_subject' => 'Alerte de Stock : Produit %s SKU %s',
 	    'tr_meliscommerce_orders_email_low_stock_html' => '<p>Bonjour,</p><p>L\'alerte de stock du produit suivant a été atteinte :</p><p>ID : [PRODUCT_ID]</p><p>Nom du produit : [PRODUCT_TEXT] </p><p>SKU : [VARIANT_SKU]</p><p>Stock restant : [STOCKS]</p>',
 	    'tr_meliscommerce_orders_email_low_stock_text' => 'Bonjour, L\'alerte de stock du produit suivant a été atteinte : ID : [PRODUCT_ID] Nom du produit : [PRODUCT_TEXT] SKU : [VARIANT_SKU] Stock restant : [STOCKS]',
+
+        //order history plugin
+        'tr_meliscommerce_order_history_name' => 'Historique des commandes',
+        'tr_meliscommerce_order_history_description' => 'Le plugin affiche toutes les commandes faites par le client',
+        'tr_meliscommerce_order_history_order_tooltip' => 'Ce plugin permet de définir l\'ordre par défault',
+        'tr_meliscommerce_order_history_order' => 'Ordre',
+        'tr_meliscommerce_order_history_empty_order' => 'Pas de commande récente',
+        'tr_meliscommerce_order_history_date' => 'Date',
+        'tr_meliscommerce_order_history_reference' => 'Référence',
+        'tr_meliscommerce_order_history_status' => 'Statut',
+        'tr_meliscommerce_order_history_items' => 'Eléments',
+        'tr_meliscommerce_order_history_total' => 'Total',
+
+        // MelisCommerceCheckoutPlugin()
+        'tr_meliscommerce_plugin_checkout_name' => 'Commander',
+        'tr_meliscommerce_plugin_checkout_description' => 'Ce plugin affiche tous les détails du processus de commande',
+
+        // MelisCommerceCheckoutCartPlugin()
+        'tr_meliscommerce_plugin_checkout_cart_name' => 'Panier',
+        'tr_meliscommerce_plugin_checkout_cart_description' => 'Ce plugin affiche la liste du panier',
+        'tr_meliscommerce_plugin_checkout_cart_sku' => 'SKU',
+        'tr_meliscommerce_plugin_checkout_cart_product' => 'Produit',
+        'tr_meliscommerce_plugin_checkout_cart_unit_price' => 'Prix unitaire',
+        'tr_meliscommerce_plugin_checkout_cart_qty' => 'Quantité',
+        'tr_meliscommerce_plugin_checkout_cart_total' => 'Total',
+        'tr_meliscommerce_plugin_checkout_cart_sub_total' => 'Sub Total',
+        'tr_meliscommerce_plugin_checkout_cart_remove' => 'Retirer',
+        'tr_meliscommerce_plugin_checkout_cart_discount' => 'Remise',
+        'tr_meliscommerce_plugin_checkout_cart_order_discount' => 'Remise commande',
+        'tr_meliscommerce_plugin_checkout_cart_update' => 'Mettre à jour le panier',
+        'tr_meliscommerce_plugin_checkout_cart_error' => 'Erreur de produit survenue',
+        'tr_meliscommerce_plugin_checkout_cart_error_msg' => 'Un message d\'erreur est apparu sous le nom du produit',
+
+        // MelisCommerceCheckoutCouponPlugin()
+        'tr_meliscommerce_plugin_checkout_coupon_name' => 'Coupon',
+        'tr_meliscommerce_plugin_checkout_coupon_description' => 'Ce plugin affiche le champ du coupon',
+        'tr_meliscommerce_plugin_checkout_coupon_multiple' => 'Multiple coupons',
+        'tr_meliscommerce_plugin_checkout_coupon_multiple tooltip' => 'Multiple coupons',
+        'tr_meliscommerce_plugin_checkout_coupon_code' => 'Code du coupon',
+        'tr_meliscommerce_plugin_checkout_coupon_value' => 'Valeur du coupon',
+
+        // MelisCommerceCheckoutAddressesPlugin()
+        'tr_meliscommerce_plugin_checkout_addresses_name' => 'Adresses',
+        'tr_meliscommerce_plugin_checkout_addresses_description' => 'Ce plugin affiche les formulaires des adresses telles que l\'adresse de livraison et de facturation',
+        'tr_meliscommerce_plugin_checkout_addresses_use_same_address' => 'Utiliser la même adresse',
+        'tr_meliscommerce_plugin_checkout_addresses_use_same_address tooltip' => 'Spécifier si l\'on doit utiliser la même adresse ou non',
+        'tr_meliscommerce_plugin_checkout_addresses_invalid_err_msg' => 'Something is wrong with the Checkout Addresses, Please check Addresses for Checkout before proceed to payment',
+
+        // MelisCommerceCheckoutSummaryPlugin()
+        'tr_meliscommerce_plugin_checkout_summary_name' => 'Résumé de la commande',
+        'tr_meliscommerce_plugin_checkout_summary_description' => 'Ce plugin affiche le détail de la commande',
+        'tr_meliscommerce_plugin_checkout_summary_shipping_cost' => 'Coûts de tansport',
+
+        // MelisCommerceCheckoutConfirmSummaryPlugin()
+        'tr_meliscommerce_plugin_checkout_confirm_summary_name' => 'Erreur de paiement',
+        'tr_meliscommerce_plugin_checkout_confirm_summary_description' => 'Ce plugin affiche une erreur de résumé de commande',
+        'tr_meliscommerce_plugin_checkout_confirm_summary_err_msg' => 'Impossible de procéder au paiement, veuillez vérifier vos détails de commande avant de procéder au paiement',
+
+        // MelisCommerceCheckoutConfirmPlugin()
+        'tr_meliscommerce_plugin_checkout_confirmation_name' => 'Confirmation de la commande',
+        'tr_meliscommerce_plugin_checkout_confirmation_description' => 'Ce plugin affiche la confirmation de la commande',
+        'tr_meliscommerce_plugin_checkout_confirmation_order' => 'Confirmation de la commande',
+        'tr_meliscommerce_plugin_checkout_confirmation_coupon' => 'Coupon',
+        'tr_meliscommerce_plugin_checkout_confirmation_shipping' => 'Transport',
+
+        // MelisCommerceOrderAddressPlugin()
+        'tr_meliscommerce_plugin_order_address_name' => 'Adresse de la commande',
+        'tr_meliscommerce_plugin_order_address_description' => 'Ce plugin affiche les adresses de livraison et de facturation de la commande',
+        'tr_meliscommerce_plugin_order_address_not_set' => 'Adresse non définie',
+
+        // MelisCommerceOrderPlugin()
+        'tr_meliscommerce_plugin_order_details_name' => 'Détails de la commande',
+        'tr_meliscommerce_plugin_order_details_description' => 'Ce plugin affiche les détails de la commande y compris l\'adresse, le transport et les messages',
+
+        // MelisCommerceOrderShippingDetailsPlugin()
+        'tr_meliscommerce_plugin_order_shipping_details_name' => 'Détails du transport de la commande',
+        'tr_meliscommerce_plugin_order_shipping_details_description' => 'Ce plugin affiche les détails du transport de la commande',
+        'tr_meliscommerce_plugin_order_shipping_date' => 'Date',
+        'tr_meliscommerce_plugin_order_shipping_comments' => 'Commentaires',
+
+        // MelisCommerceOrderMessagesPlugin()
+        'tr_meliscommerce_plugin_order_messages_name' => 'Messages de la commande',
+        'tr_meliscommerce_plugin_order_messages_description' => 'Ce plugin affiche les messages de la commande',
+        'tr_meliscommerce_plugin_order_messages_area' => 'Zone de messages',
+        
+        //Dashboard Plugin
+        //number of orders plugin
+        'tr_PluginSection_meliscommerce' => 'Melis Commerce',
+        'tr_melis_commerce_dashboard_plugin_orders_number' => ' Nombre de commandes',
+        'tr_melis_commerce_dashboard_plugin_orders_number_description' => 'Ce plugin affiche l\'aperçu du nombre de statistiques de commandes.',
+        'tr_melis_commerce_orders_dashboard_statistics_hourly' => 'Toutes les heures',
+        'tr_melis_commerce_orders_dashboard_statistics_daily' => 'Jours',
+        'tr_melis_commerce_orders_dashboard_statistics_weekly' => 'Chaque semaine',
+        'tr_melis_commerce_orders_dashboard_statistics_monthly' => 'Mois',
+
+        //number of orders table
+        'tr_melis_commerce_orders_dashboard_table_header_id' => 'ID',
+        'tr_melis_commerce_orders_dashboard_table_header_reference' => 'Référence',
+        'tr_melis_commerce_orders_dashboard_table_header_status' => 'Statut',
+        'tr_melis_commerce_orders_dashboard_table_header_price' => 'Prix',
+        'tr_melis_commerce_orders_dashboard_table_header_name' => 'Nom',
+        'tr_melis_commerce_orders_dashboard_table_header_date' => 'Date',
+
+        //sales revenue
+        'tr_melis_commerce_dashboard_plugin_sales_revenue' => 'Chiffre D\'affaire',
+        'tr_melis_commerce_dashboard_plugin_sales_revenue_description' => 'Ce plugin affiche l\'aperçu des statistiques sur les revenus des ventes.',
+        'tr_melis_commerce_dashboard_plugin_sales_revenue_order_price' => 'Prix de la commande',
+        'tr_melis_commerce_dashboard_plugin_sales_revenue_shipping_price' => 'Prix d\'expédition',
+
+        //order messages
+        'tr_melis_commerce_dashboard_plugin_order_messages' => 'Messages de commande',
+        'tr_melis_commerce_dashboard_plugin_order_messages_description' => 'Ce plugin affiche la liste des messages du client.',
+        'tr_melis_commerce_dashboard_plugin_order_messages_all' => 'Tout',
+        'tr_melis_commerce_dashboard_plugin_order_messages_unanswered' => 'Sans réponse',
+        'tr_melis_commerce_dashboard_plugin_order_messages_unanswered_messages' => 'Vous avez <strong class="text-primary"> %d messages sans réponse </strong>',
+        'tr_melis_commerce_dashboard_plugin_order_messages_message_order_amount' => 'Montant commande : ',
+        'tr_melis_commerce_dashboard_plugin_order_messages_message_placed_on' => 'Date commande : ',
 	);

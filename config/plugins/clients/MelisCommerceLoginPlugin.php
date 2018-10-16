@@ -6,7 +6,8 @@ return array(
             'plugins' => array(
                 'MelisCommerceLoginPlugin' => array(
                     'front' => array(
-                        'template_path' => 'MelisCommerce/ClientLogin',
+                        'template_path' => array('MelisCommerce/ClientLogin'),
+                        'id' => 'userLogin',
                         
                         // form fields
                         'm_login' => '',
@@ -15,7 +16,7 @@ return array(
                         'm_redirection_link_ok' => 'http://www.test.com',
                         
                         // flag true if a form is submitted
-                        'm_is_submit' => false,
+                        'm_login_is_submit' => false,
                         
                         // Form setup, elements and validators
                         'forms' => array(
@@ -23,7 +24,7 @@ return array(
                                 'attributes' => array(
                                     'name' => '',
                                     'id' => 'login',
-                                    'method' => '',
+                                    'method' => 'POST',
                                     'action' => '',
                                     'class' => '',
                                 ),
@@ -40,11 +41,12 @@ return array(
                                             'name' => 'm_login',
                                             'type' => 'Text',
                                             'options' => array(
-                                                'label' => 'tr_meliscommerce_client_Contact_email_address',
+                                                'label' => 'tr_meliscommerce_plugin_login_email',
                                             ),
                                             'attributes' => array(
                                                 'id' => 'm_login',
-                                                'placeholder' => 'tr_meliscommerce_client_Contact_email_address',
+                                                'placeholder' => 'tr_meliscommerce_plugin_login_email',
+                                                'class' => 'form-control'
                                             )
                                         )
                                     ),
@@ -53,16 +55,17 @@ return array(
                                             'name' => 'm_password',
                                             'type' => 'Text',
                                             'options' => array(
-                                                'label' => 'tr_meliscommerce_client_Contact_password',
+                                                'label' => 'tr_meliscommerce_plugin_login_password',
                                                 'label_options' => array(
                                                     'disable_html_escape' => true,
                                                 )
                                             ),
                                             'attributes' => array(
                                                 'id' => 'm_password',
-                                                'placeholder' => 'tr_meliscommerce_client_Contact_password',
+                                                'placeholder' => 'tr_meliscommerce_plugin_login_password',
                                                 'Type' => 'password',
                                                 'autocomplete' => 'off',
+                                                'class' => 'form-control'
                                             )
                                         )
                                     ),
@@ -71,10 +74,16 @@ return array(
                                             'name' => 'm_remember_me',
                                             'type' => 'Checkbox',
                                             'options' => array(
-                                                'label' => 'Remember me',
+                                                'label' => 'tr_meliscommerce_plugin_login_remember_me',
                                                 'use_hidden_element' => false,
                                                 'checked_value' => '1',
                                             )
+                                        )
+                                    ),
+                                    array(
+                                        'spec' => array(
+                                            'name' => 'm_login_is_submit',
+                                            'type' => 'hidden',
                                         )
                                     ),
                                 ),
@@ -90,14 +99,14 @@ return array(
                                                     'hostname' => 'true',
                                                     'mx'       => 'true',
                                                     'deep'     => 'true',
-                                                    'message'  => 'tr_meliscommerce_client_Contact_invalid_email',
+                                                    'message'  => 'tr_meliscommerce_plugin_login_invalid_email',
                                                 )
                                             ),
                                             array(
                                                 'name' => 'NotEmpty',
                                                 'options' => array(
                                                     'messages' => array(
-                                                        \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_client_Contact_input_empty',
+                                                        \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_input_empty',
                                                     ),
                                                 ),
                                             ),
@@ -115,7 +124,7 @@ return array(
                                                 'name' => 'NotEmpty',
                                                 'options' => array(
                                                     'messages' => array(
-                                                        \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_client_Contact_input_empty',
+                                                        \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_input_empty',
                                                     ),
                                                 ),
                                             ),
@@ -138,7 +147,102 @@ return array(
                             )
                         )
                     ),
-                    'melis' => array(),
+                    'melis' => array(
+                        'subcategory' => array(
+                            'id' => 'CLIENTS',
+                            'title' => 'tr_meliscommerce_clients_Clients'
+                        ),
+                        'name' => 'tr_meliscommerce_plugin_login',
+                        'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceLoginPlugin.jpg',
+                        'description' => 'tr_meliscommerce_plugin_login_description',
+                        // List the files to be automatically included for the correct display of the plugin
+                        // To overide a key, just add it again in your site module
+                        // To delete an entry, use the keyword "disable" instead of the file path for the same key
+                        'files' => array(
+                            'css' => array(
+                            ),
+                            'js' => array(
+                            ),
+                        ),
+                        'modal_form' => array(
+                            'melis_commerce_plugin_login_config' => array(
+                                'tab_title' => 'tr_front_plugin_common_tab_properties',
+                                'tab_icon'  => 'fa fa-cogs',
+                                'tab_form_layout' => 'MelisCommerce/plugin-common-form-config',
+                                'elements' => array(
+                                    array(
+                                        'spec' => array(
+                                            'name' => 'template_path',
+                                            'type' => 'MelisEnginePluginTemplateSelect',
+                                            'options' => array(
+                                                'label' => 'tr_melis_Plugins_Template',
+                                                'tooltip' => 'tr_melis_Plugins_Template tooltip',
+                                                'empty_option' => 'tr_melis_Plugins_Choose',
+                                                'disable_inarray_validator' => true,
+                                            ),
+                                            'attributes' => array(
+                                                'id' => 'id_page_tpl_id',
+                                                'class' => 'form-control',
+                                                'required' => 'required',
+                                            ),
+                                        ),
+                                    ),
+                                    array(
+                                        'spec' => array(
+                                            'name' => 'm_redirection_link_ok',
+                                            'type' => 'MelisText',
+                                            'options' => array(
+                                                'label' => 'tr_meliscommerce_general_common_destination_page_link',
+                                                'tooltip' => 'tr_meliscommerce_general_common_destination_page_link tooltip',
+                                            ),
+                                            'attributes' => array(
+                                                'id' => 'm_redirection_link_ok',
+                                                'class' => 'melis-input-group-button',
+                                                'data-button-icon' => 'fa fa-sitemap',
+                                                'data-button-id' => 'meliscms-site-selector',
+                                                'data-callback' => 'generatePageLink',
+                                                'required' => 'required'
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                                'input_filter' => array(
+                                    'template_path' => array(
+                                        'name'     => 'template_path',
+                                        'required' => true,
+                                        'validators' => array(
+                                            array(
+                                                'name' => 'NotEmpty',
+                                                'options' => array(
+                                                    'messages' => array(
+                                                        \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_front_template_path_empty',
+                                                    ),
+                                                ),
+                                            ),
+                                        ),
+                                        'filters'  => array(
+                                        ),
+                                    ),
+                                    'm_redirection_link_ok' => array(
+                                        'name'     => 'm_redirection_link_ok',
+                                        'required' => true,
+                                        'validators' => array(
+                                            array(
+                                                'name' => 'NotEmpty',
+                                                'options' => array(
+                                                    'messages' => array(
+                                                        \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_input_empty',
+                                                    ),
+                                                ),
+                                            ),
+                                        ),
+                                        'filters'  => array(
+                                        ),
+                                    ),
+                                )
+                            ),
+                        )
+                    ),
                 ),
             ),
         ),

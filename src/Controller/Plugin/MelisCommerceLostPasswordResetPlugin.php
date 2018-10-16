@@ -16,6 +16,8 @@ use Zend\Mail\Message;
 use Zend\Mime\Message as MimeMessage;
 use Zend\Mime\Part as MimePart;
 use Zend\Mail\Transport\Sendmail;
+use Zend\View\Model\ViewModel;
+use Zend\Stdlib\ArrayUtils;
 /**
  * This plugin implements the business logic of the
  * "lostPasswordReset" plugin.
@@ -52,8 +54,13 @@ use Zend\Mail\Transport\Sendmail;
  */
 class MelisCommerceLostPasswordResetPlugin extends MelisTemplatingPlugin
 {
-    // the key of the configuration in the app.plugins.php
-    public $configPluginKey = 'meliscommerce';
+    public function __construct($updatesPluginConfig = array())
+    {
+        // the key of the configuration in the app.plugins.php
+        $this->configPluginKey = 'meliscommerce';
+        $this->pluginXmlDbKey = 'MelisCommerceLostPasswordResetPlugin';
+        parent::__construct($updatesPluginConfig);
+    }
     
     /**
      * This function gets the datas and create an array of variables
@@ -67,6 +74,8 @@ class MelisCommerceLostPasswordResetPlugin extends MelisTemplatingPlugin
         $loggedinRedirectLink = null;
         $notLoggedinRedirectLink = null;
         
+        $formData = $this->getFormData();
+        
         $appConfigForm = (!empty($this->pluginFrontConfig['forms']['lost_password_reset'])) ? $this->pluginFrontConfig['forms']['lost_password_reset'] : array();
         
         $factory = new \Zend\Form\Factory();
@@ -74,10 +83,11 @@ class MelisCommerceLostPasswordResetPlugin extends MelisTemplatingPlugin
         $factory->setFormElementManager($formElements);
         $lostPasswordReset = $factory->createForm($appConfigForm);
         
-        $data['m_password'] = (!empty($this->pluginFrontConfig['m_password'])) ? $this->pluginFrontConfig['m_password'] : '';
-        $data['m_password2'] = (!empty($this->pluginFrontConfig['m_password2'])) ? $this->pluginFrontConfig['m_password2'] : '';
-        $data['m_recovery_key'] = (!empty($this->pluginFrontConfig['m_recovery_key'])) ? $this->pluginFrontConfig['m_recovery_key'] : '';
-        $data['m_autologin'] = (!empty($this->pluginFrontConfig['m_autologin'])) ? $this->pluginFrontConfig['m_autologin'] : false;
+        $data['m_password'] = (!empty($formData['m_password'])) ? $formData['m_password'] : '';
+        $data['m_password2'] = (!empty($formData['m_password2'])) ? $formData['m_password2'] : '';
+        $data['m_recovery_key'] = (!empty($formData['m_recovery_key'])) ? $formData['m_recovery_key'] : '';
+        $data['m_autologin'] = (!empty($formData['m_autologin'])) ? $formData['m_autologin'] : false;
+        $data['m_redirection_link_ok'] = (!empty($formData['m_redirection_link_ok'])) ? $formData['m_redirection_link_ok'] : '';
         
         $clientSrv = $this->getServiceLocator()->get('MelisComClientService');
         $translator = $this->getServiceLocator()->get('translator');
@@ -92,8 +102,8 @@ class MelisCommerceLostPasswordResetPlugin extends MelisTemplatingPlugin
         else
         {
             $isValidKey = true;
-            // Value that trigger if the form is submitted or requested
-            $is_submit = (!empty($this->pluginFrontConfig['m_is_submit'])) ? $this->pluginFrontConfig['m_is_submit'] : false;
+            // Value that trigger if the form is submitted
+            $is_submit = (!empty($formData['m_lost_password_reset_is_submit'])) ? $formData['m_lost_password_reset_is_submit'] : false;
         
             // Setting the Datas to Lost Password Form
             $lostPasswordReset->setData($data);
@@ -118,6 +128,7 @@ class MelisCommerceLostPasswordResetPlugin extends MelisTemplatingPlugin
                         $loginParameters = array(
                             'm_login' => $clientPerson->cper_email,
                             'm_password' => $data['m_password'],
+                            'm_login_is_submit' => true
                         );
                         // add generated view to children views for displaying it in the contact view
                         $login->render($loginParameters);
@@ -125,6 +136,15 @@ class MelisCommerceLostPasswordResetPlugin extends MelisTemplatingPlugin
                     
                     $message = $translator->translate('tr_meliscommerce_client_pass_change_success');
                     $success = 1;
+                    
+                    /**
+                     * This will redirect to the $redirection_link url
+                     * if the request is not from ajax request
+                     */
+                    if (!$this->getController()->getRequest()->isXmlHttpRequest())
+                    {
+                        $this->getController()->redirect()->toUrl($data['m_redirection_link_ok']);
+                    }
                 }
                 else
                 {
@@ -135,10 +155,10 @@ class MelisCommerceLostPasswordResetPlugin extends MelisTemplatingPlugin
         }
         
         /**
-         * As default form will created with the "m_is_submit" input having value of "1"
-         * so that after form render this will ready for submission
+         * This input field set value in order to validate 
+         * after submission of the form proivided of this plugin
          */
-        $lostPasswordReset->get('m_is_submit')->setValue('1');
+        $lostPasswordReset->get('m_lost_password_reset_is_submit')->setValue('1');
         
         // Create an array with the variables that will be available in the view
         $viewVariables = array(
@@ -146,12 +166,184 @@ class MelisCommerceLostPasswordResetPlugin extends MelisTemplatingPlugin
             'message' => $message,
             'success' => $success,
             'errors' => $errors,
-            'loggedinRedirectLink' => $loggedinRedirectLink,
-            'notLoggedinRedirectLink' => $notLoggedinRedirectLink,
+            'm_redirection_link_ok' => $data['m_redirection_link_ok'],
             'isValidKey' => $isValidKey,
         );
         
         // return the variable array and let the view be created
         return $viewVariables;
+    }
+    
+    /**
+     * This function generates the form displayed when editing the parameters of the plugin
+     */
+    public function createOptionsForms()
+    {
+        // construct form
+        $factory = new \Zend\Form\Factory();
+        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+        $formConfig = $this->pluginBackConfig['modal_form'];
+        
+        $response = [];
+        $render   = [];
+        if (!empty($formConfig))
+        {
+            foreach ($formConfig as $formKey => $config)
+            {
+                $form = $factory->createForm($config);
+                $request = $this->getServiceLocator()->get('request');
+                $parameters = $request->getQuery()->toArray();
+                
+                if (!isset($parameters['validate']))
+                {
+                    $form->setData($this->getFormData());
+                    $viewModelTab = new ViewModel();
+                    $viewModelTab->setTemplate($config['tab_form_layout']);
+                    $viewModelTab->modalForm = $form;
+                    $viewModelTab->formData   = $this->getFormData();
+                    
+                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $html = $viewRender->render($viewModelTab);
+                    array_push($render, array(
+                        'name' => $config['tab_title'],
+                        'icon' => $config['tab_icon'],
+                        'html' => $html
+                    ));
+                }
+                else
+                {
+                    // validate the forms and send back an array with errors by tabs
+                    $success = false;
+                    $errors = array();
+                    
+                    $post = get_object_vars($request->getPost());
+                    
+                    $form->setData($post);
+                    
+                    if (!$form->isValid())
+                    {
+                        if (empty($errors))
+                        {
+                            $errors = $form->getMessages();
+                        }
+                        else
+                        {
+                            $errors = ArrayUtils::merge($errors, $form->getMessages());
+                        }
+                    }
+                    
+                    if (empty($errors))
+                    {
+                        $success = true;
+                    }
+                    
+                    if (!empty($errors))
+                    {
+                        foreach ($errors as $keyError => $valueError)
+                        {
+                            foreach ($config['elements'] as $keyForm => $valueForm)
+                            {
+                                if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
+                                {
+                                    $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                                }
+                            }
+                        }
+                    }
+                    
+                    array_push($response, array(
+                        'name' => $this->pluginBackConfig['modal_form'][$formKey]['tab_title'],
+                        'success' => $success,
+                        'errors' => $errors,
+                        'message' => '',
+                    ));
+                }
+            }
+        }
+        
+        if (!isset($parameters['validate']))
+        {
+            return $render;
+        }
+        else
+        {
+            return $response;
+        }
+    }
+    
+    /**
+     * Returns the data to populate the form inside the modals when invoked
+     * @return array
+     */
+    public function getFormData()
+    {
+        $data = parent::getFormData();
+        return $data;
+    }
+    
+    /**
+     * This method will decode the XML in DB to make it in the form of the plugin config file
+     * so it can overide it. Only front key is needed to update.
+     * The part of the XML corresponding to this plugin can be found in $this->pluginXmlDbValue
+     */
+    public function loadDbXmlToPluginConfig()
+    {
+        $configValues = array();
+        
+        $xml = simplexml_load_string($this->pluginXmlDbValue);
+        
+        if ($xml)
+        {
+            if (!empty($xml->template_path))
+            {
+                $configValues['template_path'] = (string)$xml->template_path;
+            }
+            
+            if (!empty($xml->m_redirection_link_ok))
+            {
+                $configValues['m_redirection_link_ok'] = (string)$xml->m_redirection_link_ok;
+            }
+            
+            if (!empty($xml->m_autologin))
+            {
+                $configValues['m_autologin'] = (string)$xml->m_autologin;
+            }
+        }
+        
+        return $configValues;
+    }
+    
+    /**
+     * This method saves the XML version of this plugin in DB, for this pageId
+     * Automatically called from savePageSession listenner in PageEdition
+     */
+    public function savePluginConfigToXml($parameters)
+    {
+        $xmlValueFormatted = '';
+        
+        // template_path is mendatory for all plugins
+        if (!empty($parameters['template_path']))
+        {
+            $xmlValueFormatted .= "\t\t" . '<template_path><![CDATA[' . $parameters['template_path'] . ']]></template_path>';
+        }
+        
+        if (!empty($parameters['m_redirection_link_ok']))
+        {
+            $xmlValueFormatted .= "\t\t" . '<m_redirection_link_ok><![CDATA[' . $parameters['m_redirection_link_ok'] . ']]></m_redirection_link_ok>';
+        }
+        
+        if (!empty($parameters['m_autologin']))
+        {
+            $xmlValueFormatted .= "\t\t" . '<m_autologin><![CDATA[' . $parameters['m_autologin'] . ']]></m_autologin>';
+        }
+        
+        // Something has been saved, let's generate an XML for DB
+        if (!empty($xmlValueFormatted))
+        {
+            $xmlValueFormatted = "\t".'<'.$this->pluginXmlDbKey.' id="'.$parameters['melisPluginId'].'">'.$xmlValueFormatted."\t".'</'.$this->pluginXmlDbKey.'>'."\n";
+        }
+        
+        return $xmlValueFormatted;
     }
 }

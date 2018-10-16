@@ -1429,6 +1429,7 @@ class MelisComClientController extends AbstractActionController
         $errors_2 = array();
         
         $formErrors = array();
+        $errors_1_temp = array();
         
         $request = $this->getRequest();
         

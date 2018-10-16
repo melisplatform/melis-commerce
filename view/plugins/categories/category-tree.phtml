@@ -1,0 +1,54 @@
+<div class="row">
+    <div class="col-md-12">
+    	<ul id="<?= $this->pluginId; ?>" class="default-category-tree">
+    		<?php 
+    		    // recursive loop for displaying children, a simple loop can be done if category is a single dimension array
+    		    $renderCategoryList  = function($categoryList, $firstLoop, $renderCategoryList)
+    		    {
+    		        $temp = '';
+    		        
+    		        if ($categoryList)
+    		        {
+    		            if (!$firstLoop){
+    		                $temp .= '<ul>';
+    		            }
+    		            
+    		            foreach($categoryList as $key => $items)
+    		            {
+    		                $data = array();
+    		                if(!empty($items['children']))
+    		                {
+    		                    $data = $renderCategoryList($items['children'], false, $renderCategoryList);
+    		                }
+    		                
+    		                $opened = '';
+    		                if ($items['state']['opened']){
+    		                    $opened = 'opened';
+    		                }
+    		                
+    		                $selected = '';
+    		                if ($items['state']['selected']){
+    		                    $selected = 'selected';
+    		                }
+    		                
+    		                $temp .= '<li class="'.$opened.'"><span class="'.$items.'" title="'.$items['text'].'">'.$items['cat_id'].' - '.$items['text'].'</span>';
+    		                $temp .= (!empty($data['html'])) ? $data['html'] : '';
+    		                $temp .= '</li>';
+    		            }
+    		            
+    		            if (!$firstLoop){
+    		                $temp .= '</ul>';
+    		            }
+    		        }
+    		        
+    		        return array('html' => $temp);
+    		    };
+    		    
+    		    echo $renderCategoryList($this->categoryList, true, $renderCategoryList)['html'];
+    		?>
+        </ul>
+    </div>
+</div>
+
+
+

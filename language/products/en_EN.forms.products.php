@@ -56,7 +56,7 @@ return array(
     
     // Product Reference
     'tr_meliscommerce_products_reference' => 'Reference',
-    'tr_meliscommerce_products_reference tooltip' => 'Product reference. It becomes the name if no title is entered in the "Text" tab',
+    'tr_meliscommerce_products_reference tooltip' => 'Product reference. It becomes the name if no title is entered in the &#34;Text&#34; tab',
     'tr_meliscommerce_products_reference_form' => '<h4><i class="fa fa-asterisk"></i>Reference</h4>',
     'tr_meliscommerce_products_reference_long' => 'Product reference too long, value should be less than 45 characters',
     'tr_meliscommerce_products_reference_empty' => 'To save the product please enter the product reference',

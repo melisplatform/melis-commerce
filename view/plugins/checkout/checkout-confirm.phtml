@@ -1,0 +1,77 @@
+<?php if ($this->order){ ?>
+    <div class="checkout-payment-area order-det">
+    	<div class="checkout-total mt20 row clearfix">
+    		<div>
+    		<h3><?= $this->translate('tr_meliscommerce_plugin_checkout_confirmation_order'); ?></h3>
+    		</div>
+    		<div class="o-ref-left">
+    			<span class="o-ref-main clearfix">Reference : <?php echo $this->order['orderReference'] ?></span>				
+    		</div>
+    		<div class="pull-right o-ref-right">
+    			<span> Placed on <?php echo date("F d, Y h:i " ,strtotime($this->order['orderDate'])) ?></span>
+    		</div>
+    	</div>
+		<div class="table-responsive">
+			<table class="checkout-area table">
+				<thead>
+					<tr class="cart_item check-heading">
+						<td class="ctg-type"> <?= $this->translate('tr_meliscommerce_plugin_checkout_cart_product');?></td>
+						<td class="ctg-type"> <?= $this->translate('tr_meliscommerce_plugin_checkout_cart_unit_price');?></td>
+						<td class="ctg-type"> <?= $this->translate('tr_meliscommerce_plugin_checkout_cart_qty');?></td>
+						<td class="ctg-type"> <?= $this->translate('tr_meliscommerce_plugin_checkout_cart_discount');?></td>
+						<td class="cgt-des"> <?= $this->translate('tr_meliscommerce_plugin_checkout_cart_total');?></td>
+					</tr>
+				</thead>
+				<tbody>
+					<?php foreach($this->orderBasket as $item){ ?>
+    					<tr class="cart_item check-item prd-name">
+    						<td class="ctg-type"> <?php echo $item->obas_product_name.' ('.$item->obas_sku.')' ?></td>
+    						<td class="ctg-type"> <?php echo $item->cur_symbol.number_format($item->obas_price_net, 2) ?> </td>
+    						<td class="ctg-type"> <?php echo $item->obas_quantity ?></td>
+    						<td class="ctg-type"> <?php echo ($item->discount) ? $item->cur_symbol.number_format($item->discount, 2) : ''?></td>
+    						<td class="cgt-des"> <?php echo $item->cur_symbol.number_format($item->obas_price_net * $item->obas_quantity, 2)?></td>
+    					</tr>
+					<?php } ?>
+					<tr class="cart_item">
+						<td class="ctg-type"> <?= $this->translate('tr_meliscommerce_plugin_checkout_cart_sub_total'); ?></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td class="cgt-des"><?php echo $this->order['orderCurrency'].number_format($this->order['orderSubtotal'], 2) ?></td>
+					</tr>
+					<?php if (!empty($this->order['orderCouponDetails'])){ ?>
+    					<tr class="cart_item">
+    						<td class="ctg-type"> <?= $this->translate('tr_meliscommerce_plugin_checkout_confirmation_coupon');?></td>
+    						<td></td>
+    						<td><i><?php echo  $this->order['orderCouponDetails']['couponCode'] ?></i></td>
+    						<td class="cgt-des"><?php echo '('.$this->order['orderCurrency'].number_format($this->order['orderCouponDetails']['couponDiscount'], 2).')' ?></td>
+    					</tr>
+					<?php } ?>
+					<tr class="cart_item">
+						<td class="ctg-type"><?= $this->translate('tr_meliscommerce_plugin_checkout_confirmation_shipping');?></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td class="cgt-des">
+						<span><?php echo $this->order['orderCurrency'].number_format($this->order['orderSippingTotal'], 2) ?></span>
+					 	</td>
+					</tr>
+					<tr class="cart_item">
+						<td class="ctg-type crt-total"> <?= $this->translate('tr_meliscommerce_plugin_checkout_cart_total');?></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td class="cgt-des prc-total"> <?php echo  $this->order['orderCurrency'].number_format($this->order['orderTotal'], 2) ?> </td>
+					</tr>
+				</tbody>
+			</table>
+	   </div>
+    </div>
+    <div class="clearfix">
+    	<?php echo $this->orderAddressView ?>
+    </div>
+<?php }else{ ?>
+	<div class="alert alert-warning">
+		<p><?= $this->translate('tr_meliscommerce_general_common_no_result_found');?></p>
+	</div>
+<?php } ?>

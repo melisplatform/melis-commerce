@@ -6,25 +6,123 @@ return array(
             'plugins' => array(
                 'MelisCommerceProductShowPlugin' => array(
                     'front' => array(
-                        'template_path' => 'MelisCommerceProduct/show-product',
-                        // template for the MelisCommerceAttributesShowPlugin() plugin
-                        'template_path_attributes_view' => 'MelisCommerceProduct/show-attributes',
-                        // template for the MelisCommerceAddToCartShowPlugin() plugin
-                        'template_path_add_to_cart_view' => 'MelisCommerceProduct/show-add-to-cart',
+                        'template_path' => array('MelisCommerceProduct/show-product'),
+                        'id' => 'productShow',
                         // product id
-                        'm_p_id' => null,
-                        // variant id
-                        'm_p_var_id' => null,
+                        'm_product_id' => null,
                         // country id
-                        'm_p_country' => null,
-                        // language id
-                        'm_p_lang' => null,
-                        // default image to be shown
-                        'm_p_timage' => null,
-                        // other images
-                        'm_p_timage_ok' => array(),
+                        'm_product_country' => null,
                     ),
-                    'melis' => array()
+                    'melis' => array(
+                        'subcategory' => array(
+                            'id' => 'PRODUCTS',
+                            'title' => 'tr_meliscommerce_products_Products'
+                        ),
+                        'name' => 'tr_meliscommerce_plugin_product_show_name',
+                        'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceProductShowPlugin.jpg',
+                        'description' => 'tr_meliscommerce_plugin_product_show_description',
+                        // List the files to be automatically included for the correct display of the plugin
+                        // To overide a key, just add it again in your site module
+                        // To delete an entry, use the keyword "disable" instead of the file path for the same key
+                        'files' => array(
+                            'css' => array(
+                            ),
+                            'js' => array(
+                            ),
+                        ),
+                        'modal_form' => array(
+                            'melis_commerce_plugin_login_config' => array(
+                                'tab_title' => 'tr_front_plugin_common_tab_properties',
+                                'tab_icon'  => 'fa fa-cogs',
+                                'tab_form_layout' => 'MelisCommerce/plugin-common-form-config',
+                                'elements' => array(
+                                    array(
+                                        'spec' => array(
+                                            'name' => 'template_path',
+                                            'type' => 'MelisEnginePluginTemplateSelect',
+                                            'options' => array(
+                                                'label' => 'tr_melis_Plugins_Template',
+                                                'tooltip' => 'tr_melis_Plugins_Template tooltip',
+                                                'empty_option' => 'tr_melis_Plugins_Choose',
+                                                'disable_inarray_validator' => true,
+                                            ),
+                                            'attributes' => array(
+                                                'id' => 'id_page_tpl_id',
+                                                'class' => 'form-control',
+                                                'required' => 'required',
+                                            ),
+                                        ),
+                                    ),
+                                    array(
+                                        'spec' => array(
+                                            'name' => 'm_product_id',
+                                            'type' => 'MelisText',
+                                            'options' => array(
+                                                'label' => 'tr_meliscommerce_products_plugins_prd_id',
+                                                'tooltip' => 'tr_meliscommerce_products_plugins_prd_id tooltip',
+                                            ),
+                                            'attributes' => array(
+                                                'id' => 'm_product_id',
+                                                'class' => 'form-control',
+                                                'required' => 'required',
+                                            ),
+                                        ),
+                                    ),
+                                    array(
+                                        'spec' => array(
+                                            'name' => 'm_product_country',
+                                            'type' => 'EcomPluginPriceCountriesSelect',
+                                            'options' => array(
+                                                'label' => 'tr_meliscommerce_plugin_category_product_list_country',
+                                                'tooltip' => 'tr_meliscommerce_plugin_category_product_list_country tooltip',
+                                                'empty_option' => 'tr_melis_Plugins_Choose',
+                                                'disable_inarray_validator' => true,
+                                            ),
+                                            'attributes' => array(
+                                                'id' => 'm_product_country',
+                                                'class' => 'form-control',
+                                                'required' => 'required',
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                                'input_filter' => array(
+                                    'template_path' => array(
+                                        'name'     => 'template_path',
+                                        'required' => true,
+                                        'validators' => array(
+                                            array(
+                                                'name' => 'NotEmpty',
+                                                'options' => array(
+                                                    'messages' => array(
+                                                        \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_front_template_path_empty',
+                                                    ),
+                                                ),
+                                            ),
+                                        ),
+                                        'filters'  => array(
+                                        ),
+                                    ),
+                                    'm_product_id' => array(
+                                        'name'     => 'm_product_id',
+                                        'required' => true,
+                                        'validators' => array(
+                                            array(
+                                                'name' => 'NotEmpty',
+                                                'options' => array(
+                                                    'messages' => array(
+                                                        \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_input_empty',
+                                                    ),
+                                                ),
+                                            ),
+                                        ),
+                                        'filters'  => array(
+                                        ),
+                                    ),
+                                )
+                            )
+                        )
+                    )
                 ),
             ),
         ),

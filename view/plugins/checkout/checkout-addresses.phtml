@@ -1,0 +1,61 @@
+<?php if (!$this->checkoutErrorMsg):?>
+    <form id="checkout-addresses-default" method="post">
+    	<div style="overflow: hidden;">
+    		<div id="checkout-delivery-address-default" style="width: 50%; float: left; padding: 5px">
+    			<h1><?= $this->translate('tr_meliscommerce_order_checkout_address_delivery'); ?></h1>
+                <?php
+                    $form = $this->checkoutDeliveryAddress;
+                	$form->prepare();
+                    
+                	foreach ($form->getElements() As $key => $val)
+                	{
+                	    echo '<div class="form-group">';
+                	    if ($val->getLabel())
+                	    {
+                	        echo $this->formLabel($val);
+                	    }
+                	    echo $this->formElement($val);
+                	    echo $this->formElementErrors($val, array('class' => 'default-form-err-msg-plugin text-danger'));
+                	    echo '</div>';
+                	}
+                ?>
+            </div>
+    		<div id="checkout-billing-address-default"  style="width: 50%; float: left; padding: 5px">
+    			<div class="ship-acc clearfix">
+        			<h1><?= $this->translate('tr_meliscommerce_order_checkout_address_billing'); ?></h1>
+    				<label>
+                        <input type="checkbox" id="checkout-billing-address-same-default" <?php echo ($this->sameAddress) ? 'checked' : ''?>> <?= $this->translate('tr_meliscommerce_plugin_checkout_addresses_use_same_address'); ?>
+                        <input type="hidden" name="m_add_use_same_address" id="m_add_use_same_address" value="<?php echo ($this->sameAddress) ? 1 : 0?>">
+                    </label>
+                    <div class="checkout-billing-address-default-zone" style="display: <?php echo ($this->sameAddress) ? 'none' : ''?>">
+                    <?php
+                    	$form = $this->checkoutBillingAddress;
+                    	$form->prepare();
+                    	
+                    	foreach ($form->getElements() As $key => $val)
+                    	{
+                    	    echo '<div class="form-group">';
+                    	    if ($val->getLabel())
+                    	    {
+                    	        echo $this->formLabel($val);
+                    	    }
+                    	    echo $this->formElement($val);
+                    	    echo $this->formElementErrors($val, array('class' => 'default-form-err-msg-plugin text-danger'));
+                    	    echo '</div>';
+                    	}
+                    ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+    		<a class="btn btn-primary" href="<?php echo $this->prevStep_link?>"><?= $this->translate('tr_meliscommerce_order_checkout_common_prev'); ?></a>
+    		<button class="btn btn-primary pull-right"><?= $this->translate('tr_meliscommerce_order_checkout_common_next'); ?></button>
+		</div>
+    </form>
+<?php else:?>
+	<label class="alert alert-danger"><?php echo $this->checkoutErrorMsg?></label>
+	<?php if ($this->prevStep_link):?>
+    	<a class="btn btn-primary" href="<?php echo $this->prevStep_link?>"><?= $this->translate('tr_meliscommerce_order_checkout_common_prev'); ?></a>
+    <?php endif;?>
+<?php endif;?>

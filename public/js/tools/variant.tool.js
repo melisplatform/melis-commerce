@@ -149,7 +149,7 @@ $(document).ready(function() {
             console.log(data);
         });
 
-    })
+    });
 
     $("body").on("mouseenter mouseleave", ".toolTipVarHoverEvent", function(e) {
 
@@ -188,14 +188,51 @@ $(document).ready(function() {
         }
     });
 
+    body.on("switch-change", ".triggerVarUpdate", function(e, data){
+        var obj = {};
+        var val = "";
+        var variantId   = $(this).closest('tr').attr('id');
+        var prodId   = $(this).closest('.container-level-a').attr('id').replace(/[^0-9]/g,'');
+        if(data.value === false){
+            val = 0;
+        }else{
+            val = 1;
+        }
+        obj.id = variantId;
+        obj.var_status = val;
+        $.ajax({
+           type: 'POST',
+           url : '/melis/MelisCommerce/MelisComVariantList/updateVariantStatus',
+           data: $.param(obj)
+        }).success(function(data){
+            if(data.success){
+                //check if variant is open to update it's status
+                if($("#"+variantId+"_id_meliscommerce_variant_tab_main_header_container").length){
+                    melisHelper.zoneReload(variantId+"_id_meliscommerce_variant_tab_main_header_container", "meliscommerce_variant_tab_main_header_container", {"productId" : prodId, "variantId" : variantId});
+                }
+            }
+        });
+    });
+
 });
 //variant list table in product page
 window.initProductVariant = function(data, tblSettings) {
     var prodId = $("#" + tblSettings.sTableId ).data("prodid");
-    data.prodId = prodId
-}
+    data.prodId = prodId;
+};
 window.variantLoaded = function() {
     var productId = $(".tab-pane#" + activeTabId).data("prodid");
     var prodTabId   = productId+"_id_meliscommerce_products_page";
     melisCommerce.enableTab(prodTabId);
-}
+};
+window.initVariantSwitch = function(){
+    var productId = '';
+
+    if($(".triggerVarUpdate").closest('.container-level-a.active').attr('id') != undefined){
+        productId = $(".triggerVarUpdate").closest('.container-level-a.active').attr('id').replace(/[^0-9]/g,'');
+    }else{
+        productId = $(".save-variant").closest('.container-level-a.active').data("prodid");
+    }
+
+    $('.'+productId+'_variantStatusChk').bootstrapSwitch();
+};

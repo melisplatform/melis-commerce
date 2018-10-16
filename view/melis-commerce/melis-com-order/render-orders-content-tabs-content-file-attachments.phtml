@@ -1,0 +1,24 @@
+<?php 
+    $id = '';
+    $relationType = '';
+
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = 'id="'.$this->zoneconfig['conf']['id'] .'"';
+    }
+    if (!empty($this->zoneconfig['conf']['docRelationType'])){
+        $relationType = $this->zoneconfig['conf']['docRelationType'];
+    }
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<div <?php echo $id. ' '.$data_melisKey?>>
+    <div class="pdc-heading clearfix">
+        <h4><i class="fa fa-list-alt"></i> <?php echo $this->translate('Invoice')?></h4>						
+    </div>
+    <?php 
+    if(!empty($this->zoneconfig['interface'])) {
+        foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+            echo $this->$keyConfig;
+        }
+    }
+    ?>
+</div>

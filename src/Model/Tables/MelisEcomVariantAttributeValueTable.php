@@ -41,4 +41,19 @@ class MelisEcomVariantAttributeValueTable extends MelisEcomGenericTable
         
             return $resultSet;
     }
+
+    public function getVariantAttributeValueIdByVariantId($ids)
+    {
+        $select = $this->tableGateway->getSql()->select();
+
+        if(is_array($ids)) {
+            $select->where->in('vatv_variant_id', $ids);
+        }else{
+            $select->where->equalTo('vatv_variant_id', $ids);
+        }
+
+        $resultData = $this->tableGateway->selectWith($select);
+
+        return $resultData;
+    }
 }

@@ -2,21 +2,19 @@
     $var_status = "checked";
 
     $id = 'id="';
-    if (!empty($this->variantId)){
-        $id .= $this->variantId;
-    }
-    
+    $id .= $this->variantId;
+
     $id .= '_'.$this->zoneconfig['conf']['id'].'"';
     $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
     
     if(!empty($this->layout()->variantObj)){
         $var_status = (int)$this->layout()->variantObj->getVariant()->var_status ? 'checked="checked"' : '';
     }
-   
+
 ?>
 <div <?= $id. ' '.$data_melisKey?> class="make-switch main_variant_switch" data-on-label="<?php echo $this->translate('tr_meliscommerce_variant_main_information_status_online')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_variant_main_information_status_offline')?>" data-text-label="<?php echo $this->translate('tr_meliscommerce_variant_main_information_status_label')?>">
     <input type="checkbox" name="var_status" id="var_status"  <?= $var_status ?>>
 </div>
 <script type="text/javascript">
 	$("#<?= $this->variantId.'_'.$this->zoneconfig['conf']['id']?>").bootstrapSwitch();
-</script>	
+</script>

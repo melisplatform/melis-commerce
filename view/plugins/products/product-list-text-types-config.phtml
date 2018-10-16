@@ -1,0 +1,81 @@
+<?php
+    $form = $this->modalForm;
+    $form->prepare();
+    echo $this->form()->openTag($form);
+    echo $this->melisFieldCollection($form);
+?>
+<div class="form-group">
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="pdc-heading clearfix">
+                <h4>
+                	<?php echo $this->translate('Text types') ?>
+                </h4>
+            </div>
+		</div>
+		<?php foreach ($this->prdTextTypes As $val):?>
+			<?php
+			    $checked = '';
+			    if (!empty($this->formData['m_box_product_field_type'])){
+			        if(in_array($val['ptt_code'], $this->formData['m_box_product_field_type'])){
+			            $checked = 'check';
+			        }
+			    }
+			?>
+			<div class="col-xs-4">
+            	<label class="full-category-product-list-prd-txt-types-config-checkbox">
+            		<i class="fa fa-<?php echo ($checked) ? $checked.'-' : '' ?>square-o fa-lg"></i> <?php echo $val['ptt_name']?>
+            		<input type="checkbox" name="m_box_product_field_type[]" value="<?php echo $val['ptt_code'] ?>" <?php echo ($checked) ? $checked.'ed' : '' ?> style="display: none">
+            	</label>
+    		</div>
+		<?php endforeach;?>
+	</div>
+</div>
+
+<?php echo $this->form()->closeTag();?>
+<style>
+.full-category-product-list-prd-txt-types-config-checkbox {
+    cursor: pointer;
+    margin-left: 20px;
+    font-weight: normal;
+}
+.full-category-product-list-prd-txt-types-config-checkbox input {
+    display: none;
+}
+.full-category-product-list-prd-txt-types-config-checkbox .fa-check-square-o {
+    color: #72af46;
+}
+</style>
+<script type="text/javascript">
+    $(function(){
+        var checkboxClass = ".full-category-product-list-prd-txt-types-config-checkbox";
+        //Category Information Form Countries Custom Checkboxes
+        $(checkboxClass).on("click", function(evt){
+        	
+        	if($(this).find('.fa').hasClass('fa-check-square-o')){ // unchecking category Checkbox
+        		if(!$(this).find('.fa').hasClass("check-all")){
+        			$(this).find('.fa').removeClass('fa-check-square-o');
+        			$(this).find('.fa').addClass('fa-square-o');
+        			$(this).find('input[type="checkbox"]').removeAttr('checked');
+        		}
+        	}else{ // Checking Category Checkboxes
+        		if($(this).find('.fa').hasClass("check-all")){ // Unchecking "All" Checkbox
+        			$(checkboxClass).find('.fa').removeClass('fa-check-square-o');
+        			$(checkboxClass).find('.fa').addClass('fa-square-o');
+        			$(checkboxClass).find('input[type="checkbox"]').removeAttr('checked');
+        		}else{ // Checking "All" Checkbox
+        			$(checkboxClass).find('.check-all').removeClass('fa-check-square-o');
+        			$(checkboxClass).find('.check-all').addClass('fa-square-o');
+        			$(checkboxClass).find('.check-all').next('input[type="checkbox"]').removeAttr('checked'); // Unchecking "All" Checkbox
+        		}
+        		
+        		$(this).find('.fa').removeClass('fa-square-o');
+        		$(this).find('.fa').addClass('fa-check-square-o');
+        		$(this).find('input[type="checkbox"]').attr('checked','checked');
+        	}
+        	
+        	evt.stopPropagation();
+        	evt.preventDefault();
+        });
+    });
+</script>

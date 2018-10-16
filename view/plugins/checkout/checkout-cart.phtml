@@ -1,0 +1,95 @@
+<h1 align="center"><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_name'); ?></h1>
+<?php if ($this->checkoutHasErr){ ?>
+	<h3><?=$this->translate('tr_meliscommerce_plugin_checkout_cart_error');?> <small><?=$this->translate('tr_meliscommerce_plugin_checkout_cart_error_msg');?></small></h3>
+<?php } ?>
+
+<form>
+	<div class="form-group">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_sku'); ?></th>
+                    <th><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_unit_price'); ?></th>
+                    <th><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_qty'); ?></th>
+                    <th><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_total'); ?></th>
+                    <th><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_remove'); ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php 
+                    foreach($this->checkOutCart as $item)
+                    {
+                        echo '<tr>';
+                        echo    '<td>'.$item['var_sku'];
+                        if (!empty($item['var_err']))
+                        {
+                            echo '<div class="text-danger">'.$item['var_err'].'</div>';
+                        }
+                        echo    '</td>';
+                        echo    '<td class="text-right">'.$item['var_currency_symbol'].' '.$item['var_price'].'</td>';
+                        echo    '<td><input type="text" name="m_cc_var_qty['.$item['var_id'].']" value="'.$item['var_quantity'].'" class="form-control">';
+                        echo    (!empty($this->checkoutErrors[$item['var_id']])) ? '<p class="text-danger">'.$this->checkoutErrors[$item['var_id']].'</p>' : '';
+                        echo    '</td>';
+                        echo    '<td class="text-right">'.$item['var_currency_symbol'].' '.$item['var_total'].'</td>';
+                        echo    '<td class="text-right"><a class="btn btn-danger" href="'.$this->MelisLink($this->idPage, true).'?m_cc_var_remove='.$item['var_id'].'"><i class="fa fa-trash-o"></i></a></td>';
+                        echo '</tr>';
+                    }
+                ?>                
+            </tbody>
+        </table>
+	</div>  ,.
+    <?php if (!empty($this->checkOutCart)){?>
+        <div align="center">
+        	<button class="btn btn-primary"><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_update');?></button>
+        </div>
+    <?php } ?>
+</form>
+<br>
+<form>
+	<table class="table table-bordered">
+        <tfoot>
+        	<tr>
+                <th rowspan="4" colspan="3">
+                	<?php if (!empty($this->checkOutCart)){ ?>
+                		<?php echo $this->checkoutCoupon?>
+                	<?php } ?>
+                </th>
+            </tr>
+            <tr>
+                <th colspan="1" class="text-right"><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_sub_total'); ?></th>
+                <th class="text-right"><?php echo $this->checkOutCartSubTotal ?></th>
+            </tr>
+            <?php if ($this->checkoutHasCoupon){?>
+                <tr>
+                    <th colspan="1" class="text-right"><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_discount'); ?></th>
+                    <th class="text-right">
+                    	<?php 
+                            if (!empty($this->checkOutCartDiscountInfo))
+                         	{
+                         	    echo '<p>'.$this->translate("tr_meliscommerce_plugin_checkout_cart_order_discount").'</p>';
+                         	    foreach($this->checkOutCartDiscountInfo as $discInfo){
+                         	        echo '<p>';
+                         	        echo '(-'.$discInfo['details'].')';
+                         	        echo '<span>';
+                         	        echo $discInfo['amount'];
+                                    echo '</span>';
+                                    echo '</p>';
+                         	    }
+                         	}
+                     	?>
+                	</th>
+                </tr>
+            <?php }?>
+            <tr>
+                <th colspan="1" class="text-right"><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_total'); ?></th>
+                <th class="text-right"><?php echo $this->checkOutCartTotal ?></th>
+            </tr>
+        </tfoot>
+    </table>
+</form>
+
+<?php if ($this->nextStep_link){ ?>
+	<div align="right">
+		<a class="btn btn-primary" href="<?php echo $this->nextStep_link?>"><?= $this->translate('tr_meliscommerce_order_checkout_common_next'); ?></a>
+	</div>
+<?php } ?>

@@ -298,13 +298,13 @@ class MelisComPriceController extends AbstractActionController
         $c = 1;
         //set general price
         foreach($priceList as $price){
-            if($price->price_country_id == 0){
+            if($price->price_country_id == -1){
                 $data[0] = (array)$price;
             }
         }
         $data[0]['name'] = 'General';
-        $data[0]['price_country_id'] = 'a0';
-        $data[0]['price_currency'] = 'a0';
+        $data[0]['price_country_id'] = '-1';
+        $data[0]['price_currency'] = '-1';
         $data[0]['tab_id'] = $tabIdGen;
     
         foreach($countries as $country){

@@ -1,0 +1,63 @@
+<?php 
+    use Doctrine\DBAL\Tools\Console\Command\ImportCommand;
+
+    $delivery = $this->deliveryAddress;
+    $billing = $this->billingAddress;
+    
+    $addressIndex = array('oadd_num', 'oadd_stairs', 'oadd_building_name', 'oadd_company', 'oadd_street', 'oadd_city', 'oadd_state', 'oadd_country', 'oadd_zipcode');
+    
+    $deliveryData = array();
+    $billingyData = array();
+    foreach ($addressIndex As $key => $val)
+    {
+        if (!empty($delivery[$key]))
+        {
+            array_push($deliveryData, $delivery[$key]);
+        }
+        
+        if (!empty($billing[$key]))
+        {
+            array_push($billingyData, $billing[$key]);
+        }
+    }
+    
+    /*$deliveryStr = 'tr_meliscommerce_plugin_order_address_not_set';
+    if (!empty($deliveryData))
+    {
+        $deliveryStr = implode(', ', $deliveryData);
+    }
+    
+    $billingStr = 'tr_meliscommerce_plugin_order_address_not_set';
+    if (!empty($billingyData))
+    {
+        $billingStr = implode(', ', $billingyData);
+    }*/
+?>
+<div>
+	<div>
+		<h3><?= $this->translate('tr_meliscommerce_order_checkout_address_delivery');?></h3>
+        <?php if(!empty($delivery)) { ?>
+		    <div><i class="fa fa-user"></i> <?= $delivery['oadd_firstname'].' '.$delivery['oadd_middle_name'].' '.$delivery['oadd_name']  ?></div>
+            <?php if(!empty($deliveryData)) { ?>
+                <div><i class="fa fa-map-marker"></i><?php echo implode(', ', $deliveryData) ?></div>
+            <?php } else { ?>
+                <div><i class="fa fa-map-marker"></i> <?php echo $this->translate('tr_meliscommerce_plugin_order_address_not_set') ?></div>
+            <?php } ?>
+        <?php } else { ?>
+		    <div class="alert alert-warning"><?php echo $this->translate('tr_meliscommerce_general_common_no_result_found') ?></div>
+        <?php } ?>
+	</div>
+	<div>
+		<h3><?= $this->translate('tr_meliscommerce_order_checkout_address_billing'); ?></h3>
+        <?php if(!empty($billing)) { ?>
+		    <div><i class="fa fa-user"></i> <?= $billing['oadd_firstname'].' '.$billing['oadd_middle_name'].' '.$billing['oadd_name']  ?></div>
+            <?php if(!empty($billingyData)) { ?>
+                <div><i class="fa fa-map-marker"></i><?php echo implode(', ', $billingyData) ?></div>
+            <?php } else { ?>
+                <div><i class="fa fa-map-marker"></i> <?php echo $this->translate('tr_meliscommerce_plugin_order_address_not_set') ?></div>
+            <?php } ?>
+        <?php } else { ?>
+		    <div class="alert alert-warning"><?php echo $this->translate('tr_meliscommerce_general_common_no_result_found') ?></div>
+        <?php } ?>
+	</div>			
+</div>

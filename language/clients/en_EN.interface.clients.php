@@ -169,8 +169,8 @@
 	    'tr_meliscommerce_client_Contact_invalid_email' => 'Invalid email address',
 	    'tr_meliscommerce_client_Contact_password_error_low' => 'Password should be greater than or equal to 8 characters',
 	    'tr_meliscommerce_client_Contact_password_regex_not_match' => 'The password must contain at least one letter AND one number',
-	    'tr_meliscommerce_client_Contact_password_regex_not_match' => 'The password must contain at least one letter AND one number',
 	    'tr_meliscommerce_client_Contact_unable_to_add_address' => 'Unable to add contact address, please try again',
+	    'tr_meliscommerce_client_Contact_email_address_exist' => 'Email address is not available',
 	    // Contact Addreses Form
 	    'tr_meliscommerce_client_Contact_addresses' => 'Addresses',
 	    'tr_meliscommerce_client_Contact_address_name' => 'Address name',
@@ -215,7 +215,7 @@
 	    
 	    'tr_meliscommerce_client_Contact_address_title' => 'Address title',
 	    'tr_meliscommerce_client_Checkout_cart_empty' => 'Cart is empty',
-	    'tr_meliscommerce_client_Checkout_no_identity' => 'User has no identity, please login/register before accessing this page',
+	    'tr_meliscommerce_client_Checkout_no_identity' => 'Please login to access this page',
 	    
 	    'tr_meliscommerce_client_export_success' => 'The client(s) has been exported successfully',
 	    'tr_meliscommerce_client_export_fail' => 'Failed to export client(s)',
@@ -224,4 +224,58 @@
 	    'tr_meliscommerce_client_refresh' => 'Refresh',
 	    
 	    'tr_meliscommerce_clients_table_Client_date_created' => 'Created',
+	    
+	    // Plugin MelisCommerceLoginPlugin
+	    'tr_meliscommerce_plugin_login' => 'Login',
+	    'tr_meliscommerce_plugin_login_description' => 'The login plugin displays the form for the user to log in',
+	    'tr_meliscommerce_plugin_login_email' => 'Email Address',
+	    'tr_meliscommerce_plugin_login_password' => 'Password',
+	    'tr_meliscommerce_plugin_login_remember_me' => 'Remember me',
+	    'tr_meliscommerce_plugin_login_invalid_email' => 'Invalid email address',
+	    'tr_meliscommerce_plugin_login_invalid_email_or_password' => 'Invalid Email address or password',
+	    'tr_meliscommerce_plugin_login_success' => 'Login success',
+
+	    // Plugin MelisCommerceRegistrationPlugin
+	    'tr_meliscommerce_plugin_registration_name' => 'Registration',
+	    'tr_meliscommerce_plugin_registration_description' => 'The plugin provide a user registration form',
+	    'tr_meliscommerce_plugin_registration_reg_button' => 'Register',
+	    
+	    // Plugin MelisCommerceLostPasswordGetEmailPlugin
+	    'tr_meliscommerce_plugin_lost_password_get_email_name' => 'Lost password',
+	    'tr_meliscommerce_plugin_lost_password_get_email_name_description' => 'The lost password plugin displays the form, verifies the email and send a link by email to reset the password',
+	    'tr_meliscommerce_plugin_lost_password_reset_page' => 'Password reset page',
+	    'tr_meliscommerce_plugin_lost_password_reset_page tooltip' => 'The page where the user will be redirected to reset the password',
+	    'tr_meliscommerce_plugin_lost_password_message' => 'Please enter your account\'s email, a link will be sent to reset your password',
+	    
+	    // Email deatils
+	    'tr_meliscommerce_plugin_lost_password_email_default_subject' => 'Lost Password',
+	    'tr_meliscommerce_plugin_lost_password_email_default_content' => 'Please click the following link to reset your password.<br><a href="[lostPasswordLink]?m_recovery_key=[recoveryKey]">Link</a><br>',
+	
+	    // MelisCommerceLostPasswordResetPlugin
+	    'tr_meliscommerce_plugin_password_reset_name' => 'Password reset',
+	    'tr_meliscommerce_plugin_password_reset_description' => 'This plugin display the form to reset the current password',
+	    
+	    // MelisCommerceProfilePlugin
+	    'tr_meliscommerce_plugin_profile_name' => 'Profile',
+	    'tr_meliscommerce_plugin_profile_description' => 'This plugin display the form of the user profile',
+	    'tr_meliscommerce_plugin_profile_save_success' => 'Profile has been successfully saved',
+	    
+	    // MelisCommerceBillingAddressPlugin
+	    'tr_meliscommerce_plugin_billing_address_name' => 'Billing address',
+	    'tr_meliscommerce_plugin_billing_address_description' => 'This plugin display the form of the user billing address',
+	    'tr_meliscommerce_plugin_billing_address_delete_success' => 'Billing address has been deleted successfully',
+	    
+	    // MelisCommerceDeliveryAddressPlugin
+	    'tr_meliscommerce_plugin_delivery_address_name' => 'Delivery address',
+	    'tr_meliscommerce_plugin_delivery_address_description' => 'This plugin display the form of the user delivery address',
+	    'tr_meliscommerce_plugin_delivery_address_delete_success' => 'Delivery address has been deleted successfully',
+	    
+	    // MelisCommerceAccountPlugin
+	    'tr_meliscommerce_plugin_account_name' => 'Account',
+	    'tr_meliscommerce_plugin_account_description' => 'Display the forms of the account, it includes the profile, billing address, delivery address, cart list and order history of the account',
+        'tr_meliscommerce_plugin_account_profile_info' => 'Profile Info',
+        'tr_meliscommerce_plugin_account_delivery_address' => 'Delivery Address',
+        'tr_meliscommerce_plugin_account_billing_address' => 'Billing Address',
+        'tr_meliscommerce_plugin_account_my_cart' => 'My Cart',
+        'tr_meliscommerce_plugin_account_order_history' => 'Order History',
 	);

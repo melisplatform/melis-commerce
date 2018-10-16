@@ -11,6 +11,7 @@ namespace MelisCommerce\Service;
 
 use MelisCommerce\Model\MelisCategory;
 use Zend\Form\Annotation\Object;
+use Zend\Stdlib\ArrayUtils;
 /**
  *
  * This service handles the category system of MelisCommerce.
@@ -30,32 +31,30 @@ class MelisComCategoryService extends MelisComGeneralService
      *
      * @return MelisCategory[] Category object
      */
-    public function getCategoryListById($categoryId = -1, $langId = null,
-                                        $onlyValid = false, $start = 0, $limit = null)
+    public function getCategoryListById($categoryId = -1, $langId = null, $onlyValid = false, $start = 0, $limit = null)
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $results = array();
-
+        
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_list_start', $arrayParameters);
-
+        
         // Service implementation start
-
-
+        
         $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
         // Getting Categories under Category ID
         $melisCategoryData = $this->getCategoryListByIdRecursive($arrayParameters['categoryId'], $arrayParameters['langId'], $arrayParameters['onlyValid'], $arrayParameters['start'], $arrayParameters['limit']);
         
         $arrayParameters['results'] = $melisCategoryData;
         // Service implementation end
-
+        
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_list_end', $arrayParameters);
-
+        
         return $arrayParameters['results'];
     }
-
+    
     /**
      * Getting the Category Details Recursively
      * This function will return children data of the parent category
@@ -67,65 +66,44 @@ class MelisComCategoryService extends MelisComGeneralService
      * @param int $fatherId If Zero (0), this will return the root of the category
      * @return int Array
      */
-    public function getCategoryListByIdRecursive($categoryId, $langId = null, $onlyValid = false,
-                                                 $start = null, $limit = null, $fatherId = 0)
+    public function getCategoryListByIdRecursive($categoryId, $langId = null, $onlyValid = false, $start = null, $limit = null, $fatherId = null)
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $results = array();
-
+        
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_get_category_list_recursive_start', $arrayParameters);
-
+        
         $categoryId = $arrayParameters['categoryId'];
         $langId = $arrayParameters['langId'];
         $onlyValid = $arrayParameters['onlyValid'];
         $start = $arrayParameters['start'];
         $limit = $arrayParameters['limit'];
         $fatherId = $arrayParameters['fatherId'];
-
-        $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
-
-        $dataCategoryData = $melisEcomCategoryTable->getCategoryChildrenListById($categoryId, $langId, $onlyValid, $start, $limit, $fatherId);
         
+        $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
+        
+        $dataCategoryData = $melisEcomCategoryTable->getCategoryChildrenListById($categoryId, $langId, $onlyValid, $start, $limit, $fatherId);
+
         foreach ($dataCategoryData As $val){
-
-            $melisCategory = new \MelisCommerce\Entity\MelisCategory();
-
-            // Id
-            $melisCategory->setId($val->cat_id);
-
-            // category
-            $melisCategory->setCategory($val);
-
-            // trasnalations
-            $catTrans = $this->getCategoryTranslationById($val->cat_id, $langId);
-            $melisCategory->setTranslations($catTrans);
-            // seo
-            $catSeo = $this->getCategorySeoById($val->cat_id, $arrayParameters['langId']);
-            $melisCategory->setSeo($catSeo);
-
-            // countries
-            $catCountries = $this->getCategoryCountriesById($val->cat_id);
-            $melisCategory->setCountries($catCountries);
-            // children
-            $fatherId = $val->cat_id;
-            $catChildren = $this->getCategoryListByIdRecursive($categoryId, $langId, $onlyValid, $start, $limit, $fatherId);
-            $melisCategory->setChildren($catChildren);
-
+            
+            // Retrieving category entity
+            $melisCategory = $this->getCategoryById($val->cat_id, $langId, $onlyValid);
+            
             array_push($results, $melisCategory);
         }
-
+        
         $arrayParameters['results'] = $results;
         // Service implementation end
-
+        
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_get_category_list_recursive_end', $arrayParameters);
-
+        
         return $arrayParameters['results'];
     }
-
-
+    
+    
     /**
      *
      * This method gets a category by its categoryId and brings back
@@ -136,7 +114,7 @@ class MelisComCategoryService extends MelisComGeneralService
      *
      * @return MelisCategory|null Category object
      */
-    public function getCategoryById($categoryId, $langId = null)
+    public function getCategoryById($categoryId, $langId = null, $onlyValid = false)
     {
         // Retrieve cache version if front mode to avoid multiple calls
         $cacheKey = 'category-' . $categoryId . '-getCategoryById_' . $categoryId . '_' . $langId;
@@ -148,16 +126,15 @@ class MelisComCategoryService extends MelisComGeneralService
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $results = array();
-
+        
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_byid_start', $arrayParameters);
-
+        
         // Service implementation start
         $melisCategory = new \MelisCommerce\Entity\MelisCategory();
-        $melisCategory->setId($arrayParameters['categoryId']);
-
+        
         $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
-
+        
         // Getting Categories under Category ID
         $melisCategoryDataRes = $melisEcomCategoryTable->getEntryById($arrayParameters['categoryId']);
         $category = $melisCategoryDataRes->current();
@@ -171,38 +148,40 @@ class MelisComCategoryService extends MelisComGeneralService
             $melisCategory->setCategory($category);
 
             // trasnalations
-            $catTrans = $this->getCategoryTranslationById($category->cat_id, $arrayParameters['langId']);
+            $catTrans = $this->getCategoryTranslationById($category->cat_id, $arrayParameters['langId'], $arrayParameters['onlyValid']);
             $melisCategory->setTranslations($catTrans);
+
             // seo
-            $catSeo = $this->getCategorySeoById($category->cat_id,  $arrayParameters['langId']);
+            $catSeo = $this->getCategorySeoById($category->cat_id, $arrayParameters['langId']);
             $melisCategory->setSeo($catSeo);
 
             // countries
-            $catCountries = $this->getCategoryCountriesById($category->cat_id);
+            $catCountries = $this->getCategoryCountriesById($category->cat_id, $arrayParameters['onlyValid']);
             $melisCategory->setCountries($catCountries);
+
             // children
-            $fatherId = $category->cat_id;
-            $catChildren = $this->getCategoryListByIdRecursive($category->cat_id, $arrayParameters['langId']);
+            $catChildren = $this->getCategoryListByIdRecursive(null, $arrayParameters['langId'], $arrayParameters['onlyValid'], null, null, $category->cat_id);
+
             $melisCategory->setChildren($catChildren);
         }
 
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $melisCategory;
         // Service implementation end
-
+        
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_byid_end', $arrayParameters);
-
-	    // Save cache key
-		$melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
-
+        
+        // Save cache key
+        $melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
+        
         return $arrayParameters['results'];
     }
-
+    
     /**
      * This method will return the name of the category
      * @param int $categoryId category id
-     * @param unknown $langId if specified this will return with the same language,
+     * @param int $langId if specified this will return with the same language,
      * otherwise this will return first category name the available.
      * @return String||null
      */
@@ -218,57 +197,38 @@ class MelisComCategoryService extends MelisComGeneralService
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $results = null;
-
+        
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_get_name_start', $arrayParameters);
-
-        // Service implementation start
-
+        
+        // Service implementation
+        
         $category = $this->getCategoryById($arrayParameters['categoryId']);
-
+        
         $catTrans = $category->getTranslations();
-
+        
         $catNameStr = null;
 
         if (!empty($catTrans))
         {
-
-            if (!is_null($arrayParameters['langId']))
+             // Getting the first available translation of the Category
+            foreach ($catTrans As $val)
             {
-                foreach ($catTrans As $val)
+                if (!empty($val->catt_name) && $val->elang_id == $arrayParameters['langId']) 
                 {
-                    // checking language id
-                    if ($val->catt_lang_id == $arrayParameters['langId'] && !empty($val->catt_name))
-                    {
-                        if($exclude){
-                            $catNameStr = array(
-                                'text' => $val->catt_name,
-                                'lang' => ''
-                            );
-                        }else{
-                            $catNameStr = $val->catt_name . ' ('.$val->elang_name.')';
-                        }
-                    }
+                    $catNameStr = $val->catt_name;
+                    break;
                 }
             }
 
-            // if Category Name still emppty, this will will get the first tanslation available for category
-            if (is_null($catNameStr)||ctype_space($catNameStr)||empty($catNameStr))
+            if (empty($catNameStr)) 
             {
+                // Getting the first available translation of the Category
                 foreach ($catTrans As $val)
                 {
-                    if (!ctype_space($val->catt_name)&&!empty($val->catt_name))
+                    if (!empty($val->catt_name))
                     {
-                        
-                        if($exclude){
-                            $catNameStr = array(
-                                'text' => $val->catt_name,
-                                'lang' => $val->elang_name
-                            );
-                        }else{
-                            $catNameStr = $val->catt_name . ' ('.$val->elang_name.')';
-                        }
-                        
+                        $catNameStr = $val->catt_name . ' ('.$val->elang_name.')';
                         break;
                     }
                 }
@@ -277,18 +237,18 @@ class MelisComCategoryService extends MelisComGeneralService
 
         $results = $catNameStr;
         // Service implementation end
-
+        
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $results;
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_products_byid_end', $arrayParameters);
-
+        
         // Save cache key
-		$melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
+        $melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
         
         return $arrayParameters['results'];
     }
-
+    
     /**
      *
      * This method gets the products list affected to a category by its categoryId.
@@ -312,25 +272,25 @@ class MelisComCategoryService extends MelisComGeneralService
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $results = array();
-
+        
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_products_byid_start', $arrayParameters);
-
+        
         // Service implementation start
         $melisProduct = new \MelisCommerce\Entity\MelisProduct();
-
+        
         $melisComProductService = $this->getServiceLocator()->get('MelisComProductService');
         $melisEcomProductCategoryTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');
-
+        
         $categorProductsData = $melisEcomProductCategoryTable->getCategoryProductsByCategoryId($arrayParameters['categoryId'], $arrayParameters['onlyValid']);
-
+        
         foreach ($categorProductsData As $val)
         {
             $catProd = $melisComProductService->getProductById($val->prd_id, $arrayParameters['langId']);
             array_push($results, $catProd);
         }
         // Service implementation end
-
+        
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $results;
         
@@ -339,10 +299,115 @@ class MelisComCategoryService extends MelisComGeneralService
         
         // Save cache key
         $melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
-
+        
         return $arrayParameters['results'];
     }
+    
+    public function getCategoriesProductsByIds($categoryIds = null, $onlyvalid = false, $langId = null, $column = 'cat_id', $order = 'ASC', $includeSubCategories = false)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_categories_products_byids_start', $arrayParameters);
+        
+        // Service implementation start
+        $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
+        $prdSrv = $this->getServiceLocator()->get('MelisComProductService');
+        
+        $category = $melisEcomCategoryTable->getCategoriesByIds($arrayParameters['categoryIds'], $arrayParameters['onlyvalid'], $arrayParameters['langId'],  $arrayParameters['column'],  $arrayParameters['order']);
+        
+        foreach ($category As $val)
+        {
+            $products = $prdSrv->getProductsByCategoryId($val->cat_id, $arrayParameters['onlyvalid'], $langId);
+            
+            if ($arrayParameters['includeSubCategories'])
+            {
+                $products = ArrayUtils::merge($products, $this->getSubCategoriesProducts($val->cat_id, array(), $arrayParameters['onlyvalid'], $arrayParameters['langId']));
+            }
+            
+            $val->cat_products = $products;
+            
+            array_push($results, $val);
+        }
+        // Service implementation end
+        
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_categories_products_byids_end', $arrayParameters);
+        
+        return $arrayParameters['results'];
+        
+    }
 
+    public function getCategoriesByIds($categoryIds = null, $onlyvalid = false, $langId = null, $column = 'cat_id', $order = 'ASC')
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_categories_products_byids_start', $arrayParameters);
+        
+        // Service implementation start
+        $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
+        $categories = $melisEcomCategoryTable->getCategoriesByIds($arrayParameters['categoryIds'], $arrayParameters['onlyvalid'], $arrayParameters['langId'],  $arrayParameters['column'],  $arrayParameters['order']);
+        
+        foreach ($categories As $key => $val)
+        {
+            $category = $this->getCategoryById($val->cat_id , 1);
+            
+            array_push($results, $category);
+        }
+        // Service implementation end
+        
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_categories_products_byids_end', $arrayParameters);
+        
+        return $arrayParameters['results'];
+        
+    }
+    
+    public function getSubCategoriesProducts($categoryId, $products, $onlyvalid = false,  $langId = null)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_categories_products_byids_start', $arrayParameters);
+        
+        // Service implementation start
+        $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
+        $prdSrv = $this->getServiceLocator()->get('MelisComProductService');
+        
+        $subCats = $melisEcomCategoryTable->getEntryByField('cat_father_cat_id', $categoryId);
+        
+        foreach ($subCats As $key => $val)
+        {
+            $relProducts = $prdSrv->getProductsByCategoryId($val->cat_id, $arrayParameters['onlyvalid'], $langId);
+            
+            $products = ArrayUtils::merge($products, $relProducts);
+            
+            $products = $this->getSubCategoriesProducts($val->cat_id, $products, $arrayParameters['langId']);
+        }
+        // Service implementation end
+        
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $products;
+        
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_categories_products_byids_end', $arrayParameters);
+        
+        return $arrayParameters['results'];
+    }
+    
+    
     /**
      *
      * This method gets the affected countries of a category
@@ -351,46 +416,58 @@ class MelisComCategoryService extends MelisComGeneralService
      *
      * @return MelisEcomCountry|null Country object
      */
-    public function getCategoryCountriesById($categoryId)
+    public function getCategoryCountriesById($categoryId, $onlyValid = false)
     {
-	    // Retrieve cache version if front mode to avoid multiple calls
+        // Retrieve cache version if front mode to avoid multiple calls
         $cacheKey = 'category-' . $categoryId . '-getCategoryCountriesById_' . $categoryId;
-	    $cacheConfig = 'commerce_big_services';
-		$melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
-	    $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-	    if (!empty($results)) return $results;
+        $cacheConfig = 'commerce_big_services';
+        $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+        if (!empty($results))
+        {
+            return $results;
+        }
         
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $results = array();
-
+        
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_countries_byid_start', $arrayParameters);
-
+        
         // Service implementation start
-
+        
         if (!is_null($arrayParameters['categoryId']))
         {
-
             $melisEcomCountryCategoryTable = $this->getServiceLocator()->get('MelisEcomCountryCategoryTable');
             $catCountriesData = $melisEcomCountryCategoryTable->getEntryByField('ccat_category_id', $arrayParameters['categoryId'])->current();
-
+            
             if (!empty($catCountriesData))
             {
+                $melisEcomCountryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+                
                 if ($catCountriesData->ccat_country_id == '-1')
                 {
-                    $melisEcomCountryCategoryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
-                    $melisCategoryCountry = $melisEcomCountryCategoryTable->fetchAll();
-
+                    $status = ($arrayParameters['onlyValid']) ? 1 : 0;
+                    
+                    if ($arrayParameters['onlyValid'])
+                    {
+                        $melisCategoryCountry = $melisEcomCountryTable->getEntryByField('ctry_status', 1);
+                    }
+                    else 
+                    {
+                        $melisCategoryCountry = $melisEcomCountryTable->fetchAll();
+                    }
+                    
                     foreach ($melisCategoryCountry As $val)
                     {
                         array_push($results, $val);
                     }
-
-                }else{
+                }
+                else
+                {
                     // Getting Category Countries under category ID
-                    $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
-                    $melisCategoryCountry = $melisEcomCategoryTable->getCategoryCountriesByCategoryId($arrayParameters['categoryId']);
+                    $melisCategoryCountry = $melisEcomCountryTable->getCategoryCountriesByCategoryId($arrayParameters['categoryId'], $arrayParameters['onlyValid']);
                     foreach ($melisCategoryCountry As $val)
                     {
                         array_push($results, $val);
@@ -398,66 +475,76 @@ class MelisComCategoryService extends MelisComGeneralService
                 }
             }
         }
-
+        
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $results;
         // Service implementation end
-
+        
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_countries_byid_end', $arrayParameters);
-
+        
         // Save cache key
-		$melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
+        $melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
         
         return $arrayParameters['results'];
     }
-
-    public function getCategoryTranslationById($categoryId , $langId = null)
+    
+    /**
+     * This method gets the affected translations of a category
+     * 
+     * @param int $categoryId, id of the category
+     * @param int $langId, langauge id of the category match on melis_ecom_category_trans.catt_lang_id else this will return available translation
+     * @param boolean $onlyValid, true return only active status else return all
+     * @return MelisEcomCategory[]|null MelisEcomCategory object
+     */
+    public function getCategoryTranslationById($categoryId, $langId = null, $onlyValid = false)
     {
-	    // Retrieve cache version if front mode to avoid multiple calls
+        // Retrieve cache version if front mode to avoid multiple calls
         $cacheKey = 'category-' . $categoryId . '-getCategoryTranslationById_' . $categoryId . '_' . $langId;
         $cacheConfig = 'commerce_big_services';
-		$melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
-	    $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-	    if (!empty($results)) return $results;
+        $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+        if (!empty($results)) return $results;
         
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $results = array();
-
+        
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_get_category_translations_start', $arrayParameters);
-
+        
         // Service implementation start
         $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
-        $melisCategoryTranslation = $melisEcomCategoryTable->getCategoryTranslationBylangId($arrayParameters['categoryId'], $arrayParameters['langId']);
-
-        if (!is_null($arrayParameters['langId']))
+        $melisCategoryTranslation = $melisEcomCategoryTable->getCategoryTranslationBylangId($arrayParameters['categoryId'], $arrayParameters['langId'], $arrayParameters['onlyValid']);
+        
+        foreach ($melisCategoryTranslation As $val)
         {
-            $results = $melisCategoryTranslation->current();
+            array_push($results, $val);
         }
-        else
+        
+        if (empty($results))
         {
-            foreach ($melisCategoryTranslation As $val)
+            $catText = $melisEcomCategoryTable->getCategoryTranslationBylangId($arrayParameters['categoryId'], null, $arrayParameters['onlyValid'])->current();
+            
+            if (!empty($catText))
             {
-                array_push($results, $val);
+                array_push($results, $catText);
             }
         }
-
         // Service implementation end
-
+        
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $results;
-
+        
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_get_category_translations_end', $arrayParameters);
-
+        
         // Save cache key
-		$melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
-		
+        $melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
+        
         return $arrayParameters['results'];
     }
-
+    
     /**
      *
      * This method gets the whole list of sub categories Id from a category
@@ -474,24 +561,24 @@ class MelisComCategoryService extends MelisComGeneralService
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $results = array();
-
+        
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_list_subcategories_byid_start', $arrayParameters);
-
+        
         // Service implementation start
         $melisCategory = array();
-
+        
         $melisCategoryDataRes = $this->getSubCategoryIdByIdRecursive($arrayParameters['categoryId'], $arrayParameters['onlyValid']);
         // Service implementation end
-
+        
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $melisCategoryDataRes;
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_list_subcategories_byid_end', $arrayParameters);
-
+        
         return $arrayParameters['results'];
     }
-
+    
     /**
      * Getting Categories under Category ID
      * This function will return children categories of the parent category
@@ -503,27 +590,27 @@ class MelisComCategoryService extends MelisComGeneralService
      */
     public function getSubCategoryIdByIdRecursive($categoryId, $onlyValid = false, $fatherId = 0, $langId = null)
     {
-	    // Retrieve cache version if front mode to avoid multiple calls
+        // Retrieve cache version if front mode to avoid multiple calls
         $cacheKey = 'category-' . $categoryId . '-getSubCategoryIdByIdRecursive_' . $categoryId . '_' . $onlyValid . '_' . $fatherId . '_' . $langId;
         $cacheConfig = 'commerce_big_services';
-		$melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
-	    $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-	    if (!empty($results)) return $results;
+        $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+        if (!empty($results)) return $results;
         
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $results = array();
-
+        
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_get_sub_category_recursive_start', $arrayParameters);
-
+        
         $categoryId = $arrayParameters['categoryId'];
         $onlyValid = $arrayParameters['onlyValid'];
         $fatherId = $arrayParameters['fatherId'];
         $langId = $arrayParameters['langId'];
-
+        
         $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
-
+        
         
         $dataCategoryData = $melisEcomCategoryTable->getSubCategoryIdById($categoryId, $onlyValid, $fatherId, $langId)->toArray();
         
@@ -532,17 +619,17 @@ class MelisComCategoryService extends MelisComGeneralService
             $fatherId = $dataCategoryData[$key]['cat_id'];
             $dataCategoryData[$key]['cat_children'] = $this->getSubCategoryIdByIdRecursive($categoryId, $onlyValid, $fatherId, $langId);
         }
-
+        
         $results = $dataCategoryData;
         // Service implementation end
-
+        
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $results;
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_get_sub_category_recursive_end', $arrayParameters);
         
         // Save cache key
-		$melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
+        $melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
         
         return $arrayParameters['results'];
     }
@@ -583,7 +670,7 @@ class MelisComCategoryService extends MelisComGeneralService
                 array_push($category, $categoryRes);
                 $category = $this->getParentCategory($categoryRes['cat_father_cat_id'], $category, $arrayParameters['includeRoot'], $arrayParameters['langId'], $arrayParameters['addSeo']);
             }
-            else 
+            else
             {
                 if ($arrayParameters['includeRoot'])
                 {
@@ -615,18 +702,18 @@ class MelisComCategoryService extends MelisComGeneralService
      * @return int|null The category id created or updated, null if an error occured
      */
     public function saveCategory($category, $categoryTranslations = array(),
-                                 $categoryCountries = array(), $categorySeo = array(), $categoryId = null)
+        $categoryCountries = array(), $categorySeo = array(), $categoryId = null)
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $results = null;
-
+        
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_save_start', $arrayParameters);
-
+        
         // Service implementation start
         $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
-
+        
         $catId = null;
         try
         {
@@ -634,14 +721,14 @@ class MelisComCategoryService extends MelisComGeneralService
         }
         catch (\Exception $e)
         {
-
+            
         }
-
+        
         if(is_numeric($catId))
         {
-
+            
             $successflag = true;
-
+            
             // Saving Category Translations
             $categoryTranslations = $arrayParameters['categoryTranslations'];
             foreach ($categoryTranslations As $val)
@@ -650,27 +737,27 @@ class MelisComCategoryService extends MelisComGeneralService
                 unset($val['catt_id']);
                 $val['catt_category_id'] = $catId;
                 $result = $this->saveCategoryTranslations($val, $cattId);
-
+                
                 if ($result!=true)
                 {
                     return null;
                 }
             }
-
+            
             // Saving Category Countries
             $this->saveCategoryCountries($catId, $arrayParameters['categoryCountries']);
             // Saving Category SEO
-
+            
             // SEO Service
             $categorySeo = $arrayParameters['categorySeo'];
             $melisComSeoService = $this->getServiceLocator()->get('MelisComSeoService');
             $result = $melisComSeoService->saveSeoDataAction('category', $catId, $categorySeo);
-
+            
             if ($result!=true)
             {
                 return null;
             }
-
+            
             $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
             $melisEngineCacheSystem->deleteCacheByPrefix('category-' . $catId, 'commerce_big_services');
             $melisEngineCacheSystem->deleteCacheByPrefix('categories', 'commerce_big_services');
@@ -679,15 +766,15 @@ class MelisComCategoryService extends MelisComGeneralService
             $results = $catId;
         }
         // Service implementation end
-
+        
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $results;
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_save_byid_end', $arrayParameters);
-
+        
         return $arrayParameters['results'];
     }
-
+    
     /**
      *
      * This method saves the text translations for a category
@@ -704,16 +791,16 @@ class MelisComCategoryService extends MelisComGeneralService
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $results = array();
-
+        
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_save_translations_start', $arrayParameters);
         $successFlag = false;
         // Service implementation start
         $melisEcomCategoryTransTable = $this->getServiceLocator()->get('MelisEcomCategoryTransTable');
-
+        
         $categoryTranslations = $arrayParameters['categoryTranslations'];
         $categoryTranslationId = $arrayParameters['categoryTranslationId'];
-
+        
         if (is_null($categoryTranslationId))
         {
             try
@@ -745,17 +832,17 @@ class MelisComCategoryService extends MelisComGeneralService
             $melisEngineCacheSystem->deleteCacheByPrefix('category-' . $categoryTranslations['catt_category_id'], 'commerce_big_services');
             $melisEngineCacheSystem->deleteCacheByPrefix('categories', 'commerce_big_services');
         }
-            
+        
         // Service implementation end
-
+        
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $successFlag;
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_save_translations_end', $arrayParameters);
-
+        
         return $arrayParameters['results'];
     }
-
+    
     /**
      *
      * This method saves the list of countries of a category
@@ -772,20 +859,20 @@ class MelisComCategoryService extends MelisComGeneralService
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $results = array();
-
+        
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_save_countries_start', $arrayParameters);
         $successFlag = false;
         // Service implementation start
         $melisEcomCountryCategoryTable = $this->getServiceLocator()->get('MelisEcomCountryCategoryTable');
-
+        
         // Deleting existing data that has same Category ID
         $numDeleted = $melisEcomCountryCategoryTable->deleteByField('ccat_category_id',$arrayParameters['categoryId']);
         if ($numDeleted)
         {
             $successFlag = true;
         }
-
+        
         $paramCategoryCountries = $arrayParameters['categoryCountries'];
         if (!empty($paramCategoryCountries)&&is_array($paramCategoryCountries))
         {
@@ -800,15 +887,15 @@ class MelisComCategoryService extends MelisComGeneralService
         $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
         $melisEngineCacheSystem->deleteCacheByPrefix('category-' . $categoryId, 'commerce_big_services');
         $melisEngineCacheSystem->deleteCacheByPrefix('categories', 'commerce_big_services');
-
+        
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $successFlag;
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_save_countries_end', $arrayParameters);
-
+        
         return $arrayParameters['results'];
     }
-
+    
     /**
      * Get Category SEO
      * @param int $categoryid
@@ -819,80 +906,103 @@ class MelisComCategoryService extends MelisComGeneralService
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $results = array();
-
+        
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_get_seo_start', $arrayParameters);
-
-
+        
+        
         if (!is_null($arrayParameters['categoryId']))
         {
             $ecomSeotable = $this->serviceLocator->get('MelisEcomSeoTable');
             $data = $ecomSeotable->getCategorySeoById($arrayParameters['categoryId'], $arrayParameters['langId']);
-            // if language id is null then return all seo corresponding to the category id, else return sepcific seo
-            if(is_null($arrayParameters['langId'])){
-                foreach($data as $seo){
-                    $results[] = $seo;
-                }
-            }else{
-                $results = $data->current();
+            foreach($data as $seo){
+                array_push($results, $seo);
             }
         }
         // Service implementation end
-
+        
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $results;
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_get_seo_end', $arrayParameters);
-
+        
         return $arrayParameters['results'];
     }
-
+    
     /**
      * Get Category Tree View, listing all sub category by using the FatherID/ParentID of the Category
      * @param int $fatherId
      * @param int $langId
      * @return int Array
      */
-    public function getCategoryTreeview($fatherId = null, $langId = null)
+    public function getCategoryTreeview($fatherId = null, $langId = null, $onlyValid = false)
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $results = array();
-
+        
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_get_category_tree_view_start', $arrayParameters);
-
+        
         $fatherId = $arrayParameters['fatherId'];
         $langId = $arrayParameters['langId'];
-
+        $onlyValid= $arrayParameters['onlyValid'];
+        
         $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
-        $tool                   = $this->getServiceLocator()->get('MelisCoreTool');
-        $categoryData = $melisEcomCategoryTable->getCategoryByFatherId($fatherId);
+        $categoryData = $melisEcomCategoryTable->getCategoryByFatherId($fatherId, $onlyValid);
+
         $catData = $categoryData->toArray();
 
+        /**
+         * TEMPORARY, NEED TO CREATE GENERAL HELPER FOR THIS
+         */
+        $escaper = new \Zend\Escaper\Escaper('utf-8');
+        
         foreach ($catData As $key => $val)
         {
-            // getting category name
-            $textData = $this->getCategoryNameById($val['cat_id'], $langId, true);
-           
-            $catData[$key]['text'] = $tool->escapeHtml($textData['text']);
-            $catData[$key]['textLang'] = !empty($textData['lang'])? '('.$textData['lang'].')' : '';
+            // Getting Category Name
+            $categoryData = $this->getCategoryById($val['cat_id'], $langId, $onlyValid);
+            $category = $categoryData->getTranslations();
+
+            $catName = '';
+            $catNameLangName = '';
+            foreach ($category As $val)
+            {
+                if ($val->elang_id == $langId)
+                {
+                    $catName = $val->catt_name;
+                    break;
+                }
+                else
+                {
+                    // Getting available Name concatinated with the Language Name
+                    $catName = $val->catt_name;
+                    $catNameLangName = $val->elang_name;
+                    break;
+                }
+            }
+
+            $catData[$key]['text'] = $escaper->escapeHtml($catName); //$tool->escapeHtml($catName);
+            $catData[$key]['textLang'] = (!empty($catNameLangName)) ? '('.$catNameLangName.')' : '';
 
             $fatherId = $catData[$key]['cat_id'];
 
-            $catData[$key]['children'] = $this->getCategoryTreeview($fatherId, $langId);
+            $catData[$key]['children'] = $this->getCategoryTreeview($fatherId, $langId, $onlyValid);
+
         }
+
         $results = $catData;
         // Service implementation end
-
+        
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $results;
+
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_get_category_tree_view_end', $arrayParameters);
-
+        
         return $arrayParameters['results'];
     }
-
+    
     /**
      * Add New Product Entry to Category
      *
@@ -906,55 +1016,55 @@ class MelisComCategoryService extends MelisComGeneralService
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $successFlag = false;
-
+        
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_product_add_start', $arrayParameters);
-
+        
         $melisEcomProductCategoryTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');
-
+        
         try
         {
-
-            $catProducts = $arrayParameters['categoryProducts'];
-
+            
+            $relProducts = $arrayParameters['categoryProducts'];
+            
             // Getting category Product Order
-            $categoryId = $catProducts['pcat_cat_id'];
+            $categoryId = $relProducts['pcat_cat_id'];
             $categoryProductsOrder = $this->getCategoryProductsById($categoryId);
-
+            
             // only increment pcat_order if it is not set
-            if(!$catProducts['pcat_order']) {
-                $catProducts['pcat_order'] = count($categoryProductsOrder) + 1;
+            if(!$relProducts['pcat_order']) {
+                $relProducts['pcat_order'] = count($categoryProductsOrder) + 1;
             }
-
+            
             if((int) $arrayParameters['categoryProductsId']) {
-                $successFlag = $melisEcomProductCategoryTable->save($catProducts, $arrayParameters['categoryProductsId']);
+                $successFlag = $melisEcomProductCategoryTable->save($relProducts, $arrayParameters['categoryProductsId']);
             }
             else {
-                unset($catProducts['pcat_id']);
-                $successFlag = $melisEcomProductCategoryTable->save($catProducts);
+                unset($relProducts['pcat_id']);
+                $successFlag = $melisEcomProductCategoryTable->save($relProducts);
             }
-
-
-
+            
+            
+            
         }
         catch(\Exception $e)
         {
-           
+            
         }
-
+        
         if($successFlag) {
             $successFlag = true;
         }
         // Service implementation end
-
+        
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $successFlag;
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_product_add_end', $arrayParameters);
-
+        
         return $arrayParameters['results'];
     }
-
+    
     /**
      * Update Category Products Order
      * @param int $categoryProducts
@@ -965,14 +1075,14 @@ class MelisComCategoryService extends MelisComGeneralService
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $successFlag = false;
-
+        
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_product_order_start', $arrayParameters);
-
+        
         $catProdId = $arrayParameters['categoryProductId'];
-
+        
         $melisEcomProductCategoryTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');
-
+        
         try
         {
             $orderNum = (int) $arrayParameters['categoryProductOrder'];
@@ -982,12 +1092,12 @@ class MelisComCategoryService extends MelisComGeneralService
                     $orderNum += 1;
                 }
             }
-
-            $catProductsOrder = array(
+            
+            $relProductsOrder = array(
                 'pcat_order' => $orderNum
             );
-
-            $melisEcomProductCategoryTable->save($catProductsOrder, $catProdId);
+            
+            $melisEcomProductCategoryTable->save($relProductsOrder, $catProdId);
             $successFlag = true;
         }
         catch(\Exception $e)
@@ -995,15 +1105,15 @@ class MelisComCategoryService extends MelisComGeneralService
             $successFlag = false;
         }
         // Service implementation end
-
+        
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $successFlag;
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_product_order_end', $arrayParameters);
-
+        
         return $arrayParameters['results'];
     }
-
+    
     /**
      * Delete Categpry Product
      * @param int $categoryProductId, primary key of the entry
@@ -1014,10 +1124,10 @@ class MelisComCategoryService extends MelisComGeneralService
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $successFlag = false;
-
+        
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_product_delete_start', $arrayParameters);
-
+        
         $melisEcomProductCategoryTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');
         $categoryProduct = $melisEcomProductCategoryTable->getEntryById($arrayParameters['categoryProductId'])->current();
         if (!empty($categoryProduct))
@@ -1025,21 +1135,21 @@ class MelisComCategoryService extends MelisComGeneralService
             try
             {
                 $categoryId = $categoryProduct->pcat_cat_id;
-
+                
                 $melisEcomProductCategoryTable->deleteById($arrayParameters['categoryProductId']);
-
+                
                 // Reorder all Category Products after deletion
                 $melisEcomProductCategoryTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');
                 $categoryProducts = $melisEcomProductCategoryTable->getCategoryProductsByCategoryId($categoryId)->toArray();
-
+                
                 $ctr = 1;
-                $catProducts = array();
+                $relProducts = array();
                 foreach ($categoryProducts As $key => $val)
                 {
                     // Saving new Category Product Order
                     $this->updateCategoryProductsOrdering($val['pcat_id'], $ctr++);
                 }
-
+                
                 $successFlag = true;
             }
             catch(\Exception $e)
@@ -1047,17 +1157,17 @@ class MelisComCategoryService extends MelisComGeneralService
                 $successFlag = false;
             }
         }
-
+        
         // Service implementation end
-
+        
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $successFlag;
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_product_delete_end', $arrayParameters);
-
+        
         return $arrayParameters['results'];
     }
-
+    
     /**
      * This method will setup the ordering of product list on category
      * @param int $categoryId
@@ -1068,7 +1178,7 @@ class MelisComCategoryService extends MelisComGeneralService
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $successFlag = false;
-
+        
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_product_reorder_start', $arrayParameters);
         $categoryId = (int) $arrayParameters['categoryId'];
@@ -1079,14 +1189,14 @@ class MelisComCategoryService extends MelisComGeneralService
         $newOrders = array();
         $productId = array();
         if($prodCatData) {
-
+            
             // store product category data temporarily
             foreach($prodCatData as $data) {
                 $prodCatIds[] = $data['pcat_id'];
                 $orders[] = $data['pcat_order'];
                 $productId[] = $data['pcat_prd_id'];
             }
-
+            
             // sort orders
             usort($orders, function($a, $b) {
                 if ($a == $b) {
@@ -1094,42 +1204,42 @@ class MelisComCategoryService extends MelisComGeneralService
                 }
                 return ($a < $b) ? -1 : 1;
             });
-
-            foreach($orders as $orderNum => $order) {
-                $newOrders[] = $orderNum+1;
-            }
-
-            // save new order
-            $ctr = 0;
-            foreach($prodCatIds as $id) {
-                $productCategoryTable->save(array(
-                    'pcat_order' => $newOrders[$ctr],
-                    'pcat_prd_id' => $productId[$ctr],
-                    'pcat_cat_id' => $categoryId),
-                    $id);
-                $ctr++;
-            }
-
-            $successFlag = true;
+                
+                foreach($orders as $orderNum => $order) {
+                    $newOrders[] = $orderNum+1;
+                }
+                
+                // save new order
+                $ctr = 0;
+                foreach($prodCatIds as $id) {
+                    $productCategoryTable->save(array(
+                        'pcat_order' => $newOrders[$ctr],
+                        'pcat_prd_id' => $productId[$ctr],
+                        'pcat_cat_id' => $categoryId),
+                        $id);
+                    $ctr++;
+                }
+                
+                $successFlag = true;
         }
-
-
+        
+        
         // Service implementation end
-
+        
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $successFlag;
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_product_reorder_start', $arrayParameters);
-
+        
         return $arrayParameters['results'];
     }
     
     /**
      * This method is retrieving the father category of the category ID
-     * 
+     *
      * @param int $categoryId, Id of the category
      * @param int $langId,langauge id
-     * 
+     *
      * @return array
      */
     public function getCategoryBreadCrumb($categoryId, $langId = null)
@@ -1137,12 +1247,12 @@ class MelisComCategoryService extends MelisComGeneralService
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $results = array();
-    
+        
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_get_father_category_start', $arrayParameters);
-    
+        
         // Service implementation start
-    
+        
         /**
          * Retreiving Category data using Category service
          */
@@ -1153,13 +1263,13 @@ class MelisComCategoryService extends MelisComGeneralService
             $results = $categoryRes->current();
         }
         // Service implementation end
-    
+        
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $results;
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_get_father_category_end', $arrayParameters);
-    
+        
         return $arrayParameters['results'];
     }
-
+    
 }

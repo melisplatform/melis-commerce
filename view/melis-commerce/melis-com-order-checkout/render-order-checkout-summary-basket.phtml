@@ -27,7 +27,7 @@
                     ?>
                     <div class="form-group">                                                
                         <span><?= $title ?></span>
-  						<strong class="float-right">(<?= $this->countryCurrencySympbol.' '. number_format($discount['discount'], 2)?>) x <?= $discount['qty']?></strong>
+  						<strong class="float-right">(<?= $this->countryCurrencySympbol.number_format($discount['discount'], 2)?>) x <?= $discount['qty']?></strong>
                     </div>
                     <?php 
                             $title = '&nbsp;';
@@ -39,8 +39,8 @@
         	<?php if (!empty($this->basket)):
         	$couponCode = empty($this->couponErr)? '' : $this->couponCode;
         	?>
-        		<div class="order-basket-checkout-summary row">
-        			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-7">
+        		<div class="row">
+        			<div class="col-xs-7">
                         <div class="input-group">
                           	<input type="text" class="form-control" placeholder="<?php echo $this->translate('tr_meliscommerce_order_checkout_variant_coupon_code')?>" id="orderCheckoutCouponCode" value="<?php echo $couponCode ?>">
                           	<span class="input-group-btn">
@@ -62,28 +62,28 @@
                     		<?php }?>
     					</div>
         			</div>
-        			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-5" align="right">
+        			<div class="col-xs-5" align="right">
         				<div class="form-group">
-                        	<h4><strong><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_sub_total')?>: <?php echo $this->countryCurrencySympbol.' '.number_format($this->subTotal, 2)?></strong></h4>
+                        	<h4><strong><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_sub_total')?>: <?php echo $this->countryCurrencySympbol.number_format($this->subTotal, 2)?></strong></h4>
                         </div>
                         <div class="form-group">
                         	<h4><strong><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_discount')?></strong></h4>
                         </div>
                          <div class="form-group">
-                        	<strong><?php echo $this->translate('Product')?>: <?php echo $this->countryCurrencySympbol.' '.number_format($this->productDiscount, 2)?></strong>
+                        	<strong><?php echo $this->translate('Product')?>: <?php echo $this->countryCurrencySympbol.number_format($this->productDiscount, 2)?></strong>
                         	<?php if (!empty($this->discountInfo)):?>
                         		<p><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_coupon_value')?>: <?php echo $this->discountInfo?></p>
                         	<?php endif;?>
                         </div>
                         <div class="form-group">
-                        	<strong><?php echo $this->translate('Order')?>: <?php echo $this->countryCurrencySympbol.' '.number_format($this->totalDiscount, 2)?></strong>
+                        	<strong><?php echo $this->translate('Order')?>: <?php echo $this->countryCurrencySympbol.number_format($this->totalDiscount, 2)?></strong>
                         	<?php if (!empty($this->discountInfo)):?>
                         		<p><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_coupon_value')?>: <?php echo $this->discountInfo?></p>
                         	<?php endif;?>
                         </div>
                         <div class="form-group">
-                        	<h4 class="title">
-                        		<strong><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_total')?>: <?php echo $this->countryCurrencySympbol.' '.number_format($this->total, 2)?></strong>
+                        	<h4>
+                        		<strong><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_total')?>: <?php echo $this->countryCurrencySympbol.number_format($this->total, 2)?></strong>
                         	</h4>
                         </div>
         			</div>

@@ -72,4 +72,7 @@
 	    'tr_meliscommerce_attribute_value_delete_success' => 'La valeur de l\'attribut a été supprimée avec succès',
 
 	    'tr_meliscommerce_attribute_table_refresher' => 'Actualiser',
+
+        'tr_meliscommerce_attribute_delete_product_attr_title' => 'Attribut du produit',
+        'tr_meliscommerce_attribute_delete_product_attr_title_msg' => 'Impossible de supprimer l\'attribut, certaines variantes utilisent cet attribut.',
 	);

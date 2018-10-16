@@ -254,20 +254,27 @@ class MelisCommerceSEODispatchRouterCommerceUrlListener
     public function is301Category($params)
     {
         $melisComCategoryService = $this->serviceLocator->get('MelisComCategoryService');
-        $categoryDatas = $melisComCategoryService->getCategoryById($params['categoryId']);
+        $categoryDatas = $melisComCategoryService->getCategoryById($params['categoryId'], false, true);
+        
         if (!empty($categoryDatas))
         {
             $categoryMainDatas = $categoryDatas->getCategory();
-            if (!empty($categoryMainDatas) && $categoryMainDatas->cat_status)
+            
+            if (!empty($categoryMainDatas))
             {
                 // add check dates start and end
                 $startDate = $categoryMainDatas->cat_date_valid_start;
                 $endDate = $categoryMainDatas->cat_date_valid_end;
                 
                 if (empty($startDate))
+                {
                     $startDate = '1990-01-01 00:00:00';
+                }
+                
                 if (empty($endDate))
+                {
                     $endDate = '2038-01-01 00:00:00';
+                }
                 
                 $sDate = new \DateTime($startDate);
                 $sDate = $sDate->getTimestamp();
@@ -276,7 +283,9 @@ class MelisCommerceSEODispatchRouterCommerceUrlListener
                 $nDate = time();
                 
                 if ($nDate < $eDate && $nDate >= $sDate)
+                {
                     return false;
+                }
             }
         }
         
