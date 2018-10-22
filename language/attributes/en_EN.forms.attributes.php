@@ -9,5 +9,5 @@
         'tr_meliscommerce_attribute_label_description' => 'Description',
         'tr_meliscommerce_attribute_label_description tooltip' => 'Attribute description',
         'tr_meliscommerce_attribute_label_all' => 'Fill in for all languages',
-        'tr_meliscommerce_attribute_input tooltip' => 'SSelect and add attributes to this product created from the "Attributes" tool',
+        'tr_meliscommerce_attribute_input tooltip' => 'Select and add attributes to this product created from the "Attributes" tool',
     );
