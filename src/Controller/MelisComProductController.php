@@ -1560,25 +1560,25 @@ class MelisComProductController extends AbstractActionController
             $attrSvc = $this->getServiceLocator()->get('MelisComAttributeService');
             $attrData = $attrSvc->getAttributes($this->getTool()->getCurrentLocaleID(), null, null, null);
             $prodAttribData = $prodAttrTable->getEntryByField('patt_product_id', $productId)->toArray();
-            $tmpAttributes = array();
-            $ctr = 0;
+
             foreach($attrData as $attr) {
-                if(isset($attr->getAttribute()->attr_trans[0])) {
-                    $tmpAttributes[] = array('id' => $attr->getId(), 'text' => $attrSvc->getAttributeText($attr->getId(), $langId));
+                $text = $attrSvc->getAttributeText($attr->getId(), $langId);
+                if($text) {
+                    $exist = false;
                     foreach($prodAttribData as $prodAttr) {
-                        if(in_array($attr->getId(), $prodAttr)) {
-                            if(isset($tmpAttributes[$ctr]))
-                                unset($tmpAttributes[$ctr]);
+                        if ($attr->getId() == $prodAttr['patt_attribute_id']){
+                            $exist = true;
+                            break;
                         }
                     }
-                    $ctr++;
+
+                    if (!$exist)
+                        array_push($attributes, array('id' => $attr->getId(), 'text' => $text));
                 }
             }
 
-            $attributes = array_values($tmpAttributes);
-
+            $attributes = array_values($attributes);
         }
-
 
         return new JsonModel($attributes);
     }
@@ -1592,24 +1592,24 @@ class MelisComProductController extends AbstractActionController
         $attrSvc = $this->getServiceLocator()->get('MelisComAttributeService');
         $attrData = $attrSvc->getAttributes($langId, null, null, null);
         $prodAttribData = $prodAttrTable->getEntryByField('patt_product_id', $productId)->toArray();
-        $tmpAttributes = array();
-        $ctr = 0;
 
         foreach($attrData as $attr) {
             $text = $attrSvc->getAttributeText($attr->getId(), $langId);
             if($text) {
-                $tmpAttributes[] = array('id' => $attr->getId(), 'text' => $text);
+                $exist = false;
                 foreach($prodAttribData as $prodAttr) {
-                    if(in_array($attr->getId(), $prodAttr)) {
-                        if(isset($tmpAttributes[$ctr]))
-                            unset($tmpAttributes[$ctr]);
+                    if ($attr->getId() == $prodAttr['patt_attribute_id']){
+                        $exist = true;
+                        break;
                     }
                 }
-                $ctr++;
+
+                if (!$exist)
+                    array_push($attributes, array('id' => $attr->getId(), 'text' => $text));
             }
         }
 
-        $attributes = array_values($tmpAttributes);
+        $attributes = array_values($attributes);
         // Sorting Alphabetically attributes text
         if (!empty($attributes)){
             usort($attributes, function($a, $b){
