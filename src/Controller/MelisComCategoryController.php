@@ -1194,7 +1194,7 @@ class MelisComCategoryController extends AbstractActionController
 
             // Getting Category Products
             $melisComCategoryService = $this->getServiceLocator()->get('MelisComCategoryService');
-            $categoryProducts = $melisComCategoryService->getCategoryProductsById($catId);
+            $categoryProducts = $melisComCategoryService->getCategoryProductsById($catId, $langId);
 
             // Product Service
             $productService = $this->getServiceLocator()->get('MelisComProductService');

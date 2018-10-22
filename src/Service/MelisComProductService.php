@@ -156,7 +156,7 @@ class MelisComProductService extends MelisComGeneralService
             foreach($productData as $prod) {
                 $entProd->setId($prod->prd_id);
                 $entProd->setProduct($prod);
-                foreach($prodTable->getProductCategoryByProductId($arrayParameters['productId']) as $prodCat){
+                foreach($prodTable->getProductCategoryByProductId($arrayParameters['productId'], $arrayParameters['langId']) as $prodCat){
                     $category[]= $prodCat;
                 }
                 $entProd->setCategories($category);
