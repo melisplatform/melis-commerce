@@ -294,6 +294,8 @@ $(document).ready(function() {
     body.on("click", "#addProdTextType", function() {
         var productId = $(this).data("productid");
         var dataString = $("form#productTextTypeForm").serialize();
+        let $panel = $(this).closest('.panel').find('.panel-heading .panel-title a');
+        let $panelBody = $(this).closest('.panel').find('.panel-collapse');
         melisCoreTool.pending("#addProdTextType");
         $.ajax({
             type: 'POST',
@@ -304,8 +306,13 @@ $(document).ready(function() {
         }).success(function(data) {
             if(data.success) {
                 melisCoreTool.clearForm("productTextTypeForm");
-                melisHelper.zoneReload(melisCommerce.getCurrentProductId()+"_id_meliscommerce_products_page_content_tab_product_text_modal_form_product_type_text", "meliscommerce_products_page_content_tab_product_text_modal_form_product_type_text",  {productId : melisCommerce.getCurrentProductId()});
+                //collapse the pannel
+                $panel.addClass('collapsed');
+                $panel.attr('aria-expanded', false);
+                $panelBody.removeClass('in');
+                $panelBody.attr('aria-expanded', false);
 
+                melisHelper.zoneReload(melisCommerce.getCurrentProductId()+"_id_meliscommerce_products_page_content_tab_product_text_modal_form", "meliscommerce_products_page_content_tab_product_text_modal_form",  {productId : melisCommerce.getCurrentProductId()});
             }
             else {
                 melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
@@ -315,6 +322,7 @@ $(document).ready(function() {
             melisCoreTool.done("#addProdTextType");
         });
     });
+
     body.on('click', '.add-product-text', function() {
         $("div[data-class='addTextFieldNotif']").html("").attr("class", "addTextFieldNotif");
     });
@@ -351,7 +359,6 @@ $(document).ready(function() {
                 }
             });
             melisCoreTool.done(".btnAddText");
-
         });
     });
 
@@ -694,6 +701,18 @@ $(document).ready(function() {
         melisHelper.zoneReload(melisCommerce.getCurrentProductId()+"_id_meliscommerce_products_page_content_tab_product_text_modal_form_product_type_text", "meliscommerce_products_page_content_tab_product_text_modal_form_product_type_text", {productId : melisCommerce.getCurrentProductId()});
         reInitProductTextTypeSelect(melisCommerce.getCurrentProductId());
     });
+
+    // $("body").on("click",".add-product-text", function() {
+    //     melisHelper.createModal('id_meliscommerce_products_page_content_tab_product_text_modal_form',
+    //         'meliscommerce_products_page_content_tab_product_text_modal_form',
+    //         true,
+    //         {},
+    //         'melis/MelisCommerce/MelisComProduct/render-products-page-content-tab-text-modal-form',
+    //         function() {
+    //
+    //         }
+    //     );
+    // });
 
     body.on("click", ".openVariant", function(){
         var variantId = $(this).parent().siblings(":first").text();
