@@ -215,7 +215,7 @@ return array(
                         'target' => '#tableOrderStatus',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComOrderStatus/getOrderStatusData',
                         'dataFunction' => '',
-                        'ajaxCallback' => 'initCheckPermStatus()',
+                        'ajaxCallback' => 'initCheckPermStatus',
                         'filters' => array(
                             'left' => array(
                                 'order-status-table-filter-limit' => array(

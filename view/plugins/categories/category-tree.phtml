@@ -6,7 +6,7 @@
     		    $renderCategoryList  = function($categoryList, $firstLoop, $renderCategoryList)
     		    {
     		        $temp = '';
-    		        
+
     		        if ($categoryList)
     		        {
     		            if (!$firstLoop){
@@ -30,8 +30,8 @@
     		                if ($items['state']['selected']){
     		                    $selected = 'selected';
     		                }
-    		                
-    		                $temp .= '<li class="'.$opened.'"><span class="'.$items.'" title="'.$items['text'].'">'.$items['cat_id'].' - '.$items['text'].'</span>';
+
+    		                $temp .= '<li class="'.$opened.'"><span class="'.$selected.'" title="'.$items['text'].'">'.$items['cat_id'].' - '.$items['text'].'</span>';
     		                $temp .= (!empty($data['html'])) ? $data['html'] : '';
     		                $temp .= '</li>';
     		            }

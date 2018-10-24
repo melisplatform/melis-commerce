@@ -593,15 +593,19 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         return $resultSet;
     }
     
-    public function getProductCategoryByProductId($productId)
+    public function getProductCategoryByProductId($productId, $langId)
     {
         $select = $this->tableGateway->getSql()->select();
         $select->columns(array());
+
+        $prdCatjoin = new \Zend\Db\Sql\Predicate\Expression('melis_ecom_category_trans.catt_category_id = melis_ecom_category.cat_id AND catt_name IS NOT NULL');
+
         $select->join('melis_ecom_product_category', 'melis_ecom_product_category.pcat_prd_id = melis_ecom_product.prd_id', array('*'), $select::JOIN_LEFT)
         ->join('melis_ecom_category', 'melis_ecom_category.cat_id = melis_ecom_product_category.pcat_cat_id', array('*'), $select::JOIN_LEFT)
-        ->join('melis_ecom_category_trans', 'melis_ecom_category_trans.catt_category_id = melis_ecom_category.cat_id', array('*'), $select::JOIN_LEFT);
+        ->join('melis_ecom_category_trans', $prdCatjoin , array('*'), $select::JOIN_LEFT);
         $select->where->equalTo('melis_ecom_product_category.pcat_prd_id', $productId);
-    
+        $select->where->equalTo('melis_ecom_category_trans.catt_lang_id', $langId);
+
         // $select->group('melis_ecom_product_category.pcat_id');
         $select->order('melis_ecom_category.cat_order ASC');
         $resultSet = $this->tableGateway->selectwith($select);
