@@ -188,29 +188,65 @@ $(document).ready(function() {
         }
     });
 
-    body.on("switch-change", ".triggerVarUpdate", function(e, data){
+    body.on("click", ".updateVariantStatus", function(){
+        var _this = $(this);
         var obj = {};
         var val = "";
-        var variantId   = $(this).closest('tr').attr('id');
-        var prodId   = $(this).closest('.container-level-a').attr('id').replace(/[^0-9]/g,'');
-        if(data.value === false){
-            val = 0;
-        }else{
+        var varIndicator = "";
+        var linkClass = "";
+        var variantId = _this.closest('tr').attr('id');
+        var varStatus = _this.closest('tr').attr('var_status');
+        var prodId   = _this.closest('.container-level-a').attr('id').replace(/[^0-9]/g,'');
+        if(varStatus == 0){
             val = 1;
+            varIndicator = "text-success";
+            linkClass = "btn-danger";
+        }else{
+            val = 0;
+            varIndicator = "text-danger";
+            linkClass = "btn-success";
         }
+
         obj.id = variantId;
         obj.var_status = val;
         $.ajax({
-           type: 'POST',
-           url : '/melis/MelisCommerce/MelisComVariantList/updateVariantStatus',
-           data: $.param(obj)
+            type: 'POST',
+            url : '/melis/MelisCommerce/MelisComVariantList/updateVariantStatus',
+            data: $.param(obj),
+            beforeSend: function(){
+                //disable the button
+                _this.addClass("disabled").attr("disabled", true);
+                //change icon to loader
+                _this.find(".variant-update-icon-rotate").removeClass(function (index, className) {
+                    return (className.match (/(^|\s)fa-\S+/g) || []).join(' ');
+                }).addClass("fa-spinner fa-pulse fa-fw");
+            }
         }).success(function(data){
             if(data.success){
+                //update var_status on tr
+                _this.closest('tr').attr("var_status", val);
+                //change the original icon
+                _this.find(".variant-update-icon-rotate").removeClass(function (index, className) {
+                    return (className.match (/(^|\s)fa-\S+/g) || []).join(' ');
+                }).addClass("fa-arrow-circle-up");
+                //update style of the button
+                _this.removeClass(function (index, className) {
+                    return (className.match (/(^|\s)btn-\S+/g) || []).join(' ');
+                }).addClass(linkClass);
+                //update the status indicator inside the row
+                _this.closest('tr').find(".var-status-indicator").removeClass(function (index, className) {
+                    return (className.match (/(^|\s)text-\S+/g) || []).join(' ');
+                }).addClass(varIndicator);
+
+                //rotate the icon to indicate the status
+                _this.find(".variant-update-icon-rotate").toggleClass("down");
+
                 //check if variant is open to update it's status
                 if($("#"+variantId+"_id_meliscommerce_variant_tab_main_header_container").length){
                     melisHelper.zoneReload(variantId+"_id_meliscommerce_variant_tab_main_header_container", "meliscommerce_variant_tab_main_header_container", {"productId" : prodId, "variantId" : variantId});
                 }
             }
+            _this.removeClass("disabled").attr("disabled", false);
         });
     });
 
@@ -225,14 +261,27 @@ window.variantLoaded = function() {
     var prodTabId   = productId+"_id_meliscommerce_products_page";
     melisCommerce.enableTab(prodTabId);
 };
-window.initVariantSwitch = function(){
+window.checkVarStatus = function(){
     var productId = '';
-
-    if($(".triggerVarUpdate").closest('.container-level-a.active').attr('id') != undefined){
-        productId = $(".triggerVarUpdate").closest('.container-level-a.active').attr('id').replace(/[^0-9]/g,'');
+    if($(".updateVariantStatus").closest('.container-level-a.active').attr('id') != undefined){
+        productId = $(".updateVariantStatus").closest('.container-level-a.active').attr('id').replace(/[^0-9]/g,'');
     }else{
         productId = $(".save-variant").closest('.container-level-a.active').data("prodid");
     }
 
-    $('.'+productId+'_variantStatusChk').bootstrapSwitch();
+    $("#"+productId+"_tableProductVariantList tbody tr").each(function(){
+        var status = $(this).attr('var_status');
+        if(status != undefined){
+            var btnStyle = "btn-danger";
+            var icon = $(this).find(".variant-update-icon-rotate");
+            if(status == 0) {
+                btnStyle = "btn-success";
+            }else{
+                icon.toggleClass("down");
+            }
+            icon.closest("a").removeClass(function (index, className) {
+                return (className.match (/(^|\s)btn-\S+/g) || []).join(' ');
+            }).addClass(btnStyle);
+        }
+    });
 };

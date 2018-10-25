@@ -380,7 +380,7 @@ return array(
                                                                                                 'module' => 'MelisCommerce',
                                                                                                 'controller' => 'MelisComVariant',
                                                                                                 'action' => 'render-variant-tab-main-information-content',
-                                                                                                'jscallback' => 'initVariantStatusSwitch();'
+                                                                                                'jscallback' => ''
                                                                                             ),
                                                                                         ),
                                                                                     ),

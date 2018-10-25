@@ -612,7 +612,20 @@ div.melis-pdc *.btn {
 
 .table.dataTable tbody td.dtActionCls div {
     float: right;
-    width: 125px;
+    /*width: 125px;*/
+}
+
+.variant-update-icon-rotate{
+    -moz-transition: all .2s linear;
+    -webkit-transition: all .2s linear;
+    transition: all .2s linear;
+}
+
+.variant-update-icon-rotate.down{
+    -ms-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
 }
 
 /** -------------------------------------
