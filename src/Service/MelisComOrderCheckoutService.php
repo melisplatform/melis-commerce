@@ -989,11 +989,10 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                         $currencyId = $currency->cur_id;
                     }
 
-                    $priceOrder = isset($order['costs']['order']['totalWithProductCoupon']) ? $order['costs']['order']['totalWithProductCoupon']: $order['costs']['order']['totalWithoutCoupon'];
                     $payment = array(
                         'opay_order_id' => $orderId,
                         'opay_price_total' => $totalCost,
-                        'opay_price_order' => $priceOrder,
+                        'opay_price_order' => $order['costs']['order']['total'],
                         'opay_price_shipping' => $order['costs']['shipment']['total'],
                         'opay_currency_id' => $currencyId,
                         'opay_payment_type_id' => $paymentTypeId,
