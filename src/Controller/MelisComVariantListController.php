@@ -88,6 +88,15 @@ class MelisComVariantListController extends AbstractActionController
     {
         return new ViewModel();
     }
+
+    /**
+     * renders the product variant table's update status button
+     * @return ViewModel
+     */
+    public function renderToolVariantActionUpdateStatusAction()
+    {
+        return new ViewModel();
+    }
     
     /**
      * renders the products variants tab content container
@@ -138,8 +147,8 @@ class MelisComVariantListController extends AbstractActionController
     
         //table layout
         $attrLayout     = '<span class="btn btn-default cell-val-table" style="border-radius: 4px;color: #7D7B7B;">%s</span>';
-//        $varOnline      = '<span class="text-success"><i class="fa fa-fw fa-circle"></i></span>';
-//        $varOffline     = '<span class="text-danger"><i class="fa fa-fw fa-circle"></i></span>';
+        $varOnline      = '<span class="text-success var-status-indicator"><i class="fa fa-fw fa-circle"></i></span>';
+        $varOffline     = '<span class="text-danger var-status-indicator"><i class="fa fa-fw fa-circle"></i></span>';
         $varMain        = '<span class="text-success"><i class="fa fa-fw fa-star"></i></span>';
         $prodImage      = '<img src="%s" width="60"/>';
         $toolTipTextTag = '<a id="row-%s" class="toolTipVarHoverEvent tooltipTableVar" data-variantId="%s" data-variantname="%s" data-hasqtip="1" aria-describedby="qtip-%s">%s</a>';
@@ -209,15 +218,15 @@ class MelisComVariantListController extends AbstractActionController
             }
             
             if($variant->var_status){
-                $variantStatus = "checked";
+                $variantStatus = $varOnline;
             }else{
-                $variantStatus = "";
+                $variantStatus = $varOffline;
             }
 
             //switch for variant status
-            $varStatChk = '<div class="make-switch '.$productId.'_variantStatusChk triggerVarUpdate" data-on-label="'.$this->getTool()->getTranslation('tr_meliscore_common_active').'" data-off-label="'.$this->getTool()->getTranslation('tr_meliscore_common_inactive').'" data-text-label="'.$this->getTool()->getTranslation('tr_meliscommerce_product_list_col_status').'">
-                        <input type="checkbox" '.$variantStatus.' />
-                    </div>';
+//            $varStatChk = '<div class="make-switch '.$productId.'_variantStatusChk triggerVarUpdate" data-on-label="'.$this->getTool()->getTranslation('tr_meliscore_common_active').'" data-off-label="'.$this->getTool()->getTranslation('tr_meliscore_common_inactive').'" data-text-label="'.$this->getTool()->getTranslation('tr_meliscommerce_product_list_col_status').'">
+//                        <input type="checkbox" '.$variantStatus.' />
+//                    </div>';
              
             if($variant->var_main_variant){
                 $mainVariant = $varMain;
@@ -249,10 +258,11 @@ class MelisComVariantListController extends AbstractActionController
                 'var_id' => $variant->var_id,
                 'var_main_variant' => $mainVariant,
                 'var_image' => $variantimg,
-                'var_status' => $varStatChk,
+                'var_status' => $variantStatus,
                 'var_sku' => $sku,
                 'var_attributes' => $attributes,
                 'DT_RowId' => $variant->var_id,
+                'DT_RowAttr' => array('var_status' => $variant->var_status),
             );
             $ctr++;      
         }

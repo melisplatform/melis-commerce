@@ -10,7 +10,7 @@ return array(
                         'target' => '#tableProductVariantList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComVariantList/renderProductsVariantData',
                         'dataFunction' => 'initProductVariant',
-                        'ajaxCallback' => 'melisCommerce.initTooltipVarTable();initVariantSwitch();',
+                        'ajaxCallback' => 'melisCommerce.initTooltipVarTable();checkVarStatus();',
                         'filters' => array(
                             'left' => array(
                                 'productvariant-limit' => array(
@@ -86,6 +86,11 @@ return array(
                         ),
                         'searchables' => array(),
                         'actionButtons' => array(
+                            'updateStatus' => array(
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComVariantList',
+                                'action' => 'render-tool-variant-action-update-status',
+                            ),
                             'duplicate' => array(
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComPrdVarDuplication',

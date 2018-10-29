@@ -4442,29 +4442,65 @@ $(document).ready(function() {
         }
     });
 
-    body.on("switch-change", ".triggerVarUpdate", function(e, data){
+    body.on("click", ".updateVariantStatus", function(){
+        var _this = $(this);
         var obj = {};
         var val = "";
-        var variantId   = $(this).closest('tr').attr('id');
-        var prodId   = $(this).closest('.container-level-a').attr('id').replace(/[^0-9]/g,'');
-        if(data.value === false){
-            val = 0;
-        }else{
+        var varIndicator = "";
+        var linkClass = "";
+        var variantId = _this.closest('tr').attr('id');
+        var varStatus = _this.closest('tr').attr('var_status');
+        var prodId   = _this.closest('.container-level-a').attr('id').replace(/[^0-9]/g,'');
+        if(varStatus == 0){
             val = 1;
+            varIndicator = "text-success";
+            linkClass = "btn-danger";
+        }else{
+            val = 0;
+            varIndicator = "text-danger";
+            linkClass = "btn-success";
         }
+
         obj.id = variantId;
         obj.var_status = val;
         $.ajax({
-           type: 'POST',
-           url : '/melis/MelisCommerce/MelisComVariantList/updateVariantStatus',
-           data: $.param(obj)
+            type: 'POST',
+            url : '/melis/MelisCommerce/MelisComVariantList/updateVariantStatus',
+            data: $.param(obj),
+            beforeSend: function(){
+                //disable the button
+                _this.addClass("disabled").attr("disabled", true);
+                //change icon to loader
+                _this.find(".variant-update-icon-rotate").removeClass(function (index, className) {
+                    return (className.match (/(^|\s)fa-\S+/g) || []).join(' ');
+                }).addClass("fa-spinner fa-pulse fa-fw");
+            }
         }).success(function(data){
             if(data.success){
+                //update var_status on tr
+                _this.closest('tr').attr("var_status", val);
+                //change the original icon
+                _this.find(".variant-update-icon-rotate").removeClass(function (index, className) {
+                    return (className.match (/(^|\s)fa-\S+/g) || []).join(' ');
+                }).addClass("fa-arrow-circle-up");
+                //update style of the button
+                _this.removeClass(function (index, className) {
+                    return (className.match (/(^|\s)btn-\S+/g) || []).join(' ');
+                }).addClass(linkClass);
+                //update the status indicator inside the row
+                _this.closest('tr').find(".var-status-indicator").removeClass(function (index, className) {
+                    return (className.match (/(^|\s)text-\S+/g) || []).join(' ');
+                }).addClass(varIndicator);
+
+                //rotate the icon to indicate the status
+                _this.find(".variant-update-icon-rotate").toggleClass("down");
+
                 //check if variant is open to update it's status
                 if($("#"+variantId+"_id_meliscommerce_variant_tab_main_header_container").length){
                     melisHelper.zoneReload(variantId+"_id_meliscommerce_variant_tab_main_header_container", "meliscommerce_variant_tab_main_header_container", {"productId" : prodId, "variantId" : variantId});
                 }
             }
+            _this.removeClass("disabled").attr("disabled", false);
         });
     });
 
@@ -4479,16 +4515,29 @@ window.variantLoaded = function() {
     var prodTabId   = productId+"_id_meliscommerce_products_page";
     melisCommerce.enableTab(prodTabId);
 };
-window.initVariantSwitch = function(){
+window.checkVarStatus = function(){
     var productId = '';
-
-    if($(".triggerVarUpdate").closest('.container-level-a.active').attr('id') != undefined){
-        productId = $(".triggerVarUpdate").closest('.container-level-a.active').attr('id').replace(/[^0-9]/g,'');
+    if($(".updateVariantStatus").closest('.container-level-a.active').attr('id') != undefined){
+        productId = $(".updateVariantStatus").closest('.container-level-a.active').attr('id').replace(/[^0-9]/g,'');
     }else{
         productId = $(".save-variant").closest('.container-level-a.active').data("prodid");
     }
 
-    $('.'+productId+'_variantStatusChk').bootstrapSwitch();
+    $("#"+productId+"_tableProductVariantList tbody tr").each(function(){
+        var status = $(this).attr('var_status');
+        if(status != undefined){
+            var btnStyle = "btn-danger";
+            var icon = $(this).find(".variant-update-icon-rotate");
+            if(status == 0) {
+                btnStyle = "btn-success";
+            }else{
+                icon.toggleClass("down");
+            }
+            icon.closest("a").removeClass(function (index, className) {
+                return (className.match (/(^|\s)btn-\S+/g) || []).join(' ');
+            }).addClass(btnStyle);
+        }
+    });
 };
 $(function(){
     // char counter in seo title
@@ -9584,53 +9633,26 @@ $(document).ready(function () {
 
 var commerceDashPluginOrderMessagesAllMessagesInterval = '';
 var commerceDashPluginOrderMessagesUnseenMessagesInterval = '';
-var commDashPluginOrderMessagesWithAllFilterInstance = 0;
+var commerceDashPluginorderMessagesInstanceCount = 0;
 var commDashPluginOrderMessagesWithUnansweredFilterInstance = 0;
 
 $(document).ready(function () {
-    const $body = $('body');
-    let placeholder = '';
-    let messagecountplaceholder = '';
-    let intervalDelay = 60000;
-    let loadMessages = false;
-    let filter = '';
-    let $orderMessages = $(".melis-commerce-dashboard-plugin-order-messages-parent");
-    let start = 0;
-    let end = 9;
-
-    $body.find('.grid-stack-item .grid-stack-item-content').on('scroll', function() {
-        console.log("-------" + $(this).scrollTop());
-        if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight && loadMessages === false) {
-            console.log($(this).scrollTop());
-            console.log($(this).height());
-            console.log($(this).find('.widget-parent').height());
-            $.ajax({
-                type: 'POST',
-                url: '/melis/dashboard-plugin/MelisCommerceDashboardPluginOrderMessages/testAjax',
-                dataType: 'json',
-                encode: true
-            }).success(function (data) {
-                console.log('wow');
-                loadMessages = false;
-            }).error(function (xhr, textStatus, errorThrown) {
-                console.log("ERROR !! Status = " + textStatus + "\n Error = " + errorThrown + "\n xhr = " + xhr.statusText);
-            });
-            loadMessages = true;
-        }
-    });
+    var placeholder = '';
+    var messagecountplaceholder = '';
+    var intervalDelay = 60000;
 
     // changing filter for charts
-    $body.on("change", '.commerce-dashboard-plugin-order-messages', function () {
+    $("body").on("change", '.commerce-dashboard-plugin-order-messages', function () {
         commerceDashboardPluginOrderMessagesInit($(this));
     });
 
     //opening the message in orders
-    $body.on("click", ".commerce-dashboard-plugin-order-messages", function () {
+    $("body").on("click", ".commerce-dashboard-plugin-order-messages", function () {
         orderMessages.openOrderMessages(this);
     });
 
     window.commerceDashboardPluginOrderMessagesInit = function (target) {
-        filter = '';
+        var filter = '';
         messagecountplaceholder = '.message-count';
         if (typeof target === "undefined") {
             //first load or when using "all" filter
@@ -9642,26 +9664,26 @@ $(document).ready(function () {
             placeholder = "#" + target.closest(".melis-commerce-dashboard-plugin-order-messages-parent").find(".commerce-dashboard-plugin-order-messages-list").attr("id");
         }
 
-        commDashPluginOrderMessagesWithUnansweredFilterInstance = $orderMessages.find('label.active input[value="unseen"]').length;
-        commDashPluginOrderMessagesWithAllFilterInstance = $orderMessages.find('label.active input[value="all"]').length;
+        commDashPluginOrderMessagesWithUnansweredFilterInstance = $(".melis-commerce-dashboard-plugin-order-messages-parent").find('label.active input[value="unseen"]').length;
+        commerceDashPluginorderMessagesInstanceCount = $(".melis-commerce-dashboard-plugin-order-messages-parent").find('label.active input[value="all"]').length;
         appendMessages(filter);
 
-        if (commDashPluginOrderMessagesWithUnansweredFilterInstance === 0) {
+        if (commDashPluginOrderMessagesWithUnansweredFilterInstance == 0) {
             clearInterval(commerceDashPluginOrderMessagesUnseenMessagesInterval);
             commerceDashPluginOrderMessagesUnseenMessagesInterval = '';
         }
 
-        if (commDashPluginOrderMessagesWithAllFilterInstance === 0) {
+        if (commerceDashPluginorderMessagesInstanceCount == 0) {
             clearInterval(commerceDashPluginOrderMessagesAllMessagesInterval);
             commerceDashPluginOrderMessagesAllMessagesInterval = '';
         }
 
-        if (filter === 'all') {
-            if (commerceDashPluginOrderMessagesAllMessagesInterval === '') {
+        if (filter == 'all') {
+            if (commerceDashPluginOrderMessagesAllMessagesInterval == '') {
                 commerceDashPluginOrderMessagesAllMessagesInterval = setInterval(appendMessages, intervalDelay, filter);
             }
         } else {
-            if (commerceDashPluginOrderMessagesUnseenMessagesInterval === '') {
+            if (commerceDashPluginOrderMessagesUnseenMessagesInterval == '') {
                 commerceDashPluginOrderMessagesUnseenMessagesInterval = setInterval(appendMessages, intervalDelay, filter);
             }
         }
@@ -9676,11 +9698,7 @@ $(document).ready(function () {
         $.ajax({
             type: 'POST',
             url: '/melis/dashboard-plugin/MelisCommerceDashboardPluginOrderMessages/getMessages',
-            data: {
-                filter: filter,
-                start: start,
-                end: end
-            },
+            data: {filter: filter},
             dataType: 'json',
             encode: true
         }).success(function (data) {
@@ -9698,10 +9716,10 @@ $(document).ready(function () {
         });
     }
 
-    let orderMessages = {
+    var orderMessages = {
         openOrderMessages: function (element) {
-            let orderId = $(element).find('.order-message-id').val();
-            let orderReference = $(element).find('.order-message-reference').val();
+            var orderId = $(element).find('.order-message-id').val();
+            var orderReference = $(element).find('.order-message-reference').val();
 
             // Open parent tab
             melisHelper.tabOpen(
@@ -9711,11 +9729,11 @@ $(document).ready(function () {
                 'meliscommerce_order_list_page'
             );
 
-            let alreadyOpen = $("body #melis-id-nav-bar-tabs li a.tab-element[data-id='id_meliscommerce_order_list_page']");
+            var alreadyOpen = $("body #melis-id-nav-bar-tabs li a.tab-element[data-id='id_meliscommerce_order_list_page']");
             // check if it exists
-            let checkOrders = setInterval(function () {
+            var checkOrders = setInterval(function () {
                 if (alreadyOpen.length) {
-                    let navTabsGroup = "id_meliscommerce_order_list_page";
+                    var navTabsGroup = "id_meliscommerce_order_list_page";
 
                     melisHelper.tabOpen(
                         translations.tr_meliscommerce_orders_Order + ' ' + orderReference,
@@ -9727,10 +9745,10 @@ $(document).ready(function () {
                         function () {
                             //JS CALLBACK FOR THE ORDER MESSAGES
                             //TO OPEN THE MESSAGE TAB OF A SPECIFIC ORDER
-                            let $parent = $('#' + orderId + '_id_meliscommerce_orders_content_tabs');
+                            var parent = orderId + '_id_meliscommerce_orders_content_tabs';
 
-                            $parent.find('.widget-head').find('ul').find('li').each(function () {
-                                if ($(this).find('a').attr('href') === "#" + orderId + "_id_meliscommerce_orders_content_tabs_content_messages") {
+                            $('#' + parent).find('.widget-head').find('ul').find('li').each(function () {
+                                if ($(this).find('a').attr('href') == "#" + orderId + "_id_meliscommerce_orders_content_tabs_content_messages") {
                                     $(this).addClass("active");
                                 } else {
                                     if ($(this).hasClass("active")) {
@@ -9739,10 +9757,10 @@ $(document).ready(function () {
                                 }
                             });
 
-                            $parent = $('#' + orderId + '_id_meliscommerce_orders_content_tabs_content');
+                            var parent = orderId + '_id_meliscommerce_orders_content_tabs_content';
 
-                            $parent.find('.tab-pane').each(function () {
-                                if ($(this).attr('id') === orderId + "_id_meliscommerce_orders_content_tabs_content_messages") {
+                            $('#' + parent).find('.tab-pane').each(function () {
+                                if ($(this).attr('id') == orderId + "_id_meliscommerce_orders_content_tabs_content_messages") {
                                     $(this).addClass("active");
                                 } else {
                                     if ($(this).hasClass("active")) {
@@ -9760,8 +9778,8 @@ $(document).ready(function () {
             $(element).closest('.melis-commerce-dashboard-plugin-order-messages-parent').find('.message-count').empty();
         },
         setUnansweredMessages: function (unansweredMessages, element) {
-            let message = '';
-            let newMessage = '';
+            var message = '';
+            var newMessage = '';
 
             if (unansweredMessages > 1) {
                 message = translations.tr_melis_commerce_dashboard_plugin_order_messages_unanswered_messages;
@@ -9774,25 +9792,25 @@ $(document).ready(function () {
             $(element).closest('.melis-commerce-dashboard-plugin-order-messages-parent').find(messagecountplaceholder).append(newMessage);
         },
         setMessages: function (placeholder, message, filter) {
-            let colorRed = '';
-            let bgColorRed = '';
-            let classStrong = '';
-            let text = message.omsg_message.length > 70 ? message.omsg_message.substring(0, 70) + '...' : message.omsg_message;
-            let message_created = moment(message.omsg_date_creation, "YYYY-MM-DD HH:mm:ss");
+            var colorRed = '';
+            var bgColorRed = '';
+            var classStrong = '';
+            var text = message.omsg_message.length > 70 ? message.omsg_message.substring(0, 70) + '...' : message.omsg_message;
+            var message_created = moment(message.omsg_date_creation, "YYYY-MM-DD HH:mm:ss");
 
             if (message.noReply) {
-                colorRed = 'style="color: #e61c23;"';
+                colorRed = 'style="color: #981a1f;"';
                 classStrong = 'strong';
-                bgColorRed = 'style="background-color: #e61c23;"';
+                bgColorRed = 'style="background-color: #981a1f;"';
             }
 
-            let dateHtml = '<span class="label label-inverse pull-right" ' + bgColorRed + '>' +
+            var dateHtml = '<span class="label label-inverse pull-right" ' + bgColorRed + '>' +
                 message_created.format("HH:mm:ss DD MMM") +
                 '</span>';
 
-            let doubleArrow = '<i class="fa fa-angle-double-right" ' + colorRed + '<i/>';
+            var doubleArrow = '<i class="fa fa-angle-double-right" ' + colorRed + '<i/>';
 
-            let nameHtml = '<span class="' + classStrong + '" ' + colorRed + '>' +
+            var nameHtml = '<span class="' + classStrong + '" ' + colorRed + '>' +
                 message.clientFirstName + ' ' + message.clientLastName +
                 '</span> ' + doubleArrow +
                 ' <small class="' + classStrong + '" ' + colorRed + '>' +
@@ -9802,7 +9820,7 @@ $(document).ready(function () {
                 translations.tr_melis_commerce_dashboard_plugin_order_messages_message_placed_on + message.orderDate +
                 '</small>';
 
-            let messageHtml = '<a href="#" class="list-group-item commerce-dashboard-plugin-order-messages" ' +
+            var messageHtml = '<a href="#" class="list-group-item commerce-dashboard-plugin-order-messages" ' +
                 'style="border-radius: 0px;border-top: 0px;border-right: 0px;border-left:0px;margin-bottom: 0px;">' +
                 '  <input class="order-message-id" type="text" value="' + message.omsg_order_id + '" hidden="hidden">' +
                 '  <input class="order-message-reference" type="text" value="' + message.reference + '" hidden="hidden">' +
@@ -9826,16 +9844,16 @@ $(document).ready(function () {
 
 //delete callback if there is only one plugin and it is deleted the interval will be cleared
 function commerceDasboardPluginOrderMessagesDelete(element) {
-    if (element.find(".melis-commerce-dashboard-plugin-order-messages-parent").length === 1) {
+    if (element.find(".melis-commerce-dashboard-plugin-order-messages-parent").length == 1) {
         if (element.find(".melis-commerce-dashboard-plugin-order-messages-parent label.active input[value='all']").length > 0) {
-            commDashPluginOrderMessagesWithAllFilterInstance--;
-            if (commDashPluginOrderMessagesWithAllFilterInstance === 0) {
+            commerceDashPluginorderMessagesInstanceCount--;
+            if (commerceDashPluginorderMessagesInstanceCount == 0) {
                 clearInterval(commerceDashPluginOrderMessagesAllMessagesInterval);
                 commerceDashPluginOrderMessagesAllMessagesInterval = '';
             }
         } else {
             commDashPluginOrderMessagesWithUnansweredFilterInstance--;
-            if (commDashPluginOrderMessagesWithUnansweredFilterInstance === 0) {
+            if (commDashPluginOrderMessagesWithUnansweredFilterInstance == 0) {
                 clearInterval(commerceDashPluginOrderMessagesUnseenMessagesInterval);
                 commerceDashPluginOrderMessagesUnseenMessagesInterval = '';
             }
