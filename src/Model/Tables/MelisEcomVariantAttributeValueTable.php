@@ -70,8 +70,54 @@ class MelisEcomVariantAttributeValueTable extends MelisEcomGenericTable
             $select->where('melis_ecom_variant.var_status = 1');
         }
 
+        $select->where->in('melis_ecom_variant_attribute_value.vatv_attribute_value_id', $attrValueIds);
+
         $resultData = $this->tableGateway->selectWith($select);
 
         return $resultData;
+    }
+
+    public function getVaraintByAttrbuteValue($attrtId, $langId, $whereClause = array(), $start = null, $limit = null,
+                                              $colSort = null, $sortOrder = 'ASC', $isValid = true)
+    {
+        $select = $this->tableGateway->getSql()->select();
+
+        $select->join('melis_ecom_variant', 'melis_ecom_variant.var_id = melis_ecom_variant_attribute_value.vatv_variant_id', array('*'), $select::JOIN_LEFT);
+        $select->join('melis_ecom_attribute_value_trans', 'melis_ecom_attribute_value_trans.av_attribute_value_id = melis_ecom_variant_attribute_value.vatv_attribute_value_id', array('*'), $select::JOIN_LEFT);
+        $select->join('melis_ecom_attribute_value', 'melis_ecom_attribute_value.atval_id = melis_ecom_attribute_value_trans.av_attribute_value_id', array('*'), $select::JOIN_LEFT);
+        $select->join('melis_ecom_attribute_type', 'melis_ecom_attribute_type.atype_id = melis_ecom_attribute_value.atval_type_id', array('*'), $select::JOIN_LEFT);
+        $select->join('melis_ecom_attribute', 'melis_ecom_attribute.attr_id = melis_ecom_attribute_value.atval_attribute_id', array('*'), $select::JOIN_LEFT);
+        $select->join('melis_ecom_product_category', 'melis_ecom_product_category.pcat_prd_id = melis_ecom_variant.var_prd_id', array('*'), $select::JOIN_LEFT);
+
+        if ($isValid){
+            $select->where('melis_ecom_variant.var_status = 1');
+            $select->where('melis_ecom_attribute.attr_status = 1');
+        }
+
+        $select->where('melis_ecom_attribute_value.atval_attribute_id = '.$attrtId);
+        $select->where('melis_ecom_attribute_value_trans.avt_lang_id = '.$langId);
+
+        if (!empty($whereClause)){
+            foreach ($whereClause as $item) {
+                $select->where($item);
+            }
+        }
+
+        if (!is_null($start)){
+            $select->offset((int) $start);
+        }
+
+        if (!is_null($limit)){
+            $select->limit((int) $limit);
+        }
+
+        if (!is_null($colSort)){
+            $select->order($colSort.' '.$sortOrder);
+        }
+
+        $resultData = $this->tableGateway->selectWith($select);
+
+        return $resultData;
+
     }
 }
