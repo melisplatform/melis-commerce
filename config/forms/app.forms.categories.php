@@ -72,7 +72,7 @@ return array(
                                     ),
                                     'attributes' => array(
                                         'id' => 'catt_description',
-                                        'class' => 'form-control',
+                                        'class' => 'form-control editme',
                                         'rows' => 10
                                     )
                                 )
