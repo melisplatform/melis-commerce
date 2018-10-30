@@ -100,8 +100,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
         $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
         $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
         
-        if (!empty($results))
-        {
+        if (!empty($results)) {
             return $results;
         }
         
@@ -111,24 +110,22 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
         $select->join('melis_ecom_category_trans', 'melis_ecom_category_trans.catt_category_id = melis_ecom_category.'.$this->idField, array('*'), $select::JOIN_LEFT);
         $select->join('melis_ecom_lang', 'melis_ecom_lang.elang_id = melis_ecom_category_trans.catt_lang_id', array('*'), $select::JOIN_LEFT);
         
-        $select->where('melis_ecom_category.cat_id = '.$categoryId);
+        $select->where->equalTo('melis_ecom_category.cat_id', $categoryId);
         
-        if (!is_null($langId)){
-            $select->where('melis_ecom_category_trans.catt_lang_id = '.$langId);
+        if (!is_null($langId)) {
+            $select->where->equalTo('melis_ecom_category_trans.catt_lang_id', $langId);
         }
         
-        if ($onlyValid)
-        {
-            $select->where('melis_ecom_lang.elang_status = 1');
+        if ($onlyValid) {
+            $select->where->equalTo('melis_ecom_lang.elang_status', 1);
         }
         
         $dataCategory = $this->tableGateway->selectWith($select);
 		
-		if ($this->cacheResults)
-		{
+		if ($this->cacheResults) {
 		    $melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $dataCategory);
 		}
-		
+
         return $dataCategory;
     }
     
@@ -217,7 +214,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
      */
     public function getCategoryByFatherId($fatherId = 0, $onlyValid = false){
         $select = $this->tableGateway->getSql()->select();
-        
+
         $select->columns(array('cat_id', 'cat_status', 'cat_father_cat_id'));
         
         if ($fatherId == 0){
@@ -493,6 +490,33 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
         $select->where->equalTo('pcat_prd_id', $productId);
 
         $select->group($this->idField);
+
+        $resultSet = $this->tableGateway->selectWith($select);
+
+        return $resultSet;
+    }
+
+    public function getChildrenByLangId($fatherId, $langId, $valid)
+    {
+        $select = $this->tableGateway->getSql()->select();
+
+        if (!is_null($langId)) {
+            $join = new Expression('melis_ecom_category_trans.catt_category_id = melis_ecom_category.'.$this->idField.' AND catt_lang_id ='.$langId);
+        } else {
+            $join = new Expression('melis_ecom_category_trans.catt_category_id = melis_ecom_category.'.$this->idField.' AND catt_name IS NOT NULL');
+        }
+
+        $select->join('melis_ecom_category_trans', $join, ['*'], $select::JOIN_LEFT);
+        $select->where->equalTo('cat_father_cat_id', $fatherId);
+
+        if (is_bool($valid) && $valid) {
+            $select->where('cat_status = 1');
+            $select->where->NEST->literal('cat_date_valid_start <= "'. date('Y-m-d').'"')->or->literal('cat_date_valid_start IS NULL');
+            $select->where->NEST->literal('cat_date_valid_end >= "'. date('Y-m-d').'"')->or->literal('cat_date_valid_end IS NULL');
+        }
+
+        $select->group($this->idField);
+        $select->order('catt_name ASC');
 
         $resultSet = $this->tableGateway->selectWith($select);
 
