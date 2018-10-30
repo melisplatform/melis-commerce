@@ -792,8 +792,6 @@ class MelisComCategoryController extends AbstractActionController
         if($request->isPost()) {
 
             $postValues = get_object_vars($this->getRequest()->getPost());
-            $postValues = $this->getTool()->sanitizeRecursive($postValues);
-
             
             if ($postValues['cat_father_cat_id'] == '-1'){
                 $type = 'catalog';
