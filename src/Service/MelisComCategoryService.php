@@ -1271,5 +1271,33 @@ class MelisComCategoryService extends MelisComGeneralService
         
         return $arrayParameters['results'];
     }
-    
+
+    /**
+     * This will get all children of a category
+     *
+     * @param int $fatherId
+     * @param int $langId
+     * @param boolean $valid
+     * @return mixed
+     */
+    public function getChildrenByLangId($fatherId, $langId, $valid) {
+        //prepare events parameters
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+
+        //service event start
+        $arrayParameters = $this->sendEvent('meliscommerce_service_category_get_valid_children_by_lang_id', $arrayParameters);
+
+        //implementation start
+        $categoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
+        $categories = $categoryTable->getChildrenByLangId($arrayParameters['fatherId'], $arrayParameters['langId'], $arrayParameters['valid']);
+
+        $results = $categories;
+        //implementation end
+
+        $arrayParameters['results'] = $results;
+        //service event end
+        $arrayParameters = $this->sendEvent('meliscommerce_service_category_get_valid_children_by_lang_id_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
 }
