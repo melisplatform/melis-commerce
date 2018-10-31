@@ -77,6 +77,17 @@
 		</div>
 	</div>
     <script type="text/javascript">
-        melisTinyMCE.createTinyMCE("tool", ".editme", {height: 300});
+        var option = {
+            mode : "none",
+            height : "300px",
+            plugins : [
+                'advlist autolink lists link image charmap print preview anchor',
+                'searchreplace visualblocks code fullscreen',
+                'insertdatetime media table contextmenu paste template',
+                'textcolor',
+            ],
+            toolbar : 'undo redo | styleselect | bold italic | link image |  alignleft aligncenter alignright alignjustify | forecolor backcolor | code',
+        }
+        melisTinyMCE.createTinyMCE("tool", ".editme", option);
     </script>
 </div>

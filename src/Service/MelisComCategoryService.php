@@ -10,7 +10,6 @@
 namespace MelisCommerce\Service;
 
 use MelisCommerce\Model\MelisCategory;
-use Zend\Form\Annotation\Object;
 use Zend\Stdlib\ArrayUtils;
 /**
  *
