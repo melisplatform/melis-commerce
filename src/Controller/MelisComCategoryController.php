@@ -1207,6 +1207,7 @@ class MelisComCategoryController extends AbstractActionController
                 $productId = $val->getId();
                 // Table row Datas
 
+                $categoryProduct['pcat_order'] = null;
                 $categoryProduct['DT_RowClass'] = 'is-draggable';
 
                 $product = $val->getProduct();
