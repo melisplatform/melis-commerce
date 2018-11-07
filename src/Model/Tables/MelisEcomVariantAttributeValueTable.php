@@ -70,6 +70,8 @@ class MelisEcomVariantAttributeValueTable extends MelisEcomGenericTable
             $select->where('melis_ecom_variant.var_status = 1');
         }
 
+        $select->where->in('melis_ecom_variant_attribute_value.vatv_attribute_value_id', $attrValueIds);
+
         $resultData = $this->tableGateway->selectWith($select);
 
         return $resultData;

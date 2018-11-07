@@ -792,8 +792,6 @@ class MelisComCategoryController extends AbstractActionController
         if($request->isPost()) {
 
             $postValues = get_object_vars($this->getRequest()->getPost());
-            $postValues = $this->getTool()->sanitizeRecursive($postValues);
-
             
             if ($postValues['cat_father_cat_id'] == '-1'){
                 $type = 'catalog';
@@ -1209,6 +1207,7 @@ class MelisComCategoryController extends AbstractActionController
                 $productId = $val->getId();
                 // Table row Datas
 
+                $categoryProduct['pcat_order'] = null;
                 $categoryProduct['DT_RowClass'] = 'is-draggable';
 
                 $product = $val->getProduct();

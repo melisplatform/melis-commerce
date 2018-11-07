@@ -63,6 +63,7 @@
 	    'tr_meliscommerce_variants_delete_title' => 'Delete variant',
 	    'tr_meliscommerce_variants_delete_confirm' => 'Are you sure you wish to delete this variant?',
 	    'tr_meliscommerce_variants_prime_title' => 'Make this the default variant',
+	    'tr_meliscommerce_variants_update_status_title' => 'Update status',
 	    
 	    //flash message
 	    'tr_meliscommerce_variants_page' => 'Variant',

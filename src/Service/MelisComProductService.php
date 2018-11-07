@@ -962,10 +962,7 @@ class MelisComProductService extends MelisComGeneralService
         $decimalPoint = trim($locale['mon_decimal_point']) ? trim($locale['mon_decimal_point']) : null;
         $thousandSeparator = trim($locale['mon_thousands_sep']) ? trim($locale['mon_thousands_sep']) : ',';
         $fmt = new \NumberFormatter($sessionLocale, \NumberFormatter::CURRENCY );
-        $value = $fmt->formatCurrency($price, $curSymbolInt);
-        if(count($value) === 1) {
-            $value = $fmt->formatCurrency($price, $curSymbolInt);
-        }
+        $value = $fmt->formatCurrency((float)$price, $curSymbolInt);
 
         $value = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $value); // replace special characters
         $value = preg_replace('/[a-zA-Z$ ]/', '', $value); // replace $, [space] and alphabets in price
