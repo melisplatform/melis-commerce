@@ -240,7 +240,6 @@ class MelisEcomVariantTable extends MelisEcomGenericTable
 
         $select->group('melis_ecom_variant.var_id');
 
-// 
         $resultData = $this->tableGateway->selectWith($select);
 
         return $resultData;
@@ -248,7 +247,6 @@ class MelisEcomVariantTable extends MelisEcomGenericTable
     
     public function getAssocVariantsByProductId($productId)
     {
-        
         $select = $this->tableGateway->getSql()->select();
         $select->columns(array());
         $select->quantifier('DISTINCT');
@@ -261,7 +259,6 @@ class MelisEcomVariantTable extends MelisEcomGenericTable
     
     public function getProductAssoc($productId)
     {
-        
         $select = $this->tableGateway->getSql()->select();
         $select->columns(array());
         $select->quantifier('DISTINCT'); 
@@ -313,5 +310,50 @@ class MelisEcomVariantTable extends MelisEcomGenericTable
     {
         $this->_currentVarDataCount = $dataCount;
     }
-   
+
+    public function getVaraintsFullDetails($selectCols = array(), $whereClause = array(), $start = null, $limit = null, $sortOrder = array(), $onlyValid = true)
+    {
+        $select = $this->tableGateway->getSql()->select();
+
+        if (!empty($selectCols)){
+            $select->columns($selectCols);
+        }
+
+        $select->join('melis_ecom_product', 'melis_ecom_product.prd_id = melis_ecom_variant.var_prd_id', array('*'), $select::JOIN_LEFT);
+        $select->join('melis_ecom_product_category', 'melis_ecom_product_category.pcat_prd_id = melis_ecom_variant.var_prd_id', array('*'), $select::JOIN_LEFT);
+        $select->join('melis_ecom_price', 'melis_ecom_price.price_var_id = melis_ecom_variant.var_id', array('*'), $select::JOIN_LEFT);
+        $select->join('melis_ecom_currency', 'melis_ecom_currency.cur_id = melis_ecom_price.price_currency', array('*'), $select::JOIN_LEFT);
+        $select->join('melis_ecom_variant_stock', 'melis_ecom_variant_stock.stock_var_id = melis_ecom_variant.var_id', array('*'), $select::JOIN_LEFT);
+        $select->join('melis_ecom_category', 'melis_ecom_category.cat_id = melis_ecom_product_category.pcat_cat_id', array('*'), $select::JOIN_LEFT);
+        // Join using relation with price table
+        $select->join('melis_ecom_country', 'melis_ecom_country.ctry_id = melis_ecom_price.price_country_id', array('*'), $select::JOIN_LEFT);
+
+        if ($onlyValid){
+            $select->where('melis_ecom_variant.var_status = 1');
+            $select->where('melis_ecom_product.prd_status = 1');
+            $select->where('melis_ecom_category.cat_status = 1');
+            $select->where('melis_ecom_country.ctry_status = 1');
+        }
+
+        if (!empty($whereClause)){
+            $select->where($whereClause);
+        }
+
+        if (!is_null($start)){
+            $select->offset((int) $start);
+        }
+
+        if (!is_null($limit)){
+            $select->limit((int) $limit);
+        }
+
+        if (!empty($sortOrder)){
+            $select->order($sortOrder);
+        }
+
+        $resultData = $this->tableGateway->selectWith($select);
+
+        return $resultData;
+    }
+
 }
