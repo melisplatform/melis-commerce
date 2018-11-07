@@ -1302,6 +1302,11 @@ textarea {
     width: 100%;
 }
 
+.imageDocumentContainer .me-p-image{
+    border: 1px solid gainsboro;
+    background: #cccccc;
+}
+
 .me-p-image{
     position:relative;
     margin:5px;
