@@ -77,6 +77,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         $select->quantifier('DISTINCT');
         $select->join('melis_ecom_product_text', 'melis_ecom_product_text.ptxt_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT);
         $select->join('melis_ecom_product_category', 'melis_ecom_product_category.pcat_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT);
+        $select->join('melis_ecom_category_trans', 'melis_ecom_category_trans.catt_category_id = melis_ecom_product_category.pcat_cat_id', [], $select::JOIN_LEFT);
         $select->join('melis_ecom_variant', 'melis_ecom_variant.var_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT);
         $select->join('melis_ecom_price', 'melis_ecom_price.price_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT);
         //include product variant
@@ -101,7 +102,8 @@ class MelisEcomProductTable extends MelisEcomGenericTable
             $select->where->NEST->like('melis_ecom_product.prd_id', $search)
             ->or->like('melis_ecom_product.prd_reference', $search)
             ->or->like('melis_ecom_product_text.ptxt_field_short', $search)
-            ->or->like('melis_ecom_variant.var_sku', $search);
+            ->or->like('melis_ecom_variant.var_sku', $search)
+            ->or->like('melis_ecom_category_trans.catt_name', $search);
         }
         
         if (!is_null($start))
