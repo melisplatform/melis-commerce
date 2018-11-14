@@ -52,6 +52,7 @@
     		<a class="btn btn-primary" href="<?php echo $this->prevStep_link?>"><?= $this->translate('tr_meliscommerce_order_checkout_common_prev'); ?></a>
     		<button class="btn btn-primary pull-right"><?= $this->translate('tr_meliscommerce_order_checkout_common_next'); ?></button>
 		</div>
+        <input type="hidden" name="m_add_first_form_to_validate" value="billing">
     </form>
 <?php else:?>
 	<label class="alert alert-danger"><?php echo $this->checkoutErrorMsg?></label>

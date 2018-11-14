@@ -351,6 +351,8 @@ class MelisEcomVariantTable extends MelisEcomGenericTable
             $select->order($sortOrder);
         }
 
+        $select->group('var_id');
+
         $resultData = $this->tableGateway->selectWith($select);
 
         return $resultData;

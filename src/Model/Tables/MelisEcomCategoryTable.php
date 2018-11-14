@@ -496,7 +496,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
         return $resultSet;
     }
 
-    public function getChildrenByLangId($fatherId, $langId, $valid)
+    public function getChildrenByLangId($fatherId, $langId, $valid, $order = false)
     {
         $select = $this->tableGateway->getSql()->select();
 
@@ -515,8 +515,11 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
             $select->where->NEST->literal('cat_date_valid_end >= "'. date('Y-m-d').'"')->or->literal('cat_date_valid_end IS NULL');
         }
 
-        $select->group($this->idField);
-        $select->order('catt_name ASC');
+        if ($order) {
+            $select->order('cat_order ASC');
+        } else {
+            $select->order('catt_name ASC');
+        }
 
         $resultSet = $this->tableGateway->selectWith($select);
 
