@@ -330,6 +330,7 @@ return array(
             'EcomCurrencySelect'                    => 'MelisCommerce\Form\Factory\EcomCurrencySelectFactory',
             'EcomCheckoutBillingAddressSelect'      => 'MelisCommerce\Form\Factory\EcomCheckoutBillingAddressSelectFactory',
             'EcomCheckoutDeliveryAddressSelect'     => 'MelisCommerce\Form\Factory\EcomCheckoutDeliveryAddressSelectFactory',
+            'EcomCatalogListSelect'                 => 'MelisCommerce\Form\Factory\EcomCatalogListSelectFactory',
 
             'EcomCountriesAllStatusSelect'          => 'MelisCommerce\Form\Factory\EcomCountriesAllStatusSelectFactory',
             'EcomCurrencyAllStatusSelect'           => 'MelisCommerce\Form\Factory\EcomCurrencyAllStatusSelectFactory',

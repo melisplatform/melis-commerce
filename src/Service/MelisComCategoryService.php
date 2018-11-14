@@ -1279,7 +1279,7 @@ class MelisComCategoryService extends MelisComGeneralService
      * @param boolean $valid
      * @return mixed
      */
-    public function getChildrenByLangId($fatherId, $langId, $valid) {
+    public function getChildrenByLangId($fatherId, $langId, $valid, $order = false) {
         //prepare events parameters
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
 
@@ -1288,7 +1288,7 @@ class MelisComCategoryService extends MelisComGeneralService
 
         //implementation start
         $categoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
-        $categories = $categoryTable->getChildrenByLangId($arrayParameters['fatherId'], $arrayParameters['langId'], $arrayParameters['valid']);
+        $categories = $categoryTable->getChildrenByLangId($arrayParameters['fatherId'], $arrayParameters['langId'], $arrayParameters['valid'], $arrayParameters['order']);
 
         $results = $categories;
         //implementation end
