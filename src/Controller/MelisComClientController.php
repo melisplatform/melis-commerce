@@ -1332,7 +1332,7 @@ class MelisComClientController extends AbstractActionController
             'clientContactName' => $clientContactName
         );
         
-        $this->getEventManager()->trigger('meliscommerce_category_save_end', 
+        $this->getEventManager()->trigger('meliscommerce_clients_save_end',
             $this, array_merge($response, array('typeCode' => $logTypeCode, 'itemId' => $clientId)));
         
         return new JsonModel($response);
