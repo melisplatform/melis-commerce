@@ -141,7 +141,7 @@ return array(
     'tr_meliscommerce_plugin_product_search_name' => 'Champ de recherche',
     'tr_meliscommerce_plugin_product_search_description' => 'Le plugin affiche la recherche saisie pour la recherche de produit',
 
-    'tr_meliscommerce_plugin_product_attribute_name' => 'Product Attributes',
+    'tr_meliscommerce_plugin_product_attribute_name' => 'Attributs du produit',
     'tr_meliscommerce_plugin_product_attribute_description' => 'Le plugin affiche l\'attribut et ses valeurs',
 
     //related product plugin

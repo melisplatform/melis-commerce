@@ -12,7 +12,6 @@ namespace MelisCommerce\Service;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Authentication\AuthenticationService;
 use Zend\Authentication\Storage\Session;
-use Zend\Form\Annotation\Object;
 use Zend\Session\SessionManager;
 use Zend\Authentication\Adapter\DbTable as AuthAdapter;
 use Zend\Authentication\Result;

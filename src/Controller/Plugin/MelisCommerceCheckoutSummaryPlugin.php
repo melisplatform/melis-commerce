@@ -203,13 +203,14 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
         
         $viewVariables = array(
             'checkoutCart' => $checkoutCart,
-            'checkoutCartSubTotal' => $currency.number_format($subTotal, 2),
-            'checkoutCartDiscount' => $currency.number_format($totalDiscount, 2),
+            'checkoutCartSubTotal' => number_format($subTotal, 2),
+            'checkoutCartDiscount' => number_format($totalDiscount, 2),
             'checkoutCartCouponCode' => $couponCode,
             'checkoutCartDiscountInfo' => $discountInfo,
             'checkoutCartCouponErrMsg' => $couponMsg,
-            'checkoutShipping' => $currency.number_format($shippingTotal, 2),
-            'checkoutCartTotal' => $currency.number_format($total, 2),
+            'checkoutShipping' => number_format($shippingTotal, 2),
+            'checkoutCartTotal' => number_format($total, 2),
+            'checkoutCurrency' => $currency,
             'checkoutHasErr' => $hasErr,
             'checkoutErrorMsg' => $checkoutErrorMsg,
             'checkoutClientOrderCost' => $clientOrderCost,

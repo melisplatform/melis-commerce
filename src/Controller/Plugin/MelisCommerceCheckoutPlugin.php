@@ -325,19 +325,11 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                     if (!empty($container['checkout'][$siteId]['orderId']))
                     {
                         $orderId = $container['checkout'][$siteId]['orderId'];
-                        
-                        $couponId = null;
-                        if (!empty($container['checkout'][$siteId]['couponId']))
-                        {
-                            $couponId = $container['checkout'][$siteId]['couponId'];
-                        }
-                        
+
                         $param = array(
                             'checkout' => null,
                             'orderDetails' => array(
-                                'countryId' => $countryId,
                                 'orderId' => $orderId,
-                                'couponId' => $couponId,
                                 'totalCost' => $totalCost,
                             )
                         );

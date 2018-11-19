@@ -48,7 +48,7 @@
     			<th></th>
     			<th style="text-align: right" colspan="2"><?php echo $totalQty?></th>
     			<th style="text-align: right"><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_sub_total');?></th>
-    			<th style="text-align: right"><?php echo $this->checkoutCartSubTotal?></th>
+    			<th style="text-align: right"><?php echo $this->checkoutCurrency.$this->checkoutCartSubTotal?></th>
     		</tr>
     		<tr>
     			<th style="text-align: right" colspan="4"><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_discount');?></th>
@@ -71,11 +71,11 @@
     		</tr>
     		<tr>
     			<th style="text-align: right" colspan="4"><?= $this->translate('tr_meliscommerce_plugin_checkout_summary_shipping_cost'); ?></th>
-    			<th style="text-align: right"><?php echo $this->checkoutShipping?></th>
+    			<th style="text-align: right"><?php echo $this->checkoutCurrency.$this->checkoutShipping?></th>
     		</tr>
     		<tr>
     			<th style="text-align: right" colspan="4"><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_total'); ?></th>
-    			<th style="text-align: right"><?php echo $this->checkoutCartTotal?></th>
+    			<th style="text-align: right"><?php echo $this->checkoutCurrency.$this->checkoutCartTotal?></th>
     		</tr>
     		
     	</tfoot>

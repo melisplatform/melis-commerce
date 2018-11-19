@@ -210,7 +210,7 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
                         $personDelAdd[str_replace('cadd_', 'm_add_delivery_', $key)] = $val;
                     }
 
-                    $deliveryAddForm->setData(ArrayUtils::merge($personDelAdd, $this->pluginFrontConfig));
+                    $deliveryAddForm->setData(ArrayUtils::merge($this->pluginFrontConfig, $personDelAdd));
                 }
             }
 
@@ -276,7 +276,7 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
                         $personBilAdd[str_replace('cadd_', 'm_add_billing_', $key)] = $val;
                     }
 
-                    $billingAddForm->setData(ArrayUtils::merge($personBilAdd, $this->pluginFrontConfig));
+                    $billingAddForm->setData(ArrayUtils::merge($this->pluginFrontConfig, $personBilAdd));
                 }
             }
             // Getting the client basket list using Client key

@@ -190,7 +190,7 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
         $select = $this->tableGateway->getSql()->select();
     
         $cper_contact = new \Zend\Db\Sql\Predicate\Expression("CONCAT(COALESCE(`cper_firstname`,''),' ',COALESCE(`cper_middle_name`,''),' ',COALESCE(`cper_name`,'')) as cli_person");
-        $max_order_date = new \Zend\Db\Sql\Predicate\Expression('(SELECT ord_date_creation FROM melis_ecom_order WHERE ord_client_person_id = cper_client_id ORDER BY ord_date_creation DESC LIMIT 1)');
+        $max_order_date = new \Zend\Db\Sql\Predicate\Expression('(SELECT ord_date_creation FROM melis_ecom_order WHERE ord_client_id = cper_client_id ORDER BY ord_date_creation DESC LIMIT 1)');
         $select->columns(array('*', $cper_contact, 'cli_last_order' => $max_order_date));
     
 //         $result = $this->tableGateway->select();
@@ -261,19 +261,19 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
         if(!empty($order))
             $select->order($order . ' ' . $orderDir);
     
-            $getCount = $this->tableGateway->selectWith($select);
-            $this->setCurrentDataCount((int) $getCount->count());
-             
-            // this is used in paginations
-            $select->limit($limit);
-            $select->offset($start);
-    
-            $resultSet = $this->tableGateway->selectWith($select);
-    
-//             $sql = $this->tableGateway->getSql();
-//             $raw = $sql->getSqlstringForSqlObject($select);
-//             echo $raw; die();
-            return $resultSet;
+        $getCount = $this->tableGateway->selectWith($select);
+        $this->setCurrentDataCount((int) $getCount->count());
+
+        // this is used in paginations
+        $select->limit($limit);
+        $select->offset($start);
+
+        $select->group('cli_id');
+
+        $resultSet = $this->tableGateway->selectWith($select);
+
+
+        return $resultSet;
     
     }
     

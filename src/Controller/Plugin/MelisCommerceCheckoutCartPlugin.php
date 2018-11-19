@@ -311,6 +311,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                 $data = array(
                     'var_id' => $variantId,
                     'var_product_id' => $productId,
+                    'var_product_name' => $melisComProductService->getProductName($productId, $langId),
                     'var_sku' => $varSku,
                     'var_quantity' => $quantity,
                     'var_currency_symbol' => $varPrice->cur_symbol,
@@ -340,7 +341,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                     $totalDiscount = ($generalCoupon->coup_percentage / 100) * $subTotalWithProdDiscount;
                     $discountInfo[] = array(
                         'details' => $generalCoupon->coup_percentage.'%',
-                        'amount' => $currency.number_format($totalDiscount, 2),
+                        'amount' => number_format($totalDiscount, 2),
                         'code' => $generalCoupon->coup_code,
                     );
                 }
@@ -349,7 +350,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                     $totalDiscount = $generalCoupon->coup_discount_value;
                     $discountInfo[] =  array(
                         'details' => $totalDiscount,
-                        'amount' => $currency.number_format($totalDiscount,2),
+                        'amount' => number_format($totalDiscount,2),
                         'code' => $generalCoupon->coup_code,
                     );
                 }
@@ -367,10 +368,11 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
         
         $viewVariables = array(
             'checkOutCart' => $checkOutCart,
-            'checkOutCartSubTotal' => $currency.number_format($subTotalWithProdDiscount, 2),
-            'checkOutCartDiscount' => $currency.number_format($orderDiscount, 2),
+            'checkOutCartSubTotal' => number_format($subTotalWithProdDiscount, 2),
+            'checkOutCartDiscount' => number_format($orderDiscount, 2),
             'checkOutCartDiscountInfo' => $discountInfo,
-            'checkOutCartTotal' => $currency.number_format($total, 2),
+            'checkOutCartTotal' => number_format($total, 2),
+            'checkOutCurrency' => $currency,
             'checkoutErrors' => $errors,
             'checkoutCoupon' => $couponView,
             'checkoutHasCoupon' => $hasDiscount,

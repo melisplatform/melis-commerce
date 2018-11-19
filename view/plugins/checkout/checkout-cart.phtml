@@ -57,7 +57,7 @@
             </tr>
             <tr>
                 <th colspan="1" class="text-right"><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_sub_total'); ?></th>
-                <th class="text-right"><?php echo $this->checkOutCartSubTotal ?></th>
+                <th class="text-right"><?php echo $this->checkOutCurrency.$this->checkOutCartSubTotal ?></th>
             </tr>
             <?php if ($this->checkoutHasCoupon){?>
                 <tr>
@@ -71,7 +71,7 @@
                          	        echo '<p>';
                          	        echo '(-'.$discInfo['details'].')';
                          	        echo '<span>';
-                         	        echo $discInfo['amount'];
+                         	        echo $this->checkOutCurrency.$discInfo['amount'];
                                     echo '</span>';
                                     echo '</p>';
                          	    }
@@ -82,7 +82,7 @@
             <?php }?>
             <tr>
                 <th colspan="1" class="text-right"><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_total'); ?></th>
-                <th class="text-right"><?php echo $this->checkOutCartTotal ?></th>
+                <th class="text-right"><?php echo $this->checkOutCurrency.$this->checkOutCartTotal ?></th>
             </tr>
         </tfoot>
     </table>

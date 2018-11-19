@@ -132,6 +132,7 @@ class MelisComVariantListController extends AbstractActionController
         $getValues = get_object_vars($this->getRequest()->getQuery());//echo '<pre>'; print_r($this->getRequest()->getPost()); echo '</pre>'; die();
         $productId = $this->getRequest()->getPost('prodId');
         $variantService = $this->getServiceLocator()->get('MelisComVariantService');
+        $attrSrv = $this->getServiceLocator()->get('MelisComAttributeService');
         $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
         $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_products');
         $viewHelperManager = $this->getServiceLocator()->get('ViewHelperManager');
@@ -146,7 +147,7 @@ class MelisComVariantListController extends AbstractActionController
         $total = 0;
     
         //table layout
-        $attrLayout     = '<span class="btn btn-default cell-val-table" style="border-radius: 4px;color: #7D7B7B;">%s</span>';
+        $attrLayout     = '<span class="btn btn-default cell-val-table" title="%s" style="border-radius: 4px;color: #7D7B7B;">%s</span>';
         $varOnline      = '<span class="text-success var-status-indicator"><i class="fa fa-fw fa-circle"></i></span>';
         $varOffline     = '<span class="text-danger var-status-indicator"><i class="fa fa-fw fa-circle"></i></span>';
         $varMain        = '<span class="text-success"><i class="fa fa-fw fa-star"></i></span>';
@@ -182,7 +183,8 @@ class MelisComVariantListController extends AbstractActionController
             $mainVariant = '';
             $variantStatus = '';
             foreach($variantObj->getAttributeValues() as $attributeValue){
-            $valCol = 'avt_v_'.$attributeValue->atype_column_value;
+                $attributeText = $attrSrv->getAttributeText($attributeValue->atval_attribute_id, $langId);
+                $valCol = 'avt_v_'.$attributeValue->atype_column_value;
                 
                 //check for attribute value translations
                 $foundTrans = false;
@@ -214,9 +216,8 @@ class MelisComVariantListController extends AbstractActionController
                     case 'avt_v_varchar' : $value = $this->getTool()->limitedText($value,50); break;
                 }                   
                 
-                $attributes .= sprintf($attrLayout, $this->getTool()->escapeHtml($value));
+                $attributes .= sprintf($attrLayout, $attributeText, $this->getTool()->escapeHtml($value));
             }
-            
             if($variant->var_status){
                 $variantStatus = $varOnline;
             }else{

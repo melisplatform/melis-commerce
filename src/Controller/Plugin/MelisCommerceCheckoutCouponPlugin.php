@@ -92,7 +92,7 @@ class MelisCommerceCheckoutCouponPlugin extends MelisTemplatingPlugin
         $coupons = !empty($container['checkout'][$siteId]['coupons'])? $container['checkout'][$siteId]['coupons'] : array();
 	    $productCoupons = !empty($coupons['productCoupons'])? $coupons['productCoupons'] : array();
 	    $generalCoupons = !empty($coupons['generalCoupons'])? $coupons['generalCoupons'] : array();
-        
+
 	    /**
 	     * Removing Coupon
 	     */
@@ -186,8 +186,9 @@ class MelisCommerceCheckoutCouponPlugin extends MelisTemplatingPlugin
                         $sessionCoupons['couponErr'] = array();
                         $sessionCoupons['productCoupons'] = $productCoupons;
                         $sessionCoupons['generalCoupons'] = $generalCoupons;
-                        
-                        $couponForm->setData(array('m_coupon_code' => ''));
+
+                        if ($isMultiple)
+                            $couponForm->setData(array('m_coupon_code' => ''));
                     }
                     else
                     {
@@ -210,7 +211,6 @@ class MelisCommerceCheckoutCouponPlugin extends MelisTemplatingPlugin
                     
                     foreach ($varError as $keyError => $valueError)
                     {
-                        
                         foreach ($appConfigForm['elements'] as $keyForm => $valueForm)
                         {
                             if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
@@ -233,8 +233,17 @@ class MelisCommerceCheckoutCouponPlugin extends MelisTemplatingPlugin
         else
         {
             $sessionCoupons = !empty($container['checkout'][$siteId]['coupons']) ? $container['checkout'][$siteId]['coupons'] : array();
+
+            if (!$isMultiple){
+                if (!empty($sessionCoupons['productCoupons']))
+                    foreach ($sessionCoupons['productCoupons'] As $coupon)
+                        $couponForm->setData(array('m_coupon_code' => $coupon->coup_code));
+                if (!empty($sessionCoupons['generalCoupons']))
+                    foreach ($sessionCoupons['generalCoupons'] As $coupon)
+                        $couponForm->setData(array('m_coupon_code' => $coupon->coup_code));
+            }
         }
-        
+
         /**
          * This input field set value in order to validate
          * after submission of the form proivided of this plugin
