@@ -11,6 +11,8 @@ return array(
                         
                         // site id
                         'm_add_site_id' => 1,
+                        // Override submitted data existing data
+                        'm_add_override_data' => false,
                         
                         // delivery form fields
                         'm_add_delivery_id' => '',
