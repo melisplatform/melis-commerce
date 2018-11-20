@@ -99,7 +99,6 @@ return array(
                                             'type' => 'EcomPluginDeliveryAddressSelect',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_client_select_address',
-                                                'empty_option' => 'tr_meliscommerce_clients_common_label_choose',
                                                 'disable_inarray_validator' => true,
                                             ),
                                             'attributes' => array(
@@ -722,7 +721,6 @@ return array(
                                             'type' => 'EcomPluginBillingAddressSelect',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_client_select_address',
-                                                'empty_option' => 'tr_meliscommerce_clients_common_label_choose',
                                                 'disable_inarray_validator' => true,
                                             ),
                                             'attributes' => array(
