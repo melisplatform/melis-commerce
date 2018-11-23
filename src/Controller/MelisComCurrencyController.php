@@ -425,4 +425,22 @@ class MelisComCurrencyController extends AbstractActionController
 
         return new JsonModel($response);
     }
+
+    /**
+     * This will check if the currency is being used by a country
+     * @param $currencyId
+     */
+    public function getCountriesUsingCurrencyAction()
+    {
+        $currencyId = $this->params()->fromPost('currencyId', null);
+
+        $currencyTable = $this->getServiceLocator()->get('MelisComCurrencyService');
+        $countries = $currencyTable->getCountriesUsingCurrency($currencyId);
+
+        $response = array(
+            'countries' => $countries,
+        );
+
+        return new JsonModel($response);
+    }
 }

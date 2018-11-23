@@ -90,4 +90,24 @@ class MelisComCurrencyService extends MelisComGeneralService
          
         return $arrayParameters['results'];
     }
+
+    public function getCountriesUsingCurrency($currencyId)
+    {
+        //prepare events parameters
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+
+        //service event start
+        $arrayParameters = $this->sendEvent('meliscommerce_service_category_get_valid_children_by_lang_id', $arrayParameters);
+
+        //implementation start
+        $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+        $isCurrencyUsed = $currencyTable->getCountriesUsingCurrency($arrayParameters['currencyId'])->toArray();
+        //implementation end
+
+        $arrayParameters['results'] = $isCurrencyUsed;
+        //service event end
+        $arrayParameters = $this->sendEvent('meliscommerce_service_category_get_valid_children_by_lang_id_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
 }
