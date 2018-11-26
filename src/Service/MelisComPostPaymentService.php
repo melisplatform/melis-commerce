@@ -49,7 +49,7 @@ class MelisComPostPaymentService extends MelisComGeneralService
                 'transactionId' => $postValues['payment-transaction-id'],
                 'transactionReturnCode' => $postValues['payment-transaction-return-code'],
                 'transactionPricePaid' => $postValues['payment-transaction-price-paid'],
-                'transactionFullRawResponse' => json_encode($postValues),
+                'transactionFullRawResponse' => $postValues['payment-transaction-full-Raw-Response'] ?? json_encode($postValues),
                 'transactionPricepaidConfirm' => $postValues['payment-transaction-price-paid-confirm'],
                 'transactionDateTime' => $postValues['payment-transaction-date'],
                 'transactionCountryId' => $postValues['payment-transaction-country-id'],
