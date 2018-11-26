@@ -78,6 +78,7 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
         $translator = $this->getServiceLocator()->get('translator');
 
         $siteId = (!empty($this->pluginFrontConfig['m_add_site_id'])) ? $this->pluginFrontConfig['m_add_site_id'] : null;
+        $overrideData = (!empty($this->pluginFrontConfig['m_add_override_data'])) ? $this->pluginFrontConfig['m_add_override_data'] : false;
 
         // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
         $appConfigDeliveryAddForm = (!empty($this->pluginFrontConfig['forms']['delivery_address'])) ? $this->pluginFrontConfig['forms']['delivery_address'] : array();
@@ -210,7 +211,14 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
                         $personDelAdd[str_replace('cadd_', 'm_add_delivery_', $key)] = $val;
                     }
 
-                    $deliveryAddForm->setData(ArrayUtils::merge($this->pluginFrontConfig, $personDelAdd));
+                    if (!$overrideData)
+                    {
+                        $deliveryAddForm->setData(ArrayUtils::merge($this->pluginFrontConfig, $personDelAdd));
+                    }
+                    else
+                    {
+                        $deliveryAddForm->setData(ArrayUtils::merge($personDelAdd, $this->pluginFrontConfig));
+                    }
                 }
             }
 
@@ -432,32 +440,34 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
                     krsort($checkoutAddresses);
                     foreach ($checkoutAddresses As $key => $val)
                     {
-                        // checking if the entry is existing in db, else this will save to selected contact addresses
-                        if (empty($val['address']['cadd_id']) || $val['address']['cadd_id'] == 'new_address')
+                        $val['address']['cadd_client_id'] = $container['checkout'][$siteId]['clientId'];
+                        $val['address']['cadd_client_person'] = $container['checkout'][$siteId]['contactId'];
+
+                        $addId  = null;
+
+                        if (!empty($val['address']['cadd_id']) && $overrideData)
                         {
+                            $addId = $val['address']['cadd_id'];
+                        }
 
-                            $val['address']['cadd_client_id'] = $container['checkout'][$siteId]['clientId'];
-                            $val['address']['cadd_client_person'] = $container['checkout'][$siteId]['contactId'];
-
-                            if ($key == 'delivery')
+                        if ($key == 'delivery')
+                        {
+                            $addId = $clientSrv->saveClientAddress($val['address'], $addId);
+                            $deliveryAddId = $addId;
+                        }
+                        else
+                        {
+                            if ($sameAddress)
                             {
-                                $addId = $clientSrv->saveClientAddress($val['address']);
-                                $deliveryAddId = $addId;
+                                $addId = $deliveryAddId;
                             }
                             else
                             {
-                                if ($sameAddress)
-                                {
-                                    $addId = $deliveryAddId;
-                                }
-                                else
-                                {
-                                    $addId = $clientSrv->saveClientAddress($val['address']);
-                                }
+                                $addId = $clientSrv->saveClientAddress($val['address'], $addId);
                             }
-
-                            $validatedAddresses['addresses'][$key]['address'] = (Array) $clientSrv->getClientPersonAddressByAddressId($personId, $addId);
                         }
+
+                        $validatedAddresses['addresses'][$key]['address'] = (Array) $clientSrv->getClientPersonAddressByAddressId($personId, $addId);
                     }
 
                     $container['checkout'][$siteId]['addresses'] = $validatedAddresses;

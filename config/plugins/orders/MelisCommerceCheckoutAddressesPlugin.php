@@ -11,6 +11,8 @@ return array(
                         
                         // site id
                         'm_add_site_id' => 1,
+                        // Override submitted data existing data
+                        'm_add_override_data' => false,
                         
                         // delivery form fields
                         'm_add_delivery_id' => '',
@@ -99,7 +101,6 @@ return array(
                                             'type' => 'EcomPluginDeliveryAddressSelect',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_client_select_address',
-                                                'empty_option' => 'tr_meliscommerce_clients_common_label_choose',
                                                 'disable_inarray_validator' => true,
                                             ),
                                             'attributes' => array(
@@ -722,7 +723,6 @@ return array(
                                             'type' => 'EcomPluginBillingAddressSelect',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_client_select_address',
-                                                'empty_option' => 'tr_meliscommerce_clients_common_label_choose',
                                                 'disable_inarray_validator' => true,
                                             ),
                                             'attributes' => array(

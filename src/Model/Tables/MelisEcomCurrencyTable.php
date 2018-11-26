@@ -67,5 +67,18 @@ class MelisEcomCurrencyTable extends MelisEcomGenericTable
         
         return $resultSet;
     }
-    
+
+    public function getCountriesUsingCurrency($currencyId)
+    {
+        $select = $this->tableGateway->getSql()->select();
+        $select->join('melis_ecom_country', 'melis_ecom_country.ctry_currency_id = melis_ecom_currency.cur_id',
+            array('*'), $select::JOIN_LEFT);
+
+        $select->where->equalTo('cur_id', $currencyId);
+        $select->where->equalTo('ctry_status', 1);
+
+        $resultSet = $this->tableGateway->selectWith($select);
+
+        return $resultSet;
+    }
 }
