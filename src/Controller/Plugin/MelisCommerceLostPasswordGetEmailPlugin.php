@@ -117,7 +117,7 @@ class MelisCommerceLostPasswordGetEmailPlugin extends MelisTemplatingPlugin
                     else 
                     {
                         $personId = $clientPerson->cper_id;
-                        $recoveryKey = $clientSrv->generatePsswordRecoveryKey();
+                        $recoveryKey = $clientSrv->generatePsswordRecoveryKey($personId);
                         $clientSrv->savePasswordRecoveryKey($personId, $recoveryKey);
                         
                         $changePassConfig = array(

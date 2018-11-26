@@ -1113,7 +1113,7 @@ class MelisComClientService extends MelisComGeneralService
 	    return $arrayParameters['results'];
 	}
 	
-	public function generatePsswordRecoveryKey()
+	public function generatePsswordRecoveryKey($key = null)
 	{
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -1121,27 +1121,13 @@ class MelisComClientService extends MelisComGeneralService
 	     
 	    // Sending service start event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_generate_password_recovery_key_start', $arrayParameters);
-	    
-	    // Service implementation start
-	    $melisConfig = $this->getServiceLocator()->get('config');
-	    $datasAccount = $melisConfig['plugins']['meliscommerce']['datas']['default']['accounts'];
-	    
-	    $hashMethod = $datasAccount['hash_method'];
-	    $salt = $datasAccount['salt'];
-	    // hash password
-	    $bEncryptor = new BlockCipher(new Mcrypt(array(
-	        'algo' => 'aes',
-	        'mode' => 'cfb',
-	        'hash' => $hashMethod
-	    )));
-	    $bEncryptor->setKey($salt);
-	    
-        $value = $bEncryptor->encrypt(date('YmdHisu'));
-	    // Replacing "+ & /" to "- & _" so this will supported by the platform
-        $base64url = strtr($value, '+/', '-_');
-        
+
+        $value = $arrayParameters['key'].date('YmdHisu');
+        $options = ['cost' => 12];
+        $recoveryKey = password_hash($value, PASSWORD_BCRYPT, $options);
+
 	    // Adding results to parameters for events treatment if needed
-	    $arrayParameters['results'] = $base64url;
+	    $arrayParameters['results'] = $recoveryKey;
 	    // Sending service end event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_generate_password_recovery_key_end', $arrayParameters);
 	     
