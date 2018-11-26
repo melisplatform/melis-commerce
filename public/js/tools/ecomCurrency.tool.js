@@ -6,85 +6,87 @@ $(function() {
 
     body.on("switch-change", ".make-switch", function(e, data){
         //check the state of the switch
-        if (data.value === false) {
-            //get currency id
-            let $form = $(this).closest('form');
-            let currencyId = $form.find('#id_cur_id').val();
+		if ($(this).find('#cur_status').length) {
+            if (data.value === false) {
+                //get currency id
+                let $form = $(this).closest('form');
+                let currencyId = $form.find('#id_cur_id').val();
 
-            let $switch = $('.make-switch');
+                let $switch = $('.make-switch');
 
-            //disable the switch
-            $switch.bootstrapSwitch('setActive', false);
+                //disable the switch
+                $switch.bootstrapSwitch('setActive', false);
 
-            //don't change the state of the switch
-            $switch.bootstrapSwitch('toggleState', true, true);
-            //disable save button
-            melisCoreTool.pending('#btnComSaveCurrency');
+                //don't change the state of the switch
+                $switch.bootstrapSwitch('toggleState', true, true);
+                //disable save button
+                melisCoreTool.pending('#btnComSaveCurrency');
 
-            $.ajax({
-                type        : 'POST',
-                url         : '/melis/MelisCommerce/MelisComCurrency/getCountriesUsingCurrency',
-                data		: {currencyId : currencyId},
-                dataType    : 'json',
-                encode		: true,
-            }).success(function(data){
-                if (data.countries.length > 0) {
-                    let countriesHtml = '<ul class="container">';
+                $.ajax({
+                    type: 'POST',
+                    url: '/melis/MelisCommerce/MelisComCurrency/getCountriesUsingCurrency',
+                    data: {currencyId: currencyId},
+                    dataType: 'json',
+                    encode: true,
+                }).success(function (data) {
+                    if (data.countries.length > 0) {
+                        let countriesHtml = '<ul class="container">';
 
-                    $.each(data.countries, function(key, value){
-                        countriesHtml += '<li>' + value.ctry_name + '</li>';
-                    });
+                        $.each(data.countries, function (key, value) {
+                            countriesHtml += '<li>' + value.ctry_name + '</li>';
+                        });
 
-                    countriesHtml += '</ul>';
+                        countriesHtml += '</ul>';
 
-                    //prompt
-                    BootstrapDialog.show({
-                        title: translations.tr_meliscommerce_currency,
-                        message: translations.tr_meliscommerce_currency_prompt_are_you_sure + '<br><br>' +
-							translations.tr_meliscommerce_currency_prompt_is_used +
-							'<br>' + countriesHtml,
-                        type: BootstrapDialog.TYPE_WARNING,
-                        closable: true,
-                        buttons: [{
-                            label: translations.tr_meliscore_common_no,
-                            cssClass: 'btn-danger pull-left',
-                            action: function(dialog) {
-                                //callback
-                                //enable the switch back
-                                $switch.bootstrapSwitch('setActive', true);
-                                //enable save button
-                                melisCoreTool.done('#btnComSaveCurrency');
-                                dialog.close();
-                            }
-                        }, {
-                            label: translations.tr_meliscore_common_yes,
-                            cssClass: 'btn-success',
-                            action: function(dialog) {
-                                //callback
-                                //enable the switch back
-                                $switch.bootstrapSwitch('setActive', true);
-                                //change the state of the switch
-                                $switch.bootstrapSwitch('toggleState', true, true);
-                                //enable save button
-                                melisCoreTool.done('#btnComSaveCurrency');
-                                dialog.close();
-                            }
-                        }]
-                    });
-                } else {
+                        //prompt
+                        BootstrapDialog.show({
+                            title: translations.tr_meliscommerce_currency,
+                            message: translations.tr_meliscommerce_currency_prompt_are_you_sure + '<br><br>' +
+                            translations.tr_meliscommerce_currency_prompt_is_used +
+                            '<br>' + countriesHtml,
+                            type: BootstrapDialog.TYPE_WARNING,
+                            closable: true,
+                            buttons: [{
+                                label: translations.tr_meliscore_common_no,
+                                cssClass: 'btn-danger pull-left',
+                                action: function (dialog) {
+                                    //callback
+                                    //enable the switch back
+                                    $switch.bootstrapSwitch('setActive', true);
+                                    //enable save button
+                                    melisCoreTool.done('#btnComSaveCurrency');
+                                    dialog.close();
+                                }
+                            }, {
+                                label: translations.tr_meliscore_common_yes,
+                                cssClass: 'btn-success',
+                                action: function (dialog) {
+                                    //callback
+                                    //enable the switch back
+                                    $switch.bootstrapSwitch('setActive', true);
+                                    //change the state of the switch
+                                    $switch.bootstrapSwitch('toggleState', true, true);
+                                    //enable save button
+                                    melisCoreTool.done('#btnComSaveCurrency');
+                                    dialog.close();
+                                }
+                            }]
+                        });
+                    } else {
+                        //enable the switch back
+                        $switch.bootstrapSwitch('setActive', true);
+                        //change the state of the switch
+                        $switch.bootstrapSwitch('toggleState', true, true);
+                        //enable save button
+                        melisCoreTool.done('#btnComSaveCurrency');
+                    }
+                }).error(function () {
                     //enable the switch back
                     $switch.bootstrapSwitch('setActive', true);
-                    //change the state of the switch
-                    $switch.bootstrapSwitch('toggleState', true, true);
                     //enable save button
                     melisCoreTool.done('#btnComSaveCurrency');
-                }
-            }).error(function(){
-                //enable the switch back
-                $switch.bootstrapSwitch('setActive', true);
-                //enable save button
-                melisCoreTool.done('#btnComSaveCurrency');
-            });
+                });
+            }
         }
     });
 
