@@ -8,4 +8,7 @@ return array(
     'tr_meliscommerce_currency_modal' => 'Currency modal',
     'tr_meliscommerce_currency_modal_description' => 'Enter here the details of the currency.',
     'tr_meliscommerce_currency_refresh' => 'Refresh',
+
+    'tr_meliscommerce_currency_prompt_are_you_sure' => 'Are you sure to disable this currency? Disabling this currency will affect everything that is using this currency',
+    'tr_meliscommerce_currency_prompt_is_used' => 'This currency is being used by'
 );

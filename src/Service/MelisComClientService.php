@@ -1112,27 +1112,27 @@ class MelisComClientService extends MelisComGeneralService
 
 	    return $arrayParameters['results'];
 	}
-	
-	public function generatePsswordRecoveryKey($key = null)
-	{
-	    // Event parameters prepare
-	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
-	    $results = null;
-	     
-	    // Sending service start event
-	    $arrayParameters = $this->sendEvent('meliscommerce_service_generate_password_recovery_key_start', $arrayParameters);
+
+    public function generatePsswordRecoveryKey($key = null)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = null;
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_generate_password_recovery_key_start', $arrayParameters);
 
         $value = $arrayParameters['key'].date('YmdHisu');
         $options = ['cost' => 12];
         $recoveryKey = password_hash($value, PASSWORD_BCRYPT, $options);
 
-	    // Adding results to parameters for events treatment if needed
-	    $arrayParameters['results'] = $recoveryKey;
-	    // Sending service end event
-	    $arrayParameters = $this->sendEvent('meliscommerce_service_generate_password_recovery_key_end', $arrayParameters);
-	     
-	    return $arrayParameters['results'];
-	}
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $recoveryKey;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_generate_password_recovery_key_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
 	
 	/**
 	 *

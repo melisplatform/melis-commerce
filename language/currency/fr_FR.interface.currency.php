@@ -8,4 +8,7 @@ return array(
     'tr_meliscommerce_currency_modal' => 'Modal devise',
     'tr_meliscommerce_currency_modal_description' => 'Saisissez ici les détails de la devise.',
     'tr_meliscommerce_currency_refresh' => 'Actualiser',
+
+    'tr_meliscommerce_currency_prompt_are_you_sure' => 'Etes-vous sûr de vouloir désactiver cette devise? Désactiver cette devise affectera tout ce qui en est rattaché',
+    'tr_meliscommerce_currency_prompt_is_used' => 'Cette devise est utilisée par'
 );
