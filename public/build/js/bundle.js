@@ -1010,196 +1010,6 @@ return a=a||this.corner,c=a.precedance,b=b||this._calculateSize(a),e=[a.x,a.y],c
 !function(){function t(t){var e=Array.isArray(t)?{label:t[0],value:t[1]}:"object"==typeof t&&"label"in t&&"value"in t?t:{label:t,value:t};this.label=e.label||e.value,this.value=e.value}function e(t,e,i){for(var n in e){var s=e[n],r=t.input.getAttribute("data-"+n.toLowerCase());"number"==typeof s?t[n]=parseInt(r):s===!1?t[n]=null!==r:s instanceof Function?t[n]=null:t[n]=r,t[n]||0===t[n]||(t[n]=n in i?i[n]:s)}}function i(t,e){return"string"==typeof t?(e||document).querySelector(t):t||null}function n(t,e){return o.call((e||document).querySelectorAll(t))}function s(){n("input.awesomplete").forEach(function(t){new r(t)})}var r=function(t,n){var s=this;this.isOpened=!1,this.input=i(t),this.input.setAttribute("autocomplete","off"),this.input.setAttribute("aria-autocomplete","list"),n=n||{},e(this,{minChars:2,maxItems:10,autoFirst:!1,data:r.DATA,filter:r.FILTER_CONTAINS,sort:r.SORT_BYLENGTH,item:r.ITEM,replace:r.REPLACE},n),this.index=-1,this.container=i.create("div",{className:"awesomplete",around:t}),this.ul=i.create("ul",{hidden:"hidden",inside:this.container}),this.status=i.create("span",{className:"visually-hidden",role:"status","aria-live":"assertive","aria-relevant":"additions",inside:this.container}),i.bind(this.input,{input:this.evaluate.bind(this),blur:this.close.bind(this,{reason:"blur"}),keydown:function(t){var e=t.keyCode;s.opened&&(13===e&&s.selected?(t.preventDefault(),s.select()):27===e?s.close({reason:"esc"}):38!==e&&40!==e||(t.preventDefault(),s[38===e?"previous":"next"]()))}}),i.bind(this.input.form,{submit:this.close.bind(this,{reason:"submit"})}),i.bind(this.ul,{mousedown:function(t){var e=t.target;if(e!==this){for(;e&&!/li/i.test(e.nodeName);)e=e.parentNode;e&&0===t.button&&(t.preventDefault(),s.select(e,t.target))}}}),this.input.hasAttribute("list")?(this.list="#"+this.input.getAttribute("list"),this.input.removeAttribute("list")):this.list=this.input.getAttribute("data-list")||n.list||[],r.all.push(this)};r.prototype={set list(t){if(Array.isArray(t))this._list=t;else if("string"==typeof t&&t.indexOf(",")>-1)this._list=t.split(/\s*,\s*/);else if(t=i(t),t&&t.children){var e=[];o.apply(t.children).forEach(function(t){if(!t.disabled){var i=t.textContent.trim(),n=t.value||i,s=t.label||i;""!==n&&e.push({label:s,value:n})}}),this._list=e}document.activeElement===this.input&&this.evaluate()},get selected(){return this.index>-1},get opened(){return this.isOpened},close:function(t){this.opened&&(this.ul.setAttribute("hidden",""),this.isOpened=!1,this.index=-1,i.fire(this.input,"awesomplete-close",t||{}))},open:function(){this.ul.removeAttribute("hidden"),this.isOpened=!0,this.autoFirst&&this.index===-1&&this.goto(0),i.fire(this.input,"awesomplete-open")},next:function(){var t=this.ul.children.length;this.goto(this.index<t-1?this.index+1:t?0:-1)},previous:function(){var t=this.ul.children.length,e=this.index-1;this.goto(this.selected&&e!==-1?e:t-1)},goto:function(t){var e=this.ul.children;this.selected&&e[this.index].setAttribute("aria-selected","false"),this.index=t,t>-1&&e.length>0&&(e[t].setAttribute("aria-selected","true"),this.status.textContent=e[t].textContent,i.fire(this.input,"awesomplete-highlight",{text:this.suggestions[this.index]}))},select:function(t,e){if(t?this.index=i.siblingIndex(t):t=this.ul.children[this.index],t){var n=this.suggestions[this.index],s=i.fire(this.input,"awesomplete-select",{text:n,origin:e||t});s&&(this.replace(n),this.close({reason:"select"}),i.fire(this.input,"awesomplete-selectcomplete",{text:n}))}},evaluate:function(){var e=this,i=this.input.value;i.length>=this.minChars&&this._list.length>0?(this.index=-1,this.ul.innerHTML="",this.suggestions=this._list.map(function(n){return new t(e.data(n,i))}).filter(function(t){return e.filter(t,i)}).sort(this.sort).slice(0,this.maxItems),this.suggestions.forEach(function(t){e.ul.appendChild(e.item(t,i))}),0===this.ul.children.length?this.close({reason:"nomatches"}):this.open()):this.close({reason:"nomatches"})}},r.all=[],r.FILTER_CONTAINS=function(t,e){return RegExp(i.regExpEscape(e.trim()),"i").test(t)},r.FILTER_STARTSWITH=function(t,e){return RegExp("^"+i.regExpEscape(e.trim()),"i").test(t)},r.SORT_BYLENGTH=function(t,e){return t.length!==e.length?t.length-e.length:t<e?-1:1},r.ITEM=function(t,e){var n=""===e?t:t.replace(RegExp(i.regExpEscape(e.trim()),"gi"),"<mark>$&</mark>");return i.create("li",{innerHTML:n,"aria-selected":"false"})},r.REPLACE=function(t){this.input.value=t.value},r.DATA=function(t){return t},Object.defineProperty(t.prototype=Object.create(String.prototype),"length",{get:function(){return this.label.length}}),t.prototype.toString=t.prototype.valueOf=function(){return""+this.label};var o=Array.prototype.slice;return i.create=function(t,e){var n=document.createElement(t);for(var s in e){var r=e[s];if("inside"===s)i(r).appendChild(n);else if("around"===s){var o=i(r);o.parentNode.insertBefore(n,o),n.appendChild(o)}else s in n?n[s]=r:n.setAttribute(s,r)}return n},i.bind=function(t,e){if(t)for(var i in e){var n=e[i];i.split(/\s+/).forEach(function(e){t.addEventListener(e,n)})}},i.fire=function(t,e,i){var n=document.createEvent("HTMLEvents");n.initEvent(e,!0,!0);for(var s in i)n[s]=i[s];return t.dispatchEvent(n)},i.regExpEscape=function(t){return t.replace(/[-\\^$*+?.()|[\]{}]/g,"\\$&")},i.siblingIndex=function(t){for(var e=0;t=t.previousElementSibling;e++);return e},"undefined"!=typeof Document&&("loading"!==document.readyState?s():document.addEventListener("DOMContentLoaded",s)),r.$=i,r.$$=n,"undefined"!=typeof self&&(self.Awesomplete=r),"object"==typeof module&&module.exports&&(module.exports=r),r}();
 //# sourceMappingURL=awesomplete.min.js.map
 
-var commerceCategoryTree = (function(){
-
-	function initCategoryTree(targetId, loaded){
-		loaded = (loaded == undefined) ? null : loaded;
-
-		var categoryTree = $("#"+targetId);
-
-	    categoryTree.jstree({
-	        "core" : {
-	        	"multiple": false,
-	            "check_callback": true,
-	            "animation" : 500,
-	            "themes": {
-	                "name": "proton",
-	                "responsive": false,
-	                "icons": false
-	            },
-	            "dblclick_toggle" : false,
-	            "data" : {
-	            	"cache" : false,
-	            	"data": categoryTreeData(targetId),
-	                "url" : "/melis/MelisCommerce/MelisComCategoryList/getCategoryTreeView",
-	            },
-	        },
-	        "types" : {
-				"default" : {
-					"icon" : "fa fa-circle text-success",
-				},
-				"selected": {
-	                select_node : false
-	            }
-			},
-	        "checkbox": {
-		        three_state: false,
-		        whole_node : false,
-		        tie_selection : false,
-		    },
-	        "plugins": [
-	            "search", // Plugins for Search of the Node(s) of the Tree View
-	            "types", // Plugins for Customizing the Nodes
-				"checkbox",
-	        ]
-		    
-	    }).on("check_node.jstree uncheck_node.jstree", function(e, data) {
-            var inputField = $("#" + targetId + "_form").data("input-field-selected");
-            
-			if (data.node.state.checked) {
-				$("#" + targetId + "_form").append('<input type="hidden" name="' + inputField + '[]" value="' + data.node.original.cat_id + '">');
-			} else {
-				$("#" + targetId + "_form input[name='"+inputField+"[]'][value='" + data.node.original.cat_id + "']").remove();
-			}
-	    }).on("select_node.jstree deselect_node.jstree ", function(e, data){
-            var inputField = $("#" + targetId + "_form").data("input-field-root");
-            if (data.node.state.selected) {
-                $("#" + targetId + "_form input[name='"+inputField+"']").val(data.node.original.cat_id);
-            }
-        }).on('after_open.jstree', function (e, data) {
-			
-	    	setCheckCategoryTreeNodes(targetId);
-	    	setCustomNodeText(targetId);
-			
-	    }).on('loaded.jstree', function (e, data) {
-	    	
-			categoryTreeEvents(targetId);
-
-            /**
-			 * Check if loaded callback is existing function
-			 *
-             */
-            if(loaded !== null)
-				loaded(e, data, categoryTree);
-
-		}).on('refresh.jstree', function (e, data) {
-			
-			setCheckCategoryTreeNodes(targetId);
-			setCustomNodeText(targetId);
-			
-		});
-	}
-
-    function setCheckCategoryTreeNodes(targetId){
-		
-		$("form#"+targetId+"_form input[name='m_category_ids[]']").each(function(){
-    		$("#"+$(this).val()+"_categoryId_anchor").addClass("jstree-checked");
-    	});
-	}
-	
-	function setCustomNodeText(targetId){
-		
-		$("#"+targetId+".jstree li.jstree-node .jstree-anchor").each(function(){
-			
-    		var nodeTargetAnchor = $(this);
-			var textlang = nodeTargetAnchor.data('textlang');
-			var spanHtml = '<span title="' + translations.tr_meliscommerce_categories_list_tree_view_product_num + '"></span>';
-			
-			if(textlang){
-				spanHtml = ' ' + textlang + spanHtml;
-			}
-			
-			if(!nodeTargetAnchor.hasClass('updatedText')){
-				nodeTargetAnchor.append(spanHtml);
-				nodeTargetAnchor.addClass('updatedText');
-			}
-		});
-	}
-	
-	function categoryTreeData(targetId){
-    	
-		var categoryTree = $("#"+targetId);
-    	
-    	var dataString = new Array;
-    	
-    	dataString.push({
-    		name : 'langlocale',
-    		value : categoryTree.data('langlocale')
-    	});
-    	
-    	dataString.push({
-    		name : 'idAndNameOnly',
-    		value : true
-    	});
-    	
-    	$("form#"+targetId+"_form input[name='m_category_ids[]']").each(function(){
-    		dataString.push({
-        		name : 'categoriesChecked[]',
-        		value : $(this).val()
-        	});
-    	});
-    	
-    	return dataString;
-    }
-	
-	function categoryTreeEvents(targetId){
-		var categoryTree = $("#"+targetId);
-		
-		$("#catPrdSliderPluginSearch").on("keyup", function(e){ 
-			
-			var searchString = $(this).val().trim();
-			var searchResult = categoryTree.jstree('search', searchString);
-			
-			setTimeout(function(){ 
-				if($(searchResult).find('.jstree-search').length == 0 && searchString != ''){
-					$("#"+targetId).prev("div.alert").removeClass('hidden');
-					$("#"+targetId).prev("div.alert").find("strong").text(searchString);
-				}else{
-					$("#"+targetId).prev("div.alert").addClass('hidden');
-				}
-			}, 1500);
-		});
-		
-		
-		// Clear Input Search
-		$("#catPrdSliderPluginClearBtn").on("click", function(e){ 
-			$("#catPrdSliderPluginSearch").val("");
-			categoryTree.jstree('search', '');
-			$("#"+targetId+"SearchNoResult").addClass('hidden');
-		});
-		
-		// Toggle Buttons for Category Tree View
-		$("#catPrdSliderPluginExpandBtn").on("click", function(e){ 
-			categoryTree.jstree("open_all");
-		});
-		
-		$("#catPrdSliderPluginCollapseBtn").on("click", function(e){ 
-			categoryTree.jstree("close_all");
-		});
-		
-		// Refrech Category Tree View
-		$("#catPrdSliderPluginRefreshBtn").on("click", function(e){ 
-			//categoryTree.jstree(true).refresh("forget_state", true);
-			categoryTree.jstree('search', '');
-			$("#catPrdSliderPluginSearch").val("");
-			categoryTree.jstree(true).refresh();
-		});
-		
-		$(".category-tree-view-lang-plugin li a").on("click", function(){
-			var langText = $(this).text();
-			var langLocale = $(this).data('locale');
-			$('.categoryLangTreePluginDropdown span.filter-key').text(langText);
-			categoryTree.data('langlocale', langLocale);
-			
-			categoryTree.jstree(true).settings.core.data.data = categoryTreeData(targetId);
-			categoryTree.jstree(true).refresh();
-		});
-	}
-	
-	return {
-		initCategoryTree : initCategoryTree
-	};
-})();
 /*!
  * Isotope PACKAGED v3.0.1
  *
@@ -8053,7 +7863,93 @@ $(function() {
 	var zoneId = "id_meliscommerce_currency_content_modal_form";
 	var melisKey = 'meliscommerce_currency_content_modal_form';
 	var modalUrl = '/melis/MelisCommerce/MelisComCurrency/renderCurrencyModalContainer';
-	
+
+    body.on("switch-change", ".make-switch", function(e, data){
+        //check the state of the switch
+		if ($(this).find('#cur_status').length) {
+            if (data.value === false) {
+                //get currency id
+                let $form = $(this).closest('form');
+                let currencyId = $form.find('#id_cur_id').val();
+
+                let $switch = $('.make-switch');
+
+                //disable the switch
+                $switch.bootstrapSwitch('setActive', false);
+
+                //don't change the state of the switch
+                $switch.bootstrapSwitch('toggleState', true, true);
+                //disable save button
+                melisCoreTool.pending('#btnComSaveCurrency');
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/melis/MelisCommerce/MelisComCurrency/getCountriesUsingCurrency',
+                    data: {currencyId: currencyId},
+                    dataType: 'json',
+                    encode: true,
+                }).success(function (data) {
+                    if (data.countries.length > 0) {
+                        let countriesHtml = '<ul class="container">';
+
+                        $.each(data.countries, function (key, value) {
+                            countriesHtml += '<li>' + value.ctry_name + '</li>';
+                        });
+
+                        countriesHtml += '</ul>';
+
+                        //prompt
+                        BootstrapDialog.show({
+                            title: translations.tr_meliscommerce_currency,
+                            message: translations.tr_meliscommerce_currency_prompt_are_you_sure + '<br><br>' +
+                            translations.tr_meliscommerce_currency_prompt_is_used +
+                            '<br>' + countriesHtml,
+                            type: BootstrapDialog.TYPE_WARNING,
+                            closable: true,
+                            buttons: [{
+                                label: translations.tr_meliscore_common_no,
+                                cssClass: 'btn-danger pull-left',
+                                action: function (dialog) {
+                                    //callback
+                                    //enable the switch back
+                                    $switch.bootstrapSwitch('setActive', true);
+                                    //enable save button
+                                    melisCoreTool.done('#btnComSaveCurrency');
+                                    dialog.close();
+                                }
+                            }, {
+                                label: translations.tr_meliscore_common_yes,
+                                cssClass: 'btn-success',
+                                action: function (dialog) {
+                                    //callback
+                                    //enable the switch back
+                                    $switch.bootstrapSwitch('setActive', true);
+                                    //change the state of the switch
+                                    $switch.bootstrapSwitch('toggleState', true, true);
+                                    //enable save button
+                                    melisCoreTool.done('#btnComSaveCurrency');
+                                    dialog.close();
+                                }
+                            }]
+                        });
+                    } else {
+                        //enable the switch back
+                        $switch.bootstrapSwitch('setActive', true);
+                        //change the state of the switch
+                        $switch.bootstrapSwitch('toggleState', true, true);
+                        //enable save button
+                        melisCoreTool.done('#btnComSaveCurrency');
+                    }
+                }).error(function () {
+                    //enable the switch back
+                    $switch.bootstrapSwitch('setActive', true);
+                    //enable save button
+                    melisCoreTool.done('#btnComSaveCurrency');
+                });
+            }
+        }
+    });
+
 	body.on("click", "#btnComAddCurrency", function() {
 		melisCoreTool.pending("#btnComAddCurrency");
 		melisHelper.createModal(zoneId, melisKey, false, {curId: null, saveType : "new"},  modalUrl, function() {
