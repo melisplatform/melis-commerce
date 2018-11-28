@@ -30,6 +30,7 @@ class MelisEcomCountryTable extends MelisEcomGenericTable
     {
         $select = $this->tableGateway->getSql()->select();
         $select->columns(array('*'));
+        $select->join('melis_ecom_currency', 'melis_ecom_currency.cur_id = melis_ecom_country.ctry_currency_id', array('cur_symbol'), $select::JOIN_LEFT);
         $select->where->equalTo('ctry_status', 1);
         $select->order('ctry_name ASC');
 

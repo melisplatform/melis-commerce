@@ -30,6 +30,14 @@ $(document).ready(function() {
 
     body.on("click", ".country-price-tab li a", function(){
         var textCountry = $(this).data('country');
+        var textSymbol = $(this).data('symbol');
+        if(textSymbol != ""){
+            $(".cur-symbol").removeClass("fa fa-dollar").text(textSymbol).css("font-weight", "600");
+        }else{
+            if(!$('.cur-symbol').hasClass("fa")){
+                $(".cur-symbol").empty().addClass("fa fa-dollar").removeAttr("style");
+            }
+        }
         $('.country-price-label').text(textCountry + ' ' + translations.tr_meliscommerce_variant_tab_prices_pricing);
     });
 
