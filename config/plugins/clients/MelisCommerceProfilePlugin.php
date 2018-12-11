@@ -46,7 +46,6 @@ return array(
                                             'type' => 'EcomPluginCivilitySelect',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_client_Contact_civility',
-                                                'empty_option' => 'tr_meliscommerce_clients_common_label_choose',
                                                 'disable_inarray_validator' => true,
                                             ),
                                             'attributes' => array(
@@ -100,7 +99,6 @@ return array(
                                             'type' => 'EcomPluginLanguageSelect',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_client_Contact_language',
-                                                'empty_option' => 'tr_meliscommerce_clients_common_label_choose',
                                                 'disable_inarray_validator' => true,
                                             ),
                                             'attributes' => array(
@@ -115,7 +113,6 @@ return array(
                                             'type' => 'EcomPluginCountriesSelect',
                                             'options' => array(
                                                 'label' => 'tr_meliscommerce_client_Client_country',
-                                                'empty_option' => 'tr_meliscommerce_clients_common_label_choose',
                                                 'disable_inarray_validator' => true,
                                             ),
                                             'attributes' => array(
