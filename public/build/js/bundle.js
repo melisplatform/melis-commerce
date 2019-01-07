@@ -3723,8 +3723,8 @@ $(document).ready(function() {
     body.on("click", "#addProdTextType", function() {
         var productId = $(this).data("productid");
         var dataString = $("form#productTextTypeForm").serialize();
-        let $panel = $(this).closest('.panel').find('.panel-heading .panel-title a');
-        let $panelBody = $(this).closest('.panel').find('.panel-collapse');
+        var $panel = $(this).closest('.panel').find('.panel-heading .panel-title a');
+        var $panelBody = $(this).closest('.panel').find('.panel-collapse');
         melisCoreTool.pending("#addProdTextType");
         $.ajax({
             type: 'POST',
