@@ -9,10 +9,10 @@ $(function() {
 		if ($(this).find('#cur_status').length) {
             if (data.value === false) {
                 //get currency id
-                let $form = $(this).closest('form');
-                let currencyId = $form.find('#id_cur_id').val();
+                var $form = $(this).closest('form');
+                var currencyId = $form.find('#id_cur_id').val();
 
-                let $switch = $('.make-switch');
+                var $switch = $('.make-switch');
 
                 //disable the switch
                 $switch.bootstrapSwitch('setActive', false);
@@ -30,7 +30,7 @@ $(function() {
                     encode: true,
                 }).success(function (data) {
                     if (data.countries.length > 0) {
-                        let countriesHtml = '<ul class="container">';
+                        var countriesHtml = '<ul class="container">';
 
                         $.each(data.countries, function (key, value) {
                             countriesHtml += '<li>' + value.ctry_name + '</li>';
