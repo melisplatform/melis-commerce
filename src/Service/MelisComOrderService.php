@@ -1324,9 +1324,10 @@ class MelisComOrderService extends MelisComGeneralService
 	/**
 	 * This method retrieves the data used for the list widget
 	 * @param varchar $identifier accepts curMonth|avgMonth
+	 * @param $onlyValid - valid order only
 	 * @return float|null , float on success, otherwise null
 	 */
-	public function getWidgetOrders($identifier)
+	public function getWidgetOrders($identifier, $onlyValid = null)
 	{
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -1339,9 +1340,9 @@ class MelisComOrderService extends MelisComGeneralService
 	    $orderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
 	    switch($arrayParameters['identifier']){
 	        case 'curMonth':
-	            $results = $orderTable->getCurrentMonth()->count(); break;
+	            $results = $orderTable->getCurrentMonth($arrayParameters['onlyValid'])->count(); break;
 	        case 'avgMonth':
-	            $results = $orderTable->getAvgMonth()->current(); break;
+	            $results = $orderTable->getAvgMonth($arrayParameters['onlyValid'])->current(); break;
 	        default:
 	            break;
 	    }

@@ -96,7 +96,7 @@ class MelisComOrderListController extends AbstractActionController
     public function renderOrderListWidgetsNumOrdersAction()
     {
         $melisComOrderService = $this->getServiceLocator()->get('MelisComOrderService');
-        $orderCount = $melisComOrderService->getOrderList();
+        $orderCount = $melisComOrderService->getOrderList(null, true);
         $view = new ViewModel();
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view->melisKey = $melisKey;
@@ -111,7 +111,7 @@ class MelisComOrderListController extends AbstractActionController
     public function renderOrderListWidgetsMonthOrdersAction()
     {
         $melisComOrderService = $this->getServiceLocator()->get('MelisComOrderService');
-        $orderCount = $melisComOrderService->getWidgetOrders('curMonth');
+        $orderCount = $melisComOrderService->getWidgetOrders('curMonth', true);
         $view = new ViewModel();
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view->melisKey = $melisKey;
@@ -126,7 +126,7 @@ class MelisComOrderListController extends AbstractActionController
     public function renderOrderListWidgetsAvgOrdersAction()
     {
         $melisComOrderService = $this->getServiceLocator()->get('MelisComOrderService');
-        $orderCount = $melisComOrderService->getWidgetOrders('avgMonth');
+        $orderCount = $melisComOrderService->getWidgetOrders('avgMonth', true);
         
         $view = new ViewModel();
         $melisKey = $this->params()->fromRoute('melisKey', '');
