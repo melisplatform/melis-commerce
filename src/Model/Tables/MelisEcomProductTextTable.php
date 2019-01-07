@@ -9,6 +9,7 @@
 
 namespace MelisCommerce\Model\Tables;
 
+use Zend\Db\Sql\Where;
 use Zend\Db\TableGateway\TableGateway;
 
 class MelisEcomProductTextTable extends MelisEcomGenericTable 
@@ -26,23 +27,38 @@ class MelisEcomProductTextTable extends MelisEcomGenericTable
     {
         $select = $this->tableGateway->getSql()->select();
         $select->columns(array('*'));
-        $clause = array();
-        
         $select->join('melis_ecom_product_text_type', 'melis_ecom_product_text_type.ptt_id = melis_ecom_product_text.ptxt_type', array('*'), $select::JOIN_LEFT);
-        
-        if(!is_null($productTextCode)){            
-            $clause['melis_ecom_product_text_type.ptt_code'] = $productTextCode;
+
+        $where = new Where();
+        $nest = $where->nest();
+
+        $nest->equalTo('melis_ecom_product_text.ptxt_prd_id', $productId);
+
+        if (!is_null($productTextCode)) {
+            $nest->equalTo('melis_ecom_product_text_type.ptt_code', $productTextCode);
         }
-        
-        if(!is_null($langId)){
-            $clause['melis_ecom_product_text.ptxt_lang_id'] = (int) $langId;
+
+        if (!is_null($langId)) {
+            $nest->equalTo('melis_ecom_product_text.ptxt_lang_id', $langId);
         }
-        
-        $clause['melis_ecom_product_text.ptxt_prd_id'] = (int) $productId;
+
+        $nest = $nest->where->nest();
+        $nest->isNotNull('melis_ecom_product_text.ptxt_field_short');
+        $nest->OR->isNotNull('melis_ecom_product_text.ptxt_field_long');
+
+        if (!is_null($langId)) {
+            $nest = $where->OR->nest();
+                    $nest->OR->equalTo('ptxt_prd_id', $productId);
+                    $nest->isNotNull('melis_ecom_product_text.ptxt_lang_id');
+
+            $nest = $nest->where->nest();
+                    $nest->isNotNull('melis_ecom_product_text.ptxt_field_short');
+                    $nest->OR->isNotNull('melis_ecom_product_text.ptxt_field_long');
+        }
+
+        $select->where($where);
         $select->order('ptt_id ASC');
-        if($clause){
-            $select->where($clause);
-        }
+
         $resultSet = $this->tableGateway->selectwith($select);
 
         return $resultSet;

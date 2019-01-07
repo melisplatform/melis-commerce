@@ -10,6 +10,7 @@
 namespace MelisCommerce\Model\Tables;
 
 use Zend\Db\TableGateway\TableGateway;
+use Zend\Db\Sql\Where;
 
 class MelisEcomAttributeTransTable extends MelisEcomGenericTable 
 {
@@ -47,17 +48,18 @@ class MelisEcomAttributeTransTable extends MelisEcomGenericTable
     {
         $select = $this->tableGateway->getSql()->select();
         $select->columns(array('*'));
-        $clause = array();
 
-        $clause['melis_ecom_attribute_trans.atrans_attribute_id'] = (int) $attributeId;
+        $where = new Where();
+        $nest = $where->nest();
 
-        if(!is_null($langId)) {
-            $clause['melis_ecom_attribute_trans.atrans_lang_id'] = (int) $langId;
-        }
-    
-        if($clause){
-            $select->where($clause);
-        }
+        $nest->equalTo('melis_ecom_attribute_trans.atrans_attribute_id', $attributeId);
+        $nest->equalTo('melis_ecom_attribute_trans.atrans_lang_id', $langId);
+
+        $nest = $where->OR->nest();
+        $nest->equalTo('atrans_attribute_id', $attributeId);
+        $nest->isNotNull('melis_ecom_attribute_trans.atrans_lang_id');
+
+        $select->where($where);
     
         $resultSet = $this->tableGateway->selectwith($select);
     
