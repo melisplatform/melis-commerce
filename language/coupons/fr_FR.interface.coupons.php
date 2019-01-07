@@ -47,7 +47,8 @@
 	    'tr_meliscommerce_coupon_page_table_col_email' => 'Email',
 	    'tr_meliscommerce_coupon_page_table_col_assigned' => 'Assigné',
 	    'tr_meliscommerce_coupon_page_table_col_action' => 'Action',
-	    
+	    'tr_meliscommerce_coupon_page_table_col_price' => 'Prix',
+
 	    'tr_meliscommerce_coupon_code_duplicate_error_message' => 'Le code existe déjà',
 	    'tr_meliscommerce_coupon_save_fail' => 'Echec de la sauvegarde',
 	    'tr_meliscommerce_coupon_delete_fail' => 'Erreur lors de la suppression du coupon',

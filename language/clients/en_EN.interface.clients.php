@@ -168,7 +168,7 @@
 	    'tr_meliscommerce_client_Contact_input_too_long_10' => 'Value is too long, it should be less than 10 characters',
 	    'tr_meliscommerce_client_Contact_invalid_email' => 'Invalid email address',
 	    'tr_meliscommerce_client_Contact_password_error_low' => 'Password should be greater than or equal to 8 characters',
-	    'tr_meliscommerce_client_Contact_password_regex_not_match' => 'The password must contain at least one letter AND one number',
+	    'tr_meliscommerce_client_Contact_password_regex_not_match' => 'The password must contain at least a lowercase letter and a number',
 	    'tr_meliscommerce_client_Contact_unable_to_add_address' => 'Unable to add contact address, please try again',
 	    'tr_meliscommerce_client_Contact_email_address_exist' => 'Email address is not available',
 	    // Contact Addreses Form

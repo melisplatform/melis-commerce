@@ -168,7 +168,7 @@
 	    'tr_meliscommerce_client_Contact_input_too_long_10' => 'Valeur trop longue, elle doit être de moins de 10 caractères',
 	    'tr_meliscommerce_client_Contact_invalid_email' => 'Adresse email invalide',
 	    'tr_meliscommerce_client_Contact_password_error_low' => 'Le mot de passe doit être d\'au moins 8 caractères',
-	    'tr_meliscommerce_client_Contact_password_regex_not_match' => 'Le mot de passe doit contenir au moins une lettre ET un chiffre',
+	    'tr_meliscommerce_client_Contact_password_regex_not_match' => 'Le mot de passe doit contenir au moins une lettre minuscule et un chiffre',
 	    'tr_meliscommerce_client_Contact_email_address_exist' => 'Cet email est déjà utilisé, merci de vous connecter pour vous servir de ce compte',
 	    // Contact Addreses Form
 	    'tr_meliscommerce_client_Contact_addresses' => 'Adresses',
