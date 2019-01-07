@@ -63,7 +63,7 @@ return array(
                                                 'id' => 'select_delivery_addresses',
                                                 'data-selectaddress' => 'select-address',
                                                 'class' => 'form-control',
-                                                'onchange' => ''
+                                                'onchange' => 'this.form.submit()'
                                             )
                                         )
                                     ),
