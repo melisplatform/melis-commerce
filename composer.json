@@ -23,7 +23,7 @@
     "ext-openssl": "*",
     "ext-json": "*",
     "ext-pdo_mysql": "*",
-    "melisplatform/melis-core": "^2.3",
+    "melisplatform/melis-core": "2.3 - 3",
     "justinrainbow/json-schema": "5.2.1"
   },
   "require-dev": {
