@@ -94,7 +94,7 @@ return array(
                  * lesser requests
                  */
                 'build' => [
-                    'disable_bundle' => true,
+//                    'disable_bundle' => true,
                     // lists of assets that will be loaded in the layout
                     'css' => [
                         '/MelisCommerce/build/css/bundle.css',
