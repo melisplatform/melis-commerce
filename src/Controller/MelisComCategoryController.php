@@ -61,25 +61,8 @@ class MelisComCategoryController extends AbstractActionController
             $langId = $melisTool->getCurrentLocaleID();
             
             $melisComCategoryService = $this->getServiceLocator()->get('MelisComCategoryService');
-            $categoryData = $melisComCategoryService->getCategoryById($catId, $langId);
-            $category = $categoryData->getTranslations();
-            
-            $catname = '';
-            foreach ($category As $val)
-            {
-                if ($val->elang_id == $langId)
-                {
-                    $catname = $val->catt_name;
-                    break;
-                }
-                else 
-                {
-                    // Getting available Name concatinated with the Language Name
-                    $catname = $val->catt_name.' ('.$val->elang_name.')';
-                    break;
-                }
-            }
-            
+            $catname = $melisComCategoryService->getCategoryNameById($catId, $langId);
+
             $view->title = $translator->translate('tr_meliscommerce_categories_edit_category').' "'.$catname.'"';
         }
         else

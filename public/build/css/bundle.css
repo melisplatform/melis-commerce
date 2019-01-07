@@ -629,6 +629,25 @@ div.melis-pdc *.btn {
     transform: rotate(180deg);
 }
 
+@media (min-width: 320px) {
+    #tableProductList tbody tr td:last-child.dtActionCls {
+        padding-left: 0 !important;
+    }
+    .dtActionCls .btn {
+        padding: 6px 10px;
+    }
+}
+/* @media (min-width: 320px) and (max-width: 715px) {
+    .dtActionCls .btn {
+        padding: 6px 10px;
+    }
+}
+@media (min-width: 716px) {
+    .dtActionCls .btn {
+        padding: 6px 9px;
+    }
+} */
+
 /** -------------------------------------
 *       CLIENTS
 *       clients.css
@@ -1301,6 +1320,11 @@ textarea {
 .portfolioContainer .a img{
     display:block;
     width: 100%;
+}
+
+.imageDocumentContainer .me-p-image{
+    border: 1px solid gainsboro;
+    background: #cccccc;
 }
 
 .me-p-image{

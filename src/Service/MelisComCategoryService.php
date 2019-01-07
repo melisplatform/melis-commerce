@@ -184,7 +184,7 @@ class MelisComCategoryService extends MelisComGeneralService
      * otherwise this will return first category name the available.
      * @return String||null
      */
-    public function getCategoryNameById($categoryId, $langId = null, $exclude = false)
+    public function getCategoryNameById($categoryId, $langId = null)
     {
         // Retrieve cache version if front mode to avoid multiple calls
         $cacheKey = 'category-' . $categoryId . '-getCategoryNameById_' . $categoryId . '_' . $langId;
@@ -956,11 +956,11 @@ class MelisComCategoryService extends MelisComGeneralService
          * TEMPORARY, NEED TO CREATE GENERAL HELPER FOR THIS
          */
         $escaper = new \Zend\Escaper\Escaper('utf-8');
-        
+
         foreach ($catData As $key => $val)
         {
             // Getting Category Name
-            $categoryData = $this->getCategoryById($val['cat_id'], $langId, $onlyValid);
+            $categoryData = $this->getCategoryById($val['cat_id'], null, $onlyValid);
             $category = $categoryData->getTranslations();
 
             $catName = '';
@@ -969,15 +969,17 @@ class MelisComCategoryService extends MelisComGeneralService
             {
                 if ($val->elang_id == $langId)
                 {
-                    $catName = $val->catt_name;
-                    break;
+                    if (!empty($val->catt_name)){
+                        $catName = $val->catt_name;
+                        $catNameLangName = '';
+                        break;
+                    }
                 }
-                else
+                elseif (!empty($val->catt_name))
                 {
                     // Getting available Name concatinated with the Language Name
                     $catName = $val->catt_name;
                     $catNameLangName = $val->elang_name;
-                    break;
                 }
             }
 

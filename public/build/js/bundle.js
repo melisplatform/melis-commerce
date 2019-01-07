@@ -4284,6 +4284,14 @@ $(document).ready(function() {
 
     body.on("click", ".country-price-tab li a", function(){
         var textCountry = $(this).data('country');
+        var textSymbol = $(this).data('symbol');
+        if(textSymbol != ""){
+            $(".cur-symbol").removeClass("fa fa-dollar").text(textSymbol).css("font-weight", "600");
+        }else{
+            if(!$('.cur-symbol').hasClass("fa")){
+                $(".cur-symbol").empty().addClass("fa fa-dollar").removeAttr("style");
+            }
+        }
         $('.country-price-label').text(textCountry + ' ' + translations.tr_meliscommerce_variant_tab_prices_pricing);
     });
 
@@ -8053,7 +8061,93 @@ $(function() {
 	var zoneId = "id_meliscommerce_currency_content_modal_form";
 	var melisKey = 'meliscommerce_currency_content_modal_form';
 	var modalUrl = '/melis/MelisCommerce/MelisComCurrency/renderCurrencyModalContainer';
-	
+
+    body.on("switch-change", ".make-switch", function(e, data){
+        //check the state of the switch
+		if ($(this).find('#cur_status').length) {
+            if (data.value === false) {
+                //get currency id
+                let $form = $(this).closest('form');
+                let currencyId = $form.find('#id_cur_id').val();
+
+                let $switch = $('.make-switch');
+
+                //disable the switch
+                $switch.bootstrapSwitch('setActive', false);
+
+                //don't change the state of the switch
+                $switch.bootstrapSwitch('toggleState', true, true);
+                //disable save button
+                melisCoreTool.pending('#btnComSaveCurrency');
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/melis/MelisCommerce/MelisComCurrency/getCountriesUsingCurrency',
+                    data: {currencyId: currencyId},
+                    dataType: 'json',
+                    encode: true,
+                }).success(function (data) {
+                    if (data.countries.length > 0) {
+                        let countriesHtml = '<ul class="container">';
+
+                        $.each(data.countries, function (key, value) {
+                            countriesHtml += '<li>' + value.ctry_name + '</li>';
+                        });
+
+                        countriesHtml += '</ul>';
+
+                        //prompt
+                        BootstrapDialog.show({
+                            title: translations.tr_meliscommerce_currency,
+                            message: translations.tr_meliscommerce_currency_prompt_are_you_sure + '<br><br>' +
+                            translations.tr_meliscommerce_currency_prompt_is_used +
+                            '<br>' + countriesHtml,
+                            type: BootstrapDialog.TYPE_WARNING,
+                            closable: true,
+                            buttons: [{
+                                label: translations.tr_meliscore_common_no,
+                                cssClass: 'btn-danger pull-left',
+                                action: function (dialog) {
+                                    //callback
+                                    //enable the switch back
+                                    $switch.bootstrapSwitch('setActive', true);
+                                    //enable save button
+                                    melisCoreTool.done('#btnComSaveCurrency');
+                                    dialog.close();
+                                }
+                            }, {
+                                label: translations.tr_meliscore_common_yes,
+                                cssClass: 'btn-success',
+                                action: function (dialog) {
+                                    //callback
+                                    //enable the switch back
+                                    $switch.bootstrapSwitch('setActive', true);
+                                    //change the state of the switch
+                                    $switch.bootstrapSwitch('toggleState', true, true);
+                                    //enable save button
+                                    melisCoreTool.done('#btnComSaveCurrency');
+                                    dialog.close();
+                                }
+                            }]
+                        });
+                    } else {
+                        //enable the switch back
+                        $switch.bootstrapSwitch('setActive', true);
+                        //change the state of the switch
+                        $switch.bootstrapSwitch('toggleState', true, true);
+                        //enable save button
+                        melisCoreTool.done('#btnComSaveCurrency');
+                    }
+                }).error(function () {
+                    //enable the switch back
+                    $switch.bootstrapSwitch('setActive', true);
+                    //enable save button
+                    melisCoreTool.done('#btnComSaveCurrency');
+                });
+            }
+        }
+    });
+
 	body.on("click", "#btnComAddCurrency", function() {
 		melisCoreTool.pending("#btnComAddCurrency");
 		melisHelper.createModal(zoneId, melisKey, false, {curId: null, saveType : "new"},  modalUrl, function() {

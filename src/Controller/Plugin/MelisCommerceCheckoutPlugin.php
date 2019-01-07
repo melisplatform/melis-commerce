@@ -347,16 +347,43 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                 
                 break;
             case 'checkout-confirm':
-                
-                $checkOutConfirmPlugin = $pluginManager->get('MelisCommerceCheckoutConfirmPlugin');
-                $checkout = $checkOutConfirmPlugin->render($checkOutConfirmParameters);
-                
-                if(!empty($container['checkout'][$siteId]))
+
+                /**
+                 * Login using the Commerce Athentication Service
+                 */
+                $melisComAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
+
+                /**
+                 * Checking if the user has Loggedin
+                 * else this should redirect to Login page
+                 * with the param of the Checkout address page
+                 */
+                if (!$melisComAuthSrv->hasIdentity())
                 {
-                    // Unsetting Site Checkout Session
-                    unset($container['checkout'][$siteId]);
+                    if($this->renderMode != "melis")
+                    {
+                        $link_query = array(
+                            'm_redirection_link_ok' => $checkoutPage,
+                            'm_autologin' => 1
+                        );
+
+                        $redirect = $loginPage . '?' . http_build_query($link_query);
+                        $checkout = null;
+                    }
                 }
-                $showSteps = false;
+                else
+                {
+                    $checkOutConfirmPlugin = $pluginManager->get('MelisCommerceCheckoutConfirmPlugin');
+                    $checkout = $checkOutConfirmPlugin->render($checkOutConfirmParameters);
+
+                    if(!empty($container['checkout'][$siteId]))
+                    {
+                        // Unsetting Site Checkout Session
+                        unset($container['checkout'][$siteId]);
+                    }
+                    $showSteps = false;
+                }
+
                 
                 break;
             case 'checkout-cart':

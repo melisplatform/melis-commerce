@@ -117,26 +117,28 @@ class MelisCommerceRegisterPlugin extends MelisTemplatingPlugin
                     'cli_status'        => 1,
                     'cli_country_id'    => $data['m_country']
                 );
-                
+
+                // Getting the language id from CMS to Commerce language
                 $container = new Container('melisplugins');
-                $langId = $container['melis-plugins-lang-id'];
+                $langLocale = $container['melis-plugins-lang-locale'];
+                $ecomLang = $this->getServiceLocator()->get('MelisEcomLangTable');
+                $ecomLangData = $ecomLang->getEntryByField('elang_locale', $langLocale)->current();
                 
                 // Preparing the person data
                 $tmpData = [];
                 $tmpData['cper_status'] = 1;
                 $tmpData['cper_is_main_person'] = 1;
-                $tmpData['cper_lang_id'] = $langId;
+                $tmpData['cper_lang_id'] = $ecomLangData->elang_id;
                 $exclude = ['m_autologin', 'm_redirection_link_ok', 'cper_password2', 'm_country', 'm_registration_is_submit'];
                 
                 foreach($data as $key => $value) {
                     if(!in_array($key, $exclude)) {
                         $tmpData[$key] = $value;
                     }
-                
                 }
+
                 $person[] = $tmpData;
 
-               
                 if (!$isExist)
                 {
                     // Saving Client data using Client Servive
