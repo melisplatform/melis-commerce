@@ -83,7 +83,7 @@ return array(
                                 'sortable' => true,
                             ),
                             'price' => array(
-                                'text' => '<i class="fa fa-usd fa-lg"></i>',
+                                'text' => 'tr_meliscommerce_order_list_col_price',
                                 'css' => array('width' => '10%', 'padding-right' => '0'),
                                 'sortable' => true,
                             ),
