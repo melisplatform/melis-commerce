@@ -335,7 +335,9 @@ class MelisComProductListController extends AbstractActionController
             $productId = (int) $this->getRequest()->getPost('productId');
             $variantId = (int) $this->getRequest()->getPost('variantId');
             
-           // $productId = (int) $this->params()->fromQuery('productId');
+            $productSvc = $this->getServiceLocator()->get('MelisComProductService'); // added by: JRago
+
+            // $productId = (int) $this->params()->fromQuery('productId');
             $variants = $this->getProductVariantsData($productId);
             $mainVarDom = '<span class="text-success"><i class="fa fa-fw fa-star"></i></span>';
             $imageDom      = '<img src="%s" width="60" class="img-rounded"/>';
@@ -345,6 +347,19 @@ class MelisComProductListController extends AbstractActionController
             $viewHelperManager = $this->getServiceLocator()->get('ViewHelperManager');
             $table = $viewHelperManager->get('ToolTipTable');
             $langId = $this->getTool()->getCurrentLocaleID();
+
+            // added by: JRago for Junry to query product name for use on front-end
+            $productData = (array) $productSvc->getProductTextsById($productId, null, $langId);
+            $productName = null;
+            if (! empty($productData)) {
+                foreach ($productData as $key => $value) {
+                    if ($value->ptxt_lang_id == $langId) {
+                        $productName = $value->ptxt_field_short ?? $value->ptxt_field_long;
+                        break;
+                    }
+                }
+            }
+            // end added
 
             if($variants) {
                 $sContent = '';
@@ -375,7 +390,7 @@ class MelisComProductListController extends AbstractActionController
                     
 
                     // SKU
-                    $sku = '<a class="text-danger openVariant" style="color:#fff" data-product-id="'.$productId.'">'.$this->getTool()->escapeHtml($variant['sku']).'</a>';
+                    $sku = '<a class="text-danger openVariant" style="color:#fff" data-product-name="'.$productName.'" data-product-id="'.$productId.'">'.$this->getTool()->escapeHtml($variant['sku']).'</a>';
                     $sContent .= $table->setRowData($sku, array('class' => 'text-left', 'style' => 'font-size: 14px'));
                     
                     // ATTRIBUTES

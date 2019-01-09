@@ -243,7 +243,7 @@ $(document).ready(function() {
         initProductCategoryList(productId, langLocale);
     });
 
-    $('body').on("click",".productTextForm .deleteTextInput", function(){
+    body.on("click",".productTextForm .deleteTextInput", function(){
         var text = $(this).parent().attr("data-text-identifier");
 
         var form  = $(this).parents("form");
@@ -661,7 +661,7 @@ $(document).ready(function() {
         $("div.formCreateTextTypeContainer").slideToggle();
     });
 
-    $("body").on("mouseenter mouseout", ".toolTipHoverEvent", function(e) {
+    body.on("mouseenter mouseout", ".toolTipHoverEvent", function(e) {
         $(".thClassColId").attr("style", "");
         var productId = $(this).data("productid");
         var loaderText = '<div class="qtipLoader"><hr/><span class="text-center col-lg-12">Loading...</span><br/></div>';
@@ -697,7 +697,7 @@ $(document).ready(function() {
         }
     });
 
-    $("body").on("click",".add-product-text", function(){
+    body.on("click",".add-product-text", function(){
         melisHelper.zoneReload(melisCommerce.getCurrentProductId()+"_id_meliscommerce_products_page_content_tab_product_text_modal_form_product_type_text", "meliscommerce_products_page_content_tab_product_text_modal_form_product_type_text", {productId : melisCommerce.getCurrentProductId()});
         reInitProductTextTypeSelect(melisCommerce.getCurrentProductId());
     });
@@ -715,10 +715,23 @@ $(document).ready(function() {
     // });
 
     body.on("click", ".openVariant", function(){
-        var variantId = $(this).parent().siblings(":first").text();
-        var variantName = $(this).parent().parent().find("td:nth-child(4)").text();
-        var productId = $(this).attr("data-product-id");
-        melisHelper.tabOpen(variantName, 'icon-tag-2', variantId+'_id_meliscommerce_variants_page', 'meliscommerce_variants_page', { variantId : variantId, productId : productId});
+        var $this        = $(this),
+            productId    = $this.data("product-id"),
+            productName  = $this.data("product-name"),
+            prodTabId    = productId+"_id_meliscommerce_products_page"
+            navTabsGroup = "id_meliscommerce_product_list_container",
+            classClick   = $this[0].classList[1];
+           
+            // openProductPage to open product page then callback function tabOpen to open variant page
+            melisCommerce.openProductPage(productId, productName, navTabsGroup, function() {
+                var variantId   = $this.parent().siblings(":first").text(),
+                    variantName = $this.parent().parent().find("td:nth-child(4)").text();
+
+                    melisCommerce.disableAllTabs();
+                    melisHelper.tabOpen(variantName, 'icon-tag-2', variantId+'_id_meliscommerce_variants_page', 'meliscommerce_variants_page', { variantId : variantId, productId : productId}, prodTabId);
+                    melisCommerce.setUniqueId(variantId);
+                    melisCommerce.enableAllTabs();
+            });
     });
 
     function getSelAttributes() {
@@ -729,7 +742,6 @@ $(document).ready(function() {
         });
 
         return strInt;
-
     }
 
     function getSelCategories() {
