@@ -702,25 +702,24 @@ $(document).ready(function() {
         reInitProductTextTypeSelect(melisCommerce.getCurrentProductId());
     });
 
-    // $("body").on("click",".add-product-text", function() {
-    //     melisHelper.createModal('id_meliscommerce_products_page_content_tab_product_text_modal_form',
-    //         'meliscommerce_products_page_content_tab_product_text_modal_form',
-    //         true,
-    //         {},
-    //         'melis/MelisCommerce/MelisComProduct/render-products-page-content-tab-text-modal-form',
-    //         function() {
-    //
-    //         }
-    //     );
-    // });
+    /*$("body").on("click",".add-product-text", function() {
+        melisHelper.createModal('id_meliscommerce_products_page_content_tab_product_text_modal_form',
+            'meliscommerce_products_page_content_tab_product_text_modal_form',
+            true,
+            {},
+            'melis/MelisCommerce/MelisComProduct/render-products-page-content-tab-text-modal-form',
+            function() {
+    
+            }
+        );
+    });*/
 
     body.on("click", ".openVariant", function(){
         var $this        = $(this),
             productId    = $this.data("product-id"),
             productName  = $this.data("product-name"),
-            prodTabId    = productId+"_id_meliscommerce_products_page"
-            navTabsGroup = "id_meliscommerce_product_list_container",
-            classClick   = $this[0].classList[1];
+            prodTabId    = productId+"_id_meliscommerce_products_page",
+            navTabsGroup = "id_meliscommerce_product_list_container";
            
             // openProductPage to open product page then callback function tabOpen to open variant page
             melisCommerce.openProductPage(productId, productName, navTabsGroup, function() {

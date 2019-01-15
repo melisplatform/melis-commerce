@@ -98,7 +98,10 @@ var melisCommerce = (function(window) {
 
     function openProductPage(productId, productName, navTabsGroup, callback) {
         melisHelper.tabOpen(melisCore.escapeHtml(productName), "icon-shippment", productId+"_id_meliscommerce_products_page", "meliscommerce_products_page",  { productId: productId }, navTabsGroup );
-        callback();
+
+        if ( callback && typeof( callback ) === "function" ) {
+            callback();
+        }
     }
 
     function closeCurrentProductPage() {
