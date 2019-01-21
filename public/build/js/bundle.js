@@ -3706,14 +3706,26 @@ $(document).ready(function() {
 
     });
 
+    // coupons / product list
     body.on("click", ".btnProductListEdit", function() {
-        var productId   = $(this).parents("tr").attr('id');
-        var productName = $(this).parents("tr").find("td span").data("productname");
-        var navTabsGroup = "id_meliscommerce_product_list_container";
+        var productId   = $(this).parents("tr").attr('id'),
+            productName = $(this).parents("tr").find("td span").data("productname"),
+            navTabsGroup = "id_meliscommerce_product_list_container";
 
-        melisCommerce.disableAllTabs();
-        melisCommerce.openProductPage(productId, productName, navTabsGroup);
-        melisCommerce.setUniqueId(productId);
+        var alreadyOpen = $("body #melis-id-nav-bar-tabs li a.tab-element[data-id='id_meliscommerce_product_list_container']");
+
+        // check whether to open the products tab
+        if ( alreadyOpen.length > 0 ) {
+            melisCommerce.disableAllTabs();
+            melisCommerce.openProductPage(productId, productName, navTabsGroup);
+            melisCommerce.setUniqueId(productId);
+        } else {
+            melisHelper.tabOpen("Products", "icon-shipment", "id_meliscommerce_product_list_container", "meliscommerce_product_list_container", "", navTabsGroup, function() {
+                melisCommerce.disableAllTabs();
+                melisCommerce.openProductPage(productId, productName, navTabsGroup);
+                melisCommerce.setUniqueId(productId);
+            });
+        }
     });
 
     body.on("click", "#btnAddProduct", function() {
@@ -4318,7 +4330,7 @@ $(document).ready(function() {
         }
     });
 
-    $('body').on('click', '.productvariant-refresh', function(){
+    body.on('click', '.productvariant-refresh', function(){
         var prodId = melisCommerce.getCurrentProductId();
         melisHelper.zoneReload(prodId+"_id_meliscommerce_products_page_content_tab_variant_content_container", "meliscommerce_products_page_content_tab_variant_content_container", {productId : prodId});
     });
@@ -4427,7 +4439,7 @@ $(document).ready(function() {
 
     });
 
-    $("body").on("mouseenter mouseleave", ".toolTipVarHoverEvent", function(e) {
+    body.on("mouseenter mouseleave", ".toolTipVarHoverEvent", function(e) {
 
         var variantId = $(this).data("variantid");
         var productId   = $(this).closest('.container-level-a').attr('id').replace(/[^0-9]/g,'');
@@ -5454,11 +5466,13 @@ $(document).ready(function() {
     body.on("click", ".updateListStatus", function() {
         var orderId = $(this).data('orderid');
         melisCoreTool.pending(this);
-        // initialation of local variable
+
+        // initialization of local variable
         zoneId = 'id_meliscommerce_order_list_content_status_form';
         melisKey = 'meliscommerce_order_list_content_status_form';
         modalUrl = '/melis/MelisCommerce/MelisComOrderList/renderOrderListModal';
-        // requesitng to create modal and display after
+
+        // requesting to create modal and display after
         melisHelper.createModal(zoneId, melisKey, false, {'orderId': orderId}, modalUrl, function(){
             melisCoreTool.done(this);
         });
@@ -5618,7 +5632,6 @@ $(document).ready(function() {
     function orderTabOpen(ordername, id) {
         var navTabsGroup = "id_meliscommerce_order_list_page";
             melisHelper.tabOpen(ordername, 'fa fa fa-cart-plus fa-2x', id+'_id_meliscommerce_orders_page', 'meliscommerce_orders_page', { orderId : id }, navTabsGroup);
-            //callback();
     }
 
     body.on('apply.daterangepicker', ".dt_orderdatepicker", function(ev, picker) {
@@ -8782,8 +8795,10 @@ window.loadAssocVariantList = function(data, tblSettings) {
 }
 
 $(function() {
+
+    var body = $("body");
 	
-    $("body").on("click", ".btnAssocVAssign", function() {
+    body.on("click", ".btnAssocVAssign", function() {
     	var variantId = $(this).data("variantid");
     	var productId = $(this).data("productid");
     	var parentTable = $(this).parents('.tableAssocVariantList2');
@@ -8826,7 +8841,7 @@ $(function() {
 		});
     });
 
-    $("body").on("click", ".removeAssoc", function() {
+    body.on("click", ".removeAssoc", function() {
         var varId = $(this).closest('tr').attr('id');
         var parentTable = $(this).parents('.tableAssocVariantList1');
         var currentVariantId = parentTable.data("variantid");
@@ -8871,17 +8886,17 @@ $(function() {
     });
 
 
-    $("body").on("click", ".refreshVarList", function() {
+    body.on("click", ".refreshVarList", function() {
         var varId = $(this).closest('.container-level-a').attr('id').replace(/[^0-9]/g,'');
         melisHelper.zoneReload(varId+"_id_meliscommerce_avar_tab_var_lists", "meliscommerce_avar_tab_var_lists", {variantId : varId});
     });
 
-    $("body").on("click", ".refreshAssocVarList", function() {
+    body.on("click", ".refreshAssocVarList", function() {
         var varId =$(this).closest('.container-level-a').attr('id').replace(/[^0-9]/g,'');
         melisHelper.zoneReload(varId+"_id_meliscommerce_avar_tab_assoc_vars_list", "meliscommerce_avar_tab_assoc_vars_list", {variantId : varId});
     });
 
-    $("body").on("click", ".btnAVVV1", function() {
+    body.on("click", ".btnAVVV1", function() {
         var productId = $(this).parents("tr").children().eq(2).find("span").data().prodId;
         var sku = $(this).parents("tr").children().eq(3).find("span").data().sku;
         melisCommerce.disableAllTabs();
@@ -8890,15 +8905,35 @@ $(function() {
         melisCommerce.enableAllTabs();
     });
 
-    $("body").on("click", ".btnAVVV2", function() {
-    	var sku = $(this).data("variantsku");
-        var productId = $(this).data("productid");
-        var variantId = $(this).data("variantid");
-        melisCommerce.disableAllTabs();
-        melisHelper.tabOpen(sku, 'icon-tag-2', variantId+'_id_meliscommerce_variants_page', 'meliscommerce_variants_page', { variantId : variantId, productId : productId});
-        melisCommerce.enableAllTabs();
-    });
+    body.on("click", ".btnAVVV2", function() {
+    	var $this           = $(this),
+            sku             = $this.data("variantsku"),
+            productId       = $this.data("productid"),
+            productName     = $this.closest("tr").prev("tr").find("td:nth-child(3)").text(),
+            prodTabId       = productId+"_id_meliscommerce_products_page",
+            navTabsGroup    = "id_meliscommerce_product_list_container",
+            variantId       = $this.data("variantid");
 
+        var alreadyOpen = $("body #melis-id-nav-bar-tabs li a.tab-element[data-id='id_meliscommerce_product_list_container']");
+
+        // check whether to open the product's tab and also its equivalent variant's page
+        if ( alreadyOpen.length > 0 ) {
+            melisCommerce.disableAllTabs();
+            melisCommerce.openProductPage(productId, productName, navTabsGroup, function() {
+                melisHelper.tabOpen(sku, 'icon-tag-2', variantId+'_id_meliscommerce_variants_page', 'meliscommerce_variants_page', { variantId : variantId, productId : productId }, prodTabId);
+                melisCommerce.enableAllTabs();
+            });
+        } else {
+            melisHelper.tabOpen("Products", "icon-shippment", "id_meliscommerce_product_list_container", "meliscommerce_product_list_container", '', navTabsGroup, function() {
+                melisCommerce.disableAllTabs();
+                melisCommerce.openProductPage(productId, productName, navTabsGroup, function() {
+                    melisCommerce.setUniqueId(productId);
+                    melisHelper.tabOpen(sku, 'icon-tag-2', variantId+'_id_meliscommerce_variants_page', 'meliscommerce_variants_page', { variantId : variantId, productId : productId }, prodTabId);
+                    melisCommerce.enableAllTabs();
+                });
+            });
+        }
+    });
 
     var curVarId = activeTabId.split("_")[0];
     var assocTableSearch = $("input[type='search'][aria-controls='tableAssocVariantList1_" + curVarId + "']");
@@ -8912,7 +8947,7 @@ $(function() {
     
     
     // This event will create extra row on DataTable as Product Variant List container
-    $('body').on('click', '.showPrdVariants', function () {
+    body.on('click', '.showPrdVariants', function () {
     	
     	var parentTable = $(this).parents('.tableAssocVariantList2');
     	var tableId = parentTable.attr("id");
