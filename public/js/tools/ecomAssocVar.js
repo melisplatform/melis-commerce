@@ -5,8 +5,10 @@ window.loadAssocVariantList = function(data, tblSettings) {
 }
 
 $(function() {
+
+    var body = $("body");
 	
-    $("body").on("click", ".btnAssocVAssign", function() {
+    body.on("click", ".btnAssocVAssign", function() {
     	var variantId = $(this).data("variantid");
     	var productId = $(this).data("productid");
     	var parentTable = $(this).parents('.tableAssocVariantList2');
@@ -49,7 +51,7 @@ $(function() {
 		});
     });
 
-    $("body").on("click", ".removeAssoc", function() {
+    body.on("click", ".removeAssoc", function() {
         var varId = $(this).closest('tr').attr('id');
         var parentTable = $(this).parents('.tableAssocVariantList1');
         var currentVariantId = parentTable.data("variantid");
@@ -94,17 +96,17 @@ $(function() {
     });
 
 
-    $("body").on("click", ".refreshVarList", function() {
+    body.on("click", ".refreshVarList", function() {
         var varId = $(this).closest('.container-level-a').attr('id').replace(/[^0-9]/g,'');
         melisHelper.zoneReload(varId+"_id_meliscommerce_avar_tab_var_lists", "meliscommerce_avar_tab_var_lists", {variantId : varId});
     });
 
-    $("body").on("click", ".refreshAssocVarList", function() {
+    body.on("click", ".refreshAssocVarList", function() {
         var varId =$(this).closest('.container-level-a').attr('id').replace(/[^0-9]/g,'');
         melisHelper.zoneReload(varId+"_id_meliscommerce_avar_tab_assoc_vars_list", "meliscommerce_avar_tab_assoc_vars_list", {variantId : varId});
     });
 
-    $("body").on("click", ".btnAVVV1", function() {
+    body.on("click", ".btnAVVV1", function() {
         var productId = $(this).parents("tr").children().eq(2).find("span").data().prodId;
         var sku = $(this).parents("tr").children().eq(3).find("span").data().sku;
         melisCommerce.disableAllTabs();
@@ -113,15 +115,35 @@ $(function() {
         melisCommerce.enableAllTabs();
     });
 
-    $("body").on("click", ".btnAVVV2", function() {
-    	var sku = $(this).data("variantsku");
-        var productId = $(this).data("productid");
-        var variantId = $(this).data("variantid");
-        melisCommerce.disableAllTabs();
-        melisHelper.tabOpen(sku, 'icon-tag-2', variantId+'_id_meliscommerce_variants_page', 'meliscommerce_variants_page', { variantId : variantId, productId : productId});
-        melisCommerce.enableAllTabs();
-    });
+    body.on("click", ".btnAVVV2", function() {
+    	var $this           = $(this),
+            sku             = $this.data("variantsku"),
+            productId       = $this.data("productid"),
+            productName     = $this.closest("tr").prev("tr").find("td:nth-child(3)").text(),
+            prodTabId       = productId+"_id_meliscommerce_products_page",
+            navTabsGroup    = "id_meliscommerce_product_list_container",
+            variantId       = $this.data("variantid");
 
+        var alreadyOpen = $("body #melis-id-nav-bar-tabs li a.tab-element[data-id='id_meliscommerce_product_list_container']");
+
+        // check whether to open the product's tab and also its equivalent variant's page
+        if ( alreadyOpen.length > 0 ) {
+            melisCommerce.disableAllTabs();
+            melisCommerce.openProductPage(productId, productName, navTabsGroup, function() {
+                melisHelper.tabOpen(sku, 'icon-tag-2', variantId+'_id_meliscommerce_variants_page', 'meliscommerce_variants_page', { variantId : variantId, productId : productId }, prodTabId);
+                melisCommerce.enableAllTabs();
+            });
+        } else {
+            melisHelper.tabOpen("Products", "icon-shippment", "id_meliscommerce_product_list_container", "meliscommerce_product_list_container", '', navTabsGroup, function() {
+                melisCommerce.disableAllTabs();
+                melisCommerce.openProductPage(productId, productName, navTabsGroup, function() {
+                    melisCommerce.setUniqueId(productId);
+                    melisHelper.tabOpen(sku, 'icon-tag-2', variantId+'_id_meliscommerce_variants_page', 'meliscommerce_variants_page', { variantId : variantId, productId : productId }, prodTabId);
+                    melisCommerce.enableAllTabs();
+                });
+            });
+        }
+    });
 
     var curVarId = activeTabId.split("_")[0];
     var assocTableSearch = $("input[type='search'][aria-controls='tableAssocVariantList1_" + curVarId + "']");
@@ -135,7 +157,7 @@ $(function() {
     
     
     // This event will create extra row on DataTable as Product Variant List container
-    $('body').on('click', '.showPrdVariants', function () {
+    body.on('click', '.showPrdVariants', function () {
     	
     	var parentTable = $(this).parents('.tableAssocVariantList2');
     	var tableId = parentTable.attr("id");

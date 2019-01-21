@@ -192,11 +192,13 @@ $(document).ready(function() {
     body.on("click", ".updateListStatus", function() {
         var orderId = $(this).data('orderid');
         melisCoreTool.pending(this);
-        // initialation of local variable
+
+        // initialization of local variable
         zoneId = 'id_meliscommerce_order_list_content_status_form';
         melisKey = 'meliscommerce_order_list_content_status_form';
         modalUrl = '/melis/MelisCommerce/MelisComOrderList/renderOrderListModal';
-        // requesitng to create modal and display after
+
+        // requesting to create modal and display after
         melisHelper.createModal(zoneId, melisKey, false, {'orderId': orderId}, modalUrl, function(){
             melisCoreTool.done(this);
         });
@@ -356,7 +358,6 @@ $(document).ready(function() {
     function orderTabOpen(ordername, id) {
         var navTabsGroup = "id_meliscommerce_order_list_page";
             melisHelper.tabOpen(ordername, 'fa fa fa-cart-plus fa-2x', id+'_id_meliscommerce_orders_page', 'meliscommerce_orders_page', { orderId : id }, navTabsGroup);
-            //callback();
     }
 
     body.on('apply.daterangepicker', ".dt_orderdatepicker", function(ev, picker) {

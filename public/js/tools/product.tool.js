@@ -274,14 +274,26 @@ $(document).ready(function() {
 
     });
 
+    // coupons / product list
     body.on("click", ".btnProductListEdit", function() {
-        var productId   = $(this).parents("tr").attr('id');
-        var productName = $(this).parents("tr").find("td span").data("productname");
-        var navTabsGroup = "id_meliscommerce_product_list_container";
+        var productId   = $(this).parents("tr").attr('id'),
+            productName = $(this).parents("tr").find("td span").data("productname"),
+            navTabsGroup = "id_meliscommerce_product_list_container";
 
-        melisCommerce.disableAllTabs();
-        melisCommerce.openProductPage(productId, productName, navTabsGroup);
-        melisCommerce.setUniqueId(productId);
+        var alreadyOpen = $("body #melis-id-nav-bar-tabs li a.tab-element[data-id='id_meliscommerce_product_list_container']");
+
+        // check whether to open the products tab
+        if ( alreadyOpen.length > 0 ) {
+            melisCommerce.disableAllTabs();
+            melisCommerce.openProductPage(productId, productName, navTabsGroup);
+            melisCommerce.setUniqueId(productId);
+        } else {
+            melisHelper.tabOpen("Products", "icon-shipment", "id_meliscommerce_product_list_container", "meliscommerce_product_list_container", "", navTabsGroup, function() {
+                melisCommerce.disableAllTabs();
+                melisCommerce.openProductPage(productId, productName, navTabsGroup);
+                melisCommerce.setUniqueId(productId);
+            });
+        }
     });
 
     body.on("click", "#btnAddProduct", function() {
