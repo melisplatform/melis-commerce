@@ -2358,6 +2358,10 @@ tr.last-tr td {
     position: relative;
 }
 
+.variant-assoc-product-variant-list #loader {
+    height: 100% !important;
+}
+
 .variant-assoc-product-variant {
     display: block;
     float: none;
