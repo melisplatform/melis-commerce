@@ -64,6 +64,8 @@
 	    'tr_meliscommerce_variants_delete_confirm' => 'Etes-vous sûr de vouloir supprimer ce variant?',
 	    'tr_meliscommerce_variants_prime_title' => 'Assigner comme variant par défaut',
         'tr_meliscommerce_variants_update_status_title' => 'État de mise à jour',
+        'tr_meliscommerce_variants_deactivate_status_title' => 'Désactiver le variant',
+        'tr_meliscommerce_variants_activate_status_title' => 'Activer le variant',
 	    
 	    //flash message
 	    'tr_meliscommerce_variants_page' => 'Variant',

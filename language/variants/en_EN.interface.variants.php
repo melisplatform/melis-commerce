@@ -64,7 +64,9 @@
 	    'tr_meliscommerce_variants_delete_confirm' => 'Are you sure you wish to delete this variant?',
 	    'tr_meliscommerce_variants_prime_title' => 'Make this the default variant',
 	    'tr_meliscommerce_variants_update_status_title' => 'Update status',
-	    
+	    'tr_meliscommerce_variants_deactivate_status_title' => 'Deactivate variant',
+	    'tr_meliscommerce_variants_activate_status_title' => 'Activate variant',
+
 	    //flash message
 	    'tr_meliscommerce_variants_page' => 'Variant',
 	    'tr_meliscommerce_variants_page_duplicate_sku' => 'SKU already exist',

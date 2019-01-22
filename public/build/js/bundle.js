@@ -4478,6 +4478,7 @@ $(document).ready(function() {
 
     body.on("click", ".updateVariantStatus", function(){
         var _this = $(this);
+        var btnTitle = '';
         var obj = {};
         var val = "";
         var varIndicator = "";
@@ -4489,10 +4490,12 @@ $(document).ready(function() {
             val = 1;
             varIndicator = "text-success";
             linkClass = "btn-danger";
+            btnTitle = translations.tr_meliscommerce_variants_deactivate_status_title;
         }else{
             val = 0;
             varIndicator = "text-danger";
             linkClass = "btn-success";
+            btnTitle = translations.tr_meliscommerce_variants_activate_status_title;
         }
 
         obj.id = variantId;
@@ -4533,6 +4536,9 @@ $(document).ready(function() {
                 if($("#"+variantId+"_id_meliscommerce_variant_tab_main_header_container").length){
                     melisHelper.zoneReload(variantId+"_id_meliscommerce_variant_tab_main_header_container", "meliscommerce_variant_tab_main_header_container", {"productId" : prodId, "variantId" : variantId});
                 }
+
+                //change btn title
+                _this.attr("title", btnTitle);
             }
             _this.removeClass("disabled").attr("disabled", false);
         });
@@ -4551,6 +4557,7 @@ window.variantLoaded = function() {
 };
 window.checkVarStatus = function(){
     var productId = '';
+    var btnTitle = '';
     if($(".updateVariantStatus").closest('.container-level-a.active').attr('id') != undefined){
         productId = $(".updateVariantStatus").closest('.container-level-a.active').attr('id').replace(/[^0-9]/g,'');
     }else{
@@ -4564,12 +4571,14 @@ window.checkVarStatus = function(){
             var icon = $(this).find(".variant-update-icon-rotate");
             if(status == 0) {
                 btnStyle = "btn-success";
+                btnTitle = translations.tr_meliscommerce_variants_activate_status_title;
             }else{
                 icon.toggleClass("down");
+                btnTitle = translations.tr_meliscommerce_variants_deactivate_status_title;
             }
             icon.closest("a").removeClass(function (index, className) {
                 return (className.match (/(^|\s)btn-\S+/g) || []).join(' ');
-            }).addClass(btnStyle);
+            }).addClass(btnStyle).attr("title", btnTitle);
         }
     });
 };
