@@ -388,7 +388,9 @@ $(document).ready(function() {
         if ( alreadyOpen.length > 0 ) {
             melisCommerce.disableAllTabs();
             melisCommerce.openProductPage(productId, productName, navTabsGroup, function() {
+                melisCommerce.setUniqueId(productId);
                 melisHelper.tabOpen(variantName, 'icon-tag-2', variantId+'_id_meliscommerce_variants_page', 'meliscommerce_variants_page', { variantId : variantId, productId : productId }, prodTabId);
+                melisCommerce.setUniqueId(variantId);
                 melisCommerce.enableAllTabs();
             });
         } else {
@@ -397,6 +399,7 @@ $(document).ready(function() {
                 melisCommerce.openProductPage(productId, productName, navTabsGroup, function() {
                     melisCommerce.setUniqueId(productId);
                     melisHelper.tabOpen(variantName, 'icon-tag-2', variantId+'_id_meliscommerce_variants_page', 'meliscommerce_variants_page', { variantId : variantId, productId : productId }, prodTabId);
+                    melisCommerce.setUniqueId(variantId);
                     melisCommerce.enableAllTabs();
                 });
             });
