@@ -1,7 +1,7 @@
 $(document).ready(function() {
     var body = $("body");
 
-    $body.on("click", ".orderPaymentCouponLink", function(){
+    body.on("click", ".orderPaymentCouponLink", function(){
         var couponId   = $(this).data('couponid');
         var couponName   = $(this).data('couponname');
         // Open parent tab

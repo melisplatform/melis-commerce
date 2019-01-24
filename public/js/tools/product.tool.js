@@ -174,7 +174,7 @@ $(document).ready(function() {
 
     var body = $("body");
 
-    $body.on("click", ".productCategoryList", function(){
+    body.on("click", ".productCategoryList", function(){
         var btn = $(this);
         var productId = btn.data("productid");
 
