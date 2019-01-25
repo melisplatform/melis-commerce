@@ -22,6 +22,14 @@
         	</div>
         </div>
     </div>
+    <?php if ($this->result['alert'] == 'success'):?>
+        <br>
+        <div class="row bottom-bottons">
+            <div class="me-hl col-xs-12 col-md-12">
+                <button class="btn btn-success orderCheckoutEndClose close-tab" data-id="id_meliscommerce_order_checkout"><?php echo $this->translate('tr_meliscommerce_general_common_close') ?> </button>
+            </div>
+        </div>
+    <?php endif;?>
     <?php if ($this->result['alert'] == 'info'):?>
     <br>
     <div class="row bottom-bottons">
