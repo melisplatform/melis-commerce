@@ -236,7 +236,7 @@
 	    
 	    // Plugin MelisCommerceRegistrationPlugin
 	    'tr_meliscommerce_plugin_registration_name' => 'Inscription',
-	    'tr_meliscommerce_plugin_registration_description' => 'The plugin provide a user registration form : Le plugin fournit un formulaire d\'inscription',
+	    'tr_meliscommerce_plugin_registration_description' => 'Le plugin fournit un formulaire d\'inscription',
 	    'tr_meliscommerce_plugin_registration_reg_button' => 'S\'inscrire',
 	    
 	    // Plugin MelisCommerceLostPasswordGetEmailPlugin
