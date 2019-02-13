@@ -1,6 +1,26 @@
 <?php
     return array(
         'plugins' => array(
+            'meliscore' => [
+                'interface' => [
+                    'melis_dashboardplugin' => [
+                        'conf' => [
+                            'dashboard_plugin' => true
+                        ],
+                        'interface' => [
+                            'melisdashboardplugin_section' => [
+                                'interface' => [
+                                    'MelisCommerceDashboardPluginSalesRevenue' => [
+                                        'conf' => [
+                                            'type' => '/meliscommerce/interface/MelisCommerceDashboardPluginSalesRevenue'
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+            ],
             'meliscommerce' => array(
                 'ressources' => array(
                     'css' => array(
@@ -10,25 +30,32 @@
                         '/MelisCommerce/plugins/js/MelisCommerceDashboardPluginSalesRevenue.js',
                     ),
                 ),
-                'dashboard_plugins' => array(
+                'interface' => array(
                     'MelisCommerceDashboardPluginSalesRevenue' => array(
-                        'plugin_id' => 'MelisCommerceDashboardPluginSalesRevenue',
-                        'name' => 'tr_melis_commerce_dashboard_plugin_sales_revenue',
-                        'description' => 'tr_melis_commerce_dashboard_plugin_sales_revenue_description',
-                        'icon' => 'fa fa-dollar',
-                        'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceDashboardPluginSalesRevenue.jpg',
-                        'jscallback' => 'commerceDashboardPluginSalesRevenueChartStackedBarsInit()',
-                        'height' => 4,
-                        'activeFilter' => 'hourly',
-
-                        'interface' => array(
-                            'meliscommerce_dashboard_sales_revenue' => array(
-                                'forward' => array(
-                                    'module' => 'MelisCommerce',
-                                    'plugin' => 'MelisCommerceDashboardPluginSalesRevenue',
-                                    'function' => 'commerceSalesRevenue'
-                                ),
-                            ),
+                        'conf' => array(
+                            'name' => 'MelisCommerceDashboardPluginSalesRevenue',
+                            'melisKey' => 'MelisCommerceDashboardPluginSalesRevenue'
+                        ),
+                        'datas' => array(
+                            'plugin_id' => 'MelisCommerceDashboardPluginSalesRevenue',
+                            'name' => 'tr_melis_commerce_dashboard_plugin_sales_revenue',
+                            'description' => 'tr_melis_commerce_dashboard_plugin_sales_revenue_description',
+                            'icon' => 'fa fa-dollar',
+                            'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceDashboardPluginSalesRevenue.jpg',
+                            'jscallback' => 'commerceDashboardPluginSalesRevenueChartStackedBarsInit()',
+                            'max_lines' => 8,
+                            'height' => 4,
+                            'width' => 4,
+                            'x-axis' => 0,
+                            'y-axis' => 0,
+                            'activeFilter' => 'hourly',
+                        ),
+                        'forward' => array(
+                            'module' => 'MelisCommerce',
+                            'plugin' => 'MelisCommerceDashboardPluginSalesRevenue',
+                            'function' => 'commerceSalesRevenue',
+                            'jscallback' => '',
+                            'jsdatas' => array()
                         ),
                     ),
                 ),

@@ -28,6 +28,13 @@ class MelisCommerceDashboardPluginOrdersNumber extends MelisCoreDashboardTemplat
      */
     public function commerceOrders()
     {
+        /** @var \MelisCore\Service\MelisCoreDashboardPluginsRightsService $dashboardPluginsService */
+        $dashboardPluginsService = $this->getServiceLocator()->get('MelisCoreDashboardPluginsService');
+        //get the class name to make it as a key to the plugin
+        $path = explode('\\', __CLASS__);
+        $className = array_pop($path);
+        $isAccessable = $dashboardPluginsService->canAccess($className);
+
         $melisOrdersService = $this->getServiceLocator()->get('MelisComOrderService');
         $melisTranslation = $this->getServiceLocator()->get('MelisCoreTranslation');
         $melisCoreConfig = $this->getServiceLocator()->get('MelisCoreConfig');
@@ -100,7 +107,8 @@ class MelisCommerceDashboardPluginOrdersNumber extends MelisCoreDashboardTemplat
         $view->setTemplate('MelisCommerceDashboardPluginOrdersNumber/dashboard/commerce-orders');
         $view->orderDatas = $orders;
         $view->status = $status;
-        $view->activeFilter = $this->pluginConfig['activeFilter'];
+        $view->activeFilter = $this->pluginConfig['datas']['activeFilter'];
+        $view->isAccessable = $isAccessable;
 
         return $view;
     }
