@@ -259,6 +259,8 @@ class MelisComDocumentController extends AbstractActionController
         $request = $this->getRequest();
         $docType = '';
         $logTypeCode = '';
+        $isImgTypeOk = true;
+        $isImg = true;
         $melisCoreConfig = $this->getServiceLocator()->get('MelisCoreConfig');
         if($request->isPost()) {
 
@@ -321,6 +323,25 @@ class MelisComDocumentController extends AbstractActionController
                     // if docType is image
                     if($docType == 'image') {
                         $validator = array($size, $imageValidator);
+
+                        $imginfo_array = getimagesize($uploadedFile['tmp_name']);
+
+                        if ($imginfo_array !== false) {
+                            $isImg = true;
+                            $mime_type = $imginfo_array['mime'];
+
+                            $acceptedImageType = array("image/png","image/gif","image/jpeg","image/jpeg");
+                            if(in_array($mime_type,$acceptedImageType)){
+                                $isImgTypeOk = true;
+                            }else{
+                                $isImgTypeOk = false;
+                                $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_upload_image_fileIsImageFalseType');
+                            }
+
+                        }else{
+                            $isImg = false;
+                            $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_upload_image_fileIsImageNotDetected');
+                        }
                     }
 
                     $adapter = new Http();
@@ -328,6 +349,7 @@ class MelisComDocumentController extends AbstractActionController
                     // validate if form is valid
                     $form = $this->getDocForm($docType);
                     $form->setData($postValues);
+
 
                     if($form->isValid()) {
                         if($this->createFolder($relationType, $relationId)) {
@@ -345,29 +367,32 @@ class MelisComDocumentController extends AbstractActionController
                             if(!$postValues['doc_id']) {
                                 if($fileName) {
                                     if($adapter->isValid()) {
-                                        $adapter->setDestination($comMediaDir);
-                                        $savedDocFileName =  'public'.$this->renameIfDuplicateFile($comMediaPublicPath . $fileName);
-                                        $adapter->addFilter('File\Rename', array(
-                                            'target' => $savedDocFileName,
-                                            'overwrite' => true,
-                                        ));
+                                        if($isImgTypeOk && $isImg){
+                                            $adapter->setDestination($comMediaDir);
+                                            $savedDocFileName =  'public'.$this->renameIfDuplicateFile($comMediaPublicPath . $fileName);
+                                            $adapter->addFilter('File\Rename', array(
+                                                'target' => $savedDocFileName,
+                                                'overwrite' => true,
+                                            ));
 
-                                        // if uploaded successfully
-                                        if($adapter->receive()) {
-                                            //$data['doc_name'] = !empty($data['doc_name']) ? $this->renameIfDuplicateName($data['doc_name']) : $this->renameIfDuplicateName($formattedFileName);
-                                            $fname = pathinfo($fileName, PATHINFO_FILENAME);
-                                            $data['doc_name'] = !empty($data['doc_name']) ? $this->renameIfDuplicateName($data['doc_name']) : $fname;
-                                            $data['doc_subtype_id'] = isset($postValues['doc_subtype_id']) ? $postValues['doc_subtype_id'] : 0;
-                                            $data['doc_path'] = str_replace('public/media/commerce', '/media/commerce', $savedDocFileName);
-                                            $documentId = $this->getDocSvc()->saveDocument($relationType, $relationId, $countryId, $data, $docId);
-                                            if($documentId) {
-                                                $textMessage = 'tr_meliscommerce_documents_'.$docType.'_save_success';
-                                                $success = 1;
+                                            // if uploaded successfully
+                                            if($adapter->receive()) {
+                                                //$data['doc_name'] = !empty($data['doc_name']) ? $this->renameIfDuplicateName($data['doc_name']) : $this->renameIfDuplicateName($formattedFileName);
+                                                $fname = pathinfo($fileName, PATHINFO_FILENAME);
+                                                $data['doc_name'] = !empty($data['doc_name']) ? $this->renameIfDuplicateName($data['doc_name']) : $fname;
+                                                $data['doc_subtype_id'] = isset($postValues['doc_subtype_id']) ? $postValues['doc_subtype_id'] : 0;
+                                                $data['doc_path'] = str_replace('public/media/commerce', '/media/commerce', $savedDocFileName);
+                                                $documentId = $this->getDocSvc()->saveDocument($relationType, $relationId, $countryId, $data, $docId);
+                                                if($documentId) {
+                                                    $textMessage = 'tr_meliscommerce_documents_'.$docType.'_save_success';
+                                                    $success = 1;
+                                                }
+                                            }
+                                            else {
+                                                $textMessage = 'tr_meliscommerce_documents_upload_fail_file';
                                             }
                                         }
-                                        else {
-                                            $textMessage = 'tr_meliscommerce_documents_upload_fail_file';
-                                        }
+
                                     }
                                     else {
                                         foreach($adapter->getMessages() as $message) {
