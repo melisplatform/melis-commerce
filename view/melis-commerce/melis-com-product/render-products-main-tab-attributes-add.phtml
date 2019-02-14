@@ -21,7 +21,7 @@ $productId = $this->productId;
 	</label>
 </div>
 <div class="ui-widget" <?= $id; ?> data-melisKey="<?= $this->melisKey; ?>">
-	
+
 
     <select placeholder="<?php echo $this->translate('tr_meliscommerce_products_main_tab_attributes_content_label');?>"style="display:none" class="form-control dropdown-input<?= $this->productId; ?>" name="prodAttrib" id="<?= $this->productId; ?>_prodAttribInput">
     <option value=""><?php echo $this->translate('tr_meliscommerce_products_main_tab_attributes_content_label'); ?></option>
@@ -40,6 +40,11 @@ $productId = $this->productId;
             $('div.loadAttrCont').hide();
             attributeLists.fadeIn();
             attributeLists.select2({
+                "language": {
+                    "noResults": function(){
+                        return "<?php echo $this->translate('tr_meliscommerce_products_main_tab_attributes_no_results'); ?>";
+                    }
+                },
                 placeholder: '<?php echo $this->translate('tr_meliscommerce_products_main_tab_attributes_content_label'); ?>',
             });
         });

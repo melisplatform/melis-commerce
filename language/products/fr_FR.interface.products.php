@@ -40,6 +40,7 @@ return array(
     'tr_meliscommerce_products_tab_price_left_header' => 'Pays',
     'tr_meliscommerce_products_tab_price_right_header' => 'Prix',
     'tr_meliscommerce_products_text_modal_create' => 'Ou créer un type de texte',
+    'tr_meliscommerce_products_main_tab_attributes_no_results' => "Aucun résultat trouvé",
     
     
     //variants tab
