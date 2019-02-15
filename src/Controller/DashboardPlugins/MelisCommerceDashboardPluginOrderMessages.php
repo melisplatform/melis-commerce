@@ -49,39 +49,51 @@ class MelisCommerceDashboardPluginOrderMessages extends MelisCoreDashboardTempla
         if ($request->isPost()) {
             $filter = $this->getFilter($request);
             $orders = $this->getOrders();
-            $noReply = true;
 
             foreach ($orders as $order) {
                 $messages = $order->getMessages();
+                $lastAdmin = 0;
 
                 if (count($messages) > 0) {
-
+                    $count = 0;
                     foreach ($messages as $message) {
-                        if ($message->omsg_user_id != "") {
+                        if (!is_null($message->omsg_user_id)) {
                             $noReply = false;
+                            $lastAdmin = $count;
+                        } else {
+                            $noReply = true;
                         }
 
-                        // get client name and reference number
+                        // append client name and reference number
                         $message->clientFirstName = $order->getPerson()->cper_firstname;
                         $message->clientLastName = $order->getPerson()->cper_name;
                         $message->reference = $order->getOrder()->ord_reference;
                         $message->orderDate = $this->formatDateByLangLocale($order->getOrder()->ord_date_creation);
                         $message->totalOrderAmount = number_format($this->getTotalOrderAmount($order), 2);
+
+                        $count++;
                     }
 
                     if ($filter == 'all') {
                         if (count($messages) > 0) {
+                            $counter2 = 0;
+
                             foreach ($messages as $message) {
                                 // If no BO user has replied to the order
-                                $message->noReply = $noReply;
-
-                                if ($noReply) {
-                                    $unansweredMessages++;
+                                if ($counter2 <= $lastAdmin) {
+                                    $message->noReply = false;
+                                } else {
+                                    $message->noReply = $noReply;
                                 }
 
-                                if ($message->omsg_user_id == "") {
+                                if (is_null($message->omsg_user_id)) {
                                     array_push($messageList, $message);
+                                    if ($message->noReply) {
+                                        $unansweredMessages++;
+                                    }
                                 }
+
+                                $counter2 ++;
                             }
                         }
                     } else if ($filter == 'unseen') {
@@ -91,12 +103,11 @@ class MelisCommerceDashboardPluginOrderMessages extends MelisCoreDashboardTempla
                                     //if NO BO user has replied to the order
                                     $message->noReply = $noReply;
 
-                                    if ($noReply) {
-                                        $unansweredMessages++;
-                                    }
-
-                                    if ($message->omsg_user_id == "") {
+                                    if (is_null($message->omsg_user_id)) {
                                         array_push($messageList, $message);
+                                        if ($noReply) {
+                                            $unansweredMessages++;
+                                        }
                                     }
                                 }
                             }
@@ -107,8 +118,6 @@ class MelisCommerceDashboardPluginOrderMessages extends MelisCoreDashboardTempla
 
                     //sort all messages by date_creation in descending order to show the latest message on the top
                     array_multisort(array_column($messageList, "omsg_date_creation"), SORT_DESC, $messageList);
-                    // we set the $noReply variable to true again for the next order
-                    $noReply = true;
                 }
             }
         }

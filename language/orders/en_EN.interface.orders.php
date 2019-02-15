@@ -238,4 +238,17 @@
         'tr_melis_commerce_dashboard_plugin_order_messages_unanswered_messages' => 'You have <strong class="text-primary"> %d messages unanswered</strong>',
         'tr_melis_commerce_dashboard_plugin_order_messages_message_order_amount' => 'Order Amount : ',
         'tr_melis_commerce_dashboard_plugin_order_messages_message_placed_on' => 'Placed On : ',
+
+        'tr_meliscommerce_dashboardplugin_jan' => 'Jan',
+        'tr_meliscommerce_dashboardplugin_feb' => 'Feb',
+        'tr_meliscommerce_dashboardplugin_mar' => 'Mar',
+        'tr_meliscommerce_dashboardplugin_apr' => 'Apr',
+        'tr_meliscommerce_dashboardplugin_may' => 'May',
+        'tr_meliscommerce_dashboardplugin_jun' => 'Jun',
+        'tr_meliscommerce_dashboardplugin_jul' => 'Jul',
+        'tr_meliscommerce_dashboardplugin_aug' => 'Aug',
+        'tr_meliscommerce_dashboardplugin_sep' => 'Sep',
+        'tr_meliscommerce_dashboardplugin_oct' => 'Oct',
+        'tr_meliscommerce_dashboardplugin_nov' => 'Nov',
+        'tr_meliscommerce_dashboardplugin_dec' => 'Dec',
 	);

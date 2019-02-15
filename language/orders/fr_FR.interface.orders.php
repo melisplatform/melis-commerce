@@ -204,11 +204,11 @@
         //Dashboard Plugin
         //number of orders plugin
         'tr_PluginSection_meliscommerce' => 'Melis Commerce',
-        'tr_melis_commerce_dashboard_plugin_orders_number' => ' Nombre de commandes',
+        'tr_melis_commerce_dashboard_plugin_orders_number' => ' Commandes',
         'tr_melis_commerce_dashboard_plugin_orders_number_description' => 'Ce plugin affiche l\'aperçu du nombre de statistiques de commandes.',
-        'tr_melis_commerce_orders_dashboard_statistics_hourly' => 'Toutes les heures',
+        'tr_melis_commerce_orders_dashboard_statistics_hourly' => 'Heures',
         'tr_melis_commerce_orders_dashboard_statistics_daily' => 'Jours',
-        'tr_melis_commerce_orders_dashboard_statistics_weekly' => 'Chaque semaine',
+        'tr_melis_commerce_orders_dashboard_statistics_weekly' => 'Semaines',
         'tr_melis_commerce_orders_dashboard_statistics_monthly' => 'Mois',
 
         //number of orders table
@@ -220,10 +220,10 @@
         'tr_melis_commerce_orders_dashboard_table_header_date' => 'Date',
 
         //sales revenue
-        'tr_melis_commerce_dashboard_plugin_sales_revenue' => 'Chiffre D\'affaire',
+        'tr_melis_commerce_dashboard_plugin_sales_revenue' => 'Chiffre d\'affaires',
         'tr_melis_commerce_dashboard_plugin_sales_revenue_description' => 'Ce plugin affiche l\'aperçu des statistiques sur les revenus des ventes.',
         'tr_melis_commerce_dashboard_plugin_sales_revenue_order_price' => 'Prix de la commande',
-        'tr_melis_commerce_dashboard_plugin_sales_revenue_shipping_price' => 'Prix d\'expédition',
+        'tr_melis_commerce_dashboard_plugin_sales_revenue_shipping_price' => 'Frais d\'expédition',
 
         //order messages
         'tr_melis_commerce_dashboard_plugin_order_messages' => 'Messages de commande',
@@ -233,4 +233,17 @@
         'tr_melis_commerce_dashboard_plugin_order_messages_unanswered_messages' => 'Vous avez <strong class="text-primary"> %d messages sans réponse </strong>',
         'tr_melis_commerce_dashboard_plugin_order_messages_message_order_amount' => 'Montant commande : ',
         'tr_melis_commerce_dashboard_plugin_order_messages_message_placed_on' => 'Date commande : ',
+
+        'tr_meliscommerce_dashboardplugin_jan' => 'Jan',
+        'tr_meliscommerce_dashboardplugin_feb' => 'Fév',
+        'tr_meliscommerce_dashboardplugin_mar' => 'Mar',
+        'tr_meliscommerce_dashboardplugin_apr' => 'Avr',
+        'tr_meliscommerce_dashboardplugin_may' => 'Mai',
+        'tr_meliscommerce_dashboardplugin_jun' => 'Juin',
+        'tr_meliscommerce_dashboardplugin_jul' => 'Juil',
+        'tr_meliscommerce_dashboardplugin_aug' => 'Aoû',
+        'tr_meliscommerce_dashboardplugin_sep' => 'Sep',
+        'tr_meliscommerce_dashboardplugin_oct' => 'Oct',
+        'tr_meliscommerce_dashboardplugin_nov' => 'Nov',
+        'tr_meliscommerce_dashboardplugin_dec' => 'Déc',
 	);

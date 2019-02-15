@@ -35,22 +35,22 @@ $(document).ready(function () {
         commerceDashPluginorderMessagesInstanceCount = $(".melis-commerce-dashboard-plugin-order-messages-parent").find('label.active input[value="all"]').length;
         appendMessages(filter);
 
-        if (commDashPluginOrderMessagesWithUnansweredFilterInstance == 0) {
+        if (commDashPluginOrderMessagesWithUnansweredFilterInstance === 0) {
             clearInterval(commerceDashPluginOrderMessagesUnseenMessagesInterval);
             commerceDashPluginOrderMessagesUnseenMessagesInterval = '';
         }
 
-        if (commerceDashPluginorderMessagesInstanceCount == 0) {
+        if (commerceDashPluginorderMessagesInstanceCount === 0) {
             clearInterval(commerceDashPluginOrderMessagesAllMessagesInterval);
             commerceDashPluginOrderMessagesAllMessagesInterval = '';
         }
 
-        if (filter == 'all') {
-            if (commerceDashPluginOrderMessagesAllMessagesInterval == '') {
+        if (filter === 'all') {
+            if (commerceDashPluginOrderMessagesAllMessagesInterval === '') {
                 commerceDashPluginOrderMessagesAllMessagesInterval = setInterval(appendMessages, intervalDelay, filter);
             }
         } else {
-            if (commerceDashPluginOrderMessagesUnseenMessagesInterval == '') {
+            if (commerceDashPluginOrderMessagesUnseenMessagesInterval === '') {
                 commerceDashPluginOrderMessagesUnseenMessagesInterval = setInterval(appendMessages, intervalDelay, filter);
             }
         }
@@ -115,7 +115,7 @@ $(document).ready(function () {
                             var parent = orderId + '_id_meliscommerce_orders_content_tabs';
 
                             $('#' + parent).find('.widget-head').find('ul').find('li').each(function () {
-                                if ($(this).find('a').attr('href') == "#" + orderId + "_id_meliscommerce_orders_content_tabs_content_messages") {
+                                if ($(this).find('a').attr('href') === "#" + orderId + "_id_meliscommerce_orders_content_tabs_content_messages") {
                                     $(this).addClass("active");
                                 } else {
                                     if ($(this).hasClass("active")) {
@@ -127,7 +127,7 @@ $(document).ready(function () {
                             var parent = orderId + '_id_meliscommerce_orders_content_tabs_content';
 
                             $('#' + parent).find('.tab-pane').each(function () {
-                                if ($(this).attr('id') == orderId + "_id_meliscommerce_orders_content_tabs_content_messages") {
+                                if ($(this).attr('id') === orderId + "_id_meliscommerce_orders_content_tabs_content_messages") {
                                     $(this).addClass("active");
                                 } else {
                                     if ($(this).hasClass("active")) {
@@ -211,16 +211,16 @@ $(document).ready(function () {
 
 //delete callback if there is only one plugin and it is deleted the interval will be cleared
 function commerceDasboardPluginOrderMessagesDelete(element) {
-    if (element.find(".melis-commerce-dashboard-plugin-order-messages-parent").length == 1) {
+    if (element.find(".melis-commerce-dashboard-plugin-order-messages-parent").length === 1) {
         if (element.find(".melis-commerce-dashboard-plugin-order-messages-parent label.active input[value='all']").length > 0) {
             commerceDashPluginorderMessagesInstanceCount--;
-            if (commerceDashPluginorderMessagesInstanceCount == 0) {
+            if (commerceDashPluginorderMessagesInstanceCount === 0) {
                 clearInterval(commerceDashPluginOrderMessagesAllMessagesInterval);
                 commerceDashPluginOrderMessagesAllMessagesInterval = '';
             }
         } else {
             commDashPluginOrderMessagesWithUnansweredFilterInstance--;
-            if (commDashPluginOrderMessagesWithUnansweredFilterInstance == 0) {
+            if (commDashPluginOrderMessagesWithUnansweredFilterInstance === 0) {
                 clearInterval(commerceDashPluginOrderMessagesUnseenMessagesInterval);
                 commerceDashPluginOrderMessagesUnseenMessagesInterval = '';
             }
