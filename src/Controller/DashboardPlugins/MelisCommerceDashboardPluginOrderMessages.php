@@ -97,19 +97,24 @@ class MelisCommerceDashboardPluginOrderMessages extends MelisCoreDashboardTempla
                             }
                         }
                     } else if ($filter == 'unseen') {
-                        if ($noReply) {
-                            if (count($messages) > 0) {
-                                foreach ($messages as $message) {
-                                    //if NO BO user has replied to the order
-                                    $message->noReply = $noReply;
+                        if (count($messages) > 0) {
+                            $counter = 0;
+                            foreach ($messages as $message) {
 
-                                    if (is_null($message->omsg_user_id)) {
+                                if ($counter <= $lastAdmin) {
+                                    $message->noReply = false;
+                                } else {
+                                    $message->noReply = $noReply;
+                                }
+
+                                if (is_null($message->omsg_user_id)) {
+                                    if ($message->noReply) {
                                         array_push($messageList, $message);
-                                        if ($noReply) {
-                                            $unansweredMessages++;
-                                        }
+                                        $unansweredMessages++;
                                     }
                                 }
+
+                                $counter++;
                             }
                         }
                     } else {
