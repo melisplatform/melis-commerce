@@ -225,7 +225,7 @@
         'tr_melis_commerce_orders_dashboard_table_header_date' => 'Date',
 
         //sales revenue
-        'tr_melis_commerce_dashboard_plugin_sales_revenue' => 'Sales Revenue',
+        'tr_melis_commerce_dashboard_plugin_sales_revenue' => 'Sales Revenues',
         'tr_melis_commerce_dashboard_plugin_sales_revenue_description' => 'This tool gives you an overview of the statistics for the sales revenue',
         'tr_melis_commerce_dashboard_plugin_sales_revenue_order_price' => 'Order Price',
         'tr_melis_commerce_dashboard_plugin_sales_revenue_shipping_price' => 'Shipping Price',
