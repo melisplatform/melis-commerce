@@ -1366,10 +1366,11 @@ class MelisComOrderService extends MelisComGeneralService
                 $year = date('Y', strtotime($date));
                 $month = date('m', strtotime($date));
                 $today = date('j', strtotime($date));
-                $yesterday = date('j', strtotime($date)) - 1;
+                $currentHour = date('H', strtotime($date));
+                $lastHour = date('H', strtotime($date)) - 1;
 
-                $startDate = date('Y-m-d H:i:s', mktime(0, 0, 0, $month, $yesterday, $year));
-                $endDate = date('Y-m-d H:i:s', mktime(0, 0, 0, $month, $today, $year));
+                $startDate = date('Y-m-d H:i:s', mktime($lastHour, 0, 0, $month, $today, $year));
+                $endDate = date('Y-m-d H:i:s', mktime($currentHour + 1, 0, 0, $month, $today, $year));
 
                 $ordersData = $this->getOrderList(
                     null,
@@ -1428,11 +1429,11 @@ class MelisComOrderService extends MelisComGeneralService
             case 'daily':
                 $year = date('Y', strtotime($date));
                 $month = date('m', strtotime($date));
-                $today = date('j', strtotime($date));
+                $tomorrow = date('j', strtotime($date)) + 1;
                 $yesterday = date('j', strtotime($date)) - 1;
 
                 $startDate = date('Y-m-d H:i:s', mktime(0, 0, 0, $month, $yesterday, $year));
-                $endDate = date('Y-m-d H:i:s', mktime(0, 0, 0, $month, $today, $year));
+                $endDate = date('Y-m-d H:i:s', mktime(0, 0, 0, $month, $tomorrow, $year));
 
                 $ordersData = $this->getOrderList(
                     null,
@@ -1505,12 +1506,13 @@ class MelisComOrderService extends MelisComGeneralService
             switch ($type) {
                 case 'hourly':
                     $year = date('Y', strtotime($date));
-                    $month = date('m', strtotime($date));
-                    $today = date('j', strtotime($date));
-                    $yesterday = date('j', strtotime($date)) - 1;
+	                $month = date('m', strtotime($date));
+	                $today = date('j', strtotime($date));
+	                $currentHour = date('H', strtotime($date));
+	                $lastHour = date('H', strtotime($date)) - 1;
 
-                    $startDate = date('Y-m-d H:i:s', mktime(0, 0, 0, $month, $yesterday, $year));
-                    $endDate = date('Y-m-d H:i:s', mktime(0, 0, 0, $month, $today, $year));
+	                $startDate = date('Y-m-d H:i:s', mktime($lastHour, 0, 0, $month, $today, $year));
+	                $endDate = date('Y-m-d H:i:s', mktime($currentHour + 1, 0, 0, $month, $today, $year));
 
                     $ordersData = $this->getOrderList(
                         null,
@@ -1576,12 +1578,12 @@ class MelisComOrderService extends MelisComGeneralService
                     break;
                 case 'daily':
                     $year = date('Y', strtotime($date));
-                    $month = date('m', strtotime($date));
-                    $today = date('j', strtotime($date));
-                    $yesterday = date('j', strtotime($date)) - 1;
+	                $month = date('m', strtotime($date));
+	                $tomorrow = date('j', strtotime($date)) + 1;
+	                $yesterday = date('j', strtotime($date)) - 1;
 
-                    $startDate = date('Y-m-d H:i:s', mktime(0, 0, 0, $month, $yesterday, $year));
-                    $endDate = date('Y-m-d H:i:s', mktime(0, 0, 0, $month, $today, $year));
+	                $startDate = date('Y-m-d H:i:s', mktime(0, 0, 0, $month, $yesterday, $year));
+	                $endDate = date('Y-m-d H:i:s', mktime(0, 0, 0, $month, $tomorrow, $year));
 
                     $ordersData = $this->getOrderList(
                         null,

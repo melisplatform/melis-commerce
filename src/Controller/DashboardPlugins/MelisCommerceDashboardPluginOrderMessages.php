@@ -80,7 +80,7 @@ class MelisCommerceDashboardPluginOrderMessages extends MelisCoreDashboardTempla
 
                             foreach ($messages as $message) {
                                 // If no BO user has replied to the order
-                                if ($counter2 <= $lastAdmin) {
+                                if ($counter2 <= $lastAdmin && $lastAdmin != 0) {
                                     $message->noReply = false;
                                 } else {
                                     $message->noReply = $noReply;
@@ -101,7 +101,7 @@ class MelisCommerceDashboardPluginOrderMessages extends MelisCoreDashboardTempla
                             $counter = 0;
                             foreach ($messages as $message) {
 
-                                if ($counter <= $lastAdmin) {
+                                if ($counter <= $lastAdmin && $lastAdmin != 0) {
                                     $message->noReply = false;
                                 } else {
                                     $message->noReply = $noReply;

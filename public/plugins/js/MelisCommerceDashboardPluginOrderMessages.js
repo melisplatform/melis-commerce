@@ -171,8 +171,25 @@ $(document).ready(function () {
                 bgColorRed = 'style="background-color: #981a1f;"';
             }
 
+            let months = [
+                translations.tr_meliscommerce_dashboardplugin_jan,
+                translations.tr_meliscommerce_dashboardplugin_feb,
+                translations.tr_meliscommerce_dashboardplugin_mar,
+                translations.tr_meliscommerce_dashboardplugin_apr,
+                translations.tr_meliscommerce_dashboardplugin_may,
+                translations.tr_meliscommerce_dashboardplugin_jun,
+                translations.tr_meliscommerce_dashboardplugin_jul,
+                translations.tr_meliscommerce_dashboardplugin_aug,
+                translations.tr_meliscommerce_dashboardplugin_sep,
+                translations.tr_meliscommerce_dashboardplugin_oct,
+                translations.tr_meliscommerce_dashboardplugin_nov,
+                translations.tr_meliscommerce_dashboardplugin_dec,
+            ]; 
+
+            let month = months[parseInt(message_created.format("M")) - 1];
+
             var dateHtml = '<span class="label label-inverse pull-right" ' + bgColorRed + '>' +
-                message_created.format("HH:mm:ss DD MMM") +
+                message_created.format("HH:mm:ss") + ' ' + month.replace('%day', message_created.format("DD")) +
                 '</span>';
 
             var doubleArrow = '<i class="fa fa-angle-double-right" ' + colorRed + '<i/>';

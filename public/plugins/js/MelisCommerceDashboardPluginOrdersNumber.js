@@ -187,24 +187,37 @@ $(document).ready(function () {
             //the first value of the data.values is the current date / time.
             for (var i = 0; i < data.values.length; i++) {
                 if (chartFor === 'hourly') {
-                    // displays the hour only
-                    dataString = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH');
+                    let locale = melisLangId;
+                    let hour = '';
+                    let time = '';
+
+                    if (locale === 'fr_FR') {
+                        hour = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH');
+                        time = hour + 'h';
+                    } else {
+                        hour = moment(data.values[i][0], 'YYYY-MM-DD HH').format('h A');
+                        time = hour;
+                    }
+
+                    dataString = time;
                 } else if (chartFor === 'daily') {
                     var date = moment(data.values[i][0], 'YYYY-MM-DD');
+                    let day = date.format("DD");
                     let month = months[parseInt(date.format("M")) - 1];
 
-                    dataString = month + '\n' + date.format("DD");
+                    dataString = month.replace('%day', day);
                 } else if (chartFor === 'weekly') {
                     var week = moment(data.values[i][0], 'YYYY-MM-DD').format('W');
                     var weekday = moment().day("Monday").week(week);
                     let month = months[parseInt(weekday.format("M")) - 1];
+                    let day = weekday.format("DD");
 
-                    dataString = month + "\n" + weekday.format("DD");
+                    dataString = month.replace('%day', day);
                 } else if (chartFor === 'monthly') {
                     let monthOfYear = moment(data.values[i][0], 'YYYY-MM-DD').format("M");
                     let month = months[parseInt(parseInt(monthOfYear)) - 1];
 
-                    dataString = month;
+                    dataString = month.replace('%day', '');
                 }
 
                 //pushing the data to the finalData which will be used in the charts

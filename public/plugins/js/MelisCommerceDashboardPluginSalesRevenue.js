@@ -51,7 +51,7 @@ $(document).ready(function () {
             },
             yaxis: {
                 min: 0,
-                tickDecimals: 0,
+                tickDecimals: 2,
             },
             legend: {
                 position: "ne",
@@ -101,7 +101,7 @@ $(document).ready(function () {
             });
 
             if (emptyChartCount === $body.find(".commerce-dashboard-plugin-sales-revenue-placeholder").length) {
-                //when count of empty charts is equal to the count of charts then it mean the tab is closed and opened again.
+                //when count of empty charts is equal to the count of charts then it means the tab is closed and opened again.
                 var pluginConfig = $(chartsArray[instanceCount]).closest('.grid-stack-item').find('.grid-stack-item-content .widget .widget-parent .widget-body .dashboard-plugin-json-config').text();
                 instanceCount++;
 
@@ -163,24 +163,37 @@ $(document).ready(function () {
             //the first value of the data.values is the current date / time.
             for (var i = 0; i < data.values.length; i++) {
                 if (chartFor === 'hourly') {
-                    // displays the hour only
-                    dataString = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH');
+                    let locale = melisLangId;
+                    let hour = '';
+                    let time = '';
+
+                    if (locale === 'fr_FR') {
+                        hour = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH');
+                        time = hour + 'h';
+                    } else {
+                        hour = moment(data.values[i][0], 'YYYY-MM-DD HH').format('h A');
+                        time = hour;
+                    }
+
+                    dataString = time;
                 } else if (chartFor === 'daily') {
                     var date = moment(data.values[i][0], 'YYYY-MM-DD');
+                    let day = date.format("DD");
                     let month = months[parseInt(date.format("M")) - 1];
 
-                    dataString = month + '\n' + date.format("DD");
+                    dataString = month.replace('%day', day);
                 } else if (chartFor === 'weekly') {
                     var week = moment(data.values[i][0], 'YYYY-MM-DD').format('W');
                     var weekday = moment().day("Monday").week(week);
                     let month = months[parseInt(weekday.format("M")) - 1];
+                    let day = weekday.format("DD");
 
-                    dataString = month + "\n" + weekday.format("DD");
+                    dataString = month.replace('%day', day);
                 } else if (chartFor === 'monthly') {
                     let monthOfYear = moment(data.values[i][0], 'YYYY-MM-DD').format("M");
                     let month = months[parseInt(parseInt(monthOfYear)) - 1];
 
-                    dataString = month;
+                    dataString = month.replace('%day', '');
                 }
 
                 /*
