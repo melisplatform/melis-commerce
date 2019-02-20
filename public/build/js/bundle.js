@@ -9986,48 +9986,46 @@ $(document).ready(function () {
                 'meliscommerce_order_list_page'
             );
 
-            var alreadyOpen = $("body #melis-id-nav-bar-tabs li a.tab-element[data-id='id_meliscommerce_order_list_page']");
+            var ordersTab = $("body #melis-id-nav-bar-tabs li a.tab-element[data-id='id_meliscommerce_order_list_page']");
+            var specificOrderTab = $("body a.tab-element[data-id='" + orderId + "_id_meliscommerce_orders_page']");
+            var orderPage = $("body #" + orderId + "_id_meliscommerce_orders_page");
             // check if it exists
             var checkOrders = setInterval(function () {
-                if (alreadyOpen.length) {
-                    var navTabsGroup = "id_meliscommerce_order_list_page";
+                if (ordersTab.length) {
+                    if (specificOrderTab.length) {
+                        specificOrderTab[0].click();
+                        melisHelper.zoneReload(
+                            orderId + '_id_meliscommerce_orders_content_tabs_content_messages_details',
+                            'meliscommerce_orders_content_tabs_content_messages_details',
+                            {orderId: orderId},
+                            function() {
+                                var parent = orderId + '_id_meliscommerce_orders_content_tabs';
+                                
+                                $('#' + parent).find("a[href='#" + orderId + "_id_meliscommerce_orders_content_tabs_content_messages']")[0].click();
+                            }
+                        ); 
+                    } else {
+                        var navTabsGroup = "id_meliscommerce_order_list_page";                        
 
-                    melisHelper.tabOpen(
-                        translations.tr_meliscommerce_orders_Order + ' ' + orderReference,
-                        'fa fa fa-cart-plus fa-2x',
-                        orderId + '_id_meliscommerce_orders_page',
-                        'meliscommerce_orders_page',
-                        {orderId: orderId},
-                        navTabsGroup,
-                        function () {
-                            //JS CALLBACK FOR THE ORDER MESSAGES
-                            //TO OPEN THE MESSAGE TAB OF A SPECIFIC ORDER
-                            var parent = orderId + '_id_meliscommerce_orders_content_tabs';
-
-                            $('#' + parent).find('.widget-head').find('ul').find('li').each(function () {
-                                if ($(this).find('a').attr('href') === "#" + orderId + "_id_meliscommerce_orders_content_tabs_content_messages") {
-                                    $(this).addClass("active");
-                                } else {
-                                    if ($(this).hasClass("active")) {
-                                        $(this).removeClass("active");
-                                    }
-                                }
-                            });
-
-                            var parent = orderId + '_id_meliscommerce_orders_content_tabs_content';
-
-                            $('#' + parent).find('.tab-pane').each(function () {
-                                if ($(this).attr('id') === orderId + "_id_meliscommerce_orders_content_tabs_content_messages") {
-                                    $(this).addClass("active");
-                                } else {
-                                    if ($(this).hasClass("active")) {
-                                        $(this).removeClass("active");
-                                    }
-                                }
-                            });
-                        });
-                    clearInterval(checkOrders);
+                        melisHelper.tabOpen(
+                            translations.tr_meliscommerce_orders_Order + ' ' + orderReference,
+                            'fa fa fa-cart-plus fa-2x',
+                            orderId + '_id_meliscommerce_orders_page',
+                            'meliscommerce_orders_page',
+                            {orderId: orderId},
+                            navTabsGroup,
+                            function () {
+                                //JS CALLBACK FOR THE ORDER MESSAGES
+                                //TO OPEN THE MESSAGE TAB OF A SPECIFIC ORDER
+                                var parent = orderId + '_id_meliscommerce_orders_content_tabs';
+                                
+                                $('#' + parent).find("a[href='#" + orderId + "_id_meliscommerce_orders_content_tabs_content_messages']")[0].click();
+                            }
+                        );
+                    }
                 }
+
+                clearInterval(checkOrders);
             }, 500);
         },
         clear: function (element) {
