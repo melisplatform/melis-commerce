@@ -204,7 +204,7 @@
         //Dashboard Plugin
         //number of orders plugin
         'tr_PluginSection_meliscommerce' => 'Melis Commerce',
-        'tr_melis_commerce_dashboard_plugin_orders_number' => ' Nombre de commandes',
+        'tr_melis_commerce_dashboard_plugin_orders_number' => ' Commandes',
         'tr_melis_commerce_dashboard_plugin_orders_number_description' => 'Ce plugin affiche l\'aperçu du nombre de statistiques de commandes.',
         'tr_melis_commerce_orders_dashboard_statistics_hourly' => 'Toutes les heures',
         'tr_melis_commerce_orders_dashboard_statistics_daily' => 'Jours',
