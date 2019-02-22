@@ -33,7 +33,7 @@
                 'interface' => array(
                     'MelisCommerceDashboardPluginOrdersNumber' => array(
                         'conf' => array(
-                            'name' => 'tr_melis_commerce_dashboard_plugin_orders_number',
+                            'name' => 'MelisCommerceDashboardPluginOrdersNumber',
                             'melisKey' => 'MelisCommerceDashboardPluginOrdersNumber'
                         ),
                         'datas' => array(

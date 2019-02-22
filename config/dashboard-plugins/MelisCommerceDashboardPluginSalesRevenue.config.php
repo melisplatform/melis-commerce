@@ -33,7 +33,7 @@
                 'interface' => array(
                     'MelisCommerceDashboardPluginSalesRevenue' => array(
                         'conf' => array(
-                            'name' => 'tr_melis_commerce_dashboard_plugin_sales_revenue',
+                            'name' => 'MelisCommerceDashboardPluginSalesRevenue',
                             'melisKey' => 'MelisCommerceDashboardPluginSalesRevenue'
                         ),
                         'datas' => array(
