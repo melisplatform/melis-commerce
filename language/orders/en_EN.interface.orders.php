@@ -6,7 +6,7 @@
 	    'tr_meliscommerce_orders_header_right_container_save' => 'Save order',
 	    'tr_meliscommerce_orders_header_right_container_cancel' => 'Cancel',
 	    'tr_meliscommerce_orders_content_tab_main' => 'Properties',
-	    'tr_meliscommerce_orders_content_tab_main_invoice' => 'Invoice',
+	    'tr_meliscommerce_orders_content_tab_main_invoice' => 'Invoice (manual upload, custom document)',
 	    'tr_meliscommerce_orders_content_tab_basket' => 'Basket',	    
 	    'tr_meliscommerce_orders_content_tab_address' => 'Addresses',
 	    'tr_meliscommerce_orders_content_tab_paymnet' => 'Payment',
