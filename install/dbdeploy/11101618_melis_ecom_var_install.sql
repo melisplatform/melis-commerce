@@ -26,7 +26,7 @@ DROP TABLE IF EXISTS `melis_ecom_variant_stock` ;
 CREATE TABLE IF NOT EXISTS `melis_ecom_variant_stock` (
   `stock_id` INT NOT NULL AUTO_INCREMENT,
   `stock_var_id` INT NOT NULL,
-  `stock_country_id` INT NOT NULL DEFAULT 0,
+  `stock_country_id` INT NOT NULL DEFAULT -1,
   `stock_quantity` INT NULL DEFAULT 0,
   `stock_low` INT NULL DEFAULT NULL,
   `stock_qty_email_sent` SMALLINT NULL DEFAULT 0,
