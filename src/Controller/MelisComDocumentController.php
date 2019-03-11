@@ -167,11 +167,11 @@ class MelisComDocumentController extends AbstractActionController
         $formUpload = 'meliscommerce_documents_file_upload_form';
         $fileTitle = 'tr_meliscommerce_documents_main_information_upload_file_select';
         
-        if($typeUpload=='image'){
+        if ($typeUpload=='image') {
             $title = 'tr_meliscommerce_documents_add_image_button';
             $formUpload = 'meliscommerce_documents_image_upload_form';
             $fileTitle = 'tr_meliscommerce_documents_main_information_upload_select_img';
-            if($docId) {
+            if ($docId) {
                 $docImageData = $this->getDocSvc()->getDocumentById($docId);
                 $docRelData = (array) $this->getDocSvc()->getDocumentRelationByDocumentId($docId);
                 $document = $docImageData->getDocument();
@@ -179,8 +179,8 @@ class MelisComDocumentController extends AbstractActionController
             }
         }
         
-        if($typeUpload == 'file') {
-            if($docId) {
+        if ($typeUpload == 'file') {
+            if ($docId) {
                 $docFileData = $this->getDocSvc()->getDocumentById($docId);
                 $docRelData = (array)$this->getDocSvc()->getDocumentRelationByDocumentId($docId);
                 $document = $docFileData->getDocument();
@@ -198,22 +198,31 @@ class MelisComDocumentController extends AbstractActionController
         $propertyForm = $factory->createForm($appConfigForm);
 
         // modal texts
-        if($relationType == 'product'){
+        if ($relationType == 'product') {
             // product
-            if($typeUpload == 'file'){
+            if ($typeUpload == 'file') {
                 $modalText = 'tr_meliscommerce_documents_modal_text_prod_file';
-            }else{
+            } else {
                 $propertyForm->get('doc_name')->setOption('tooltip', $translator->translate('tr_meliscommerce_documents_upload_doc_name_image tooltip'));
                 $propertyForm->get('doc_subtype_id')->setOption('tooltip', $translator->translate('tr_meliscommerce_documents_main_information_upload_select_type_image tooltip'));
                 $propertyForm->get('rdoc_country_id')->setOption('tooltip', $translator->translate('tr_meliscommerce_documents_main_information_update_file_country_image tooltip'));
                 
                 $modalText = 'tr_meliscommerce_documents_modal_text_prod_image';
             }
-        }else{
+        } else if ($relationType == 'order') {
+            if ($typeUpload == 'file') {
+                $modalText = 'tr_meliscommerce_documents_modal_text_order_file';
+
+                $propertyForm->get('doc_type_id')->setAttribute('type', 'hidden')->setValue(2);
+                $propertyForm->get('rdoc_country_id')->setAttribute('type', 'hidden')->setValue(-1);
+            } else {
+                $modalText = 'tr_meliscommerce_documents_modal_text_order_image';
+            }
+        } else {
             // variant
-            if($typeUpload == 'file'){
+            if ($typeUpload == 'file') {
                 $modalText = 'tr_meliscommerce_documents_modal_text_var_file';
-            }else{
+            } else {
                 $modalText = 'tr_meliscommerce_documents_modal_text_var_image';
             }
         }
