@@ -300,6 +300,9 @@ table.dataTable.uk-table-condensed .sorting_desc:after {
     color: #932E2A;
 }
 
+.cb-cont .cbmask-outer {
+    top: 12px !important;
+}
 /** -------------------------------------
 *       DOCUMENTS
 *       document.css
