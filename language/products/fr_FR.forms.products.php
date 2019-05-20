@@ -1,7 +1,8 @@
 <?php
 return array(
     'tr_meliscommerce_products_form_' => 'Texte',
-    
+    'tr_prd_reference' => 'Référence',
+
     // Product Text Form
     'tr_meliscommerce_product_text' => 'Produit texte',
     'tr_meliscommerce_product_text_lang_id' => 'ID',

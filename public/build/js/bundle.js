@@ -291,6 +291,13 @@ var melisCommerce = (function(window) {
 setInterval(function() {
     melisCommerce.enableAllTabs();
 }, 10000)
+
+
+// checkbox
+$('body').on("click", ".cb-cont input[type=checkbox]", function(){
+    $(this).parent().find(".cbmask-inner").toggleClass("cb-active");
+});
+
 /*
  * Fuel UX Checkbox
  * https://github.com/ExactTarget/fuelux

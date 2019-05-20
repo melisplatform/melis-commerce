@@ -1184,6 +1184,7 @@ class MelisComProductController extends AbstractActionController
         $isNew = false;
         $prodName = '';
         $logTypeCode = '';
+        $translator = $this->serviceLocator->get('translator');
         
         if($this->getRequest()->isPost()) {
 
@@ -1242,6 +1243,11 @@ class MelisComProductController extends AbstractActionController
             }
         }
 
+        //override prd_reference validation translations
+        if(isset($errors["prd_reference"])){
+            $errors[$translator->translate('tr_prd_reference')] = $errors["prd_reference"];
+            unset($errors['prd_reference']);
+        }
         $response = array(
             'success' => $success,
             'textTitle' => $textTitle,
