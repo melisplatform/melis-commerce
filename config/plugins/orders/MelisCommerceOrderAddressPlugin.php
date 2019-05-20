@@ -13,6 +13,18 @@ return array(
                         'm_add_order_id' => null,
                     ),
                     'melis' => array(
+                        /*
+                        * if set this plugin will belong to a specific marketplace section,
+                        * if not it will go directly to ( Others ) section
+                        *  - available section for templating plugins as of 2019-05-16
+                        *    - MelisCms
+                        *    - MelisMarketing
+                        *    - MelisSite
+                        *    - MelisCommerce
+                        *    - Others
+                        *    - CustomProjects
+                        */
+                        'section' => 'MelisCommerce',
                         'subcategory' => array(
                             'id' => 'ORDERS',
                             'title' => 'tr_meliscommerce_orders_Orders'
