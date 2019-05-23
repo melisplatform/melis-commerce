@@ -445,7 +445,8 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
 
                         $addId  = null;
 
-                        if (!empty($val['address']['cadd_id']) && $overrideData)
+//                        if (!empty($val['address']['cadd_id']) && $overrideData)
+                        if (!empty($val['address']['cadd_id']))
                         {
                             $addId = $val['address']['cadd_id'];
                         }
