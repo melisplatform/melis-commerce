@@ -30,7 +30,7 @@ return array(
                         'section' => 'MelisCommerce',
                         'subcategory' => array(
                             'id' => 'CATEGORIES',
-                            'title' => 'tr_MelisCommerceFilterMenuCategoryListPlugin_Title'
+                            'title' => 'tr_meliscommerce_plugin_sub_categories_title'
                         ),
                         'name' => 'tr_meliscommerce_plugin_category_tree_name',
                         'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceCategoryTreePlugin.jpg',
