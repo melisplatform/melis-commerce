@@ -3567,7 +3567,27 @@ window.initProductTextTinyMce = function(productId) {
             var option = {
                 mode : "none",
                 height : "400px",
-                init_instance_callback  : productTextTinyMCECallback(form, productId),
+                relative_urls : false,
+                language : 'en',
+                templates : 'miniTemplates',
+                menubar : false,
+                forced_root_block : '',
+                paste_word_valid_elements : "p,b,strong,i,em,h1,h2,h3,h4",
+                cleanup : false,
+                verify_html : false,
+                plugins : [
+                    //[contextmenu, textcolor, colorpicker] this plugin is already built in the core editor as of TinyMCE v. 5
+                   'advlist autolink lists link paste image charmap preview anchor emoticons help hr nonbreaking',
+                   'searchreplace visualblocks code fullscreen',
+                   'insertdatetime media table template'
+                ],
+                image_advtab: true,
+                toolbar : 'insertfile undo redo paste | formatselect | forecolor | bold italic strikethrough underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media template | code',
+                init_instance_callback  : productTextTinyMCECallback(form, productId)
+            }
+
+            /*
+                For reference before fixed: http://mantis.melistechnology.fr/view.php?id=3675
                 plugins : [
                     'advlist autolink lists link image charmap print preview anchor',
                     'searchreplace visualblocks code fullscreen',
@@ -3575,7 +3595,7 @@ window.initProductTextTinyMce = function(productId) {
                     'textcolor',
                 ],
                 toolbar : 'undo redo | styleselect | bold italic | link image |  alignleft aligncenter alignright alignjustify | forecolor backcolor | code',
-            }
+            */
 
             //Initialize TinyMCE editor
             melisTinyMCE.createTinyMCE("tool", "#"+targetSelector, option);
