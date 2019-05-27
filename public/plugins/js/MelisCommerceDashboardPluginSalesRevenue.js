@@ -103,21 +103,23 @@ $(document).ready(function () {
             if (emptyChartCount === $body.find(".commerce-dashboard-plugin-sales-revenue-placeholder").length) {
                 //when count of empty charts is equal to the count of charts then it means the tab is closed and opened again.
                 var pluginConfig = $(chartsArray[instanceCount]).closest('.grid-stack-item').find('.grid-stack-item-content .widget .widget-parent .widget-body .dashboard-plugin-json-config').text();
+                pluginConfig = JSON.parse(pluginConfig);
                 instanceCount++;
 
                 if (instanceCount === chartsArray.length) {
                     instanceCount = 0;
                 }
 
-                chartFor = JSON.parse(pluginConfig).activeFilter;
-                placeholder = "#commerce-dashboard-plugin-sales-revenue-placeholder-" + JSON.parse(pluginConfig).plugin_id;
+                chartFor = pluginConfig.datas.activeFilter;
+                placeholder = "#commerce-dashboard-plugin-sales-revenue-placeholder-" + pluginConfig.plugin_id;
             } else {
                 //when a new plugin is dragged to the grid stack
                 var lastItem = body.find(".commerce-dashboard-plugin-sales-revenue-placeholder").length - 1;
                 var pluginConfig = $(chartsArray[lastItem]).closest('.grid-stack-item').find('.grid-stack-item-content .widget .widget-parent .widget-body .dashboard-plugin-json-config').text();
+                pluginConfig = JSON.parse(pluginConfig);
 
-                chartFor = JSON.parse(pluginConfig).activeFilter;
-                placeholder = "#commerce-dashboard-plugin-sales-revenue-placeholder-" + JSON.parse(pluginConfig).plugin_id;
+                chartFor = pluginConfig.datas.activeFilter;
+                placeholder = "#commerce-dashboard-plugin-sales-revenue-placeholder-" + pluginConfig.plugin_id;
             }
         } else if (typeof target === "string") {
             //when initializing the charts on first load of dashboard
