@@ -1,26 +1,32 @@
-<div class="row row-merge">
-    <div class="col-sm-12 bg-white">
-        <div class="innerAll">
-            <div class="tab-content">
-                <div class="tab-pane active" id="chart-simple-lines-<?php echo $this->pluginConfig['plugin_id']?>">
-                    <div class="btn-group pull-right" data-toggle="buttons">
-                        <label class="btn btn-default btn-sm <?= ($activeFilter == 'hourly') ? 'active' : '' ?>">
-                            <input type="radio" class="commerce-dashboard-plugin-sales-revenue" name="commerce-dashboard-plugin-sales-revenue" value="hourly"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_hourly')?>
-                        </label>
-                        <label class="btn btn-default btn-sm <?= ($activeFilter == 'daily') ? 'active' : '' ?>">
-                            <input type="radio" class="commerce-dashboard-plugin-sales-revenue" name="commerce-dashboard-plugin-sales-revenue" value="daily"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_daily')?>
-                        </label>
-                        <label class="btn btn-default btn-sm <?= ($activeFilter == 'weekly') ? 'active' : '' ?>">
-                            <input type="radio" class="commerce-dashboard-plugin-sales-revenue" name="commerce-dashboard-plugin-sales-revenue" value="weekly"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_weekly')?>
-                        </label>
-                        <label class="btn btn-default btn-sm <?= ($activeFilter == 'monthly') ? 'active' : '' ?>">
-                            <input type="radio" class="commerce-dashboard-plugin-sales-revenue" name="commerce-dashboard-plugin-sales-revenue" value="monthly"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_monthly')?>
-                        </label>
+<?php if($this->isAccessable) { ?>
+    <div class="row row-merge">
+        <div class="col-sm-12 bg-white">
+            <div class="innerAll">
+                <div class="tab-content">
+                    <div class="tab-pane active" id="chart-simple-lines-<?php echo $this->pluginConfig['plugin_id']?>">
+                        <div class="btn-group pull-right" data-toggle="buttons">
+                            <label class="btn btn-default btn-sm <?= ($activeFilter == 'hourly') ? 'active' : '' ?>">
+                                <input type="radio" class="commerce-dashboard-plugin-sales-revenue" name="commerce-dashboard-plugin-sales-revenue" value="hourly"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_hourly')?>
+                            </label>
+                            <label class="btn btn-default btn-sm <?= ($activeFilter == 'daily') ? 'active' : '' ?>">
+                                <input type="radio" class="commerce-dashboard-plugin-sales-revenue" name="commerce-dashboard-plugin-sales-revenue" value="daily"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_daily')?>
+                            </label>
+                            <label class="btn btn-default btn-sm <?= ($activeFilter == 'weekly') ? 'active' : '' ?>">
+                                <input type="radio" class="commerce-dashboard-plugin-sales-revenue" name="commerce-dashboard-plugin-sales-revenue" value="weekly"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_weekly')?>
+                            </label>
+                            <label class="btn btn-default btn-sm <?= ($activeFilter == 'monthly') ? 'active' : '' ?>">
+                                <input type="radio" class="commerce-dashboard-plugin-sales-revenue" name="commerce-dashboard-plugin-sales-revenue" value="monthly"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_monthly')?>
+                            </label>
+                        </div>
+                        <div class="separator bottom"></div>
+                        <div class="flotchart-holder commerce-dashboard-plugin-sales-revenue-placeholder" id="commerce-dashboard-plugin-sales-revenue-placeholder-<?php echo $this->pluginConfig['plugin_id']?>" ></div>
                     </div>
-                    <div class="separator bottom"></div>
-                    <div class="flotchart-holder commerce-dashboard-plugin-sales-revenue-placeholder" id="commerce-dashboard-plugin-sales-revenue-placeholder-<?php echo $this->pluginConfig['plugin_id']?>" ></div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+<?php } else { ?>
+    <div class="no-rights-container">
+        <span><?= $this->translate('tr_melisdashboardplugin_plugin_no_rights'); ?></span>
+    </div>
+<?php } ?>
