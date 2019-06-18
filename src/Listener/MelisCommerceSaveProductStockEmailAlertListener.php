@@ -29,7 +29,6 @@ class MelisCommerceSaveProductStockEmailAlertListener implements ListenerAggrega
         		$params = $e->getParams();
         		
         		if($params['success']){
-        		    
         		    $data = array();
         		    $postedValues = $sm->get('request')->getPost();
         		    
@@ -39,7 +38,7 @@ class MelisCommerceSaveProductStockEmailAlertListener implements ListenerAggrega
         		    
         		    $recipients = !empty($postedValues['recipients'])? $postedValues['recipients'] :  array();
         		    
-        		    $productId = $postedValues['productId'];
+        		    $productId = $params['itemId'];
         		    
         		    // remove deleted recipients
         		    $stockAlerts = $stockEmailAlertSvc->getStockEmailRecipients($productId);
@@ -79,7 +78,7 @@ class MelisCommerceSaveProductStockEmailAlertListener implements ListenerAggrega
                             $stockEmailAlertSvc->deleteStockEmailAlertById($recipient['sea_id']);
                         }
                     }
-                    
+
                     // insert data to db
                     foreach($data as $entry){
                     

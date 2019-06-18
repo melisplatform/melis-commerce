@@ -1419,8 +1419,11 @@ class MelisComProductController extends AbstractActionController
                 {
                     array_push($errors, $seoErrors);
                 }
-                
-                $stocksAlertForm->setData($requestData);
+
+                // Using loop to set data because the index is not 0. not sure if this will always be the case.
+                foreach ($requestData['settings_stock_alert'] as $stock) {
+                    $stocksAlertForm->setData($stock);
+                }
                 
                 if(!$stocksAlertForm->isValid()){
                     
