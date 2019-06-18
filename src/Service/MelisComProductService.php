@@ -156,9 +156,27 @@ class MelisComProductService extends MelisComGeneralService
             foreach($productData as $prod) {
                 $entProd->setId($prod->prd_id);
                 $entProd->setProduct($prod);
-                foreach($prodTable->getProductCategoryByProductId($arrayParameters['productId']) as $prodCat){
-                    $category[]= $prodCat;
+
+                // Get all category
+                $prodCats = $prodTable->getProductCategoryByProductId($arrayParameters['productId']);
+
+                // Get category with the same language with the BO
+                foreach($prodCats as $prodCat) {
+                    if ($prodCat->catt_lang_id == $arrayParameters['langId']) {
+                        // Clear array if not empty
+                        if (!empty($category)) {
+                            $category = [];
+                        }
+
+                        $category[] = $prodCat;
+                    } else {
+                        // If no category with the same language with the BO get the first one instead.
+                        if (empty($category)) {
+                            $category[] = $prodCat;
+                        }
+                    }
                 }
+
                 $entProd->setCategories($category);
                 $entProd->setAttributes($this->getProductAttributesById($arrayParameters['productId'], $arrayParameters['langId']));
                 $entProd->setTexts($this->getProductTextsById($arrayParameters['productId'], null, $arrayParameters['langId']));
