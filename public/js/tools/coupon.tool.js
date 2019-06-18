@@ -119,8 +119,8 @@ $(document).ready(function() {
 
         melisCommerce.postSave(url, dataString, function(data){
             if(data.success){
-                melisHelper.tabClose(  couponId + "_id_meliscommerce_coupon_page");
-                couponTabOpen(translations.tr_meliscommerce_coupon_page+' '+data.chunk.coup_code, data.chunk.couponId, "id_meliscommerce_coupon_list_page");
+                // melisHelper.tabClose(  couponId + "_id_meliscommerce_coupon_page");
+                // couponTabOpen(translations.tr_meliscommerce_coupon_page+' '+data.chunk.coup_code, data.chunk.couponId, "id_meliscommerce_coupon_list_page");
                 melisHelper.melisOkNotification( data.textTitle, data.textMessage );
                 melisHelper.zoneReload("id_meliscommerce_coupon_list_content_table", "meliscommerce_coupon_list_content_table");
             }else{
