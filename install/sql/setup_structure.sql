@@ -1158,7 +1158,7 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 INSERT INTO `melis_ecom_civility_trans` (`civt_id`, `civt_civ_id`, `civt_lang_id`, `civt_min_name`, `civt_max_name`) VALUES (1, 1, 1, 'Mr', 'Mister');
-INSERT INTO `melis_ecom_civility_trans` (`civt_id`, `civt_civ_id`, `civt_lang_id`, `civt_min_name`, `civt_max_name`) VALUES (2, 1, 2, 'M', 'Monsieur');
+INSERT INTO `melis_ecom_civility_trans` (`civt_id`, `civt_civ_id`, `civt_lang_id`, `civt_min_name`, `civt_max_name`) VALUES (2, 1, 2, 'Mr', 'Monsieur');
 INSERT INTO `melis_ecom_civility_trans` (`civt_id`, `civt_civ_id`, `civt_lang_id`, `civt_min_name`, `civt_max_name`) VALUES (3, 2, 1, 'Mrs', 'Madam');
 INSERT INTO `melis_ecom_civility_trans` (`civt_id`, `civt_civ_id`, `civt_lang_id`, `civt_min_name`, `civt_max_name`) VALUES (4, 2, 2, 'Mme', 'Madame');
 INSERT INTO `melis_ecom_civility_trans` (`civt_id`, `civt_civ_id`, `civt_lang_id`, `civt_min_name`, `civt_max_name`) VALUES (5, 3, 1, 'Miss', 'Miss');
