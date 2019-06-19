@@ -47,6 +47,8 @@ class MelisEcomPriceTable extends MelisEcomGenericTable
 
         $select->join('melis_ecom_country', 'melis_ecom_country.ctry_id = melis_ecom_price.price_country_id',
             array('*'), $select::JOIN_LEFT);
+        $select->join('melis_ecom_currency', 'melis_ecom_country.ctry_currency_id = melis_ecom_currency.cur_id',
+            array('cur_code', 'cur_symbol'), $select::JOIN_LEFT);
 
         $select->where->equalTo('melis_ecom_price.price_prd_id', (int) $productId);
 
