@@ -51,7 +51,11 @@ class MelisEcomPriceTable extends MelisEcomGenericTable
         $select->where->equalTo('melis_ecom_price.price_prd_id', (int) $productId);
 
         if(!is_null($countryId)) {
-            $select->where->and->equalTo('melis_ecom_price.price_country_id', (int) $countryId)->and->equalTo('melis_ecom_country.ctry_status', 1);
+            if($countryId == '-1'){
+                $select->where->and->equalTo('melis_ecom_price.price_country_id', (int)$countryId);
+            }else {
+                $select->where->and->equalTo('melis_ecom_price.price_country_id', (int)$countryId)->and->equalTo('melis_ecom_country.ctry_status', 1);
+            }
         }
 
         $resultSet = $this->tableGateway->selectwith($select);

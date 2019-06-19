@@ -137,10 +137,10 @@ class MelisComProductService extends MelisComGeneralService
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
 	    $results = array();
-	    	    
+
 	    // Sending service start event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_byid_start', $arrayParameters);
-	    
+
 	    // Service implementation start
 	    $prodTable = $this->getServiceLocator()->get('MelisEcomProductTable');
 	    $productData = $prodTable->getProduct($arrayParameters['productId']);
@@ -414,12 +414,12 @@ class MelisComProductService extends MelisComGeneralService
                 $results = $productPrice;
             }
 	    }
-	    
+
 	    /**
 	     * If the Product Country price has no data
 	     * this will try to get the General price of the Product
 	     */
-	    if ($arrayParameters['countryId'] != -1 && empty($variantPrice))
+	    if (empty($arrayParameters['countryId']) && empty($productPrice))
 	    {
 	        // Retreiving the General price of the Product
 	        $results = $this->getProductFinalPrice($arrayParameters['productId'], -1);

@@ -495,7 +495,7 @@ class MelisComVariantService extends MelisComGeneralService
 	     * If the Variant Country price has no data
 	     * this will try to get the General price of the Variant
 	     */
-	    if ($arrayParameters['countryId'] != -1 && empty($variantPrice))
+	    if (empty($arrayParameters['countryId']) && empty($variantPrice))
 	    {
 	        // Retreiving the General price of the Variant
 	        $results = $this->getVariantFinalPrice($arrayParameters['variantId'], -1);
