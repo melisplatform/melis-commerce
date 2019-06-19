@@ -20,7 +20,7 @@
 	    'tr_meliscommerce_general_common_configuration' => 'Configuration',
 	    'tr_meliscommerce_general_common_destination_page_link' => 'Page de destination',
 	    'tr_meliscommerce_general_common_submit' => 'Envoyer',
-	    'tr_meliscommerce_general_common_autologin' => 'L\'auto-login',
+	    'tr_meliscommerce_general_common_autologin' => 'Connexion automatique',
 	    'tr_meliscommerce_general_common_show_select_addresses' => 'Champ de sélection d\'adresse',
 	    'tr_meliscommerce_general_common_per_page' => 'Résultats par page',
 	    'tr_meliscommerce_general_common_num_page_before_after' => 'Nombre de liens avant et après la page courante',
