@@ -87,17 +87,17 @@ class MelisEcomProductTable extends MelisEcomGenericTable
             $select->where->and->in('melis_ecom_product_category.pcat_cat_id', $categoryIds);
         }
 
-        if(!is_null($countryId)) {
+        if(!empty($countryId)) {
             $select->where->NEST->equalTo('melis_ecom_price.price_country_id', $countryId)
             ->or->equalTo('var_price.price_country_id', $countryId);
         }
         
-        if (!is_null($onlyValid))
+        if (!empty($onlyValid))
         {
             $select->where('melis_ecom_product.prd_status = 1');
         }
         
-        if(!is_null($search)){
+        if(!empty($search)){
             $search = '%'.$search.'%';
             $select->where->NEST->like('melis_ecom_product.prd_id', $search)
             ->or->like('melis_ecom_product.prd_reference', $search)
@@ -106,18 +106,17 @@ class MelisEcomProductTable extends MelisEcomGenericTable
             ->or->like('melis_ecom_category_trans.catt_name', $search);
         }
         
-        if (!is_null($start))
+        if (!empty($start))
         {
             $select->offset($start);
         }
         
-        if (!is_null($limit) && $limit != -1)
+        if (!empty($limit) && $limit != -1)
         {
             $select->limit((int) $limit);
         }
         
         $select->order($orderColumn .' '. $order);
-
         $resultData = $this->tableGateway->selectWith($select);
         return $resultData;
     }
@@ -555,7 +554,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         
         $select->where->equalTo('prd_id', $productId);
         $select->order($priceColumn . " $order");
-        
+
         $resultSet = $this->tableGateway->selectwith($select);
         
         return $resultSet;
