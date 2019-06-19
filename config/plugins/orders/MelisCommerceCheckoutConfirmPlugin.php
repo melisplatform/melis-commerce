@@ -51,7 +51,7 @@ return array(
                         'js_initialization' => array(),
                         'modal_form' => array(
                             'melis_commerce_plugin_checkout_confirm_config' => array(
-                                'tab_title' => 'tr_front_plugin_common_tab_properties',
+                                'tab_title' => 'tr_meliscommerce_general_plugin_properties_title',
                                 'tab_icon'  => 'fa fa-cogs',
                                 'tab_form_layout' => 'MelisCommerce/plugin-common-form-config',
                                 'elements' => array(
