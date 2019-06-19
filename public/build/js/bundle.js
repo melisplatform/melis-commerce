@@ -5303,10 +5303,10 @@ window.initClientListTitle = function(){
 
 window.initClientContactAddressForm = function(){
     var tabId = $("#saveClientContactAddress").data("tabid");
-    $("#melisCommerceClientContactAddressFormModal").find("#cadd_civility").val($("#"+tabId+"_contact_form").find("#cper_civility").val());
-    $("#melisCommerceClientContactAddressFormModal").find("#cadd_firstname").val($("#"+tabId+"_contact_form").find("#cper_firstname").val());
-    $("#melisCommerceClientContactAddressFormModal").find("#cadd_name").val($("#"+tabId+"_contact_form").find("#cper_name").val());
-    $("#melisCommerceClientContactAddressFormModal").find("#cadd_middle_name").val($("#"+tabId+"_contact_form").find("#cper_middle_name").val());
+    $("#melisCommerceClientContactAddressFormModal").find("select[name='cadd_civility']").val($("#"+tabId+"_contact_form").find("select[name='cper_civility']").val());
+    $("#melisCommerceClientContactAddressFormModal").find("input[name='cadd_firstname']").val($("#"+tabId+"_contact_form").find("input[name='cper_firstname']").val());
+    $("#melisCommerceClientContactAddressFormModal").find("input[name='cadd_name']").val($("#"+tabId+"_contact_form").find("input[name='cper_name']").val());
+    $("#melisCommerceClientContactAddressFormModal").find("input[name='cadd_middle_name']").val($("#"+tabId+"_contact_form").find("input[name='cper_middle_name']").val());
 }
 $(document).ready(function() {
 
