@@ -80,8 +80,8 @@ return array(
                                                 'empty_option' => 'tr_melis_Plugins_Choose',
                                                 'disable_inarray_validator' => true,
                                                 'value_options' => array(
-                                                    'ord_date_creation ASC' => 'Date Ascending',
-                                                    'ord_date_creation DESC' => 'Date Descending',
+                                                    'ord_date_creation ASC' => 'tr_meliscommerce_orders_historic_plugin_asc',
+                                                    'ord_date_creation DESC' => 'tr_meliscommerce_orders_historic_plugin_desc',
                                                 ),
                                                 'tooltip' => 'tr_meliscommerce_order_history_order_tooltip',
                                             ),
