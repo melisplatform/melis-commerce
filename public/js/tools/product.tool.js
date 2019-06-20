@@ -80,19 +80,19 @@ window.initProductCategoryList = function(productId, langLocale){
                     "dblclick_toggle" : false,
                     "data" : {
                         "cache" : true,
-                        "url" : "/melis/MelisCommerce/MelisComCategoryList/getCategoryTreeView?"+dataString,
-                    },
+                        "url" : "/melis/MelisCommerce/MelisComCategoryList/getCategoryTreeView?"+dataString
+                    }
                 },
                 "checkbox": {
                     three_state: false,
                     whole_node : false,
-                    tie_selection : false,
+                    tie_selection : false
                 },
                 "plugins": [
                     "search",
                     "changed", // Plugins for Change and Click Event
                     "types", // Plugins for Customizing the Nodes
-                    "checkbox",
+                    "checkbox"
                 ]
             });
     }
@@ -138,7 +138,7 @@ window.initProductTextTinyMce = function(productId) {
                 verify_html : false,
                 plugins : [
                     //[contextmenu, textcolor, colorpicker] this plugin is already built in the core editor as of TinyMCE v. 5
-                   'advlist autolink lists link paste image charmap preview anchor emoticons help hr nonbreaking',
+                   'autolink advlist lists link paste image charmap preview anchor emoticons help hr nonbreaking',
                    'searchreplace visualblocks code fullscreen',
                    'insertdatetime media table template'
                 ],
@@ -423,7 +423,7 @@ $(document).ready(function() {
             if (typeof productId !== "undefined") {
                 dataString .push({  name : 'recipients['+ctr+'][sea_prd_id]', value : productId});
             }
-            ctr++
+            ctr++;
         });
 
         ctr = 0;
@@ -676,7 +676,7 @@ $(document).ready(function() {
                     url         : '/melis/MelisCommerce/MelisComProduct/delete',
                     data		: {productId : productId},
                     dataType    : 'json',
-                    encode		: true,
+                    encode		: true
                 }).success(function(data){
                     if(data.success) {
                         $("#" + activeTabId + " .melis-refreshTable").trigger("click");
@@ -706,7 +706,7 @@ $(document).ready(function() {
             url         : 'melis/MelisCommerce/MelisComProductList/getToolTip',
             data		: {productId : productId},
             dataType    : 'json',
-            encode		: true,
+            encode		: true
         }).success(function(data){
             $("div.qtipLoader").remove();
             if(data.content.length === 0) {
