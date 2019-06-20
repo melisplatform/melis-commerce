@@ -893,18 +893,35 @@ class MelisComAttributeService extends MelisComGeneralService
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_check_selected_attr_format_start', $arrayParameters);
 
+        $attrValTable = $this->getServiceLocator()->get('MelisEcomAttributeValueTable');
+
         if(!empty($arrayParameters['selectedAttributes'])){
             if(isset($arrayParameters['selectedAttributes'][0])){
                 //check the array first to make sure it is well formed
+                $newDatas = [];
                 foreach ($arrayParameters['selectedAttributes'] as $key => $val) {
                     //check if it is an array already
                     if (!is_array($val)) {
-                        //we need to parse it if it is a string(query string)
-                        $temp = htmlspecialchars_decode($val);
-                        parse_str(htmlspecialchars_decode($temp), $attributes);
-                        $arrayParameters['selectedAttributes'] = $attributes;
+                        if(is_numeric($val)){
+                            $attributeData = $attrValTable->getParentAttributeByAttrId($val)->toArray();
+                            if(!empty($attributeData)){
+                                foreach($attributeData as $atts){
+                                    $attrNewKey = strtolower(str_replace(' ', '_', $atts['attr_reference']));
+                                    if(!array_key_exists($attrNewKey, $newDatas)){
+                                        $newDatas[$attrNewKey] = [];
+                                    }
+                                    array_push($newDatas[$attrNewKey], $atts['atval_id']);
+                                }
+                            }
+                        }else {
+                            //we need to parse it if it is a string(query string)
+                            $temp = htmlspecialchars_decode($val);
+                            parse_str(htmlspecialchars_decode($temp), $attributes);
+                            $newDatas = $attributes;
+                        }
                     }
                 }
+                $arrayParameters['selectedAttributes'] = $newDatas;
             }else{
                 if(!is_array($arrayParameters['selectedAttributes'])) {
                     //we need to parse it if it is a string(query string)

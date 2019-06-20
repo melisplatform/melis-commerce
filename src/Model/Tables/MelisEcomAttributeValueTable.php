@@ -112,4 +112,22 @@ class MelisEcomAttributeValueTable extends MelisEcomGenericTable
         
         return $resultData;
     }
+
+    public function getParentAttributeByAttrId($attributeValueId)
+    {
+        $select = $this->tableGateway->getSql()->select();
+        $select->columns(array('*'));
+        $clause = array();
+
+        $select ->join('melis_ecom_attribute', 'melis_ecom_attribute.attr_id = melis_ecom_attribute_value.atval_attribute_id', array('*'), $select::JOIN_LEFT);
+        $clause['melis_ecom_attribute_value.atval_id'] = (int) $attributeValueId;
+
+        if($clause){
+            $select->where($clause);
+        }
+
+        $resultSet = $this->tableGateway->selectwith($select);
+
+        return $resultSet;
+    }
 }
