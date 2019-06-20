@@ -75,7 +75,7 @@
     <div class="col-md-12">
         <div class="form-group">
             <div class="alert alert-warning hidden">"<strong></strong>" <?php echo $this->translate('tr_meliscommerce_categories_list_tree_view_search_not_found')?></div>
-            <div id="catTreeFilterPluginConfig" data-langlocale="<?php echo $this->currentLangLocale ?>"></div>
+            <div id="catTreeFilterPluginConfig" class="categoryTreeTrigger" data-langlocale="<?php echo $this->currentLangLocale ?>"></div>
             <form id="catTreeFilterPluginConfig_form" data-input-field-selected="m_box_category_tree_ids_selected" data-input-field-root="m_box_root_category_tree_id">
                 <?php if (!empty($this->formData['m_box_category_tree_ids_selected'])){?>
                     <?php foreach ($this->formData['m_box_category_tree_ids_selected'] As $val){?>

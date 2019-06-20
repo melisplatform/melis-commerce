@@ -10,7 +10,7 @@ var catTreeConfig = (function(){
      * if the node is disable the select_node and
      * deselect_node event are not working
      **/
-    $('body').on('click', '#catTreeFilterPluginConfig ul li', function (e) {
+    $('body').on('click', '.categoryTreeTrigger ul li', function (e) {
         if(allowClickableNode) {
             var id = $(this).find('a').attr('id');
             var target_id = $(e.target).attr('id');
