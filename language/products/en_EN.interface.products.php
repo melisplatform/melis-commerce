@@ -114,7 +114,7 @@ return array(
     'tr_meliscommerce_plugin_attribute_show_description' => 'Display the attributes of a specific product',
 
     //Product List Plugin
-    'tr_meliscommerce_plugin_product_list_name' => 'Product list by category',
+    'tr_meliscommerce_plugin_product_list_name' => 'Product list',
     'tr_meliscommerce_plugin_product_list_description' => 'The plugin display the Product list by Category',
     'tr_meliscommerce_plugin_product_list_category_config' => 'Catalogs / Categories',
     'tr_meliscommerce_plugin_product_list_no_country' => 'Please choose a country',
