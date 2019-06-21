@@ -16,9 +16,9 @@ return array(
                         // site id
                         'm_checkout_site_id' => 1,
                         // page link
-                        'm_checkout_page_link' => 'http://www.test.com',
+                        'm_checkout_page_link' => '',
                         // page link ro reroute user if not logged in
-                        'm_login_page_link' => 'http://www.test.com',
+                        'm_login_page_link' => '',
                         
                         // Sub plugin paramaters
                         'checkout_cart_parameters' => array(),

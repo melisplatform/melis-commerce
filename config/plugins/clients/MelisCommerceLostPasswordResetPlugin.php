@@ -16,7 +16,7 @@ return array(
                         // Recovery key of the user
                         'm_recovery_key' => null,
                         // Page redirected after password reset
-                        'm_redirection_link_ok' => 'http://www.test.com',
+                        'm_redirection_link_ok' => '',
                         
                         'm_lost_password_reset_is_submit' => '',
                         

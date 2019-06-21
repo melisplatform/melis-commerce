@@ -13,7 +13,7 @@ return array(
                         'm_login' => '',
                         'm_password' => '',
                         'm_remember_me' => '',
-                        'm_redirection_link_ok' => 'http://www.test.com',
+                        'm_redirection_link_ok' => '',
                         
                         // flag true if a form is submitted
                         'm_login_is_submit' => false,

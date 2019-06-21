@@ -18,7 +18,7 @@ return array(
                         'cper_name' => '',
                         'm_country' => 1,
                         
-                        'm_redirection_link_ok' => 'http://www.test.com',
+                        'm_redirection_link_ok' => '',
                         'm_autologin' => false,
                         
                         // flag true if a form is submitted
