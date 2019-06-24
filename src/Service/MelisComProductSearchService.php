@@ -259,10 +259,17 @@ class MelisComProductSearchService extends MelisComGeneralService
         );
 
         if($data) {
+            //remove the product if the price is empty (only if there is any filter related to price)
             foreach($data as $product){
+                if(empty($arrayParameters['priceMin']) && empty($arrayParameters['priceMax']) && empty($arrayParameters['priceColumn'])) {
+                    $productData[] = $product;
+                }else{
+                    if(!empty($product->price)){
+                        $productData[] = $product;
+                    }
+                }
                 unset($product->price);
                 unset($product->country);
-                $productData[] = $product;
             }
             
             $productData = array_unique($productData, SORT_REGULAR);
