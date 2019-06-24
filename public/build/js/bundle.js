@@ -3578,7 +3578,7 @@ window.initProductTextTinyMce = function(productId) {
                 verify_html : false,
                 plugins : [
                     //[contextmenu, textcolor, colorpicker] this plugin is already built in the core editor as of TinyMCE v. 5
-                   'autolink advlist lists link paste image charmap preview anchor emoticons help hr nonbreaking',
+                   'autolink lists advlist link paste image charmap preview anchor emoticons help hr nonbreaking',
                    'searchreplace visualblocks code fullscreen',
                    'insertdatetime media table template'
                 ],
