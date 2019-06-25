@@ -146,6 +146,7 @@ return array(
                                     ),
                                     'attributes' => array(
                                         'id' => '',
+                                        'required' => 'required',
                                     ),
                                 ),
                             ),
