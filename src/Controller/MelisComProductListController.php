@@ -351,12 +351,22 @@ class MelisComProductListController extends AbstractActionController
             // added by: JRago for Junry to query product name for use on front-end
             $productData = (array) $productSvc->getProductTextsById($productId, null, $langId);
             $productName = null;
+            $productNameDiffLang = null;
             if (! empty($productData)) {
                 foreach ($productData as $key => $value) {
+                    //store the first found product name
+                    if(!empty($value->ptxt_field_short) && empty($productNameDiffLang)){
+                        $productNameDiffLang = $value->ptxt_field_short;
+                    }
+                    //get the text for the current language
                     if ($value->ptxt_lang_id == $langId) {
                         $productName = $value->ptxt_field_short ?? $value->ptxt_field_long;
                         break;
                     }
+                }
+                //check if product name is still empty to use the stored product name of the different lang
+                if(empty($productName)){
+                    $productName = $productNameDiffLang;
                 }
             }
             // end added
