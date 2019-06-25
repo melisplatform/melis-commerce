@@ -511,9 +511,6 @@ class MelisEcomProductTable extends MelisEcomGenericTable
             $select->where('prd_status = 1');
         }
 
-        // only get active variants
-        $select->where->equalTo('var_status', 1);
-
         $resultSet = $this->tableGateway->selectwith($select);
 
         return $resultSet;

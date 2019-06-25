@@ -280,18 +280,13 @@ class MelisComCategoryService extends MelisComGeneralService
         
         $melisComProductService = $this->getServiceLocator()->get('MelisComProductService');
         $melisEcomProductCategoryTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');
-        $melisVariantService = $this->getServiceLocator()->get('MelisComVariantService');
         
         $categorProductsData = $melisEcomProductCategoryTable->getCategoryProductsByCategoryId($arrayParameters['categoryId'], $arrayParameters['onlyValid']);
         
         foreach ($categorProductsData As $val)
         {
             $catProd = $melisComProductService->getProductById($val->prd_id, $arrayParameters['langId']);
-            $variants = $melisVariantService->getVariantListByProductId($val->prd_id, $langId, null, true);
-
-            // only add the product if there are available variants
-            if (!empty($variants))
-                array_push($results, $catProd);
+            array_push($results, $catProd);
         }
         // Service implementation end
         
