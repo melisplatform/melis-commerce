@@ -132,6 +132,7 @@ return array(
                                         'attributes' => array(
                                             'id' => 'id_lang_name',
                                             'value' => '',
+                                            'required' => 'required'
                                         ),
                                     ),
                                 ),
@@ -159,6 +160,7 @@ return array(
                                         'attributes' => array(
                                             'id' => 'id_lang_locale',
                                             'value' => '',
+                                            'required' => 'required'
                                         ),
                                     ),
                                 ),
