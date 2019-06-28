@@ -136,6 +136,7 @@ return array(
                                         'attributes' => array(
                                             'id' => 'id_cur_name',
                                             'value' => '',
+                                            'required' => 'required',
                                         ),
                                     ),
                                 ),
@@ -151,6 +152,7 @@ return array(
                                         'attributes' => array(
                                             'id' => 'id_cur_name',
                                             'value' => '',
+                                            'required' => 'required',
                                         ),
                                     ),
                                 ),
@@ -164,8 +166,9 @@ return array(
                                             'tooltip' => 'tr_meliscommerce_currency_symbol tooltip',
                                         ),
                                         'attributes' => array(
-                                            'id' => 'id_cur_name',
+                                            'id' => 'id_cur_symbol',
                                             'value' => '',
+                                            'required' => 'required',
                                         ),
                                     ),
                                 ),
