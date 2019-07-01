@@ -31,14 +31,18 @@ $(document).ready(function() {
     body.on("click", ".country-price-tab li a", function(){
         var textCountry = $(this).data('country');
         var textSymbol = $(this).data('symbol');
+
+        var parentUl = $(this).parents("ul");
+        var targetIdPrefix = parentUl.data("id");
+
         if(textSymbol != ""){
-            $(".cur-symbol").removeClass("fa fa-dollar").text(textSymbol).css("font-weight", "600");
+            $("#"+targetIdPrefix+"_id_meliscommerce_prices_tab_right_content .cur-symbol").removeClass("fa fa-dollar").text(textSymbol).css("font-weight", "600");
         }else{
-            if(!$('.cur-symbol').hasClass("fa")){
-                $(".cur-symbol").empty().addClass("fa fa-dollar").removeAttr("style");
+            if(!$("#"+targetIdPrefix+'_id_meliscommerce_prices_tab_right_content cur-symbol').hasClass("fa")){
+                $("#"+targetIdPrefix+"_id_meliscommerce_prices_tab_right_content .cur-symbol").empty().addClass("fa fa-dollar").removeAttr("style");
             }
         }
-        $('.country-price-label').text(textCountry + ' ' + translations.tr_meliscommerce_variant_tab_prices_pricing);
+        $("#"+targetIdPrefix+'_id_meliscommerce_prices_tab_right_content .country-price-label').text(textCountry + ' ' + translations.tr_meliscommerce_variant_tab_prices_pricing);
     });
 
     body.on("click", ".country-stock-tab li a", function(){
