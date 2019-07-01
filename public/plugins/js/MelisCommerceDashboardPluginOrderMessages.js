@@ -169,7 +169,7 @@ $(document).ready(function () {
                 bgColorRed = 'style="background-color: #981a1f;"';
             }
 
-            let months = [
+            var months = [
                 translations.tr_meliscommerce_dashboardplugin_jan,
                 translations.tr_meliscommerce_dashboardplugin_feb,
                 translations.tr_meliscommerce_dashboardplugin_mar,
@@ -181,10 +181,10 @@ $(document).ready(function () {
                 translations.tr_meliscommerce_dashboardplugin_sep,
                 translations.tr_meliscommerce_dashboardplugin_oct,
                 translations.tr_meliscommerce_dashboardplugin_nov,
-                translations.tr_meliscommerce_dashboardplugin_dec,
-            ]; 
+                translations.tr_meliscommerce_dashboardplugin_dec
+            ];
 
-            let month = months[parseInt(message_created.format("M")) - 1];
+            var month = months[parseInt(message_created.format("M")) - 1];
 
             var dateHtml = '<span class="label label-inverse pull-right" ' + bgColorRed + '>' +
                 message_created.format("HH:mm:ss") + ' ' + month.replace('%day', message_created.format("DD")) +
