@@ -578,26 +578,27 @@ class MelisComProductListController extends AbstractActionController
             $generalStockData  = $variantSvc->getVariantStocksById($varData->var_id);
             $tmpData = array();
         
-            $genPrice = null;
-            $genStock = null;
+            $genPrice = [];
+            $genStock = [];
             foreach($generalPricesData as $genPriceData) {
-                if($genPriceData->price_country_id == -1) {
+                if($genPriceData->price_country_id == -1 && $genPriceData->price_net) {
                     $genPriceData->price_net = $productSvc->formatPrice($genPriceData->price_net);
-                    $genPrice = $genPriceData->price_net;
+                    $genPrice = $genPriceData;
                 }
             }
+
             foreach($generalStockData as $genStockData) {
                 if($genStockData->stock_country_id == -1) {
-                    $genStock = $genStockData->stock_quantity;
+                    $genStock = $genStockData;
                 }
             }
-            
+
             // Filtering variant that has only data of Price ar Stock
             if (!empty($genPrice) || !empty($genStock)) {
-                $dataPricesAndStock[$this->getTool()->getTranslation('tr_meliscommerce_general_text')]['price'] = $this->getOnlyKeyOnArray('price_net', $genPriceData);
-                $dataPricesAndStock[$this->getTool()->getTranslation('tr_meliscommerce_general_text')]['stock'] = $this->getOnlyKeyOnArray('stock_quantity', $genStockData);
+                $dataPricesAndStock[$this->getTool()->getTranslation('tr_meliscommerce_general_text')]['price'] = $this->getOnlyKeyOnArray('price_net', $genPrice);
+                $dataPricesAndStock[$this->getTool()->getTranslation('tr_meliscommerce_general_text')]['stock'] = $this->getOnlyKeyOnArray('stock_quantity', $genStock);
             }
-            
+
             // Countries
             foreach($countries as $country) {
                 
@@ -615,13 +616,15 @@ class MelisComProductListController extends AbstractActionController
                         $tmpStock = $this->getOnlyKeyOnArray('stock_quantity', $sData);
                     }
                 }
-                
+
+
+
                 // Filtering variant that has only data of Price ar Stock
                 if (!empty($tmpPrice) || !empty($tmpStock)) {
                     $dataPricesAndStock[$country['ctry_name']]['flag'] = $country['ctry_flag'];
                     $dataPricesAndStock[$country['ctry_name']]['price']['price_net'] = null;
                     $dataPricesAndStock[$country['ctry_name']]['stock']['stock_quantity'] = null;
-                    
+
                     $dataPricesAndStock[$country['ctry_name']]['price'] = $tmpPrice;
                     $dataPricesAndStock[$country['ctry_name']]['stock'] = $tmpStock;
                 }
