@@ -8,6 +8,8 @@
         'tr_meliscommerce_documents_modal_text_prod_image' => 'Attach an image to this product.',
         'tr_meliscommerce_documents_modal_text_var_file' => 'Attach a file to this variant (ex: user manual).',
         'tr_meliscommerce_documents_modal_text_var_image' => 'Attach an image to this variant.',
+        'tr_meliscommerce_documents_modal_text_order_file' => 'Attach a file to this order (ex: invoice)',
+        'tr_meliscommerce_documents_modal_text_order_image' => 'Attach an image to this order.',
 	    'tr_meliscommerce_documents_file_attachments_lists' => 'File attachments lists',
         'tr_meliscommerce_documents_product_imgs' => 'Images',
 	    'tr_meliscommerce_documents_image_lists' => 'Image lists',

@@ -96,7 +96,7 @@ class MelisComOrderListController extends AbstractActionController
     public function renderOrderListWidgetsNumOrdersAction()
     {
         $melisComOrderService = $this->getServiceLocator()->get('MelisComOrderService');
-        $orderCount = $melisComOrderService->getOrderList();
+        $orderCount = $melisComOrderService->getOrderList(null, true);
         $view = new ViewModel();
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view->melisKey = $melisKey;
@@ -111,7 +111,7 @@ class MelisComOrderListController extends AbstractActionController
     public function renderOrderListWidgetsMonthOrdersAction()
     {
         $melisComOrderService = $this->getServiceLocator()->get('MelisComOrderService');
-        $orderCount = $melisComOrderService->getWidgetOrders('curMonth');
+        $orderCount = $melisComOrderService->getWidgetOrders('curMonth', true);
         $view = new ViewModel();
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view->melisKey = $melisKey;
@@ -126,7 +126,7 @@ class MelisComOrderListController extends AbstractActionController
     public function renderOrderListWidgetsAvgOrdersAction()
     {
         $melisComOrderService = $this->getServiceLocator()->get('MelisComOrderService');
-        $orderCount = $melisComOrderService->getWidgetOrders('avgMonth');
+        $orderCount = $melisComOrderService->getWidgetOrders('avgMonth', true);
         
         $view = new ViewModel();
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -489,7 +489,7 @@ class MelisComOrderListController extends AbstractActionController
                 $tableData[$c]['ord_reference'] = $this->getTool()->escapeHtml($order->getOrder()->ord_reference);
                 $tableData[$c]['ord_status'] = sprintf($status, $class, $order->getId(), $disabled, $orderStatus->osta_id, $orderStatus->ostt_status_name);
                 $tableData[$c]['products'] = number_format($products, 0);
-                $tableData[$c]['price'] = number_format($price, 2);
+                $tableData[$c]['price'] = number_format($price, 2) . "€";
                 $tableData[$c]['ccomp_name'] = $this->getTool()->escapeHtml($company);
                 $tableData[$c]['civt_min_name'] = $this->getTool()->escapeHtml($civt_min_name);
                 $tableData[$c]['cper_firstname'] = $this->getTool()->escapeHtml($cper_firstname);

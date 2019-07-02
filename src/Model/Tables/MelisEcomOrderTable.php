@@ -151,20 +151,36 @@ class MelisEcomOrderTable extends MelisEcomGenericTable
         $resultData = $this->tableGateway->selectWith($select);
         return $resultData;
     }
-    
-    public function getCurrentMonth()
+
+    /**
+     * @param null $onlyValid
+     * @return mixed
+     */
+    public function getCurrentMonth($onlyValid = null)
     {
         $select = $this->tableGateway->getSql()->select();
         $select->where('YEAR(ord_date_creation) = YEAR(CURRENT_DATE())');
         $select->where('MONTH(ord_date_creation) = MONTH(CURRENT_DATE())');
-        
+
+        if(!empty($onlyValid)){
+            $select->where('ord_status != -1');
+        }
+
         $resultData = $this->tableGateway->selectWith($select);
         return $resultData;
     }
-    
-    public function getAvgMonth()
+
+    /**
+     * @param null $onlyValid
+     * @return mixed
+     */
+    public function getAvgMonth($onlyValid = null)
     {
-        $sql = 'SELECT AVG(`monthly`) AS average FROM (SELECT COUNT(*) as `monthly` from melis_ecom_order group by YEAR(`ord_date_creation`), MONTH(`ord_date_creation`)) AS average';
+        $sql = 'SELECT AVG(`monthly`) AS average FROM (SELECT COUNT(*) as `monthly` from melis_ecom_order ';
+        if(!empty($onlyValid)){
+            $sql .= 'where ord_status != -1 ';
+        }
+        $sql .= 'group by YEAR(`ord_date_creation`), MONTH(`ord_date_creation`)) AS average';
         $resultData = $this->tableGateway->getAdapter()->driver->getConnection()->execute($sql);
     
         return $resultData;

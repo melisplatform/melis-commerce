@@ -1,9 +1,10 @@
 $(document).ready(function () {
     //instance counter
     var instanceCount = 0;
+    var $body = $("body");
 
     //when a filter is selected
-    $("body").on("change", '.com-orders-dash-chart-line', function () {
+    $body.on("change", '.com-orders-dash-chart-line', function () {
         commerceDashboardOrdersLineGraphInit($(this));
 
         //get the hidden plugin config
@@ -17,7 +18,7 @@ $(document).ready(function () {
     });
 
     //opening order tab when an order is clicked
-    $("body").on("click", ".melis-commerce-dashboard-plugin-orders-number-item", function () {
+    $body.on("click", ".melis-commerce-dashboard-plugin-orders-number-item", function () {
         var orderId = $(this).find('.melis-commerce-dashboard-plugin-orders-number-item-id').text();
         var orderReference = $(this).find('.melis-commerce-dashboard-plugin-orders-number-item-ref').text();
 
@@ -55,7 +56,7 @@ $(document).ready(function () {
                 borderColor: "#eee",
                 clickable: true,
                 hoverable: true,
-                labelMargin: 20,
+                labelMargin: 20
             },
             series: {
                 lines: {
@@ -74,13 +75,13 @@ $(document).ready(function () {
             },
             xaxis: {
                 // we are not using any plugin for the xaxis, we use ticks instead.
-                tickColor: '#eee',
+                tickColor: '#eee'
             },
             yaxis: {
                 show: true,
                 tickColor: '#eee',
                 min: 0,
-                tickDecimals: 0,
+                tickDecimals: 0
             },
             legend: {
                 position: "nw",
@@ -111,7 +112,7 @@ $(document).ready(function () {
     // INIT PLOTTING FUNCTION [also used as callback in the app.interface for when we refresh the chart]
     window.commerceDashboardOrdersLineGraphInit = function (target, placeholder) {
         var target = target || null;
-        var placeholder = placeholder || null
+        var placeholder = placeholder || null;
         var chartFor = "";
 
         if (target === null) {
@@ -120,29 +121,31 @@ $(document).ready(function () {
 
             //count the number of empty charts
             $body.find(".commerce-dashboard-orders-chart-linegraph-placeholder").each(function (index, value) {
-                if ($(this).text() == "") {
+                if ($(this).text() === "") {
                     emptyChartCount++;
                 }
             });
 
-            if (emptyChartCount == $body.find(".commerce-dashboard-orders-chart-linegraph-placeholder").length) {
+            if (emptyChartCount === $body.find(".commerce-dashboard-orders-chart-linegraph-placeholder").length) {
                 //when count of empty charts is equal to the count of charts then it mean the tab is closed and opened again.
                 var pluginConfig = $(chartsArray[instanceCount]).closest('.grid-stack-item').find('.grid-stack-item-content .widget .widget-parent .widget-body .dashboard-plugin-json-config').text();
+                pluginConfig = JSON.parse(pluginConfig);
                 instanceCount++;
 
-                if (instanceCount == chartsArray.length) {
+                if (instanceCount === chartsArray.length) {
                     instanceCount = 0;
                 }
 
-                chartFor = JSON.parse(pluginConfig).activeFilter;
-                placeholder = "#commerce-dashboard-orders-chart-linegraph-placeholder-" + JSON.parse(pluginConfig).plugin_id;
+                chartFor = pluginConfig.datas.activeFilter;
+                placeholder = "#commerce-dashboard-orders-chart-linegraph-placeholder-" + pluginConfig.plugin_id;
             } else {
                 //when a new plugin is dragged to the grid stack
                 var lastItem = body.find(".commerce-dashboard-orders-chart-linegraph-placeholder").length - 1;
                 var pluginConfig = $(chartsArray[lastItem]).closest('.grid-stack-item').find('.grid-stack-item-content .widget .widget-parent .widget-body .dashboard-plugin-json-config').text();
+                pluginConfig = JSON.parse(pluginConfig);
 
-                chartFor = JSON.parse(pluginConfig).activeFilter;
-                placeholder = "#commerce-dashboard-orders-chart-linegraph-placeholder-" + JSON.parse(pluginConfig).plugin_id;
+                chartFor = pluginConfig.datas.activeFilter;
+                placeholder = "#commerce-dashboard-orders-chart-linegraph-placeholder-" + pluginConfig.plugin_id;
             }
         } else if (typeof target == "string") {
             //when initializing the charts on the first load of dashboard
@@ -166,23 +169,57 @@ $(document).ready(function () {
             var tick = [];
             var counter = data.values.length;
             var window_width = $(window).width();
+            var dataString = '';
 
+            var months = [
+                translations.tr_meliscommerce_dashboardplugin_jan,
+                translations.tr_meliscommerce_dashboardplugin_feb,
+                translations.tr_meliscommerce_dashboardplugin_mar,
+                translations.tr_meliscommerce_dashboardplugin_apr,
+                translations.tr_meliscommerce_dashboardplugin_may,
+                translations.tr_meliscommerce_dashboardplugin_jun,
+                translations.tr_meliscommerce_dashboardplugin_jul,
+                translations.tr_meliscommerce_dashboardplugin_aug,
+                translations.tr_meliscommerce_dashboardplugin_sep,
+                translations.tr_meliscommerce_dashboardplugin_oct,
+                translations.tr_meliscommerce_dashboardplugin_nov,
+                translations.tr_meliscommerce_dashboardplugin_dec
+            ];
+
+            // the first value of the data.values is the current date / time.
             for (var i = 0; i < data.values.length; i++) {
-                if (chartFor == 'hourly') {
-                    // displays the hour only
-                    var dataString = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH');
-                } else if (chartFor == 'daily') {
+                if (chartFor === 'hourly') {
+                    var locale = melisLangId;
+                    var hour = '';
+                    var time = '';
+
+                    if (locale === 'fr_FR') {
+                        hour = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH');
+                        time = hour + 'h';
+                    } else {
+                        hour = moment(data.values[i][0], 'YYYY-MM-DD HH').format('h A');
+                        time = hour;
+                    }
+
+                    dataString = time;
+                } else if (chartFor === 'daily') {
                     var date = moment(data.values[i][0], 'YYYY-MM-DD');
-                    // displays month name in 3 letters and the day is in another line
-                    var dataString = date.format("MMM") + '\n' + date.format("DD");
-                } else if (chartFor == 'weekly') {
+                    var day = date.format("DD");
+                    var month = months[parseInt(date.format("M")) - 1];
+
+                    dataString = month.replace('%day', day);
+                } else if (chartFor === 'weekly') {
                     var week = moment(data.values[i][0], 'YYYY-MM-DD').format('W');
                     var weekday = moment().day("Monday").week(week);
-                    // displays month name in 3 letters
-                    var dataString = weekday.format("MMM") + "\n" + weekday.format("DD");
-                } else if (chartFor == 'monthly') {
-                    // displays month name in 3 letters
-                    var dataString = moment(data.values[i][0], 'YYYY-MM-DD').format("MMM");
+                    var month = months[parseInt(weekday.format("M")) - 1];
+                    var day = weekday.format("DD");
+
+                    dataString = month.replace('%day', day);
+                } else if (chartFor === 'monthly') {
+                    var monthOfYear = moment(data.values[i][0], 'YYYY-MM-DD').format("M");
+                    var month = months[parseInt(parseInt(monthOfYear)) - 1];
+
+                    dataString = month.replace('%day', '');
                 }
 
                 //pushing the data to the finalData which will be used in the charts
@@ -211,7 +248,7 @@ $(document).ready(function () {
         }).error(function (xhr, textStatus, errorThrown) {
             console.log("ERROR !! Status = " + textStatus + "\n Error = " + errorThrown + "\n xhr = " + xhr.statusText);
         });
-    }
+    };
 
     //initialize all the charts on the dashboard on first load of dashboard.
     $body.find(".commerce-dashboard-orders-chart-linegraph-placeholder").each(function (index, value) {

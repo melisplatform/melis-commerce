@@ -21,7 +21,7 @@
 	    'tr_meliscommerce_general_common_destination_page_link' => 'Destination page',
 	    'tr_meliscommerce_general_common_submit' => 'Submit',
 	    'tr_meliscommerce_general_common_autologin' => 'Auto login',
-	    'tr_meliscommerce_general_common_show_select_addresses' => 'Show select addresses',
+	    'tr_meliscommerce_general_common_show_select_addresses' => 'Select address field',
 	    'tr_meliscommerce_general_common_per_page' => 'Number per page',
 	    'tr_meliscommerce_general_common_num_page_before_after' => 'No. of pagination link before & after',
 	    'tr_meliscommerce_general_common_country' => 'Country',
@@ -51,7 +51,7 @@
 	    'tr_meliscommerce_general_common_limit tooltip' => 'This filter allows to set the number displayed',
 	    'tr_meliscommerce_general_common_destination_page_link tooltip' => 'Enter the url of the destination page in which the user will be redirected. It can be an internal or external url',
 	    'tr_meliscommerce_general_common_autologin tooltip' => 'Connect the user directly after validation of the form',
-	    'tr_meliscommerce_general_common_show_select_addresses tooltip' => 'This will show a form select option of addresses',
+	    'tr_meliscommerce_general_common_show_select_addresses tooltip' => 'Display a field in the form to select a registered address',
 	    'tr_meliscommerce_general_common_per_page tooltip' => 'Number of results displayed on a single page',
 	    'tr_meliscommerce_general_common_num_page_before_after tooltip' => 'The display of the pagination generate a certain number of links before and after the current page, this field allows to limit this number of links',
 	    'tr_meliscommerce_general_common_country tooltip' => 'Select the country to assign the corresponding currency and price of the products',
@@ -61,5 +61,7 @@
 	    'tr_meliscommerce_general_error' => 'Something is wrong, please contact administrator for assistance',
 	    'tr_meliscommerce_general_error_occured' => 'Error(s) occured',
 	    'tr_meliscommerce_input_empty' => 'The input is required and can\'t be empty',
-	    
+
+        // Modal
+        'tr_meliscommerce_general_plugin_properties_title' => 'Properties',
 	);

@@ -29,8 +29,16 @@ class MelisCommerceDashboardPluginOrderMessages extends MelisCoreDashboardTempla
      */
     public function orderMessages()
     {
+        /** @var \MelisCore\Service\MelisCoreDashboardPluginsRightsService $dashboardPluginsService */
+        $dashboardPluginsService = $this->getServiceLocator()->get('MelisCoreDashboardPluginsService');
+        //get the class name to make it as a key to the plugin
+        $path = explode('\\', __CLASS__);
+        $className = array_pop($path);
+        $isAccessable = $dashboardPluginsService->canAccess($className);
+
         $view = new ViewModel();
         $view->setTemplate('MelisCommerceDashboardPluginOrderMessages/commerce-orders-messages');
+        $view->isAccessable = $isAccessable;
 
         return $view;
     }
@@ -49,56 +57,72 @@ class MelisCommerceDashboardPluginOrderMessages extends MelisCoreDashboardTempla
         if ($request->isPost()) {
             $filter = $this->getFilter($request);
             $orders = $this->getOrders();
-            $noReply = true;
 
             foreach ($orders as $order) {
                 $messages = $order->getMessages();
+                $lastAdmin = 0;
 
                 if (count($messages) > 0) {
-
+                    $count = 0;
                     foreach ($messages as $message) {
-                        if ($message->omsg_user_id != "") {
+                        if (!is_null($message->omsg_user_id)) {
                             $noReply = false;
+                            $lastAdmin = $count;
+                        } else {
+                            $noReply = true;
                         }
 
-                        // get client name and reference number
+                        // append client name and reference number
                         $message->clientFirstName = $order->getPerson()->cper_firstname;
                         $message->clientLastName = $order->getPerson()->cper_name;
                         $message->reference = $order->getOrder()->ord_reference;
                         $message->orderDate = $this->formatDateByLangLocale($order->getOrder()->ord_date_creation);
                         $message->totalOrderAmount = number_format($this->getTotalOrderAmount($order), 2);
+
+                        $count++;
                     }
 
                     if ($filter == 'all') {
                         if (count($messages) > 0) {
+                            $counter2 = 0;
+
                             foreach ($messages as $message) {
                                 // If no BO user has replied to the order
-                                $message->noReply = $noReply;
-
-                                if ($noReply) {
-                                    $unansweredMessages++;
+                                if ($counter2 <= $lastAdmin && $lastAdmin != 0) {
+                                    $message->noReply = false;
+                                } else {
+                                    $message->noReply = $noReply;
                                 }
 
-                                if ($message->omsg_user_id == "") {
+                                if (is_null($message->omsg_user_id)) {
                                     array_push($messageList, $message);
+                                    if ($message->noReply) {
+                                        $unansweredMessages++;
+                                    }
                                 }
+
+                                $counter2 ++;
                             }
                         }
                     } else if ($filter == 'unseen') {
-                        if ($noReply) {
-                            if (count($messages) > 0) {
-                                foreach ($messages as $message) {
-                                    //if NO BO user has replied to the order
-                                    $message->noReply = $noReply;
+                        if (count($messages) > 0) {
+                            $counter = 0;
+                            foreach ($messages as $message) {
 
-                                    if ($noReply) {
+                                if ($counter <= $lastAdmin && $lastAdmin != 0) {
+                                    $message->noReply = false;
+                                } else {
+                                    $message->noReply = $noReply;
+                                }
+
+                                if (is_null($message->omsg_user_id)) {
+                                    if ($message->noReply) {
+                                        array_push($messageList, $message);
                                         $unansweredMessages++;
                                     }
-
-                                    if ($message->omsg_user_id == "") {
-                                        array_push($messageList, $message);
-                                    }
                                 }
+
+                                $counter++;
                             }
                         }
                     } else {
@@ -107,8 +131,6 @@ class MelisCommerceDashboardPluginOrderMessages extends MelisCoreDashboardTempla
 
                     //sort all messages by date_creation in descending order to show the latest message on the top
                     array_multisort(array_column($messageList, "omsg_date_creation"), SORT_DESC, $messageList);
-                    // we set the $noReply variable to true again for the next order
-                    $noReply = true;
                 }
             }
         }

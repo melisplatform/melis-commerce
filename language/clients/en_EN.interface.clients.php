@@ -209,8 +209,8 @@
         'tr_meliscommerce_client_email_not_exist' => 'Email does not exist, please try another email address',
         'tr_meliscommerce_client_email_not_available' => 'This email address is already used',
         'tr_meliscommerce_client_pass_change_success' => 'Password has been successfully changed',
-        'tr_meliscommerce_client_pass_key_invalid' => 'Invalid password recovery key',
-        'tr_meliscommerce_client_pass_errors' => 'Error(s) occured',
+        'tr_meliscommerce_client_pass_key_invalid' => '<bold>Error!</bold> Invalid password recovery key',
+        'tr_meliscommerce_client_pass_errors' => '<bold>Error!</bold> Error(s) occured',
         'tr_meliscommerce_client_common_error' => 'Something is wrong, please contact administrator for assistance',
 	    
 	    'tr_meliscommerce_client_Contact_address_title' => 'Address title',

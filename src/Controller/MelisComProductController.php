@@ -1184,6 +1184,7 @@ class MelisComProductController extends AbstractActionController
         $isNew = false;
         $prodName = '';
         $logTypeCode = '';
+        $translator = $this->serviceLocator->get('translator');
         
         if($this->getRequest()->isPost()) {
 
@@ -1242,6 +1243,11 @@ class MelisComProductController extends AbstractActionController
             }
         }
 
+        //override prd_reference validation translations
+        if(isset($errors["prd_reference"])){
+            $errors[$translator->translate('tr_prd_reference')] = $errors["prd_reference"];
+            unset($errors['prd_reference']);
+        }
         $response = array(
             'success' => $success,
             'textTitle' => $textTitle,
@@ -1413,8 +1419,11 @@ class MelisComProductController extends AbstractActionController
                 {
                     array_push($errors, $seoErrors);
                 }
-                
-                $stocksAlertForm->setData($requestData);
+
+                // Using loop to set data because the index is not 0. not sure if this will always be the case.
+                foreach ($requestData['settings_stock_alert'] as $stock) {
+                    $stocksAlertForm->setData($stock);
+                }
                 
                 if(!$stocksAlertForm->isValid()){
                     

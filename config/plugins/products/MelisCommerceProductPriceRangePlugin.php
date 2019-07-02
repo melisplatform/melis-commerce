@@ -16,6 +16,18 @@ return array(
                         'm_box_product_price_column' => 'price_net',
                     ),
                     'melis' => array(
+                        /*
+                        * if set this plugin will belong to a specific marketplace section,
+                        * if not it will go directly to ( Others ) section
+                        *  - available section for templating plugins as of 2019-05-16
+                        *    - MelisCms
+                        *    - MelisMarketing
+                        *    - MelisSite
+                        *    - MelisCommerce
+                        *    - Others
+                        *    - CustomProjects
+                        */
+                        'section' => 'MelisCommerce',
                         'subcategory' => array(
                             'id' => 'PRODUCTS',
                             'title' => 'tr_meliscommerce_products_Products'

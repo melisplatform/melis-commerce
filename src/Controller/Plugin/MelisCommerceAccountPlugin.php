@@ -95,7 +95,7 @@ class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
         // Getting custom param for Order list Plugin
         $clientOrderParameter =(!empty($data['order_list_paremeter'])) ? $data['order_list_paremeter'] : array();
         $clientOrderPlugin = $pluginManager->get('MelisCommerceOrderHistoryPlugin');
-        $clientOrderParameter = ArrayUtils::merge($clientOrderParameter, array('id' => 'cartPlugin_'.$data['id'], 'pageId' => $data['pageId']));
+        $clientOrderParameter = ArrayUtils::merge($clientOrderParameter, array('id' => 'cartPlugin_'.$data['id'].uniqid(), 'pageId' => $data['pageId']));
         $clientOrderHistory = $clientOrderPlugin->render($clientOrderParameter);
         
         // Create an array with the variables that will be available in the view

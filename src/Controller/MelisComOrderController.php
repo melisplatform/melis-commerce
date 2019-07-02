@@ -938,7 +938,7 @@ class MelisComOrderController extends AbstractActionController
                     'obas_sku' => $this->getTool()->escapeHtml($basket->obas_sku),
                     'image' => sprintf($image, $imageSrc),
                     'obas_quantity' => $basket->obas_quantity,
-                    'obas_price_net' => $basket->obas_price_net,
+                    'obas_price_net' => $basket->obas_price_net . "€",
                     'obas_product_name' => $this->getTool()->escapeHtml($basket->obas_product_name),
                     'obas_category_name' => $category,
                     'DT_RowId' => $basket->obas_id,

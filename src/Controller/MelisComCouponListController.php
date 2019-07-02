@@ -231,7 +231,7 @@ class MelisComCouponListController extends AbstractActionController
                 $tableData[$c]['coup_status'] = $status;
                 $tableData[$c]['coup_code'] = $this->getTool()->escapeHtml($coupon->coup_code);
                 $tableData[$c]['coup_percentage'] = !empty($coupon->coup_percentage)? $coupon->coup_percentage : '&nbsp;';
-                $tableData[$c]['coup_discount_value'] = !empty($coupon->coup_discount_value)? $coupon->coup_discount_value: '&nbsp;';
+                $tableData[$c]['coup_discount_value'] = !empty($coupon->coup_discount_value)? $coupon->coup_discount_value . "€": '&nbsp;';
                 $tableData[$c]['coup_current_use_number'] = $coupon->coup_current_use_number;
                 $tableData[$c]['DT_RowClass'] = ($coupon->coup_current_use_number) ? 'couponListNoDeleteButton' : '';
                 $c++;

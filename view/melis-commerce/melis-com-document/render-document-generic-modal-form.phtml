@@ -99,6 +99,8 @@
                             } elseif($this->uploadType == 'file') { 
                             ?>
                             <br>
+                            <?php if ($this->relationType == 'order') { ?>
+                            <?php } else { ?>
                             <div class="panel panel-default commerce-toggle">
                                 <div class="panel-heading">
                                     <h4 class="panel-title"><a class="accordion-toggle collapsed" id="" data-toggle="collapse" href="#toggleAddFileType"><?php echo $this->translate('tr_meliscommerce_documents_file_type_add') ?></a></h4>
@@ -124,6 +126,7 @@
                                     </div>
                                 </div>
                             </div>
+                            <?php } ?>
                             <div class="clearfix"></div>
                             <?php    
                             }

@@ -438,7 +438,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
                 $variantPrice = '';
                 $available = true;
                 // Check if Variant has stocks, else remove add button
-                if (is_null($varStock) || is_null($varPrice))
+                if (empty($varStock) || empty($varPrice))
                 {
                     $available = false;
                 }

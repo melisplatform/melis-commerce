@@ -80,19 +80,19 @@ window.initProductCategoryList = function(productId, langLocale){
                     "dblclick_toggle" : false,
                     "data" : {
                         "cache" : true,
-                        "url" : "/melis/MelisCommerce/MelisComCategoryList/getCategoryTreeView?"+dataString,
-                    },
+                        "url" : "/melis/MelisCommerce/MelisComCategoryList/getCategoryTreeView?"+dataString
+                    }
                 },
                 "checkbox": {
                     three_state: false,
                     whole_node : false,
-                    tie_selection : false,
+                    tie_selection : false
                 },
                 "plugins": [
                     "search",
                     "changed", // Plugins for Change and Click Event
                     "types", // Plugins for Customizing the Nodes
-                    "checkbox",
+                    "checkbox"
                 ]
             });
     }
@@ -128,7 +128,27 @@ window.initProductTextTinyMce = function(productId) {
             var option = {
                 mode : "none",
                 height : "400px",
-                init_instance_callback  : productTextTinyMCECallback(form, productId),
+                relative_urls : false,
+                language : 'en',
+                templates : 'miniTemplates',
+                menubar : false,
+                forced_root_block : '',
+                paste_word_valid_elements : "p,b,strong,i,em,h1,h2,h3,h4",
+                cleanup : false,
+                verify_html : false,
+                plugins : [
+                    //[contextmenu, textcolor, colorpicker] this plugin is already built in the core editor as of TinyMCE v. 5
+                   'autolink lists advlist link paste image charmap preview anchor emoticons help hr nonbreaking',
+                   'searchreplace visualblocks code fullscreen',
+                   'insertdatetime media table template'
+                ],
+                image_advtab: true,
+                toolbar : 'insertfile undo redo paste | formatselect | forecolor | bold italic strikethrough underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media template | code',
+                init_instance_callback  : productTextTinyMCECallback(form, productId)
+            }
+
+            /*
+                For reference before fixed: http://mantis.melistechnology.fr/view.php?id=3675
                 plugins : [
                     'advlist autolink lists link image charmap print preview anchor',
                     'searchreplace visualblocks code fullscreen',
@@ -136,7 +156,7 @@ window.initProductTextTinyMce = function(productId) {
                     'textcolor',
                 ],
                 toolbar : 'undo redo | styleselect | bold italic | link image |  alignleft aligncenter alignright alignjustify | forecolor backcolor | code',
-            }
+            */
 
             //Initialize TinyMCE editor
             melisTinyMCE.createTinyMCE("tool", "#"+targetSelector, option);
@@ -174,7 +194,7 @@ $(document).ready(function() {
 
     var body = $("body");
 
-    $body.on("click", ".productCategoryList", function(){
+    body.on("click", ".productCategoryList", function(){
         var btn = $(this);
         var productId = btn.data("productid");
 
@@ -243,7 +263,7 @@ $(document).ready(function() {
         initProductCategoryList(productId, langLocale);
     });
 
-    $('body').on("click",".productTextForm .deleteTextInput", function(){
+    body.on("click",".productTextForm .deleteTextInput", function(){
         var text = $(this).parent().attr("data-text-identifier");
 
         var form  = $(this).parents("form");
@@ -274,14 +294,26 @@ $(document).ready(function() {
 
     });
 
+    // coupons / product list
     body.on("click", ".btnProductListEdit", function() {
-        var productId   = $(this).parents("tr").attr('id');
-        var productName = $(this).parents("tr").find("td span").data("productname");
-        var navTabsGroup = "id_meliscommerce_product_list_container";
+        var productId   = $(this).parents("tr").attr('id'),
+            productName = $(this).parents("tr").find("td span").data("productname"),
+            navTabsGroup = "id_meliscommerce_product_list_container";
 
-        melisCommerce.disableAllTabs();
-        melisCommerce.openProductPage(productId, productName, navTabsGroup);
-        melisCommerce.setUniqueId(productId);
+        var alreadyOpen = $("body #melis-id-nav-bar-tabs li a.tab-element[data-id='id_meliscommerce_product_list_container']");
+
+        // check whether to open the products tab
+        if ( alreadyOpen.length > 0 ) {
+            melisCommerce.disableAllTabs();
+            melisCommerce.openProductPage(productId, productName, navTabsGroup);
+            melisCommerce.setUniqueId(productId);
+        } else {
+            melisHelper.tabOpen("Products", "icon-shipment", "id_meliscommerce_product_list_container", "meliscommerce_product_list_container", "", navTabsGroup, function() {
+                melisCommerce.disableAllTabs();
+                melisCommerce.openProductPage(productId, productName, navTabsGroup);
+                melisCommerce.setUniqueId(productId);
+            });
+        }
     });
 
     body.on("click", "#btnAddProduct", function() {
@@ -391,7 +423,7 @@ $(document).ready(function() {
             if (typeof productId !== "undefined") {
                 dataString .push({  name : 'recipients['+ctr+'][sea_prd_id]', value : productId});
             }
-            ctr++
+            ctr++;
         });
 
         ctr = 0;
@@ -644,7 +676,7 @@ $(document).ready(function() {
                     url         : '/melis/MelisCommerce/MelisComProduct/delete',
                     data		: {productId : productId},
                     dataType    : 'json',
-                    encode		: true,
+                    encode		: true
                 }).success(function(data){
                     if(data.success) {
                         $("#" + activeTabId + " .melis-refreshTable").trigger("click");
@@ -661,7 +693,7 @@ $(document).ready(function() {
         $("div.formCreateTextTypeContainer").slideToggle();
     });
 
-    $("body").on("mouseenter mouseout", ".toolTipHoverEvent", function(e) {
+    body.on("mouseenter mouseout", ".toolTipHoverEvent", function(e) {
         $(".thClassColId").attr("style", "");
         var productId = $(this).data("productid");
         var loaderText = '<div class="qtipLoader"><hr/><span class="text-center col-lg-12">Loading...</span><br/></div>';
@@ -674,7 +706,7 @@ $(document).ready(function() {
             url         : 'melis/MelisCommerce/MelisComProductList/getToolTip',
             data		: {productId : productId},
             dataType    : 'json',
-            encode		: true,
+            encode		: true
         }).success(function(data){
             $("div.qtipLoader").remove();
             if(data.content.length === 0) {
@@ -697,28 +729,40 @@ $(document).ready(function() {
         }
     });
 
-    $("body").on("click",".add-product-text", function(){
+    body.on("click",".add-product-text", function(){
         melisHelper.zoneReload(melisCommerce.getCurrentProductId()+"_id_meliscommerce_products_page_content_tab_product_text_modal_form_product_type_text", "meliscommerce_products_page_content_tab_product_text_modal_form_product_type_text", {productId : melisCommerce.getCurrentProductId()});
         reInitProductTextTypeSelect(melisCommerce.getCurrentProductId());
     });
 
-    // $("body").on("click",".add-product-text", function() {
-    //     melisHelper.createModal('id_meliscommerce_products_page_content_tab_product_text_modal_form',
-    //         'meliscommerce_products_page_content_tab_product_text_modal_form',
-    //         true,
-    //         {},
-    //         'melis/MelisCommerce/MelisComProduct/render-products-page-content-tab-text-modal-form',
-    //         function() {
-    //
-    //         }
-    //     );
-    // });
+    /*$("body").on("click",".add-product-text", function() {
+        melisHelper.createModal('id_meliscommerce_products_page_content_tab_product_text_modal_form',
+            'meliscommerce_products_page_content_tab_product_text_modal_form',
+            true,
+            {},
+            'melis/MelisCommerce/MelisComProduct/render-products-page-content-tab-text-modal-form',
+            function() {
+    
+            }
+        );
+    });*/
 
     body.on("click", ".openVariant", function(){
-        var variantId = $(this).parent().siblings(":first").text();
-        var variantName = $(this).parent().parent().find("td:nth-child(4)").text();
-        var productId = $(this).attr("data-product-id");
-        melisHelper.tabOpen(variantName, 'icon-tag-2', variantId+'_id_meliscommerce_variants_page', 'meliscommerce_variants_page', { variantId : variantId, productId : productId});
+        var $this        = $(this),
+            productId    = $this.data("product-id"),
+            productName  = $this.data("product-name"),
+            prodTabId    = productId+"_id_meliscommerce_products_page",
+            navTabsGroup = "id_meliscommerce_product_list_container";
+           
+            // openProductPage to open product page then callback function tabOpen to open variant page
+            melisCommerce.openProductPage(productId, productName, navTabsGroup, function() {
+                var variantId   = $this.parent().siblings(":first").text(),
+                    variantName = $this.parent().parent().find("td:nth-child(4)").text();
+
+                    melisCommerce.disableAllTabs();
+                    melisHelper.tabOpen(variantName, 'icon-tag-2', variantId+'_id_meliscommerce_variants_page', 'meliscommerce_variants_page', { variantId : variantId, productId : productId}, prodTabId);
+                    melisCommerce.setUniqueId(variantId);
+                    melisCommerce.enableAllTabs();
+            });
     });
 
     function getSelAttributes() {
@@ -729,7 +773,6 @@ $(document).ready(function() {
         });
 
         return strInt;
-
     }
 
     function getSelCategories() {

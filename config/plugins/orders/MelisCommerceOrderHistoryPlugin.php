@@ -18,6 +18,18 @@ return array(
                         ),
                     ),
                     'melis' => array(
+                        /*
+                        * if set this plugin will belong to a specific marketplace section,
+                        * if not it will go directly to ( Others ) section
+                        *  - available section for templating plugins as of 2019-05-16
+                        *    - MelisCms
+                        *    - MelisMarketing
+                        *    - MelisSite
+                        *    - MelisCommerce
+                        *    - Others
+                        *    - CustomProjects
+                        */
+                        'section' => 'MelisCommerce',
                         'subcategory' => array(
                             'id' => 'CART',
                             'title' => 'tr_meliscommerce_car_Cart'
@@ -68,8 +80,8 @@ return array(
                                                 'empty_option' => 'tr_melis_Plugins_Choose',
                                                 'disable_inarray_validator' => true,
                                                 'value_options' => array(
-                                                    'ord_date_creation ASC' => 'Date Ascending',
-                                                    'ord_date_creation DESC' => 'Date Descending',
+                                                    'ord_date_creation ASC' => 'tr_meliscommerce_orders_historic_plugin_asc',
+                                                    'ord_date_creation DESC' => 'tr_meliscommerce_orders_historic_plugin_desc',
                                                 ),
                                                 'tooltip' => 'tr_meliscommerce_order_history_order_tooltip',
                                             ),

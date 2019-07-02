@@ -35,22 +35,22 @@ $(document).ready(function () {
         commerceDashPluginorderMessagesInstanceCount = $(".melis-commerce-dashboard-plugin-order-messages-parent").find('label.active input[value="all"]').length;
         appendMessages(filter);
 
-        if (commDashPluginOrderMessagesWithUnansweredFilterInstance == 0) {
+        if (commDashPluginOrderMessagesWithUnansweredFilterInstance === 0) {
             clearInterval(commerceDashPluginOrderMessagesUnseenMessagesInterval);
             commerceDashPluginOrderMessagesUnseenMessagesInterval = '';
         }
 
-        if (commerceDashPluginorderMessagesInstanceCount == 0) {
+        if (commerceDashPluginorderMessagesInstanceCount === 0) {
             clearInterval(commerceDashPluginOrderMessagesAllMessagesInterval);
             commerceDashPluginOrderMessagesAllMessagesInterval = '';
         }
 
-        if (filter == 'all') {
-            if (commerceDashPluginOrderMessagesAllMessagesInterval == '') {
+        if (filter === 'all') {
+            if (commerceDashPluginOrderMessagesAllMessagesInterval === '') {
                 commerceDashPluginOrderMessagesAllMessagesInterval = setInterval(appendMessages, intervalDelay, filter);
             }
         } else {
-            if (commerceDashPluginOrderMessagesUnseenMessagesInterval == '') {
+            if (commerceDashPluginOrderMessagesUnseenMessagesInterval === '') {
                 commerceDashPluginOrderMessagesUnseenMessagesInterval = setInterval(appendMessages, intervalDelay, filter);
             }
         }
@@ -96,48 +96,46 @@ $(document).ready(function () {
                 'meliscommerce_order_list_page'
             );
 
-            var alreadyOpen = $("body #melis-id-nav-bar-tabs li a.tab-element[data-id='id_meliscommerce_order_list_page']");
+            var ordersTab = $("body #melis-id-nav-bar-tabs li a.tab-element[data-id='id_meliscommerce_order_list_page']");
+            var specificOrderTab = $("body a.tab-element[data-id='" + orderId + "_id_meliscommerce_orders_page']");
+            var orderPage = $("body #" + orderId + "_id_meliscommerce_orders_page");
             // check if it exists
             var checkOrders = setInterval(function () {
-                if (alreadyOpen.length) {
-                    var navTabsGroup = "id_meliscommerce_order_list_page";
+                if (ordersTab.length) {
+                    if (specificOrderTab.length) {
+                        specificOrderTab[0].click();
+                        melisHelper.zoneReload(
+                            orderId + '_id_meliscommerce_orders_content_tabs_content_messages_details',
+                            'meliscommerce_orders_content_tabs_content_messages_details',
+                            {orderId: orderId},
+                            function() {
+                                var parent = orderId + '_id_meliscommerce_orders_content_tabs';
+                                
+                                $('#' + parent).find("a[href='#" + orderId + "_id_meliscommerce_orders_content_tabs_content_messages']")[0].click();
+                            }
+                        ); 
+                    } else {
+                        var navTabsGroup = "id_meliscommerce_order_list_page";                        
 
-                    melisHelper.tabOpen(
-                        translations.tr_meliscommerce_orders_Order + ' ' + orderReference,
-                        'fa fa fa-cart-plus fa-2x',
-                        orderId + '_id_meliscommerce_orders_page',
-                        'meliscommerce_orders_page',
-                        {orderId: orderId},
-                        navTabsGroup,
-                        function () {
-                            //JS CALLBACK FOR THE ORDER MESSAGES
-                            //TO OPEN THE MESSAGE TAB OF A SPECIFIC ORDER
-                            var parent = orderId + '_id_meliscommerce_orders_content_tabs';
-
-                            $('#' + parent).find('.widget-head').find('ul').find('li').each(function () {
-                                if ($(this).find('a').attr('href') == "#" + orderId + "_id_meliscommerce_orders_content_tabs_content_messages") {
-                                    $(this).addClass("active");
-                                } else {
-                                    if ($(this).hasClass("active")) {
-                                        $(this).removeClass("active");
-                                    }
-                                }
-                            });
-
-                            var parent = orderId + '_id_meliscommerce_orders_content_tabs_content';
-
-                            $('#' + parent).find('.tab-pane').each(function () {
-                                if ($(this).attr('id') == orderId + "_id_meliscommerce_orders_content_tabs_content_messages") {
-                                    $(this).addClass("active");
-                                } else {
-                                    if ($(this).hasClass("active")) {
-                                        $(this).removeClass("active");
-                                    }
-                                }
-                            });
-                        });
-                    clearInterval(checkOrders);
+                        melisHelper.tabOpen(
+                            translations.tr_meliscommerce_orders_Order + ' ' + orderReference,
+                            'fa fa fa-cart-plus fa-2x',
+                            orderId + '_id_meliscommerce_orders_page',
+                            'meliscommerce_orders_page',
+                            {orderId: orderId},
+                            navTabsGroup,
+                            function () {
+                                //JS CALLBACK FOR THE ORDER MESSAGES
+                                //TO OPEN THE MESSAGE TAB OF A SPECIFIC ORDER
+                                var parent = orderId + '_id_meliscommerce_orders_content_tabs';
+                                
+                                $('#' + parent).find("a[href='#" + orderId + "_id_meliscommerce_orders_content_tabs_content_messages']")[0].click();
+                            }
+                        );
+                    }
                 }
+
+                clearInterval(checkOrders);
             }, 500);
         },
         clear: function (element) {
@@ -171,8 +169,25 @@ $(document).ready(function () {
                 bgColorRed = 'style="background-color: #981a1f;"';
             }
 
+            var months = [
+                translations.tr_meliscommerce_dashboardplugin_jan,
+                translations.tr_meliscommerce_dashboardplugin_feb,
+                translations.tr_meliscommerce_dashboardplugin_mar,
+                translations.tr_meliscommerce_dashboardplugin_apr,
+                translations.tr_meliscommerce_dashboardplugin_may,
+                translations.tr_meliscommerce_dashboardplugin_jun,
+                translations.tr_meliscommerce_dashboardplugin_jul,
+                translations.tr_meliscommerce_dashboardplugin_aug,
+                translations.tr_meliscommerce_dashboardplugin_sep,
+                translations.tr_meliscommerce_dashboardplugin_oct,
+                translations.tr_meliscommerce_dashboardplugin_nov,
+                translations.tr_meliscommerce_dashboardplugin_dec
+            ];
+
+            var month = months[parseInt(message_created.format("M")) - 1];
+
             var dateHtml = '<span class="label label-inverse pull-right" ' + bgColorRed + '>' +
-                message_created.format("HH:mm:ss DD MMM") +
+                message_created.format("HH:mm:ss") + ' ' + month.replace('%day', message_created.format("DD")) +
                 '</span>';
 
             var doubleArrow = '<i class="fa fa-angle-double-right" ' + colorRed + '<i/>';
@@ -211,16 +226,16 @@ $(document).ready(function () {
 
 //delete callback if there is only one plugin and it is deleted the interval will be cleared
 function commerceDasboardPluginOrderMessagesDelete(element) {
-    if (element.find(".melis-commerce-dashboard-plugin-order-messages-parent").length == 1) {
+    if (element.find(".melis-commerce-dashboard-plugin-order-messages-parent").length === 1) {
         if (element.find(".melis-commerce-dashboard-plugin-order-messages-parent label.active input[value='all']").length > 0) {
             commerceDashPluginorderMessagesInstanceCount--;
-            if (commerceDashPluginorderMessagesInstanceCount == 0) {
+            if (commerceDashPluginorderMessagesInstanceCount === 0) {
                 clearInterval(commerceDashPluginOrderMessagesAllMessagesInterval);
                 commerceDashPluginOrderMessagesAllMessagesInterval = '';
             }
         } else {
             commDashPluginOrderMessagesWithUnansweredFilterInstance--;
-            if (commDashPluginOrderMessagesWithUnansweredFilterInstance == 0) {
+            if (commDashPluginOrderMessagesWithUnansweredFilterInstance === 0) {
                 clearInterval(commerceDashPluginOrderMessagesUnseenMessagesInterval);
                 commerceDashPluginOrderMessagesUnseenMessagesInterval = '';
             }

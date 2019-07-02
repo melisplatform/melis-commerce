@@ -8,6 +8,7 @@
  */
 
 namespace MelisCommerce\Service;
+use DateTime;
 use Zend\Http\Response;
 
 /**
@@ -1324,9 +1325,10 @@ class MelisComOrderService extends MelisComGeneralService
 	/**
 	 * This method retrieves the data used for the list widget
 	 * @param varchar $identifier accepts curMonth|avgMonth
+	 * @param $onlyValid - valid order only
 	 * @return float|null , float on success, otherwise null
 	 */
-	public function getWidgetOrders($identifier)
+	public function getWidgetOrders($identifier, $onlyValid = null)
 	{
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -1339,9 +1341,9 @@ class MelisComOrderService extends MelisComGeneralService
 	    $orderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
 	    switch($arrayParameters['identifier']){
 	        case 'curMonth':
-	            $results = $orderTable->getCurrentMonth()->count(); break;
+	            $results = $orderTable->getCurrentMonth($arrayParameters['onlyValid'])->count(); break;
 	        case 'avgMonth':
-	            $results = $orderTable->getAvgMonth()->current(); break;
+	            $results = $orderTable->getAvgMonth($arrayParameters['onlyValid'])->current(); break;
 	        default:
 	            break;
 	    }
@@ -1357,51 +1359,139 @@ class MelisComOrderService extends MelisComGeneralService
 
 	public function getOrdersDataByDate($type = 'daily', $date)
     {
-        $commerceOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
-        $ordersData = $commerceOrderTable->getOrdersDataByDate('DESC');
         $count = 0;
-        if (!empty($ordersData)){
 
-            $res = $ordersData->toArray();
-            if (!empty($res)){
+        switch ($type) {
+            case 'hourly':
+                $year = date('Y', strtotime($date));
+                $month = date('m', strtotime($date));
+                $today = date('j', strtotime($date));
+                $currentHour = date('H', strtotime($date));
+                $lastHour = date('H', strtotime($date)) - 1;
 
-                switch ($type) {
-                    case 'hourly':
-                        for ($i = 0 ; $i < count($res); $i++){
-                            // Checking if Date is same as the Param data
-                            if (date('Y-m-d H',strtotime($date))==date('Y-m-d H',strtotime($res[$i]['ord_date_creation']))){
-                                $count++;
-                            }
-                        }
-                        break;
-                    case 'weekly':
-                        for ($i = 0 ; $i < count($res); $i++){
-                            // Checking if Date is same as the Param data
-                            if (date('W',strtotime($date))==date('W',strtotime($res[$i]['ord_date_creation']))){
-                                $count++;
-                            }
-                        }
-                        break;
-                    case 'daily':
-                        for ($i = 0 ; $i < count($res); $i++){
-                            // Checking if Date is same as the Param data
-                            if ($date==date('Y-m-d',strtotime($res[$i]['ord_date_creation']))){
-                                $count++;
-                            }
-                        }
-                        break;
-                    case 'monthly':
-                        for ($i = 0 ; $i < count($res); $i++){
-                            // Checking if Date is same as the Param data
-                            if (date('Y-m',strtotime($date))==date('Y-m',strtotime($res[$i]['ord_date_creation']))){
-                                $count++;
-                            }
-                        }
-                        break;
-                    default:
-                        break;
+                $startDate = date('Y-m-d H:i:s', mktime($lastHour, 0, 0, $month, $today, $year));
+                $endDate = date('Y-m-d H:i:s', mktime($currentHour + 1, 0, 0, $month, $today, $year));
+
+                $ordersData = $this->getOrderList(
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    0,
+                    null,
+                    'ord_id DESC',
+                    null,
+                    $startDate,
+                    $endDate
+                );
+
+                for ($i = 0 ; $i < count($ordersData); $i++){
+                    // Checking if Date is same as the Param data
+                    if (date('Y-m-d H',strtotime($date)) == date('Y-m-d H', strtotime($ordersData[$i]->getOrder()->ord_date_creation))){
+                        $count++;
+                    }
                 }
-            }
+                break;
+            case 'weekly':
+                $year = date('Y', strtotime($date));
+                $month = date('m', strtotime($date));
+                $lastDateOfMonth = date('t', strtotime($date));
+
+                $startDate = date('Y-m-d H:i:s', mktime(0, 0, 0, $month, 1, $year));
+                $endDate = date('Y-m-d H:i:s', mktime(0, 0, 0, $month, $lastDateOfMonth, $year));
+
+                $ordersData = $this->getOrderList(
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    0,
+                    null,
+                    'ord_id DESC',
+                    null,
+                    $startDate,
+                    $endDate
+                );
+
+                for ($i = 0 ; $i < count($ordersData); $i++){
+                    // Checking if Date is same as the Param data
+                    if (date('W',strtotime($date)) == date('W', strtotime($ordersData[$i]->getOrder()->ord_date_creation))){
+                        $count++;
+                    }
+                }
+                break;
+            case 'daily':
+                $year = date('Y', strtotime($date));
+                $month = date('m', strtotime($date));
+                $tomorrow = date('j', strtotime($date)) + 1;
+                $yesterday = date('j', strtotime($date)) - 1;
+
+                $startDate = date('Y-m-d H:i:s', mktime(0, 0, 0, $month, $yesterday, $year));
+                $endDate = date('Y-m-d H:i:s', mktime(0, 0, 0, $month, $tomorrow, $year));
+
+                $ordersData = $this->getOrderList(
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    0,
+                    null,
+                    'ord_id DESC',
+                    null,
+                    $startDate,
+                    $endDate
+                );
+
+                for ($i = 0 ; $i < count($ordersData); $i++){
+                    // Checking if Date is same as the Param data
+                    if ($date == date('Y-m-d', strtotime($ordersData[$i]->getOrder()->ord_date_creation))){
+                        $count++;
+                    }
+                }
+                break;
+            case 'monthly':
+                $year = date('Y', strtotime($date));
+                $month = date('m', strtotime($date));
+                $lastDateOfMonth = date('t', strtotime($date));
+
+                $startDate = date('Y-m-d H:i:s', mktime(0, 0, 0, $month, 1, $year));
+                $endDate = date('Y-m-d H:i:s', mktime(0, 0, 0, $month, $lastDateOfMonth, $year));
+
+                $ordersData = $this->getOrderList(
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    0,
+                    null,
+                    'ord_id DESC',
+                    null,
+                    $startDate,
+                    $endDate
+                );
+
+                for ($i = 0 ; $i < count($ordersData); $i++){
+                    // Checking if Date is same as the Param data
+                    if (date('Y-m',strtotime($date)) == date('Y-m',strtotime($ordersData[$i]->getOrder()->ord_date_creation))){
+                        $count++;
+                    }
+                }
+                break;
+            default:
+                break;
+
         }
 
         return $count;
@@ -1409,69 +1499,157 @@ class MelisComOrderService extends MelisComGeneralService
 
     public function getSalesRevenueDataByDate($type = 'hourly', $date)
     {
-        $ordersData = $this->getOrderList(null,null,null,null,null,null,null,0,5,'ord_id DESC',null,null,null);
-
+        $value = [];
         $value['totalOrderPrice'] = 0;
         $value['totalShippingPrice'] = 0;
-        if (!empty($ordersData)){
 
-            $order = $ordersData;
-            if (!empty($order)){
+            switch ($type) {
+                case 'hourly':
+                    $year = date('Y', strtotime($date));
+	                $month = date('m', strtotime($date));
+	                $today = date('j', strtotime($date));
+	                $currentHour = date('H', strtotime($date));
+	                $lastHour = date('H', strtotime($date)) - 1;
 
-                switch ($type) {
-                    case 'hourly':
-                        for ($i = 0 ; $i < count($order); $i++){
-                            // Checking if Date is same as the Param data
-                            if (date('Y-m-d H',strtotime($date))==date('Y-m-d H',strtotime($order[$i]->getOrder()->ord_date_creation))){
-                                foreach($order[$i]->getPayment() as $payment)
-                                {
-                                    $value['totalOrderPrice'] += $payment->opay_price_order;
-                                    $value['totalShippingPrice'] += $payment->opay_price_shipping;
-                                }
+	                $startDate = date('Y-m-d H:i:s', mktime($lastHour, 0, 0, $month, $today, $year));
+	                $endDate = date('Y-m-d H:i:s', mktime($currentHour + 1, 0, 0, $month, $today, $year));
+
+                    $ordersData = $this->getOrderList(
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        0,
+                        null,
+                        'ord_id DESC',
+                        null,
+                        $startDate,
+                        $endDate
+                    );
+                    
+                    for ($i = 0 ; $i < count($ordersData); $i++){
+                        // Checking if Date is same as the Param data
+                        if (date('Y-m-d H',strtotime($date)) == date('Y-m-d H',strtotime($ordersData[$i]->getOrder()->ord_date_creation))){
+                            foreach($ordersData[$i]->getPayment() as $payment)
+                            {
+                                $value['totalOrderPrice'] += $payment->opay_price_order;
+                                $value['totalShippingPrice'] += $payment->opay_price_shipping;
                             }
                         }
-                        break;
-                    case 'weekly':
-                        for ($i = 0 ; $i < count($order); $i++){
-                            // Checking if Date is same as the Param data
-                            if (date('W',strtotime($date))==date('W',strtotime($order[$i]->getOrder()->ord_date_creation))){
-                                foreach($order[$i]->getPayment() as $payment)
-                                {
-                                    $value['totalOrderPrice'] += $payment->opay_price_order;
-                                    $value['totalShippingPrice'] += $payment->opay_price_shipping;
-                                }
+                    }
+                    break;
+                case 'weekly':
+                    $year = date('Y', strtotime($date));
+                    $month = date('m', strtotime($date));
+                    $lastDateOfMonth = date('t', strtotime($date));
+
+                    $startDate = date('Y-m-d H:i:s', mktime(0, 0, 0, $month, 1, $year));
+                    $endDate = date('Y-m-d H:i:s', mktime(0, 0, 0, $month, $lastDateOfMonth, $year));
+
+                    $ordersData = $this->getOrderList(
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        0,
+                        null,
+                        'ord_id DESC',
+                        null,
+                        $startDate,
+                        $endDate
+                    );
+                    
+                    for ($i = 0 ; $i < count($ordersData); $i++){
+                        // Checking if Date is same as the Param data
+                        if (date('W',strtotime($date)) == date('W',strtotime($ordersData[$i]->getOrder()->ord_date_creation))){
+                            foreach($ordersData[$i]->getPayment() as $payment)
+                            {
+                                $value['totalOrderPrice'] += $payment->opay_price_order;
+                                $value['totalShippingPrice'] += $payment->opay_price_shipping;
                             }
                         }
-                        break;
-                    case 'daily':
-                        for ($i = 0 ; $i < count($order); $i++){
-                            // Checking if Date is same as the Param data
-                            if ($date==date('Y-m-d',strtotime($order[$i]->getOrder()->ord_date_creation))){
-                                foreach($order[$i]->getPayment() as $payment)
-                                {
-                                    $value['totalOrderPrice'] += $payment->opay_price_order;
-                                    $value['totalShippingPrice'] += $payment->opay_price_shipping;
-                                }
+                    }
+                    break;
+                case 'daily':
+                    $year = date('Y', strtotime($date));
+	                $month = date('m', strtotime($date));
+	                $tomorrow = date('j', strtotime($date)) + 1;
+	                $yesterday = date('j', strtotime($date)) - 1;
+
+	                $startDate = date('Y-m-d H:i:s', mktime(0, 0, 0, $month, $yesterday, $year));
+	                $endDate = date('Y-m-d H:i:s', mktime(0, 0, 0, $month, $tomorrow, $year));
+
+                    $ordersData = $this->getOrderList(
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        0,
+                        null,
+                        'ord_id DESC',
+                        null,
+                        $startDate,
+                        $endDate
+                    );
+
+                    for ($i = 0 ; $i < count($ordersData); $i++){
+                        // Checking if Date is same as the Param data
+                        if ($date == date('Y-m-d',strtotime($ordersData[$i]->getOrder()->ord_date_creation))){
+                            foreach($ordersData[$i]->getPayment() as $payment)
+                            {
+                                $value['totalOrderPrice'] += $payment->opay_price_order;
+                                $value['totalShippingPrice'] += $payment->opay_price_shipping;
                             }
                         }
-                        break;
-                    case 'monthly':
-                        for ($i = 0 ; $i < count($order); $i++){
-                            // Checking if Date is same as the Param data
-                            if (date('Y-m',strtotime($date))==date('Y-m',strtotime($order[$i]->getOrder()->ord_date_creation))){
-                                foreach($order[$i]->getPayment() as $payment)
-                                {
-                                    $value['totalOrderPrice'] += $payment->opay_price_order;
-                                    $value['totalShippingPrice'] += $payment->opay_price_shipping;
-                                }
+                    }
+                    break;
+                case 'monthly':
+                    $year = date('Y', strtotime($date));
+                    $month = date('m', strtotime($date));
+                    $lastDateOfMonth = date('t', strtotime($date));
+
+                    $startDate = date('Y-m-d H:i:s', mktime(0, 0, 0, $month, 1, $year));
+                    $endDate = date('Y-m-d H:i:s', mktime(0, 0, 0, $month, $lastDateOfMonth, $year));
+
+                    $ordersData = $this->getOrderList(
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        0,
+                        null,
+                        'ord_id DESC',
+                        null,
+                        $startDate,
+                        $endDate
+                    );
+
+                    for ($i = 0 ; $i < count($ordersData); $i++){
+                        // Checking if Date is same as the Param data
+                        if (date('Y-m',strtotime($date)) == date('Y-m',strtotime($ordersData[$i]->getOrder()->ord_date_creation))){
+                            foreach($ordersData[$i]->getPayment() as $payment)
+                            {
+                                $value['totalOrderPrice'] += $payment->opay_price_order;
+                                $value['totalShippingPrice'] += $payment->opay_price_shipping;
                             }
                         }
-                        break;
-                    default:
-                        break;
-                }
+                    }
+                    break;
+                default:
+                    break;
             }
-        }
 
         return $value;
     }

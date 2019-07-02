@@ -6,7 +6,7 @@
 	    'tr_meliscommerce_orders_header_right_container_save' => 'Save order',
 	    'tr_meliscommerce_orders_header_right_container_cancel' => 'Cancel',
 	    'tr_meliscommerce_orders_content_tab_main' => 'Properties',
-	    'tr_meliscommerce_orders_content_tab_main_invoice' => 'Invoice',
+	    'tr_meliscommerce_orders_content_tab_main_invoice' => 'Invoice (manual upload, custom document)',
 	    'tr_meliscommerce_orders_content_tab_basket' => 'Basket',	    
 	    'tr_meliscommerce_orders_content_tab_address' => 'Addresses',
 	    'tr_meliscommerce_orders_content_tab_paymnet' => 'Payment',
@@ -225,7 +225,7 @@
         'tr_melis_commerce_orders_dashboard_table_header_date' => 'Date',
 
         //sales revenue
-        'tr_melis_commerce_dashboard_plugin_sales_revenue' => 'Sales Revenue',
+        'tr_melis_commerce_dashboard_plugin_sales_revenue' => 'Sales Revenues',
         'tr_melis_commerce_dashboard_plugin_sales_revenue_description' => 'This tool gives you an overview of the statistics for the sales revenue',
         'tr_melis_commerce_dashboard_plugin_sales_revenue_order_price' => 'Order Price',
         'tr_melis_commerce_dashboard_plugin_sales_revenue_shipping_price' => 'Shipping Price',
@@ -238,4 +238,17 @@
         'tr_melis_commerce_dashboard_plugin_order_messages_unanswered_messages' => 'You have <strong class="text-primary"> %d messages unanswered</strong>',
         'tr_melis_commerce_dashboard_plugin_order_messages_message_order_amount' => 'Order Amount : ',
         'tr_melis_commerce_dashboard_plugin_order_messages_message_placed_on' => 'Placed On : ',
+
+        'tr_meliscommerce_dashboardplugin_jan' => 'Jan %day',
+        'tr_meliscommerce_dashboardplugin_feb' => 'Feb %day',
+        'tr_meliscommerce_dashboardplugin_mar' => 'Mar %day',
+        'tr_meliscommerce_dashboardplugin_apr' => 'Apr %day',
+        'tr_meliscommerce_dashboardplugin_may' => 'May %day',
+        'tr_meliscommerce_dashboardplugin_jun' => 'Jun %day',
+        'tr_meliscommerce_dashboardplugin_jul' => 'Jul %day',
+        'tr_meliscommerce_dashboardplugin_aug' => 'Aug %day',
+        'tr_meliscommerce_dashboardplugin_sep' => 'Sep %day',
+        'tr_meliscommerce_dashboardplugin_oct' => 'Oct %day',
+        'tr_meliscommerce_dashboardplugin_nov' => 'Nov %day',
+        'tr_meliscommerce_dashboardplugin_dec' => 'Dec %day',
 	);

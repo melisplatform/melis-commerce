@@ -36,6 +36,12 @@
                         		$form->setAttribute('id', $addressId.'_address_form');
                         		$form->setAttribute('class', 'clientAddressForm');
                         		$form->setAttribute('data-addressid', $addressId);
+
+                                foreach($form->getElements() as $element => $attributes)  {
+                                    $el =  $form->get((string) $element);
+                                    $el->setAttribute('id', $addressId . '_' . $el->getAttribute('id'));
+                                }
+
                         		$form->bind($val);
                         		$form->prepare();
                         		echo $this->form()->openTag($form);

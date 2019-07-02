@@ -96,9 +96,12 @@ var melisCommerce = (function(window) {
         });
     }
 
-    function openProductPage(productId, productName, navTabsGroup)
-    {
+    function openProductPage(productId, productName, navTabsGroup, callback) {
         melisHelper.tabOpen(melisCore.escapeHtml(productName), "icon-shippment", productId+"_id_meliscommerce_products_page", "meliscommerce_products_page",  { productId: productId }, navTabsGroup );
+
+        if ( callback && typeof( callback ) === "function" ) {
+            callback();
+        }
     }
 
     function closeCurrentProductPage() {
@@ -138,9 +141,10 @@ var melisCommerce = (function(window) {
                 language: locale,
                 height: 200,
                 plugins: [
-                    'advlist autolink lists link image charmap print preview anchor',
+                    //[contextmenu, textcolor, colorpicker] this plugin is already built in the core editor as of TinyMCE v. 5
+                    'lists advlist autolink link image charmap print preview anchor',
                     'searchreplace visualblocks code fullscreen',
-                    'insertdatetime media table contextmenu paste template'
+                    'insertdatetime media table paste template'
                 ],
                 menubar: false,
                 toolbar: 'undo redo | styleselect | bold italic | link image |  alignleft aligncenter alignright alignjustify | code',
@@ -288,3 +292,9 @@ var melisCommerce = (function(window) {
 setInterval(function() {
     melisCommerce.enableAllTabs();
 }, 10000)
+
+
+// checkbox
+$('body').on("click", ".cb-cont input[type=checkbox]", function(){
+    $(this).parent().find(".cbmask-inner").toggleClass("cb-active");
+});
