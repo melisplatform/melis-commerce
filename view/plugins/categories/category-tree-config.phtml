@@ -49,9 +49,9 @@
                                     <li>
                                         <?php
                                         $imageData = $lang->elang_flag;
-                                        $image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay pull-right" width="24" height="24"/>' : '<i class="fa fa-globe"></i>';
+                                        $image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay float-right" width="24" height="24"/>' : '<i class="fa fa-globe"></i>';
                                         ?>
-                                        <a data-locale="<?= $lang->elang_locale; ?>"><?= $lang->elang_name; ?><span class="pull-right"><?php echo $image; ?></span></a>
+                                        <a data-locale="<?= $lang->elang_locale; ?>"><?= $lang->elang_name; ?><span class="float-right"><?php echo $image; ?></span></a>
                                     </li>
                                     <?php
                                 };

@@ -117,11 +117,11 @@ return array(
                         'ajaxCallback' => 'melisCommerce.initTooltipTable();',
                         'filters' => array(
                             'left' => array(
-//                                 'product-list-table-filter-bulk' => array(
-//                                     'module' => 'MelisCommerce',
-//                                     'controller' => 'MelisComProductList',
-//                                     'action' => 'render-product-list-content-filter-bulk'
-//                                 ),
+                                /* 'product-list-table-filter-bulk' => array(
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComProductList',
+                                    'action' => 'render-product-list-content-filter-bulk'
+                                ), */
                                 'product-list-table-filter-limit' => array(
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComProductList',

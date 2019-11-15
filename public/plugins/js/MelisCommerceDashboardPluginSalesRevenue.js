@@ -1,125 +1,128 @@
-$(document).ready(function () {
+$(function () {
     //instance counter
-    var instanceCount = 0;
+    var $body           = $("body"),
+        instanceCount   = 0;
 
-    //when a filter is selected
-    $("body").on("change", '.commerce-dashboard-plugin-sales-revenue', function () {
-        commerceDashboardPluginSalesRevenueChartStackedBarsInit($(this));
+        //when a filter is selected
+        $body.on("change", '.commerce-dashboard-plugin-sales-revenue', function () {
+            commerceDashboardPluginSalesRevenueChartStackedBarsInit($(this));
 
-        //get the hidden plugin config
-        var $hiddenJsonConfig = $(this).closest('.grid-stack-item').find('.grid-stack-item-content .widget .widget-parent .widget-body .dashboard-plugin-json-config');
-        var pluginConfig = JSON.parse($hiddenJsonConfig.text());
+            //get the hidden plugin config
+            var $this = $(this),
+                $hiddenJsonConfig = $this.closest('.grid-stack-item').find('.grid-stack-item-content .widget .widget-parent .widget-body .dashboard-plugin-json-config'),
+                pluginConfig = JSON.parse($hiddenJsonConfig.text());
 
-        //update the filter and save the plugin
-        pluginConfig.activeFilter = $(this).val();
-        $($hiddenJsonConfig).text(JSON.stringify(pluginConfig));
-        melisDashBoardDragnDrop.saveCurrentDashboard($(this));
-    });
+                //update the filter and save the plugin
+                pluginConfig.activeFilter = $this.val();
+                $($hiddenJsonConfig).text(JSON.stringify(pluginConfig));
+                melisDashBoardDragnDrop.saveCurrentDashboard( $this );
+        });
 
-    charts.commerceDashboardPluginSalesRevenueChartStackedBars = {
-        //chart data
-        data: null,
-        //will hold the chart object
-        plot: null,
-        options: {
-            grid: {
-                color: "#dedede",
-                borderWidth: 1,
-                borderColor: "transparent",
-                clickable: true,
-                hoverable: true,
-                backgroundColor: {
-                    colors: [
-                        "#fff", "#fff"
-                    ],
+        charts.commerceDashboardPluginSalesRevenueChartStackedBars = {
+            //chart data
+            data: null,
+            //will hold the chart object
+            plot: null,
+            options: {
+                grid: {
+                    color: "#dedede",
+                    borderWidth: 1,
+                    borderColor: "transparent",
+                    clickable: true,
+                    hoverable: true,
+                    backgroundColor: {
+                        colors: [
+                            "#fff", "#fff"
+                        ],
+                    },
                 },
-            },
-            series: {
-                stack: true,
-                grow: {
-                    active: false,
+                series: {
+                    stack: true,
+                    grow: {
+                        active: false,
+                    },
+                    bars: {
+                        show: true,
+                        barWidth: 0.5,
+                        fill: 1,
+                        align: 'center',
+                    },
                 },
-                bars: {
-                    show: true,
-                    barWidth: 0.5,
-                    fill: 1,
-                    align: 'center',
+                xaxis: {
+                    // we are not using any plugin for the xaxis, we use ticks instead.
                 },
-            },
-            xaxis: {
-                // we are not using any plugin for the xaxis, we use ticks instead.
-            },
-            yaxis: {
-                min: 0,
-                tickDecimals: 2,
-            },
-            legend: {
-                position: "ne",
-                backgroundColor: null,
-                backgroundOpacity: 0,
-                noColumns: 2,
-            },
-            colors: [
-                "#7acc66",
-                "#66cccc",
-            ],
-            shadowSize: 0,
-            tooltip: true,
-            tooltipOpts: {
-                content: "%s : %y",
-                shifts: {
-                    x: -30,
-                    y: -50
+                yaxis: {
+                    min: 0,
+                    tickDecimals: 2,
                 },
-                defaultTheme: false
+                legend: {
+                    position: "ne",
+                    backgroundColor: null,
+                    backgroundOpacity: 0,
+                    noColumns: 2,
+                },
+                colors: [
+                    "#7acc66",
+                    "#66cccc",
+                ],
+                shadowSize: 0,
+                tooltip: true,
+                tooltipOpts: {
+                    content: "%s : %y",
+                    shifts: {
+                        x: -30,
+                        y: -50
+                    },
+                    defaultTheme: false
+                }
+            },
+            placeholder: ".commerce-dashboard-plugin-sales-revenue-placeholder",
+            // initialize
+            init: function () {
+                if (this.plot == null) {
+                    // hook the init function for plotting the chart
+                    commerceDashboardPluginSalesRevenueChartStackedBarsInit();
+                }
             }
-        },
-        placeholder: ".commerce-dashboard-plugin-sales-revenue-placeholder",
-        // initialize
-        init: function () {
-            if (this.plot == null) {
-                // hook the init function for plotting the chart
-                commerceDashboardPluginSalesRevenueChartStackedBarsInit();
-            }
-        }
-    };
+        };
 
     window.commerceDashboardPluginSalesRevenueChartStackedBarsInit = function (target, placeholder) {
-        var target = target || null;
-        var placeholder = placeholder || null;
-        var chartFor = "";
+        var target      = target || null,
+            placeholder = placeholder || null,
+            chartFor    = "";
 
-        if (target == null) {
-            var chartsArray = $body.find(".commerce-dashboard-plugin-sales-revenue-placeholder");
-            var emptyChartCount = 0;
+        if ( target == null ) {
+            var chartsArray     = $body.find(".commerce-dashboard-plugin-sales-revenue-placeholder"),
+                emptyChartCount = 0;
 
             //count the number of empty charts
             $body.find(".commerce-dashboard-plugin-sales-revenue-placeholder").each(function (index, value) {
-                if ($(this).text() === "") {
+                if ( $(this).text() === "" ) {
                     emptyChartCount++;
                 }
             });
 
-            if (emptyChartCount === $body.find(".commerce-dashboard-plugin-sales-revenue-placeholder").length) {
+            if ( emptyChartCount === $body.find(".commerce-dashboard-plugin-sales-revenue-placeholder").length ) {
                 //when count of empty charts is equal to the count of charts then it means the tab is closed and opened again.
                 var pluginConfig = $(chartsArray[instanceCount]).closest('.grid-stack-item').find('.grid-stack-item-content .widget .widget-parent .widget-body .dashboard-plugin-json-config').text();
-                instanceCount++;
 
-                if (instanceCount === chartsArray.length) {
-                    instanceCount = 0;
-                }
+                    instanceCount++;
 
-                chartFor = JSON.parse(pluginConfig).activeFilter;
-                placeholder = "#commerce-dashboard-plugin-sales-revenue-placeholder-" + JSON.parse(pluginConfig).plugin_id;
+                    if ( instanceCount === chartsArray.length) {
+                        instanceCount = 0;
+                    }
+
+                    chartFor = JSON.parse(pluginConfig).activeFilter;
+                    placeholder = "#commerce-dashboard-plugin-sales-revenue-placeholder-" + JSON.parse(pluginConfig).plugin_id;
             } else {
                 //when a new plugin is dragged to the grid stack
-                var lastItem = body.find(".commerce-dashboard-plugin-sales-revenue-placeholder").length - 1;
-                var pluginConfig = $(chartsArray[lastItem]).closest('.grid-stack-item').find('.grid-stack-item-content .widget .widget-parent .widget-body .dashboard-plugin-json-config').text();
+                var lastItem        = $body.find(".commerce-dashboard-plugin-sales-revenue-placeholder").length - 1,
+                    pluginConfig    = $(chartsArray[lastItem]).closest('.grid-stack-item').find('.grid-stack-item-content .widget .widget-parent .widget-body .dashboard-plugin-json-config').text();
 
-                chartFor = JSON.parse(pluginConfig).activeFilter;
-                placeholder = "#commerce-dashboard-plugin-sales-revenue-placeholder-" + JSON.parse(pluginConfig).plugin_id;
+                    chartFor = JSON.parse(pluginConfig).activeFilter;
+                    placeholder = "#commerce-dashboard-plugin-sales-revenue-placeholder-" + JSON.parse(pluginConfig).plugin_id;
             }
-        } else if (typeof target === "string") {
+        } else if ( typeof target === "string" ) {
             //when initializing the charts on first load of dashboard
             chartFor = target;
             placeholder = "#commerce-dashboard-plugin-sales-revenue-placeholder-" + placeholder;
@@ -135,15 +138,15 @@ $(document).ready(function () {
             data: {chartFor: chartFor},
             dataType: 'json',
             encode: true
-        }).success(function (data) {
+        }).done(function (data) {
             // for total order price.
-            var data1 = [];
-            // for total shipping fee.
-            var data2 = [];
-            var ticks = [];
-            var counter = data.values.length;
-            var window_width = $(window).width();
-            var dataString = '';
+            var data1 = [],
+                // for total shipping fee.
+                data2 = [],
+                ticks = [],
+                counter = data.values.length,
+                window_width = $(window).width(),
+                dataString = '';
 
             let months = [
                 translations.tr_meliscommerce_dashboardplugin_jan,
@@ -230,17 +233,18 @@ $(document).ready(function () {
                 charts.commerceDashboardPluginSalesRevenueChartStackedBars.data,
                 charts.commerceDashboardPluginSalesRevenueChartStackedBars.options
             );
-        }).error(function (xhr, textStatus, errorThrown) {
+        }).done(function (xhr, textStatus, errorThrown) {
             console.log("ERROR !! Status = " + textStatus + "\n Error = " + errorThrown + "\n xhr = " + xhr.statusText);
+            alert( translations.tr_meliscore_error_message );
         });
     }
 
     //initialize all the charts on the dashboard on first load of dashboard.
     $body.find(".commerce-dashboard-plugin-sales-revenue-placeholder").each(function (index, value) {
-        var pluginConfig = $(value).closest('.grid-stack-item').find('.grid-stack-item-content .widget .widget-parent .widget-body .dashboard-plugin-json-config').text();
-        var filter = JSON.parse(pluginConfig).activeFilter;
-        var placeholder = JSON.parse(pluginConfig).plugin_id;
+        var pluginConfig    = $(value).closest('.grid-stack-item').find('.grid-stack-item-content .widget .widget-parent .widget-body .dashboard-plugin-json-config').text(),
+            filter          = JSON.parse(pluginConfig).activeFilter,
+            placeholder     = JSON.parse(pluginConfig).plugin_id;
 
-        commerceDashboardPluginSalesRevenueChartStackedBarsInit(filter, placeholder);
+            commerceDashboardPluginSalesRevenueChartStackedBarsInit(filter, placeholder);
     });
 });

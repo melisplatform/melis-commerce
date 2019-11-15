@@ -35,7 +35,7 @@
 								$curStatus = (int) $this->data['cur_status'] ? 'checked="checked"' : '';
 							}
 						?>
-						<div class="pull-right">
+						<div class="float-right">
 						<div <?= $id; ?> class="make-switch" data-on-label="<?php echo $this->translate('tr_meliscommerce_products_page_content_tab_main_header_switch_online')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_products_page_content_tab_main_header_switch_offline')?>" data-text-label="<?php echo $this->translate('tr_meliscommerce_categories_common_label_status')?>">
 							<input type="checkbox" name="cur_status" id="cur_status" <?php echo $curStatus; ?>>
 						</div>
@@ -45,7 +45,7 @@
                             echo $this->form()->closeTag();
                         ?>
                         <div align="right">
-                     		<button data-dismiss="modal" class="btn btn-danger pull-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
+                     		<button data-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
                      		<button class="btn btn-success" id="btnComSaveCurrency"><i class="fa fa-save"></i>  <?php echo $this->translate('tr_meliscommerce_orders_common_btn_save') ?></button>
                      	</div>
                         <div class="clearfix"></div>

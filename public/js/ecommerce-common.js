@@ -1,98 +1,104 @@
 var pUniqueId = [];
 
-$(function(){
+$(function() {
     var $body = $('body');
 
 	/* #### FIX DataTable issue in Tab #### */
-//	$body.on('a[data-toggle="tab"]','shown.bs.tab', function (e) {
-//		$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
-//	});
-//	$body.on("init.dt", function(e, settings) {
-//		$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
-//	});	
-//	$body.on("mouseenter", '.tab-pane.active', function(e, settings) {		
-//		$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
-//		console.log('Test1');
-//	});
-//	$body.on("click", '.tab-pane.active', function(e, settings) {		
-//		$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
-//	});
-
+	/* $body.on('a[data-toggle="tab"]','shown.bs.tab', function (e) {
+		$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
+	});
+	$body.on("init.dt", function(e, settings) {
+		$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
+	});	
+	$body.on("mouseenter", '.tab-pane.active', function(e, settings) {		
+		$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
+		console.log('Test1');
+	});
+	$body.on("click", '.tab-pane.active', function(e, settings) {		
+		$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
+	}); */
 });
-//$(window).on("resize",function(){
-//	$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
-//});
+
+/* $(window).on("resize",function(){
+	$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
+}); */
 
 var melisCommerce = (function(window) {
 
-    function pendingZoneStart(zoneId){
+    function pendingZoneStart(zoneId) {
         $("#"+zoneId).append('<div id="loader" class="overlay-loader"><img class="loader-icon spinning-cog" src="/MelisCore/assets/images/cog12.svg" data-cog="cog12"></div>');
     }
 
-    function pendingZoneDone(zoneId){
+    function pendingZoneDone(zoneId) {
         $("#"+zoneId+" .loader-icon").removeClass("spinning-cog").addClass("shrinking-cog");
         setTimeout(function() {
             $("#"+zoneId+" #loader").remove();
-        },500);
+        }, 500);
     }
 
     function initTooltipTable() {
         $(".tooltipTable").each(function() {
-            $(this).qtip({
-                content: {
-                    text: $(this).next('.tooltiptext')
-                },
-                overwrite: false,
-                style: {
-                    classes: 'qtip-tipsy qtip-shadow',
-                    width: "auto",
-                },
-                hide: {
-                    fixed: true,
-                    delay: 300,
-                    event: "mouseleave"
-                },
-                position: {
-                    target: 'mouse',
-                    adjust: {
-                        mouse: false
+            var $this = $(this);
+                $this.qtip({
+                    content: {
+                        text: $(this).next('.tooltiptext')
                     },
-                    my: 'center center',
-                    at: 'center center',
-                    //container : false,
-                },
-//			    adjust:{
-//		          screen: true,
-//			    },
-            });
+                    overwrite: false,
+                    style: {
+                        classes: 'qtip-tipsy qtip-shadow',
+                        width: "auto",
+                    },
+                    hide: {
+                        fixed: true,
+                        delay: 300,
+                        event: "mouseleave"
+                    },
+                    position: {
+                        target: 'mouse',
+                        adjust: {
+                            mouse: false
+                        },
+                        my: 'center center',
+                        at: 'center center',
+                        //container : false,
+                    },
+    			    /* adjust:{
+    		          screen: true,
+    			    }, */
+                });
         });
+
+        // paginateDataTables
+        //melisCore.paginateDataTables();
     }
 
     function initTooltipVarTable() {
         $(".tooltipTableVar").each(function() {
-            $(this).qtip({
-                content: {
-                    text: $(this).next('.tooltiptext')
-                },
-                overwrite: false,
-                style: {
-                    classes: 'qtip-tipsy qtip-shadow',
-                    width: "auto",
-                },
-                hide: {
-                    fixed: true,
-                    delay: 300,
-                    event: "mouseleave"
-                },
-                position: {
-                    target: 'mouse',
-                    adjust: {
-                        mouse: false,
+            var $this = $(this);
+
+                $this.qtip({
+                    content: {
+                        text: $(this).next('.tooltiptext')
                     },
-                    my: 'center center',
-                    at: 'center center',
-                },
-            });
+                    overwrite: false,
+                    style: {
+                        classes: 'qtip-tipsy qtip-shadow',
+                        width: "auto",
+                    },
+                    hide: {
+                        fixed: true,
+                        delay: 300,
+                        event: "mouseleave"
+                    },
+                    position: {
+                        target: 'mouse',
+                        adjust: {
+                            mouse: false,
+                        },
+                        my: 'center center',
+                        at: 'center center',
+                    },
+                });
         });
     }
 
@@ -108,26 +114,25 @@ var melisCommerce = (function(window) {
         melisHelper.tabClose(melisCommerce.getCurrentProductId() + "_id_meliscommerce_products_page");
     }
 
-    function getCurrentProductId()
-    {
+    function getCurrentProductId() {
         return activeTabId.split("_")[0];
     }
 
     function reloadCurrentProdPage(prodId) {
         var productId = melisCommerce.getCurrentProductId();
-        if(prodId != null) {
-            productId = prodId;
-        }
-        melisCoreTool.clearForm("productTextTypeForm");
-        melisHelper.zoneReload(productId+"_id_meliscommerce_products_page","meliscommerce_products_page", {productId : productId});
+
+            if ( prodId != null ) {
+                productId = prodId;
+            }
+
+            melisCoreTool.clearForm("productTextTypeForm");
+            melisHelper.zoneReload(productId+"_id_meliscommerce_products_page","meliscommerce_products_page", {productId : productId});
     }
 
-    function initTinyMCE()
-    {
-        console.log('done');
+    function initTinyMCE() {
         var locale = "";
 
-        if(melisLangId == "en_EN") {
+        if ( melisLangId == "en_EN" ) {
             locale = "en";
         }
         else {
@@ -141,9 +146,10 @@ var melisCommerce = (function(window) {
                 language: locale,
                 height: 200,
                 plugins: [
+                    //[contextmenu, textcolor, colorpicker] this plugin is already built in the core editor as of TinyMCE v. 5
                     'advlist autolink lists link image charmap print preview anchor',
                     'searchreplace visualblocks code fullscreen',
-                    'insertdatetime media table contextmenu paste template'
+                    'insertdatetime media table paste template'
                 ],
                 menubar: false,
                 toolbar: 'undo redo | styleselect | bold italic | link image |  alignleft aligncenter alignright alignjustify | code',
@@ -191,44 +197,43 @@ var melisCommerce = (function(window) {
             url         : ajaxUrl,
             data		: ajaxData,
             dataType    : 'json',
-            encode		: true,
-        }).success(function(data){
+            encode		: true
+        }).done(function(data) {
             successCallBack(data);
-        }).error(function(){
+        }).fail(function() {
             errorCallBack();
         });
     }
 
     function getDocFormType() {
         var formType = "";
-        formType = $("#"+activeTabId).find("div.ecom-doc-container").data("form-type");
-        return formType;
+
+            formType = $("#"+activeTabId).find("div.ecom-doc-container").data("form-type");
+
+            return formType;
     }
 
     function setUniqueId(id) {
-        if(id == null) {
+        if ( id == null ) {
             $.ajax({
                 type        : 'POST',
                 url         : '/melis/MelisCommerce/MelisComDocument/setUniqueId',
-                data : {id: id},
+                data        : {id: id},
                 dataType    : 'json',
-                encode		: true,
-            }).success(function(data){
-                //$("body").attr("data-uniq-id", data.id);
+                encode		: true
+            }).done(function(data){
                 pUniqueId[activeTabId] = data.id;
+            }).fail(function() {
+                alert( translations.tr_meliscore_error_message );
             });
         }
         else {
-            //$("body").attr("data-uniq-id", id);
             pUniqueId[activeTabId] = id;
         }
-
-
     }
 
     function getUniqueId() {
         return pUniqueId[activeTabId];
-        //return $("body").attr("data-uniq-id");
     }
 
     function disableTab(tabId) {
@@ -239,11 +244,11 @@ var melisCommerce = (function(window) {
         $("li a.tab-element[data-id='"+tabId+"']").css('pointer-events','auto').parent().css("cursor", "pointer");
     }
 
-    function disableAllTabs()
-    {
+    function disableAllTabs() {
         $.each($("#melis-id-nav-bar-tabs li a"), function(i, v) {
             var tabId = $(v).data("id");
-            disableTab(tabId);
+
+                disableTab(tabId);
         });
 
         // disable navigation too
@@ -252,11 +257,11 @@ var melisCommerce = (function(window) {
         });
     }
 
-    function enableAllTabs()
-    {
+    function enableAllTabs() {
         $.each($("#melis-id-nav-bar-tabs li a"), function(i, v) {
             var tabId = $(v).data("id");
-            enableTab(tabId);
+
+                enableTab(tabId);
         });
 
         $.each($("ul.sideMenu"), function(i ,v) {

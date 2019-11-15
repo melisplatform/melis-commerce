@@ -222,7 +222,7 @@ class MelisComPriceController extends AbstractActionController
         foreach ($countries as $country){
 
             $imageData = $country->ctry_flag;
-            $image = !empty($imageData) ? '<span class="pull-right"><img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay pull-right"/></span>' : '<i class="fa fa-globe"></i>';
+            $image = !empty($imageData) ? '<span class="float-right"><img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay float-right"/></span>' : '<i class="fa fa-globe"></i>';
             $ctyData[] = sprintf($ctyFormat, $hrefCountry.str_replace(' ', '', $country->ctry_name), $country->ctry_name, $country->cur_symbol, $country->ctry_name, $image);
         }
         $view = new ViewModel();

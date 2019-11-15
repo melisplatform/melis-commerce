@@ -8166,7 +8166,13 @@
 	};
 	// include the wholerow plugin by default
 	// $.jstree.defaults.plugins.push("wholerow");
-	if(document.registerElement && Object && Object.create) {
+	/*
+	* document.registerElement("vakata-jstree", { prototype: proto });
+	* [Deprecation] document.registerElement is deprecated and will be removed in M80, around February 2020. 
+	* Please use window.customElements.define instead. 
+	* See https://www.chromestatus.com/features/4642138092470272 and https://developers.google.com/web/updates/2019/07/web-components-time-to-upgrade for more details.
+	*/
+	if(indow.customElements && Object && Object.create) {
 		var proto = Object.create(HTMLElement.prototype);
 		proto.createdCallback = function () {
 			var c = { core : {}, plugins : [] }, i;
@@ -8187,7 +8193,13 @@
 		};
 		// proto.attributeChangedCallback = function (name, previous, value) { };
 		try {
-			document.registerElement("vakata-jstree", { prototype: proto });
+			/*
+			 * document.registerElement("vakata-jstree", { prototype: proto });
+			 * [Deprecation] document.registerElement is deprecated and will be removed in M80, around February 2020. 
+			 * Please use window.customElements.define instead. 
+			 * See https://www.chromestatus.com/features/4642138092470272 and https://developers.google.com/web/updates/2019/07/web-components-time-to-upgrade for more details.
+			 */ 
+			window.customElements.define("vakata-jstree", { prototype: proto });
 		} catch(ignore) { }
 	}
 

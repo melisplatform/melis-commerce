@@ -24,7 +24,7 @@
 								    $imageData = $val['elang_flag'];
                                     if(!empty($imageData))
                                     {
-                                        echo '<span class="pull-right"><img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay pull-right"/></span>';
+                                        echo '<span class="float-right"><img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay float-right"/></span>';
                                     }
                                     else
                                     {
@@ -81,10 +81,10 @@
             mode : "none",
             height : "300px",
             plugins : [
+				//[contextmenu, textcolor, colorpicker] this plugin is already built in the core editor as of TinyMCE v. 5
                 'advlist autolink lists link image charmap print preview anchor',
                 'searchreplace visualblocks code fullscreen',
-                'insertdatetime media table contextmenu paste template',
-                'textcolor',
+                'insertdatetime media table paste template',
             ],
             toolbar : 'undo redo | styleselect | bold italic | link image |  alignleft aligncenter alignright alignjustify | forecolor backcolor | code',
         }

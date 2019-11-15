@@ -21,7 +21,7 @@
 					$imageData = $val['elang_flag'];
 					$image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay" width="24" height="24"/>' : '<i class="fa fa-globe"></i>';
 					?>
-    				<a data-locale="<?php echo $val['elang_locale']?>"><span><?php echo $val['elang_name']?></span><span class="pull-right"><?php echo $image; ?></span></a>
+    				<a data-locale="<?php echo $val['elang_locale']?>"><span><?php echo $val['elang_name']?></span><span class="float-right"><?php echo $image; ?></span></a>
     			</li>
 			<?php endforeach;?>
 		</ul>

@@ -13,7 +13,7 @@
 		foreach($this->files as $file) { ?>
         <p data-doc-id="<?= $file['doc_id']; ?>" data-doc-type="file">
         	<a href="<?= $file['doc_path'] ?>" target="_blank"><?= $this->escapeHtml($file['doc_name']); ?></a>
-        	<span class="pull-right">
+        	<span class="float-right">
             	<label>
             		<span class="fa fa-pencil updateFileDocument" data-doc-id="<?= $file['doc_id']; ?>" data-type="file"/>
             	</label>&nbsp;
