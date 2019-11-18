@@ -69,7 +69,7 @@ var melisCommerce = (function(window) {
         });
 
         // paginateDataTables
-        //melisCore.paginateDataTables();
+        melisCore.paginateDataTables();
     }
 
     function initTooltipVarTable() {
