@@ -883,7 +883,7 @@ class MelisComOrderController extends AbstractActionController
         $draw = 0;
         $tableData = array();
         $prodId = null;
-        $image      = '<img src="%s" width="60" height="60" class="img-rounded img-responsive"/>';
+        $image      = '<img src="%s" width="60" height="60" class="rounded-circle img-fluid"/>';
         $categoryDom    = '<span class="cell-val-table" style="margin:0 2px 4px 0;display:inline-block;padding: 3px 10px;background: #ECEBEB;border-radius: 4px;color: #7D7B7B;">%s</span>';
         
         if($this->getRequest()->isPost()) {

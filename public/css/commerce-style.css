@@ -402,9 +402,6 @@ table.dataTable.uk-table-condensed .sorting_desc:after {
     height: 100%;
 	overflow-y: scroll;
 }
-#id_meliscommerce_categories_list .panel-group{
-    /* padding-bottom: 30px; */
-}
 
 /**
 * Category Tree View Language Dropdown
@@ -777,10 +774,6 @@ a {
     background: #fff;
 }
 
-.filter-bar {
-    /*line-height: 0;*/
-}
-
 /* filter bar left */
 .fb-left form{
     border: 1px solid #e5e5e5;
@@ -830,7 +823,6 @@ a {
 }
 .meliscommerce-order-checkout-product-list-countries .pays {
     float: left;
-    display: inline-block;
     position: relative;
     height: 20px;
     padding: 0px;
@@ -969,7 +961,6 @@ a {
     float: left;
 }
 .bulk-action {
-    display: inline-block;
     float: left;
     width: auto;
     margin: 0 1% 0 0;
@@ -1027,15 +1018,6 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child:before {
 }
 
 /* qTip Custom CSS */
-.tooltipTable {
-}
-.qtip.qtip-default.qtip-tipsy {
-    /*top: 300px !important;*/
-}
-.qtip-content {
-    /*	position: relative!important;
-        top: 100px !important;*/
-}
 .qtip-tipsy {
     background: #555555;
     color: #fff;
@@ -1167,7 +1149,6 @@ button.refresh-attribute-lists {
     border-bottom: 1px solid #e5e5e5;
 }
 .form-group.attr-input-dropdown {
-    display: inline-block;
     float: left;
 }
 
@@ -1268,9 +1249,6 @@ textarea {
     cursor:pointer;
     font-size: 20px;
     color: #C3C0C0;
-}
-.melis-pdc{
-    /*padding-top: 25px;*/
 }
 .pdc-heading{
     padding-bottom: 30px;
@@ -1490,7 +1468,6 @@ textarea {
 /* ACCORDION */
 .a-accordion .fa-times {
     clear: none;
-    display: inline-block;
     float: right;
     font-size: 20px;
 }
@@ -1575,9 +1552,6 @@ textarea {
 }
 
 /* TABS */
-.content-cont .nav-tabs.product-text-tab li:hover {
-    /*border-bottom: 1px solid #e5e5e5; 8*/
-}
 .content-cont .product-text-tab li.active:hover a{
     background: #932E2A;
     border-color: transparent;
@@ -1631,9 +1605,6 @@ textarea {
 }
 .content-cont .widget.widget-tabs-double-2>.widget-head ul li a {
     height: 69px;
-}
-.content-cont .product-text-tab.nav-tabs > li:hover {
-    /* border-bottom: 1px solid #e5e5e5!important; */
 }
 /* MODAL  */
 .me-commerce .modal-contet-cont{
@@ -1730,7 +1701,7 @@ textarea {
 .remove-language-attribute{
     background: #cb4040;
     padding: 10px 11px;
-    webkit-transition: .3s ease-in-out;
+    -webkit-transition: .3s ease-in-out;
     -moz-transition: .3s ease-in-out;
     -o-transition: .3s ease-in-out;
     transition: .3s ease-in-out;
@@ -1860,6 +1831,7 @@ textarea {
 
 .dt-rowReorder-moving:hover {
     -webkit-animation:fading 10s infinite;
+    animation:fading 10s infinite;
     transition: all 3s ease;
 }
 .dt-rowReorder-moving {
@@ -2406,4 +2378,12 @@ tr.last-tr td {
 }
 .main-variant-radio i{
     cursor: pointer;
+}
+/* bootstrap-filestyle */
+.bootstrap-filestyle .group-span-filestyle .btn {
+    padding-top: 0;
+}
+/* tooltip */
+.pdc-content .form-group .fa-info-circle {
+    float: right;
 }

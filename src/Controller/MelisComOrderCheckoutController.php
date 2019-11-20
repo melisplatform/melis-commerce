@@ -361,7 +361,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
                 $productList = $prodSvc->getProductList(null, null, null, null, $start, $length, $selColOrder, $sortOrder, $search);
                 $dataCount = $prodSvc->getProductList(null, null, null, null, null, null, $selColOrder, $sortOrder, $search);
                 
-                $prodImage = '<img src="%s" width="60" height="60" class="img-rounded img-responsive"/>';
+                $prodImage = '<img src="%s" width="60" height="60" class="rounded-circle img-fluid"/>';
                 
                 foreach($productList as $val) {
                     $productId = $val->getId();
