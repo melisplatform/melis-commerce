@@ -1,30 +1,6 @@
 var pUniqueId = [];
-
-$(function() {
-    var $body = $('body');
-
-	/* #### FIX DataTable issue in Tab #### */
-	/* $body.on('a[data-toggle="tab"]','shown.bs.tab', function (e) {
-		$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
-	});
-	$body.on("init.dt", function(e, settings) {
-		$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
-	});	
-	$body.on("mouseenter", '.tab-pane.active', function(e, settings) {		
-		$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
-		console.log('Test1');
-	});
-	$body.on("click", '.tab-pane.active', function(e, settings) {		
-		$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
-	}); */
-});
-
-/* $(window).on("resize",function(){
-	$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
-}); */
-
 var melisCommerce = (function(window) {
-
+    
     function pendingZoneStart(zoneId) {
         $("#"+zoneId).append('<div id="loader" class="overlay-loader"><img class="loader-icon spinning-cog" src="/MelisCore/assets/images/cog12.svg" data-cog="cog12"></div>');
     }
@@ -67,9 +43,6 @@ var melisCommerce = (function(window) {
     			    }, */
                 });
         });
-
-        // paginateDataTables
-        melisCore.paginateDataTables();
     }
 
     function initTooltipVarTable() {
@@ -269,30 +242,70 @@ var melisCommerce = (function(window) {
         });
     }
 
+    function accordionToggle(event) {
+        var target  = event.target,
+            id      = $(target).attr("href");
+
+            $(id).collapse('toggle');
+    }
+
+    //order-checkout-steps
+    function switchOrderTab( tabId ) {
+        var $tab        = $(tabId),
+            $navTab     = $(tabId+"[data-toggle='tab']"),
+            $navTabLi   = $navTab.closest("li");
+
+            // tab content
+            if ( tabId === 'id_meliscommerce_order_checkout_payment_step_nav' ) {
+                var paymentTab = $(tabId).attr("href");
+                    $(paymentTab).tab("show");
+            } 
+            else {
+                $tab.tab("show");
+            }
+
+            // tabsbar
+            $navTab.removeClass("hidden");
+            $navTabLi.siblings().removeClass("active");
+            $navTabLi.addClass("active");
+    }
 
     return {
-        pendingZoneStart : pendingZoneStart,
-        pendingZoneDone : pendingZoneDone,
-        initTooltipTable: initTooltipTable,
-        initTooltipVarTable: initTooltipVarTable,
-        initCommerceTable : initCommerceTable,
-        openProductPage : openProductPage,
-        postSave: postSave,
-        getCurrentProductId : getCurrentProductId,
+        pendingZoneStart        : pendingZoneStart,
+        pendingZoneDone         : pendingZoneDone,
+        initTooltipTable        : initTooltipTable,
+        initTooltipVarTable     : initTooltipVarTable,
+        initCommerceTable       : initCommerceTable,
+        openProductPage         : openProductPage,
+        postSave                : postSave,
+        getCurrentProductId     : getCurrentProductId,
         closeCurrentProductPage : closeCurrentProductPage,
-        reloadCurrentProdPage : reloadCurrentProdPage,
-        initTinyMCE : initTinyMCE,
-        getDocFormType : getDocFormType,
-        setUniqueId : setUniqueId,
-        getUniqueId : getUniqueId,
-        enableTab : enableTab,
-        disableTab : disableTab,
-        disableAllTabs : disableAllTabs,
-        enableAllTabs : enableAllTabs
+        reloadCurrentProdPage   : reloadCurrentProdPage,
+        initTinyMCE             : initTinyMCE,
+        getDocFormType          : getDocFormType,
+        setUniqueId             : setUniqueId,
+        getUniqueId             : getUniqueId,
+        enableTab               : enableTab,
+        disableTab              : disableTab,
+        disableAllTabs          : disableAllTabs,
+        enableAllTabs           : enableAllTabs,
+        accordionToggle         : accordionToggle,
+        switchOrderTab          : switchOrderTab
     }
 
 })(window);
 
 setInterval(function() {
     melisCommerce.enableAllTabs();
-}, 10000)
+}, 10000);
+
+$(function() {
+    var $body = $('body');
+        /* 
+         * Triggers accordion toggle manually data-target="#1_accordion" not triggering
+         * same goes to modal
+         * https://github.com/twbs/bootstrap/issues/29129
+         */
+        
+        $body.on("click", ".accordion-toggle", melisCommerce.accordionToggle );
+});

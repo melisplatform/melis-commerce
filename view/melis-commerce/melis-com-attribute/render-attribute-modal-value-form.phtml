@@ -29,14 +29,14 @@
                                         echo $this->form()->closeTag();
                                     ?>
                                     <br>
-                                    <div class="panel panel-default commerce-toggle product-create-text">
-                                    	<div class="panel-heading">
-                                    		<h4 class="panel-title">
-                                    			<a class="accordion-toggle collapsed" id="" data-toggle="collapse" href="#fill_<?= $this->zoneconfig['conf']['id']?>"><?= $this->translate('tr_meliscommerce_attribute_value_modal_each_language')?></a>
+                                    <div class="card default-card commerce-toggle product-create-text">
+                                    	<div class="card-header" >
+                                    		<h4 class="card-title">
+                                    			<a class="collapsed" id="" data-toggle="collapse" href="#fill_<?= $this->zoneconfig['conf']['id']?>"><?= $this->translate('tr_meliscommerce_attribute_value_modal_each_language')?></a>
                                 			</h4>
-                                        </div>
-                                    	<div class="panel-collapse collapse" id="fill_<?= $this->zoneconfig['conf']['id']?>">                                		
-                                    		<div class="panel-body">
+										</div>
+										<div class="card-collapse collapse" id="fill_<?= $this->zoneconfig['conf']['id']?>">   
+                                    		<div class="card-body">
                                           		<div class="innerAll spacing-x2">
                                 		     		<?php
                                             		$forms = $this->forms;                                		
@@ -59,7 +59,7 @@
                                     .datepicker{z-index:1151 !important;}
                                     </style>
                                     <br>
-                                 	<div align="right">
+									<div class="footer-modal d-flex flex-row justify-content-between">
                                  		<button data-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
                                  		<button class="btn btn-success" id="saveAttributeValue"><i class="fa fa-save"></i>  <?php echo $this->translate('tr_meliscommerce_orders_common_btn_save') ?></button>
                                  	</div>                                 	

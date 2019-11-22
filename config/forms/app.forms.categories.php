@@ -115,6 +115,7 @@ return array(
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_categories_category_valid_from',
                                         'tooltip' => 'tr_meliscommerce_categories_category_valid_from tooltip',
+                                        'class' => 'd-flex flex-row justify-content-between'
                                     ),
                                     'attributes' => array(
                                         'dateId' => 'categoryValidateDates',
@@ -129,6 +130,7 @@ return array(
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_categories_category_valid_to',
                                         'tooltip' => 'tr_meliscommerce_categories_category_valid_to tooltip',
+                                        'class' => 'd-flex flex-row justify-content-between'
                                     ),
                                     'attributes' => array(
                                         'dateId' => 'categoryValidateDates',

@@ -30,10 +30,6 @@
     height: 100%;
 }
 
-#id_meliscommerce_categories_list .panel-group{
-	/* padding-bottom: 30px; */ 
-}
-
 /** 
 * Category Tree View Language Dropdown
 */
@@ -115,6 +111,7 @@
 /**
  * Panel Group
  */
+.group-card,
 .panel-group {
     margin-bottom: 0px; 
 }
@@ -142,4 +139,3 @@
     padding-left: 32px;
     color: #686868 !important;
 }
-

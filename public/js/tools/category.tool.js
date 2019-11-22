@@ -486,7 +486,7 @@ $(function() {
 
 				$(loaderText).insertAfter("table#catProductTable"+productId + " thead");
 
-				var xhr = $.ajax({
+					$.ajax({
 						type        : 'POST', 
 						url         : 'melis/MelisCommerce/MelisComProductList/getToolTip',
 						data		: {productId : productId},
@@ -508,11 +508,9 @@ $(function() {
 								$(v).insertAfter("table#catProductTable"+productId + " thead")
 							});
 						}
+					}).fail(function() {
+						alert( translations.tr_meliscore_error_message );
 					});
-
-					if ( e.type === "mouseout" ) {
-						xhr.abort();
-					}
 		});
 });
 

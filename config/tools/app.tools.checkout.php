@@ -8,7 +8,7 @@ return array(
                         'target' => '#orderCheckoutProductListTbl',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComOrderCheckout/getProductList',
                         'dataFunction' => '',
-                        'ajaxCallback' => '',
+                        'ajaxCallback' => 'melisCore.paginateDataTables()',
                         'filters' => array(
                             'left' => array(
                                 'meliscommerce-order-checkout-product-list-countries' => array(
@@ -71,7 +71,7 @@ return array(
                         'target' => '#orderCheckoutContactListTbl',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComOrderCheckout/getContactList',
                         'dataFunction' => '',
-                        'ajaxCallback' => 'initCheckoutSelectContactTable()',
+                        'ajaxCallback' => 'initCheckoutSelectContactTable();melisCore.paginateDataTables();',
                         'filters' => array(
                             'left' => array(
                                 'meliscommerce-order-checkout-contact-list-limit' => array(

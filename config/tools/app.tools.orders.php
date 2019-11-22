@@ -9,7 +9,7 @@ return array(
                         'target' => '#tableOrderList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComOrderList/getOrderListData',
                         'dataFunction' => 'initOrderList',
-                        'ajaxCallback' => 'initOrderListTitle()',
+                        'ajaxCallback' => 'initOrderListTitle();melisCore.paginateDataTables()',
                         'filters' => array(
                             'left' => array(                                
                                 'order-list-table-filter-limit' => array(

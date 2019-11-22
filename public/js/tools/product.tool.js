@@ -43,13 +43,6 @@ window.initProductCategoryList = function(productId, langLocale) {
             });
         });
 
-        /* if(categoriesChecked.length){
-           dataString.push({
-               name : 'categoriesChecked',
-               value : categoriesChecked
-           });
-        } */
-
         dataString = $.param(dataString);
 
         target
@@ -112,8 +105,8 @@ window.populateAttribList = function(data) {
 }
 
 
-window.initProductTextTinyMce = function(productId) {
-    var targetEditor = "#"+productId+"_id_meliscommerce_products_page textarea.product-text-mce[data-display='true']:not([id])";
+window.initProductTextTinyMce = function(productId) {  
+    var targetEditor = "#"+productId+"_id_meliscommerce_products_page textarea.product-text-mce[data-display='true']"; //:not([id])
 
         if ( $(targetEditor).length ) {
             $(targetEditor).each(function(index, value) {
@@ -371,11 +364,6 @@ $(function() {
                     alert( translations.tr_meliscore_error_message );
                 });
         });
-        
-        // duplicate event handler click @ line 825
-        /* $body.on('click', '.add-product-text', function() {
-            $("div[data-class='addTextFieldNotif']").html("").attr("class", "addTextFieldNotif");
-        }); */
 
         $body.on('click', '.btnAddText', function(){
             var $this       = $(this),
@@ -395,7 +383,7 @@ $(function() {
                     var formTextForms = $("#" + productId + "_id_meliscommerce_products_page .product-text-forms > .custom-field-type");
 
                         if ( formTextForms.length ) {
-                            $("#" + productId + "_id_meliscommerce_products_page .notifTinyMcePreloaInfo").fadeIn("slow");
+                            $("#" + productId + "_id_meliscommerce_products_page .notifTinyMcePreloaInfo").fadeIn();
                         }
 
                         $.each(formTextForms, function(i, v){
@@ -784,7 +772,7 @@ $(function() {
 
                 $(loaderText).insertAfter("table#productTable"+productId + " thead");
 
-                var xhr = $.ajax({
+                $.ajax({
                     type        : 'POST',
                     url         : 'melis/MelisCommerce/MelisComProductList/getToolTip',
                     data		: {productId : productId},
@@ -809,33 +797,20 @@ $(function() {
                 }).fail(function() {
                     alert( translations.tr_meliscore_error_message );
                 });
-
-                if ( e.type === "mouseout" ) {
-                    xhr.abort();
-                }
         });
 
         $body.on("click", ".add-product-text", function() {
-            var $this = $(this);
+            var $this       = $(this),
+                $idSelector = $this.data("target");
 
                 $("div[data-class='addTextFieldNotif']").html("").attr("class", "addTextFieldNotif");
 
                 melisHelper.zoneReload( melisCommerce.getCurrentProductId()+"_id_meliscommerce_products_page_content_tab_product_text_modal_form_product_type_text", "meliscommerce_products_page_content_tab_product_text_modal_form_product_type_text", {productId : melisCommerce.getCurrentProductId()} );
 
                 reInitProductTextTypeSelect(melisCommerce.getCurrentProductId());
-        });
 
-        /*$("body").on("click",".add-product-text", function() {
-            melisHelper.createModal('id_meliscommerce_products_page_content_tab_product_text_modal_form',
-                'meliscommerce_products_page_content_tab_product_text_modal_form',
-                true,
-                {},
-                'melis/MelisCommerce/MelisComProduct/render-products-page-content-tab-text-modal-form',
-                function() {
-        
-                }
-            );
-        });*/
+                $($idSelector).modal("show");
+        });
 
         $body.on("click", ".openVariant", function() {
             var $this        = $(this),

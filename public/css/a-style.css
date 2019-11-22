@@ -59,10 +59,6 @@ a {
 	background: #fff;
 }
 
-.filter-bar {
-	/*line-height: 0;*/
-}
-
 /* filter bar left */
 .fb-left form{
 	border: 1px solid #e5e5e5;
@@ -112,7 +108,6 @@ a {
 }
 .meliscommerce-order-checkout-product-list-countries .pays {
     float: left;
-	display: inline-block;
 	position: relative;
 	height: 20px;
 	padding: 0px;
@@ -251,7 +246,6 @@ a {
 	float: left;
 }
 .bulk-action {
-	display: inline-block;
     float: left;
     width: auto;
     margin: 0 1% 0 0;
@@ -260,7 +254,6 @@ a {
 	float: left;
 	margin: 0 0 0 5px;
 }
-
 .bulk-action a.dropdown-toggle {
 	float: left;
     width: auto;
@@ -309,15 +302,6 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child:before {
 }
 
 /* qTip Custom CSS */
-.tooltipTable {
-}
-.qtip.qtip-default.qtip-tipsy {
-	/*top: 300px !important;*/
-}
-.qtip-content {
-/*	position: relative!important;
-	top: 100px !important;*/
-}
 .qtip-tipsy {
 	background: #555555;
 	color: #fff;
@@ -422,7 +406,6 @@ html a.btn-success {
 	text-align: left;
 	vertical-align:middle;
 	font-weight: 300;
-	/* font-size: 14px; */
 	border-bottom: 1px solid rgba(147,46,42,0.2);
 }
 .info-table td:first-child {
@@ -449,7 +432,6 @@ button.refresh-attribute-lists {
     border-bottom: 1px solid #e5e5e5;
 }
 .form-group.attr-input-dropdown {
-    display: inline-block;
     float: left;
 }
 
@@ -550,9 +532,6 @@ textarea {
 	cursor:pointer;
 	font-size: 20px;
 	color: #C3C0C0;
-}
-.melis-pdc{
-	/*padding-top: 25px;*/
 }
 .pdc-heading{
 	padding-bottom: 30px;
@@ -772,7 +751,6 @@ textarea {
 /* ACCORDION */
 .a-accordion .fa-times {
     clear: none;
-    display: inline-block;
     float: right;
     font-size: 20px;
 }
@@ -806,17 +784,22 @@ textarea {
 	border-color: #932E2A;
 	background: #932E2A;
 	color: #fff;
+
 }
+#id_meliscommerce_categories_page .card-heading,
 #id_meliscommerce_categories_page .panel-heading{
 	padding: 0;
 }
+.card-title a.btn,
 .panel-title a.btn {
 	margin: 10px 0 0 10px;
 }
+.card-title > a,
 .panel-title > a {
     display: block;
 	text-decoration: none;
 }
+.card-heading .accordion-toggle:before,
 .panel-heading .accordion-toggle:before {
     font-family: 'Glyphicons Halflings';
     content: "\e114";
@@ -825,6 +808,7 @@ textarea {
     margin: 17px 0 0;
     padding: 0 10px;
 }
+.card-heading .accordion-toggle.collapsed:before,
 .panel-heading .accordion-toggle.collapsed:before {    
     content: "\e080";
 }
@@ -836,30 +820,33 @@ textarea {
 #content .accordion-toggle h1.content-heading {
 	text-transform: none;
 }
+#id_meliscommerce_categories_page .default-card,
 #id_meliscommerce_categories_page .panel-default {
 	border: none medium;
 }
+#id_meliscommerce_categories_page .card-title,
 #id_meliscommerce_categories_page .panel-title {
 	border-bottom: 1px solid #eee;
 }
+#id_meliscommerce_categories_page .card-header,
 #id_meliscommerce_categories_page .panel-heading {
 	border: none medium;
 	border-bottom: none medium;
 }
+#content .default-card > .card-header+.card-collapse .card-body,
 #content .panel-default > .panel-heading+.panel-collapse .panel-body {
 	border: none medium;
 }
+.card-body,
 .panel-body {
 	padding: 0;
 }
+.content-cont .card-title > a,
 .content-cont .panel-title > a {
 	color: #111;
 }
 
 /* TABS */
-.content-cont .nav-tabs.product-text-tab li:hover {
-	/*border-bottom: 1px solid #e5e5e5; 8*/
-}
 .content-cont .product-text-tab li.active:hover a{
 	background: #932E2A;
 	border-color: transparent;
@@ -913,9 +900,6 @@ textarea {
 }
 .content-cont .widget.widget-tabs-double-2>.widget-head ul li a {
 	height: 69px;
-}
-.content-cont .product-text-tab.nav-tabs > li:hover {
-	/* border-bottom: 1px solid #e5e5e5!important; */
 }
 /* MODAL  */
 .me-commerce .modal-contet-cont{
@@ -1012,7 +996,7 @@ textarea {
 .remove-language-attribute{
 	background: #cb4040;
     padding: 10px 11px;
-	webkit-transition: .3s ease-in-out;
+	-webkit-transition: .3s ease-in-out;
     -moz-transition: .3s ease-in-out;
     -o-transition: .3s ease-in-out;
     transition: .3s ease-in-out;
@@ -1141,7 +1125,8 @@ textarea {
 /*  bootstrap switch small */
 
 .dt-rowReorder-moving:hover {
-	-webkit-animation:fading 10s infinite;
+	-webkit-animation: fading 10s infinite;
+	animation: fading 10s infinite;
 	transition: all 3s ease;
 }
 .dt-rowReorder-moving {

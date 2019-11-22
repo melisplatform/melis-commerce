@@ -271,17 +271,21 @@ table.dataTable.uk-table-condensed .sorting_desc:after {
     border-color: #d8d8d8;
 }
 
+.card {
+    border-radius: 4px;
+}
+
+.commerce-toggle .card-header,
 .commerce-toggle .panel-heading{
-    background-color: #932e2a;
-    padding: 7px;
+    padding: 0;
     height: auto;
-    padding-bottom: 10px;
 }
 
 .commerce-toggle .accordion-toggle {
     background-color: #932e2a !important;
 }
 
+.commerce-toggle .card-title > a,
 .commerce-toggle .panel-title > a {
     color: #fff !important;
 }
@@ -486,6 +490,7 @@ table.dataTable.uk-table-condensed .sorting_desc:after {
 /**
  * Panel Group
  */
+.group-card,
 .panel-group {
     margin-bottom: 0px;
 }
@@ -654,12 +659,16 @@ div.melis-pdc *.btn {
     min-width: 90px;
 }
 
+.clients-page .card-header .accordion-toggle:before,
 .clients-page .panel-heading .accordion-toggle:before {
     margin: auto;
 }
 
+#content .card-title,
 #content .panel-title {
     border-bottom: 0px;
+    font-size: 16px;
+    margin-bottom: 0;
 }
 
 .client-contact-tab-content .accordion-toggle {
@@ -668,21 +677,25 @@ div.melis-pdc *.btn {
     padding: 0 10px 0;
 }
 
+.client-contact-address .card-header .accordion-toggle:before,
 .client-contact-address .panel-heading .accordion-toggle:before {
     margin: 0px;
     color: #fff;
 }
 
+.client-contact-address .card-header .accordion-toggle:hover,
 .client-contact-address .panel-heading .accordion-toggle:hover {
     color: #fff;
 }
 
+.client-contact-address .default-card>.card-header,
 .client-contact-address .panel-default>.panel-heading {
     color: #fff;
     background-color: #932e2a;
     border-color: #ddd;
 }
 
+.client-contact-address .card-header,
 .client-contact-address .panel-heading {
     height: auto;
     border-top-left-radius: 0px;
@@ -693,6 +706,7 @@ div.melis-pdc *.btn {
     margin-bottom: 0px;
 }
 
+.client-contact-address .card-title,
 .client-contact-address .panel-title {
     margin: 2px 0px;
 }
@@ -820,6 +834,10 @@ a {
 .tabsbar ul li {
     border-top: 1px solid #e5e5e5;
     border-bottom: 1px solid #e5e5e5;
+    height: 62px;
+}
+.tabsbar ul.order-checkout-steps li a i:before {
+    vertical-align: middle;
 }
 .meliscommerce-order-checkout-product-list-countries .pays {
     float: left;
@@ -953,6 +971,9 @@ a {
 }
 .content-cont table.table thead .sorting {
     background-image: none;
+}
+.table td, .table th {
+    vertical-align: middle;
 }
 .float-right {
     float: right;
@@ -1456,9 +1477,11 @@ textarea {
 }
 
 /* Category Sticky Wrap */
+#id_meliscommerce_categories_category .card-header,
 #id_meliscommerce_categories_category .panel-heading {
     position: relative;
 }
+#id_meliscommerce_categories_category.fix-cat .card-header,
 #id_meliscommerce_categories_category.fix-cat .panel-heading {
     position: fixed;
     top: 38px;
@@ -1502,24 +1525,31 @@ textarea {
     background: #932E2A;
     color: #fff;
 }
-#id_meliscommerce_categories_page .panel-heading{
+/* panel */
+#id_meliscommerce_categories_page .card-header,
+#id_meliscommerce_categories_page .panel-heading {
     padding: 0;
 }
+.card-title a.btn,
 .panel-title a.btn {
     margin: 10px 0 0 10px;
 }
+.card-title > a,
 .panel-title > a {
     display: block;
     text-decoration: none;
+    padding: 10px 14px;
 }
+.card-header .accordion-toggle:before,
 .panel-heading .accordion-toggle:before {
     font-family: 'Glyphicons Halflings';
     content: "\e114";
     float: left;
     color: grey;
-    margin: 17px 0 0;
+    margin: 12px 0 0;
     padding: 0 10px;
 }
+.card-header .accordion-toggle.collapsed:before,
 .panel-heading .accordion-toggle.collapsed:before {
     content: "\e080";
 }
@@ -1531,24 +1561,32 @@ textarea {
 #content .accordion-toggle h1.content-heading {
     text-transform: none;
 }
+#id_meliscommerce_categories_page .default-card,
 #id_meliscommerce_categories_page .panel-default {
     border: none medium;
 }
+#id_meliscommerce_categories_page .card-title,
 #id_meliscommerce_categories_page .panel-title {
     border-bottom: 1px solid #eee;
 }
+#id_meliscommerce_categories_page .card-header,
 #id_meliscommerce_categories_page .panel-heading {
     border: none medium;
     border-bottom: none medium;
 }
+#content .default-card > .card-heading+.card-collapse .card-body,
 #content .panel-default > .panel-heading+.panel-collapse .panel-body {
     border: none medium;
 }
+.card-body,
 .panel-body {
     padding: 0;
 }
+.content-cont .card-title > a,
 .content-cont .panel-title > a {
-    color: #111;
+    color: #fff;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
 }
 
 /* TABS */
@@ -2386,4 +2424,64 @@ tr.last-tr td {
 /* tooltip */
 .pdc-content .form-group .fa-info-circle {
     float: right;
+}
+/* catalogs / categories */
+#categoryTreeViewPanel .btn {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+#tableProductList img {
+    width: 60px;
+    height: 60px;
+}
+.country-list-wrapper {
+    display: block;
+    position: relative;
+}
+.country-list-wrapper .country-list {
+    float: left;
+}
+/* product texts */ 
+.custom-field-type-area textarea {
+    width: 100%;
+}
+/* qtipLoader */
+.qtipLoader {
+    padding-bottom: 1rem;
+}
+/* variant */
+.product-variant img {
+    border-radius: 100%;
+    height: 60px;
+}
+/* pop up add product text */
+#addProdTextType {
+    display: block;
+    float: right;
+    margin-bottom: 2rem;
+}
+/* accordion */
+#accordion .content-cont .card-title > a {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+/* clients */
+.form-group label i.fa-info-circle,
+.addNewAddress,
+.addNewContact,
+.saveClientInfo {
+    float: right;
+}
+.modalClientContactStatus {
+    margin-bottom: 2rem;
+}
+.label.label-success {
+    padding: 0.15rem 0.2rem;
+    font-size: 10px;
+}
+#categoryProductListTbl img.rounded-circle.img-fluid,
+#orderCheckoutProductListTbl img.rounded-circle.img-fluid {
+    width: 60px;
+    height: 60px;
+    max-width: 60px;
 }

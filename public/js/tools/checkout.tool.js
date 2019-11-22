@@ -7,7 +7,7 @@ $(function() {
 		});
 		// Add event listener for opening and closing details
 		// This event will create extra row on DataTable as Product Variant List container
-		$body.on('click', '.orderCheckoutProduListViewVariant', function () {
+		$body.on('click', '.orderCheckoutProduListViewVariant', function() {
 			var $this 		= $(this),
 				tr 			= $this.closest('tr'),
 				row 		= $orderCheckoutProductListTbl.row( tr ),
@@ -39,7 +39,7 @@ $(function() {
 		
 		// Checkout country event
 		// This Process will create a Session variable on for Country Id that will use for processing Checkout
-		$body.on("change", "#orderCheckoutCountries", function(){
+		$body.on("change", "#orderCheckoutCountries", function() {
 			var $this 		= $(this),
 				dataString 	= new Array;
 
@@ -70,7 +70,7 @@ $(function() {
 		});
 		
 		// Adding variant to Basket List
-		$body.on('click', '.orderCheckoutVariantAddBasket', function () {
+		$body.on('click', '.orderCheckoutVariantAddBasket', function() {
 			var $this 		= $(this),
 				variantId 	= $this.data('variantid'),
 				dataString 	= new Array;
@@ -88,10 +88,11 @@ $(function() {
 					encode		: true
 				}).done(function(data) {
 					if(data.success) {
-						var zoneId = "id_meliscommerce_order_checkout_product_bakset";
-						var melisKey = "meliscommerce_order_checkout_product_bakset";
-						melisHelper.zoneReload(zoneId, melisKey);
-						melisHelper.melisOkNotification(data.textTitle, data.textMessage);
+						var zoneId 		= "id_meliscommerce_order_checkout_product_bakset",
+							melisKey 	= "meliscommerce_order_checkout_product_bakset";
+
+							melisHelper.zoneReload(zoneId, melisKey);
+							melisHelper.melisOkNotification(data.textTitle, data.textMessage);
 					}else{
 						melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
 					}
@@ -101,7 +102,7 @@ $(function() {
 		});
 		
 		// Changing the Quantity by typing the number of the quantity of the variant in Basket List
-		$body.on('change', '.orderBasketVariantQty', function () {
+		$body.on('change', '.orderBasketVariantQty', function() {
 			var $this 		= $(this),
 				variantId 	= $this.data("variantid"),
 				varQty 		= parseInt( $this.data("quantity") ),
@@ -118,7 +119,7 @@ $(function() {
 		});
 		
 		// Binding Variant quantity input to Numeric characters only
-		$body.on("keydown", ".orderBasketVariantQty", function (e) {
+		$body.on("keydown", ".orderBasketVariantQty", function(e) {
 			// Allow: backspace, delete, tab, escape, enter and .
 			if ( $.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
 				// Allow: Ctrl+A, Command+A
@@ -136,7 +137,7 @@ $(function() {
 		
 		// Variant quantity + (plus) button
 		// This action will add 1 (One) quantity to the Variant current quantity
-		$body.on('click', '.qty-plus', function () {
+		$body.on('click', '.qty-plus', function() {
 			var $this 		= $(this),
 				variantId 	= $this.data("variantid");
 
@@ -147,7 +148,7 @@ $(function() {
 		
 		// Variant quantity - (minus) button
 		// This action will deduct 1 (One) quantity to the Variant current quantity
-		$body.on('click', '.qty-minus', function () {
+		$body.on('click', '.qty-minus', function() {
 			var $this 		= $(this),
 				variantId 	= $this.data("variantid");
 
@@ -162,42 +163,52 @@ $(function() {
 		
 		// Checkout First step Next button
 		// This action will validate if the basket has Content, else this action will show a message
-		$body.on('click', '.orderCheckoutFirstStepBtn', function () {
+		$body.on('click', '.orderCheckoutFirstStepBtn', function() {
+			var $orderFirstBtn 	= $(".orderCheckoutFirstStepBtn"),
+				tabId 			= $orderFirstBtn.data("tabid");
 			
-			$(".orderCheckoutFirstStepBtn").button("loading");
-			
-			$.ajax({
-				type        : "POST", 
-				url         : "/melis/MelisCommerce/MelisComOrderCheckout/checkBasket",
-				dataType    : "json",
-				encode		: true
-			}).done(function(data) {
-				if(data.success) {
-					$($(".orderCheckoutFirstStepBtn").data("tabid")).tab("show");
-				}else{
-					melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
-				}
-				$(".orderCheckoutFirstStepBtn").button("reset");
-			}).fail(function(){
-				$(".#orderCheckoutFirstStepBtn").button("reset");
-				alert( translations.tr_meliscore_error_message );
-			});
+				$orderFirstBtn.button("loading");
+				
+				$.ajax({
+					type        : "POST", 
+					url         : "/melis/MelisCommerce/MelisComOrderCheckout/checkBasket",
+					dataType    : "json",
+					encode		: true
+				}).done(function(data) {
+					if ( data.success ) {
+						melisCommerce.switchOrderTab( tabId );
+					}
+					else {
+						melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
+					}
+					$orderFirstBtn.button("reset");
+				}).fail(function(){
+					$orderFirstBtn.button("reset");
+					alert( translations.tr_meliscore_error_message );
+				});
 		});
 		
 		// Next button event
-		$body.on('click', '.orderCheckoutNextStep', function () {
-			var $body = $("html, body");
+		$body.on('click', '.orderCheckoutNextStep', function() {
+			var $this = $(this),
+				tabId = $this.data("tabid"),
+				$body = $("html, body");
+
 				$body.stop().animate({scrollTop:0}, '500', 'swing');
+
+				melisCommerce.switchOrderTab( tabId );
 		});
 		
 		// Preview button, activating previews step of the checkout steps
-		$body.on('click', '.orderCheckoutPrevStep', function () {
+		$body.on('click', '.orderCheckoutPrevStep', function() {
 			var $this = $(this),
+				tabId = $this.data("tabid"),
 				$body = $("html, body");
 
-				$( $this.data("tabid") ).tab("show");
-				
-				if( $this.data("tabid") == '#id_meliscommerce_order_checkout_select_addresses_step_nav') {
+				//$(tabId).tab("show");
+				melisCommerce.switchOrderTab( tabId );
+			
+				if ( tabId == '#id_meliscommerce_order_checkout_select_addresses_step_nav') {
 					// Zone reload Checkout Addresses
 					melisHelper.zoneReload('id_meliscommerce_order_checkout_billing_address','meliscommerce_order_checkout_billing_address');
 					melisHelper.zoneReload('id_meliscommerce_order_checkout_delivery_address','meliscommerce_order_checkout_delivery_address');
@@ -207,8 +218,7 @@ $(function() {
 		});
 		
 		// Selecting Contact on Checkout Second Step
-		$body.on('click', '.orderCheckoutSelectContact', function () {
-			
+		$body.on('click', '.orderCheckoutSelectContact', function() {
 			var btn 		= $(this),
 				tr 			= btn.closest('tr'),
 				// Getting the contactId from the row id attribute
@@ -232,7 +242,8 @@ $(function() {
 				}).done(function(data) {
 					if(data.success) {
 						
-						$(nxtTabid).tab("show");
+						//$(nxtTabid).tab("show");
+						melisCommerce.switchOrderTab( nxtTabid );
 						
 						setTimeout(function(){ 
 							melisHelper.zoneReload('id_meliscommerce_order_checkout_product_bakset', 'meliscommerce_order_checkout_product_bakset');
@@ -251,12 +262,12 @@ $(function() {
 		});
 		
 		// Refresh button for Contact List table
-		$body.on('click', '.orderCheckoutContactListRefresh', function () {
+		$body.on('click', '.orderCheckoutContactListRefresh', function() {
 			melisHelper.zoneReload("id_meliscommerce_order_checkout_choose_contact_step_content", "meliscommerce_order_checkout_choose_contact_step_content");
 		});
 		
 		// Selecting Checkout Billing Address
-		$body.on('change', '#orderCheckoutBillingSelect', function () {
+		$body.on('change', '#orderCheckoutBillingSelect', function() {
 			var $this 		= $(this),
 				clientAddId = $this.val();
 
@@ -275,22 +286,25 @@ $(function() {
 		});
 		
 		// Selecting Checkout Delivery Address
-		$body.on('change', '#orderCheckoutDeliverySelect', function () {
+		$body.on('change', '#orderCheckoutDeliverySelect', function() {
 			var $this 		= $(this),
 				clientAddId = $this.val();
 
 				melisHelper.zoneReload("id_meliscommerce_order_checkout_delivery_address", "meliscommerce_order_checkout_delivery_address", {cadd_id: clientAddId});
 		});
+
 		// Create new Billing Address button by clearing the Form fields for address
-		$body.on('click', '#orderCheckoutCreateBillingAdd', function () {
+		$body.on('click', '#orderCheckoutCreateBillingAdd', function() {
 			melisHelper.zoneReload("id_meliscommerce_order_checkout_billing_address", "meliscommerce_order_checkout_billing_address", {emptyBillingAddress : 1});
 		});
+
 		// Create new Billing Address button by clearing the Form fields for address
-		$body.on('click', '#orderCheckoutCreateDeliveryAdd', function () {
+		$body.on('click', '#orderCheckoutCreateDeliveryAdd', function() {
 			melisHelper.zoneReload("id_meliscommerce_order_checkout_delivery_address", "meliscommerce_order_checkout_delivery_address", {emptyDeliveryAddress : 1});
 		});
+
 		// Checkout Addresses validations
-		$body.on('click', '.orderCheckoutValidateAddresses', function () {
+		$body.on('click', '.orderCheckoutValidateAddresses', function() {
 			
 			var btn 		= $(this),
 				dataString 	= new Array,
@@ -357,13 +371,14 @@ $(function() {
 						encode		: true
 					}).done(function(data) {
 						if(data.success) {
-							$(nxtTabid).tab("show");
-							
+							//$(nxtTabid).tab("show");
+							melisCommerce.switchOrderTab( nxtTabid );
+
 							melisHelper.zoneReload('id_meliscommerce_order_checkout_summary_basket','meliscommerce_order_checkout_summary_basket');
 							melisHelper.zoneReload('id_meliscommerce_order_checkout_summary_billing_address','meliscommerce_order_checkout_summary_billing_address');
 							melisHelper.zoneReload('id_meliscommerce_order_checkout_summary_delivery_address','meliscommerce_order_checkout_summary_delivery_address');
-							
-						}else{
+						}
+						else {
 							melisHelper.melisMultiKoNotification(data.textTitle, data.textMessage, data.errors);
 							melisHelper.highlightMultiErrors(data.success, data.errors,  activeTabId+" form");
 						}
@@ -375,7 +390,7 @@ $(function() {
 		});
 		
 		// validating Coupon code
-		$body.on("click", "#orderCheckoutValidateCoupon", function(){
+		$body.on("click", "#orderCheckoutValidateCoupon", function() {
 			var couponCode = $("#orderCheckoutCouponCode").val();
 
 				if ( couponCode != '' ) {
@@ -384,7 +399,7 @@ $(function() {
 		});
 		
 		// Deleting validated coupon
-		$body.on("click", ".orderValidCoupons i", function(){
+		$body.on("click", ".orderValidCoupons i", function() {
 			var couponCode = $(this).closest('.orderValidCoupons').data('couponcode');
 
 				if ( couponCode != '' ) {
@@ -411,7 +426,7 @@ $(function() {
 		});
 		
 		// Binding Variant quantity input to Numeric characters only
-		$body.on("keydown", ".orderSummaryBasketVariantQty", function (e) {
+		$body.on("keydown", ".orderSummaryBasketVariantQty", function(e) {
 			// Allow: backspace, delete, tab, escape, enter and .
 			if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
 				// Allow: Ctrl+A, Command+A
@@ -429,7 +444,7 @@ $(function() {
 		
 		// Variant quantity + (plus) button
 		// This action will add 1 (One) quantity to the Variant current quantity
-		$body.on('click', '.summary-qty-plus', function () {
+		$body.on('click', '.summary-qty-plus', function() {
 			var $this 		= $(this),
 				variantId 	= $this.data("variantid");
 
@@ -440,7 +455,7 @@ $(function() {
 		
 		// Variant quantity - (minus) button
 		// This action will deduct 1 (One) quantity to the Variant current quantity
-		$body.on('click', '.summary-qty-minus', function () {
+		$body.on('click', '.summary-qty-minus', function() {
 			var $this 		= $(this),
 				variantId 	= $this.data("variantid");
 				$varQty 	= $("#"+variantId+"_orderSummaryBasketVariantQty").val();
@@ -451,8 +466,9 @@ $(function() {
 					updateSummaryVariantbasket("deduct", variantId, variantQty);
 				}
 		});
+
 		// Confirming Client basket button
-		$body.on('click', '.orderCheckoutConfirmSummary', function () {
+		$body.on('click', '.orderCheckoutConfirmSummary', function() {
 			var btn 		= $(this),
 				nxtTabid 	= btn.data("tabid"),
 				dataString 	= new Array;
@@ -470,11 +486,12 @@ $(function() {
 					encode		: true
 				}).done(function(data) {
 					if(data.success) {
-						$(nxtTabid).tab("show");
-						
+						//$(nxtTabid).tab("show");
+						melisCommerce.switchOrderTab( nxtTabid );
+
 						melisHelper.zoneReload("id_meliscommerce_order_checkout_payment_step_content", "meliscommerce_order_checkout_payment_step_content");
-						
-					}else{
+					}
+					else {
 						melisHelper.melisMultiKoNotification(data.textTitle, data.textMessage, data.errors);
 					}
 					btn.attr('disabled', false);
@@ -484,16 +501,16 @@ $(function() {
 				});
 		});
 		
-		$body.on('click', '.orderCheckoutConfirmPayment', function () {
+		$body.on('click', '.orderCheckoutConfirmPayment', function() {
 			var btn 		= $(this),
 				nxtTabid 	= btn.data("tabid"),
 				zoneId 		= "id_meliscommerce_order_checkout_confirmation_step",
 				melisKey 	= "meliscommerce_order_checkout_confirmation_step";
 
-				$(nxtTabid).tab("show");
+				//$(nxtTabid).tab("show");
+				melisCommerce.switchOrderTab( nxtTabid );
 
 				melisHelper.zoneReload(zoneId, melisKey, {activateTab : true});
-				
 				melisHelper.zoneReload('id_meliscommerce_order_list_content_table', 'meliscommerce_order_list_content_table');
 		});
 		
@@ -528,7 +545,7 @@ window.productNextButtonState = function() {
 }
 
 // This method will update the Summary step basket list
-window.updateSummaryVariantbasket = function(action, variantId, variantQty){
+window.updateSummaryVariantbasket = function(action, variantId, variantQty) {
 	var zoneId 		= "id_meliscommerce_order_checkout_summary_basket",
 		melisKey 	= "meliscommerce_order_checkout_summary_basket",
 		couponCode 	= $("#orderCheckoutCouponCode").val();
@@ -544,14 +561,15 @@ window.updateSummaryVariantbasket = function(action, variantId, variantQty){
 		}, 3000);
 	
 }
+
 // This method will update the Basket list at First Step
-window.updateVariantbasket = function(action, variantId, variantQty){
+window.updateVariantbasket = function(action, variantId, variantQty) {
 	var zoneId 		= "id_meliscommerce_order_checkout_product_bakset",
 		melisKey 	= "meliscommerce_order_checkout_product_bakset";
 
 		melisHelper.zoneReload(zoneId, melisKey, {action: action, variantId : variantId, variantQty : variantQty});
 }
 
-window.initCheckoutSelectContactTable = function(){
+window.initCheckoutSelectContactTable = function() {
 	$('.checkoutSelectContactOrderHeader').attr('title', translations.tr_meliscommerce_checkout_tbl_cper_num_orders);
 }

@@ -4,24 +4,20 @@
         $id = $this->productId.'_'.$this->zoneconfig['conf']['id'];
     }
 ?>
-<div class="panel panel-default commerce-toggle product-create-text" id="<?php echo $id?>" data-melisKey="<?php echo $this->melisKey?>">
-	<div class="panel-heading">
-		<h4 class="panel-title"><a class="accordion-toggle collapsed" id="" data-toggle="collapse" href="#<?php echo $this->productId.'_'?>toggleformCreateTextType"><?php echo $this->translate('tr_meliscommerce_products_text_modal_create') ?></a></h4>
+<div class="card default-card commerce-toggle product-create-text" id="<?php echo $id?>" data-melisKey="<?php echo $this->melisKey?>" style="margin-bottom: 2rem;">
+	<div class="card-header">
+		<h4 class="card-title"><a class="accordion-toggle collapsed" id="" data-toggle="collapse" href="#<?php echo $this->productId.'_'?>toggleformCreateTextType"><?php echo $this->translate('tr_meliscommerce_products_text_modal_create') ?></a></h4>
     </div>
-    <div id="<?php echo $this->productId.'_'?>toggleformCreateTextType" class="panel-collapse collapse">
-      	<div class="panel-body">
+    <div id="<?php echo $this->productId.'_'?>toggleformCreateTextType" class="card-collapse collapse">
+      	<div class="card-body">
       		<div class="innerAll spacing-x2">
         		<?php 
         		    $formTextType = $this->productTextTypeForm;
 	        		echo $this->form()->openTag($formTextType);
                     echo $this->melisFieldCollection($formTextType);
                     echo $this->form()->closeTag();
-        		?>
-        		<div class="row">
-        			<div class="col-xs-12" align="right">
-        				<button id="addProdTextType" class="btn btn-success" data-productid="<?php echo $this->productId?>"><i class="fa fa-plus"></i> <?php echo $this->translate('tr_meliscommerce_general_common_add')?></button>
-        			</div>
-        		</div>
+        		?>        		
+        		<button id="addProdTextType" class="btn btn-success" data-productid="<?php echo $this->productId?>"><i class="fa fa-plus"></i> <?php echo $this->translate('tr_meliscommerce_general_common_add')?></button>
       		</div>
       	</div>
     </div>

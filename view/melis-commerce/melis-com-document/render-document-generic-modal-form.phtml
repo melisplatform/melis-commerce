@@ -71,12 +71,12 @@
                             if($this->uploadType == 'image') {
                             ?>
                             <br>
-                            <div class="panel panel-default commerce-toggle">
-                                <div class="panel-heading">
-                                    <h4 class="panel-title"><a class="accordion-toggle collapsed" id="" data-toggle="collapse" href="#toggleAddImageType"><?php echo $this->translate('tr_meliscommerce_documents_add_image_type_text') ?></a></h4>
+                            <div class="card default-card commerce-toggle">
+                                <div class="card-header">
+                                    <h4 class="card-title"><a class="collapsed" id="" data-toggle="collapse" href="#toggleAddImageType"><?php echo $this->translate('tr_meliscommerce_documents_add_image_type_text') ?></a></h4>
                                 </div>
-                                <div id="toggleAddImageType" class="panel-collapse collapse">
-                                    <div class="panel-body">
+                                <div id="toggleAddImageType" class="card-collapse collapse">
+                                    <div class="card-body">
                                         <div class="innerAll spacing-x2">
                                             <?php 
                                                 $imageTypeForm = $this->meliscommerce_documents_image_type_form;
@@ -86,7 +86,7 @@
                                                 echo $this->form()->closeTag();
                                             ?>
                                             <div class="row">
-                                                <div class="col-xs-12" align="right">
+                                                <div class="col-xs-12" style="text-align: center;">
                                                     <button class="btn btn-success btnDocAddImageType"><i class="fa fa-plus"></i> <?php echo $this->translate('tr_meliscommerce_general_common_add')?></button>
                                                 </div>
                                             </div>
@@ -101,12 +101,12 @@
                             <br>
                             <?php if ($this->relationType == 'order') { ?>
                             <?php } else { ?>
-                            <div class="panel panel-default commerce-toggle">
-                                <div class="panel-heading">
-                                    <h4 class="panel-title"><a class="accordion-toggle collapsed" id="" data-toggle="collapse" href="#toggleAddFileType"><?php echo $this->translate('tr_meliscommerce_documents_file_type_add') ?></a></h4>
+                            <div class="card default-card commerce-toggle">
+                                <div class="card-header">
+                                    <h4 class="card-title"><a class="collapsed" id="" data-toggle="collapse" href="#toggleAddFileType"><?php echo $this->translate('tr_meliscommerce_documents_file_type_add') ?></a></h4>
                                 </div>
-                                <div id="toggleAddFileType" class="panel-collapse collapse">
-                                    <div class="panel-body">
+                                <div id="toggleAddFileType" class="card-collapse collapse">
+                                    <div class="card-body">
                                         <div class="innerAll spacing-x2">
                                             <?php 
                                                 $imageTypeForm = $this->meliscommerce_documents_image_type_form;
@@ -118,7 +118,7 @@
                                                 echo $this->form()->closeTag();
                                             ?>
                                             <div class="row">
-                                                <div class="col-xs-12" align="right">
+                                                <div class="col-xs-12" style="text-align: center;">
                                                     <button class="btn btn-success btnDocAddFileType"><i class="fa fa-plus"></i> <?php echo $this->translate('tr_meliscommerce_general_common_add')?></button>
                                                 </div>
                                             </div>
@@ -133,7 +133,7 @@
                             ?>
                             <div class="row">
                                 <div class="col-md-12">
-                                    <div align="right">
+                                    <div class="footer-modal d-flex flex-row justify-content-between">
                                         <a data-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_documents_common_btn_close')?></a>
                                         <button type="submit" form="<?php echo $this->relationId.'_'.$this->relationType.'_frmDocUpload'?>" class="btn btn-success float-right" id="btnDocFileAdd"><i class="fa fa-save"></i> <?php echo $this->translate('tr_meliscommerce_documents_common_btn_save'); ?></button>
                                     </div>

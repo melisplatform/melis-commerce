@@ -10,7 +10,7 @@ return array(
                         'target' => '#tableProductVariantList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComVariantList/renderProductsVariantData',
                         'dataFunction' => 'initProductVariant',
-                        'ajaxCallback' => 'melisCommerce.initTooltipVarTable();checkVarStatus();',
+                        'ajaxCallback' => 'melisCommerce.initTooltipVarTable();checkVarStatus();melisCore.paginateDataTables();',
                         'filters' => array(
                             'left' => array(
                                 'productvariant-limit' => array(
@@ -27,17 +27,16 @@ return array(
                                 ),  
                             ),
                             'right' => array(
-
-//                                 'productvariant-grid' => array(
-//                                     'module' => 'MelisCommerce',
-//                                     'controller' => 'MelisComVariantList',
-//                                     'action' => 'render-products-variant-tab-table-grid'
-//                                 ),
-//                                 'productvariant-list' => array(
-//                                     'module' => 'MelisCommerce',
-//                                     'controller' => 'MelisComVariantList',
-//                                     'action' => 'render-products-variant-tab-table-list'
-//                                 ),
+                                /* 'productvariant-grid' => array(
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComVariantList',
+                                    'action' => 'render-products-variant-tab-table-grid'
+                                ),
+                                'productvariant-list' => array(
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComVariantList',
+                                    'action' => 'render-products-variant-tab-table-list'
+                                ), */
                                 'productvariant-refresh' => array(
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComVariantList',
@@ -46,12 +45,11 @@ return array(
                             ),
                         ),
                         'columns' => array(
-//                             'select' => array(
-//                                 'text' => '',
-//                                 'css' => array('width' => '3%', 'padding-right' => '0'),
-//                                 'sortable' => false,
-                               
-//                             ),
+                            /* 'select' => array(
+                                'text' => '',
+                                'css' => array('width' => '3%', 'padding-right' => '0'),
+                                'sortable' => false,                               
+                            ), */
                             'var_id' => array(
                                 'text' => 'tr_meliscommerce_variant_list_id',
                                 'css' => array('width' => '1%', 'padding-right' => '0'),
@@ -114,7 +112,7 @@ return array(
                         'target' => '#tableProductList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComProductList/getProductsList',
                         'dataFunction' => '',
-                        'ajaxCallback' => 'melisCommerce.initTooltipTable();',
+                        'ajaxCallback' => 'melisCommerce.initTooltipTable();melisCore.paginateDataTables();',
                         'filters' => array(
                             'left' => array(
                                 /* 'product-list-table-filter-bulk' => array(
@@ -135,30 +133,29 @@ return array(
                                     'controller' => 'MelisComProductList',
                                     'action' => 'render-product-list-content-filter-search'
                                 ),
-                                
-//                                 'product-list-table-filter-search' => array(
-//                                     'module' => 'MelisCommerce',
-//                                     'controller' => 'MelisComProductList',
-//                                     'action' => 'render-product-list-content-filter-search'
-//                                 ),
-//                                 'product-list-table-filter-limit' => array(
-//                                     'module' => 'MelisCommerce',
-//                                     'controller' => 'MelisComProductList',
-//                                     'action' => 'render-product-list-content-filter-limit'
-//                                 ),
+                                /* 'product-list-table-filter-search' => array(
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComProductList',
+                                    'action' => 'render-product-list-content-filter-search'
+                                ),
+                                'product-list-table-filter-limit' => array(
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComProductList',
+                                    'action' => 'render-product-list-content-filter-limit'
+                                ), */
                             ),
                             
                             'right' => array(
-//                                 'product-list-table-filter-grid-view' => array(
-//                                     'module' => 'MelisCommerce',
-//                                     'controller' => 'MelisComProductList',
-//                                     'action' => 'render-product-list-content-filter-grid-view'
-//                                 ),
-//                                 'product-list-table-filter-list-view' => array(
-//                                     'module' => 'MelisCommerce',
-//                                     'controller' => 'MelisComProductList',
-//                                     'action' => 'render-product-list-content-filter-list-view'
-//                                 ),
+                                /* 'product-list-table-filter-grid-view' => array(
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComProductList',
+                                    'action' => 'render-product-list-content-filter-grid-view'
+                                ),
+                                'product-list-table-filter-list-view' => array(
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComProductList',
+                                    'action' => 'render-product-list-content-filter-list-view'
+                                ), */
                                 'product-list-table-filter-refresh' => array(
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComProductList',
@@ -168,12 +165,11 @@ return array(
                         ),
                         
                         'columns' => array(
-//                             'product_table_checkbox' => array(
-//                                 'text' => '',
-//                                 'css' => array('width' => '1%', 'padding-right' => '0'),
-//                                 'sortable' => false,
-//                             ),
-                            
+                            /* 'product_table_checkbox' => array(
+                                'text' => '',
+                                'css' => array('width' => '1%', 'padding-right' => '0'),
+                                'sortable' => false,
+                            ), */
                             'prd_id' => array(
                                 'text' => 'tr_meliscommerce_product_list_col_id',
                                 'css' => array('width' => '1%', 'padding-right' => '0'),

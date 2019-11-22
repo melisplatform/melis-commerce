@@ -19,11 +19,6 @@
     padding: 7px 10px;
     padding: 10px;
 }
-/*.red-box-panel {
-	background: #fff;
-    margin: 5px 0 0;
-	box-shadow: 3px 5px 10px #cdcdcd;
-}*/
 .shadow-effect {
     margin: 40px 0 0;
 }
@@ -94,7 +89,6 @@ tr.last-tr td {
 	margin: 6px 6px 6px 0;
 }
 .filter-bar .row .fb-dt-left .order-list-table-filter-limit-order {
-	display: inline-block;
 	float: left;
 }
 

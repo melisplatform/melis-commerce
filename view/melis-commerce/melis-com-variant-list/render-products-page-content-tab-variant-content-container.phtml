@@ -8,16 +8,16 @@
 
 <div <?= $id?> data-meliskey="<?= $data_melisKey; ?>">
 <?php 
-//     if(!empty($this->zoneconfig['interface'])) {
-//         foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
-//             echo $this->$keyConfig;
-//         }
-//     }
+    /* if(!empty($this->zoneconfig['interface'])) {
+        foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+            echo $this->$keyConfig;
+        }
+    } */
 
     $this->melisGenericTable()->setTable(array(
         'id' => $this->productId.'_tableProductVariantList',
         'data-prodid' => $this->productId,
-        'class' => 'table table-striped table-primary dt-responsive nowrap',
+        'class' => 'table table-striped table-primary dt-responsive nowrap product-variant',
         'cellspacing' => '0',
         'width' => '100%'
     ));

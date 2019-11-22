@@ -7,14 +7,10 @@
     
 ?>
 <div <?php echo $id. ' '.$data_melisKey?>>	
-	<div class="row">
-		<div class="col-xs-12">
-            <div class="make-switch commerce-switch" id="<?php echo $this->clientId ?>_cli_status" data-on-label="<?php echo $this->translate('tr_meliscommerce_client_status_active')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_client_status_inactive')?>" data-text-label="<?php echo $this->translate('tr_meliscommerce_clients_common_label_status')?>">
-                <input type="checkbox" name="<?php echo $this->clientId ?>_cli_status" id="<?php echo $this->clientId ?>_cli_status" <?php echo $this->status?>>
-            </div>
-    	</div>
-	</div>
+    <div class="make-switch commerce-switch" id="<?php echo $this->clientId ?>_cli_status" data-on-label="<?php echo $this->translate('tr_meliscommerce_client_status_active')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_client_status_inactive')?>" data-text-label="<?php echo $this->translate('tr_meliscommerce_clients_common_label_status')?>">
+        <input type="checkbox" name="<?php echo $this->clientId ?>_cli_status" id="<?php echo $this->clientId ?>_cli_status" <?php echo $this->status?>>
+    </div>
 </div>
 <script>
-$('#'+<?php echo $this->clientId ?>+'_cli_status').bootstrapSwitch();
+    $('#'+<?php echo $this->clientId ?>+'_cli_status').bootstrapSwitch();
 </script>
