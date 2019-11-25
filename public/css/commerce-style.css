@@ -2485,3 +2485,8 @@ tr.last-tr td {
     height: 60px;
     max-width: 60px;
 }
+/* accordion-toggle heading */
+.content-cont .card-title > a,
+.content-cont .panel-title > a {
+    color: #686868;
+}

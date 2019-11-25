@@ -161,16 +161,16 @@ return array(
                                 'css' => array('width' => '10%', 'padding-right' => '0'),
                                 'sortable' => true,
                             ),
-//                             'ccomp_name' => array(
-//                                 'text' => 'tr_meliscommerce_order_list_col_company',
-//                                 'css' => array('width' => '15%', 'padding-right' => '0'),
-//                                 'sortable' => false,
-//                             ),
-//                             'civt_min_name' => array(
-//                                 'text' => 'tr_meliscommerce_order_list_col_civility',
-//                                 'css' => array('width' => '10%', 'padding-right' => '0'),
-//                                 'sortable' => false,
-//                             ),
+                            /* 'ccomp_name' => array(
+                                'text' => 'tr_meliscommerce_order_list_col_company',
+                                'css' => array('width' => '15%', 'padding-right' => '0'),
+                                'sortable' => false,
+                            ),
+                            'civt_min_name' => array(
+                                'text' => 'tr_meliscommerce_order_list_col_civility',
+                                'css' => array('width' => '10%', 'padding-right' => '0'),
+                                'sortable' => false,
+                            ), */
                             'cper_firstname' => array(
                                 'text' => 'tr_meliscommerce_order_list_col_firstname',
                                 'css' => array('width' => '15%', 'padding-right' => '0'),

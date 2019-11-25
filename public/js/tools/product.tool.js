@@ -383,7 +383,7 @@ $(function() {
                     var formTextForms = $("#" + productId + "_id_meliscommerce_products_page .product-text-forms > .custom-field-type");
 
                         if ( formTextForms.length ) {
-                            $("#" + productId + "_id_meliscommerce_products_page .notifTinyMcePreloaInfo").fadeIn();
+                            $("#" + productId + "_id_meliscommerce_products_page .notifTinyMcePreloaInfo").fadeIn("slow");
                         }
 
                         $.each(formTextForms, function(i, v){
