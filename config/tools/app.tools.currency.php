@@ -12,7 +12,7 @@ return array(
                         'target' => '#tableComCurrencyList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComCurrency/getComCurrencyData',
                         'dataFunction' => '',
-                        'ajaxCallback' => 'reInitTableEcomCurrency()',
+                        'ajaxCallback' => 'reInitTableEcomCurrency();melisCore.paginateDataTables()',
                         'filters' => array(
                             'left' => array(
                                 'country-table-limit' => array(

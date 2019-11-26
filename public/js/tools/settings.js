@@ -102,7 +102,7 @@ var melisCommerceSettings = (function(window) {
 				}	
 				melisCore.flashMessenger();	
 			}, function(data) {
-				
+				alert( translations.tr_meliscore_error_message );
 			});
 	}
 	

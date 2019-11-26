@@ -11,7 +11,7 @@ return array(
                         'target' => '#tableComCountryList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComCountry/getComCountryData',
                         'dataFunction' => '',
-                        'ajaxCallback' => '',
+                        'ajaxCallback' => 'melisCore.paginateDataTables()',
                         'filters' => array(
                             'left' => array(
                                 'country-table-limit' => array(

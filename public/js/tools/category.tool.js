@@ -57,10 +57,10 @@ $(function() {
 			var zoneId 		= 'id_meliscommerce_categories_category',
 				melisKey 	= 'meliscommerce_categories_category';
 			
-			$("#"+zoneId).removeClass("hidden");
-			
-			melisHelper.zoneReload(zoneId, melisKey, {catId : 0, catFatherId: -1});
-			melisCommerce.setUniqueId(0);
+				$("#"+zoneId).removeClass("hidden");
+				
+				melisHelper.zoneReload(zoneId, melisKey, {catId : 0, catFatherId: -1});
+				melisCommerce.setUniqueId(0);
 		});
 		
 		$body.on("click", "#saveCategory", function(){ 
@@ -143,66 +143,65 @@ $(function() {
 								melisCore.flashMessenger();
 								melisHelper.melisOkNotification(data.textTitle, data.textMessage);
 								
-								var catTree = $('#categoryTreeView').jstree(true);
-								// Get Current Url of the category Tree view
-								var realUrl = catTree.settings.core.data.url;
-								
-								// selected Category Id/Node
-								var selectedNode = '';
-								if(catId==0){
-									// New Category Created
-									var nodeData = catTree.get_node(catFatherId);
-									
-									var nodeParents = new Array;
-									
-									nodeParentsStr = '';
-									
-									nodeParents.push(catFatherId);
-									
-									if(typeof nodeData === "object"){
-										if(nodeData.parents.length>1){
-											for(i = 0; i<nodeData.parents.length-1 ; i++){
-												nodeParents.push(nodeData.parents[i]);
-											}
-										}
-									}
-									
-									nodeParentsStr = "&openStateParent="+nodeParents.join();
-									
-									selectedNode = data.cat_id;
-									
-								}else{
-									// Category exist
-									var nodeData = catTree.get_node(catId);
-									
-									var nodeParents = new Array;
-									
-									nodeParentsStr = ''; 
-									
-									if(nodeData !== false){
-										if(nodeData.parents.length>1 ){
-											for(i = 0; i<nodeData.parents.length-1 ; i++){
-												nodeParents.push(nodeData.parents[i]);
-											}
-											nodeParentsStr = "&openStateParent="+nodeParents.join();
-										}
+								var catTree = $('#categoryTreeView').jstree(true),
+									// Get Current Url of the category Tree view
+									realUrl = catTree.settings.core.data.url,
+									// selected Category Id/Node
+									selectedNode = '';
+
+									if(catId==0){
+										// New Category Created
+										var nodeData 	= catTree.get_node(catFatherId),
+											nodeParents = new Array;
 										
-										catTree.get_node(catId).state.selected = true;
+											nodeParentsStr = '';
+											
+											nodeParents.push(catFatherId);
+											
+											if(typeof nodeData === "object"){
+												if(nodeData.parents.length>1){
+													for(i = 0; i<nodeData.parents.length-1 ; i++){
+														nodeParents.push(nodeData.parents[i]);
+													}
+												}
+											}
+											
+											nodeParentsStr = "&openStateParent="+nodeParents.join();
+											
+											selectedNode = data.cat_id;
+										
 									}
-									
-									selectedNode = catId;
-								}
+									else {
+										// Category exist
+										var nodeData 	= catTree.get_node(catId),
+											nodeParents = new Array;
+										
+											nodeParentsStr = ''; 
+											
+											if(nodeData !== false){
+												if(nodeData.parents.length>1 ){
+													for(i = 0; i<nodeData.parents.length-1 ; i++){
+														nodeParents.push(nodeData.parents[i]);
+													}
+													nodeParentsStr = "&openStateParent="+nodeParents.join();
+												}
+												
+												catTree.get_node(catId).state.selected = true;
+											}
+											
+											selectedNode = catId;
+									}
 								
-								// Set JsTree Url with Selected Node and Open State Nodes
-								catTree.settings.core.data.url = realUrl+"&selected="+selectedNode+nodeParentsStr;
-								// Deselect selected node
-								catTree.deselect_all();
-								// Remove Node Highllight
-								$("#categoryTreeView ul li div").removeClass("jstree-wholerow-clicked");
-								//refresh Category view
-								catTree.refresh();
-								// Rollback the real/default url
-								catTree.settings.core.data.url = realUrl;
+									// Set JsTree Url with Selected Node and Open State Nodes
+									catTree.settings.core.data.url = realUrl+"&selected="+selectedNode+nodeParentsStr;
+									// Deselect selected node
+									catTree.deselect_all();
+									// Remove Node Highllight
+									$("#categoryTreeView ul li div").removeClass("jstree-wholerow-clicked");
+									//refresh Category view
+									catTree.refresh();
+									// Rollback the real/default url
+									catTree.settings.core.data.url = realUrl;
 								
 								var zoneId 		= 'id_meliscommerce_categories_category',
 									melisKey 	= 'meliscommerce_categories_category';

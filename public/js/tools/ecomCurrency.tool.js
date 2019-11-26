@@ -24,11 +24,11 @@ $(function() {
 							melisCoreTool.pending('#btnComSaveCurrency');
 
 							$.ajax({
-								type: 'POST',
-								url: '/melis/MelisCommerce/MelisComCurrency/getCountriesUsingCurrency',
-								data: {currencyId: currencyId},
+								type	: 'POST',
+								url		: '/melis/MelisCommerce/MelisComCurrency/getCountriesUsingCurrency',
+								data	: {currencyId: currencyId},
 								dataType: 'json',
-								encode: true
+								encode	: true
 							}).done(function (data) {
 								if ( data.countries.length > 0 ) {
 									var countriesHtml = '<ul class="container">';
@@ -157,6 +157,7 @@ $(function() {
 					melisCoreTool.done("#btnComSaveCurrency");
 				}, function() {
 					melisCoreTool.done("#btnComSaveCurrency");
+					alert( translations.tr_meliscore_error_message );
 				});
 		});
 		

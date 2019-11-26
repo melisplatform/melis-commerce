@@ -273,6 +273,12 @@ table.dataTable.uk-table-condensed .sorting_desc:after {
 
 .card {
     border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.card .card-header {
+    background-color: transparent;
+    border: 0;
 }
 
 .commerce-toggle .card-header,
@@ -421,7 +427,7 @@ table.dataTable.uk-table-condensed .sorting_desc:after {
 */
 
 #categoryTreeViewPanel .btn span{
-    font-size: 12px;
+    font-size: 11px;
 }
 
 @media (min-width: 1753px) and (max-width: 1850px){
@@ -667,6 +673,12 @@ div.melis-pdc *.btn {
 #content .card-title,
 #content .panel-title {
     border-bottom: 0px;
+    font-size: 16px;
+    margin-bottom: 0;
+}
+
+.card-title,
+.panel-title {
     font-size: 16px;
     margin-bottom: 0;
 }
@@ -2421,14 +2433,19 @@ tr.last-tr td {
 .bootstrap-filestyle .group-span-filestyle .btn {
     padding-top: 0;
 }
+.bootstrap-filestyle.input-group .input-group-btn label {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    line-height: 33px;
+}
 /* tooltip */
 .pdc-content .form-group .fa-info-circle {
     float: right;
 }
 /* catalogs / categories */
 #categoryTreeViewPanel .btn {
-    padding-left: 0.5em;
-    padding-right: 0.5em;
+    padding-left: 0.3em;
+    padding-right: 0.3em;
 }
 #tableProductList img {
     width: 60px;
@@ -2489,4 +2506,8 @@ tr.last-tr td {
 .content-cont .card-title > a,
 .content-cont .panel-title > a {
     color: #686868;
+}
+/* Images inside tables */
+.table-primary .rounded-circle.img-fluid {
+    height: 60px;
 }

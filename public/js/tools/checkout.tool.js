@@ -509,106 +509,110 @@ $(function() {
 			if ( parseInt($varQty) > 0 ) {
 				variantQty = parseInt($sumBasketVarQty.val()) - 1;
 				$sumBasketVarQty.val(variantQty);
-				
+
 				updateSummaryVariantbasket("deduct", variantId, variantQty);
 			}
 		});
 		
 		// Confirming Client basket button
-		$('body').on('click', '.orderCheckoutConfirmSummary', function () {
-			var btn = $(this);
-			var nxtTabid = $(this).data("tabid");
-			
-			var dataString = new Array;
-			dataString.push({
-				name : 'couponCode',
-				value : ($("#orderCheckoutCouponCode").length) ? $("#orderCheckoutCouponCode").val() : ''
-			});
-			
-			$.ajax({
-				type        : "POST", 
-				url         : "/melis/MelisCommerce/MelisComOrderCheckout/confirmOrderCheckoutSummary",
-				data		: dataString,
-				dataType    : "json",
-				encode		: true
-			}).done(function(data) {
-				if(data.success) {
-					$(nxtTabid).tab("show");
-					
-					melisHelper.zoneReload("id_meliscommerce_order_checkout_payment_step_content", "meliscommerce_order_checkout_payment_step_content");
-					
-				}else{
-					melisHelper.melisMultiKoNotification(data.textTitle, data.textMessage, data.errors);
-				}
-				btn.attr('disabled', false);
-			}).fail(function(){
-				alert( translations.tr_meliscore_error_message );
-				btn.attr('disabled', false);
-			});
+		$body.on('click', '.orderCheckoutConfirmSummary', function() {
+			var btn 		= $(this),
+				nxtTabid 	= $this.data("tabid"),
+				dataString 	= new Array;
+
+				dataString.push({
+					name : 'couponCode',
+					value : ($("#orderCheckoutCouponCode").length) ? $("#orderCheckoutCouponCode").val() : ''
+				});
+				
+				$.ajax({
+					type        : "POST", 
+					url         : "/melis/MelisCommerce/MelisComOrderCheckout/confirmOrderCheckoutSummary",
+					data		: dataString,
+					dataType    : "json",
+					encode		: true
+				}).done(function(data) {
+					if(data.success) {
+						//$(nxtTabid).tab("show");
+						
+						melisHelper.zoneReload("id_meliscommerce_order_checkout_payment_step_content", "meliscommerce_order_checkout_payment_step_content");
+						
+					}else{
+						melisHelper.melisMultiKoNotification(data.textTitle, data.textMessage, data.errors);
+					}
+					btn.attr('disabled', false);
+				}).fail(function(){
+					btn.attr('disabled', false);
+					alert( translations.tr_meliscore_error_message );
+				});
 		});
 		
-		$('body').on('click', '.orderCheckoutConfirmPayment', function () {
-			var btn = $(this);
-			var nxtTabid = $(this).data("tabid");
-			$(nxtTabid).tab("show");
-			
-			var zoneId = "id_meliscommerce_order_checkout_confirmation_step";
-			var melisKey = "meliscommerce_order_checkout_confirmation_step";
-			melisHelper.zoneReload(zoneId, melisKey, {activateTab : true});
-			
-			melisHelper.zoneReload('id_meliscommerce_order_list_content_table', 'meliscommerce_order_list_content_table');
+		$body.on('click', '.orderCheckoutConfirmPayment', function() {
+			var btn 		= $(this),
+				nxtTabid 	= btn.data("tabid"),
+				zoneId 		= "id_meliscommerce_order_checkout_confirmation_step",
+				melisKey 	= "meliscommerce_order_checkout_confirmation_step";
+
+				$(nxtTabid).tab("show");
+
+				melisHelper.zoneReload(zoneId, melisKey, {activateTab : true});				
+				melisHelper.zoneReload('id_meliscommerce_order_list_content_table', 'meliscommerce_order_list_content_table');
 		});
 		
-		$('body').on('change', '#orderCheckoutCouponCode', function () {
-			if($(this).val() == ''){
-				$(this).parent('.input-group').next().fadeOut('slow');
+		$body.on('change', '#orderCheckoutCouponCode', function() {
+			var $this = $(this);
+			
+			if ( $this.val() == '' ) {
+				$this.parent('.input-group').next().fadeOut('slow');
 			}
 		});
 	});
 
-window.productNextButtonState = function(){
-	
+window.productNextButtonState = function() {
 	var nextButton = $(".orderCheckoutFirstStepBtn");
-	$.ajax({
-        type        : "POST", 
-        url         : "/melis/MelisCommerce/MelisComOrderCheckout/checkBasket",
-        dataType    : "json",
-        encode		: true
-	}).done(function(data) {
-		if(data.success) {
-			nextButton.attr('disabled', false);
-			nextButton.attr('title', '');
-		}else{
-			nextButton.attr('disabled', true);
-			nextButton.attr('title', translations.tr_meliscommerce_order_checkout_product_basket_empty);
-		}
-	}).fail(function(){});
+
+		$.ajax({
+			type        : "POST", 
+			url         : "/melis/MelisCommerce/MelisComOrderCheckout/checkBasket",
+			dataType    : "json",
+			encode		: true
+		}).done(function(data) {
+			if(data.success) {
+				nextButton.attr('disabled', false);
+				nextButton.attr('title', '');
+			}else{
+				nextButton.attr('disabled', true);
+				nextButton.attr('title', translations.tr_meliscommerce_order_checkout_product_basket_empty);
+			}
+		}).fail(function() {
+			alert( translations.tr_meliscore_error_message );
+		});
 }
 
 // This method will update the Summary step basket list
-window.updateSummaryVariantbasket = function(action, variantId, variantQty){
-	var zoneId = "id_meliscommerce_order_checkout_summary_basket";
-	var melisKey = "meliscommerce_order_checkout_summary_basket";
-	
-	var couponCode = $("#orderCheckoutCouponCode").val();
-	if(couponCode == ''){
-		couponCode = null;
-	}
-	melisHelper.zoneReload(zoneId, melisKey, {action: action, variantId : variantId, variantQty : variantQty, couponCode : couponCode});
-	// this will also update the basket list at First step
-	setTimeout(function(){ 
-		melisHelper.zoneReload("id_meliscommerce_order_checkout_product_bakset", "meliscommerce_order_checkout_product_bakset");
-	}, 3000);
-	
+window.updateSummaryVariantbasket = function(action, variantId, variantQty) {
+	var zoneId 		= "id_meliscommerce_order_checkout_summary_basket",
+		melisKey 	= "meliscommerce_order_checkout_summary_basket",
+		couponCode 	= $("#orderCheckoutCouponCode").val();
+
+		if ( couponCode == '' ) {
+			couponCode = null;
+		}
+		melisHelper.zoneReload(zoneId, melisKey, {action: action, variantId : variantId, variantQty : variantQty, couponCode : couponCode});
+		// this will also update the basket list at First step
+		setTimeout(function(){ 
+			melisHelper.zoneReload("id_meliscommerce_order_checkout_product_bakset", "meliscommerce_order_checkout_product_bakset");
+		}, 3000);
 }
 
 // This method will update the Basket list at First Step
-window.updateVariantbasket = function(action, variantId, variantQty){
-	var zoneId = "id_meliscommerce_order_checkout_product_bakset";
-	var melisKey = "meliscommerce_order_checkout_product_bakset";
-	melisHelper.zoneReload(zoneId, melisKey, {action: action, variantId : variantId, variantQty : variantQty});
+window.updateVariantbasket = function(action, variantId, variantQty) {
+	var zoneId 		= "id_meliscommerce_order_checkout_product_bakset",
+		melisKey 	= "meliscommerce_order_checkout_product_bakset";
+
+		melisHelper.zoneReload(zoneId, melisKey, {action: action, variantId : variantId, variantQty : variantQty});
 }
 
-window.initCheckoutSelectContactTable = function(){
+window.initCheckoutSelectContactTable = function() {
 	$('.checkoutSelectContactOrderHeader').attr('title', translations.tr_meliscommerce_checkout_tbl_cper_num_orders);
 }

@@ -130,7 +130,7 @@ return array(
                         'target' => '#tableOrderBasketList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComOrder/getBasketData',
                         'dataFunction' => 'initOrderBasket',
-                        'ajaxCallback' => 'hideBasketButton()',                        
+                        'ajaxCallback' => 'hideBasketButton();melisCore.paginateDataTables()',                        
                         'filters' => array(
                             'left' => array(
                                 'order-basket-list-table-filter-limit' => array(
@@ -215,7 +215,7 @@ return array(
                         'target' => '#tableOrderStatus',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComOrderStatus/getOrderStatusData',
                         'dataFunction' => '',
-                        'ajaxCallback' => 'initCheckPermStatus',
+                        'ajaxCallback' => 'initCheckPermStatus;melisCore.paginateDataTables()',
                         'filters' => array(
                             'left' => array(
                                 'order-status-table-filter-limit' => array(

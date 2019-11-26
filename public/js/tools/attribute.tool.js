@@ -8,7 +8,7 @@ $(function() {
 
         //removes modal elements when clicking outside
         $body.on("click", function (e) {
-            if ($(e.target).hasClass('modal')) {
+            if ( $(e.target).hasClass('modal') ) {
                 $('#id_meliscommerce_attribute_value_modal_value_form_container').modal('hide');
             }
         });
@@ -56,7 +56,7 @@ $(function() {
                 melisKey = 'meliscommerce_attribute_value_modal_value_form';
                 modalUrl = '/melis/MelisCommerce/MelisComAttribute/renderAttributeModal';
                 // requesitng to create modal and display after
-                melisHelper.createModal(zoneId, melisKey, false, {'attributeId': attributeId}, modalUrl, function(){
+                melisHelper.createModal(zoneId, melisKey, false, {'attributeId': attributeId}, modalUrl, function() {
 
                 });
                 melisCoreTool.done(this);
@@ -74,7 +74,7 @@ $(function() {
                 melisKey = 'meliscommerce_attribute_value_modal_value_form';
                 modalUrl = '/melis/MelisCommerce/MelisComAttribute/renderAttributeModal';
                 // requesitng to create modal and display after
-                melisHelper.createModal(zoneId, melisKey, false, {'attributeId': attributeId, 'attributeValueId' : attributeValueId}, modalUrl, function(){
+                melisHelper.createModal(zoneId, melisKey, false, {'attributeId': attributeId, 'attributeValueId' : attributeValueId}, modalUrl, function() {
 
                 });
                 melisCoreTool.done(this);
@@ -111,7 +111,8 @@ $(function() {
                             melisCore.flashMessenger();
                         }, function(data){
                             console.log(data);
-                        })
+                            alert( translations.tr_meliscore_error_message );
+                        });
                     });
 
                 melisCoreTool.done(this);
@@ -155,6 +156,7 @@ $(function() {
                     melisCore.flashMessenger();
                 }, function(data){
                     console.log(data);
+                    alert( translations.tr_meliscore_error_message );
                 });
                 melisCoreTool.done(this);
         });
@@ -220,6 +222,7 @@ $(function() {
                     melisCore.flashMessenger();
                 }, function(data){
                     console.log(data);
+                    alert( translations.tr_meliscore_error_message );
                 });
 
                 melisCoreTool.done(this);
@@ -256,6 +259,7 @@ $(function() {
                             melisCore.flashMessenger();
                         }, function(data){
                             console.log(data);
+                            alert( translations.tr_meliscore_error_message );
                         })
 
                     });
@@ -272,6 +276,6 @@ $(function() {
 
 window.initAttributeValue = function(data, tblSettings) {
     var attributeId = $("#" + tblSettings.sTableId ).data("attributeid");
-    data.attributeId = attributeId;
+        data.attributeId = attributeId;
 }
 

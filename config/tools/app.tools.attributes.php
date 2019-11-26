@@ -9,7 +9,7 @@ return array(
                         'target' => '#tableAttributeList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComAttributeList/getAttributeListData',
                         'dataFunction' => '',
-                        'ajaxCallback' => '',
+                        'ajaxCallback' => 'melisCore.paginateDataTables()',
                         'filters' => array(
                             'left' => array(
                                 'attribute-list-table-filter-limit' => array(

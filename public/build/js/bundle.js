@@ -2582,10 +2582,10 @@ $(function() {
 			var zoneId 		= 'id_meliscommerce_categories_category',
 				melisKey 	= 'meliscommerce_categories_category';
 			
-			$("#"+zoneId).removeClass("hidden");
-			
-			melisHelper.zoneReload(zoneId, melisKey, {catId : 0, catFatherId: -1});
-			melisCommerce.setUniqueId(0);
+				$("#"+zoneId).removeClass("hidden");
+				
+				melisHelper.zoneReload(zoneId, melisKey, {catId : 0, catFatherId: -1});
+				melisCommerce.setUniqueId(0);
 		});
 		
 		$body.on("click", "#saveCategory", function(){ 
@@ -2668,66 +2668,65 @@ $(function() {
 								melisCore.flashMessenger();
 								melisHelper.melisOkNotification(data.textTitle, data.textMessage);
 								
-								var catTree = $('#categoryTreeView').jstree(true);
-								// Get Current Url of the category Tree view
-								var realUrl = catTree.settings.core.data.url;
-								
-								// selected Category Id/Node
-								var selectedNode = '';
-								if(catId==0){
-									// New Category Created
-									var nodeData = catTree.get_node(catFatherId);
-									
-									var nodeParents = new Array;
-									
-									nodeParentsStr = '';
-									
-									nodeParents.push(catFatherId);
-									
-									if(typeof nodeData === "object"){
-										if(nodeData.parents.length>1){
-											for(i = 0; i<nodeData.parents.length-1 ; i++){
-												nodeParents.push(nodeData.parents[i]);
-											}
-										}
-									}
-									
-									nodeParentsStr = "&openStateParent="+nodeParents.join();
-									
-									selectedNode = data.cat_id;
-									
-								}else{
-									// Category exist
-									var nodeData = catTree.get_node(catId);
-									
-									var nodeParents = new Array;
-									
-									nodeParentsStr = ''; 
-									
-									if(nodeData !== false){
-										if(nodeData.parents.length>1 ){
-											for(i = 0; i<nodeData.parents.length-1 ; i++){
-												nodeParents.push(nodeData.parents[i]);
-											}
-											nodeParentsStr = "&openStateParent="+nodeParents.join();
-										}
+								var catTree = $('#categoryTreeView').jstree(true),
+									// Get Current Url of the category Tree view
+									realUrl = catTree.settings.core.data.url,
+									// selected Category Id/Node
+									selectedNode = '';
+
+									if(catId==0){
+										// New Category Created
+										var nodeData 	= catTree.get_node(catFatherId),
+											nodeParents = new Array;
 										
-										catTree.get_node(catId).state.selected = true;
+											nodeParentsStr = '';
+											
+											nodeParents.push(catFatherId);
+											
+											if(typeof nodeData === "object"){
+												if(nodeData.parents.length>1){
+													for(i = 0; i<nodeData.parents.length-1 ; i++){
+														nodeParents.push(nodeData.parents[i]);
+													}
+												}
+											}
+											
+											nodeParentsStr = "&openStateParent="+nodeParents.join();
+											
+											selectedNode = data.cat_id;
+										
 									}
-									
-									selectedNode = catId;
-								}
+									else {
+										// Category exist
+										var nodeData 	= catTree.get_node(catId),
+											nodeParents = new Array;
+										
+											nodeParentsStr = ''; 
+											
+											if(nodeData !== false){
+												if(nodeData.parents.length>1 ){
+													for(i = 0; i<nodeData.parents.length-1 ; i++){
+														nodeParents.push(nodeData.parents[i]);
+													}
+													nodeParentsStr = "&openStateParent="+nodeParents.join();
+												}
+												
+												catTree.get_node(catId).state.selected = true;
+											}
+											
+											selectedNode = catId;
+									}
 								
-								// Set JsTree Url with Selected Node and Open State Nodes
-								catTree.settings.core.data.url = realUrl+"&selected="+selectedNode+nodeParentsStr;
-								// Deselect selected node
-								catTree.deselect_all();
-								// Remove Node Highllight
-								$("#categoryTreeView ul li div").removeClass("jstree-wholerow-clicked");
-								//refresh Category view
-								catTree.refresh();
-								// Rollback the real/default url
-								catTree.settings.core.data.url = realUrl;
+									// Set JsTree Url with Selected Node and Open State Nodes
+									catTree.settings.core.data.url = realUrl+"&selected="+selectedNode+nodeParentsStr;
+									// Deselect selected node
+									catTree.deselect_all();
+									// Remove Node Highllight
+									$("#categoryTreeView ul li div").removeClass("jstree-wholerow-clicked");
+									//refresh Category view
+									catTree.refresh();
+									// Rollback the real/default url
+									catTree.settings.core.data.url = realUrl;
 								
 								var zoneId 		= 'id_meliscommerce_categories_category',
 									melisKey 	= 'meliscommerce_categories_category';
@@ -7698,6 +7697,7 @@ $(function() {
                     melisCore.flashMessenger();
                 }, function(data) {
                     console.log(data);
+                    alert( translations.tr_meliscore_error_message );
                 });
 
                 $('#'+couponId+"_id_meliscommerce_coupon_tabs_content_assign_details").addClass('active');
@@ -7773,6 +7773,7 @@ $(function() {
                     melisCore.flashMessenger();
                 }, function(data) {
                     console.log(data);
+                    alert( translations.tr_meliscore_error_message );
                 });
 
                 melisCoreTool.done(this);
@@ -7825,6 +7826,7 @@ $(function() {
                             melisCore.flashMessenger();
                         }, function(data) {
                             console.log(data);
+                            alert( translations.tr_meliscore_error_message );
                         });
                     });
 
@@ -7869,6 +7871,7 @@ $(function() {
                             melisCore.flashMessenger();
                         }, function(data) {
                             console.log(data);
+                            alert( translations.tr_meliscore_error_message );
                         });
                     });
 
@@ -7936,6 +7939,7 @@ $(function() {
                     melisCore.flashMessenger();
                 }, function(data) {
                     console.log(data);
+                    alert( translations.tr_meliscore_error_message );
                 });
          		//$('#'+couponId+"_id_meliscommerce_coupon_tabs_content_assign_details").addClass('active');
         }
@@ -8516,107 +8520,111 @@ $(function() {
 			if ( parseInt($varQty) > 0 ) {
 				variantQty = parseInt($sumBasketVarQty.val()) - 1;
 				$sumBasketVarQty.val(variantQty);
-				
+
 				updateSummaryVariantbasket("deduct", variantId, variantQty);
 			}
 		});
 		
 		// Confirming Client basket button
-		$('body').on('click', '.orderCheckoutConfirmSummary', function () {
-			var btn = $(this);
-			var nxtTabid = $(this).data("tabid");
-			
-			var dataString = new Array;
-			dataString.push({
-				name : 'couponCode',
-				value : ($("#orderCheckoutCouponCode").length) ? $("#orderCheckoutCouponCode").val() : ''
-			});
-			
-			$.ajax({
-				type        : "POST", 
-				url         : "/melis/MelisCommerce/MelisComOrderCheckout/confirmOrderCheckoutSummary",
-				data		: dataString,
-				dataType    : "json",
-				encode		: true
-			}).done(function(data) {
-				if(data.success) {
-					$(nxtTabid).tab("show");
-					
-					melisHelper.zoneReload("id_meliscommerce_order_checkout_payment_step_content", "meliscommerce_order_checkout_payment_step_content");
-					
-				}else{
-					melisHelper.melisMultiKoNotification(data.textTitle, data.textMessage, data.errors);
-				}
-				btn.attr('disabled', false);
-			}).fail(function(){
-				alert( translations.tr_meliscore_error_message );
-				btn.attr('disabled', false);
-			});
+		$body.on('click', '.orderCheckoutConfirmSummary', function() {
+			var btn 		= $(this),
+				nxtTabid 	= $this.data("tabid"),
+				dataString 	= new Array;
+
+				dataString.push({
+					name : 'couponCode',
+					value : ($("#orderCheckoutCouponCode").length) ? $("#orderCheckoutCouponCode").val() : ''
+				});
+				
+				$.ajax({
+					type        : "POST", 
+					url         : "/melis/MelisCommerce/MelisComOrderCheckout/confirmOrderCheckoutSummary",
+					data		: dataString,
+					dataType    : "json",
+					encode		: true
+				}).done(function(data) {
+					if(data.success) {
+						//$(nxtTabid).tab("show");
+						
+						melisHelper.zoneReload("id_meliscommerce_order_checkout_payment_step_content", "meliscommerce_order_checkout_payment_step_content");
+						
+					}else{
+						melisHelper.melisMultiKoNotification(data.textTitle, data.textMessage, data.errors);
+					}
+					btn.attr('disabled', false);
+				}).fail(function(){
+					btn.attr('disabled', false);
+					alert( translations.tr_meliscore_error_message );
+				});
 		});
 		
-		$('body').on('click', '.orderCheckoutConfirmPayment', function () {
-			var btn = $(this);
-			var nxtTabid = $(this).data("tabid");
-			$(nxtTabid).tab("show");
-			
-			var zoneId = "id_meliscommerce_order_checkout_confirmation_step";
-			var melisKey = "meliscommerce_order_checkout_confirmation_step";
-			melisHelper.zoneReload(zoneId, melisKey, {activateTab : true});
-			
-			melisHelper.zoneReload('id_meliscommerce_order_list_content_table', 'meliscommerce_order_list_content_table');
+		$body.on('click', '.orderCheckoutConfirmPayment', function() {
+			var btn 		= $(this),
+				nxtTabid 	= btn.data("tabid"),
+				zoneId 		= "id_meliscommerce_order_checkout_confirmation_step",
+				melisKey 	= "meliscommerce_order_checkout_confirmation_step";
+
+				$(nxtTabid).tab("show");
+
+				melisHelper.zoneReload(zoneId, melisKey, {activateTab : true});				
+				melisHelper.zoneReload('id_meliscommerce_order_list_content_table', 'meliscommerce_order_list_content_table');
 		});
 		
-		$('body').on('change', '#orderCheckoutCouponCode', function () {
-			if($(this).val() == ''){
-				$(this).parent('.input-group').next().fadeOut('slow');
+		$body.on('change', '#orderCheckoutCouponCode', function() {
+			var $this = $(this);
+			
+			if ( $this.val() == '' ) {
+				$this.parent('.input-group').next().fadeOut('slow');
 			}
 		});
 	});
 
-window.productNextButtonState = function(){
-	
+window.productNextButtonState = function() {
 	var nextButton = $(".orderCheckoutFirstStepBtn");
-	$.ajax({
-        type        : "POST", 
-        url         : "/melis/MelisCommerce/MelisComOrderCheckout/checkBasket",
-        dataType    : "json",
-        encode		: true
-	}).done(function(data) {
-		if(data.success) {
-			nextButton.attr('disabled', false);
-			nextButton.attr('title', '');
-		}else{
-			nextButton.attr('disabled', true);
-			nextButton.attr('title', translations.tr_meliscommerce_order_checkout_product_basket_empty);
-		}
-	}).fail(function(){});
+
+		$.ajax({
+			type        : "POST", 
+			url         : "/melis/MelisCommerce/MelisComOrderCheckout/checkBasket",
+			dataType    : "json",
+			encode		: true
+		}).done(function(data) {
+			if(data.success) {
+				nextButton.attr('disabled', false);
+				nextButton.attr('title', '');
+			}else{
+				nextButton.attr('disabled', true);
+				nextButton.attr('title', translations.tr_meliscommerce_order_checkout_product_basket_empty);
+			}
+		}).fail(function() {
+			alert( translations.tr_meliscore_error_message );
+		});
 }
 
 // This method will update the Summary step basket list
-window.updateSummaryVariantbasket = function(action, variantId, variantQty){
-	var zoneId = "id_meliscommerce_order_checkout_summary_basket";
-	var melisKey = "meliscommerce_order_checkout_summary_basket";
-	
-	var couponCode = $("#orderCheckoutCouponCode").val();
-	if(couponCode == ''){
-		couponCode = null;
-	}
-	melisHelper.zoneReload(zoneId, melisKey, {action: action, variantId : variantId, variantQty : variantQty, couponCode : couponCode});
-	// this will also update the basket list at First step
-	setTimeout(function(){ 
-		melisHelper.zoneReload("id_meliscommerce_order_checkout_product_bakset", "meliscommerce_order_checkout_product_bakset");
-	}, 3000);
-	
+window.updateSummaryVariantbasket = function(action, variantId, variantQty) {
+	var zoneId 		= "id_meliscommerce_order_checkout_summary_basket",
+		melisKey 	= "meliscommerce_order_checkout_summary_basket",
+		couponCode 	= $("#orderCheckoutCouponCode").val();
+
+		if ( couponCode == '' ) {
+			couponCode = null;
+		}
+		melisHelper.zoneReload(zoneId, melisKey, {action: action, variantId : variantId, variantQty : variantQty, couponCode : couponCode});
+		// this will also update the basket list at First step
+		setTimeout(function(){ 
+			melisHelper.zoneReload("id_meliscommerce_order_checkout_product_bakset", "meliscommerce_order_checkout_product_bakset");
+		}, 3000);
 }
 
 // This method will update the Basket list at First Step
-window.updateVariantbasket = function(action, variantId, variantQty){
-	var zoneId = "id_meliscommerce_order_checkout_product_bakset";
-	var melisKey = "meliscommerce_order_checkout_product_bakset";
-	melisHelper.zoneReload(zoneId, melisKey, {action: action, variantId : variantId, variantQty : variantQty});
+window.updateVariantbasket = function(action, variantId, variantQty) {
+	var zoneId 		= "id_meliscommerce_order_checkout_product_bakset",
+		melisKey 	= "meliscommerce_order_checkout_product_bakset";
+
+		melisHelper.zoneReload(zoneId, melisKey, {action: action, variantId : variantId, variantQty : variantQty});
 }
 
-window.initCheckoutSelectContactTable = function(){
+window.initCheckoutSelectContactTable = function() {
 	$('.checkoutSelectContactOrderHeader').attr('title', translations.tr_meliscommerce_checkout_tbl_cper_num_orders);
 }
 $(function() {
@@ -8645,11 +8653,11 @@ $(function() {
 							melisCoreTool.pending('#btnComSaveCurrency');
 
 							$.ajax({
-								type: 'POST',
-								url: '/melis/MelisCommerce/MelisComCurrency/getCountriesUsingCurrency',
-								data: {currencyId: currencyId},
+								type	: 'POST',
+								url		: '/melis/MelisCommerce/MelisComCurrency/getCountriesUsingCurrency',
+								data	: {currencyId: currencyId},
 								dataType: 'json',
-								encode: true
+								encode	: true
 							}).done(function (data) {
 								if ( data.countries.length > 0 ) {
 									var countriesHtml = '<ul class="container">';
@@ -8778,6 +8786,7 @@ $(function() {
 					melisCoreTool.done("#btnComSaveCurrency");
 				}, function() {
 					melisCoreTool.done("#btnComSaveCurrency");
+					alert( translations.tr_meliscore_error_message );
 				});
 		});
 		
@@ -8857,7 +8866,7 @@ $(function() {
 
         //removes modal elements when clicking outside
         $body.on("click", function (e) {
-            if ($(e.target).hasClass('modal')) {
+            if ( $(e.target).hasClass('modal') ) {
                 $('#id_meliscommerce_attribute_value_modal_value_form_container').modal('hide');
             }
         });
@@ -8905,7 +8914,7 @@ $(function() {
                 melisKey = 'meliscommerce_attribute_value_modal_value_form';
                 modalUrl = '/melis/MelisCommerce/MelisComAttribute/renderAttributeModal';
                 // requesitng to create modal and display after
-                melisHelper.createModal(zoneId, melisKey, false, {'attributeId': attributeId}, modalUrl, function(){
+                melisHelper.createModal(zoneId, melisKey, false, {'attributeId': attributeId}, modalUrl, function() {
 
                 });
                 melisCoreTool.done(this);
@@ -8923,7 +8932,7 @@ $(function() {
                 melisKey = 'meliscommerce_attribute_value_modal_value_form';
                 modalUrl = '/melis/MelisCommerce/MelisComAttribute/renderAttributeModal';
                 // requesitng to create modal and display after
-                melisHelper.createModal(zoneId, melisKey, false, {'attributeId': attributeId, 'attributeValueId' : attributeValueId}, modalUrl, function(){
+                melisHelper.createModal(zoneId, melisKey, false, {'attributeId': attributeId, 'attributeValueId' : attributeValueId}, modalUrl, function() {
 
                 });
                 melisCoreTool.done(this);
@@ -8960,7 +8969,8 @@ $(function() {
                             melisCore.flashMessenger();
                         }, function(data){
                             console.log(data);
-                        })
+                            alert( translations.tr_meliscore_error_message );
+                        });
                     });
 
                 melisCoreTool.done(this);
@@ -9004,6 +9014,7 @@ $(function() {
                     melisCore.flashMessenger();
                 }, function(data){
                     console.log(data);
+                    alert( translations.tr_meliscore_error_message );
                 });
                 melisCoreTool.done(this);
         });
@@ -9069,6 +9080,7 @@ $(function() {
                     melisCore.flashMessenger();
                 }, function(data){
                     console.log(data);
+                    alert( translations.tr_meliscore_error_message );
                 });
 
                 melisCoreTool.done(this);
@@ -9105,6 +9117,7 @@ $(function() {
                             melisCore.flashMessenger();
                         }, function(data){
                             console.log(data);
+                            alert( translations.tr_meliscore_error_message );
                         })
 
                     });
@@ -9121,7 +9134,7 @@ $(function() {
 
 window.initAttributeValue = function(data, tblSettings) {
     var attributeId = $("#" + tblSettings.sTableId ).data("attributeid");
-    data.attributeId = attributeId;
+        data.attributeId = attributeId;
 }
 
 
@@ -9939,7 +9952,7 @@ var melisCommerceSettings = (function(window) {
 				}	
 				melisCore.flashMessenger();	
 			}, function(data) {
-				
+				alert( translations.tr_meliscore_error_message );
 			});
 	}
 	

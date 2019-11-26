@@ -44,7 +44,7 @@ if (!empty($this->zoneconfig['conf']['id']))
                                         $('form[name=order-list-status] select[name=ord_status]').attr("style", $("form[name=order-list-status] select[name=ord_status] option:selected").attr("style"));
                                     });
                                     </script>
-                                 	<div align="right">
+                                 	<div class="footer-modal d-flex flex-row justify-content-between">
                                  		<button data-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
                                  		<button class="btn btn-success" id="saveOrderStatus" data-reference="<?= $this->order->ord_reference?>" ><i class="fa fa-save"></i>  <?php echo $this->translate('tr_meliscommerce_orders_common_btn_save') ?></button>
                                  	</div>                                 	
