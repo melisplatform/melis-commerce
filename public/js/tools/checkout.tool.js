@@ -144,26 +144,30 @@ $(function() {
 		// Variant quantity + (plus) button
 		// This action will add 1 (One) quantity to the Variant current quantity
 		$body.on('click', '.qty-plus', function() {
-			var $this 		= $(this),
-				variantId 	= $(this).data("variantid");
+			var $this 			= $(this),
+				variantId 		= $this.data("variantid"),
+				$varBasketQty 	= $("#"+variantId+"_orderBasketVariantQty");
 
-				variantQty = parseInt($("#"+variantId+"_orderBasketVariantQty").val()) + 1;
+				variantQty = parseInt( $varBasketQty.val() ) + 1;
 
-				$("#"+variantId+"_orderBasketVariantQty").val(variantQty);
+				$varBasketQty.val(variantQty);
+
 				updateVariantbasket("add", variantId, variantQty);
 		});
 		
 		// Variant quantity - (minus) button
 		// This action will deduct 1 (One) quantity to the Variant current quantity
 		$body.on('click', '.qty-minus', function() {
-			var $this = $(this),
-				variantId = $this.data("variantid");
+			var $this 			= $(this),
+				variantId 		= $this.data("variantid"),
+				$varBasketQty 	= $("#"+variantId+"_orderBasketVariantQty");
 
-				$varQty = $("#"+variantId+"_orderBasketVariantQty").val();
+				$varQty = $varBasketQty.val();
 			
-				if ( parseInt($varQty) > 0 ) {
-					variantQty = parseInt($("#"+variantId+"_orderBasketVariantQty").val()) - 1;
-					$("#"+variantId+"_orderBasketVariantQty").val(variantQty);
+				if ( parseInt( $varQty ) > 0 ) {
+					variantQty = parseInt( $varBasketQty.val() ) - 1;
+					$varBasketQty.val(variantQty);
+
 					updateVariantbasket("deduct", variantId, variantQty);
 				}
 		});
@@ -178,7 +182,7 @@ $(function() {
 				hrefId 		= $navTab.attr("href"),
 				$tabPane 	= $("#id_meliscommerce_order_checkout_content .tab-content").find(".tab-pane");
 			
-				$(".orderCheckoutFirstStepBtn").button("loading");
+				$this.button("loading");
 				
 				$.ajax({
 					type        : "POST", 
@@ -186,14 +190,23 @@ $(function() {
 					dataType    : "json",
 					encode		: true
 				}).done(function(data) {
-					if ( !data.success ) {
-						console.log("data success: ", data.success);
+					if (data.success) {
+						// to show active tab content
+						$tabPane.siblings().removeClass("active");
+						$(hrefId).tab("show");
+
+						// to show active tabsbar/link
+						$navTab.removeClass("hidden");
+						$navTabLi.siblings().removeClass("active");
+						$navTabLi.addClass("active");
+					}
+					else {
 						melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
 					}
-					$(".orderCheckoutFirstStepBtn").button("reset");
+					$this.button("reset");
 				}).fail(function(){
+					$this.button("reset");
 					alert( translations.tr_meliscore_error_message );
-					$(".#orderCheckoutFirstStepBtn").button("reset");
 				});
 		});
 		
@@ -286,8 +299,8 @@ $(function() {
 					}
 					btn.attr('disabled', false);
 				}).fail(function(){
-					alert( translations.tr_meliscore_error_message );
 					btn.attr('disabled', false);
+					alert( translations.tr_meliscore_error_message );
 				});
 		});
 		
@@ -400,14 +413,13 @@ $(function() {
 						dataType    : "json",
 						encode		: true
 					}).done(function(data) {
-						if(data.success) {
+						if ( data.success ) {
 							//$(nxtTabid).tab("show");
-							
 							melisHelper.zoneReload('id_meliscommerce_order_checkout_summary_basket','meliscommerce_order_checkout_summary_basket');
 							melisHelper.zoneReload('id_meliscommerce_order_checkout_summary_billing_address','meliscommerce_order_checkout_summary_billing_address');
 							melisHelper.zoneReload('id_meliscommerce_order_checkout_summary_delivery_address','meliscommerce_order_checkout_summary_delivery_address');
-							
-						}else{
+						}
+						else {
 							melisHelper.melisMultiKoNotification(data.textTitle, data.textMessage, data.errors);
 							melisHelper.highlightMultiErrors(data.success, data.errors,  activeTabId+" form");
 						}
@@ -419,38 +431,44 @@ $(function() {
 		});
 		
 		// validating Coupon code
-		$("body").on("click", "#orderCheckoutValidateCoupon", function(){
+		$body.on("click", "#orderCheckoutValidateCoupon", function() {
 			var couponCode = $("#orderCheckoutCouponCode").val();
-			if(couponCode != ''){
-				melisHelper.zoneReload("id_meliscommerce_order_checkout_summary_basket", "meliscommerce_order_checkout_summary_basket", {couponCode: couponCode});
-			}
+
+				if ( couponCode != '' ) {
+					melisHelper.zoneReload("id_meliscommerce_order_checkout_summary_basket", "meliscommerce_order_checkout_summary_basket", {couponCode: couponCode});
+				}
 		});
 		
 		// Deleting validated coupon
-		$("body").on("click", ".orderValidCoupons i", function(){
-			var couponCode = $(this).closest('.orderValidCoupons').data('couponcode');
-			if(couponCode != ''){
-				melisHelper.zoneReload("id_meliscommerce_order_checkout_summary_basket", "meliscommerce_order_checkout_summary_basket", {removeCoupon: couponCode});
-			}
+		$body.on("click", ".orderValidCoupons i", function() {
+			var $this 		= $(this),
+				couponCode 	= $this.closest('.orderValidCoupons').data('couponcode');
+
+				if ( couponCode != '' ) {
+					melisHelper.zoneReload("id_meliscommerce_order_checkout_summary_basket", "meliscommerce_order_checkout_summary_basket", {removeCoupon: couponCode});
+				}
 		});
 		
 		// Changing the Quantity by typing the number of the quantity of the variant in Basket List in Summary Step
-		$('body').on('change', '.orderSummaryBasketVariantQty', function () {
-			var variantId = $(this).data("variantid");
-			var varQty = parseInt($(this).data("quantity"));
-			var variantQty = parseInt($(this).val());
-			// Checking the last Variant qunatity and the New Quantity
-			if(varQty < variantQty){
-				// Adding Variant quantity
-				updateSummaryVariantbasket("add", variantId, variantQty);
-			}else{
-				// Deducting Variant quantity
-				updateSummaryVariantbasket("deduct", variantId, variantQty);
-			}
+		$body.on('change', '.orderSummaryBasketVariantQty', function() {
+			var $this 		= $(this),
+				variantId 	= $this.data("variantid"),
+				varQty 		= parseInt($this.data("quantity")),
+				variantQty 	= parseInt($this.val());
+
+				// Checking the last Variant qunatity and the New Quantity
+				if ( varQty < variantQty ) {
+					// Adding Variant quantity
+					updateSummaryVariantbasket("add", variantId, variantQty);
+				}
+				else {
+					// Deducting Variant quantity
+					updateSummaryVariantbasket("deduct", variantId, variantQty);
+				}
 		});
 		
 		// Binding Variant quantity input to Numeric characters only
-		$('body').on("keydown", ".orderSummaryBasketVariantQty", function (e) {
+		$body.on("keydown", ".orderSummaryBasketVariantQty", function(e) {
 			// Allow: backspace, delete, tab, escape, enter and .
 			if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
 				// Allow: Ctrl+A, Command+A
@@ -468,22 +486,30 @@ $(function() {
 		
 		// Variant quantity + (plus) button
 		// This action will add 1 (One) quantity to the Variant current quantity
-		$('body').on('click', '.summary-qty-plus', function () {
-			var variantId = $(this).data("variantid");
-			variantQty = parseInt($("#"+variantId+"_orderSummaryBasketVariantQty").val()) + 1;
-			$("#"+variantId+"_orderSummaryBasketVariantQty").val(variantQty);
-			updateSummaryVariantbasket("add", variantId, variantQty);
+		$body.on('click', '.summary-qty-plus', function() {
+			var $this 				= $(this),
+				variantId 			= $this.data("variantid"),
+				$sumBasketVarQty 	= $("#"+variantId+"_orderSummaryBasketVariantQty");
+
+				variantQty = parseInt( $sumBasketVarQty.val()) + 1;
+				$sumBasketVarQty.val(variantQty);
+
+				updateSummaryVariantbasket("add", variantId, variantQty);
 		});
 		
 		// Variant quantity - (minus) button
 		// This action will deduct 1 (One) quantity to the Variant current quantity
-		$('body').on('click', '.summary-qty-minus', function () {
-			var variantId = $(this).data("variantid");
-			$varQty = $("#"+variantId+"_orderSummaryBasketVariantQty").val();
+		$body.on('click', '.summary-qty-minus', function() {
+			var $this 				= $(this),
+				variantId 			= $this.data("variantid"),
+				$sumBasketVarQty 	= $("#"+variantId+"_orderSummaryBasketVariantQty");
+
+				$varQty = $sumBasketVarQty.val();
 			
-			if(parseInt($varQty) > 0){
-				variantQty = parseInt($("#"+variantId+"_orderSummaryBasketVariantQty").val()) - 1;
-				$("#"+variantId+"_orderSummaryBasketVariantQty").val(variantQty);
+			if ( parseInt($varQty) > 0 ) {
+				variantQty = parseInt($sumBasketVarQty.val()) - 1;
+				$sumBasketVarQty.val(variantQty);
+				
 				updateSummaryVariantbasket("deduct", variantId, variantQty);
 			}
 		});
