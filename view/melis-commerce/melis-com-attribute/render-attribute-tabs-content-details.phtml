@@ -4,7 +4,7 @@
         $id .= $this->attributeId.'_'.$this->zoneconfig['conf']['id'];
     }
 ?>
-<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="row">
+<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>">
 	<?php 
     	if(!empty($this->zoneconfig['interface'])) {
     	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {

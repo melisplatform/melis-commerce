@@ -3343,7 +3343,6 @@ window.initCategoryTreeView = function() {
 		
 		$body.on("click", ".categoryProductsExport", function() {
 			if ( !melisCoreTool.isTableEmpty("categoryProductListTbl") ) {
-				console.log("categoryProductListTbl not empty");
 				melisCoreTool.exportData('/melis/MelisCommerce/MelisComCategory/productsExportToCsv?catId='+$(this).data('catid'));
 			}
 		});
