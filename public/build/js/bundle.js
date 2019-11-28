@@ -7703,38 +7703,44 @@ $(function() {
 
         $body.on("click", ".saveCoupon", function() {
             melisCoreTool.pending(this);
-            var couponId = activeTabId.split("_")[0];
-            var forms = $(this).closest('.container-level-a').find('form');
-            var url = 'melis/MelisCommerce/MelisComCoupon/saveCouponData';
-            var dataString = [];
-            var len;
-            var ctr = 0;
-            // serialize each form
-            forms.each(function(){
-                var i = 0;
-                var pre = $(this).attr('name');
-                var data = $(this).serializeArray();
-                len = data.length;
-                for(j=0; j<len; j++ ){
-                    dataString.push({  name: pre+'['+i+']['+data[j].name+']', value : data[j].value});
-                }
-                i++;
-                ctr++;
-            });
-            dataString.push({name : 'couponId', value : couponId});
-            // serialize each switch
+
+            var couponId    = activeTabId.split("_")[0],
+                forms       = $(this).closest('.container-level-a').find('form'),
+                url         = 'melis/MelisCommerce/MelisComCoupon/saveCouponData',
+                dataString  = [],
+                ctr         = 0,
+                len;
+
+                // serialize each form
+                forms.each(function(){
+                    var i = 0,
+                        pre = $(this).attr('name'),
+                        data = $(this).serializeArray();
+
+                    len = data.length;
+
+                        for(j=0; j<len; j++ ){
+                            dataString.push({  name: pre+'['+i+']['+data[j].name+']', value : data[j].value});
+                        }
+                        i++;
+                        ctr++;
+                });
+
+                dataString.push({name : 'couponId', value : couponId});
+                // serialize each switch
 
             $('#'+activeTabId+' .make-switch div').each(function(){
-                var field = 'switch['+$(this).find('input').attr('name')+']';
-                var status = $(this).hasClass('switch-on');
-                var saveStatus = 0;
-                if(status) {
-                    saveStatus = 1;
-                }
-                dataString.push({
-                    name : field,
-                    value: saveStatus
-                })
+                var field       = 'switch['+$(this).find('input').attr('name')+']',
+                    status      = $(this).hasClass('switch-on'),
+                    saveStatus  = 0;
+
+                    if ( status ) {
+                        saveStatus = 1;
+                    }
+                    dataString.push({
+                        name : field,
+                        value: saveStatus
+                    });
             });
 
             melisCommerce.postSave(url, dataString, function(data){
@@ -7761,6 +7767,7 @@ $(function() {
                 melisCore.flashMessenger();
             }, function(data){
                 console.log(data);
+                alert( translations.tr_meliscore_error_message );
             });
             melisCoreTool.done(this);
         });
