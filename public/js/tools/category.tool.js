@@ -820,7 +820,7 @@ window.initCategoryTreeView = function() {
 		
 		$body.on("click", ".categoryProductsExport", function() {
 			if ( !melisCoreTool.isTableEmpty("categoryProductListTbl") ) {
-				melisCoreTool.exportData('/melis/MelisCommerce/MelisComCategory/productsExportToCsv?catId='+$this.data('catid'));
+				melisCoreTool.exportData('/melis/MelisCommerce/MelisComCategory/productsExportToCsv?catId='+$(this).data('catid'));
 			}
 		});
 }
