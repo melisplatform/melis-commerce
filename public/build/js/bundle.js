@@ -7702,79 +7702,67 @@ $(function() {
         }
 
         $body.on("click", ".saveCoupon", function() {
-            var $this       = $(this),
-                couponId    = activeTabId.split("_")[0],
-                forms       = $this.closest('.container-level-a').find('form'),
-                url         = 'melis/MelisCommerce/MelisComCoupon/saveCouponData',
-                dataString  = [],
-                len,
-                ctr         = 0;
+            melisCoreTool.pending(this);
+            var couponId = activeTabId.split("_")[0];
+            var forms = $(this).closest('.container-level-a').find('form');
+            var url = 'melis/MelisCommerce/MelisComCoupon/saveCouponData';
+            var dataString = [];
+            var len;
+            var ctr = 0;
+            // serialize each form
+            forms.each(function(){
+                var i = 0;
+                var pre = $(this).attr('name');
+                var data = $(this).serializeArray();
+                len = data.length;
+                for(j=0; j<len; j++ ){
+                    dataString.push({  name: pre+'['+i+']['+data[j].name+']', value : data[j].value});
+                }
+                i++;
+                ctr++;
+            });
+            dataString.push({name : 'couponId', value : couponId});
+            // serialize each switch
 
-                melisCoreTool.pending(this);
+            $('#'+activeTabId+' .make-switch div').each(function(){
+                var field = 'switch['+$(this).find('input').attr('name')+']';
+                var status = $(this).hasClass('switch-on');
+                var saveStatus = 0;
+                if(status) {
+                    saveStatus = 1;
+                }
+                dataString.push({
+                    name : field,
+                    value: saveStatus
+                })
+            });
 
-                // serialize each form
-                forms.each(function() {
-                    var $this   = $(this),
-                        i       = 0,
-                        pre     = $this.attr('name'),
-                        data    = $this.serializeArray();
+            melisCommerce.postSave(url, dataString, function(data){
+                if(data.success){
+                    melisHelper.tabClose(  couponId + "_id_meliscommerce_coupon_page", true);
+                    couponTabOpen(translations.tr_meliscommerce_coupon_page+' '+data.chunk.coup_code, data.chunk.couponId, "id_meliscommerce_coupon_list_page");
+                    melisHelper.melisOkNotification( data.textTitle, data.textMessage );
+                    melisHelper.zoneReload("id_meliscommerce_coupon_list_content_table", "meliscommerce_coupon_list_content_table");
+                }else{
 
-                        len = data.length;
-                        for( j=0; j<len; j++ ) {
-                            dataString.push({  name: pre+'['+i+']['+data[j].name+']', value : data[j].value});
+                    melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
+                    melisCoreTool.highlightErrors(data.success, data.errors, couponId+"_id_meliscommerce_coupon_page");
+                    $(".couponEnd").prev("label").css("color","#686868");
+                    $.each( data.errors, function( key, error ) {
+                        if( key == 'coup_date_valid_end'){
+                            $(".couponEnd").prev("label").css("color","red");
                         }
-
-                        i++;
-                        ctr++;
-                });
-
-                dataString.push({name : 'couponId', value : couponId});
-                // serialize each switch
-
-                $('#'+activeTabId+' .make-switch div').each(function(){
-                    var $this       = $(this),
-                        field       = 'switch['+$this.find('input').attr('name')+']';
-                        status      = $this.hasClass('switch-on');
-                        saveStatus  = 0;
-
-                        if ( status ) {
-                            saveStatus = 1;
+                        if( key == 'values'){
+                            $("#" + couponId+"_id_meliscommerce_coupon_page" + " .form-control[name='coup_percentage']").prev("label").css("color","red");
+                            $("#" + couponId+"_id_meliscommerce_coupon_page" + " .form-control[name='coup_discount_value']").prev("label").css("color","red");
                         }
-                        
-                        dataString.push({
-                            name : field,
-                            value: saveStatus
-                        });
-                });
-
-                melisCommerce.postSave(url, dataString, function(data) {
-                    if ( data.success ) {
-                        melisHelper.tabClose(  couponId + "_id_meliscommerce_coupon_page");
-                        couponTabOpen(translations.tr_meliscommerce_coupon_page+' '+data.chunk.coup_code, data.chunk.couponId, "id_meliscommerce_coupon_list_page");
-                        melisHelper.melisOkNotification( data.textTitle, data.textMessage );
-                        melisHelper.zoneReload("id_meliscommerce_coupon_list_content_table", "meliscommerce_coupon_list_content_table");
-                    }
-                    else {
-                        melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
-                        melisCoreTool.highlightErrors(data.success, data.errors, couponId+"_id_meliscommerce_coupon_page");
-                        $(".couponEnd").prev("label").css("color","#686868");
-                        $.each( data.errors, function( key, error ) {
-                            if( key == 'coup_date_valid_end'){
-                                $(".couponEnd").prev("label").css("color","red");
-                            }
-                            if( key == 'values'){
-                                $("#" + couponId+"_id_meliscommerce_coupon_page" + " .form-control[name='coup_percentage']").prev("label").css("color","red");
-                                $("#" + couponId+"_id_meliscommerce_coupon_page" + " .form-control[name='coup_discount_value']").prev("label").css("color","red");
-                            }
-                        });
-                    }
-                    melisCore.flashMessenger();
-                }, function(data) {
-                    console.log(data);
-                    alert( translations.tr_meliscore_error_message );
-                });
-
-                melisCoreTool.done(this);
+                    });
+                }
+                melisCore.flashMessenger();
+            }, function(data){
+                console.log(data);
+            });
+            melisCoreTool.done(this);
         });
 
         // coupon list - opens specific order for editing
@@ -8526,7 +8514,7 @@ $(function() {
 		// Confirming Client basket button
 		$body.on('click', '.orderCheckoutConfirmSummary', function() {
 			var btn 		= $(this),
-				nxtTabid 	= $this.data("tabid"),
+				nxtTabid 	= btn.data("tabid"),
 				dataString 	= new Array;
 
 				dataString.push({

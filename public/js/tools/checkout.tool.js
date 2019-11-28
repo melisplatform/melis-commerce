@@ -517,7 +517,7 @@ $(function() {
 		// Confirming Client basket button
 		$body.on('click', '.orderCheckoutConfirmSummary', function() {
 			var btn 		= $(this),
-				nxtTabid 	= $this.data("tabid"),
+				nxtTabid 	= btn.data("tabid"),
 				dataString 	= new Array;
 
 				dataString.push({
