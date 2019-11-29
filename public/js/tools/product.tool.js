@@ -774,7 +774,7 @@ $(function() {
 
                 $.ajax({
                     type        : 'POST',
-                    url         : 'melis/MelisCommerce/MelisComProductList/getToolTip',
+                    url         : '/melis/MelisCommerce/MelisComProductList/getToolTip',
                     data		: {productId : productId},
                     dataType    : 'json',
                     encode		: true,

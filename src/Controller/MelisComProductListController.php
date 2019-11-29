@@ -390,7 +390,7 @@ class MelisComProductListController extends AbstractActionController
                     
 
                     // SKU
-                    $sku = '<a class="text-danger openVariant" style="color:#fff" data-product-name="'.$productName.'" data-product-id="'.$productId.'">'.$this->getTool()->escapeHtml($variant['sku']).'</a>';
+                    $sku = '<a class="openVariant" style="color:#fff" data-product-name="'.$productName.'" data-product-id="'.$productId.'">'.$this->getTool()->escapeHtml($variant['sku']).'</a>';
                     $sContent .= $table->setRowData($sku, array('class' => 'text-left', 'style' => 'font-size: 14px'));
                     
                     // ATTRIBUTES

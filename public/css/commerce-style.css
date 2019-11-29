@@ -2512,3 +2512,6 @@ table tr td img,
 .table-primary .rounded-circle.img-fluid {
     height: 60px;
 }
+.toolTipHoverEvent {
+  text-decoration: underline;
+}
