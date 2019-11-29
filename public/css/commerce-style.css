@@ -2518,8 +2518,11 @@ table tr td img,
 .toolTipHoverEvent:focus,
 .openVariant:hover,
 .toolTipHoverEvent:hover {
-  text-decoration: underline !important;
+    text-decoration: underline !important;
 }
 #orderCheckoutProductListTbl .rounded-circle.img-fluid {
     border-radius: unset !important;
+}
+.form-control.input-sm {
+    font-size: 12px;
 }
