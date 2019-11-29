@@ -2447,6 +2447,7 @@ tr.last-tr td {
     padding-left: 0.3em;
     padding-right: 0.3em;
 }
+table tr td img,
 #tableProductList img {
     width: 60px;
     height: 60px;
