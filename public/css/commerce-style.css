@@ -2512,6 +2512,11 @@ table tr td img,
 .table-primary .rounded-circle.img-fluid {
     height: 60px;
 }
-.toolTipHoverEvent {
-  text-decoration: underline;
+.openVariant,
+.toolTipHoverEvent,
+.openVariant:focus,
+.toolTipHoverEvent:focus,
+.openVariant:hover,
+.toolTipHoverEvent:hover {
+  text-decoration: underline !important;
 }
