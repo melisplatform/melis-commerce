@@ -2522,7 +2522,8 @@ table tr td img,
     text-decoration: underline !important;
 }
 #orderCheckoutProductListTbl .rounded-circle.img-fluid {
-    border-radius: unset !important;
+    border-radius: 7px !important;
+    height: auto !important;
 }
 .form-control.input-sm {
     font-size: 12px;
