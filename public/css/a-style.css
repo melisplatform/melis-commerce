@@ -312,8 +312,8 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child:before {
 .qtipTable h4.text-danger{
 	color: #fff;
 }
-.fa-star {
-	color: #f9bb49;
+.text-success.fa-star {
+	color: #f9bb49 !important;
 }
 .qtipTable tbody tr {
 	border-top: #fff 1px solid;
