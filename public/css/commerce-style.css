@@ -2520,3 +2520,6 @@ table tr td img,
 .toolTipHoverEvent:hover {
   text-decoration: underline !important;
 }
+#orderCheckoutProductListTbl .rounded-circle.img-fluid {
+    border-radius: unset !important;
+}
