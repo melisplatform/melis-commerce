@@ -196,7 +196,7 @@ $(function() {
                 });
         });
 
-        $("body").on("click", "#saveClientAddress", function(){
+        $body.on("click", "#saveClientAddress", function(){
             var $this       = $(this),
                 clientId    = $this.data("clientid");
 

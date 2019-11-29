@@ -308,4 +308,11 @@ $(function() {
          */
         
         $body.on("click", ".accordion-toggle", melisCommerce.accordionToggle );
+
+        /**
+         * Export modal checkbox
+         */
+        $body.on("click", ".cb-cont input[type=checkbox]", function() {
+            $(this).parent().find(".cbmask-inner").toggleClass("cb-active");
+        });
 });
