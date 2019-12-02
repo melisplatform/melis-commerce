@@ -2494,9 +2494,11 @@ table tr td img,
 .modalClientContactStatus {
     margin-bottom: 2rem;
 }
+.label.label-danger,
+.label.label-info,
 .label.label-success {
-    padding: 0.15rem 0.2rem;
-    font-size: 10px;
+    padding: 2px 5px;
+    color: #fff;
 }
 #categoryProductListTbl img.rounded-circle.img-fluid,
 #orderCheckoutProductListTbl img.rounded-circle.img-fluid {
