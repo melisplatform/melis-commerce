@@ -251,20 +251,17 @@ var melisCommerce = (function(window) {
 
     //order-checkout-steps
     function switchOrderTab( tabId ) {
-        var $tab        = $(tabId),
-            $navTab     = $(tabId+"[data-toggle='tab']"),
-            $navTabLi   = $navTab.closest("li");
+        var $tabId 		= $(tabId),
+            $navTab   	= $(tabId+"[data-toggle='tab']"),
+            $navTabLi  	= $navTab.closest("li"),
+            hrefId 		= $navTab.attr("href"),
+            $tabPane 	= $("#id_meliscommerce_order_checkout_content .tab-content").find(".tab-pane");
 
-            // tab content
-            if ( tabId === 'id_meliscommerce_order_checkout_payment_step_nav' ) {
-                var paymentTab = $(tabId).attr("href");
-                    $(paymentTab).tab("show");
-            } 
-            else {
-                $tab.tab("show");
-            }
+            // to show active tab content
+            $tabPane.siblings().removeClass("active");
+            $(hrefId).tab("show");
 
-            // tabsbar
+            // to show active tabsbar/link
             $navTab.removeClass("hidden");
             $navTabLi.siblings().removeClass("active");
             $navTabLi.addClass("active");

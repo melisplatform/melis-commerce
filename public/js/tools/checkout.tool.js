@@ -175,12 +175,8 @@ $(function() {
 		// Checkout First step Next button
 		// This action will validate if the basket has Content, else this action will show a message
 		$body.on('click', '.orderCheckoutFirstStepBtn', function() {
-			var $this 		= $(this),
-				tabId 		= $this.data("tabid"),
-				$navTab   	= $(tabId+"[data-toggle='tab']"),
-				$navTabLi  	= $navTab.closest("li"),
-				hrefId 		= $navTab.attr("href"),
-				$tabPane 	= $("#id_meliscommerce_order_checkout_content .tab-content").find(".tab-pane");
+			var $this = $(this),
+				tabId = $this.data("tabid");
 			
 				$this.button("loading");
 				
@@ -191,14 +187,8 @@ $(function() {
 					encode		: true
 				}).done(function(data) {
 					if (data.success) {
-						// to show active tab content
-						$tabPane.siblings().removeClass("active");
-						$(hrefId).tab("show");
-
-						// to show active tabsbar/link
-						$navTab.removeClass("hidden");
-						$navTabLi.siblings().removeClass("active");
-						$navTabLi.addClass("active");
+						// switch tab
+						melisCommerce.switchOrderTab( tabId );
 					}
 					else {
 						melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
@@ -212,26 +202,7 @@ $(function() {
 		
 		// Next button event
 		$body.on('click', '.orderCheckoutNextStep', function() {
-			var $this 		= $(this),
-				tabId 		= $this.data("tabid"),
-				$navTab   	= $(tabId+"[data-toggle='tab']"),
-				$navTabLi  	= $navTab.closest("li"),
-				hrefId 		= $navTab.attr("href"),
-				$tabPane 	= $("#id_meliscommerce_order_checkout_content .tab-content").find(".tab-pane"),
-				$body 		= $("html, body");
-
-				// check if class is found, so no double execution of the same code for active tab
-				if ( !$this.hasClass("orderCheckoutFirstStepBtn") ) {
-					// to show active tab content
-					$tabPane.siblings().removeClass("active");
-					$(hrefId).tab("show");
-
-					// to show active tabsbar/link
-					$navTab.removeClass("hidden");
-					$navTabLi.siblings().removeClass("active");
-					$navTabLi.addClass("active");
-				}
-
+			var $body = $("html, body");
 				$body.stop().animate({scrollTop:0}, '500', 'swing');
 		});
 		
@@ -287,7 +258,11 @@ $(function() {
 					encode		: true
 				}).done(function(data) {
 					if ( data.success ) {
-						//$(nxtTabid).tab("show");						
+						//$(nxtTabid).tab("show");	
+
+						// switch tab
+						melisCommerce.switchOrderTab( nxtTabid );
+
 						setTimeout(function(){ 
 							melisHelper.zoneReload('id_meliscommerce_order_checkout_product_bakset', 'meliscommerce_order_checkout_product_bakset');
 							melisHelper.zoneReload("id_meliscommerce_order_checkout_billing_address", "meliscommerce_order_checkout_billing_address");
@@ -347,7 +322,7 @@ $(function() {
 			melisHelper.zoneReload("id_meliscommerce_order_checkout_delivery_address", "meliscommerce_order_checkout_delivery_address", {emptyDeliveryAddress : 1});
 		});
 		
-		// Checkout Addresses validations
+		// Checkout Addresses validations / junry edits
 		$body.on('click', '.orderCheckoutValidateAddresses', function() {
 			var btn 		= $(this),
 				dataString 	= new Array,
@@ -415,6 +390,10 @@ $(function() {
 					}).done(function(data) {
 						if ( data.success ) {
 							//$(nxtTabid).tab("show");
+
+							// switch tab
+							melisCommerce.switchOrderTab( nxtTabid );
+
 							melisHelper.zoneReload('id_meliscommerce_order_checkout_summary_basket','meliscommerce_order_checkout_summary_basket');
 							melisHelper.zoneReload('id_meliscommerce_order_checkout_summary_billing_address','meliscommerce_order_checkout_summary_billing_address');
 							melisHelper.zoneReload('id_meliscommerce_order_checkout_summary_delivery_address','meliscommerce_order_checkout_summary_delivery_address');
@@ -534,7 +513,10 @@ $(function() {
 				}).done(function(data) {
 					if(data.success) {
 						//$(nxtTabid).tab("show");
-						
+
+						// switch tab
+						melisCommerce.switchOrderTab( nxtTabid );
+
 						melisHelper.zoneReload("id_meliscommerce_order_checkout_payment_step_content", "meliscommerce_order_checkout_payment_step_content");
 						
 					}else{

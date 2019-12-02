@@ -2514,7 +2514,8 @@ table tr td img,
 }
 /* Images inside tables */
 .table-primary .rounded-circle.img-fluid {
-    height: 60px;
+    height: auto;
+    border-radius: 6px !important;
 }
 .openVariant:focus,
 .toolTipHoverEvent:focus,
@@ -2523,7 +2524,7 @@ table tr td img,
     text-decoration: underline !important;
 }
 #orderCheckoutProductListTbl .rounded-circle.img-fluid {
-    border-radius: 7px !important;
+    border-radius: 6px !important;
     height: auto !important;
 }
 .form-control.input-sm {
