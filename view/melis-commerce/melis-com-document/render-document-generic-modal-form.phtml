@@ -73,7 +73,7 @@
                             <br>
                             <div class="card default-card commerce-toggle">
                                 <div class="card-header">
-                                    <h4 class="card-title"><a class="collapsed" id="" data-toggle="collapse" href="#toggleAddImageType"><?php echo $this->translate('tr_meliscommerce_documents_add_image_type_text') ?></a></h4>
+                                    <h4 class="card-title"><a class="accordion-toggle collapsed" id="" data-toggle="collapse" href="#toggleAddImageType"><?php echo $this->translate('tr_meliscommerce_documents_add_image_type_text') ?></a></h4>
                                 </div>
                                 <div id="toggleAddImageType" class="card-collapse collapse">
                                     <div class="card-body">
@@ -85,10 +85,8 @@
                                                 echo $this->melisFieldCollection($imageTypeForm);
                                                 echo $this->form()->closeTag();
                                             ?>
-                                            <div class="row">
-                                                <div class="col-xs-12" style="text-align: center;">
-                                                    <button class="btn btn-success btnDocAddImageType"><i class="fa fa-plus"></i> <?php echo $this->translate('tr_meliscommerce_general_common_add')?></button>
-                                                </div>
+                                            <div class="d-flex flex-row justify-content-end">
+                                                <button class="btn btn-success btnDocAddImageType"><i class="fa fa-plus"></i> <?php echo $this->translate('tr_meliscommerce_general_common_add')?></button>
                                             </div>
                                         </div>
                                     </div>
@@ -103,7 +101,7 @@
                             <?php } else { ?>
                             <div class="card default-card commerce-toggle">
                                 <div class="card-header">
-                                    <h4 class="card-title"><a class="collapsed" id="" data-toggle="collapse" href="#toggleAddFileType"><?php echo $this->translate('tr_meliscommerce_documents_file_type_add') ?></a></h4>
+                                    <h4 class="card-title"><a class="accordion-toggle collapsed" id="" data-toggle="collapse" href="#toggleAddFileType"><?php echo $this->translate('tr_meliscommerce_documents_file_type_add') ?></a></h4>
                                 </div>
                                 <div id="toggleAddFileType" class="card-collapse collapse">
                                     <div class="card-body">
@@ -117,10 +115,8 @@
                                                 echo $this->melisFieldCollection($imageTypeForm);
                                                 echo $this->form()->closeTag();
                                             ?>
-                                            <div class="row">
-                                                <div class="col-xs-12" style="text-align: center;">
-                                                    <button class="btn btn-success btnDocAddFileType"><i class="fa fa-plus"></i> <?php echo $this->translate('tr_meliscommerce_general_common_add')?></button>
-                                                </div>
+                                            <div class="d-flex flex-row justify-content-end">
+                                                <button class="btn btn-success btnDocAddFileType"><i class="fa fa-plus"></i> <?php echo $this->translate('tr_meliscommerce_general_common_add')?></button>
                                             </div>
                                         </div>
                                     </div>
