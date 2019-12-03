@@ -8218,21 +8218,11 @@ $(function() {
 		$body.on('click', '.orderCheckoutPrevStep', function() {
 			var $this 		= $(this),
 				tabId 		= $this.data("tabid"),
-				$navTab   	= $(tabId+"[data-toggle='tab']"),
-				$navTabLi  	= $navTab.closest("li"),
-				hrefId 		= $navTab.attr("href"),
-				$tabPane 	= $("#id_meliscommerce_order_checkout_content .tab-content").find(".tab-pane"),
 				$body 		= $("html, body");
 
-				// to show active tab content
-				$tabPane.siblings().removeClass("active");
-				$(hrefId).tab("show");
-
-				// to show active tabsbar/link
-				$navTab.removeClass("hidden");
-				$navTabLi.siblings().removeClass("active");
-				$navTabLi.addClass("active");
-				
+				// switch tab
+				melisCommerce.switchOrderTab( tabId );
+			
 				if ( tabId == '#id_meliscommerce_order_checkout_select_addresses_step_nav' ) {
 					// Zone reload Checkout Addresses
 					melisHelper.zoneReload('id_meliscommerce_order_checkout_billing_address','meliscommerce_order_checkout_billing_address')
@@ -8266,7 +8256,6 @@ $(function() {
 					encode		: true
 				}).done(function(data) {
 					if ( data.success ) {
-						//$(nxtTabid).tab("show");	
 
 						// switch tab
 						melisCommerce.switchOrderTab( nxtTabid );
@@ -8397,8 +8386,6 @@ $(function() {
 						encode		: true
 					}).done(function(data) {
 						if ( data.success ) {
-							//$(nxtTabid).tab("show");
-
 							// switch tab
 							melisCommerce.switchOrderTab( nxtTabid );
 
@@ -8520,14 +8507,12 @@ $(function() {
 					encode		: true
 				}).done(function(data) {
 					if(data.success) {
-						//$(nxtTabid).tab("show");
-
 						// switch tab
 						melisCommerce.switchOrderTab( nxtTabid );
 
 						melisHelper.zoneReload("id_meliscommerce_order_checkout_payment_step_content", "meliscommerce_order_checkout_payment_step_content");
-						
-					}else{
+					}
+					else {
 						melisHelper.melisMultiKoNotification(data.textTitle, data.textMessage, data.errors);
 					}
 					btn.attr('disabled', false);
@@ -8543,7 +8528,8 @@ $(function() {
 				zoneId 		= "id_meliscommerce_order_checkout_confirmation_step",
 				melisKey 	= "meliscommerce_order_checkout_confirmation_step";
 
-				$(nxtTabid).tab("show");
+				// switch tab
+				melisCommerce.switchOrderTab( nxtTabid );
 
 				melisHelper.zoneReload(zoneId, melisKey, {activateTab : true});				
 				melisHelper.zoneReload('id_meliscommerce_order_list_content_table', 'meliscommerce_order_list_content_table');
@@ -8552,9 +8538,9 @@ $(function() {
 		$body.on('change', '#orderCheckoutCouponCode', function() {
 			var $this = $(this);
 			
-			if ( $this.val() == '' ) {
-				$this.parent('.input-group').next().fadeOut('slow');
-			}
+				if ( $this.val() == '' ) {
+					$this.parent('.input-group').next().fadeOut('slow');
+				}
 		});
 	});
 
