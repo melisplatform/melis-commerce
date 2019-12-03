@@ -6,7 +6,7 @@
     $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
    
 ?>
-<div class="tab-pane " <?php echo $id. ' '.$data_melisKey?>>				
+<div class="tab-pane " <?php echo $id. ' '.$data_melisKey?> data-junry="junry data">				
 	<?php 
     	if(!empty($this->zoneconfig['interface'])) {
     	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {

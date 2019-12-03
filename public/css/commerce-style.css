@@ -1119,6 +1119,9 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child:before {
 .cell-val-table {
     margin: 5px 5px 0;
 }
+.qtipTable img.rounded-circle {
+    border-radius: 6px !important;
+}
 /* Action Buttons */
 html a.btn-danger {
     color: #d9534f;
@@ -2450,7 +2453,6 @@ tr.last-tr td {
 table tr td img,
 #tableProductList img {
     width: 60px;
-    height: 60px;
 }
 .country-list-wrapper {
     display: block;
@@ -2466,11 +2468,6 @@ table tr td img,
 /* qtipLoader */
 .qtipLoader {
     padding-bottom: 1rem;
-}
-/* variant */
-.product-variant img {
-    border-radius: 100%;
-    height: 60px;
 }
 /* pop up add product text */
 #addProdTextType {
@@ -2548,4 +2545,7 @@ table tr td img,
     -webkit-transition: border .2s ease-in-out;
     -o-transition: border .2s ease-in-out;
     transition: border .2s ease-in-out;
+}
+.red-box-panel .red-box-panel-list label {
+    font-weight: bold;
 }

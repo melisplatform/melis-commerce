@@ -315,11 +315,11 @@ return array(
                                 'sortable' => true,
                             ),
                 
-//                             'ccomp_name' => array(
-//                                 'text' => 'tr_meliscommerce_order_list_col_company',
-//                                 'css' => array('width' => '15%', 'padding-right' => '0'),
-//                                 'sortable' => false,
-//                             ),
+                            /* 'ccomp_name' => array(
+                                'text' => 'tr_meliscommerce_order_list_col_company',
+                                'css' => array('width' => '15%', 'padding-right' => '0'),
+                                'sortable' => false,
+                            ), */
                 
                             'civt_min_name' => array(
                                 'text' => 'tr_meliscommerce_order_list_col_civility',
@@ -402,11 +402,11 @@ return array(
                                 'sortable' => true,
                             ),
 
-//                             'product_image' => array(
-//                                 'text' => 'tr_meliscommerce_product_list_col_image',
-//                                 'css' => array('width' => '5%', 'padding-right' => '0'),
-//                                 'sortable' => false,
-//                             ),
+                            /* 'product_image' => array(
+                                'text' => 'tr_meliscommerce_product_list_col_image',
+                                'css' => array('width' => '5%', 'padding-right' => '0'),
+                                'sortable' => false,
+                            ), */
                             'product_name' => array(
                                 'text' => 'tr_meliscommerce_product_list_col_name',
                                 'css' => array('width' => '20%', 'padding-right' => '0'),
@@ -480,11 +480,11 @@ return array(
                                 'sortable' => true,
                             ),
                             
-//                             'product_image' => array(
-//                                 'text' => 'tr_meliscommerce_product_list_col_image',
-//                                 'css' => array('width' => '5%', 'padding-right' => '0'),
-//                                 'sortable' => false,
-//                             ),
+                            /* 'product_image' => array(
+                                'text' => 'tr_meliscommerce_product_list_col_image',
+                                'css' => array('width' => '5%', 'padding-right' => '0'),
+                                'sortable' => false,
+                            ), */
                             'product_name' => array(
                                 'text' => 'tr_meliscommerce_product_list_col_name',
                                 'css' => array('width' => '20%', 'padding-right' => '0'),
