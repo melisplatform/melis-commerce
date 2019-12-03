@@ -2549,3 +2549,6 @@ table tr td img,
 .red-box-panel .red-box-panel-list label {
     font-weight: bold;
 }
+.order-checkout-steps li a {
+    font-size: 14px;
+}
