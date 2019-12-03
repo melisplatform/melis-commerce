@@ -35,7 +35,7 @@
             </div>
 		</div>
 		<div class="col-xs-12 col-md-9 col-lg-10">
-			<div class="tab-content client-contact-tab-content" id="<?php echo $this->clientId.'_client_contact_tab_content' ?>">
+			<div class="tab-content client-contact-tab-content" id="<?php echo $this->clientId.'_client_contact_tab_content' ?>" data-junry="junry data">
 				<?php foreach ($this->clientPerson As $val):?>
 					<?php $tabId = md5($val->cper_id); ?>
 					<div id="<?php echo $tabId ?>" class="tab-pane product-text-tab-content" style="border: 1px solid #eee; padding: 15px; margin-bottom: 20px">
@@ -44,12 +44,12 @@
                 		</div>
                 		<div class="form-group">
                 			<div class="row">
-                				<div class="col-xs-6">
+                				<div class="col-6">
                     				<div class="main-contact-start">
                                     	<i class="fa <?php echo ($val->cper_is_main_person) ? 'fa-star' : 'fa-star-o'?> fa-2x clientMainContact"  data-clientid="<?php echo $this->clientId ?>" data-tabid="<?php echo $tabId ?>" aria-hidden="true" title="<?php echo $this->translate('tr_meliscommerce_client_Main_contact')?>"></i>
                                     </div>
                 				</div>
-                				<div class="col-xs-6" style="text-align: right;">
+                				<div class="col-6" style="text-align: right;">
                 					<div class="make-switch clientContactStatus <?php echo $this->clientId.'-client-contact-status'?>" data-clientid="<?php echo $this->clientId ?>" data-tabid="<?php echo $tabId ?>" data-text-label="<?php echo $this->translate('tr_meliscommerce_client_Contact_status')?>" data-on-label="<?php echo $this->translate('tr_meliscommerce_client_Contact_status_active')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_client_Contact_status_inactive')?>">
                                         <input type="checkbox" name="cper_status" <?php echo ($val->cper_status) ? 'checked' : ''?>>
                                     </div>
