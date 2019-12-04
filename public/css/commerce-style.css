@@ -2504,6 +2504,12 @@ table tr td img,
     height: 60px;
     max-width: 60px;
 }
+.client-contact-address .card-title .accordion-toggle {
+    color: #fff;
+}
+.client-contact-address .card-title .accordion-toggle:hover {
+    text-decoration: underline;
+}
 /* accordion-toggle heading */
 .content-cont .card-title > a,
 .content-cont .panel-title > a {
