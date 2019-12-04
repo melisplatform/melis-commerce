@@ -14,7 +14,7 @@ return array(
                         'target' => '#categoryProductListTbl',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComCategory/getCategoryProductList',
                         'dataFunction' => 'initCategoryProducts',
-                        'ajaxCallback' => 'initCategoryProductsImgs();melisCore.paginateDataTables();',
+                        'ajaxCallback' => 'initCategoryProductsImgs();',
                         'filters' => array(
                             'left' => array(),
                             'center' => array(),

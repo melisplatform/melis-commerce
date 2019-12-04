@@ -11,7 +11,7 @@ return array(
                         'target' => '#tableComLanguageList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComLanguage/getComLangData',
                         'dataFunction' => '',
-                        'ajaxCallback' => 'melisCore.paginateDataTables()',
+                        'ajaxCallback' => '',
                         'filters' => array(
                             'left' => array(
                                 'language-table-limit' => array(

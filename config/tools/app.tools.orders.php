@@ -9,7 +9,7 @@ return array(
                         'target' => '#tableOrderList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComOrderList/getOrderListData',
                         'dataFunction' => 'initOrderList',
-                        'ajaxCallback' => 'initOrderListTitle();melisCore.paginateDataTables()',
+                        'ajaxCallback' => 'initOrderListTitle();',
                         'filters' => array(
                             'left' => array(                                
                                 'order-list-table-filter-limit' => array(
@@ -130,7 +130,7 @@ return array(
                         'target' => '#tableOrderBasketList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComOrder/getBasketData',
                         'dataFunction' => 'initOrderBasket',
-                        'ajaxCallback' => 'hideBasketButton();melisCore.paginateDataTables()',                        
+                        'ajaxCallback' => 'hideBasketButton();',                        
                         'filters' => array(
                             'left' => array(
                                 'order-basket-list-table-filter-limit' => array(
@@ -215,7 +215,7 @@ return array(
                         'target' => '#tableOrderStatus',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComOrderStatus/getOrderStatusData',
                         'dataFunction' => '',
-                        'ajaxCallback' => 'initCheckPermStatus;melisCore.paginateDataTables()',
+                        'ajaxCallback' => 'initCheckPermStatus;',
                         'filters' => array(
                             'left' => array(
                                 'order-status-table-filter-limit' => array(

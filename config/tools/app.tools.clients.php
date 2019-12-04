@@ -13,7 +13,7 @@ return array(
                         'target' => '#clientListTbl',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComClientList/getClientList',
                         'dataFunction' => '',
-                        'ajaxCallback' => 'melisCore.paginateDataTables()',
+                        'ajaxCallback' => '',
                         'filters' => array(
                             'left' => array(
                                 'meliscommerce-clients-list-tbl-limit' => array(

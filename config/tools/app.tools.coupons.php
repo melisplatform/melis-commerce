@@ -9,7 +9,7 @@ return array(
                         'target' => '#tableCouponList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComCouponList/getCouponListData',
                         'dataFunction' => 'initMelisCommerceCouponTbl',
-                        'ajaxCallback' => 'initCheckUsedCoupon(), melisCore.paginateDataTables()',
+                        'ajaxCallback' => 'initCheckUsedCoupon()',
                         'filters' => array(
                             'left' => array(
                                 'coupon-list-table-filter-limit' => array(
@@ -248,7 +248,7 @@ return array(
                         'target' => '#tableOrderList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComOrderList/getOrderListData',
                         'dataFunction' => 'initCouponOrder',
-                        'ajaxCallback' => 'melisCore.paginateDataTables()',
+                        'ajaxCallback' => '',
                         'filters' => array(
                             'left' => array(
                                 'order-list-table-filter-limit-order' => array(
@@ -440,7 +440,7 @@ return array(
                         'target' => '#productList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComCoupon/getCouponProductData',
                         'dataFunction' => 'initMelisCouponProduct',
-                        'ajaxCallback' => 'melisCommerce.initTooltipTable(), initCouponProductTable(), melisCore.paginateDataTables()',
+                        'ajaxCallback' => 'melisCommerce.initTooltipTable(), initCouponProductTable()',
                         'filters' => array(
                             'left' => array(
                                 'coupon-table-filter-limit-assign-product' => array(
