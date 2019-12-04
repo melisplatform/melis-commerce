@@ -204,5 +204,6 @@
         'tr_meliscommerce_plugin_checked_category_note' => 'Les catégories cochées pré-filtrent le résulat.',
 	    
         'tr_meliscommerce_plugin_category_product_list_product' => 'Produits',
-	    
+		
+		'tr_MelisCommerceFilterMenuCategoryListPlugin_Title' => 'Catégories',
 	);

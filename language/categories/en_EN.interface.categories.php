@@ -203,5 +203,7 @@
         'tr_meliscommerce_plugin_highlighted_category_note' => 'The highlighted category is displayed with its sub-categories.',
         'tr_meliscommerce_plugin_checked_category_note' => 'The checked categories pre-filter the result.',
 	    
-	    'tr_meliscommerce_plugin_category_product_list_product' => 'Products',
+		'tr_meliscommerce_plugin_category_product_list_product' => 'Products',
+		
+		'tr_MelisCommerceFilterMenuCategoryListPlugin_Title' => 'Categories',
 	);
