@@ -601,13 +601,13 @@ $(function() {
                 melisCoreTool.done(this);
         });
 
-        // order payment tab
+        // payment tab
         $body.on("click", ".tabs-label li a", function() {
             var $this       = $(this),
                 href        = $this.attr("href"),
                 $aAccordion = $(href).find(".a-accordion");
 
-                if ( $(href).hasClass("active") ) {
+                if ( $(href).hasClass("accordion-list") ) {
                     var payTabContentTable = $aAccordion.attr("href");
                         $(payTabContentTable).collapse("show");
                 }
