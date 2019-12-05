@@ -1,5 +1,6 @@
 $(function() {
-    var $body = $("body");
+    var $body           = $("body"),
+        $payAccordion   = $(".a-accordion");
 
         //removes modal elements when clicking outside
         $body.on("click", function (e) {
@@ -598,6 +599,18 @@ $(function() {
                     });
 
                 melisCoreTool.done(this);
+        });
+
+        // order payment tab
+        $body.on("click", ".tabs-label li a", function() {
+            var $this       = $(this),
+                href        = $this.attr("href"),
+                $aAccordion = $(href).find(".a-accordion");
+
+                if ( $(href).hasClass("active") ) {
+                    var payTabContentTable = $aAccordion.attr("href");
+                        $(payTabContentTable).collapse("show");
+                }
         });
 });
 
