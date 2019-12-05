@@ -1706,9 +1706,9 @@ $(function() {
 				melisCoreTool.pending(".btn");
 
 				$.ajax({
-					type : 'POST',
-					url  : '/melis/MelisCommerce/MelisComDocument/saveDocument',
-					data : formData,
+					type 		: 'POST',
+					url  		: '/melis/MelisCommerce/MelisComDocument/saveDocument',
+					data 		: formData,
 					processData : false,
 					cache       : false,
 					contentType : false,

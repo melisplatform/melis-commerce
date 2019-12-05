@@ -2480,6 +2480,9 @@ table tr td img,
     padding-top: 0;
     padding-bottom: 0;
 }
+#accordion .card {
+    margin-bottom: 0;
+}
 /* clients */
 .form-group label i.fa-info-circle,
 .addNewAddress,
