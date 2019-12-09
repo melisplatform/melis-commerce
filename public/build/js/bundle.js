@@ -6168,7 +6168,7 @@ $(function() {
             var $this   = $(this),
                 href    = $this.attr("href");
 
-                $(href).collapse("show");
+                $(href).collapse("toggle");
         });
 });
 
