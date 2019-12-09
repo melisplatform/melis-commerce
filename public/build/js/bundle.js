@@ -6169,7 +6169,7 @@ $(function() {
                 href    = $this.attr("href");
 
                 $(href).collapse("toggle");
-                $this.toggleClass("collapsed")
+                $this.toggleClass("collapsed");
         });
 });
 
