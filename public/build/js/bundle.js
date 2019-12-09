@@ -6154,14 +6154,17 @@ $(function() {
 
         // payment tab
         $body.on("click", ".tabs-label li a", function() {
-            var $this       = $(this),
-                href        = $this.attr("href"),
-                $aAccordion = $(href).find(".a-accordion");
+            var $this               = $(this),
+                href                = $this.attr("href"),
+                $aAccordion         = $(href).find(".a-accordion"),
+                payTabContentTable  = $aAccordion.attr("href");
 
-                if ( $(href).hasClass("accordion-list") ) {
+                $(payTabContentTable).collapse("show");
+
+                /* if ( $(href).hasClass("accordion-list") ) {
                     var payTabContentTable = $aAccordion.attr("href");
                         $(payTabContentTable).collapse("show");
-                }
+                } */
         });
 
         
@@ -8809,8 +8812,6 @@ $(function() {
 			var $this 	= $(this),
 				id 		= $this.parents("tr").attr("id");
 
-				console.log({id});
-
 				melisCoreTool.pending(".btnComCurrencyMakeDefault");
 				$.ajax({
 					type        : 'POST', 
@@ -8828,8 +8829,8 @@ $(function() {
 					melisCoreTool.done(".btnComCurrencyMakeDefault");
 					melisCore.flashMessenger();
 				}).fail(function(){
-					alert( translations.tr_meliscore_error_message );
 					melisCoreTool.done(".btnComCurrencyMakeDefault");
+					alert( translations.tr_meliscore_error_message );
 				});
 		});
 });
