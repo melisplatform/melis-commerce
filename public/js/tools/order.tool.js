@@ -612,6 +612,8 @@ $(function() {
                         $(payTabContentTable).collapse("show");
                 }
         });
+
+        
 });
 
 // table datafunction for basket

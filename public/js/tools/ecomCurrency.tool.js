@@ -208,14 +208,14 @@ $(function() {
 					dataType    : 'json',
 					encode		: true
 				}).done(function(data){
-						if(data.success) {
-							$("#" + activeTabId + " .melis-refreshTable").trigger("click");
-							melisHelper.melisOkNotification(data.textTitle, data.textMessage);
-						}else{
-							melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
-						}
-						melisCoreTool.done(".btnComCurrencyMakeDefault");
-						melisCore.flashMessenger();
+					if(data.success) {
+						$("#" + activeTabId + " .melis-refreshTable").trigger("click");
+						melisHelper.melisOkNotification(data.textTitle, data.textMessage);
+					}else{
+						melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
+					}
+					melisCoreTool.done(".btnComCurrencyMakeDefault");
+					melisCore.flashMessenger();
 				}).fail(function(){
 					melisCoreTool.done(".btnComCurrencyMakeDefault");
 					alert( translations.tr_meliscore_error_message );

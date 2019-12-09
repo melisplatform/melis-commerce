@@ -6163,6 +6163,8 @@ $(function() {
                         $(payTabContentTable).collapse("show");
                 }
         });
+
+        
 });
 
 // table datafunction for basket
@@ -8807,6 +8809,8 @@ $(function() {
 			var $this 	= $(this),
 				id 		= $this.parents("tr").attr("id");
 
+				console.log({id});
+
 				melisCoreTool.pending(".btnComCurrencyMakeDefault");
 				$.ajax({
 					type        : 'POST', 
@@ -8815,17 +8819,17 @@ $(function() {
 					dataType    : 'json',
 					encode		: true
 				}).done(function(data){
-						if(data.success) {
-							$("#" + activeTabId + " .melis-refreshTable").trigger("click");
-							melisHelper.melisOkNotification(data.textTitle, data.textMessage);
-						}else{
-							melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
-						}
-						melisCoreTool.done(".btnComCurrencyMakeDefault");
-						melisCore.flashMessenger();
-				}).fail(function(){
+					if(data.success) {
+						$("#" + activeTabId + " .melis-refreshTable").trigger("click");
+						melisHelper.melisOkNotification(data.textTitle, data.textMessage);
+					}else{
+						melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
+					}
 					melisCoreTool.done(".btnComCurrencyMakeDefault");
+					melisCore.flashMessenger();
+				}).fail(function(){
 					alert( translations.tr_meliscore_error_message );
+					melisCoreTool.done(".btnComCurrencyMakeDefault");
 				});
 		});
 });
