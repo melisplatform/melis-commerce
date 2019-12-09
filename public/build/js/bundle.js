@@ -6168,8 +6168,13 @@ $(function() {
             var $this   = $(this),
                 href    = $this.attr("href");
 
+                if ( $this.hasClass("collapsed") ) {
+                    $this.removeClass("collapsed");
+                } else {
+                    $this.toggleClass("collapsed");
+                }
+
                 $(href).collapse("toggle");
-                $this.toggleClass("collapsed");
         });
 });
 
