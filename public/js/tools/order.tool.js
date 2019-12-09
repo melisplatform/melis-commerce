@@ -604,16 +604,9 @@ $(function() {
         // payment tab
         $body.on("click", ".tabs-label li a", function() {
             var $this               = $(this),
-                href                = $this.attr("href"),
-                $aAccordion         = $(href).find(".a-accordion"),
-                payTabContentTable  = $aAccordion.attr("href");
+                href                = $this.attr("href");
 
-                $(payTabContentTable).collapse("show");
-
-                /* if ( $(href).hasClass("accordion-list") ) {
-                    var payTabContentTable = $aAccordion.attr("href");
-                        $(payTabContentTable).collapse("show");
-                } */
+                $(href).collapse("show");
         });
 
         
