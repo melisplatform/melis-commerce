@@ -21,9 +21,9 @@
 	    'tr_meliscommerce_order_checkout_common_next' => 'Suivant',
 	    
 	    // tabs
-	    'tr_meliscommerce_order_checkout_Choose_product' => 'Choisir le Produit',
-	    'tr_meliscommerce_order_checkout_Choose_contact' => 'Choisir le Contact',
-	    'tr_meliscommerce_order_checkout_Select_addresses' => 'Choisir les Adresses',
+	    'tr_meliscommerce_order_checkout_Choose_product' => 'Produit',
+	    'tr_meliscommerce_order_checkout_Choose_contact' => 'Contact',
+	    'tr_meliscommerce_order_checkout_Select_addresses' => 'Adresses',
 	    'tr_meliscommerce_order_checkout_Summary' => 'Récapitulatif',
 	    'tr_meliscommerce_order_checkout_Payment' => 'Paiement',
 	    'tr_meliscommerce_order_checkout_Confirmation' => 'Confirmation',

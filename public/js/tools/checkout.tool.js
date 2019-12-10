@@ -472,12 +472,12 @@ $(function() {
 
 				$varQty = $sumBasketVarQty.val();
 			
-			if ( parseInt($varQty) > 0 ) {
-				variantQty = parseInt($sumBasketVarQty.val()) - 1;
-				$sumBasketVarQty.val(variantQty);
+				if ( parseInt($varQty) > 0 ) {
+					variantQty = parseInt($sumBasketVarQty.val()) - 1;
+					$sumBasketVarQty.val(variantQty);
 
-				updateSummaryVariantbasket("deduct", variantId, variantQty);
-			}
+					updateSummaryVariantbasket("deduct", variantId, variantQty);
+				}
 		});
 		
 		// Confirming Client basket button

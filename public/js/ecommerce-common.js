@@ -259,10 +259,11 @@ var melisCommerce = (function(window) {
 
             // to show active tab content
             $tabPane.siblings().removeClass("active");
+            $tabId.removeClass("active");
             $(hrefId).tab("show");
 
             // to show active tabsbar/link
-            $navTab.removeClass("hidden");
+            //$navTab.removeClass("hidden");
             $navTabLi.siblings().removeClass("active");
             $navTabLi.addClass("active");
     }

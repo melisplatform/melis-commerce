@@ -259,10 +259,11 @@ var melisCommerce = (function(window) {
 
             // to show active tab content
             $tabPane.siblings().removeClass("active");
+            $tabId.removeClass("active");
             $(hrefId).tab("show");
 
             // to show active tabsbar/link
-            $navTab.removeClass("hidden");
+            //$navTab.removeClass("hidden");
             $navTabLi.siblings().removeClass("active");
             $navTabLi.addClass("active");
     }
@@ -8506,12 +8507,12 @@ $(function() {
 
 				$varQty = $sumBasketVarQty.val();
 			
-			if ( parseInt($varQty) > 0 ) {
-				variantQty = parseInt($sumBasketVarQty.val()) - 1;
-				$sumBasketVarQty.val(variantQty);
+				if ( parseInt($varQty) > 0 ) {
+					variantQty = parseInt($sumBasketVarQty.val()) - 1;
+					$sumBasketVarQty.val(variantQty);
 
-				updateSummaryVariantbasket("deduct", variantId, variantQty);
-			}
+					updateSummaryVariantbasket("deduct", variantId, variantQty);
+				}
 		});
 		
 		// Confirming Client basket button
