@@ -1400,7 +1400,7 @@ textarea {
 }
 @media ( max-width: 320px ) {
 	.melis-product-heading > a.btn-success {
-		float: left;
+		/* float: left; */
 		margin: 0;
 	}
 }
