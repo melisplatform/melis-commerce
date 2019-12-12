@@ -613,6 +613,10 @@ $(function() {
 
                 $(href).collapse("toggle");
         });
+
+        $body.on("click", ".order-checkout-steps li a", function(e) {
+            e.preventDefault();
+        });
 });
 
 // table datafunction for basket

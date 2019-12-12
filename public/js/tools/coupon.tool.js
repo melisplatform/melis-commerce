@@ -335,6 +335,20 @@ $(function() {
                 });
          		//$('#'+couponId+"_id_meliscommerce_coupon_tabs_content_assign_details").addClass('active');
         }
+
+        $body.on("click", ".user_add", function() {
+            var $this   = $(this),
+                href    = $this.attr("href");
+
+                $(href).find(".couponClientListRefresh").trigger("click");
+        });
+
+        $body.on("click", ".more_items", function() {
+            var $this = $(this),
+                href = $this.attr("href");
+
+                $(href).find(".couponClientListRefresh").trigger("click");
+        });
 });
 
 window.initCouponClient = function(data, tblSettings) {
