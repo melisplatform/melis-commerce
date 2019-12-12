@@ -614,9 +614,11 @@ $(function() {
                 $(href).collapse("toggle");
         });
 
-        $body.on("click", ".order-checkout-steps li a", function(e) {
+        /* $body.on("click", ".order-checkout-steps li a", function(e) {
             e.preventDefault();
-        });
+
+            console.log("order-checkout-steps li a");
+        }); */
 });
 
 // table datafunction for basket
