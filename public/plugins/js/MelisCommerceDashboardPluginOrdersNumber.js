@@ -105,7 +105,7 @@ $(function () {
                     defaultTheme: false
                 }
             },
-            placeholder: ".commerce-dashboard-orders-chart-linegraph-placeholder",
+            placeholder: "#"+activeTabId+" .commerce-dashboard-orders-chart-linegraph-placeholder",
             init: function () {
                 if ( this.plot == null ) {
                     // hook the init function for plotting the chart

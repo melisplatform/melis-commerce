@@ -1,4 +1,3 @@
-
 $(function() {
     var $body = $("body");
 
@@ -295,6 +294,15 @@ $(function() {
                 }).fail(function() {
                     alert( translations.tr_meliscore_error_message );
                 });
+        });
+
+        $body.on("click", ".tabs-label li a", function() {
+            var $this       = $(this),
+                $tabVariants = $this.closest("li").find("[data-meliskey='meliscommerce_products_page_content_tab_variants'].active");
+
+                if ( $tabVariants.length > 0 ) {
+                    $body.find(".productvariant-refresh").trigger("click");
+                }
         });
 });
 

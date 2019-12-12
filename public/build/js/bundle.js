@@ -4441,7 +4441,6 @@ var melisCommerceSeo = (function(window) {
 		serializeSeo: serializeSeo,
 	}
 })(window);
-
 $(function() {
     var $body = $("body");
 
@@ -4738,6 +4737,15 @@ $(function() {
                 }).fail(function() {
                     alert( translations.tr_meliscore_error_message );
                 });
+        });
+
+        $body.on("click", ".tabs-label li a", function() {
+            var $this       = $(this),
+                $tabVariants = $this.closest("li").find("[data-meliskey='meliscommerce_products_page_content_tab_variants'].active");
+
+                if ( $tabVariants.length > 0 ) {
+                    $body.find(".productvariant-refresh").trigger("click");
+                }
         });
 });
 
@@ -6152,18 +6160,6 @@ $(function() {
 
                 melisCoreTool.done(this);
         });
-
-        // payment tab
-        /* $body.on("click", ".tabs-label li a", function() {
-            var $this       = $(this),
-                href        = $this.attr("href"),
-                $aAccordion = $(href).find(".a-accordion");
-
-                if ( $(href).hasClass("accordion-list") ) {
-                    var payTabContentTable = $aAccordion.attr("href");
-                        $(payTabContentTable).collapse("show");
-                }
-        }); */
 
         $body.on("click", ".a-accordion", function() {
             var $this   = $(this),
@@ -10060,7 +10056,7 @@ $(function () {
                     defaultTheme: false
                 }
             },
-            placeholder: ".commerce-dashboard-orders-chart-linegraph-placeholder",
+            placeholder: "#"+activeTabId+" .commerce-dashboard-orders-chart-linegraph-placeholder",
             init: function () {
                 if ( this.plot == null ) {
                     // hook the init function for plotting the chart
@@ -10298,7 +10294,7 @@ $(function () {
                     defaultTheme: false
                 }
             },
-            placeholder: ".commerce-dashboard-plugin-sales-revenue-placeholder",
+            placeholder: "#"+activeTabId+" .commerce-dashboard-plugin-sales-revenue-placeholder",
             // initialize
             init: function () {
                 if (this.plot == null) {

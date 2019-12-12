@@ -76,7 +76,7 @@ $(function () {
                     defaultTheme: false
                 }
             },
-            placeholder: ".commerce-dashboard-plugin-sales-revenue-placeholder",
+            placeholder: "#"+activeTabId+" .commerce-dashboard-plugin-sales-revenue-placeholder",
             // initialize
             init: function () {
                 if (this.plot == null) {

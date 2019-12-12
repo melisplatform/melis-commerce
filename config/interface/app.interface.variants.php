@@ -23,14 +23,14 @@ return array(
             'interface' => array(
                 'meliscommerce_variants' => array(                     
                     'interface' => array(
-//                         'meliscommerce_variants_leftmenu' => array(
-//                             'conf' => array(
-//                                 'id' => 'id_meliscommerce_variants_page',
-//                                 'melisKey' => 'meliscommerce_variants_page',
-//                                 'name' => 'tr_meliscommerce_varaints',
-//                                 'icon' => 'fa fa-user',
-//                             ),
-//                         ),
+                        /* 'meliscommerce_variants_leftmenu' => array(
+                            'conf' => array(
+                                'id' => 'id_meliscommerce_variants_page',
+                                'melisKey' => 'meliscommerce_variants_page',
+                                'name' => 'tr_meliscommerce_varaints',
+                                'icon' => 'fa fa-user',
+                            ),
+                        ), */
                         'meliscommerce_variants_page' => array(
                             'conf' => array(
                                 'id' => 'id_meliscommerce_variants_page',
@@ -150,20 +150,20 @@ return array(
                                                         'action' => 'render-variant-tab',
                                                     ),
                                                 ),
-//                                                 'meliscommerce_variant_tab_text' => array(
-//                                                     'conf' => array(
-//                                                         'id' => 'id_meliscommerce_variant_tab_text',
-//                                                         'melisKey' => 'meliscommerce_variant_tab_text',
-//                                                         'name' => 'tr_meliscommerce_variant_tab_text',
-//                                                         'icon' => 'icon-paper-documents',
-//                                                         'href' => 'id_meliscommerce_variant_tab_content_text',
-//                                                     ),
-//                                                     'forward' => array(
-//                                                         'module' => 'MelisCommerce',
-//                                                         'controller' => 'MelisComVariant',
-//                                                         'action' => 'render-variant-tab',
-//                                                     ),
-//                                                 ),
+                                                /* 'meliscommerce_variant_tab_text' => array(
+                                                    'conf' => array(
+                                                        'id' => 'id_meliscommerce_variant_tab_text',
+                                                        'melisKey' => 'meliscommerce_variant_tab_text',
+                                                        'name' => 'tr_meliscommerce_variant_tab_text',
+                                                        'icon' => 'icon-paper-documents',
+                                                        'href' => 'id_meliscommerce_variant_tab_content_text',
+                                                    ),
+                                                    'forward' => array(
+                                                        'module' => 'MelisCommerce',
+                                                        'controller' => 'MelisComVariant',
+                                                        'action' => 'render-variant-tab',
+                                                    ),
+                                                ), */
                                                 'meliscommerce_variant_tab_seo' => array(
                                                     'conf' => array(
                                                         'id' => 'id_meliscommerce_variant_tab_seo',
@@ -593,19 +593,19 @@ return array(
                                                                         'action' => 'render-variant-tab-content-header-right',
                                                                     ),
                                                                     'interface' => array(
-//                                                                         'meliscommerce_variant_tab_stocks_header_add' => array(
-//                                                                             'conf' => array(
-//                                                                                 'id' => 'id_meliscommerce_variant_tab_stocks_header_add',
-//                                                                                 'melisKey' => 'meliscommerce_variant_tab_stocks_header_add',
-//                                                                                 'name' => 'tr_meliscommerce_variant_tab_prices_header_add',
-//                                                                                 'icon' => 'fa fa-globe',
-//                                                                             ),
-//                                                                             'forward' => array(
-//                                                                                 'module' => 'MelisCommerce',
-//                                                                                 'controller' => 'MelisComVariant',
-//                                                                                 'action' => 'render-variant-tab-stocks-header-add',
-//                                                                             ),
-//                                                                         ),
+                                                                        /* 'meliscommerce_variant_tab_stocks_header_add' => array(
+                                                                            'conf' => array(
+                                                                                'id' => 'id_meliscommerce_variant_tab_stocks_header_add',
+                                                                                'melisKey' => 'meliscommerce_variant_tab_stocks_header_add',
+                                                                                'name' => 'tr_meliscommerce_variant_tab_prices_header_add',
+                                                                                'icon' => 'fa fa-globe',
+                                                                            ),
+                                                                            'forward' => array(
+                                                                                'module' => 'MelisCommerce',
+                                                                                'controller' => 'MelisComVariant',
+                                                                                'action' => 'render-variant-tab-stocks-header-add',
+                                                                            ),
+                                                                        ), */
                                                                     ),
                                                                 ),
                                                             ),
