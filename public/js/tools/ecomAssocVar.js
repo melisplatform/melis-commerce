@@ -209,8 +209,5 @@ $(function() {
                     $(href).find(".refreshAssocVarList").trigger("click");
                     $(href).find(".refreshVarList").trigger("click");
                 }
-
-                console.log("aVarTab: ", aVarTab);
-                console.log("refreshAssocVarList: ", $(href).find(".refreshAssocVarList"));
         });
 });

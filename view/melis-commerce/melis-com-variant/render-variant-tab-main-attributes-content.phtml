@@ -18,13 +18,13 @@
     		<?php foreach($this->attributes as $attr){?>		
     			
     			<tr>
-        			<td class="col-md-4">
+        			<td>
         				<label><?= $this->escapeHtml($attr['name']) ?>:&nbsp;</label>
         			</td>
         			<td>
         				<form name ="attrVal"> 
         				<fieldset>       				
-        				<div class="form-group">
+        				<div class="form-group" style="margin-bottom: 0;">
         					<select class="form-control" name="vatv_attribute_value_id">
         						<option value ="0" >
         							<?= $this->translate('tr_meliscommerce_variant_main_information_attribute_select');?>
