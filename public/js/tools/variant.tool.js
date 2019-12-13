@@ -299,13 +299,14 @@ $(function() {
         $body.on("click", ".tabs-label li a", function() {
             var $this           = $(this),
                 href            = $this.attr("href"),
+                tabVariants     = $this.closest("li").data("meliskey"),
                 $tabVariants    = $this.closest("li").find("[data-meliskey='meliscommerce_products_page_content_tab_variants']");
 
-                if ( $tabVariants.length > 0 ) {
+                if ( tabVariants === 'meliscommerce_products_page_content_tab_variants' ) {
                     $(href).find(".refresh-attribute-lists").trigger("click");
                 }
 
-                console.log("$tabVariants: ", $tabVariants.length );
+                console.log("tabVariants: ", tabVariants );
                 console.log("refresh: ", $(href).find(".refresh-attribute-lists") );
         });
 });
