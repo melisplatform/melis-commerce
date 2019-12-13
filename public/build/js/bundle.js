@@ -9539,7 +9539,7 @@ $(function() {
             //("#tableAssocVariantList2_58").fnFilterAll("test");
         
         // This event will create extra row on DataTable as Product Variant List container
-        $body.on('click', '.showPrdVariants', function () {
+        $body.on("click", ".showPrdVariants", function() {
             var $this               = $(this),
                 parentTable         = $this.parents('.tableAssocVariantList2'),
                 tableId             = parentTable.attr("id"),
@@ -9571,6 +9571,19 @@ $(function() {
                         // this process will request to server for variant list depend on ProductId
                         melisHelper.zoneReload(zoneId, melisKey, {productId: productId, variantId: currentVariantId, search : search});
                 }
+        });
+
+        $body.on("click", ".tabs-label li a", function() {
+            var $this   = $(this),
+                href    = $this.attr("href"),
+                aVarTab = $this.closest("li").data("meliskey");
+
+                if ( aVarTab === 'meliscommerce_avar_tab' ) {
+                    $(href).find(".refreshAssocVarList").trigger("click");
+                }
+
+                console.log("aVarTab: ", aVarTab);
+                console.log("refreshAssocVarList: ", $(href).find(".refreshAssocVarList"));
         });
 });
 $(function() {
