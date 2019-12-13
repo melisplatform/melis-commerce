@@ -6174,11 +6174,14 @@ $(function() {
                 $(href).collapse("toggle");
         });
 
-        /* $body.on("click", ".order-checkout-steps li a", function(e) {
-            e.preventDefault();
+        $body.on("click", ".tabs-label li a", function() {
+            var $this   = $(this),
+                href    = $this.attr("href");
 
-            console.log("order-checkout-steps li a");
-        }); */
+                if ( $this.hasClass("shopping_bag") ) {
+                    $(href).find(".orderBasketRefresh").trigger("click");
+                }
+        });
 });
 
 // table datafunction for basket
