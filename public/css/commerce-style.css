@@ -2572,3 +2572,6 @@ tr.last-tr td {
     vertical-align: baseline;
     border-radius: .25em;
 }
+.tabsbar .has-sub > .tab-element:before {
+    content: "";
+}

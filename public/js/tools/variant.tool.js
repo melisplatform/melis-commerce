@@ -297,11 +297,11 @@ $(function() {
         });
 
         $body.on("click", ".tabs-label li a", function() {
-            var $this       = $(this),
-                $tabVariants = $this.closest("li").find("[data-meliskey='meliscommerce_products_page_content_tab_variants'].active");
+            var $this           = $(this),
+                $tabVariants    = $this.closest("li").find("[data-meliskey='meliscommerce_products_page_content_tab_variants'].active");
 
                 if ( $tabVariants.length > 0 ) {
-                    $body.find(".productvariant-refresh").trigger("click");
+                    $body.find(".refresh-attribute-lists").trigger("click");
                 }
         });
 });

@@ -4744,7 +4744,7 @@ $(function() {
                 $tabVariants = $this.closest("li").find("[data-meliskey='meliscommerce_products_page_content_tab_variants'].active");
 
                 if ( $tabVariants.length > 0 ) {
-                    $body.find(".productvariant-refresh").trigger("click");
+                    $body.find(".refresh-attribute-lists").trigger("click");
                 }
         });
 });
