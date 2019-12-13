@@ -298,14 +298,15 @@ $(function() {
 
         $body.on("click", ".tabs-label li a", function() {
             var $this           = $(this),
-                $tabVariants    = $this.closest("li").find("[data-meliskey='meliscommerce_products_page_content_tab_variants'].active");
+                href            = $this.attr("href"),
+                $tabVariants    = $this.closest("li").find("[data-meliskey='meliscommerce_products_page_content_tab_variants']");
 
                 if ( $tabVariants.length > 0 ) {
-                    $body.find(".refresh-attribute-lists").trigger("click");
+                    $(href).find(".refresh-attribute-lists").trigger("click");
                 }
 
                 console.log("$tabVariants: ", $tabVariants.length );
-                console.log("refresh: ", $body.find(".refresh-attribute-lists"));
+                console.log("refresh: ", $(href).find(".refresh-attribute-lists") );
         });
 });
 
