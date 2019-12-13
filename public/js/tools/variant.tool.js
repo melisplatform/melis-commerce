@@ -303,6 +303,9 @@ $(function() {
                 if ( $tabVariants.length > 0 ) {
                     $body.find(".refresh-attribute-lists").trigger("click");
                 }
+
+                console.log("$tabVariants: ", $tabVariants.length );
+                console.log("refresh: ", $body.find(".refresh-attribute-lists"));
         });
 });
 
