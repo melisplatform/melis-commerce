@@ -105,8 +105,8 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
         $siteId = (!empty($data['m_checkout_site_id'])) ? $data['m_checkout_site_id'] : null;
         $steps = (!empty($data['m_checkout_step'])) ? $data['m_checkout_step'] : '';
         
-        $checkoutPage = (!empty($data['m_checkout_page_link'])) ? $data['m_checkout_page_link'] : 'http://www.test.com';
-        $loginPage = (!empty($data['m_login_page_link'])) ? $data['m_login_page_link'] : 'http://www.test.com';
+        $checkoutPage = (!empty($data['m_checkout_page_link'])) ? $data['m_checkout_page_link'] : '';
+        $loginPage = (!empty($data['m_login_page_link'])) ? $data['m_login_page_link'] : '';
         
         // Preparing the Container/Session of Commerce checkout
         $container = new Container('meliscommerce');

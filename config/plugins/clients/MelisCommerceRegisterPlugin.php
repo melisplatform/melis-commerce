@@ -18,7 +18,7 @@ return array(
                         'cper_name' => '',
                         'm_country' => 1,
                         
-                        'm_redirection_link_ok' => 'http://www.test.com',
+                        'm_redirection_link_ok' => '',
                         'm_autologin' => false,
                         
                         // flag true if a form is submitted
@@ -357,6 +357,18 @@ return array(
                         )
                     ),
                     'melis' => array(
+                        /*
+                         * if set this plugin will belong to a specific marketplace section,
+                         * if not it will go directly to ( Others ) section
+                         *  - available section for templating plugins as of 2019-05-16
+                         *    - MelisCms
+                         *    - MelisMarketing
+                         *    - MelisSite
+                         *    - MelisCommerce
+                         *    - Others
+                         *    - CustomProjects
+                         */
+                        'section' => 'MelisCommerce',
                         'subcategory' => array(
                             'id' => 'CLIENTS',
                             'title' => 'tr_meliscommerce_clients_Clients'
@@ -375,7 +387,7 @@ return array(
                         ),
                         'modal_form' => array(
                             'melis_commerce_plugin_login_config' => array(
-                                'tab_title' => 'tr_front_plugin_common_tab_properties',
+                                'tab_title' => 'tr_meliscommerce_general_plugin_properties_title',
                                 'tab_icon'  => 'fa fa-cogs',
                                 'tab_form_layout' => 'MelisCommerce/plugin-common-form-config',
                                 'elements' => array(

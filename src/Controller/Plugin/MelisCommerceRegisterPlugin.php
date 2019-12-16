@@ -78,7 +78,7 @@ class MelisCommerceRegisterPlugin extends MelisTemplatingPlugin
         // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
         $is_submit              = (!empty($this->pluginFrontConfig['m_registration_is_submit'])) ? $this->pluginFrontConfig['m_registration_is_submit'] : false;
         $data['m_autologin']    = (!empty($this->pluginFrontConfig['m_autologin'])) ? $this->pluginFrontConfig['m_autologin'] : true;
-        $data['m_redirection_link_ok']      = (!empty($this->pluginFrontConfig['m_redirection_link_ok'])) ? $this->pluginFrontConfig['m_redirection_link_ok'] : 'http://www.test.com';
+        $data['m_redirection_link_ok']      = (!empty($this->pluginFrontConfig['m_redirection_link_ok'])) ? $this->pluginFrontConfig['m_redirection_link_ok'] : '';
         
         // get submitted form values
         foreach($registrationForm->getElements() as $key => $val){

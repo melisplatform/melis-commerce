@@ -72,19 +72,19 @@ window.initProductCategoryList = function(productId, langLocale) {
                     "dblclick_toggle" : false,
                     "data" : {
                         "cache" : true,
-                        "url" : "/melis/MelisCommerce/MelisComCategoryList/getCategoryTreeView?"+dataString,
-                    },
+                        "url" : "/melis/MelisCommerce/MelisComCategoryList/getCategoryTreeView?"+dataString
+                    }
                 },
                 "checkbox": {
                     three_state: false,
                     whole_node : false,
-                    tie_selection : false,
+                    tie_selection : false
                 },
                 "plugins": [
                     "search",
                     "changed", // Plugins for Change and Click Event
                     "types", // Plugins for Customizing the Nodes
-                    "checkbox",
+                    "checkbox"
                 ]
             });
     }

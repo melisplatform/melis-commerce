@@ -27,4 +27,7 @@
         'tr_meliscommerce_orders_invalid_separator' => 'Seperator must be comma (,) or semi-colon (;)',
         'tr_meliscommerce_orders_date_end_error' => 'La date de fin doit être ultérieure à la date de début',
         'tr_meliscommerce_orders_encapse' => 'Encapsuler les colonnes',
+
+        'tr_meliscommerce_orders_historic_plugin_asc' => 'Date ascendante',
+        'tr_meliscommerce_orders_historic_plugin_desc' => 'Date descendante',
     );

@@ -129,7 +129,7 @@ return array(
     'tr_meliscommerce_plugin_product_list_search' => 'Search',
     'tr_meliscommerce_plugin_product_list_default_page_number' => 'Default page number',
     'tr_meliscommerce_plugin_product_list_product_per_page' => 'Number of product',
-    'tr_meliscommerce_plugin_product_list_number_of_pages' => 'No. of pagination link before & after',
+    'tr_meliscommerce_plugin_product_list_number_of_pages' => 'Pagination',
     'tr_meliscommerce_plugin_product_list_column_product_ref' => 'Product Reference',
     'tr_meliscommerce_plugin_product_list_column_product_text_title' => 'Product title',
     'tr_meliscommerce_plugin_product_list_column_product_price' => 'Product Price',

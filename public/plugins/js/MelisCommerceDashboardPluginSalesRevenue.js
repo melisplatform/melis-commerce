@@ -18,6 +18,7 @@ $(function () {
                 melisDashBoardDragnDrop.saveCurrentDashboard( $this );
         });
 
+<<<<<<< HEAD
         charts.commerceDashboardPluginSalesRevenueChartStackedBars = {
             //chart data
             data: null,
@@ -54,6 +55,62 @@ $(function () {
                 yaxis: {
                     min: 0,
                     tickDecimals: 2,
+=======
+    charts.commerceDashboardPluginSalesRevenueChartStackedBars = {
+        //chart data
+        data: null,
+        //will hold the chart object
+        plot: null,
+        options: {
+            grid: {
+                color: "#dedede",
+                borderWidth: 1,
+                borderColor: "transparent",
+                clickable: true,
+                hoverable: true,
+                backgroundColor: {
+                    colors: [
+                        "#fff", "#fff"
+                    ]
+                }
+            },
+            series: {
+                stack: true,
+                grow: {
+                    active: false
+                },
+                bars: {
+                    show: true,
+                    barWidth: 0.5,
+                    fill: 1,
+                    align: 'center'
+                }
+            },
+            xaxis: {
+                // we are not using any plugin for the xaxis, we use ticks instead.
+            },
+            yaxis: {
+                min: 0,
+                tickDecimals: 2
+            },
+            legend: {
+                position: "ne",
+                backgroundColor: null,
+                backgroundOpacity: 0,
+                noColumns: 2
+            },
+            colors: [
+                "#7acc66",
+                "#66cccc"
+            ],
+            shadowSize: 0,
+            tooltip: true,
+            tooltipOpts: {
+                content: "%s : %y",
+                shifts: {
+                    x: -30,
+                    y: -50
+>>>>>>> develop
                 },
                 legend: {
                     position: "ne",
@@ -105,6 +162,11 @@ $(function () {
             if ( emptyChartCount === $body.find(".commerce-dashboard-plugin-sales-revenue-placeholder").length ) {
                 //when count of empty charts is equal to the count of charts then it means the tab is closed and opened again.
                 var pluginConfig = $(chartsArray[instanceCount]).closest('.grid-stack-item').find('.grid-stack-item-content .widget .widget-parent .widget-body .dashboard-plugin-json-config').text();
+<<<<<<< HEAD
+=======
+                pluginConfig = JSON.parse(pluginConfig);
+                instanceCount++;
+>>>>>>> develop
 
                     instanceCount++;
 
@@ -112,6 +174,7 @@ $(function () {
                         instanceCount = 0;
                     }
 
+<<<<<<< HEAD
                     chartFor = JSON.parse(pluginConfig).activeFilter;
                     placeholder = "#commerce-dashboard-plugin-sales-revenue-placeholder-" + JSON.parse(pluginConfig).plugin_id;
             } else {
@@ -121,6 +184,18 @@ $(function () {
 
                     chartFor = JSON.parse(pluginConfig).activeFilter;
                     placeholder = "#commerce-dashboard-plugin-sales-revenue-placeholder-" + JSON.parse(pluginConfig).plugin_id;
+=======
+                chartFor = pluginConfig.datas.activeFilter;
+                placeholder = "#commerce-dashboard-plugin-sales-revenue-placeholder-" + pluginConfig.plugin_id;
+            } else {
+                //when a new plugin is dragged to the grid stack
+                var lastItem = body.find(".commerce-dashboard-plugin-sales-revenue-placeholder").length - 1;
+                var pluginConfig = $(chartsArray[lastItem]).closest('.grid-stack-item').find('.grid-stack-item-content .widget .widget-parent .widget-body .dashboard-plugin-json-config').text();
+                pluginConfig = JSON.parse(pluginConfig);
+
+                chartFor = pluginConfig.datas.activeFilter;
+                placeholder = "#commerce-dashboard-plugin-sales-revenue-placeholder-" + pluginConfig.plugin_id;
+>>>>>>> develop
             }
         } else if ( typeof target === "string" ) {
             //when initializing the charts on first load of dashboard
@@ -148,7 +223,7 @@ $(function () {
                 window_width = $(window).width(),
                 dataString = '';
 
-            let months = [
+            var months = [
                 translations.tr_meliscommerce_dashboardplugin_jan,
                 translations.tr_meliscommerce_dashboardplugin_feb,
                 translations.tr_meliscommerce_dashboardplugin_mar,
@@ -160,15 +235,15 @@ $(function () {
                 translations.tr_meliscommerce_dashboardplugin_sep,
                 translations.tr_meliscommerce_dashboardplugin_oct,
                 translations.tr_meliscommerce_dashboardplugin_nov,
-                translations.tr_meliscommerce_dashboardplugin_dec,
+                translations.tr_meliscommerce_dashboardplugin_dec
             ];
 
             //the first value of the data.values is the current date / time.
             for (var i = 0; i < data.values.length; i++) {
                 if (chartFor === 'hourly') {
-                    let locale = melisLangId;
-                    let hour = '';
-                    let time = '';
+                    var locale = melisLangId;
+                    var hour = '';
+                    var time = '';
 
                     if (locale === 'fr_FR') {
                         hour = moment(data.values[i][0], 'YYYY-MM-DD HH').format('HH');
@@ -181,20 +256,20 @@ $(function () {
                     dataString = time;
                 } else if (chartFor === 'daily') {
                     var date = moment(data.values[i][0], 'YYYY-MM-DD');
-                    let day = date.format("DD");
-                    let month = months[parseInt(date.format("M")) - 1];
+                    var day = date.format("DD");
+                    var month = months[parseInt(date.format("M")) - 1];
 
                     dataString = month.replace('%day', day);
                 } else if (chartFor === 'weekly') {
                     var week = moment(data.values[i][0], 'YYYY-MM-DD').format('W');
                     var weekday = moment().day("Monday").week(week);
-                    let month = months[parseInt(weekday.format("M")) - 1];
-                    let day = weekday.format("DD");
+                    var month = months[parseInt(weekday.format("M")) - 1];
+                    var day = weekday.format("DD");
 
                     dataString = month.replace('%day', day);
                 } else if (chartFor === 'monthly') {
-                    let monthOfYear = moment(data.values[i][0], 'YYYY-MM-DD').format("M");
-                    let month = months[parseInt(parseInt(monthOfYear)) - 1];
+                    var monthOfYear = moment(data.values[i][0], 'YYYY-MM-DD').format("M");
+                    var month = months[parseInt(parseInt(monthOfYear)) - 1];
 
                     dataString = month.replace('%day', '');
                 }

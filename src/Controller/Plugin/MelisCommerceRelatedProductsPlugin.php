@@ -84,11 +84,24 @@ class MelisCommerceRelatedProductsPlugin extends MelisTemplatingPlugin
         // Create an array with the variables that will be available in the view
         $viewVariables = array(
             'relatedProducts' => $data,
+            'isInFront' => $this->isInFront(),
             'langId' => $langId
         );
         
         // return the variable array and let the view be created
         return $viewVariables;
+    }
+
+    /**
+     * @return bool
+     */
+    private function isInFront()
+    {
+        if($this->renderMode == 'front'){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     /**

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 var catTreeConfig = (function() {
     var $body               = $("body"),
         categoryTree        = "",
@@ -50,6 +51,53 @@ var catTreeConfig = (function() {
                                     });
                                 }
                             }
+=======
+var catTreeConfig = (function(){
+
+    var categoryTree = "";
+    var root_node_id = "";
+    var selectorId = "";
+    var allowClickableNode = true;
+
+    /**
+     * we need to detect the click on li manually because
+     * if the node is disable the select_node and
+     * deselect_node event are not working
+     **/
+    $('body').on('click', '.categoryTreeTrigger ul li', function (e) {
+        if(allowClickableNode) {
+            var id = $(this).find('a').attr('id');
+            var target_id = $(e.target).attr('id');
+            if (id === target_id) {
+                var node_id = '#' + $(this).attr('id');
+                if (root_node_id != node_id) {
+                    processNodeDisableState('enable', node_id, categoryTree, function () {
+                        //process the previous selected node
+                        categoryTree.jstree("deselect_node", root_node_id);
+                        checkNodeIfUnderParent(root_node_id, node_id);
+
+                        //enable our new root node
+                        categoryTree.jstree("select_node", node_id);
+                        categoryTree.jstree("open_node", node_id);
+                        categoryTree.jstree("check_node", node_id);
+                        processNodeDisableState('enable', node_id, categoryTree);
+
+                        //assign new root node
+                        root_node_id = node_id;
+                    });
+                } else {
+                    //this is the process where we deselect the selected(highlighted) category
+                    var node = categoryTree.jstree().get_node(node_id);
+                    if (node.state.selected) {
+                        categoryTree.jstree("deselect_node", node_id);
+                        processNodeDisableState('disable', node_id, categoryTree);
+                        $(selectorId + "_form input[name='m_box_root_category_tree_id']").val('');
+                    } else {
+                        processNodeDisableState('enable', node_id, categoryTree, function () {
+                            categoryTree.jstree("select_node", node_id);
+                            categoryTree.jstree("check_node", node_id);
+                        });
+>>>>>>> develop
                     }
             }
         });

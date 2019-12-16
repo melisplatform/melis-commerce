@@ -20,7 +20,11 @@
 	    'tr_meliscommerce_order_checkout_common_next' => 'Next',
 	    
 	    // tabs
+<<<<<<< HEAD
 	    'tr_meliscommerce_order_checkout_Choose_product' => 'Product',
+=======
+	    'tr_meliscommerce_order_checkout_Choose_product' => 'Products',
+>>>>>>> develop
 	    'tr_meliscommerce_order_checkout_Choose_contact' => 'Contact',
 	    'tr_meliscommerce_order_checkout_Select_addresses' => 'Addresses',
 	    'tr_meliscommerce_order_checkout_Summary' => 'Summary',
