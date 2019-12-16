@@ -18,7 +18,6 @@ $(function () {
                 melisDashBoardDragnDrop.saveCurrentDashboard( $this );
         });
 
-<<<<<<< HEAD
         charts.commerceDashboardPluginSalesRevenueChartStackedBars = {
             //chart data
             data: null,
@@ -55,62 +54,6 @@ $(function () {
                 yaxis: {
                     min: 0,
                     tickDecimals: 2,
-=======
-    charts.commerceDashboardPluginSalesRevenueChartStackedBars = {
-        //chart data
-        data: null,
-        //will hold the chart object
-        plot: null,
-        options: {
-            grid: {
-                color: "#dedede",
-                borderWidth: 1,
-                borderColor: "transparent",
-                clickable: true,
-                hoverable: true,
-                backgroundColor: {
-                    colors: [
-                        "#fff", "#fff"
-                    ]
-                }
-            },
-            series: {
-                stack: true,
-                grow: {
-                    active: false
-                },
-                bars: {
-                    show: true,
-                    barWidth: 0.5,
-                    fill: 1,
-                    align: 'center'
-                }
-            },
-            xaxis: {
-                // we are not using any plugin for the xaxis, we use ticks instead.
-            },
-            yaxis: {
-                min: 0,
-                tickDecimals: 2
-            },
-            legend: {
-                position: "ne",
-                backgroundColor: null,
-                backgroundOpacity: 0,
-                noColumns: 2
-            },
-            colors: [
-                "#7acc66",
-                "#66cccc"
-            ],
-            shadowSize: 0,
-            tooltip: true,
-            tooltipOpts: {
-                content: "%s : %y",
-                shifts: {
-                    x: -30,
-                    y: -50
->>>>>>> develop
                 },
                 legend: {
                     position: "ne",
@@ -162,11 +105,6 @@ $(function () {
             if ( emptyChartCount === $body.find(".commerce-dashboard-plugin-sales-revenue-placeholder").length ) {
                 //when count of empty charts is equal to the count of charts then it means the tab is closed and opened again.
                 var pluginConfig = $(chartsArray[instanceCount]).closest('.grid-stack-item').find('.grid-stack-item-content .widget .widget-parent .widget-body .dashboard-plugin-json-config').text();
-<<<<<<< HEAD
-=======
-                pluginConfig = JSON.parse(pluginConfig);
-                instanceCount++;
->>>>>>> develop
 
                     instanceCount++;
 
@@ -174,7 +112,6 @@ $(function () {
                         instanceCount = 0;
                     }
 
-<<<<<<< HEAD
                     chartFor = JSON.parse(pluginConfig).activeFilter;
                     placeholder = "#commerce-dashboard-plugin-sales-revenue-placeholder-" + JSON.parse(pluginConfig).plugin_id;
             } else {
@@ -184,18 +121,6 @@ $(function () {
 
                     chartFor = JSON.parse(pluginConfig).activeFilter;
                     placeholder = "#commerce-dashboard-plugin-sales-revenue-placeholder-" + JSON.parse(pluginConfig).plugin_id;
-=======
-                chartFor = pluginConfig.datas.activeFilter;
-                placeholder = "#commerce-dashboard-plugin-sales-revenue-placeholder-" + pluginConfig.plugin_id;
-            } else {
-                //when a new plugin is dragged to the grid stack
-                var lastItem = body.find(".commerce-dashboard-plugin-sales-revenue-placeholder").length - 1;
-                var pluginConfig = $(chartsArray[lastItem]).closest('.grid-stack-item').find('.grid-stack-item-content .widget .widget-parent .widget-body .dashboard-plugin-json-config').text();
-                pluginConfig = JSON.parse(pluginConfig);
-
-                chartFor = pluginConfig.datas.activeFilter;
-                placeholder = "#commerce-dashboard-plugin-sales-revenue-placeholder-" + pluginConfig.plugin_id;
->>>>>>> develop
             }
         } else if ( typeof target === "string" ) {
             //when initializing the charts on first load of dashboard

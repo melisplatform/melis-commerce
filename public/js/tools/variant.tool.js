@@ -1,7 +1,6 @@
 $(function() {
     var $body = $("body");
 
-<<<<<<< HEAD
         $body.on("click", ".editvariant", function() {
             var $this       = $(this),
                 variantId   = $this.closest('tr').attr('id'),
@@ -13,76 +12,6 @@ $(function() {
                 melisHelper.tabOpen(variantName, 'icon-tag-2', variantId+'_id_meliscommerce_variants_page', 'meliscommerce_variants_page', { variantId : variantId, productId : productId}, prodTabId);
                 melisCommerce.setUniqueId(variantId);
                 melisCommerce.enableAllTabs();
-=======
-$(document).ready(function() {
-
-    var body = $("body");
-
-    body.on("click", ".editvariant", function(){
-        var variantId   = $(this).closest('tr').attr('id');
-        var variantName = $(this).closest('tr').find("td a").data("variantname");
-        var productId   = $(this).closest('.container-level-a').attr('id').replace(/[^0-9]/g,'');
-        var prodTabId   = productId+"_id_meliscommerce_products_page";
-        melisCommerce.disableAllTabs();
-        melisHelper.tabOpen(variantName, 'icon-tag-2', variantId+'_id_meliscommerce_variants_page', 'meliscommerce_variants_page', { variantId : variantId, productId : productId}, prodTabId);
-        melisCommerce.setUniqueId(variantId);
-        melisCommerce.enableAllTabs();
-
-    });
-
-    body.on("click", ".add-variant", function(){
-        var productId   = $(this).closest('.container-level-a').attr('id').replace(/[^0-9]/g,'');
-        var prodTabId   = productId+"_id_meliscommerce_products_page";
-        melisCoreTool.processing();
-        melisHelper.tabOpen(translations.tr_meliscommerce_variant_main_information_sku_new, 'icon-tag-2', 'id_meliscommerce_variants_page', 'meliscommerce_variants_page', { productId : productId, page : 'newvar'}, prodTabId);
-        melisCommerce.setUniqueId(0);
-        melisCoreTool.processDone();
-    });
-
-    body.on("click", ".save-add-variant", function(){
-        var variantPageId   = $(this).closest('.container-level-a').attr('id');
-    });
-
-    body.on("click", ".country-price-tab li a", function(){
-        var textCountry = $(this).data('country');
-        var textSymbol = $(this).data('symbol');
-
-        var parentUl = $(this).parents("ul");
-        var targetIdPrefix = parentUl.data("id");
-
-        if(textSymbol != ""){
-            $("#"+targetIdPrefix+"_id_meliscommerce_prices_tab_right_content .cur-symbol").removeClass("fa fa-dollar").text(textSymbol).css("font-weight", "600");
-        }else{
-            if(!$("#"+targetIdPrefix+'_id_meliscommerce_prices_tab_right_content cur-symbol').hasClass("fa")){
-                $("#"+targetIdPrefix+"_id_meliscommerce_prices_tab_right_content .cur-symbol").empty().addClass("fa fa-dollar").removeAttr("style");
-            }
-        }
-        $("#"+targetIdPrefix+'_id_meliscommerce_prices_tab_right_content .country-price-label').text(textCountry + ' ' + translations.tr_meliscommerce_variant_tab_prices_pricing);
-    });
-
-    body.on("click", ".country-stock-tab li a", function(){
-        var textCountry = $(this).data('country');
-        if(melisLangId == 'fr_FR'){
-            $('.country-stock-label').text(translations.tr_meliscommerce_variant_tab_stocks_header + ' ' + textCountry );
-        }else{
-            $('.country-stock-label').text(textCountry + ' ' + translations.tr_meliscommerce_variant_tab_stocks_header);
-        }
-    });
-
-    body.on('click', '.productvariant-refresh', function(){
-        var prodId = melisCommerce.getCurrentProductId();
-        melisHelper.zoneReload(prodId+"_id_meliscommerce_products_page_content_tab_variant_content_container", "meliscommerce_products_page_content_tab_variant_content_container", {productId : prodId});
-    });
-
-    body.on("click", ".deletevariant", function(){
-        var del = this;
-        var variantId   = $(del).closest('tr').attr('id');
-        var url = 'melis/MelisCommerce/MelisComVariant/deleteVariant';
-        var dataString = [];
-        dataString.push({
-            name : 'var_id',
-            value: variantId,
->>>>>>> develop
         });
 
         $body.on("click", ".add-variant", function() {

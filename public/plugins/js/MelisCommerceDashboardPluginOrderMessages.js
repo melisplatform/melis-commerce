@@ -166,7 +166,6 @@ $(function () {
                 $(element).closest('.melis-commerce-dashboard-plugin-order-messages-parent').find(messagecountplaceholder).append(newMessage);
         },
         setMessages: function (placeholder, message, filter) {
-<<<<<<< HEAD
             var colorRed        = '',
                 bgColorRed      = '',
                 classStrong     = '',
@@ -178,67 +177,6 @@ $(function () {
                     classStrong = 'strong';
                     bgColorRed = 'style="background-color: #981a1f;"';
                 }
-=======
-            var colorRed = '';
-            var bgColorRed = '';
-            var classStrong = '';
-            var text = message.omsg_message.length > 70 ? message.omsg_message.substring(0, 70) + '...' : message.omsg_message;
-            var message_created = moment(message.omsg_date_creation, "YYYY-MM-DD HH:mm:ss");
-
-            if (message.noReply) {
-                colorRed = 'style="color: #981a1f;"';
-                classStrong = 'strong';
-                bgColorRed = 'style="background-color: #981a1f;"';
-            }
-
-            var months = [
-                translations.tr_meliscommerce_dashboardplugin_jan,
-                translations.tr_meliscommerce_dashboardplugin_feb,
-                translations.tr_meliscommerce_dashboardplugin_mar,
-                translations.tr_meliscommerce_dashboardplugin_apr,
-                translations.tr_meliscommerce_dashboardplugin_may,
-                translations.tr_meliscommerce_dashboardplugin_jun,
-                translations.tr_meliscommerce_dashboardplugin_jul,
-                translations.tr_meliscommerce_dashboardplugin_aug,
-                translations.tr_meliscommerce_dashboardplugin_sep,
-                translations.tr_meliscommerce_dashboardplugin_oct,
-                translations.tr_meliscommerce_dashboardplugin_nov,
-                translations.tr_meliscommerce_dashboardplugin_dec
-            ];
-
-            var month = months[parseInt(message_created.format("M")) - 1];
-
-            var dateHtml = '<span class="label label-inverse pull-right" ' + bgColorRed + '>' +
-                message_created.format("HH:mm:ss") + ' ' + month.replace('%day', message_created.format("DD")) +
-                '</span>';
-
-            var doubleArrow = '<i class="fa fa-angle-double-right" ' + colorRed + '<i/>';
-
-            var nameHtml = '<span class="' + classStrong + '" ' + colorRed + '>' +
-                message.clientFirstName + ' ' + message.clientLastName +
-                '</span> ' + doubleArrow +
-                ' <small class="' + classStrong + '" ' + colorRed + '>' +
-                translations.tr_melis_commerce_dashboard_plugin_order_messages_message_order_amount + message.totalOrderAmount +
-                '</small> ' + doubleArrow +
-                ' <small class="' + classStrong + '" ' + colorRed + '>' +
-                translations.tr_melis_commerce_dashboard_plugin_order_messages_message_placed_on + message.orderDate +
-                '</small>';
-
-            var messageHtml = '<a href="#" class="list-group-item commerce-dashboard-plugin-order-messages" ' +
-                'style="border-radius: 0px;border-top: 0px;border-right: 0px;border-left:0px;margin-bottom: 0px;">' +
-                '  <input class="order-message-id" type="text" value="' + message.omsg_order_id + '" hidden="hidden">' +
-                '  <input class="order-message-reference" type="text" value="' + message.reference + '" hidden="hidden">' +
-                '  <span class="media">' +
-                '    <span class="media-body media-body-inline">' +
-                dateHtml +
-                nameHtml +
-                '    <p class="list-group-item-text" style="font-size:12px;"> ' +
-                text + ' ' +
-                '    </p>' +
-                '    </span>' +
-                '  </span>' +
-                '</a>';
->>>>>>> develop
 
                 let months = [
                     translations.tr_meliscommerce_dashboardplugin_jan,

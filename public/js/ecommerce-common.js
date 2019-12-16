@@ -245,7 +245,7 @@ var melisCommerce = (function(window) {
     function accordionToggle(event) {
         var target  = event.target,
             id      = $(target).attr("href");
-
+            
             $(id).collapse('toggle');
     }
 

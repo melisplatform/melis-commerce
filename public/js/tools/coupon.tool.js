@@ -46,7 +46,6 @@ $(function() {
             melisHelper.tabOpen(translations.tr_meliscommerce_coupon_list_add_coupon, 'fa fa-ticket', '0_id_meliscommerce_coupon_page', 'meliscommerce_coupon_page', {}, 'id_meliscommerce_coupon_list_page');
         });
 
-<<<<<<< HEAD
         $body.on("click", ".removeCouponFromClient", function(){ 
             var $this       = $(this),
                 clientId    = $this.closest('tr').attr('id'),
@@ -61,32 +60,6 @@ $(function() {
                 couponManagement(dataString);
 
                 melisCoreTool.done(this);
-=======
-        melisCommerce.postSave(url, dataString, function(data){
-            if(data.success){
-                melisHelper.tabClose(  couponId + "_id_meliscommerce_coupon_page", true);
-                couponTabOpen(translations.tr_meliscommerce_coupon_page+' '+data.chunk.coup_code, data.chunk.couponId, "id_meliscommerce_coupon_list_page");
-                melisHelper.melisOkNotification( data.textTitle, data.textMessage );
-                melisHelper.zoneReload("id_meliscommerce_coupon_list_content_table", "meliscommerce_coupon_list_content_table");
-            }else{
-
-                melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
-                melisCoreTool.highlightErrors(data.success, data.errors, couponId+"_id_meliscommerce_coupon_page");
-                $(".couponEnd").prev("label").css("color","#686868");
-                $.each( data.errors, function( key, error ) {
-                    if( key == 'coup_date_valid_end'){
-                        $(".couponEnd").prev("label").css("color","red");
-                    }
-                    if( key == 'values'){
-                        $("#" + couponId+"_id_meliscommerce_coupon_page" + " .form-control[name='coup_percentage']").prev("label").css("color","red");
-                        $("#" + couponId+"_id_meliscommerce_coupon_page" + " .form-control[name='coup_discount_value']").prev("label").css("color","red");
-                    }
-                });
-            }
-            melisCore.flashMessenger();
-        }, function(data){
-            console.log(data);
->>>>>>> develop
         });
 
         $body.on("click", ".addCouponToClient", function() {

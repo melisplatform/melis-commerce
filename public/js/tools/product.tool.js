@@ -104,7 +104,6 @@ window.populateAttribList = function(data) {
     }
 }
 
-
 window.initProductTextTinyMce = function(productId) {  
     var targetEditor = "#"+productId+"_id_meliscommerce_products_page textarea.product-text-mce[data-display='true']"; //:not([id])
 
@@ -168,6 +167,7 @@ window.productTextTinyMCECallback = function(editor, productId) {
 window.allLoaded = function() {
     melisCommerce.enableAllTabs();
 }
+
 window.reInitProductTextTypeSelect = function(productId) {
     // Remove items that are already existing in the product text
     var productTexts     = [],

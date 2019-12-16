@@ -666,7 +666,6 @@ window.initClientListTitle = function() {
 }
 
 window.initClientContactAddressForm = function(){
-<<<<<<< HEAD
     var tabId           = $("#saveClientContactAddress").data("tabid"),
         $addFormModal   = $("#melisCommerceClientContactAddressFormModal");
 
@@ -674,11 +673,4 @@ window.initClientContactAddressForm = function(){
         $addFormModal.find("#cadd_firstname").val( $("#"+tabId+"_contact_form").find("#cper_firstname").val() );
         $addFormModal.find("#cadd_name").val( $("#"+tabId+"_contact_form").find("#cper_name").val() );
         $addFormModal.find("#cadd_middle_name").val( $("#"+tabId+"_contact_form").find("#cper_middle_name").val() );
-=======
-    var tabId = $("#saveClientContactAddress").data("tabid");
-    $("#melisCommerceClientContactAddressFormModal").find("select[name='cadd_civility']").val($("#"+tabId+"_contact_form").find("select[name='cper_civility']").val());
-    $("#melisCommerceClientContactAddressFormModal").find("input[name='cadd_firstname']").val($("#"+tabId+"_contact_form").find("input[name='cper_firstname']").val());
-    $("#melisCommerceClientContactAddressFormModal").find("input[name='cadd_name']").val($("#"+tabId+"_contact_form").find("input[name='cper_name']").val());
-    $("#melisCommerceClientContactAddressFormModal").find("input[name='cadd_middle_name']").val($("#"+tabId+"_contact_form").find("input[name='cper_middle_name']").val());
->>>>>>> develop
 }

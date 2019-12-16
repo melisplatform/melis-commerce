@@ -37,6 +37,7 @@ $(function() {
 							docRelationId   = $("#" + activeTabId + " div.ecom-doc-container").data("doc-relation-id");
 
 							$("div.modal").modal("hide");
+							
 							if ( data.type == "file" ) {
 								melisHelper.zoneReload(activeTabId+" #id_meliscommerce_documents_file_attachments_lists", "meliscommerce_documents_file_attachments_lists", {
 									docRelationType : docRelationType, docRelationId : docRelationId
@@ -59,16 +60,18 @@ $(function() {
 					melisCoreTool.done(".btn");
 					melisCore.flashMessenger();
 				}).fail(function() {
+					//$("div.modal").modal("hide");
 					melisCoreTool.done(".btn");
+
 					melisHelper.melisKoNotification(translations.tr_meliscommerce_documents_Documents, translations.tr_meliscommerce_documents_save_fail, [], 'closeByButtonOnly');
-				}).fail(function() {
-					$("div.modal").modal("hide");
-					melisCoreTool.done(".btn");
-					if ( docType == "file" ) {
-						melisHelper.zoneReload(activeTabId+" #id_meliscommerce_documents_file_attachments_lists", "meliscommerce_documents_file_attachments_lists");
-					}
-					else if ( docType == "image" ) {
-						melisHelper.zoneReload(activeTabId+" #id_meliscommerce_documents_image_lists", "meliscommerce_documents_image_lists");
+
+					if ( $(target).find(".filestyle").val() !== '' ) {
+						if ( docType == "file" ) {
+							melisHelper.zoneReload(activeTabId+" #id_meliscommerce_documents_file_attachments_lists", "meliscommerce_documents_file_attachments_lists");
+						}
+						else if ( docType == "image" ) {
+							melisHelper.zoneReload(activeTabId+" #id_meliscommerce_documents_image_lists", "meliscommerce_documents_image_lists");
+						}
 					}
 					melisCore.flashMessenger();
 				});
@@ -281,7 +284,7 @@ $(function() {
 				});
 		});
 		
-		$body.on("click", "#btnDocFileAdd", function(e){
+		$body.on("click", "#btnDocFileAdd", function(e) {
 			var button = $(this),
 				formId = '#'+button.attr("form");
 
