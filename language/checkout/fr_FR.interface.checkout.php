@@ -21,11 +21,7 @@
 	    'tr_meliscommerce_order_checkout_common_next' => 'Suivant',
 	    
 	    // tabs
-<<<<<<< HEAD
 	    'tr_meliscommerce_order_checkout_Choose_product' => 'Produit',
-=======
-	    'tr_meliscommerce_order_checkout_Choose_product' => 'Produits',
->>>>>>> develop
 	    'tr_meliscommerce_order_checkout_Choose_contact' => 'Contact',
 	    'tr_meliscommerce_order_checkout_Select_addresses' => 'Adresses',
 	    'tr_meliscommerce_order_checkout_Summary' => 'Récapitulatif',
