@@ -448,7 +448,7 @@ $(function() {
 		});
 		
 		// Category Tree Double Click Item Action
-		$body.on("dblclick", ".jstree-node", function(evt){
+		$body.on("dblclick", "#categoryTreeView .jstree-node", function(evt){
 			$("#categoryTreeViewPanel").collapse("hide");
 			
 			var $this 		= $(this),
