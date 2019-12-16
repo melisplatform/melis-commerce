@@ -4839,7 +4839,8 @@ $(function() {
                     melisCoreTool.done(".save-variant");
                     melisCore.flashMessenger();
                 }, function(data) {
-                    console.log(data);
+                    console.log({data});
+                    alert( translations.tr_meliscore_error_message );
                 });
         });
 
