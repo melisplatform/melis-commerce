@@ -459,6 +459,7 @@ $(function() {
 				$("#"+zoneId).removeClass("hidden");
 				
 				melisHelper.zoneReload(zoneId, melisKey, {catId : catId});
+				$(".categoryProductsRefresh").trigger("click");
 				
 				// Highlighting the node
 				$("#categoryTreeView #"+catId+" div").first().addClass("jstree-wholerow-clicked");
