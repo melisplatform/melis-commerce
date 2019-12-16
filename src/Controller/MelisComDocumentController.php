@@ -333,162 +333,154 @@ class MelisComDocumentController extends AbstractActionController
                     if($docType == 'image') {
                         $validator = array($size, $imageValidator);
 
-                        $imginfo_array = getimagesize($uploadedFile['tmp_name']);
+                        if(!empty($uploadedFile['tmp_name'])){
+                            $imginfo_array = getimagesize($uploadedFile['tmp_name']);
+                            if ($imginfo_array !== false) {
+                                $isImg = true;
+                                $mime_type = $imginfo_array['mime'];
 
-                        if ($imginfo_array !== false) {
-                            $isImg = true;
-                            $mime_type = $imginfo_array['mime'];
+                                $acceptedImageType = array("image/png","image/gif","image/jpeg","image/jpeg");
+                                if(in_array($mime_type,$acceptedImageType)){
+                                    $isImgTypeOk = true;
+                                }else{
+                                    $isImgTypeOk = false;
+                                    $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_upload_image_fileIsImageFalseType');
+                                }
 
-                            $acceptedImageType = array("image/png","image/gif","image/jpeg","image/jpeg");
-                            if(in_array($mime_type,$acceptedImageType)){
-                                $isImgTypeOk = true;
                             }else{
-                                $isImgTypeOk = false;
-                                $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_upload_image_fileIsImageFalseType');
+                                $isImg = false;
+                                $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_upload_image_fileIsImageNotDetected');
                             }
-
                         }else{
                             $isImg = false;
                             $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_upload_image_fileIsImageNotDetected');
                         }
                     }
 
-                    $adapter = new Http();
+                    /**
+                     * Check if image is okay
+                     */
+                    if($isImgTypeOk && $isImg) {
+                        $adapter = new Http();
+                        // validate if form is valid
+                        $form = $this->getDocForm($docType);
+                        $form->setData($postValues);
 
-                    // validate if form is valid
-                    $form = $this->getDocForm($docType);
-                    $form->setData($postValues);
+                        if ($form->isValid()) {
+                            if ($this->createFolder($relationType, $relationId)) {
+                                $data = $form->getData();
 
-
-                    if($form->isValid()) {
-                        if($this->createFolder($relationType, $relationId)) {
-                            $data = $form->getData();
-
-                            // do saving
-                            $adapter->setValidators($validator, $fileName);
-                            if($docType == 'image') {
-                                $data['doc_type_id'] = 1;
-                            }
-                            else {
-                                $data['doc_type_id'] = isset($postValues['doc_type_id']) ? $postValues['doc_type_id'] : 0;
-                            }
-                            // if post doesnt have a doc id value, then it is a new data, then forcily need to have an upload validation
-                            if(!$postValues['doc_id']) {
-                                if($fileName) {
-                                    if($adapter->isValid()) {
-                                        if($isImgTypeOk && $isImg){
+                                // do saving
+                                $adapter->setValidators($validator, $fileName);
+                                if ($docType == 'image') {
+                                    $data['doc_type_id'] = 1;
+                                } else {
+                                    $data['doc_type_id'] = isset($postValues['doc_type_id']) ? $postValues['doc_type_id'] : 0;
+                                }
+                                // if post doesnt have a doc id value, then it is a new data, then forcily need to have an upload validation
+                                if (!$postValues['doc_id']) {
+                                    if ($fileName) {
+                                        if ($adapter->isValid()) {
                                             $adapter->setDestination($comMediaDir);
-                                            $savedDocFileName =  'public'.$this->renameIfDuplicateFile($comMediaPublicPath . $fileName);
+                                            $savedDocFileName = 'public' . $this->renameIfDuplicateFile($comMediaPublicPath . $fileName);
                                             $adapter->addFilter('File\Rename', array(
                                                 'target' => $savedDocFileName,
                                                 'overwrite' => true,
                                             ));
 
                                             // if uploaded successfully
-                                            if($adapter->receive()) {
+                                            if ($adapter->receive()) {
                                                 //$data['doc_name'] = !empty($data['doc_name']) ? $this->renameIfDuplicateName($data['doc_name']) : $this->renameIfDuplicateName($formattedFileName);
                                                 $fname = pathinfo($fileName, PATHINFO_FILENAME);
                                                 $data['doc_name'] = !empty($data['doc_name']) ? $this->renameIfDuplicateName($data['doc_name']) : $fname;
                                                 $data['doc_subtype_id'] = isset($postValues['doc_subtype_id']) ? $postValues['doc_subtype_id'] : 0;
                                                 $data['doc_path'] = str_replace('public/media/commerce', '/media/commerce', $savedDocFileName);
                                                 $documentId = $this->getDocSvc()->saveDocument($relationType, $relationId, $countryId, $data, $docId);
-                                                if($documentId) {
-                                                    $textMessage = 'tr_meliscommerce_documents_'.$docType.'_save_success';
+                                                if ($documentId) {
+                                                    $textMessage = 'tr_meliscommerce_documents_' . $docType . '_save_success';
                                                     $success = 1;
                                                 }
-                                            }
-                                            else {
+                                            } else {
                                                 $textMessage = 'tr_meliscommerce_documents_upload_fail_file';
                                             }
-                                        }
-
-                                    }
-                                    else {
-                                        foreach($adapter->getMessages() as $message) {
-                                            $textMessage = $message;
-                                        }
-                                    }
-                                }
-                                else {
-                                    $textMessage = 'tr_meliscommerce_documents_form_'.$docType.'_type_empty';
-                                }
-
-                            }
-                            else {
-                                // or else just save it, this will be used for updating
-                                if($fileName) {
-                                    // upload the file
-                                    if($adapter->isValid()) {
-                                        $adapter->setDestination($comMediaDir);
-                                        $savedDocFileName =  'public'.$this->renameIfDuplicateFile($comMediaPublicPath . $fileName);
-                                        $adapter->addFilter('File\Rename', array(
-                                            'target' => $savedDocFileName,
-                                            'overwrite' => true,
-                                        ));
-
-                                        // if uploaded successfully
-                                        if($adapter->receive()) {
-                                            if(empty($data['doc_name'])) {
-                                                unset($data['doc_name']);
+                                        } else {
+                                            foreach ($adapter->getMessages() as $message) {
+                                                $textMessage = $message;
                                             }
-                                            
-                                            $documentData = $this->getDocSvc()->getDocumentById($docId)->getDocument();
-                                            $fname = pathinfo($fileName, PATHINFO_FILENAME);
-                                            //$data['doc_name'] = !empty($data['doc_name']) ? $this->renameIfDuplicateName($data['doc_name']) : $this->getFormattedFileName($adapter->getFileName());
-                                            $data['doc_name'] = !empty($data['doc_name']) ? $this->renameIfDuplicateName($data['doc_name']) : $fname;
-                                            $data['doc_subtype_id'] = isset($postValues['doc_subtype_id']) ? $postValues['doc_subtype_id'] : 0;
-                                            $data['doc_path'] = str_replace('public/media/commerce', '/media/commerce', $savedDocFileName);
+                                        }
+                                    } else {
+                                        $textMessage = 'tr_meliscommerce_documents_form_' . $docType . '_type_empty';
+                                    }
 
-                                            $documentId = $this->getDocSvc()->saveDocument($relationType, $relationId, $countryId, $data, $docId);
-                                            if($documentId) {
-                                                
-                                                if (!empty($documentData))
-                                                {
-                                                    // if the file exists, delete the file after update
-                                                    if(file_exists('public'.$documentData['doc_path'])) {
-                                                        unlink('public'.$documentData['doc_path']);
-                                                    }
+                                } else {
+                                    // or else just save it, this will be used for updating
+                                    if ($fileName) {
+                                        // upload the file
+                                        if ($adapter->isValid()) {
+                                            $adapter->setDestination($comMediaDir);
+                                            $savedDocFileName = 'public' . $this->renameIfDuplicateFile($comMediaPublicPath . $fileName);
+                                            $adapter->addFilter('File\Rename', array(
+                                                'target' => $savedDocFileName,
+                                                'overwrite' => true,
+                                            ));
+
+                                            // if uploaded successfully
+                                            if ($adapter->receive()) {
+                                                if (empty($data['doc_name'])) {
+                                                    unset($data['doc_name']);
                                                 }
-                                                
-                                                $textMessage = 'tr_meliscommerce_documents_'.$docType.'_save_success';
-                                                $success = 1;
+
+                                                $documentData = $this->getDocSvc()->getDocumentById($docId)->getDocument();
+                                                $fname = pathinfo($fileName, PATHINFO_FILENAME);
+                                                //$data['doc_name'] = !empty($data['doc_name']) ? $this->renameIfDuplicateName($data['doc_name']) : $this->getFormattedFileName($adapter->getFileName());
+                                                $data['doc_name'] = !empty($data['doc_name']) ? $this->renameIfDuplicateName($data['doc_name']) : $fname;
+                                                $data['doc_subtype_id'] = isset($postValues['doc_subtype_id']) ? $postValues['doc_subtype_id'] : 0;
+                                                $data['doc_path'] = str_replace('public/media/commerce', '/media/commerce', $savedDocFileName);
+
+                                                $documentId = $this->getDocSvc()->saveDocument($relationType, $relationId, $countryId, $data, $docId);
+                                                if ($documentId) {
+
+                                                    if (!empty($documentData)) {
+                                                        // if the file exists, delete the file after update
+                                                        if (file_exists('public' . $documentData['doc_path'])) {
+                                                            unlink('public' . $documentData['doc_path']);
+                                                        }
+                                                    }
+
+                                                    $textMessage = 'tr_meliscommerce_documents_' . $docType . '_save_success';
+                                                    $success = 1;
+                                                }
+                                            } else {
+                                                $textMessage = 'tr_meliscommerce_documents_upload_fail_file';
+                                            }
+                                        } else {
+                                            foreach ($adapter->getMessages() as $message) {
+                                                $textMessage = $message;
                                             }
                                         }
-                                        else {
-                                            $textMessage = 'tr_meliscommerce_documents_upload_fail_file';
+                                    } else {
+                                        if (empty($data['doc_name'])) {
+                                            $docData = $this->getDocSvc()->getDocumentById((int)$data['doc_id']);
+                                            $docData = $docData->getDocument();
+                                            $fileName = pathinfo($docData['doc_path'], PATHINFO_FILENAME);
+                                            $data['doc_name'] = $fileName;
                                         }
-                                    }
-                                    else {
-                                        foreach($adapter->getMessages() as $message) {
-                                            $textMessage = $message;
-                                        }
-                                    }
-                                }
-                                else {
-                                    if(empty($data['doc_name'])) {
-                                        $docData = $this->getDocSvc()->getDocumentById( (int) $data['doc_id']);
-                                        $docData = $docData->getDocument();
-                                        $fileName = pathinfo($docData['doc_path'], PATHINFO_FILENAME);
-                                        $data['doc_name'] = $fileName;
-                                    }
 
-                                    $data['doc_subtype_id'] = isset($postValues['doc_subtype_id']) ? $postValues['doc_subtype_id'] : 0;
-                                    $documentId = $this->getDocSvc()->saveDocument($relationType, $relationId, $countryId, $data, $docId);
-                                    if($documentId) {
-                                        $textMessage = 'tr_meliscommerce_documents_'.$docType.'_update_success';
-                                        $success = 1;
+                                        $data['doc_subtype_id'] = isset($postValues['doc_subtype_id']) ? $postValues['doc_subtype_id'] : 0;
+                                        $documentId = $this->getDocSvc()->saveDocument($relationType, $relationId, $countryId, $data, $docId);
+                                        if ($documentId) {
+                                            $textMessage = 'tr_meliscommerce_documents_' . $docType . '_update_success';
+                                            $success = 1;
+                                        }
                                     }
                                 }
+                            } else {
+                                $textMessage = 'tr_meliscommerce_documents_upload_path_rights_error';
                             }
-                        }
-                        else {
-                            $textMessage = 'tr_meliscommerce_documents_upload_path_rights_error';
+                        } else {
+                            $errors = $form->getMessages();
                         }
                     }
-                    else {
-                        $errors = $form->getMessages();
-                    }
-
                 }
 
                 $appConfigForm = $melisCoreConfig->getItem('meliscommerce/forms/meliscommerce_documents/'.$this->formString($postValues['docType']));
