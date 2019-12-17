@@ -7,13 +7,13 @@
     $collapse = 'collapse in';
     $collapsed = '';
 ?>
-<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="tab-pane active custom-field-type">
+<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="tab-pane active custom-field-type" data-junry="junry data">
 	<?php foreach($this->payments as $payment):?>
     	<a class="btn btn-primary form-control a-accordion collapsed" data-toggle="collapse" href="#<?= $payment->opay_id.'_'.$this->melisKey?>" aria-expanded="false" aria-controls="payment1">
     		<span><?= $this->translate('tr_meliscommerce_orders_content_tab_paymnet'). ' ' .$payment->payment_type->opty_name?></span>
     		<span style="float:right"><?= $payment->opay_date_payment?></span>
     	</a>
-    	<div class="<?= $collapse?>" id="<?= $payment->opay_id.'_'.$this->melisKey?>">
+    	<div class="<?= $collapse?> show" id="<?= $payment->opay_id.'_'.$this->melisKey?>">
     		<table class="info-table">
     			<tr>
     				<td><label><?= $this->translate('tr_meliscommerce_order_payment_price')?></label></td>
