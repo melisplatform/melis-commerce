@@ -29,8 +29,16 @@ class MelisCommerceDashboardPluginOrderMessages extends MelisCoreDashboardTempla
      */
     public function orderMessages()
     {
+        /** @var \MelisCore\Service\MelisCoreDashboardPluginsRightsService $dashboardPluginsService */
+        $dashboardPluginsService = $this->getServiceLocator()->get('MelisCoreDashboardPluginsService');
+        //get the class name to make it as a key to the plugin
+        $path = explode('\\', __CLASS__);
+        $className = array_pop($path);
+        $isAccessable = $dashboardPluginsService->canAccess($className);
+
         $view = new ViewModel();
         $view->setTemplate('MelisCommerceDashboardPluginOrderMessages/commerce-orders-messages');
+        $view->isAccessable = $isAccessable;
 
         return $view;
     }

@@ -14,6 +14,7 @@ return array(
                     '/MelisCommerce/assets/switch/bootstrap-switch.js',
                     '/MelisCommerce/js/tools/category.tool.js',
                     '/MelisCommerce/js/tools/seo.tool.js',
+                    '/MelisCommerce/plugins/js/MelisCommerceCategoryTreePlugin.js',
                 ),
             ),
             'datas' => array(

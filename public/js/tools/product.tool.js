@@ -72,19 +72,19 @@ window.initProductCategoryList = function(productId, langLocale) {
                     "dblclick_toggle" : false,
                     "data" : {
                         "cache" : true,
-                        "url" : "/melis/MelisCommerce/MelisComCategoryList/getCategoryTreeView?"+dataString,
-                    },
+                        "url" : "/melis/MelisCommerce/MelisComCategoryList/getCategoryTreeView?"+dataString
+                    }
                 },
                 "checkbox": {
                     three_state: false,
                     whole_node : false,
-                    tie_selection : false,
+                    tie_selection : false
                 },
                 "plugins": [
                     "search",
                     "changed", // Plugins for Change and Click Event
                     "types", // Plugins for Customizing the Nodes
-                    "checkbox",
+                    "checkbox"
                 ]
             });
     }
@@ -103,7 +103,6 @@ window.populateAttribList = function(data) {
         melisCommerce.enableAllTabs();
     }
 }
-
 
 window.initProductTextTinyMce = function(productId) {  
     var targetEditor = "#"+productId+"_id_meliscommerce_products_page textarea.product-text-mce[data-display='true']"; //:not([id])
@@ -168,6 +167,7 @@ window.productTextTinyMCECallback = function(editor, productId) {
 window.allLoaded = function() {
     melisCommerce.enableAllTabs();
 }
+
 window.reInitProductTextTypeSelect = function(productId) {
     // Remove items that are already existing in the product text
     var productTexts     = [],

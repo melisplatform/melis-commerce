@@ -174,7 +174,7 @@
 	    'tr_meliscommerce_plugin_sub_categories_title' => 'Categories',
 	    'tr_meliscommerce_plugin_sub_categories_product_list_no_result' => 'No result found',
 
-	    'tr_meliscommerce_plugin_category_product_list_name' => 'Product list',
+	    'tr_meliscommerce_plugin_category_product_list_name' => 'Product list by category',
 	    'tr_meliscommerce_plugin_category_product_list_description' => 'The plugin display the Product list by Category',
 	    'tr_meliscommerce_plugin_category_product_list_config' => 'Configuration',
 	    'tr_meliscommerce_plugin_category_product_list_category' => 'Catalogs / Categories',

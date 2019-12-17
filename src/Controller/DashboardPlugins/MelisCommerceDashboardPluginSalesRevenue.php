@@ -25,10 +25,17 @@ class MelisCommerceDashboardPluginSalesRevenue extends MelisCoreDashboardTemplat
 
     public function commerceSalesRevenue()
     {
+        /** @var \MelisCore\Service\MelisCoreDashboardPluginsRightsService $dashboardPluginsService */
+        $dashboardPluginsService = $this->getServiceLocator()->get('MelisCoreDashboardPluginsService');
+        //get the class name to make it as a key to the plugin
+        $path = explode('\\', __CLASS__);
+        $className = array_pop($path);
+        $isAccessable = $dashboardPluginsService->canAccess($className);
 
         $view = new ViewModel();
         $view->setTemplate('MelisCommerceDashboardPluginSalesRevenue/dashboard/commerce-sales-revenue');
-        $view->activeFilter = $this->pluginConfig['activeFilter'];
+        $view->activeFilter = $this->pluginConfig['datas']['activeFilter'];
+        $view->isAccessable = $isAccessable;
 
         return $view;
     }
@@ -40,9 +47,8 @@ class MelisCommerceDashboardPluginSalesRevenue extends MelisCoreDashboardTemplat
         $values = array();
 
         if($this->getController()->getRequest()->isPost()) {
-
             $chartFor = get_object_vars($this->getController()->getRequest()->getPost());
-            $chartFor = ($chartFor['chartFor'] == "") ? $this->pluginConfig['activeFilter'] : $chartFor['chartFor'];
+            $chartFor = ($chartFor['chartFor'] == "") ? $this->pluginConfig['datas']['activeFilter'] : $chartFor['chartFor'];
 
             //$pluginConfig['activeFilter'] = $chartFor;
 

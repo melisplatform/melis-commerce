@@ -28,4 +28,7 @@
         'tr_meliscommerce_orders_invalid_separator' => 'Seperator must be comma (,) or semi-colon (;)',
         'tr_meliscommerce_orders_date_end_error' => 'End date must be utlerior than start date',
         'tr_meliscommerce_orders_encapse' => 'Encapsulate columns',
+
+        'tr_meliscommerce_orders_historic_plugin_asc' => 'Date Ascending',
+        'tr_meliscommerce_orders_historic_plugin_desc' => 'Date Descending',
     );

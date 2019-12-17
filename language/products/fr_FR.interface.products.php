@@ -129,7 +129,7 @@ return array(
     'tr_meliscommerce_plugin_product_list_search' => 'Recherche',
     'tr_meliscommerce_plugin_product_list_default_page_number' => 'Numéro de page par défaut',
     'tr_meliscommerce_plugin_product_list_product_per_page' => 'Nombre de produits',
-    'tr_meliscommerce_plugin_product_list_number_of_pages' => 'Nombre de pages',
+    'tr_meliscommerce_plugin_product_list_number_of_pages' => 'Pagination',
     'tr_meliscommerce_plugin_product_list_column_product_ref' => 'Référence du produit',
     'tr_meliscommerce_plugin_product_list_column_product_text_title' => 'Titre du produit',
     'tr_meliscommerce_plugin_product_list_column_product_price' => 'Prix du produit',

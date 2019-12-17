@@ -137,10 +137,10 @@ class MelisComProductService extends MelisComGeneralService
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
 	    $results = array();
-	    	    
+
 	    // Sending service start event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_byid_start', $arrayParameters);
-	    
+
 	    // Service implementation start
 	    $prodTable = $this->getServiceLocator()->get('MelisEcomProductTable');
 	    $productData = $prodTable->getProduct($arrayParameters['productId']);
@@ -156,9 +156,28 @@ class MelisComProductService extends MelisComGeneralService
             foreach($productData as $prod) {
                 $entProd->setId($prod->prd_id);
                 $entProd->setProduct($prod);
-                foreach($prodTable->getProductCategoryByProductId($arrayParameters['productId'], $arrayParameters['langId']) as $prodCat){
-                    $category[]= $prodCat;
+
+                // Get all category
+                $prodCats = $prodTable->getProductCategoryByProductId($arrayParameters['productId']);
+                $catIds = [];
+                $catt = [];
+
+                foreach($prodCats as $prodCat) {
+                    if (in_array($prodCat->pcat_id, $catIds)) {
+                        if ($prodCat->catt_lang_id == $arrayParameters['langId']) {
+                            // If category is already listed. override it with the correct language
+                            $catt[$prodCat->pcat_id] = $prodCat;
+                        }
+                    } else {
+                        $catt[$prodCat->pcat_id] = $prodCat;
+                        array_push($catIds, $prodCat->pcat_id);
+                    }
                 }
+
+                foreach ($catt as $cat) {
+                    $category[] = $cat;
+                }
+
                 $entProd->setCategories($category);
                 $entProd->setAttributes($this->getProductAttributesById($arrayParameters['productId'], $arrayParameters['langId']));
                 $entProd->setTexts($this->getProductTextsById($arrayParameters['productId'], null, $arrayParameters['langId']));
@@ -395,12 +414,12 @@ class MelisComProductService extends MelisComGeneralService
                 $results = $productPrice;
             }
 	    }
-	    
+
 	    /**
 	     * If the Product Country price has no data
 	     * this will try to get the General price of the Product
 	     */
-	    if ($arrayParameters['countryId'] != -1 && empty($variantPrice))
+	    if (empty($arrayParameters['countryId']) && empty($productPrice))
 	    {
 	        // Retreiving the General price of the Product
 	        $results = $this->getProductFinalPrice($arrayParameters['productId'], -1);

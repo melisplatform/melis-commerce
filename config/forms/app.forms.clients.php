@@ -7,7 +7,7 @@ return array(
                     'meliscommerce_clients_main_form' => array(
                         'attributes' => array(
                             'name' => '',
-                            'id' => '',
+                            'id' => 'id_meliscommerce_clients_main_form',
                             'method' => '',
                             'action' => '',
                         ),
@@ -52,7 +52,7 @@ return array(
                     'meliscommerce_client_list_export_form' => array(
                         'attributes' => array(
                             'name' => 'client-list-export',
-                            'id' => '',
+//                            'id' => '',
                             'method' => 'POST',
                             'action' => '',
                         ),
@@ -1271,7 +1271,7 @@ return array(
                     'meliscommerce_clients_company_form' => array(
                         'attributes' => array(
                             'name' => '',
-                            'id' => '',
+                            'id' => 'id_meliscommerce_clients_company_form',
                             'method' => '',
                             'action' => '',
                         ),

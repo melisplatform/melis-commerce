@@ -65,6 +65,14 @@
                         		$form->get('cper_confirm_password')->setAttribute('placeholder', $this->translate('tr_meliscommerce_client_Contact_password_placeholder'));
                         		$form->get('cper_password')->setLabel($form->get('cper_password')->getLabel().' <i class="fa fa-info-circle fa-lg" title="'.$this->translate('tr_meliscommerce_client_tooltip_password').'"></i>');
                         		$form->get('cper_confirm_password')->setLabel($form->get('cper_confirm_password')->getLabel().' <i class="fa fa-info-circle fa-lg" title="'.$this->translate('tr_meliscommerce_client_tooltip_password_2').'"></i>');
+
+                                foreach($form->getElements() as $element => $attributes)  {
+                                    $el =  $form->get((string) $element);
+                                    $elId = $el->getAttribute('id') ?? $el->getName();
+
+                                    $el->setAttribute('id', $tabId . '_' . $elId);
+                                }
+
                         		$form->prepare();
                         		echo $this->form()->openTag($form);
                         		echo $this->melisFieldCollection($form);
@@ -108,8 +116,18 @@
                                 	        		$addForm->setAttribute('id', $contactAddressId.'_contact_address_form');
                                 	        		$addForm->setAttribute('data-contactaddressid', $contactAddressId);
                                 	        		$addForm->setAttribute('class', 'clientContactAddressForm');
+
                                 	        		$addForm->prepare();
+
+                                                    foreach($addForm->getElements() as $element => $attributes)  {
+                                                        $el =  $addForm->get((string) $element);
+                                                        $elId = $el->getAttribute('id') ?? $el->getName();
+
+                                                        $el->setAttribute('id', $contactAddressId . '_' . $elId);
+                                                    }
+
                                 	        		$addForm->bind($pVal);
+
                                 	        		echo $this->form()->openTag($addForm);
                                 	        		echo $this->melisFieldCollection($addForm);
                                 	        		echo $this->form()->closeTag();
