@@ -283,7 +283,7 @@ class Module
     {
         $sm = $e->getApplication()->getServiceManager();
         $translator = $sm->get('translator');
-        
+
         $param = $routeMatch->getParams();
 
         // Checking if the Request is from Melis-BackOffice or Front
@@ -291,14 +291,23 @@ class Module
 
         if ($renderMode == 'melis')
         {
-            $container = new Container('meliscore');
-            $locale = $container['melis-lang-locale'];
+            // rendering plugin based from page language
+            if (isset($param['action']) && ($param['action'] == 'getPlugin' || $param['action'] == 'index')) {
+                $container = new Container('melisplugins');
+                $locale = $container['melis-plugins-lang-locale'];
+            } else {
+                $container = new Container('meliscore');
+                $locale = $container['melis-lang-locale'];
+            }
+
         }
         else
         {
             $container = new Container('melisplugins');
             $locale = $container['melis-plugins-lang-locale'];
         }
+
+
         
         if(!empty($locale)) 
         {   
