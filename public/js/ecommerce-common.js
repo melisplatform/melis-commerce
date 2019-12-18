@@ -298,7 +298,7 @@ setInterval(function() {
 }, 10000);
 
 $(function() {
-    var $body = $('body');
+    var $body   = $('body');
         /* 
          * Triggers accordion toggle manually data-target="#1_accordion" not triggering
          * same goes to modal

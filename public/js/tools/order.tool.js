@@ -76,7 +76,7 @@ $(function() {
                 modalUrl    = '/melis/MelisCommerce/MelisComOrderStatus/renderOrderStatusModal';
 
                 // requesitng to create modal and display after
-                melisHelper.createModal(zoneId, melisKey, false, {ostaId : statusId}, modalUrl, function(){
+                melisHelper.createModal(zoneId, melisKey, false, {ostaId : statusId}, modalUrl, function() {
                     //melisCoreTool.done(this);
                 });
         });
@@ -595,7 +595,7 @@ $(function() {
                             melisCore.flashMessenger();
                         }, function(data){
                             console.log(data);
-                        })
+                        });
                     });
 
                 melisCoreTool.done(this);

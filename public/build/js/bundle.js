@@ -298,7 +298,7 @@ setInterval(function() {
 }, 10000);
 
 $(function() {
-    var $body = $('body');
+    var $body   = $('body');
         /* 
          * Triggers accordion toggle manually data-target="#1_accordion" not triggering
          * same goes to modal
@@ -2540,7 +2540,7 @@ if( melisCore.screenSize >= 768){
 
 					if (position.top < ($(window).scrollTop() - 10)) {
 						$("#id_meliscommerce_categories_category").addClass("fix-cat");
-						$("#categoryInfoPanel").css("padding-top","66px");
+						//$("#categoryInfoPanel").css("padding-top","66px");
 						$("#saveCategory").css("margin-top","10px");
 						$("#id_meliscommerce_categories_category_header").width($("#id_meliscommerce_categories_list").width());
 					} else {
@@ -2978,7 +2978,7 @@ $(function() {
 		});
 		
 		// Category Tree Double Click Item Action
-		$body.on("dblclick", "#categoryTreeView .jstree-node", function(evt){
+		$body.on("dblclick", "#categoryTreeViewPanel .jstree-node", function(evt){
 			$("#categoryTreeViewPanel").collapse("hide");
 			
 			var $this 		= $(this),
@@ -3067,6 +3067,10 @@ window.initCategoryTreeView = function() {
 
 			evt.stopPropagation();
 			evt.preventDefault();
+		});
+
+		$body.on("click", "#categoryTreeViewPanel .jstree-anchor", function() {
+			enableDisableAddCategoryBtn('enable');
 		});
 		
 		$category
@@ -5853,7 +5857,7 @@ $(function() {
                 modalUrl    = '/melis/MelisCommerce/MelisComOrderStatus/renderOrderStatusModal';
 
                 // requesitng to create modal and display after
-                melisHelper.createModal(zoneId, melisKey, false, {ostaId : statusId}, modalUrl, function(){
+                melisHelper.createModal(zoneId, melisKey, false, {ostaId : statusId}, modalUrl, function() {
                     //melisCoreTool.done(this);
                 });
         });
@@ -6372,7 +6376,7 @@ $(function() {
                             melisCore.flashMessenger();
                         }, function(data){
                             console.log(data);
-                        })
+                        });
                     });
 
                 melisCoreTool.done(this);
@@ -8020,7 +8024,6 @@ $(function() {
                 melisCore.flashMessenger();
             }, function(data){
                 console.log(data);
-                alert( translations.tr_meliscore_error_message );
             });
             melisCoreTool.done(this);
         });
@@ -8072,7 +8075,6 @@ $(function() {
                             melisCore.flashMessenger();
                         }, function(data) {
                             console.log(data);
-                            alert( translations.tr_meliscore_error_message );
                         });
                     });
 
@@ -8117,7 +8119,6 @@ $(function() {
                             melisCore.flashMessenger();
                         }, function(data) {
                             console.log(data);
-                            alert( translations.tr_meliscore_error_message );
                         });
                     });
 
@@ -8185,7 +8186,6 @@ $(function() {
                     melisCore.flashMessenger();
                 }, function(data) {
                     console.log(data);
-                    alert( translations.tr_meliscore_error_message );
                 });
          		//$('#'+couponId+"_id_meliscommerce_coupon_tabs_content_assign_details").addClass('active');
         }
@@ -9197,7 +9197,6 @@ $(function() {
                             melisCore.flashMessenger();
                         }, function(data){
                             console.log(data);
-                            alert( translations.tr_meliscore_error_message );
                         });
                     });
 
@@ -9242,7 +9241,6 @@ $(function() {
                     melisCore.flashMessenger();
                 }, function(data){
                     console.log(data);
-                    alert( translations.tr_meliscore_error_message );
                 });
                 melisCoreTool.done(this);
         });
@@ -9308,7 +9306,6 @@ $(function() {
                     melisCore.flashMessenger();
                 }, function(data){
                     console.log(data);
-                    alert( translations.tr_meliscore_error_message );
                 });
 
                 melisCoreTool.done(this);
@@ -9345,7 +9342,6 @@ $(function() {
                             melisCore.flashMessenger();
                         }, function(data){
                             console.log(data);
-                            alert( translations.tr_meliscore_error_message );
                         })
 
                     });

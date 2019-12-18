@@ -111,7 +111,6 @@ $(function() {
                             melisCore.flashMessenger();
                         }, function(data){
                             console.log(data);
-                            alert( translations.tr_meliscore_error_message );
                         });
                     });
 
@@ -156,7 +155,6 @@ $(function() {
                     melisCore.flashMessenger();
                 }, function(data){
                     console.log(data);
-                    alert( translations.tr_meliscore_error_message );
                 });
                 melisCoreTool.done(this);
         });
@@ -222,7 +220,6 @@ $(function() {
                     melisCore.flashMessenger();
                 }, function(data){
                     console.log(data);
-                    alert( translations.tr_meliscore_error_message );
                 });
 
                 melisCoreTool.done(this);
@@ -259,7 +256,6 @@ $(function() {
                             melisCore.flashMessenger();
                         }, function(data){
                             console.log(data);
-                            alert( translations.tr_meliscore_error_message );
                         })
 
                     });

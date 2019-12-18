@@ -10,7 +10,7 @@ if( melisCore.screenSize >= 768){
 
 					if (position.top < ($(window).scrollTop() - 10)) {
 						$("#id_meliscommerce_categories_category").addClass("fix-cat");
-						$("#categoryInfoPanel").css("padding-top","66px");
+						//$("#categoryInfoPanel").css("padding-top","66px");
 						$("#saveCategory").css("margin-top","10px");
 						$("#id_meliscommerce_categories_category_header").width($("#id_meliscommerce_categories_list").width());
 					} else {
@@ -448,7 +448,7 @@ $(function() {
 		});
 		
 		// Category Tree Double Click Item Action
-		$body.on("dblclick", "#categoryTreeView .jstree-node", function(evt){
+		$body.on("dblclick", "#categoryTreeViewPanel .jstree-node", function(evt){
 			$("#categoryTreeViewPanel").collapse("hide");
 			
 			var $this 		= $(this),
@@ -537,6 +537,10 @@ window.initCategoryTreeView = function() {
 
 			evt.stopPropagation();
 			evt.preventDefault();
+		});
+
+		$body.on("click", "#categoryTreeViewPanel .jstree-anchor", function() {
+			enableDisableAddCategoryBtn('enable');
 		});
 		
 		$category
