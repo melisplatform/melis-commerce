@@ -291,14 +291,8 @@ class Module
 
         if ($renderMode == 'melis')
         {
-            // rendering plugin based from page language
-            if (isset($param['action']) && ($param['action'] == 'getPlugin' || $param['action'] == 'index')) {
-                $container = new Container('melisplugins');
-                $locale = $container['melis-plugins-lang-locale'];
-            } else {
-                $container = new Container('meliscore');
-                $locale = $container['melis-lang-locale'];
-            }
+            $container = new Container('meliscore');
+            $locale = $container['melis-lang-locale'];
 
         }
         else
