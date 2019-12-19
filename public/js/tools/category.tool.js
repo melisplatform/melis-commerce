@@ -448,7 +448,8 @@ $(function() {
 		});
 		
 		// Category Tree Double Click Item Action
-		$body.on("dblclick", "#categoryTreeViewPanel .jstree-node", function(evt){
+		// #categoryTreeView
+		$body.on("dblclick", "#categoryTreeView .jstree-node", function(evt){
 			$("#categoryTreeViewPanel").collapse("hide");
 			
 			var $this 		= $(this),
@@ -467,6 +468,13 @@ $(function() {
 				evt.stopPropagation();
 				evt.preventDefault();
 		});
+
+		/* $body.on("click", "#categoryTreeView .jstree-node", function() {
+			var $addCategory = $("#"+activeTabId+" .addCategory");
+
+				$addCategory.attr("disabled", false);
+				$addCategory.attr("title", null);
+		}); */
 		
 		// Open Single Node in JSTree
 		$body.on("click", ".cat-div .jstree-node .jstree-icon", function() {
@@ -537,10 +545,6 @@ window.initCategoryTreeView = function() {
 
 			evt.stopPropagation();
 			evt.preventDefault();
-		});
-
-		$body.on("click", "#categoryTreeViewPanel .jstree-anchor", function() {
-			enableDisableAddCategoryBtn('enable');
 		});
 		
 		$category
@@ -894,5 +898,5 @@ window.initCategoryProductsImgs = function() {
     lightbox.option({
 	    'resizeDuration': 200,
 	    'wrapAround': true
-    })
+    });
 }
