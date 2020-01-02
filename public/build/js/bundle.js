@@ -2979,7 +2979,7 @@ $(function() {
 		
 		// Category Tree Double Click Item Action
 		// #categoryTreeView
-		$body.on("dblclick", "#categoryTreeView .jstree-node", function(evt){
+		$body.on("dblclick", "#"+activeTabId+".jstree-node", function(evt){
 			$("#categoryTreeViewPanel").collapse("hide");
 			
 			var $this 		= $(this),
