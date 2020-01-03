@@ -390,7 +390,7 @@ class Module
             /** @var MelisPageService $pageSvc */
             $pageSvc = $sm->get('MelisEnginePage');
             // get melis page tree
-            $melisPageTree = $pageSvc->getDatasPage($routeMatch['idpage'])->getMelisPageTree();
+            $melisPageTree = $pageSvc->getDatasPage($routeMatch['idpage'] ?? $request->getQuery('pageId'))->getMelisPageTree();
             // get page locale
             $pageLocale = $melisPageTree->lang_cms_locale;
         }
