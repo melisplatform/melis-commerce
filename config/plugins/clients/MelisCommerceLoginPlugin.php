@@ -8,7 +8,7 @@ return array(
                     'front' => array(
                         'template_path' => array('MelisCommerce/ClientLogin'),
                         'id' => 'userLogin',
-                        
+
                         // form fields
                         'm_login' => '',
                         'm_password' => '',
@@ -164,9 +164,9 @@ return array(
                             'id' => 'CLIENTS',
                             'title' => 'tr_meliscommerce_clients_Clients'
                         ),
-                        'name' => 'tr_meliscommerce_plugin_login',
+                        'name' => '\tr_meliscommerce_plugin_login',
                         'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceLoginPlugin.jpg',
-                        'description' => 'tr_meliscommerce_plugin_login_description',
+                        'description' => '\tr_meliscommerce_plugin_login_description',
                         // List the files to be automatically included for the correct display of the plugin
                         // To overide a key, just add it again in your site module
                         // To delete an entry, use the keyword "disable" instead of the file path for the same key

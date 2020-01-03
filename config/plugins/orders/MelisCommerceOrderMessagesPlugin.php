@@ -107,9 +107,9 @@ return array(
                             'id' => 'ORDERS',
                             'title' => 'tr_meliscommerce_orders_Orders'
                         ),
-                        'name' => 'tr_meliscommerce_plugin_order_messages_name',
+                        'name' => '\tr_meliscommerce_plugin_order_messages_name',
                         'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceOrderMessagesPlugin.jpg',
-                        'description' => 'tr_meliscommerce_plugin_order_messages_description',
+                        'description' => '\tr_meliscommerce_plugin_order_messages_description',
                         // List the files to be automatically included for the correct display of the plugin
                         // To overide a key, just add it again in your site module
                         // To delete an entry, use the keyword "disable" instead of the file path for the same key

@@ -60,9 +60,9 @@ return array(
                             'id' => 'CATEGORIES',
                             'title' => 'tr_meliscommerce_plugin_sub_categories_title'
                         ),
-                        'name' => 'tr_meliscommerce_plugin_category_product_list_name',
+                        'name' => '\tr_meliscommerce_plugin_category_product_list_name',
                         'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceCategoryProductListPlugin.jpg',
-                        'description' => 'tr_meliscommerce_plugin_category_product_list_description',
+                        'description' => '\tr_meliscommerce_plugin_category_product_list_description',
                         // List the files to be automatically included for the correct display of the plugin
                         // To overide a key, just add it again in your site module
                         // To delete an entry, use the keyword "disable" instead of the file path for the same key

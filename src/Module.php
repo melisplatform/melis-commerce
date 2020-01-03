@@ -158,6 +158,7 @@ class Module
 
     public function getConfig()
     {
+
     	$config = array();
     	$configFiles = array(
 			include __DIR__ . '/../config/module.config.php',
@@ -285,15 +286,19 @@ class Module
         $translator = $sm->get('translator');
 
         $param = $routeMatch->getParams();
-
         // Checking if the Request is from Melis-BackOffice or Front
         $renderMode = (isset($param['renderMode'])) ? $param['renderMode'] : 'melis';
-
+        $request = $sm->get('request');
         if ($renderMode == 'melis')
         {
-            $container = new Container('meliscore');
-            $locale = $container['melis-lang-locale'];
-
+            // for templating plugins in page edition, page content lang. should be based from page lang.
+            if ( (isset($param['renderType']) && isset($param['renderMode']) && isset($param['idpage']) ) || ($param['action'] == "getPlugin")) {
+                $container = new Container('melisplugins');
+                $locale = $container['melis-plugins-lang-locale'];
+            } else {
+                $container = new Container('meliscore');
+                $locale = $container['melis-lang-locale'];
+            }
         }
         else
         {
@@ -302,7 +307,6 @@ class Module
         }
 
 
-        
         if(!empty($locale)) 
         {   
             // Commerce sub modules langauge config
