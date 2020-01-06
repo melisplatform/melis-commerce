@@ -9,6 +9,7 @@
 
 namespace MelisCommerce;
 
+use MelisEngine\Service\MelisPageService;
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
 use Zend\ModuleManager\ModuleManager;
@@ -158,6 +159,7 @@ class Module
 
     public function getConfig()
     {
+
     	$config = array();
     	$configFiles = array(
 			include __DIR__ . '/../config/module.config.php',
@@ -285,15 +287,19 @@ class Module
         $translator = $sm->get('translator');
 
         $param = $routeMatch->getParams();
-
         // Checking if the Request is from Melis-BackOffice or Front
         $renderMode = (isset($param['renderMode'])) ? $param['renderMode'] : 'melis';
-
+        $request = $sm->get('request');
         if ($renderMode == 'melis')
         {
-            $container = new Container('meliscore');
-            $locale = $container['melis-lang-locale'];
-
+            // for templating plugins in page edition, page content lang. should be based from page lang.
+            if ( (isset($param['renderType']) && isset($param['renderMode']) && isset($param['idpage']) ) || ($param['action'] == "getPlugin")) {
+                $container = new Container('melisplugins');
+                $locale = $this->getPageLocale($sm);
+            } else {
+                $container = new Container('meliscore');
+                $locale = $container['melis-lang-locale'];
+            }
         }
         else
         {
@@ -302,7 +308,6 @@ class Module
         }
 
 
-        
         if(!empty($locale)) 
         {   
             // Commerce sub modules langauge config
@@ -363,5 +368,33 @@ class Module
                 }
             }
         }
+    }
+    /**
+     * get page locale
+     *
+     * @return |null
+     */
+    private function getPageLocale($sm)
+    {
+        $pageLocale = null;
+        // get router
+        $router = $sm->get('router');
+        // get request
+        $request = $sm->get('request');
+        // get routematch
+        $routeMatch = $router->match($request)->getParams();
+
+        // look for idpage
+        if ((isset($routeMatch['idpage']) && !empty($routeMatch['idpage'])) || ($request->getQuery('pageId'))) {
+            // get the page locale
+            /** @var MelisPageService $pageSvc */
+            $pageSvc = $sm->get('MelisEnginePage');
+            // get melis page tree
+            $melisPageTree = $pageSvc->getDatasPage($routeMatch['idpage'] ?? $request->getQuery('pageId'))->getMelisPageTree();
+            // get page locale
+            $pageLocale = $melisPageTree->lang_cms_locale;
+        }
+
+        return $pageLocale;
     }
 }

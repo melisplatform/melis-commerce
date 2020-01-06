@@ -32,7 +32,7 @@ return array(
                             'id' => 'CATEGORIES',
                             'title' => 'tr_meliscommerce_plugin_sub_categories_title'
                         ),
-                        'name' => 'tr_meliscommerce_plugin_category_tree_name',
+                        'name' => '\tr_meliscommerce_plugin_category_tree_name',
                         'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceCategoryTreePlugin.jpg',
                         'description' => 'tr_meliscommerce_plugin_category_tree_description',
                         // List the files to be automatically included for the correct display of the plugin

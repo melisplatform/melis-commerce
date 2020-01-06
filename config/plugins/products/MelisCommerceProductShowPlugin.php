@@ -30,9 +30,9 @@ return array(
                             'id' => 'PRODUCTS',
                             'title' => 'tr_meliscommerce_products_Products'
                         ),
-                        'name' => 'tr_meliscommerce_plugin_product_show_name',
+                        'name' => '\tr_meliscommerce_plugin_product_show_name',
                         'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceProductShowPlugin.jpg',
-                        'description' => 'tr_meliscommerce_plugin_product_show_description',
+                        'description' => '\tr_meliscommerce_plugin_product_show_description',
                         // List the files to be automatically included for the correct display of the plugin
                         // To overide a key, just add it again in your site module
                         // To delete an entry, use the keyword "disable" instead of the file path for the same key

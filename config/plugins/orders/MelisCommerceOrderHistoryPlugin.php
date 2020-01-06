@@ -34,9 +34,9 @@ return array(
                             'id' => 'CART',
                             'title' => 'tr_meliscommerce_car_Cart'
                         ),
-                        'name' => 'tr_meliscommerce_order_history_name',
+                        'name' => '\tr_meliscommerce_order_history_name',
                         'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceOrderHistoryPlugin.jpg',
-                        'description' => 'tr_meliscommerce_order_history_description',
+                        'description' => '\tr_meliscommerce_order_history_description',
                         // List the files to be automatically included for the correct display of the plugin
                         // To overide a key, just add it again in your site module
                         // To delete an entry, use the keyword "disable" instead of the file path for the same key
