@@ -2141,6 +2141,9 @@ textarea {
     .layout-timeline .innerAll {
         padding: 15px 0!important;
     }
+    .accordion-toggle {
+		clear: both;
+	}
 }
 @media ( max-width: 510px ) {
     .container-level-a  .widget.widget-tabs.widget-tabs-responsive > .widget-head ul li {
