@@ -1990,7 +1990,16 @@ textarea {
 }
 
 .group-span-filestyle label {
-    font-weight: normal;
+    font-weight: normal !important;
+}
+
+.dataTables_empty {
+    white-space: normal;
+}
+
+span .fa-globe {
+    width:24px;
+    height:24px;
 }
 
 /* ===============================[ -= RESPONSIVE =- ]==================================== */
@@ -2176,12 +2185,6 @@ textarea {
         margin: 0;
     }
 }
-
-span .fa-globe{
-    width:24px;
-    height:24px;
-}
-
 @media ( min-width: 1200px ) {
     .pays-country .form-control {
         min-width: 120px;
