@@ -1987,6 +1987,10 @@ textarea {
     background: transparent;
 }
 
+.group-span-filestyle label {
+    font-weight: normal;
+}
+
 /* ===============================[ -= RESPONSIVE =- ]==================================== */
 
 @media ( min-width: 1000px ) {
