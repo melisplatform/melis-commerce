@@ -1610,9 +1610,12 @@ textarea {
 }
 
 /* TABS */
+.content-cont .nav-tabs.product-text-tab li a {
+    border: 0 !important;
+}
 .content-cont .product-text-tab li.active:hover a{
     background: #932E2A;
-    border-color: transparent;
+    border: 0 !important;
 }
 .content-cont .nav-tabs.product-text-tab li.active a,
 .content-cont .nav-tabs.product-text-tab li.active:focus a,
@@ -1620,10 +1623,8 @@ textarea {
 .content-cont .nav-tabs.product-text-tab li a:hover{
     color: #fff;
     background: #932E2A;
-    /*border-bottom: 1px solid #e5e5e5;*/
     font-weight: normal;
     text-decoration: none;
-    border-color: #eee;
 
 }
 .content-cont .product-text-tab li.active span,
