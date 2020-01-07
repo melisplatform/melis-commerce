@@ -1072,6 +1072,7 @@ return array(
                                     'name' => 'osta_id',
                                     'type' => 'hidden',
                                     'options' => array(
+                                        
                                     ),
                                     'attributes' => array(
                                         'id' => '',
