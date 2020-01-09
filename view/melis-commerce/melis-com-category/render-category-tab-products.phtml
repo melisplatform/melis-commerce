@@ -34,9 +34,9 @@
 	?>
 	<script type="text/javascript">
 		// this script cannot be separated to this file since all table configuration and initialization are done here
-		// render table to DataTable plugin
-		<?php echo $this->getToolDataTableConfig; ?>
 		$(document).ready(function() {
+			// render table to DataTable plugin
+			<?php echo $this->getToolDataTableConfig; ?>
 			$(document).on("init.dt", function(e, settings) {
 				melisCommerce.initTooltipTable(".tooltipTable");				
 			});
