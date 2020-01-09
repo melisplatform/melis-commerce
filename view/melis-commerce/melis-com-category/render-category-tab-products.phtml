@@ -41,7 +41,9 @@
 				melisCommerce.initTooltipTable(".tooltipTable");				
 			});
 
-			console.log("testing dataTable");
+			$($.fn.dataTable.tables(true)).DataTable()
+				.responsive.recalc()
+				.columns.adjust();
 		});
 	</script>
 </div>
