@@ -170,14 +170,14 @@ $(function() {
             var $this               = $(this),
                 parentTable         = $this.parents('.tableAssocVariantList2'),
                 tableId             = parentTable.attr("id"),
-                tableInstance       = $(tableId), //eval("$"+tableId) ,
+                tableInstance       = $(tableId).DataTable(), //eval("$"+tableId) ,
                 currentVariantId    = parentTable.data("variantid"),
                 tr                  = $this.closest('tr'),
-                //row                 = tableInstance.row( tr ),            
+                row                 = tableInstance.row( tr ),            
                 productId           = tr.attr("id"); // Getting the product Id from the row Id
 
                 console.log({tableId});
-                console.log("eval($tableId): ", eval("$"+tableId));
+                console.log("tableInstance: ", tableInstance);
             
                 if ( row.child.isShown() ) {
                     // This row is already open - close it
