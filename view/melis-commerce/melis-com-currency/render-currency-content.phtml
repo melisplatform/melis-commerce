@@ -39,13 +39,12 @@ if (!empty($this->zoneconfig['conf']['id']))
 			?>
 			<!-- // END TABLE -->
 			
-			
 			<script type="text/javascript">
-			// this script cannot be separated to this file since all table configuration and initialization are done here
-			// render table to DataTable plugin
-			$(document).ready(function() {
-				<?php echo $this->getToolDataTableConfig; ?>
-			});
+				// this script cannot be separated to this file since all table configuration and initialization are done here
+				// render table to DataTable plugin
+				$(document).ready(function() {
+					<?php echo $this->getToolDataTableConfig; ?>
+				});
 			</script>
 	</div>
 </div>
