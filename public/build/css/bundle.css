@@ -434,6 +434,10 @@ table.dataTable.uk-table-condensed .sorting_desc:after {
     font-size: 11px;
 }
 
+#productCategorySearchZone .btn {
+    font-size: 0.8rem;
+}
+
 @media (min-width: 1753px) and (max-width: 1850px){
     #categoryTreeViewPanel .btn{
         font-size: 10px;
