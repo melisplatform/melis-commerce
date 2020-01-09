@@ -38,12 +38,6 @@
 			// render table to DataTable plugin
 			<?php echo $this->getToolDataTableConfig; ?>
 
-			$($.fn.dataTable.tables(true)).DataTable()
-				.responsive.recalc()
-				.columns.adjust();
-
-				console.log("two recalc");
-
 			$(document).on("init.dt", function(e, settings) {
 				melisCommerce.initTooltipTable(".tooltipTable");				
 			});
