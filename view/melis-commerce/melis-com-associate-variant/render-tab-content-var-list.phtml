@@ -51,9 +51,7 @@ $data_melisKey = $this->melisKey;
             // render table to DataTable plugin
             <?php echo $this->getToolDataTableConfig; ?>
             $(document).ready(function() {
-                $($.fn.dataTable.tables(true)).DataTable()
-                  .responsive.recalc()
-                  .columns.adjust();
+                console.log("variants under associations...");
             });
         </script>
     </div>
