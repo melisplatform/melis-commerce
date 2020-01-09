@@ -173,12 +173,9 @@ $(function() {
                 tableInstance       = $(tableId).DataTable(), //eval("$"+tableId) ,
                 currentVariantId    = parentTable.data("variantid"),
                 tr                  = $this.closest('tr'),
-                row                 = tableInstance.row( tr ),            
+                row                 = tableInstance.row(tr),            
                 productId           = tr.attr("id"); // Getting the product Id from the row Id
-
-                console.log({tableId});
-                console.log("tableInstance: ", tableInstance);
-            
+           
                 if ( row.child.isShown() ) {
                     // This row is already open - close it
                     row.child.hide();
