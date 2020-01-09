@@ -1199,10 +1199,7 @@ class MelisComCategoryController extends AbstractActionController
                 // Table row Datas
 
                 $categoryProduct['pcat_order'] = null;
-                /**
-                 * Commented rowReorder option for the fix on issue: http://mantis.melistechnology.fr/view.php?id=4459
-                 */
-                $categoryProduct['DT_RowClass'] = 'not-draggable'; //'is-draggable';
+                $categoryProduct['DT_RowClass'] = 'is-draggable';
 
                 $product = $val->getProduct();
                 if(!empty($product)) {
