@@ -49,9 +49,9 @@ $data_melisKey = $this->melisKey;
         <script type="text/javascript">
             // this script cannot be separated to this file since all table configuration and initialization are done here
             // render table to DataTable plugin
-            <?php echo $this->getToolDataTableConfig; ?>
             $(document).ready(function() {
-                console.log("variants under associations...");
+                <?php echo $this->getToolDataTableConfig; ?>
+                console.log("Variants under associations...");
             });
         </script>
     </div>
