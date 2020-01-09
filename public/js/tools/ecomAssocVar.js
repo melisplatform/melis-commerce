@@ -173,7 +173,7 @@ $(function() {
                 tableInstance       = $(tableId), //eval("$"+tableId) ,
                 currentVariantId    = parentTable.data("variantid"),
                 tr                  = $this.closest('tr'),
-                row                 = tableInstance.row( tr ),            
+                //row                 = tableInstance.row( tr ),            
                 productId           = tr.attr("id"); // Getting the product Id from the row Id
 
                 console.log({tableId});
