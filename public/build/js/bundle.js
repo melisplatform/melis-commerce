@@ -9755,7 +9755,7 @@ $(function() {
             //("#tableAssocVariantList2_58").fnFilterAll("test");
         
         // This event will create extra row on DataTable as Product Variant List container
-        $body.on("click", ".showPrdVariants", function() {
+        $body.on("click", ".showPrdVariants .dtActionCls", function() {
             var $this               = $(this),
                 parentTable         = $this.parents('.tableAssocVariantList2'),
                 tableId             = parentTable.attr("id"),
@@ -9767,6 +9767,7 @@ $(function() {
 
                 console.log("tableInstance: ", tableInstance);
                 console.log("tableId: ", tableId);
+                console.log("parentTable: ", parentTable);
            
                 if ( row.child.isShown() ) {
                     // This row is already open - close it
@@ -9789,15 +9790,6 @@ $(function() {
                         // Reloading the Product variant container,
                         // this process will request to server for variant list depend on ProductId
                         melisHelper.zoneReload(zoneId, melisKey, {productId: productId, variantId: currentVariantId, search : search});
-
-                        console.log("=============================================================================");
-                        console.log("zoneId: ", zoneId);
-                        console.log("melisKey: ", melisKey);
-                        console.log("productId: ", productId);
-                        console.log("variantId: ", currentVariantId);
-                        console.log("search: ", search);
-                        console.log("variantContainer: ", variantContainer);
-                        console.log("row.child(variantContainer): ", row.child(variantContainer) );
                 }
         });
 
