@@ -9759,7 +9759,7 @@ $(function() {
             var $this               = $(this),
                 parentTable         = $this.parents('.tableAssocVariantList2'),
                 tableId             = parentTable.attr("id"),
-                tableInstance       = eval("$"+tableId),//$(tableId).DataTable(),
+                tableInstance       = $(tableId),//eval("$"+tableId),//$(tableId).DataTable(),
                 currentVariantId    = parentTable.data("variantid"),
                 tr                  = $this.closest('tr'),
                 row                 = tableInstance.row(tr),            
