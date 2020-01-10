@@ -197,6 +197,20 @@ $(function() {
                         // Reloading the Product variant container,
                         // this process will request to server for variant list depend on ProductId
                         melisHelper.zoneReload(zoneId, melisKey, {productId: productId, variantId: currentVariantId, search : search});
+
+                        /* console.log("zoneId: ", zoneId);
+                        console.log("productId: ", productId);
+                        console.log("currentVariantId: ", currentVariantId);
+                        console.log("tableId: ", tableId);
+                        console.log("row.child(variantContainer).show(): ", row.child(variantContainer).show()); */
+                        console.log("=============================================================================");
+                        console.log("zoneId: ", zoneId);
+                        console.log("melisKey: ", melisKey);
+                        console.log("productId: ", productId);
+                        console.log("variantId: ", currentVariantId);
+                        console.log("search: ", search);
+                        console.log("variantContainer: ", variantContainer);
+                        console.log("row.child(variantContainer): ", row.child(variantContainer) );
                 }
         });
 
