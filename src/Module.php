@@ -287,13 +287,14 @@ class Module
         $translator = $sm->get('translator');
 
         $param = $routeMatch->getParams();
+
         // Checking if the Request is from Melis-BackOffice or Front
         $renderMode = (isset($param['renderMode'])) ? $param['renderMode'] : 'melis';
         $request = $sm->get('request');
         if ($renderMode == 'melis')
         {
             // for templating plugins in page edition, page content lang. should be based from page lang.
-            if ( (isset($param['renderType']) && isset($param['renderMode']) && isset($param['idpage']) ) || ($param['action'] == "getPlugin")) {
+            if ( (isset($param['renderType']) && isset($param['renderMode']) && isset($param['idpage']) ) || ($param['action'] == "getPlugin" && $param['controller'] == "MelisFront\Controller\MelisPluginRenderer")) {
                 $container = new Container('melisplugins');
                 $locale = $this->getPageLocale($sm);
             } else {
