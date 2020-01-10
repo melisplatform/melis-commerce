@@ -2591,6 +2591,15 @@ tr.last-tr td {
     vertical-align: baseline;
     border-radius: .25em;
 }
-/* .tabsbar .has-sub > .tab-element:before {
-    content: "";
-} */
+.dataTable.dtr-inline.collapsed>tbody>tr>td:first-child:before, 
+.dataTable.dtr-inline.collapsed>tbody>tr>th:first-child:before {
+  top: 20px !important;
+  border-radius: 0 !important;
+  background-color: #b9b8b8 !important;
+}
+#categoryProductListTbl.dataTable.dtr-inline.collapsed>tbody>tr>td:first-child:before, 
+#categoryProductListTbl.dataTable.dtr-inline.collapsed>tbody>tr>th:first-child:before {
+  top: 33px !important;
+  border-radius: 0 !important;
+  background-color: #b9b8b8 !important;
+}

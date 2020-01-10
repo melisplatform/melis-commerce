@@ -3050,6 +3050,10 @@ $(function() {
 						alert( translations.tr_meliscore_error_message );
 					});
 		});
+
+		$body.on("click", "#categoryInfoPanel .widget-head .nav-tabs li a.shopping_cart", function() {
+			$("#id_meliscommerce_categories_category_tab_products").find(".categoryProductsRefresh").trigger("click");
+		});
 });
 
 window.enableDisableAddCategoryBtn = function(action) {
