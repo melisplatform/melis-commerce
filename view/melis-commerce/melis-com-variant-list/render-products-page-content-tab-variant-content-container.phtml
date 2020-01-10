@@ -38,9 +38,9 @@
 	// render table to DataTable plugin
 	$(document).ready(function() {
 		<?php echo $this->getToolDataTableConfig; ?>
-		$(document).on('a[data-toggle="tab"]','shown.bs.tab', function (e) {
+		/* $(document).on('a[data-toggle="tab"]','shown.bs.tab', function (e) {
 			$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
-		});
+		}); */
         // add event for the product title
 	});
 	</script>

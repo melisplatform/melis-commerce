@@ -170,12 +170,15 @@ $(function() {
             var $this               = $(this),
                 parentTable         = $this.parents('.tableAssocVariantList2'),
                 tableId             = parentTable.attr("id"),
-                tableInstance       = eval("$"+tableId),
+                tableInstance       = $("#"+tableId).DataTable(),//eval("$"+tableId),//$(tableId).DataTable(),
                 currentVariantId    = parentTable.data("variantid"),
                 tr                  = $this.closest('tr'),
-                row                 = tableInstance.row( tr ),            
+                row                 = tableInstance.row(tr),            
                 productId           = tr.attr("id"); // Getting the product Id from the row Id
-            
+
+                console.log("tableInstance: ", tableInstance);
+                console.log("tableId: ", tableId);
+           
                 if ( row.child.isShown() ) {
                     // This row is already open - close it
                     row.child.hide();
@@ -197,6 +200,15 @@ $(function() {
                         // Reloading the Product variant container,
                         // this process will request to server for variant list depend on ProductId
                         melisHelper.zoneReload(zoneId, melisKey, {productId: productId, variantId: currentVariantId, search : search});
+
+                        console.log("=============================================================================");
+                        console.log("zoneId: ", zoneId);
+                        console.log("melisKey: ", melisKey);
+                        console.log("productId: ", productId);
+                        console.log("variantId: ", currentVariantId);
+                        console.log("search: ", search);
+                        console.log("variantContainer: ", variantContainer);
+                        console.log("row.child(variantContainer): ", row.child(variantContainer) );
                 }
         });
 

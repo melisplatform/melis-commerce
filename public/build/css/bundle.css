@@ -434,6 +434,10 @@ table.dataTable.uk-table-condensed .sorting_desc:after {
     font-size: 11px;
 }
 
+#productCategorySearchZone .btn {
+    font-size: 0.8rem;
+}
+
 @media (min-width: 1753px) and (max-width: 1850px){
     #categoryTreeViewPanel .btn{
         font-size: 10px;
@@ -1610,9 +1614,12 @@ textarea {
 }
 
 /* TABS */
+.content-cont .nav-tabs.product-text-tab li a {
+    border: 0 !important;
+}
 .content-cont .product-text-tab li.active:hover a{
     background: #932E2A;
-    border-color: transparent;
+    border: 0 !important;
 }
 .content-cont .nav-tabs.product-text-tab li.active a,
 .content-cont .nav-tabs.product-text-tab li.active:focus a,
@@ -1620,10 +1627,8 @@ textarea {
 .content-cont .nav-tabs.product-text-tab li a:hover{
     color: #fff;
     background: #932E2A;
-    /*border-bottom: 1px solid #e5e5e5;*/
     font-weight: normal;
     text-decoration: none;
-    border-color: #eee;
 
 }
 .content-cont .product-text-tab li.active span,
@@ -1988,6 +1993,19 @@ textarea {
     background: transparent;
 }
 
+.group-span-filestyle label {
+    font-weight: normal !important;
+}
+
+.dataTables_empty {
+    white-space: normal;
+}
+
+span .fa-globe {
+    width:24px;
+    height:24px;
+}
+
 /* ===============================[ -= RESPONSIVE =- ]==================================== */
 
 @media ( min-width: 1000px ) {
@@ -2141,6 +2159,9 @@ textarea {
     .layout-timeline .innerAll {
         padding: 15px 0!important;
     }
+    .accordion-toggle {
+		clear: both;
+	}
 }
 @media ( max-width: 510px ) {
     .container-level-a  .widget.widget-tabs.widget-tabs-responsive > .widget-head ul li {
@@ -2168,12 +2189,6 @@ textarea {
         margin: 0;
     }
 }
-
-span .fa-globe{
-    width:24px;
-    height:24px;
-}
-
 @media ( min-width: 1200px ) {
     .pays-country .form-control {
         min-width: 120px;

@@ -40,7 +40,8 @@
                                     ?>
                                     <script>
                                         $(function() {
-                                        	$(".osta_color_code").colorpicker({color : "<?=$this->color ?>", format: "hex"});
+                                            $(".osta_color_code").colorpicker({color : "<?=$this->color ?>", format: "hex"});
+                                            $("body").find(".form-group label[for='osta_color_code']").addClass("d-flex flex-row justify-content-between");
                                         });
                                     </script>
                                     <br>

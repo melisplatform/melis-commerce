@@ -1225,6 +1225,11 @@ textarea {
     background: transparent;
 }
 
+span .fa-globe{
+	width:24px;
+	height:24px;
+}
+
 /* ===============================[ -= RESPONSIVE =- ]==================================== */
 
 @media ( min-width: 1000px ) {
@@ -1404,12 +1409,6 @@ textarea {
 		margin: 0;
 	}
 }
-
-span .fa-globe{
-	width:24px;
-	height:24px;
-}
-
 @media ( min-width: 1200px ) {
 	.pays-country .form-control {
 		min-width: 120px;
