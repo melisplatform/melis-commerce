@@ -9759,13 +9759,14 @@ $(function() {
             var $this               = $(this),
                 parentTable         = $this.parents('.tableAssocVariantList2'),
                 tableId             = parentTable.attr("id"),
-                tableInstance       = $(tableId),//eval("$"+tableId),//$(tableId).DataTable(),
+                tableInstance       = $("#"+tableId).DataTable(),//eval("$"+tableId),//$(tableId).DataTable(),
                 currentVariantId    = parentTable.data("variantid"),
                 tr                  = $this.closest('tr'),
                 row                 = tableInstance.row(tr),            
                 productId           = tr.attr("id"); // Getting the product Id from the row Id
 
                 console.log("tableInstance: ", tableInstance);
+                console.log("tableId: ", tableId);
            
                 if ( row.child.isShown() ) {
                     // This row is already open - close it
@@ -9789,11 +9790,6 @@ $(function() {
                         // this process will request to server for variant list depend on ProductId
                         melisHelper.zoneReload(zoneId, melisKey, {productId: productId, variantId: currentVariantId, search : search});
 
-                        /* console.log("zoneId: ", zoneId);
-                        console.log("productId: ", productId);
-                        console.log("currentVariantId: ", currentVariantId);
-                        console.log("tableId: ", tableId);
-                        console.log("row.child(variantContainer).show(): ", row.child(variantContainer).show()); */
                         console.log("=============================================================================");
                         console.log("zoneId: ", zoneId);
                         console.log("melisKey: ", melisKey);
