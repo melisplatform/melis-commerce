@@ -9764,10 +9764,6 @@ $(function() {
                 tr                  = $this.closest('tr'),
                 row                 = tableInstance.row(tr),            
                 productId           = tr.attr("id"); // Getting the product Id from the row Id
-
-                console.log("tableInstance: ", tableInstance);
-                console.log("tableId: ", tableId);
-                console.log("parentTable: ", parentTable);
            
                 if ( row.child.isShown() ) {
                     // This row is already open - close it
