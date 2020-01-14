@@ -96,7 +96,7 @@ $(function() {
                             melisCore.flashMessenger();
                         }, function(data) {
                             console.log(data);
-                        })
+                        });
 
                     });
                     
@@ -141,7 +141,7 @@ $(function() {
 
                 dataString = melisCommerceSeo.serializeSeo('variant', varId, dataString);
 
-                dataString.push({name : 'variant[0][var_id]', value : varId}, {name : 'variant[0][var_prd_id]', value : prodId})
+                dataString.push({name : 'variant[0][var_id]', value : varId}, {name : 'variant[0][var_prd_id]', value : prodId});
 
                 $('#'+id).find('.make-switch div').each(function() {
                     var $this       = $(this),
@@ -161,7 +161,7 @@ $(function() {
 
                 melisCommerce.postSave(url, dataString, function(data) {
                     if ( data.success ) {
-                        melisHelper.tabClose(  fixVarId + "id_meliscommerce_variants_page");
+                        melisHelper.tabClose(fixVarId + "id_meliscommerce_variants_page");
                         melisHelper.tabOpen(data.chunk.varSku, 'icon-tag-2', data.chunk.variantId+'_id_meliscommerce_variants_page', 'meliscommerce_variants_page', { variantId : data.chunk.variantId, productId : prodId}, prodTabId);
                         melisHelper.melisOkNotification( data.textTitle, data.textMessage );
                         melisHelper.zoneReload(prodId+"_id_meliscommerce_products_page_content_tab_variant_content_container", "meliscommerce_products_page_content_tab_variant_content_container", {productId : prodId});
@@ -173,7 +173,7 @@ $(function() {
                         var target = 'id_meliscommerce_variant_content';
 
                             if ( data.chunk.variantId ) {
-                                target = data.chunk.variantId + 'id_meliscommerce_variant_content'
+                                target = data.chunk.variantId + 'id_meliscommerce_variant_content';
                             }
 
                             melisCoreTool.highlightErrors(0, data.errors, target);
@@ -181,7 +181,7 @@ $(function() {
                     melisCoreTool.done(".save-variant");
                     melisCore.flashMessenger();
                 }, function(data) {
-                    console.log({data});
+                    console.log(data);
                     alert( translations.tr_meliscore_error_message );
                 });
         });

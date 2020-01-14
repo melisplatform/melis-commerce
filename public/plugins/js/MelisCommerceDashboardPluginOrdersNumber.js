@@ -61,7 +61,7 @@ $(function () {
                     borderColor: "#eee",
                     clickable: true,
                     hoverable: true,
-                    labelMargin: 20,
+                    labelMargin: 20
                 },
                 series: {
                     lines: {
@@ -80,13 +80,13 @@ $(function () {
                 },
                 xaxis: {
                     // we are not using any plugin for the xaxis, we use ticks instead.
-                    tickColor: '#eee',
+                    tickColor: '#eee'
                 },
                 yaxis: {
                     show: true,
                     tickColor: '#eee',
                     min: 0,
-                    tickDecimals: 0,
+                    tickDecimals: 0
                 },
                 legend: {
                     position: "nw",
@@ -176,7 +176,7 @@ $(function () {
                     window_width    = $(window).width(),
                     dataString      = '';
 
-                let months = [
+                var months = [
                     translations.tr_meliscommerce_dashboardplugin_jan,
                     translations.tr_meliscommerce_dashboardplugin_feb,
                     translations.tr_meliscommerce_dashboardplugin_mar,
@@ -188,13 +188,13 @@ $(function () {
                     translations.tr_meliscommerce_dashboardplugin_sep,
                     translations.tr_meliscommerce_dashboardplugin_oct,
                     translations.tr_meliscommerce_dashboardplugin_nov,
-                    translations.tr_meliscommerce_dashboardplugin_dec,
+                    translations.tr_meliscommerce_dashboardplugin_dec
                 ];
 
                 //the first value of the data.values is the current date / time.
                 for ( var i = 0; i < data.values.length; i++ ) {
                     if ( chartFor === 'hourly' ) {
-                        let locale  = melisLangId,
+                        var locale  = melisLangId,
                             hour    = '',
                             time    = '';
 
@@ -209,20 +209,20 @@ $(function () {
                         dataString = time;
                     } else if (chartFor === 'daily') {
                         var date = moment(data.values[i][0], 'YYYY-MM-DD');
-                        let day = date.format("DD");
-                        let month = months[parseInt(date.format("M")) - 1];
+                        var day = date.format("DD");
+                        var month = months[parseInt(date.format("M")) - 1];
 
                         dataString = month.replace('%day', day);
                     } else if (chartFor === 'weekly') {
                         var week = moment(data.values[i][0], 'YYYY-MM-DD').format('W');
                         var weekday = moment().day("Monday").week(week);
-                        let month = months[parseInt(weekday.format("M")) - 1];
-                        let day = weekday.format("DD");
+                        var month = months[parseInt(weekday.format("M")) - 1];
+                        var day = weekday.format("DD");
 
                         dataString = month.replace('%day', day);
                     } else if (chartFor === 'monthly') {
-                        let monthOfYear = moment(data.values[i][0], 'YYYY-MM-DD').format("M");
-                        let month = months[parseInt(parseInt(monthOfYear)) - 1];
+                        var monthOfYear = moment(data.values[i][0], 'YYYY-MM-DD').format("M");
+                        var month = months[parseInt(parseInt(monthOfYear)) - 1];
 
                         dataString = month.replace('%day', '');
                     }
