@@ -2603,3 +2603,8 @@ tr.last-tr td {
   border-radius: 0 !important;
   background-color: #b9b8b8 !important;
 }
+
+.flotchart-holder {
+    width: 100%;
+    height: 400px;
+}
