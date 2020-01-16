@@ -1,19 +1,21 @@
 /* Category Sticky Top Start */
-if( melisCore.screenSize >= 768){
+if ( melisCore.screenSize >= 768 ) {
 	$(window).on('scroll click resize', function(e) {
 		$("#id_meliscommerce_categories_category_header").css("width","100%");
 
-		var stickyCatNav = $("#"+ activeTabId + ' #id_meliscommerce_categories_category');
+		var stickyCatNav 	= $("#"+ activeTabId + ' #id_meliscommerce_categories_category'),
+			$tabSeo 		= $("#id_meliscommerce_categories_category_tabs .widget-head ul li.active a.search.active");
 
-			if(stickyCatNav.length){
+			if ( stickyCatNav.length ) {
 				var position = stickyCatNav.position();
 
-					if (position.top < ($(window).scrollTop() - 10)) {
+					if ( position.top < ($(window).scrollTop() - 10) && $tabSeo.length !== 1 ) {
 						$("#id_meliscommerce_categories_category").addClass("fix-cat");
 						//$("#categoryInfoPanel").css("padding-top","66px");
 						$("#saveCategory").css("margin-top","10px");
 						$("#id_meliscommerce_categories_category_header").width($("#id_meliscommerce_categories_list").width());
-					} else {
+					} 
+					else {
 						$("#id_meliscommerce_categories_category").removeClass("fix-cat");
 						$("#categoryInfoPanel").css("padding-top","0");
 						$("#saveCategory").css("margin-top","0");
