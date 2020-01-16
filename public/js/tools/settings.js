@@ -3,11 +3,11 @@ $(function() {
 	
 		// add alert email recipients
 		$body.on('click', '.addStockAlertEmail', function() {
-			var stockAlert 	= $(this),
-				userId 		= stockAlert.closest('div').find('.stockAlertSelect').val(),
-				selectEmail = stockAlert.closest('div').find('.stockAlertSelect option:selected'),
-				emailArea 	= stockAlert.closest('.email-alert-area').find('.email_area'),
-				recipient 	= '';
+			var stockAlert 			= $(this),
+				userId 				= stockAlert.closest('div').find('.stockAlertSelect').val(),
+				selectEmail 		= stockAlert.closest('div').find('.stockAlertSelect option:selected'),
+				emailArea 			= stockAlert.closest('.email-alert-area').find('.email_area'),
+				recipient 			= '';
 			
 				recipient += '<span class="alert-email-values" data-seaid="" data-userid="' + userId + '" data-alertemail="' + selectEmail.text() + '">';
 				recipient += 	'<span class="ab-attr">';

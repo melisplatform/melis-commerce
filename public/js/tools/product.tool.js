@@ -565,7 +565,7 @@ $(function() {
         $body.on('click','.add-attribute',function() {
             var selAttrVal      = $("#"+melisCommerce.getCurrentProductId()+"_prodAttribInput"),
                 selAttrValCont  = $("#" + activeTabId + " #select2-"+melisCommerce.getCurrentProductId()+"_prodAttribInput-container"),
-                select2         = $("#" + activeTabId + " span.select2"),
+                select2         = $("#" + activeTabId + " #"+melisCommerce.getCurrentProductId()+"_id_meliscommerce_products_main_tab_attributes_add span.select2"),
                 attributeLists  = $('div#'+activeTabId+' select.dropdown-input'+melisCommerce.getCurrentProductId());
 
                 if ( selAttrVal.val() ) {
