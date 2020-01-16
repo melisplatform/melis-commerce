@@ -2608,3 +2608,12 @@ tr.last-tr td {
     width: 100%;
     height: 400px;
 }
+
+.commerce-dashboard-plugin-messages-head {
+    width: 100%;
+}
+
+.commerce-dashboard-plugin-sales-revenue-button-header .btn-group .btn input[type="radio"],
+.commerce-dashboard-plugin-messages-head .btn-group .btn input[type="radio"] {
+    display: none;
+}

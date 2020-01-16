@@ -77,13 +77,14 @@ $(document).ready(function () {
                 defaultTheme: false
             }
         },
-        placeholder: ".commerce-dashboard-plugin-sales-revenue-placeholder",
+        placeholder: "#id_meliscore_toolstree_section_dashboard.active .commerce-dashboard-plugin-sales-revenue-placeholder",
         // initialize
-        init: function () {
-            if (this.plot == null) {
-                // hook the init function for plotting the chart
-                commerceDashboardPluginSalesRevenueChartStackedBarsInit();
-            }
+        init: function() {
+            var $dashboard = $("#id_meliscore_toolstree_section_dashboard.active");
+                if ( this.plot == null && $dashboard.length > 0 ) {
+                    // hook the init function for plotting the chart
+                    commerceDashboardPluginSalesRevenueChartStackedBarsInit();
+                }
         }
     };
 
@@ -245,7 +246,7 @@ $(document).ready(function () {
     }
 
     //initialize all the charts on the dashboard on first load of dashboard.
-    $body.find(".commerce-dashboard-plugin-sales-revenue-placeholder").each(function (index, value) {
+    $body.find("#id_meliscore_toolstree_section_dashboard.active .commerce-dashboard-plugin-sales-revenue-placeholder").each(function (index, value) {
         var pluginConfig = $(value).closest('.grid-stack-item').find('.grid-stack-item-content .widget .widget-parent .widget-body .dashboard-plugin-json-config').text();
         var filter = JSON.parse(pluginConfig).activeFilter;
         var placeholder = JSON.parse(pluginConfig).plugin_id;
