@@ -25,30 +25,30 @@ window.seoCharCounter = function (event) {
 		prevLabel 	= $this.prev('label'),
 		limit 		= event.data.limit;
 	
-		if ( prevLabel.find('span').length ) {
+		if ( prevLabel.find('.label-text span').length ) {
 			if ( charLength === 0 ) {
 				prevLabel.removeClass('limit');
-				prevLabel.find('span').remove();
+				prevLabel.find('.label-text span').remove();
 			}
 			else {
-				prevLabel.find('span').html('<i class="fa fa-text-width"></i>(' + charLength + ')');
+				prevLabel.find('.label-text span').html('<i class="fa fa-text-width"></i>(' + charLength + ')');
 				if ( charLength > limit ) {
 					prevLabel.addClass('limit');
-					prevLabel.find('span').addClass('limit');
+					prevLabel.find('.label-text span').addClass('limit');
 				}
 				else {
 					prevLabel.removeClass('limit');
-					prevLabel.find('span').removeClass('limit');
+					prevLabel.find('.label-text span').removeClass('limit');
 				}	
 			}
 		}
 		else {
 			if ( charLength !== 0 ) {
-				prevLabel.append("<span class='text-counter-indicator'><i class='fa fa-text-width'></i>(" + charLength + ")</span>");
+				prevLabel.find(".label-text").append("<span class='text-counter-indicator'><i class='fa fa-text-width'></i>(" + charLength + ")</span>");
 				
 				if ( charLength > limit ) {
 					prevLabel.addClass('limit');
-					prevLabel.find('span').addClass('limit');
+					prevLabel.find('.label-text span').addClass('limit');
 				}
 			}
 		}
