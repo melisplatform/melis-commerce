@@ -310,7 +310,7 @@ $(function() {
         /**
          * Export modal checkbox
          */
-        $body.on("click", ".cb-cont input[type=checkbox]", function() {
+        $body.on("click", ".melis-commerce-checkbox input[type=checkbox]", function() {
             $(this).parent().find(".cbmask-inner").toggleClass("cb-active");
         });
 });
