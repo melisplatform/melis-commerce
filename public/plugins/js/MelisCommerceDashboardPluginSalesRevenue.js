@@ -35,6 +35,7 @@ var commerceDashboardPluginSalesRevenue = (function($, window) {
                     },
                     xaxis: {
                         // we are not using any plugin for the xaxis, we use ticks instead.
+                        mode: "time"
                     },
                     yaxis: {
                         min: 0,
@@ -63,8 +64,8 @@ var commerceDashboardPluginSalesRevenue = (function($, window) {
                 },
                 placeholder: ".commerce-dashboard-plugin-sales-revenue-placeholder",
                 // initialize
-                init: function() {
-                    if ( this.plot == null ) {
+                init: function () {
+                    if (this.plot == null) {
                         // hook the init function for plotting the chart
                         commerceDashboardPluginSalesRevenueChartStackedBarsInit();
                     }
@@ -113,8 +114,6 @@ var commerceDashboardPluginSalesRevenue = (function($, window) {
                 //when initializing the charts on first load of dashboard
                 chartFor = target;
                 placeholder = "#commerce-dashboard-plugin-sales-revenue-placeholder-" + placeholder;
-            } else if ( typeof target === "undefined" ) {
-                chartFor = "hourly";
             } else {
                 //when a filter is selected
                 chartFor = target.val();
@@ -136,7 +135,7 @@ var commerceDashboardPluginSalesRevenue = (function($, window) {
                 var counter = data.values.length;
                 var window_width = $(window).width();
                 var dataString = '';
-
+                
                 var months = [
                     translations.tr_meliscommerce_dashboardplugin_jan,
                     translations.tr_meliscommerce_dashboardplugin_feb,
@@ -204,13 +203,8 @@ var commerceDashboardPluginSalesRevenue = (function($, window) {
                     ticks.push([counter, dataString]);
                     counter--;
                 }
-
-                console.log("ticks: ", ticks);
-
                 //insert the ticks to the charts object
                 charts.commerceDashboardPluginSalesRevenueChartStackedBars.options.xaxis.ticks = ticks;
-
-                console.log("xaxis tickes: ", charts.commerceDashboardPluginSalesRevenueChartStackedBars.options.xaxis.ticks );
 
                 //chart data
                 charts.commerceDashboardPluginSalesRevenueChartStackedBars.data = [];
@@ -218,19 +212,16 @@ var commerceDashboardPluginSalesRevenue = (function($, window) {
                     label: translations.tr_melis_commerce_dashboard_plugin_sales_revenue_order_price,
                     data: data1
                 });
-
                 charts.commerceDashboardPluginSalesRevenueChartStackedBars.data.push({
                     label: translations.tr_melis_commerce_dashboard_plugin_sales_revenue_shipping_price,
                     data: data2
                 });
-
                 //plot the chart
                 charts.commerceDashboardPluginSalesRevenueChartStackedBars.plot = $.plot(
                     $(placeholder),
                     charts.commerceDashboardPluginSalesRevenueChartStackedBars.data,
                     charts.commerceDashboardPluginSalesRevenueChartStackedBars.options
                 );
-                
             }).fail(function (xhr, textStatus, errorThrown) {
                 console.log("ERROR !! Status = " + textStatus + "\n Error = " + errorThrown + "\n xhr = " + xhr.statusText);
             });
