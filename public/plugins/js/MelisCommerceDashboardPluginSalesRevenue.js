@@ -239,7 +239,7 @@ var commerceDashboardPluginSalesRevenue = (function($, window) {
         };
 })($, window);
 
-$(document).ready(function() {
+$(function() {
     /**
      * chart class 
      * [.flotchart-holder] 
