@@ -276,7 +276,7 @@ $(function() {
         });
 
         if ( typeof melisUserTabs === "undefined" ) {
-            if ( $activeTab.data("meliskey") === "meliscore_dashboard" && $activeTab.find(".commerce-dashboard-plugin-sales-revenue-placeholder").length > 0 ) {
+            if ( $activeTab.find(".commerce-dashboard-plugin-sales-revenue-placeholder").length > 0 ) {
                 commerceDashboardPluginSalesRevenue.loadChart();
             }
         }
