@@ -64,7 +64,7 @@ var commerceDashboardPluginSalesRevenue = (function($, window) {
                 },
                 placeholder: ".commerce-dashboard-plugin-sales-revenue-placeholder",
                 // initialize
-                init: function () {
+                init: function() {
                     if (this.plot == null) {
                         // hook the init function for plotting the chart
                         commerceDashboardPluginSalesRevenueChartStackedBarsInit();
@@ -73,10 +73,13 @@ var commerceDashboardPluginSalesRevenue = (function($, window) {
             };
         }
 
-        function commerceDashboardPluginSalesRevenueChartStackedBarsInit(target, placeholder) {
+        function commerceDashboardPluginSalesRevenueChartStackedBarsInit( target, placeholder ) {
             var target = target || null;
             var placeholder = placeholder || null;
             var chartFor = "";
+
+            // run set up for initializing all the charts on first load of dashboard
+            setUpChart();
 
             if (target == null) {
                 var chartsArray = $body.find(".commerce-dashboard-plugin-sales-revenue-placeholder");
@@ -228,7 +231,6 @@ var commerceDashboardPluginSalesRevenue = (function($, window) {
         }
 
         function loadChart() {
-            setUpChart();
             commerceDashboardPluginSalesRevenueChartStackedBarsInit();
         }
 
