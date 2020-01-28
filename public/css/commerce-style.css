@@ -2630,3 +2630,15 @@ tr.last-tr td {
     display: block;
     padding: 0 15px;
 }
+
+.btn {
+    background-color: #f0f0ef;
+}
+
+i.fa.fa-download {
+    color: #7c7c7c;
+}
+
+.btn:hover i.fa.fa-download {
+    color: #333;
+}
