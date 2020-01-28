@@ -191,14 +191,25 @@ $(function() {
 							// switch tab
 							melisCommerce.switchOrderTab( tabId );
 
-							setTimeout(function() {
+							/* setTimeout(function() {
 								console.log("$contactTabRefresh length: ", $contactTabRefresh.length );
 								if ( $contactTabRefresh.length > 0 ) {
 									if ( melisCore.screenSize < 768 ) {
 										$contactTabRefresh.trigger("click");
 									}
 								}
-							}, 3000);
+							}, 3000); */
+
+							var refresh = setInterval(function() {
+								// Wait for the refresh button to be available
+								if ( $contactTabRefresh.length > 0 ) {
+									console.log("$contactTabRefresh length: ", $contactTabRefresh.length );
+									if ( melisCore.screenSize < 768 ) {
+										$contactTabRefresh.trigger("click");
+									}
+									clearInterval(waitForSelect2);
+								}
+							}, 1000);
 						}
 						else {
 							melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
