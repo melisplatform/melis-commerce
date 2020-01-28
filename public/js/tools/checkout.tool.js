@@ -189,6 +189,10 @@ $(function() {
 					if (data.success) {
 						// switch tab
 						melisCommerce.switchOrderTab( tabId );
+
+						if ( melisCore.screenSize < 768 ) {
+							$(tabId).find(".orderCheckoutContactListRefresh").trigger("click");
+						}
 					}
 					else {
 						melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
@@ -534,6 +538,7 @@ $(function() {
 					$this.parent('.input-group').next().fadeOut('slow');
 				}
 		});
+
 	});
 
 window.productNextButtonState = function() {

@@ -565,7 +565,17 @@ $(function() {
                 })
 
                 melisCoreTool.done(button);
-    });
+        });
+
+        $body.on("click", ".shopping_cart", function() {
+            var $this 		= $(this),
+                href 		= $this.attr("href"),
+                $tabContent = $(href);
+
+                if ( melisCore.screenSize < 768 ) {
+                    $tabContent.find(".clientOrderListRefresh").trigger("click");
+                }
+        });
 });
 
 window.clientHighlightErrors = function(success, errors, divContainer){

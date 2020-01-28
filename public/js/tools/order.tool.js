@@ -614,14 +614,14 @@ $(function() {
                 $(href).collapse("toggle");
         });
 
-        $body.on("click", ".tabs-label li a", function() {
+        /* $body.on("click", ".tabs-label li a", function() {
             var $this   = $(this),
                 href    = $this.attr("href");
 
                 if ( $this.hasClass("shopping_bag") ) {
                     $(href).find(".orderBasketRefresh").trigger("click");
                 }
-        });
+        }); */
 });
 
 // table datafunction for basket
