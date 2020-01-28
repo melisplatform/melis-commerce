@@ -202,8 +202,25 @@ $(function() {
 		
 		// Next button event
 		$body.on('click', '.orderCheckoutNextStep', function() {
-			var $body = $("html, body");
+			var $body 				= $("html, body"),
+				$contactNav 		= $("#id_meliscommerce_order_checkout_choose_contact_step_nav"),
+				$contactStep 		= $("#id_meliscommerce_order_checkout_choose_contact_step"),
+				$contactTabRefresh 	= $contactNav.find(".orderCheckoutContactListRefresh");	
+
 				$body.stop().animate({scrollTop:0}, '500', 'swing');
+
+				if ( $contactStep.hasClass("active") ) {
+					var refresh = setInterval(function() {
+						// Wait for the refresh button to be available
+						if ( $contactTabRefresh.length > 0 ) {
+							console.log("$contactTabRefresh length: ", $contactTabRefresh.length );
+							if ( melisCore.screenSize < 768 ) {
+								$contactTabRefresh.trigger("click");
+							}
+							clearInterval(refresh);
+						}
+					}, 1000);
+				}
 		});
 		
 		// Preview button, activating previews step of the checkout steps
@@ -583,19 +600,5 @@ window.updateVariantbasket = function(action, variantId, variantQty) {
 }
 
 window.initCheckoutSelectContactTable = function() {
-	var $contactNav 		= $("#id_meliscommerce_order_checkout_choose_contact_step_nav"),
-		$contactTabRefresh 	= $contactNav.find(".orderCheckoutContactListRefresh");
-
-		$('.checkoutSelectContactOrderHeader').attr('title', translations.tr_meliscommerce_checkout_tbl_cper_num_orders);
-
-	var refresh = setInterval(function() {
-		// Wait for the refresh button to be available
-		if ( $contactTabRefresh.length > 0 ) {
-			console.log("$contactTabRefresh length: ", $contactTabRefresh.length );
-			if ( melisCore.screenSize < 768 ) {
-				$contactTabRefresh.trigger("click");
-			}
-			clearInterval(refresh);
-		}
-	}, 1000);
+	$('.checkoutSelectContactOrderHeader').attr('title', translations.tr_meliscommerce_checkout_tbl_cper_num_orders);	
 }
