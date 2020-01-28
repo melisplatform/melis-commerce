@@ -191,13 +191,13 @@ $(function() {
 						// switch tab
 						melisCommerce.switchOrderTab( tabId );
 
-						if ( $contactTabRefresh.length > 0 ) {
-							if ( melisCore.screenSize < 768 ) {
-								setTimeout(function() {
+						setTimeout(function() {
+							if ( $contactTabRefresh.length > 0 ) {
+								if ( melisCore.screenSize < 768 ) {
 									$contactTabRefresh.trigger("click");
-								}, 1000);
+								}
 							}
-						}
+						}, 1000);
 					}
 					else {
 						melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
