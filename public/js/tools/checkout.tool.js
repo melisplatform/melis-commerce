@@ -191,6 +191,7 @@ $(function() {
 						melisCommerce.switchOrderTab( tabId );
 
 						if ( melisCore.screenSize < 768 ) {
+							console.log("orderCheckoutFirstStepBtn Contact refresh")
 							$(tabId).find(".orderCheckoutContactListRefresh").trigger("click");
 						}
 					}
