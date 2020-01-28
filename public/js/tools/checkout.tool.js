@@ -209,21 +209,10 @@ $(function() {
 				$body.stop().animate({scrollTop:0}, '500', 'swing');
 
 				setTimeout(function() {
-					console.log("$contactStep: ", $contactStep.length);
-					console.log("$contactStep: ", $contactStep.hasClass("active"));
-					console.log("$contactTabRefresh.length: ", $contactTabRefresh.length);
-
-					if ( $contactStep.hasClass("active") ) {
-						//var refresh = setInterval(function() {
-							// Wait for the refresh button to be available
-							if ( $contactTabRefresh.length > 0 ) {
-								console.log("$contactTabRefresh length: ", $contactTabRefresh.length );
-								if ( melisCore.screenSize < 768 ) {
-									$contactTabRefresh.trigger("click");
-								}
-								//clearInterval(refresh);
-							}
-						//}, 1000);
+					if ( $contactStep.hasClass("active") &&
+					$contactTabRefresh.length > 0 &&
+					melisCore.screenSize < 768 ) {
+						$contactTabRefresh.trigger("click");
 					}
 				}, 3000);
 		});
