@@ -2625,3 +2625,8 @@ tr.last-tr td {
 .commerce-dashboard-plugin-sales-revenue-placeholder .legend table td {
     border: 0 !important;
 }
+
+[data-meliskey='meliscommerce_orders_content_tabs_content_order_invoice_details'] > .row {
+    display: block;
+    padding: 0 15px;
+}

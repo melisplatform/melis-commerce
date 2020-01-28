@@ -618,7 +618,7 @@ $(function() {
             var $this   = $(this),
                 href    = $this.attr("href");
 
-                if ( $this.hasClass("shopping_bag") ) {
+                if ( $this.hasClass("shopping_bag") && melisCore.screenSize < 768 ) {
                     $(href).find(".orderBasketRefresh").trigger("click");
                 }
         });
