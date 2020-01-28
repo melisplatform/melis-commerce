@@ -8476,14 +8476,17 @@ $(function() {
 					dataType    : "json",
 					encode		: true
 				}).done(function(data) {
+					var $contactTabRefresh = $(tabId).find(".orderCheckoutContactListRefresh");
 					if (data.success) {
 						// switch tab
 						melisCommerce.switchOrderTab( tabId );
 
-						if ( melisCore.screenSize < 768 ) {
-							setTimeout(function() {
-								$(tabId).find(".orderCheckoutContactListRefresh").trigger("click");
-							}, 1000);
+						if ( $contactTabRefresh.length > 0 ) {
+							if ( melisCore.screenSize < 768 ) {
+								setTimeout(function() {
+									$contactTabRefresh.trigger("click");
+								}, 1000);
+							}
 						}
 					}
 					else {
