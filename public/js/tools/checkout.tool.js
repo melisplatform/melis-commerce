@@ -205,7 +205,7 @@ $(function() {
 			var $body 				= $("html, body"),
 				$contactNav 		= $("#id_meliscommerce_order_checkout_choose_contact_step_nav"),
 				$contactStep 		= $("#id_meliscommerce_order_checkout_choose_contact_step"),
-				$contactTabRefresh 	= $contactNav.find(".orderCheckoutContactListRefresh");	
+				$contactTabRefresh 	= $contactStep.find(".orderCheckoutContactListRefresh");	
 
 				$body.stop().animate({scrollTop:0}, '500', 'swing');
 
