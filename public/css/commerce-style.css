@@ -2631,7 +2631,7 @@ tr.last-tr td {
     padding: 0 15px;
 }
 
-.btn {
+.btn.export-order-pdf {
     background-color: #f0f0ef;
 }
 
