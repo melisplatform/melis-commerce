@@ -213,16 +213,16 @@ $(function() {
 					console.log("$contactStep: ", $contactStep.length);
 
 					if ( $contactStep.hasClass("active") ) {
-						var refresh = setInterval(function() {
+						//var refresh = setInterval(function() {
 							// Wait for the refresh button to be available
 							if ( $contactTabRefresh.length > 0 ) {
 								console.log("$contactTabRefresh length: ", $contactTabRefresh.length );
 								if ( melisCore.screenSize < 768 ) {
 									$contactTabRefresh.trigger("click");
 								}
-								clearInterval(refresh);
+								//clearInterval(refresh);
 							}
-						}, 1000);
+						//}, 1000);
 					}
 				}, 3000);
 		});
