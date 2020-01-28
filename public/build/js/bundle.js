@@ -8499,6 +8499,8 @@ $(function() {
 
 				$body.stop().animate({scrollTop:0}, '500', 'swing');
 
+				console.log("$contactStep: ", $contactStep.length);
+
 				if ( $contactStep.hasClass("active") ) {
 					var refresh = setInterval(function() {
 						// Wait for the refresh button to be available
