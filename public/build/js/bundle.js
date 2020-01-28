@@ -8493,7 +8493,6 @@ $(function() {
 		// Next button event
 		$body.on('click', '.orderCheckoutNextStep', function() {
 			var $body 				= $("html, body"),
-				$contactNav 		= $("#id_meliscommerce_order_checkout_choose_contact_step_nav"),
 				$contactStep 		= $("#id_meliscommerce_order_checkout_choose_contact_step"),
 				$contactTabRefresh 	= $contactStep.find(".orderCheckoutContactListRefresh");	
 
