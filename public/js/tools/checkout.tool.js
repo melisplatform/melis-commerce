@@ -209,20 +209,22 @@ $(function() {
 
 				$body.stop().animate({scrollTop:0}, '500', 'swing');
 
-				console.log("$contactStep: ", $contactStep.length);
+				setTimeout(function() {
+					console.log("$contactStep: ", $contactStep.length);
 
-				if ( $contactStep.hasClass("active") ) {
-					var refresh = setInterval(function() {
-						// Wait for the refresh button to be available
-						if ( $contactTabRefresh.length > 0 ) {
-							console.log("$contactTabRefresh length: ", $contactTabRefresh.length );
-							if ( melisCore.screenSize < 768 ) {
-								$contactTabRefresh.trigger("click");
+					if ( $contactStep.hasClass("active") ) {
+						var refresh = setInterval(function() {
+							// Wait for the refresh button to be available
+							if ( $contactTabRefresh.length > 0 ) {
+								console.log("$contactTabRefresh length: ", $contactTabRefresh.length );
+								if ( melisCore.screenSize < 768 ) {
+									$contactTabRefresh.trigger("click");
+								}
+								clearInterval(refresh);
 							}
-							clearInterval(refresh);
-						}
-					}, 1000);
-				}
+						}, 1000);
+					}
+				}, 3000);
 		});
 		
 		// Preview button, activating previews step of the checkout steps
