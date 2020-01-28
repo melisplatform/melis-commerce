@@ -186,35 +186,14 @@ $(function() {
 					dataType    : "json",
 					encode		: true
 				}).done(function(data) {
-					var $contactTabRefresh = $(tabId).find(".orderCheckoutContactListRefresh");
-						if (data.success) {
-							// switch tab
-							melisCommerce.switchOrderTab( tabId );
-
-							/* setTimeout(function() {
-								console.log("$contactTabRefresh length: ", $contactTabRefresh.length );
-								if ( $contactTabRefresh.length > 0 ) {
-									if ( melisCore.screenSize < 768 ) {
-										$contactTabRefresh.trigger("click");
-									}
-								}
-							}, 3000); */
-
-							var refresh = setInterval(function() {
-								// Wait for the refresh button to be available
-								if ( $contactTabRefresh.length > 0 ) {
-									console.log("$contactTabRefresh length: ", $contactTabRefresh.length );
-									if ( melisCore.screenSize < 768 ) {
-										$contactTabRefresh.trigger("click");
-									}
-									clearInterval(waitForSelect2);
-								}
-							}, 1000);
-						}
-						else {
-							melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
-						}
-						$this.button("reset");
+					if (data.success) {
+						// switch tab
+						melisCommerce.switchOrderTab( tabId );
+					}
+					else {
+						melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
+					}
+					$this.button("reset");
 				}).fail(function(){
 					$this.button("reset");
 					alert( translations.tr_meliscore_error_message );
@@ -604,5 +583,19 @@ window.updateVariantbasket = function(action, variantId, variantQty) {
 }
 
 window.initCheckoutSelectContactTable = function() {
-	$('.checkoutSelectContactOrderHeader').attr('title', translations.tr_meliscommerce_checkout_tbl_cper_num_orders);
+	var $contactNav 		= $("#id_meliscommerce_order_checkout_choose_contact_step_nav"),
+		$contactTabRefresh 	= $contactNav.find(".orderCheckoutContactListRefresh");
+
+		$('.checkoutSelectContactOrderHeader').attr('title', translations.tr_meliscommerce_checkout_tbl_cper_num_orders);
+
+	var refresh = setInterval(function() {
+		// Wait for the refresh button to be available
+		if ( $contactTabRefresh.length > 0 ) {
+			console.log("$contactTabRefresh length: ", $contactTabRefresh.length );
+			if ( melisCore.screenSize < 768 ) {
+				$contactTabRefresh.trigger("click");
+			}
+			clearInterval(refresh);
+		}
+	}, 1000);
 }
