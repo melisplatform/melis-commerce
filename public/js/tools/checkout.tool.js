@@ -191,14 +191,10 @@ $(function() {
 						melisCommerce.switchOrderTab( tabId );
 
 						if ( melisCore.screenSize < 768 ) {
-							console.log("orderCheckoutFirstStepBtn Contact refresh")
-							$(tabId).find(".orderCheckoutContactListRefresh").trigger("click");
+							setTimeout(function() {
+								$(tabId).find(".orderCheckoutContactListRefresh").trigger("click");
+							}, 1000);
 						}
-
-						console.log("melisCore.screenSize: ", melisCore.screenSize );
-						console.log("tabId: ", tabId );
-						console.log("orderCheckoutContactListRefresh: ", $(tabId).find(".orderCheckoutContactListRefresh") );
-						console.log("orderCheckoutContactListRefresh length: ", $(tabId).find(".orderCheckoutContactListRefresh").length );
 					}
 					else {
 						melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
