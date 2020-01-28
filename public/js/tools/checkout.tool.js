@@ -211,6 +211,8 @@ $(function() {
 
 				setTimeout(function() {
 					console.log("$contactStep: ", $contactStep.length);
+					console.log("$contactStep: ", $contactStep.hasClass("active"));
+					console.log("$contactTabRefresh.length: ", $contactTabRefresh.length);
 
 					if ( $contactStep.hasClass("active") ) {
 						//var refresh = setInterval(function() {
