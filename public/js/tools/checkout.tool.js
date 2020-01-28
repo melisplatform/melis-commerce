@@ -187,22 +187,23 @@ $(function() {
 					encode		: true
 				}).done(function(data) {
 					var $contactTabRefresh = $(tabId).find(".orderCheckoutContactListRefresh");
-					if (data.success) {
-						// switch tab
-						melisCommerce.switchOrderTab( tabId );
+						if (data.success) {
+							// switch tab
+							melisCommerce.switchOrderTab( tabId );
 
-						setTimeout(function() {
-							if ( $contactTabRefresh.length > 0 ) {
-								if ( melisCore.screenSize < 768 ) {
-									$contactTabRefresh.trigger("click");
+							setTimeout(function() {
+								console.log("$contactTabRefresh length: ", $contactTabRefresh.length );
+								if ( $contactTabRefresh.length > 0 ) {
+									if ( melisCore.screenSize < 768 ) {
+										$contactTabRefresh.trigger("click");
+									}
 								}
-							}
-						}, 1000);
-					}
-					else {
-						melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
-					}
-					$this.button("reset");
+							}, 3000);
+						}
+						else {
+							melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
+						}
+						$this.button("reset");
 				}).fail(function(){
 					$this.button("reset");
 					alert( translations.tr_meliscore_error_message );
