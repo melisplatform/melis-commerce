@@ -4,7 +4,7 @@
         $id .= $this->orderId.'_'.$this->zoneconfig['conf']['id'];
     }
 ?>
-<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>">
+<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="w-100">
 	<?php 
 		$this->melisGenericTable()->setTable(array(
 		    'id' => $this->orderId.'_tableOrderBasketList',

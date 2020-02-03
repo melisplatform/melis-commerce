@@ -8,16 +8,16 @@
 
 <div <?= $id?> data-meliskey="<?= $data_melisKey; ?>">
 <?php 
-//     if(!empty($this->zoneconfig['interface'])) {
-//         foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
-//             echo $this->$keyConfig;
-//         }
-//     }
+    /* if(!empty($this->zoneconfig['interface'])) {
+        foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+            echo $this->$keyConfig;
+        }
+    } */
 
     $this->melisGenericTable()->setTable(array(
         'id' => $this->productId.'_tableProductVariantList',
         'data-prodid' => $this->productId,
-        'class' => 'table table-striped table-primary dt-responsive nowrap',
+        'class' => 'table table-striped table-primary dt-responsive nowrap product-variant',
         'cellspacing' => '0',
         'width' => '100%'
     ));
@@ -38,9 +38,9 @@
 	// render table to DataTable plugin
 	$(document).ready(function() {
 		<?php echo $this->getToolDataTableConfig; ?>
-		$(document).on('a[data-toggle="tab"]','shown.bs.tab', function (e) {
+		/* $(document).on('a[data-toggle="tab"]','shown.bs.tab', function (e) {
 			$($.fn.dataTable.tables(true)).DataTable().columns.adjust().responsive.recalc();
-		});
+		}); */
         // add event for the product title
 	});
 	</script>

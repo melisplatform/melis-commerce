@@ -195,7 +195,7 @@ class MelisComAssociateVariantController extends AbstractActionController
     
             $activeDom     = '<span class="text-success"><i class="fa fa-fw fa-circle"></i></span>';
             $inactiveDom   = '<span class="text-danger"><i class="fa fa-fw fa-circle"></i></span>';
-            $prodImage = '<img src="%s" width="60" height="60" class="img-rounded img-responsive"/>';
+            $prodImage = '<img src="%s" width="60" height="60" class="rounded-circle img-fluid"/>';
     
             foreach($productList as $val) {
                 $productId = $val->getId();

@@ -1,4 +1,4 @@
-<h1 align="center"><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_name'); ?></h1>
+<h1 style="text-align: center;"><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_name'); ?></h1>
 <?php if ($this->checkoutHasErr){ ?>
 	<h3><?=$this->translate('tr_meliscommerce_plugin_checkout_cart_error');?> <small><?=$this->translate('tr_meliscommerce_plugin_checkout_cart_error_msg');?></small></h3>
 <?php } ?>
@@ -39,7 +39,7 @@
         </table>
 	</div>  ,.
     <?php if (!empty($this->checkOutCart)){?>
-        <div align="center">
+        <div style="text-align: center;">
         	<button class="btn btn-primary"><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_update');?></button>
         </div>
     <?php } ?>
@@ -89,7 +89,7 @@
 </form>
 
 <?php if ($this->nextStep_link){ ?>
-	<div align="right">
+	<div class="footer-modal d-flex flex-row justify-content-between">
 		<a class="btn btn-primary" href="<?php echo $this->nextStep_link?>"><?= $this->translate('tr_meliscommerce_order_checkout_common_next'); ?></a>
 	</div>
 <?php } ?>

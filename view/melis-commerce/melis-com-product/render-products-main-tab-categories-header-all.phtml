@@ -33,9 +33,9 @@
                     			<li>
 									<?php
 									$imageData = $lang->elang_flag;
-									$image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay pull-right" width="24" height="24"/>' : '<i class="fa fa-globe"></i>';
+									$image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay float-right" width="24" height="24"/>' : '<i class="fa fa-globe"></i>';
 									?>
-                    				<a data-locale="<?= $lang->elang_locale; ?>"><?= $lang->elang_name; ?><span class="pull-right"><?php echo $image; ?></span></a>
+                    				<a data-locale="<?= $lang->elang_locale; ?>"><?= $lang->elang_name; ?><span class="float-right"><?php echo $image; ?></span></a>
                     			</li>
                 			<?php endforeach;
 							}
@@ -49,8 +49,8 @@
 				</div>
 				<div id="<?= $this->productId; ?>_productCategory" class="productCategoryView" data-langlocale="<?php echo $this->currentLangLocale ?>"></div>
 				<div class="modal-footer">
-				<button type="button" class="btn btn-danger pull-left" data-dismiss="modal"><i class="fa fa-close"></i> <?= $this->translate('tr_meliscommerce_general_common_cancel'); ?></button>
-				<button type="button" class="btn btn-success pull-right btnProdSaveCategory" data-dismiss="modal"><i class="fa fa-plus"></i> <?= $this->translate('tr_meliscommerce_general_common_add'); ?></button>
+				<button type="button" class="btn btn-danger float-left" data-dismiss="modal"><i class="fa fa-close"></i> <?= $this->translate('tr_meliscommerce_general_common_cancel'); ?></button>
+				<button type="button" class="btn btn-success float-right btnProdSaveCategory" data-dismiss="modal"><i class="fa fa-plus"></i> <?= $this->translate('tr_meliscommerce_general_common_add'); ?></button>
 				</div>
 			</div>		        
 		</div>	      

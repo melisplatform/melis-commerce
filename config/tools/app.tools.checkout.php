@@ -71,7 +71,7 @@ return array(
                         'target' => '#orderCheckoutContactListTbl',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComOrderCheckout/getContactList',
                         'dataFunction' => '',
-                        'ajaxCallback' => 'initCheckoutSelectContactTable()',
+                        'ajaxCallback' => 'initCheckoutSelectContactTable();',
                         'filters' => array(
                             'left' => array(
                                 'meliscommerce-order-checkout-contact-list-limit' => array(

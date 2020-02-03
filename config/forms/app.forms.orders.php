@@ -146,13 +146,13 @@ return array(
                                 'name' => 'separator',
                                 'require' => true,
                                 'validators' => array(
-//                                     array(
-//                                         'name'    => '\Zend\Validator\InArray',
-//                                         'options' => array(
-//                                             'haystack' => array(',', ';'),
-//                                             'messages'=> array(\Zend\Validator\InArray::NOT_IN_ARRAY => 'tr_meliscommerce_orders_invalid_separator'),
-//                                         ),
-//                                     ),
+                                    /* array(
+                                        'name'    => '\Zend\Validator\InArray',
+                                        'options' => array(
+                                            'haystack' => array(',', ';'),
+                                            'messages'=> array(\Zend\Validator\InArray::NOT_IN_ARRAY => 'tr_meliscommerce_orders_invalid_separator'),
+                                        ),
+                                    ), */
                                     array(
                                         'name' => 'NotEmpty',
                                         'options' => array(
@@ -1072,6 +1072,7 @@ return array(
                                     'name' => 'osta_id',
                                     'type' => 'hidden',
                                     'options' => array(
+                                        
                                     ),
                                     'attributes' => array(
                                         'id' => '',

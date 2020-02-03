@@ -763,7 +763,7 @@ class MelisComVariantController extends AbstractActionController
         foreach ($countries as $country){
             $countryName = $this->getTool()->escapeHtml($country->ctry_name);
             $imageData = $country->ctry_flag;
-            $image = !empty($imageData) ? '<span class="pull-right"><img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay pull-right"/></span>' : '<i class="fa fa-globe"></i>';
+            $image = !empty($imageData) ? '<span class="float-right"><img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay float-right"/></span>' : '<i class="fa fa-globe"></i>';
             $ctyData[] = sprintf($ctyFormat, $this->getVariantId(), str_replace(' ', '', $countryName), $countryName, $countryName, $image);
         }
         $melisKey = $this->params()->fromRoute('melisKey', '');

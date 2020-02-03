@@ -3,9 +3,9 @@
         <div class="col-sm-12 bg-white">
             <div class="innerAll">
                 <div class="tab-content">
-                    <div class="tab-pane active" id="chart-simple-lines-<?php echo $this->pluginConfig['plugin_id']?>">
-                        <div class="btn-group pull-right" data-toggle="buttons">
-                            <label class="btn btn-default btn-sm <?= ($activeFilter == 'hourly') ? 'active' : '' ?>">
+                    <div class="tab-pane active commerce-dashboard-plugin-sales-revenue-button-header" id="chart-simple-lines-<?php echo $this->pluginConfig['plugin_id']?>">
+                        <div class="btn-group float-right" data-toggle="buttons">
+                            <label class="btn btn-default btn-sm active <?= ($activeFilter == 'hourly') ? 'active' : '' ?>">
                                 <input type="radio" class="commerce-dashboard-plugin-sales-revenue" name="commerce-dashboard-plugin-sales-revenue" value="hourly"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_hourly')?>
                             </label>
                             <label class="btn btn-default btn-sm <?= ($activeFilter == 'daily') ? 'active' : '' ?>">

@@ -4,8 +4,8 @@
     background-color: #ECEBEB;
     border-color: #d8d8d8;
 }
-
-.commerce-toggle .panel-heading{
+.commerce-toggle .card-header,
+.commerce-toggle .panel-heading {
 	background-color: #932e2a;
     padding: 7px;
     height: auto;
@@ -15,7 +15,7 @@
 .commerce-toggle .accordion-toggle {
 	background-color: #932e2a !important;
 }
-
+.commerce-toggle .card-title > a,
 .commerce-toggle .panel-title > a {
     color: #fff !important;
 }
@@ -32,4 +32,3 @@
 .widget.widget-tabs>.widget-head ul li.active a i.fa-language:before {
     color: #932E2A;
 }
-

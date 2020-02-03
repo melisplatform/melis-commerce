@@ -36,7 +36,7 @@ $imageData = '';
                             }
                             echo $this->form()->openTag($form);
 						?>
-						<div class="pull-left">
+						<div class="float-left">
 							<?php
 							if(isset($this->data['elang_flag'])) {
 								$imageData = 'data:image/jpeg;base64,'.$this->data['elang_flag'];
@@ -45,7 +45,7 @@ $imageData = '';
 
 							<img src="<?php echo $imageData; ?>" class="imgFlag" id="imgLangFlag" style="border:none"/>
 						</div>
-						<div class="pull-right">
+						<div class="float-right">
 							<div <?= $id; ?> class="make-switch" data-on-label="<?php echo $this->translate('tr_meliscommerce_products_page_content_tab_main_header_switch_online')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_products_page_content_tab_main_header_switch_offline')?>" data-text-label="<?php echo $this->translate('tr_meliscommerce_categories_common_label_status')?>">
 								<input type="checkbox" name="elang_status" id="elang_status" <?php echo $langStatus; ?>>
 							</div>
@@ -53,8 +53,8 @@ $imageData = '';
 						<?php
                             echo $this->melisFieldCollection($form);
                         ?>
-                        <div align="right">
-                     		<button data-dismiss="modal" class="btn btn-danger pull-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
+                        <div class="footer-modal d-flex flex-row justify-content-between">
+                     		<button data-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
                      		<button type="submit" class="btn btn-success" id="btnComSaveLang"><i class="fa fa-save"></i>  <?php echo $this->translate('tr_meliscommerce_orders_common_btn_save') ?></button>
                      	</div>
 						<?php echo $this->form()->closeTag(); ?>

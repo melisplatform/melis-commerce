@@ -34,6 +34,7 @@ return array(
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_coupon_date_start',
                                         'tooltip' => 'tr_meliscommerce_coupon_date_start tooltip',
+                                        'class' => 'd-flex flex-row justify-content-between'
                                     ),
                                     'attributes' => array(
                                         'dateId' => 'couponStart',
@@ -59,6 +60,7 @@ return array(
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_coupon_date_end',
                                         'tooltip' => 'tr_meliscommerce_coupon_date_end tooltip',
+                                        'class' => 'd-flex flex-row justify-content-between'
                                     ),
                                     'attributes' => array(
                                         'dateId' => 'couponEnd',

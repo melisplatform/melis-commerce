@@ -17,7 +17,7 @@ $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
 
 <div class="melis-product-heading border-bottom" <?php echo $id. ' '. $data_melisKey;?>>
     <h3 <?= $id. ' '.$data_melisKey?>><?= $this->translate('tr_meliscommerce_avar_title'); ?></h3>
-    <div class="pull-right">
+    <div class="float-right">
         <?php
         if(!empty($this->zoneconfig['interface'])) {
             foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {

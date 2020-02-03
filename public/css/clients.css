@@ -1,11 +1,11 @@
 .widget.widget-tabs-double-2>.widget-head ul li a.glyphicons {
     min-width: 90px;
 }
-
+.clients-page .card-header .accordion-toggle:before,
 .clients-page .panel-heading .accordion-toggle:before {
     margin: auto; 
 }
-
+#content .card-title,
 #content .panel-title {
     border-bottom: 0px;
 }
@@ -15,22 +15,22 @@
     border-bottom: dadada;
     padding: 0 10px 0;
 }
-
+.client-contact-address .card-header .accordion-toggle:before,
 .client-contact-address .panel-heading .accordion-toggle:before {
     margin: 0px;
 	color: #fff;
 }
-
+.client-contact-address .card-header .accordion-toggle:hover,
 .client-contact-address .panel-heading .accordion-toggle:hover {
 	color: #fff;
 }
-
+.client-contact-address .default-card>.card-header,
 .client-contact-address .panel-default>.panel-heading {
     color: #fff;
     background-color: #932e2a;
     border-color: #ddd;
 }
-
+.client-contact-address .card-header,
 .client-contact-address .panel-heading {
 	height: auto;
 	border-top-left-radius: 0px;
@@ -40,7 +40,7 @@
 .client-contact-address .accordion-toggle>label {
 	margin-bottom: 0px;
 }
-
+.client-contact-address .card-title,
 .client-contact-address .panel-title {
     margin: 2px 0px;
 }

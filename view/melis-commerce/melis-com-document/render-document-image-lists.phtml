@@ -17,7 +17,7 @@
         		</a>
         		<ul class="documentImageFilter dropdown-menu filter-key-values" data-filter-group="country">
         			<li>
-        				<a data-filter-value=".image" data-text='<?= $this->translate('tr_meliscommerce_documents_filter_all_option'); ?>' style="text-align: right"><span class="pull-left"><?= $this->translate('tr_meliscommerce_documents_filter_all_option'); ?></span><i class="fa fa-globe"></i></a>
+        				<a data-filter-value=".image" data-text='<?= $this->translate('tr_meliscommerce_documents_filter_all_option'); ?>' style="text-align: right"><span class="float-left"><?= $this->translate('tr_meliscommerce_documents_filter_all_option'); ?></span><i class="fa fa-globe"></i></a>
         			</li>
         			<?php 
         			foreach($this->country as $country):
@@ -25,10 +25,10 @@
         			<li>
 						<?php
 						$imageData = $country['ctry_flag'];
-						$image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay pull-right" width="24" height="24"/>' : '<i class="fa fa-globe"></i>';
+						$image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay float-right" width="24" height="24"/>' : '<i class="fa fa-globe"></i>';
 						?>
 
-        				<a data-filter-value=".<?= $country['ctry_id']; ?>" data-text='<?= $country['ctry_name']; ?>' style="text-align: right"><span class="pull-left"><?= $country['ctry_name']; ?></span><?php echo $image; ?></a>
+        				<a data-filter-value=".<?= $country['ctry_id']; ?>" data-text='<?= $country['ctry_name']; ?>' style="text-align: right"><span class="float-left"><?= $country['ctry_name']; ?></span><?php echo $image; ?></a>
         			</li>
         			<?php endforeach; ?>
         		</ul>

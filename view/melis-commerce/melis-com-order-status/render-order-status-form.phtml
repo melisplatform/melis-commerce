@@ -25,7 +25,7 @@
                                     <?php
                                         echo $this->form()->openTag($this->statusForm);
                                     ?>
-                                    <div class="pull-right">
+                                    <div class="float-right">
                                         <div id="<?= $this->statusId.'_status' ?>" data-melisKey="<?= $this->melisKey; ?>" class="make-switch main_variant_switch" data-on-label="<?php echo $this->translate('tr_meliscommerce_coupon_page_status_online')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_coupon_page_status_offline')?>" data-text-label="<?php echo $this->translate('tr_meliscommerce_coupon_page_status')?>">
                                             <input type="checkbox" name="osta_status" id="var_status"  <?= $this->status ?>>
                                         </div>
@@ -40,7 +40,8 @@
                                     ?>
                                     <script>
                                         $(function() {
-                                        	$(".osta_color_code").colorpicker({color : "<?=$this->color ?>", format: "hex"});
+                                            $(".osta_color_code").colorpicker({color : "<?=$this->color ?>", format: "hex"});
+                                            $("body").find(".form-group label[for='osta_color_code']").addClass("d-flex flex-row justify-content-between");
                                         });
                                     </script>
                                     <br>
@@ -51,14 +52,14 @@
                                         echo $this->form()->closeTag();
                                     ?>
                                     <br>
-                                    <div class="panel panel-default commerce-toggle product-create-text">
-                                    	<div class="panel-heading">
-                                    		<h4 class="panel-title">
+                                    <div class="card default-card commerce-toggle product-create-text">
+                                    	<div class="card-header">
+                                    		<h4 class="card-title">
                                     			<a class="accordion-toggle collapsed" id="" data-toggle="collapse" href="#fill_<?= $this->zoneconfig['conf']['id']?>"><?= $this->translate('tr_meliscommerce_attribute_value_modal_each_language')?></a>
                                 			</h4>
                                         </div>
-                                    	<div class="panel-collapse collapse" id="fill_<?= $this->zoneconfig['conf']['id']?>">                                		
-                                    		<div class="panel-body">
+                                    	<div class="card-collapse collapse" id="fill_<?= $this->zoneconfig['conf']['id']?>">                                		
+                                    		<div class="card-body">
                                           		<div class="innerAll spacing-x2">
                                 		     		<?php
                                             		$forms = $this->forms;                                		
@@ -76,9 +77,8 @@
                                           	</div>                                		
                                     	</div>
                                 	</div>
-                                    <br>
-                                 	<div align="right">
-                                 		<button data-dismiss="modal" class="btn btn-danger pull-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
+                                    <div class="footer-modal d-flex flex-row justify-content-between">
+                                 		<button data-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
                                  		<button class="btn btn-success" id="saveOrderStatusForm" data-statusid="<?= $this->statusId ?>"><i class="fa fa-save"></i>  <?php echo $this->translate('tr_meliscommerce_orders_common_btn_save') ?></button>
                                  	</div>                                 	
                             	</div>

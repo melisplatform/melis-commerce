@@ -7,15 +7,11 @@
 ?>
 <div <?php echo $id. ' '.$data_melisKey?> class="border-bottom">	
 	<div class="form-group">
-    	<div class="row">
-    		<div class="col-xs-12">
-    			<div class="pdc-heading clearfix">
-                    <h4>
-                    	<i class="fa fa-calendar"></i> <?php echo $this->translate('tr_meliscommerce_categories_category_date_validity')?>
-                    </h4>
-                </div>
-    		</div>
-    	</div>
+		<div class="pdc-heading">
+			<h4>
+				<i class="fa fa-calendar"></i> <?php echo $this->translate('tr_meliscommerce_categories_category_date_validity')?>
+			</h4>
+		</div>
     	<?php
         	$form = $this->meliscommerce_categories_date_validty_form;
         	$form->prepare();

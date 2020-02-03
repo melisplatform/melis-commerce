@@ -30,8 +30,8 @@
                                     	echo $this->melisFieldCollection($form);
                                     	echo $this->form()->closeTag(); 
                                     ?>
-                                 	<div align="right">
-                                 		<button data-dismiss="modal" class="btn btn-danger pull-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
+                                 	<div class="footer-modal d-flex flex-row justify-content-between">
+                                 		<button data-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
                                  		<button class="btn btn-success" id="saveClientAddress" data-clientid="<?php echo $this->clientId ?>" data-loading-text="<?php echo $this->translate('tr_meliscommerce_clients_common_label_loading') ?>"><i class="fa fa-plus"></i>  <?php echo $this->translate('tr_meliscommerce_clients_add_contact_address'); ?></button>
                                  	</div>
                             	</div>

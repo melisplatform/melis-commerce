@@ -117,6 +117,7 @@ return array(
                                     'options' => array(
                                         'label' => 'tr_meliscommerce_variant_tab_stocks_fill_up',
                                         'tooltip' => 'tr_meliscommerce_variant_tab_stocks_fill_up tooltip',
+                                        'class' => 'd-flex flex-row justify-content-between'
                                     ),
                                     'attributes' => array(
                                         'dateId' => 'stocksDate',

@@ -13,7 +13,9 @@
                 	<i class="fa fa-cog"></i> <?php echo $this->translate('tr_meliscommerce_categories_common_label_texts')?>
                 </h4>
             </div>
-        </div>
+		</div>
+	</div>
+	<div class="row">
 		<div class="col-xs-12 col-md-5 col-lg-4">
     		<div class="product-text-tab-container">
             	<ul class="nav-tabs product-text-tab">
@@ -24,7 +26,7 @@
 								    $imageData = $val['elang_flag'];
                                     if(!empty($imageData))
                                     {
-                                        echo '<span class="pull-right"><img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay pull-right"/></span>';
+                                        echo '<span class="float-right"><img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay float-right"/></span>';
                                     }
                                     else
                                     {
@@ -82,9 +84,9 @@
             height : "300px",
             plugins : [
 				//[contextmenu, textcolor, colorpicker] this plugin is already built in the core editor as of TinyMCE v. 5
-                'autolink advlist lists link image charmap print preview anchor',
+                'advlist autolink lists link image charmap print preview anchor',
                 'searchreplace visualblocks code fullscreen',
-                'insertdatetime media table paste template'
+                'insertdatetime media table paste template',
             ],
             toolbar : 'undo redo | styleselect | bold italic | link image |  alignleft aligncenter alignright alignjustify | forecolor backcolor | code',
         }

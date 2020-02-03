@@ -63,7 +63,7 @@
                                             		</label>
                                             	</div>	
                                         		</td>
-                                        		<td align="center">
+                                        		<td style="text-align: center;">
                                         			<i class="fa fa-star fa-lg" aria-hidden="true" title="<?php echo $this->translate('tr_meliscommerce_duplication_Main_variant')?>"></i>
                                         		</td>
                                         	</tr>
@@ -84,7 +84,7 @@
                                                         echo $this->form()->closeTag();
                                                     ?>
                                         		</td>
-                                        		<td class="main-variant-radio" align="center">
+                                        		<td class="main-variant-radio" style="text-align: center;">
                                         			<?php if($val->var_main_variant):?>
                                         			<i class="fa fa-dot-circle-o fa-lg text-success" data-variantid="<?php echo $val->var_id?>"></i>
                                         			<?php else:?>
@@ -94,8 +94,8 @@
                                         	</tr>
                                     	<?php endforeach;?>
                                     </table>
-                                 	<div align="right">
-                                 		<button data-dismiss="modal" class="btn btn-danger pull-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_duplication_common_close')?></button>
+									<div class="footer-modal d-flex flex-row justify-content-between">
+                                 		<button data-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_duplication_common_close')?></button>
                                  		<button class="btn btn-success" id="melisComStartDuplicateProduct" data-productid="<?php echo $this->productId?>"><i class="fa fa-clone"></i>  <?php echo $this->translate('tr_meliscommerce_duplication_common_duplicate') ?></button>
                                  	</div>
                             	</div>

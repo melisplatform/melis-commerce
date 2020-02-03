@@ -4,12 +4,14 @@
         $id .= $this->orderId.'_'.$this->zoneconfig['conf']['id'];
     }
 ?>
-<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="row">
-	<?php 
-    	if(!empty($this->zoneconfig['interface'])) {
-    	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
-    	        echo $this->$keyConfig;
-    	    }
-    	}
-    ?>
-</div>
+<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>">
+	<div class="row">
+		<?php 
+			if(!empty($this->zoneconfig['interface'])) {
+				foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+					echo $this->$keyConfig;
+				}
+			}
+		?>
+	</div>
+</div> 

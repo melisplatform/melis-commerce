@@ -194,7 +194,7 @@ class MelisComProductListController extends AbstractActionController
 						</div>';
             $prodActive     = '<span class="text-success"><i class="fa fa-fw fa-circle"></i></span>';
             $prodInactive   = '<span class="text-danger"><i class="fa fa-fw fa-circle"></i></span>';
-            $prodImage      = '<img src="%s" width="60" height="60" class="img-rounded img-responsive"/>';
+            $prodImage      = '<img src="%s" width="60" height="60" class="rounded-circle img-fluid"/>';
             $categoryDom    = '<span class="cell-val-table" style="margin:0 2px 4px 0;display:inline-block;padding: 3px 10px;background: #ECEBEB;border-radius: 4px;color: #7D7B7B;">%s</span>';
             $toolTipTextTag = '<a id="row-%s" class="toolTipHoverEvent tooltipTable" data-productId="%s" data-hasqtip="1" aria-describedby="qtip-%s">%s</a>';
             // PRODUCT DETAILS
@@ -340,7 +340,7 @@ class MelisComProductListController extends AbstractActionController
             // $productId = (int) $this->params()->fromQuery('productId');
             $variants = $this->getProductVariantsData($productId);
             $mainVarDom = '<span class="text-success"><i class="fa fa-fw fa-star"></i></span>';
-            $imageDom      = '<img src="%s" width="60" class="img-rounded"/>';
+            $imageDom      = '<img src="%s" width="60" class="rounded-circle"/>';
             $activeDom     = '<span class="text-success"><i class="fa fa-fw fa-circle"></i></span>';
             $inactiveDom   = '<span class="text-danger"><i class="fa fa-fw fa-circle"></i></span>';
             $attributesDom = '<span class="btn btn-default cell-val-table" style="border-radius: 4px;color: #7D7B7B;">%s</span>';
@@ -400,7 +400,7 @@ class MelisComProductListController extends AbstractActionController
                     
 
                     // SKU
-                    $sku = '<a class="text-danger openVariant" style="color:#fff" data-product-name="'.$productName.'" data-product-id="'.$productId.'">'.$this->getTool()->escapeHtml($variant['sku']).'</a>';
+                    $sku = '<a class="openVariant" style="color:#fff" data-product-name="'.$productName.'" data-product-id="'.$productId.'">'.$this->getTool()->escapeHtml($variant['sku']).'</a>';
                     $sContent .= $table->setRowData($sku, array('class' => 'text-left', 'style' => 'font-size: 14px'));
                     
                     // ATTRIBUTES
@@ -464,7 +464,7 @@ class MelisComProductListController extends AbstractActionController
                                    
                                    // label whole row with red if stock is set and it is zero
                                    if(!is_null($stockQty) && $stockQty == 0) {
-                                       $warningDom = '<i class="fa fa-warning fa-2x pull-left" style="color:#981a1f; font-size: 20px;"></i> ';
+                                       $warningDom = '<i class="fa fa-warning fa-2x float-left" style="color:#981a1f; font-size: 20px;"></i> ';
                                    }
                                    
                                    $image = !empty($value['flag']) ? '<img src="data:image/jpeg;base64,'. ($value['flag']) .'" class="" width="16" height="16"/>' : '<i class="fa fa-globe"></i>';

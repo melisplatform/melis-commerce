@@ -71,9 +71,9 @@
                                                     			<li>
                                 									<?php
                                 									$imageData = $lang->elang_flag;
-                                									$image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay pull-right" width="24" height="24"/>' : '<i class="fa fa-globe"></i>';
+                                									$image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay float-right" width="24" height="24"/>' : '<i class="fa fa-globe"></i>';
                                 									?>
-                                                    				<a data-locale="<?= $lang->elang_locale; ?>"><?= $lang->elang_name; ?><span class="pull-right"><?php echo $image; ?></span></a>
+                                                    				<a data-locale="<?= $lang->elang_locale; ?>"><?= $lang->elang_name; ?><span class="float-right"><?php echo $image; ?></span></a>
                                                     			</li>
                                         			<?php 
                                             			    endforeach;
@@ -90,8 +90,8 @@
                             		<div id="<?= $this->productId; ?>_productCategoryList" class="productCategoryView" data-langlocale="<?php echo $this->currentLangLocale ?>"></div>
                             	</div>
                             	<div class="col-md-12">
-                                 	<div align="right">
-                                 		<button data-dismiss="modal" class="btn btn-danger pull-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_products_text_close')?></button>
+									<div class="footer-modal d-flex flex-row justify-content-between">
+                                 		<button data-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_products_text_close')?></button>
                                  		<button class="btn btn-success addProductCategory" data-productid="<?= $this->productId; ?>"><i class="fa fa-plus"></i> <?php echo $this->translate('tr_meliscommerce_general_common_add'); ?></button>
                                  	</div>
                             	</div>
