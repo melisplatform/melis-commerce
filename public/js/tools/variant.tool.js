@@ -33,14 +33,15 @@ $(function() {
         $body.on("click", ".country-price-tab li a", function() {
             var $this       = $(this),
                 textCountry = $this.data('country'),
-                textSymbol  = $this.data('symbol');
+                textSymbol  = $this.data('symbol'),
+                $curSymbol  = $("[data-meliskey='meliscommerce_prices_tab_country_header'] .cur-symbol");
 
                 if ( textSymbol != "" ) {
-                    $(".cur-symbol").removeClass("fa fa-dollar").text(textSymbol).css("font-weight", "600");
+                    $curSymbol.removeClass("fa fa-dollar").text(textSymbol).css("font-weight", "600");
                 }
                 else {
-                    if(!$('.cur-symbol').hasClass("fa")){
-                        $(".cur-symbol").empty().addClass("fa fa-dollar").removeAttr("style");
+                    if(!$curSymbol.hasClass("fa")){
+                        $curSymbol.empty().addClass("fa fa-dollar").removeAttr("style");
                     }
                 }
                 

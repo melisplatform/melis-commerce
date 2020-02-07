@@ -2642,3 +2642,7 @@ i.fa.fa-download {
 .btn:hover i.fa.fa-download {
     color: #333;
 }
+
+.row .pdc-heading {
+    text-transform: capitalize;
+}
