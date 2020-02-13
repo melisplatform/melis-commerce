@@ -523,7 +523,10 @@ $(function() {
 		});
 
 		$body.on("click", "#categoryInfoPanel .widget-head .nav-tabs li a.shopping_cart", function() {
-			$("#id_meliscommerce_categories_category_tab_products").find(".categoryProductsRefresh").trigger("click");
+			// trigger refresh on of the tab
+			if ( melisCore.screenSize <= 767 ) {
+				$("#id_meliscommerce_categories_category_tab_products").find(".categoryProductsRefresh").trigger("click");
+			}
 		});
 });
 
