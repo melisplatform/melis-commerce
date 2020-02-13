@@ -482,7 +482,7 @@ $(function() {
 			categoryOpeningItemFlag = true;
 		});
 		
-		$body.on("mouseenter mouseout", ".toolTipCatHoverEvent", function(e) {
+		$body.on("mouseenter", ".toolTipCatHoverEvent", function(e) {
 			$(".thClassColId").attr("style", "");
 
 			var $this 		= $(this),
@@ -527,7 +527,7 @@ $(function() {
 			if ( melisCore.screenSize <= 767 ) {
 				$("#id_meliscommerce_categories_category_tab_products").find(".categoryProductsRefresh").trigger("click");
 			}
-			
+
 		});
 });
 
