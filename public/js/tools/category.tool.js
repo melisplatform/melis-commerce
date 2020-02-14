@@ -483,6 +483,11 @@ $(function() {
 		});
 		
 		$body.on("mouseenter", ".toolTipCatHoverEvent", function(e) {
+			/**
+			 * if mouse hover not equal to 3 seconds,
+			 * cancel ajax call
+			 * */ 
+
 			$(".thClassColId").attr("style", "");
 
 			var $this 		= $(this),
@@ -495,31 +500,41 @@ $(function() {
 
 				$(loaderText).insertAfter("table#catProductTable"+productId + " thead");
 
-					$.ajax({
-						type        : 'POST', 
-						url         : '/melis/MelisCommerce/MelisComProductList/getToolTip',
-						data		: {productId : productId},
-						dataType    : 'json',
-						encode		: true
-					}).done(function(data){
-						$("div.qtipLoader").remove();
+			var timeout = setTimeout(function() {
+				$.ajax({
+					type        : 'POST', 
+					url         : '/melis/MelisCommerce/MelisComProductList/getToolTip',
+					data		: {productId : productId},
+					dataType    : 'json',
+					encode		: true
+				}).done(function(data) {
+					console.log("inside setTimeout next is ajax");
+					
+					$("div.qtipLoader").remove();
 
-						if ( data.content.length === 0 ) {
-							$('<div class="qtipLoader"><hr/><span class="text-center col-lg-12">'+translations.tr_meliscommerce_product_tooltip_no_variants+'</span><br/></div>').insertAfter("table.qtipTable thead");
-						}
-						else {
-							// make sure tbody is clear
-							$.each($("table#catProductTable"+productId + " thead").nextAll(), function(i,v) {
-								$(v).remove();
-							});
+					if ( data.content.length === 0 ) {
+						$('<div class="qtipLoader"><hr/><span class="text-center col-lg-12">'+translations.tr_meliscommerce_product_tooltip_no_variants+'</span><br/></div>').insertAfter("table.qtipTable thead");
+					}
+					else {
+						// make sure tbody is clear
+						$.each($("table#catProductTable"+productId + " thead").nextAll(), function(i,v) {
+							$(v).remove();
+						});
 
-							$.each(data.content.reverse(), function(i ,v) {
-								$(v).insertAfter("table#catProductTable"+productId + " thead")
-							});
-						}
-					}).fail(function() {
-						alert( translations.tr_meliscore_error_message );
-					});
+						$.each(data.content.reverse(), function(i ,v) {
+							$(v).insertAfter("table#catProductTable"+productId + " thead")
+						});
+					}
+				}).fail(function() {
+					alert( translations.tr_meliscore_error_message );
+				});
+			}, 2000);
+
+			// clear timeout variable on mouse leave
+			$(e.target).one("mouseleave", function() {
+				console.log("mouseleave clearTimeout");
+				clearTimeout(timeout);
+			});
 		});
 
 		$body.on("click", "#categoryInfoPanel .widget-head .nav-tabs li a.shopping_cart", function() {
