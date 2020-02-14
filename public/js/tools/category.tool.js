@@ -482,7 +482,7 @@ $(function() {
 			categoryOpeningItemFlag = true;
 		});
 		
-		$body.on("mouseenter mouseout", ".toolTipCatHoverEvent", function(e) {
+		$body.on("mouseenter mouseout", ".toolTipHoverEvent", function(e) {
 			var $this 		= $(this),
 				productId 	= $this.data("productid");
 				loaderText 	= '<div class="qtipLoader"><hr/><span class="text-center col-lg-12">Loading...</span><br/></div>';
