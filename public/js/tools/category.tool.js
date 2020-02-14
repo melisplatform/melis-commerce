@@ -521,7 +521,7 @@ $(function() {
 								$(v).insertAfter("table#catProductTable"+productId + " thead")
 							});
 						}
-					}).complete(function() {
+					}).always(function() {
 						catHoverActive = false;
 					}).fail(function(jqXHR, textStatus, errorThrown) {
 						console.log("jqXHR: " + jqXHR + " textStatus: " + textStatus + " errorThrown: " + errorThrown);
