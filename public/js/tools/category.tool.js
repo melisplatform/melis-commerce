@@ -482,6 +482,7 @@ $(function() {
 			categoryOpeningItemFlag = true;
 		});
 		
+		var catHoverActive = false;
 		$body.on("mouseenter mouseleave", ".toolTipCatHoverEvent", function(e) {
 			$(".thClassColId").attr("style", "");
 
@@ -495,32 +496,38 @@ $(function() {
 
 				$(loaderText).insertAfter("table#catProductTable"+productId + " thead");
 
-				$.ajax({
-					type        : 'POST', 
-					url         : '/melis/MelisCommerce/MelisComProductList/getToolTip',
-					data		: {productId : productId},
-					dataType    : 'json',
-					encode		: true
-				}).done(function(data) {
-					$("div.qtipLoader").remove();
+				if ( catHoverActive === false ) {
+					catHoverActive = true;
 
-					if ( data.content.length === 0 ) {
-						$('<div class="qtipLoader"><hr/><span class="text-center col-lg-12">'+translations.tr_meliscommerce_product_tooltip_no_variants+'</span><br/></div>').insertAfter("table.qtipTable thead");
-					}
-					else {
-						// make sure tbody is clear
-						$.each($("table#catProductTable"+productId + " thead").nextAll(), function(i,v) {
-							$(v).remove();
-						});
+					$.ajax({
+						type        : 'POST', 
+						url         : '/melis/MelisCommerce/MelisComProductList/getToolTip',
+						data		: {productId : productId},
+						dataType    : 'json',
+						encode		: true
+					}).done(function(data) {
+						$("div.qtipLoader").remove();
 
-						$.each(data.content.reverse(), function(i ,v) {
-							$(v).insertAfter("table#catProductTable"+productId + " thead")
-						});
-					}
-				}).fail(function(jqXHR, textStatus, errorThrown) {
-					console.log("jqXHR: " + jqXHR + " textStatus: " + textStatus + " errorThrown: " + errorThrown);
-					//alert( translations.tr_meliscore_error_message );
-				});
+						if ( data.content.length === 0 ) {
+							$('<div class="qtipLoader"><hr/><span class="text-center col-lg-12">'+translations.tr_meliscommerce_product_tooltip_no_variants+'</span><br/></div>').insertAfter("table.qtipTable thead");
+						}
+						else {
+							// make sure tbody is clear
+							$.each($("table#catProductTable"+productId + " thead").nextAll(), function(i,v) {
+								$(v).remove();
+							});
+
+							$.each(data.content.reverse(), function(i ,v) {
+								$(v).insertAfter("table#catProductTable"+productId + " thead")
+							});
+						}
+					}).complete(function() {
+						catHoverActive = false;
+					}).fail(function(jqXHR, textStatus, errorThrown) {
+						console.log("jqXHR: " + jqXHR + " textStatus: " + textStatus + " errorThrown: " + errorThrown);
+						//alert( translations.tr_meliscore_error_message );
+					});
+				}
 		});
 
 		$body.on("click", "#categoryInfoPanel .widget-head .nav-tabs li a.shopping_cart", function() {
