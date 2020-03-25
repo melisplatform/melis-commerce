@@ -155,14 +155,14 @@ $(function() {
                 }
         });
 
-        var curVarId            = activeTabId.split("_")[0],
+        /* var curVarId            = activeTabId.split("_")[0],
             assocTableSearch    = $("input[type='search'][aria-controls='tableAssocVariantList1_" + curVarId + "']"),
             varTableSearch      = $("input[type='search'][aria-controls='tableAssocVariantList2_" + curVarId + "']");
 
             assocTableSearch.keyup(function () {
                 // Filter on the column (the index) of this element
                 //oTable1.fnFilterAll(this.value);
-            });
+            }); */
             //("#tableAssocVariantList2_58").fnFilterAll("test");
         
         // This event will create extra row on DataTable as Product Variant List container
