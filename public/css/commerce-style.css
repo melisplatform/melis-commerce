@@ -2635,7 +2635,7 @@ tr.last-tr td {
     background-color: #f0f0ef;
 }
 
-i.fa.fa-download {
+button :not(.melis-marketplace-product-action) i.fa.fa-download {
     color: #7c7c7c;
 }
 
