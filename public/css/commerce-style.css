@@ -2639,9 +2639,13 @@ button :not(.melis-marketplace-product-action) i.fa.fa-download {
     color: #7c7c7c;
 }
 
-.btn:hover i.fa.fa-download {
+.btn:hover :not(.melis-marketplace-product-action) i.fa.fa-download {
     color: #333;
 }
+
+/* button:hover i.fa.fa-download {
+    color: #fff;
+} */
 
 .row .pdc-heading {
     text-transform: capitalize;
