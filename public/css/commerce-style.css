@@ -2643,10 +2643,12 @@ button :not(.melis-marketplace-product-action) i.fa.fa-download {
     color: #333;
 }
 
-/* button:hover i.fa.fa-download {
-    color: #fff;
-} */
-
 .row .pdc-heading {
     text-transform: capitalize;
+}
+
+.list-group-item.commerce-dashboard-plugin-order-messages {
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
 }
