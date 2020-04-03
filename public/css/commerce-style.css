@@ -2654,6 +2654,6 @@ button :not(.melis-marketplace-product-action) i.fa.fa-download {
 }
 
 .list-group-item.commerce-dashboard-plugin-order-messages:hover {
-    background-color: #e7e7e7;
+    background-color: #f1f1f1;
     text-decoration: none;
 }
