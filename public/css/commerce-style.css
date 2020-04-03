@@ -2643,6 +2643,10 @@ button :not(.melis-marketplace-product-action) i.fa.fa-download {
     color: #333;
 }
 
+i.fa.fa-download {
+    color: #7c7c7c;
+}
+
 .row .pdc-heading {
     text-transform: capitalize;
 }
