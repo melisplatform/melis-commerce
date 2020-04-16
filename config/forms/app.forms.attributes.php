@@ -131,7 +131,7 @@ return [
                             [
                                 'spec' => [
                                     'name' => 'atrans_description',
-                                    'type' => 'TextArea',
+                                    'type' => 'Textarea',
                                     'options' => [
                                         'label' => 'tr_meliscommerce_attribute_label_description',
                                         'tooltip' => 'tr_meliscommerce_attribute_label_description tooltip',
@@ -537,7 +537,7 @@ return [
                             [
                                 'spec' => [
                                     'name' => 'avt_v_text',
-                                    'type' => 'TextArea',
+                                    'type' => 'Textarea',
                                     'options' => [
                                         'label' => 'tr_meliscommerce_attribute_value_text',
                                     ],

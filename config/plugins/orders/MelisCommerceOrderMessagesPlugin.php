@@ -48,7 +48,7 @@ return [
                                     [
                                         'spec' => [
                                             'name' => 'm_om_message',
-                                            'type' => 'TextArea',
+                                            'type' => 'Textarea',
                                             'attributes' => [
                                                 'id' => 'm_om_message',
                                                 'placeholder' => 'tr_meliscommerce_orders_message_your',
