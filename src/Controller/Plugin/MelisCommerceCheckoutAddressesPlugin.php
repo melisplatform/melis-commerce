@@ -11,9 +11,9 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
-use Zend\Session\Container;
-use Zend\Stdlib\ArrayUtils;
-use Zend\View\Model\ViewModel;
+use Laminas\Session\Container;
+use Laminas\Stdlib\ArrayUtils;
+use Laminas\View\Model\ViewModel;
 /**
  * This plugin implements the business logic of the
  * "checkOutAddresses" plugin.
@@ -75,7 +75,7 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
          */
         $postFormName = 'AddForm';
 
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
 
         $siteId = (!empty($this->pluginFrontConfig['m_add_site_id'])) ? $this->pluginFrontConfig['m_add_site_id'] : null;
         $overrideData = (!empty($this->pluginFrontConfig['m_add_override_data'])) ? $this->pluginFrontConfig['m_add_override_data'] : false;
@@ -84,8 +84,8 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
         $appConfigDeliveryAddForm = (!empty($this->pluginFrontConfig['forms']['delivery_address'])) ? $this->pluginFrontConfig['forms']['delivery_address'] : array();
         $appConfigDeliveryAddForm = $this->getFormMergedAndOrdered($appConfigDeliveryAddForm, 'checkout_delivery_address');
 
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $deliveryAddForm = $factory->createForm($appConfigDeliveryAddForm);
 
@@ -141,7 +141,7 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
         /**
          * Getting the User identity using Commerce Authentication Service
          */
-        $ecomAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
+        $ecomAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
         if ($ecomAuthSrv->hasIdentity())
         {
             $clientId = $ecomAuthSrv->getClientId();
@@ -165,7 +165,7 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
                 }
             }
 
-            $clientSrv = $this->getServiceLocator()->get('MelisComClientService');
+            $clientSrv = $this->getServiceManager()->get('MelisComClientService');
             $personDelAddress = $clientSrv->getClientAddressesByClientPersonId($personId, 'DEL');
             if (empty($personDelAddress))
             {
@@ -201,7 +201,7 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
                  * If the checkout selection selected existing address
                  * this will retrieve from db and set to the Form
                  */
-                $clientSrv = $this->getServiceLocator()->get('MelisComClientService');
+                $clientSrv = $this->getServiceManager()->get('MelisComClientService');
                 $clientPersonDelAdd = $clientSrv->getClientPersonAddressByAddressId($personId, $deliverySelectAddress);
                 if (!empty($clientPersonDelAdd))
                 {
@@ -274,7 +274,7 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
                  * If the checkout selection selected existing address
                  * this will retrieve from db and set to the Form
                  */
-                $clientSrv = $this->getServiceLocator()->get('MelisComClientService');
+                $clientSrv = $this->getServiceManager()->get('MelisComClientService');
                 $clientPersonBilAdd = $clientSrv->getClientPersonAddressByAddressId($personId, $billingSelectAddress);
                 if (!empty($clientPersonBilAdd))
                 {
@@ -288,7 +288,7 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
                 }
             }
             // Getting the client basket list using Client key
-            $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
+            $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
             $basketData = $melisComBasketService->getBasket($clientId, $clientKey);
 
             if (is_null($basketData)){
@@ -409,7 +409,7 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
                 unset($personDelAdd['m_add_is_submit']);
 
                 // Validating addresses using Checkout service
-                $melisComOrderCheckoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
+                $melisComOrderCheckoutService = $this->getServiceManager()->get('MelisComOrderCheckoutService');
                 $melisComOrderCheckoutService->setSiteId($siteId);
                 $validatedAddresses = $melisComOrderCheckoutService->validateAddresses($personDelAdd, $personBilAdd);
 
@@ -432,7 +432,7 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
 
                 if ($validatedAddresses['success'] == true)
                 {
-                    $clientSrv = $this->getServiceLocator()->get('MelisComClientService');
+                    $clientSrv = $this->getServiceManager()->get('MelisComClientService');
 
                     $deliveryAddId = null;
 
@@ -499,8 +499,8 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
     public function createOptionsForms()
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
 
@@ -511,7 +511,7 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
             foreach ($formConfig as $formKey => $config)
             {
                 $form = $factory->createForm($config);
-                $request = $this->getServiceLocator()->get('request');
+                $request = $this->getServiceManager()->get('request');
                 $parameters = $request->getQuery()->toArray();
 
                 if (!isset($parameters['validate']))
@@ -522,7 +522,7 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
                     $viewModelTab->modalForm = $form;
                     $viewModelTab->formData   = $this->getFormData();
 
-                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
                         'name' => $config['tab_title'],

@@ -11,8 +11,8 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
-use Zend\Session\Container;
-use Zend\View\Model\ViewModel;
+use Laminas\Session\Container;
+use Laminas\View\Model\ViewModel;
 /**
  * This plugin implements the business logic of the
  * "filter menu category list" plugin.
@@ -70,7 +70,7 @@ class MelisCommerceCategoryTreePlugin extends MelisTemplatingPlugin
         $selectedCategories = !empty($data['m_box_category_tree_ids_selected']) ?  $data['m_box_category_tree_ids_selected'] : array();
         
         // Getting Category Tree View form the Category Service
-        $melisComCategoryService = $this->getServiceLocator()->get('MelisComCategoryService');
+        $melisComCategoryService = $this->getServiceManager()->get('MelisComCategoryService');
         $categoryListData = $melisComCategoryService->getCategoryTreeview($rootCategoryId, $langId, true);
 
         // Category states preparation
@@ -106,7 +106,7 @@ class MelisCommerceCategoryTreePlugin extends MelisTemplatingPlugin
     private function includeParentCategory($categoryList, $langId)
     {
         // Getting Category Tree View form the Category Service
-        $melisComCategoryService = $this->getServiceLocator()->get('MelisComCategoryService');
+        $melisComCategoryService = $this->getServiceManager()->get('MelisComCategoryService');
 
         if(!empty($categoryList[0]['cat_father_cat_id']))
         {
@@ -114,7 +114,7 @@ class MelisCommerceCategoryTreePlugin extends MelisTemplatingPlugin
             $parentId = $categoryList[0]['cat_father_cat_id'];
             $categoryData = $melisComCategoryService->getCategoryById($parentId, $langId, true);
             $parentData = $categoryData->getTranslations();
-            $escaper = new \Zend\Escaper\Escaper('utf-8');
+            $escaper = new \Laminas\Escaper\Escaper('utf-8');
 
             $catName = '';
             $catNameLangName = '';
@@ -154,7 +154,7 @@ class MelisCommerceCategoryTreePlugin extends MelisTemplatingPlugin
      * @return int Array[]
      */
     private function prepareCategoriesSates($categoryList, $selectedCategories = array(), $openedCategories = array()){
-        $melisEcomProductCategoryTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');
+        $melisEcomProductCategoryTable = $this->getServiceManager()->get('MelisEcomProductCategoryTable');
         
         foreach ($categoryList As $key => $val){
             // Categoru number of products assigned
@@ -222,8 +222,8 @@ class MelisCommerceCategoryTreePlugin extends MelisTemplatingPlugin
     public function createOptionsForms()
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
     
@@ -231,7 +231,7 @@ class MelisCommerceCategoryTreePlugin extends MelisTemplatingPlugin
         $render   = [];
         if (!empty($formConfig))
         {
-            $request = $this->getServiceLocator()->get('request');
+            $request = $this->getServiceManager()->get('request');
             $parameters = $request->getQuery()->toArray();
             if (!isset($parameters['validate'])){
                 $formData = $this->getFormData();
@@ -249,7 +249,7 @@ class MelisCommerceCategoryTreePlugin extends MelisTemplatingPlugin
                     $viewModelTab->modalForm = $form;
                     $viewModelTab->formData   = $formData;
                     
-                    $langTable = $this->getServiceLocator()->get('MelisEcomLangTable');
+                    $langTable = $this->getServiceManager()->get('MelisEcomLangTable');
                     $langData = $langTable->langOrderByName();
                     $recLangData = array();
                     foreach($langData as $data)
@@ -266,7 +266,7 @@ class MelisCommerceCategoryTreePlugin extends MelisTemplatingPlugin
                     if($container)
                     {
                         $locale = $container['melis-lang-locale'];
-                        $melisEcomLangTable = $this->getServiceLocator()->get('MelisEcomLangTable');
+                        $melisEcomLangTable = $this->getServiceManager()->get('MelisEcomLangTable');
                         $currentLangData = $melisEcomLangTable->getEntryByField('elang_locale', $locale)->current();
                     
                         if (!empty($currentLang))
@@ -279,7 +279,7 @@ class MelisCommerceCategoryTreePlugin extends MelisTemplatingPlugin
                     $viewModelTab->currentLangName = $currentLangName;
                     $viewModelTab->currentLangLocale = $locale;
                     
-                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
                         'name' => $config['tab_title'],

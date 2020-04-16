@@ -1,183 +1,191 @@
 <?php
-return array(
-    'plugins' => array(
-        'meliscommerce' => array(
-            'forms' => array(
-                'meliscommerce_variants' => array(
-                    'meliscommerce_variants_information_form' => array(
-                        'attributes' => array(
+
+/**
+ * Melis Technology (http://www.melistechnology.com)
+ *
+ * @copyright Copyright (c) 2016 Melis Technology (http://www.melistechnology.com)
+ *
+ */
+
+return [
+    'plugins' => [
+        'meliscommerce' => [
+            'forms' => [
+                'meliscommerce_variants' => [
+                    'meliscommerce_variants_information_form' => [
+                        'attributes' => [
                             'name' => 'variant',
                             'id' => '',
                             'method' => 'POST',
                             'action' => 'melis/MelisCommerce/MelisComVariant/saveVariantForm',
-                        ),
-                        'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
-                        'elements' => array(                            
-                            array(
-                                'spec' => array(
+                        ],
+                        'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                        'elements' => [
+                            [
+                                'spec' => [
                                     'name' => 'var_sku',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_variant_main_information_main_variant_input_label',
                                         'tooltip' => 'tr_meliscommerce_variant_main_information_main_variant_input_label tooltip',
-                                    ),
-                                    'attributes' => array(
-                                        'id' => '',                                        
-                                    ),                                    
-                                ),
-                            ),
-                        ),
-                        'input_filter' => array(                            
-                            'var_sku' => array(
+                                    ],
+                                    'attributes' => [
+                                        'id' => '',
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'input_filter' => [
+                            'var_sku' => [
                                 'name'     => 'var_sku',
                                 'required' => true,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name' => 'NotEmpty',
-                                        'options' => array(
-                                            'messages' => array(
-                                                \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_variants_error_empty',
-                                            ),
-                                        ),
-                                    ),
-                                    array(
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_variants_error_empty',
+                                            ],
+                                        ],
+                                    ],
+                                    [
                                         'name'    => 'StringLength',
-                                        'options' => array(
+                                        'options' => [
                                             'encoding' => 'UTF-8',
                                             'max'      => 100,
-                                            'messages' => array(
-                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_variant_main_information_main_variant_long_err',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                        ),
-                    ),                    
-                    'meliscommerce_variants_stocks_form' => array(
-                        'attributes' => array(
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_variant_main_information_main_variant_long_err',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                        ],
+                    ],
+                    'meliscommerce_variants_stocks_form' => [
+                        'attributes' => [
                             'name' => 'stockForm',
                             'id' => '',
                             'method' => 'POST',
                             'action' => 'melis/MelisCommerce/MelisComVariant/saveStocksForm',
-                        ),
-                        'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
-                        'elements' => array(
-                            array(
-                                'spec' => array(
+                        ],
+                        'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                        'elements' => [
+                            [
+                                'spec' => [
                                     'name' => 'stock_id',
                                     'type' => 'Hidden',
-                                    'options' => array(
-                                    ),
-                                    'attributes' => array(
-                                    ),
-                                ),
-                            ),
-//                             array(
-//                                 'spec' => array(
+                                    'options' => [
+                                    ],
+                                    'attributes' => [
+                                    ],
+                                ],
+                            ],
+//                             [
+//                                 'spec' => [
 //                                     'name' => 'stock_org_qty',
 //                                     'type' => 'Hidden',
-//                                     'options' => array(
-//                                     ),
-//                                     'attributes' => array(
-//                                     ),
-//                                 ),
-//                             ),
-                            array(
-                                'spec' => array(
+//                                     'options' => [
+//                                     ],
+//                                     'attributes' => [
+//                                     ],
+//                                 ],
+//                             ],
+                            [
+                                'spec' => [
                                     'name' => 'stock_country_id',
                                     'type' => 'Hidden',
-                                    'options' => array(
-                                    ),
-                                    'attributes' => array(
-                                    ),
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
+                                    'options' => [
+                                    ],
+                                    'attributes' => [
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'stock_quantity',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_variant_stocks_quantity_label',
                                         'tooltip' => 'tr_meliscommerce_variant_stocks_quantity_label tooltip',
-                                    ),
-                                    'attributes' => array(
-                                        'id' => '',                                        
-                                    ),
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
+                                    ],
+                                    'attributes' => [
+                                        'id' => '',
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'stock_next_fill_up',
                                     'type' => 'DateField',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_variant_tab_stocks_fill_up',
                                         'tooltip' => 'tr_meliscommerce_variant_tab_stocks_fill_up tooltip',
                                         'class' => 'd-flex flex-row justify-content-between'
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'dateId' => 'stocksDate',
                                         'dateLabel' => 'tr_meliscommerce_variant_tab_stocks_fill_up'
-                                    ),
-                                ),
-                            ),
-                             
-                        ),
-                        'input_filter' => array( 
-                            'stock_id' => array(
+                                    ],
+                                ],
+                            ],
+
+                        ],
+                        'input_filter' => [
+                            'stock_id' => [
                                 'name'     => 'stock_id',
                                 'required' => false,
-                                'validators' => array(),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'stock_country_id' => array(
+                                'validators' => [],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'stock_country_id' => [
                                 'name'     => 'stock_country_id',
                                 'required' => false,
-                                'validators' => array(),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'stock_quantity' => array(
+                                'validators' => [],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'stock_quantity' => [
                                 'name'     => 'stock_quantity',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
-                                        'name'    => '\Zend\I18n\Validator\IsInt',
-                                        'options' => array(
-                                            'messages'=> array(
-                                                \Zend\I18n\Validator\IsInt::NOT_INT   => 'tr_meliscommerce_variant_prices_variant_price_digit_invalid',
-                                            ),
-                                        ),
-                                    ),
-                                    array(
-                                        'name' => '\Zend\Validator\GreaterThan',
-                                        'options' => array(
+                                'validators' => [
+                                    [
+                                        'name'    => '\Laminas\I18n\Validator\IsInt',
+                                        'options' => [
+                                            'messages'=> [
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT   => 'tr_meliscommerce_variant_prices_variant_price_digit_invalid',
+                                            ],
+                                        ],
+                                    ],
+                                    [
+                                        'name' => '\Laminas\Validator\GreaterThan',
+                                        'options' => [
                                             'min' => -1,
-                                            'messages' => array(
-                                                \Zend\Validator\GreaterThan::NOT_GREATER => 'tr_meliscommerce_variant_prices_variant_price_digit_greater',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                        ),
-                        
-                    ),
-                ),
-            ),
-        ),
-    ),
-);
+                                            'messages' => [
+                                                \Laminas\Validator\GreaterThan::NOT_GREATER => 'tr_meliscommerce_variant_prices_variant_price_digit_greater',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                        ],
+
+                    ],
+                ],
+            ],
+        ],
+    ],
+];

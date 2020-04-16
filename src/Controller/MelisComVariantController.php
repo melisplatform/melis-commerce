@@ -9,10 +9,10 @@
 
 namespace MelisCommerce\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Session\Container;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\Session\Container;
+use MelisCore\Controller\AbstractActionController;
 
 class MelisComVariantController extends AbstractActionController
 {
@@ -43,7 +43,7 @@ class MelisComVariantController extends AbstractActionController
      */
     private function getTool()
     {
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_variants');
     
         return $melisTool;
@@ -52,7 +52,7 @@ class MelisComVariantController extends AbstractActionController
     
     private function setProductVariables($productId)
     {
-        $prodSvc = $this->getServiceLocator()->get('MelisComProductService');
+        $prodSvc = $this->getServiceManager()->get('MelisComProductService');
         $prodData = $prodSvc->getProductById($productId);
         $this->layout()->setVariables(array(
             'product' =>  $prodData->getProduct(),
@@ -61,7 +61,7 @@ class MelisComVariantController extends AbstractActionController
     
     private function setVariantVariables($variantId)
     {
-        $varService = $this->getServiceLocator()->get('MelisComVariantService');
+        $varService = $this->getServiceManager()->get('MelisComVariantService');
         $varObj = $varService->getVariantById($variantId);
         $this->layout()->setVariables(array(
             'variantObj' =>  $varObj,
@@ -70,7 +70,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the page container
-     * @return \Zend\View\Model\ViewModel 
+     * @return \Laminas\View\Model\ViewModel 
      */
     public function renderVariantPageAction()
     {   
@@ -100,7 +100,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the page header container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantHeaderAction()
     {   
@@ -113,7 +113,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the header title container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantHeaderLeftAction()
     {
@@ -126,12 +126,12 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the header's heading
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantHeaderHeadingAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
-        $prodSvc = $this->getServiceLocator()->get('MelisComProductService');
+        $prodSvc = $this->getServiceManager()->get('MelisComProductService');
         $prodTitle= $prodSvc->getProductTextsById($this->getProductId(), 'TITLE', $this->getTool()->getCurrentLocaleID());
         $prd_reference = $prodSvc->getProductById($this->getProductId(), $this->getTool()->getCurrentLocaleID())->getProduct()->prd_reference;
         $prodTitle = empty($prodTitle[0]->ptxt_field_short)? $prd_reference : $prodTitle[0]->ptxt_field_short;
@@ -145,7 +145,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the header button container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantHeaderRightAction()
     {
@@ -158,7 +158,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the header button save
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantHeaderSaveAction()
     {
@@ -171,7 +171,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the header button cancel
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantHeaderCancelAction()
     {
@@ -193,7 +193,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the tab head container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabHeadAction()
     {
@@ -206,7 +206,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the tab head main tab
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabAction()
     {
@@ -219,7 +219,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the tab contents container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabContentsContainerAction()
     {
@@ -232,7 +232,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the tab individual contents container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabContentAction()
     {
@@ -245,7 +245,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the tab individual content header container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabContentHeaderContainerAction()
     {
@@ -265,7 +265,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the tab individual content header left container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabContentHeaderLeftAction()
     {
@@ -278,7 +278,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the tab individual content header right container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabContentHeaderRightAction()
     {
@@ -291,7 +291,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the tab individual content header
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabContentHeaderAction()
     {
@@ -304,7 +304,7 @@ class MelisComVariantController extends AbstractActionController
     
    /**
     * renders the tab individual general container, for main,price,stocks
-    * @return \Zend\View\Model\ViewModel
+    * @return \Laminas\View\Model\ViewModel
     */
     public function renderVariantTabContentGeneralContainerAction()
     {
@@ -317,7 +317,7 @@ class MelisComVariantController extends AbstractActionController
     
    /**
     * renders the variant status switch
-    * @return \Zend\View\Model\ViewModel
+    * @return \Laminas\View\Model\ViewModel
     */ 
     public function renderVariantTabMainHeaderSwitchAction()
     {
@@ -330,7 +330,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the tab main sub content container , <div class="col-xs-12 col-lg-6">
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabMainSubContentAction()
     {
@@ -343,7 +343,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the sub content sub container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */   
     public function renderVariantTabSubContainerAction()
     {
@@ -356,7 +356,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the sub content heading container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabSubHeadingAction()
     {
@@ -369,7 +369,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the sub content header text
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabSubHeaderAction()
     {
@@ -382,7 +382,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the sub content container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */  
     public function renderVariantTabSubContentAction()
     {
@@ -395,16 +395,16 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the information tab content
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabMainInformationContentAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_variants/meliscommerce_variants_information_form','meliscommerce_variants_information_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $informationForm = $factory->createForm($appConfigForm);
         if(!empty($this->layout()->variantObj)){
@@ -419,7 +419,7 @@ class MelisComVariantController extends AbstractActionController
      
    /**
     * renders the file attachement button
-    * @return \Zend\View\Model\ViewModel
+    * @return \Laminas\View\Model\ViewModel
     */
     public function renderVariantTabMainFilesAddAction()
     {
@@ -432,7 +432,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the files contents
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabMainFilesContentAction()
     {
@@ -445,7 +445,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the attributes contents
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabMainAttributesContentAction()
     {   
@@ -454,9 +454,9 @@ class MelisComVariantController extends AbstractActionController
         $variantId = (!empty($this->layout()->variantObj)) ? $this->layout()->variantObj->getId() : 0;
         $variantId = !empty($this->params()->fromQuery('variantId', ''))? (int) $this->params()->fromQuery('variantId', ''): $variantId;
         $productId = !empty($this->params()->fromQuery('productId', ''))? (int) $this->params()->fromQuery('productId', ''): $this->layout()->product->prd_id;
-        $varSvc = $this->getServiceLocator()->get('MelisComVariantService');
-        $prodSvc = $this->getServiceLocator()->get('MelisComProductService');      
-        $attrService = $this->getServiceLocator()->get('MelisComAttributeService');
+        $varSvc = $this->getServiceManager()->get('MelisComVariantService');
+        $prodSvc = $this->getServiceManager()->get('MelisComProductService');
+        $attrService = $this->getServiceManager()->get('MelisComAttributeService');
         $varAttrVals = $varSvc->getVariantAttributesValuesById($variantId);
         $langId = $this->getTool()->getCurrentLocaleID();
         $attributes = array();
@@ -546,7 +546,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the images filters container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantMainImagesFiltersAction()
     {
@@ -559,7 +559,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the images filter type
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantMainImageFilterTypeAction()
     {
@@ -572,7 +572,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the images filter country
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantMainImageFilterCountryAction()
     {
@@ -585,7 +585,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the images portfolio
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantMainImagesPortfolioAction()
     {
@@ -598,7 +598,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the images add image button
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantPortfolioSubHeaderAddAction()
     {
@@ -611,7 +611,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the text tab add language button
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */ 
     public function renderVariantTabContentHeaderAddLanguageAction()
     {
@@ -624,7 +624,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the text tab select field button
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabContentHeaderTextFieldAction()
     {
@@ -637,7 +637,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the text tab left container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabTextContentLeftContainerAction()
     {
@@ -650,7 +650,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the tex tab language text list
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabTextLanguageListAction()
     {
@@ -663,7 +663,7 @@ class MelisComVariantController extends AbstractActionController
     
    /**
     * renders the text tab right container
-    * @return \Zend\View\Model\ViewModel
+    * @return \Laminas\View\Model\ViewModel
     */
     public function renderVariantTabTextContentRightContainerAction()
     {
@@ -676,7 +676,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the text tab text fields
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabTextFieldsAction()
     { 
@@ -689,7 +689,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the tab prices header add acountry action
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabPricesHeaderAddAction()
     {
@@ -702,7 +702,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the tab prices left content container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabPricesContentLeftContainerAction()
     {
@@ -715,7 +715,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the tab prices right content container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabPricesContentRightContainerAction()
     {
@@ -728,7 +728,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the tab sotcks head add country
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabStocksHeaderAddAction()
     {
@@ -741,7 +741,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the prices country list
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabStocksCountryListAction()
     {
@@ -757,7 +757,7 @@ class MelisComVariantController extends AbstractActionController
                     		</a>
                     	</li>';
         
-        $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+        $countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
         $countries = $countryTable->getCountries();
         $ctyData[] = $ctyGeneral;
         foreach ($countries as $country){
@@ -776,20 +776,20 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * renders the tab prices country form for prices
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabStocksCountryFormAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
        
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_variants/meliscommerce_variants_stocks_form','meliscommerce_variants_stocks_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $stocksForm = $factory->createForm($appConfigForm);
-        $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
-        $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+        $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
+        $countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
         $countries = $countryTable->getCountries();
         $stockList = $variantSvc->getVariantStocksById($this->getVariantId());
         $c = 1;
@@ -849,14 +849,14 @@ class MelisComVariantController extends AbstractActionController
         );
         $postValues = get_object_vars($this->getRequest()->getPost());
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
-        $melisComSeoService = $this->getServiceLocator()->get('MelisComSeoService');
+        $melisComSeoService = $this->getServiceManager()->get('MelisComSeoService');
 
         return new JsonModel($seoResult);
     }
 
     /**
      * process the form data before saving, checks if form data are valid
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function saveVariantAction()
     {
@@ -872,7 +872,7 @@ class MelisComVariantController extends AbstractActionController
         $container = new Container('meliscommerce');
         unset($container['variant-tmp-data']);
         //get services
-        $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');                
+        $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
         
         if($this->getRequest()->isPost()){
             $this->getEventManager()->trigger('meliscommerce_variant_save_start', $this, array());
@@ -925,7 +925,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * triggered by event, saves the processed data from the variant form
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function saveVariantDataAction()
     {
@@ -951,8 +951,8 @@ class MelisComVariantController extends AbstractActionController
         $variantId = isset($data['variant']['var_id']) ? $data['variant']['var_id'] : null;
         unset($data['variant']['var_id']);
         
-        $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
-        $stockTable = $this->getServiceLocator()->get('MelisEcomVariantStockTable');
+        $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
+        $stockTable = $this->getServiceManager()->get('MelisEcomVariantStockTable');
         if($success){
             if(!is_null($variantId)){
                 $variantSvc->deleteVariantAttributeById($variantId);
@@ -1001,14 +1001,14 @@ class MelisComVariantController extends AbstractActionController
         );
         $errors = array();
         $success = false;
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');        
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigInformationForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_variants/meliscommerce_variants_information_form','meliscommerce_variants_information_form');
         $informationForm = $factory->createForm($appConfigInformationForm);
         
-        $variantTable = $this->getServiceLocator()->get('MelisEcomVariantTable');
+        $variantTable = $this->getServiceManager()->get('MelisEcomVariantTable');
 
         $postValues = get_object_vars($this->getRequest()->getPost());
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
@@ -1071,10 +1071,10 @@ class MelisComVariantController extends AbstractActionController
         );
         $errors = array();
         $success = false;
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigStockForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_variants/meliscommerce_variants_stocks_form','meliscommerce_variants_stocks_form');
         $stockForm = $factory->createForm($appConfigStockForm);
 
@@ -1128,7 +1128,7 @@ class MelisComVariantController extends AbstractActionController
         );
         $errors = array();
         $success = true;
-        $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
+        $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
         $postValues = get_object_vars($this->getRequest()->getPost());
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
         
@@ -1162,7 +1162,7 @@ class MelisComVariantController extends AbstractActionController
         );
         $postValues = get_object_vars($this->getRequest()->getPost());
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
-        $melisComSeoService = $this->getServiceLocator()->get('MelisComSeoService');
+        $melisComSeoService = $this->getServiceManager()->get('MelisComSeoService');
         if(!empty($postValues['variant_seo'])){
             $seoResult = $melisComSeoService->validateSEOData('variant', $postValues['variant_seo']);
 
@@ -1179,7 +1179,7 @@ class MelisComVariantController extends AbstractActionController
         $textMessage = 'tr_meliscommerce_variants_delete_fail';
         $textTitle = 'tr_meliscommerce_variants_page';
         
-        $varSvc = $this->getServiceLocator()->get('MelisComVariantService');
+        $varSvc = $this->getServiceManager()->get('MelisComVariantService');
         if($this->getRequest()->isPost()){
             $postValues = get_object_vars($this->getRequest()->getPost());
             
@@ -1208,7 +1208,7 @@ class MelisComVariantController extends AbstractActionController
     
     /**
      * This method deletes a stock entry if the country its affected to is deleted
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function stockCountryDeletedAction()
     {
@@ -1217,8 +1217,8 @@ class MelisComVariantController extends AbstractActionController
         $data = array();
         $countryId = -1;
          
-        $stockTable = $this->getServiceLocator()->get('MelisEcomVariantStockTable');
-        $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+        $stockTable = $this->getServiceManager()->get('MelisEcomVariantStockTable');
+        $countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
     
         $countryId = $this->getRequest()->getPost('id');
     

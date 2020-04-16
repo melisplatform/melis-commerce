@@ -9,11 +9,11 @@
 
 namespace MelisCommerce\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
-use Zend\Session\Container;
-use Zend\View\Model\JsonModel;
-use Zend\Stdlib\ArrayUtils;
+use Laminas\View\Model\ViewModel;
+use Laminas\Session\Container;
+use Laminas\View\Model\JsonModel;
+use Laminas\Stdlib\ArrayUtils;
+use MelisCore\Controller\AbstractActionController;
 
 class MelisComClientController extends AbstractActionController
 {
@@ -22,7 +22,7 @@ class MelisComClientController extends AbstractActionController
     /**
      * Render Client Page
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientPageAction()
     {
@@ -37,11 +37,11 @@ class MelisComClientController extends AbstractActionController
     /**
      * This method will return the Client first Person Name
      * 
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function getClientContactNameAction()
     {
-        $translator = $this->serviceLocator->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
         $success = 0;
         $textTitle = $translator->translate('tr_meliscommerce_clients_get_contact_name');
@@ -60,7 +60,7 @@ class MelisComClientController extends AbstractActionController
             {
                 $clientId = $postValues['clientId'];
                 // Getting Client Data from Client Service
-                $melisComClientService = $this->getServiceLocator()->get('MelisComClientService');
+                $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
                 $clientData = $melisComClientService->getClientByIdAndClientPerson($clientId);
                 // Getting data from Client object
                 $clientPerson = $clientData->getPersons();
@@ -94,20 +94,20 @@ class MelisComClientController extends AbstractActionController
      * Render Client Page Header
      * This method return also the Title of the Page
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientPageHeaderAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $clientId = $this->params()->fromQuery('clientId', '');
         
-        $translator = $this->serviceLocator->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
         $title = $translator->translate('tr_meliscommerce_clients_add_client');
         
         if ($clientId)
         {
-            $melisComClientService = $this->getServiceLocator()->get('MelisComClientService');
+            $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
             $clientData = $melisComClientService->getClientByIdAndClientPerson($clientId);
             
             $clientPerson = $clientData->getPersons();
@@ -148,7 +148,7 @@ class MelisComClientController extends AbstractActionController
     /**
      * Render Client Page Content
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientPageContentAction()
     {
@@ -163,7 +163,7 @@ class MelisComClientController extends AbstractActionController
     /**
      * Render Client Page Header Button Save
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientPageSaveAction()
     {
@@ -178,7 +178,7 @@ class MelisComClientController extends AbstractActionController
     /**
      * Render Client Tabulation Container
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientPageTabMainAction()
     {
@@ -193,7 +193,7 @@ class MelisComClientController extends AbstractActionController
     /**
      * Render Client Tab Main Header
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientPageTabMainHeaderAction()
     {
@@ -208,7 +208,7 @@ class MelisComClientController extends AbstractActionController
     /**
      * Render Client Tab Main Content
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientPageTabMainContentAction()
     {
@@ -223,7 +223,7 @@ class MelisComClientController extends AbstractActionController
     /**
      * Render Client Tab Main Content Left Zone
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientPageTabMainContentLeftAction()
     {
@@ -238,7 +238,7 @@ class MelisComClientController extends AbstractActionController
     /**
      * Render Client Tab Main Content Right Zone
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientPageTabMainContentRightAction()
     {
@@ -253,7 +253,7 @@ class MelisComClientController extends AbstractActionController
     /**
      * Render Client Tab Contact Content
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientPageTabContactAction()
     {
@@ -268,7 +268,7 @@ class MelisComClientController extends AbstractActionController
     /**
      * Render Client Tab Contact Header
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientPageTabContactHeaderAction()
     {
@@ -284,7 +284,7 @@ class MelisComClientController extends AbstractActionController
     /**
      * Render Client Contact header button Add Contact
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientAddContactAction()
     {
@@ -300,7 +300,7 @@ class MelisComClientController extends AbstractActionController
      * Render Client tab Contact Content
      * This method return Contact Form and Addresses Form
      *  
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientPageTabContactContentAction()
     {
@@ -312,18 +312,18 @@ class MelisComClientController extends AbstractActionController
         if (!empty($clientId))
         {
             // Getting the Client Data from Service
-            $melisComClientService = $this->getServiceLocator()->get('MelisComClientService');
+            $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
             $clientPerson = $melisComClientService->getClientByIdAndClientPerson($clientId);
             // Getting Client Person form Client Object
             $clientPerson = $clientPerson->getPersons();
             
             // Preparing Form for Contact and Addresses Forms
-            $factory = new \Zend\Form\Factory();
-            $formElements = $this->serviceLocator->get('FormElementManager');
+            $factory = new \Laminas\Form\Factory();
+            $formElements = $this->getServiceManager()->get('FormElementManager');
             $factory->setFormElementManager($formElements);
             
             // Melis Core Config Service Manager
-            $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+            $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
             
             // Getting Client Contact Form from Config using CoreConfig
             $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_contact_form','meliscommerce_clients_contact_form');
@@ -346,24 +346,24 @@ class MelisComClientController extends AbstractActionController
      * Render Client Company Tab
      * This method return Client Company Form from Config
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientPageTabCompanyAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $clientId = $this->params()->fromQuery('clientId', '');
         
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_company_form','meliscommerce_clients_company_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $propertyForm = $factory->createForm($appConfigForm);
         
         if (!empty($clientId))
         {
             // Getting Client Data for Company and set/bind to Company Form
-            $melisComClientService = $this->getServiceLocator()->get('MelisComClientService');
+            $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
             $client = $melisComClientService->getClientByIdAndClientPerson($clientId);
             // Getting Company from Client Object
             $clientCompany = $client->getCompany();
@@ -384,7 +384,7 @@ class MelisComClientController extends AbstractActionController
     /**
      * Render Client Tab Addresses
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientPageTabAddressAction()
     {
@@ -399,7 +399,7 @@ class MelisComClientController extends AbstractActionController
     /**
      * Render Client Addresses Header
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientPageTabAddressHeaderAction()
     {
@@ -415,7 +415,7 @@ class MelisComClientController extends AbstractActionController
      * Render Client Addresses Content
      * This method return Client Address Form if there is availabel data base on ClientId requested
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientPageTabAddressContentAction()
     {
@@ -429,16 +429,16 @@ class MelisComClientController extends AbstractActionController
         if (!empty($clientId))
         {
             // Getting Client Data form Client Service
-            $melisComClientService = $this->getServiceLocator()->get('MelisComClientService');
+            $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
             $client = $melisComClientService->getClientByIdAndClientPerson($clientId);
             // Getting Company Data from Client Object
             $clientAddresses = $client->getAddresses();
             
             // Getting Client Addres from from Config
-            $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+            $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
             $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_addresses_form','meliscommerce_clients_addresses_form');
-            $factory = new \Zend\Form\Factory();
-            $formElements = $this->serviceLocator->get('FormElementManager');
+            $factory = new \Laminas\Form\Factory();
+            $formElements = $this->getServiceManager()->get('FormElementManager');
             $factory->setFormElementManager($formElements);
             $propertyForm = $factory->createForm($appConfigForm);
             
@@ -454,7 +454,7 @@ class MelisComClientController extends AbstractActionController
     /**
      * Render Client Address Header Button Add Address
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientAddAddressAction()
     {
@@ -470,12 +470,12 @@ class MelisComClientController extends AbstractActionController
      * Render Client Tab Order Content
      * This method return Order List table from Tool Config
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientPageTabOrdersAction()
     {
         $status = array();
-        $orderStatusTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTable');
+        $orderStatusTable = $this->getServiceManager()->get('MelisEcomOrderStatusTable');
         foreach($orderStatusTable->fetchAll() as $orderStatus){
             $status[] = $orderStatus;
         }
@@ -484,10 +484,10 @@ class MelisComClientController extends AbstractActionController
         $clientId = $this->params()->fromQuery('clientId', '');
         $activateTab = $this->params()->fromQuery('activateTab');
         
-        $translator = $this->serviceLocator->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
         // Getting Client Order List Table Config
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_client_order_list');
         // Getting the Columns of the table
         $columns = $melisTool->getColumns();
@@ -507,7 +507,7 @@ class MelisComClientController extends AbstractActionController
     /**
      * Render Client Order Table Limit filter
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientTableLimitAction()
     {
@@ -522,7 +522,7 @@ class MelisComClientController extends AbstractActionController
     /**
      * Render Client Order Table Serach input filter
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientTableSearchAction()
     {
@@ -537,7 +537,7 @@ class MelisComClientController extends AbstractActionController
     /**
      * Render Client Order Table Refresh Button
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientTableRefreshAction()
     {
@@ -552,7 +552,7 @@ class MelisComClientController extends AbstractActionController
     /**
      * Render Client Order table Action View
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientTableViewAction()
     {
@@ -568,7 +568,7 @@ class MelisComClientController extends AbstractActionController
      * Render Client Status 
      * This method return Client data to be fillup to Client Status switch
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientStatusAction()
     {
@@ -579,7 +579,7 @@ class MelisComClientController extends AbstractActionController
         if (!empty($clientId))
         {
             // Getting Client Data from Client Service
-            $melisComClientService = $this->getServiceLocator()->get('MelisComClientService');
+            $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
             $clieData = $melisComClientService->getClientByIdAndClientPerson($clientId);
             // Getting Client data form Client Object
             $client = $clieData->getClient();
@@ -597,7 +597,7 @@ class MelisComClientController extends AbstractActionController
     /**
      * Render CLient Main Contact view
      * This method return Client Data base on request
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientMainContactAction()
     {
@@ -611,11 +611,11 @@ class MelisComClientController extends AbstractActionController
         if (!empty($clientId))
         {
             // Getting Current Langauge ID
-            $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+            $melisTool = $this->getServiceManager()->get('MelisCoreTool');
             $langId = $melisTool->getCurrentLocaleID();
             
             // Getting Client Data from Service
-            $melisComClientService = $this->getServiceLocator()->get('MelisComClientService');
+            $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
             $clientMainPerson = $melisComClientService->getClientMainPersonByClientId($clientId, $langId);
             // Getting Persion Data form Client Object
             $clientPerson = $clientMainPerson->getPerson();
@@ -631,15 +631,15 @@ class MelisComClientController extends AbstractActionController
      * Render Client Main Form
      * This method return Client Form forom Config
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientMainFormAction()
     {
         // Grtting Client Form From Config
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_main_form','meliscommerce_clients_main_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $propertyForm = $factory->createForm($appConfigForm);
         
@@ -650,7 +650,7 @@ class MelisComClientController extends AbstractActionController
         {
             
             // Getting Client Data from Client Service
-            $melisComClientService = $this->getServiceLocator()->get('MelisComClientService');
+            $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
             $clieData = $melisComClientService->getClientByIdAndClientPerson($clientId);
             // Getting Client data form Client Object
             $client = $clieData->getClient();
@@ -672,11 +672,11 @@ class MelisComClientController extends AbstractActionController
     /**
      * This method validate Client Contact Form and Add to the Client Contact list
      * 
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function addClientContactAction()
     {
-        $translator = $this->serviceLocator->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
         $success = 0;
         $textTitle = $translator->translate('tr_meliscommerce_clients_add_contact');
@@ -690,13 +690,13 @@ class MelisComClientController extends AbstractActionController
         if($request->isPost())
         {
             // Getting Client Contact Form from Config
-            $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+            $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
             $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_contact_form','meliscommerce_clients_contact_form');
-            $factory = new \Zend\Form\Factory();
-            $formElements = $this->serviceLocator->get('FormElementManager');
+            $factory = new \Laminas\Form\Factory();
+            $formElements = $this->getServiceManager()->get('FormElementManager');
             $factory->setFormElementManager($formElements);
             $propertyForm = $factory->createForm($appConfigForm);
-            $clientSvc = $this->getServiceLocator()->get('MelisComClientService');
+            $clientSvc = $this->getServiceManager()->get('MelisComClientService');
             
             // Getting the Elements/fields of the Client COntact form
             $appConfigFormElements = $appConfigForm['elements'];
@@ -742,7 +742,7 @@ class MelisComClientController extends AbstractActionController
                     'controller' => 'MelisComClient',
                     'action' => 'render-client-contact-tab-content'
                 );
-                $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+                $melisTool = $this->getServiceManager()->get('MelisCoreTool');
                 $tabContent = $melisTool->getViewContent($dispatchHandler);
                 
                 // Assigning New Client Contact data to one array container
@@ -792,7 +792,7 @@ class MelisComClientController extends AbstractActionController
      * Render Client Contact Tab Content
      * This method return Client Contact form with binded data form Post 
      * this method is requested through dispatch
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientContactTabContentAction()
     {
@@ -804,13 +804,13 @@ class MelisComClientController extends AbstractActionController
         // Getting Data form Post
         $request = $this->getRequest();
         
-        $translator = $this->serviceLocator->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
         // Getting Client Contact Form form Config
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_contact_form','meliscommerce_clients_contact_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $propertyForm = $factory->createForm($appConfigForm);
         
@@ -833,11 +833,11 @@ class MelisComClientController extends AbstractActionController
      * This method add Client Address to Client Content
      * This will also validate Data assign to Client Address and return Form with validated datas
      * 
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function addClientContactAddressAction()
     {
-        $translator = $this->serviceLocator->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
         $success = 0;
         $textTitle = $translator->translate('tr_meliscommerce_clients_add_contact_address');
@@ -851,10 +851,10 @@ class MelisComClientController extends AbstractActionController
         if($request->isPost())
         {
             // Geting Client Address from Config
-            $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+            $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
             $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_addresses_form','meliscommerce_clients_addresses_form');
-            $factory = new \Zend\Form\Factory();
-            $formElements = $this->serviceLocator->get('FormElementManager');
+            $factory = new \Laminas\Form\Factory();
+            $formElements = $this->getServiceManager()->get('FormElementManager');
             $factory->setFormElementManager($formElements);
             $propertyForm = $factory->createForm($appConfigForm);
 
@@ -883,7 +883,7 @@ class MelisComClientController extends AbstractActionController
                     'controller' => 'MelisComClient',
                     'action' => 'render-client-contact-address-accordion-content'
                 );
-                $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+                $melisTool = $this->getServiceManager()->get('MelisCoreTool');
                 $accordionContent = $melisTool->getViewContent($dispatchHandler);
                 
                 // Assigning New Address data to one array container
@@ -928,7 +928,7 @@ class MelisComClientController extends AbstractActionController
     /**
      * Render Client Contact Address in Accordion Contect
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientContactAddressAccordionContentAction()
     {
@@ -939,13 +939,13 @@ class MelisComClientController extends AbstractActionController
         $request = $this->getRequest();
         $postValues = get_object_vars($request->getPost());
             
-        $translator = $this->serviceLocator->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
         // Getting Client Contact Address form from Config
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_addresses_form','meliscommerce_clients_addresses_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $propertyForm = $factory->createForm($appConfigForm);
         $propertyForm->setData($postValues);
@@ -977,11 +977,11 @@ class MelisComClientController extends AbstractActionController
      * This method validate Datas for Client Address and return as Validated Datas
      * This method also return tabulation for Client Addresses
      *  
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function addClientAddressAction()
     {
-        $translator = $this->serviceLocator->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
         $success = 0;
         $textTitle = $translator->translate('tr_meliscommerce_clients_add_contact_address');
@@ -996,10 +996,10 @@ class MelisComClientController extends AbstractActionController
         if($request->isPost())
         {
             // Getting Client Address Form from Config
-            $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+            $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
             $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_addresses_form','meliscommerce_clients_addresses_form');
-            $factory = new \Zend\Form\Factory();
-            $formElements = $this->serviceLocator->get('FormElementManager');
+            $factory = new \Laminas\Form\Factory();
+            $formElements = $this->getServiceManager()->get('FormElementManager');
             $factory->setFormElementManager($formElements);
             $propertyForm = $factory->createForm($appConfigForm);
             
@@ -1041,7 +1041,7 @@ class MelisComClientController extends AbstractActionController
                     'controller' => 'MelisComClient',
                     'action' => 'render-client-address-tab-content'
                 );
-                $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+                $melisTool = $this->getServiceManager()->get('MelisCoreTool');
                 $tabContent = $melisTool->getViewContent($dispatchHandler);
                 
                 $clientAddressDom = array(
@@ -1086,7 +1086,7 @@ class MelisComClientController extends AbstractActionController
      * Render Client Address tab Content
      * This method return Client Address form with binded data form Post 
      * this method is requested through dispatch
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientAddressTabContentAction()
     {
@@ -1096,13 +1096,13 @@ class MelisComClientController extends AbstractActionController
         $request = $this->getRequest();
         $postValues = get_object_vars($request->getPost());
         
-        $translator = $this->serviceLocator->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
         // Getting Client Address form and Bind Posted data to the form
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_addresses_form','meliscommerce_clients_addresses_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $propertyForm = $factory->createForm($appConfigForm);
         $propertyForm->setData($postValues);
@@ -1116,7 +1116,7 @@ class MelisComClientController extends AbstractActionController
     /**
      * Client Page modal container
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientModalAction()
     {
@@ -1134,21 +1134,21 @@ class MelisComClientController extends AbstractActionController
      * Render Client Contact Form modal contect
      * This method return Client Contact Form
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientModalContactFormAction()
     {
-        $translator = $this->serviceLocator->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $clientId = $this->params()->fromQuery('clientId');
         $tabId = $this->params()->fromQuery('tabId');
         
         // Getting Client Contact Form from Config
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_contact_form','meliscommerce_clients_contact_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $propertyForm = $factory->createForm($appConfigForm);
 
@@ -1169,21 +1169,21 @@ class MelisComClientController extends AbstractActionController
      * Render Client Contact Address Form modal
      * This method return Client Contact Address Form
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientModalContactAddressFormAction()
     {
-        $translator = $this->serviceLocator->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
     
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $clientId = $this->params()->fromQuery('clientId');
         $tabId = $this->params()->fromQuery('tabId');
         
         // Getting Client Contact Address Form from Config
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_addresses_form','meliscommerce_clients_addresses_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $propertyForm = $factory->createForm($appConfigForm);
         
@@ -1199,20 +1199,20 @@ class MelisComClientController extends AbstractActionController
      * Render Client Address Form modal
      * This method return Contact Address Form
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientModalAddressFormAction()
     {
-        $translator = $this->serviceLocator->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
     
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $clientId = $this->params()->fromQuery('clientId');
         
         // Getting Client Address Form from Config
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_addresses_form','meliscommerce_clients_addresses_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $propertyForm = $factory->createForm($appConfigForm);
     
@@ -1226,7 +1226,7 @@ class MelisComClientController extends AbstractActionController
     /**
      * Saving Client Data
      * 
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function saveClientAction()
     {
@@ -1291,7 +1291,7 @@ class MelisComClientController extends AbstractActionController
             // Cehcking if error occured during validation of submitted datas
             if (empty($errors)){
                 // Saving Client data using Client Servive
-                $melisComClientService = $this->getServiceLocator()->get('MelisComClientService');
+                $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
                 $clientId = $melisComClientService->saveClient($clientData, $contactsData, $addressesData, $companyData, $clientId);
                 // Checking if Saving of datas is success if the return is not null
                 // return should be the Client Id
@@ -1341,7 +1341,7 @@ class MelisComClientController extends AbstractActionController
     /**
      * Validating Client data from Posted Datas and return as validated Data
      * 
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function validateClientAction()
     {
@@ -1358,10 +1358,10 @@ class MelisComClientController extends AbstractActionController
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
             // Getting Client Form from Config
-            $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+            $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
             $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_main_form','meliscommerce_clients_main_form');
-            $factory = new \Zend\Form\Factory();
-            $formElements = $this->serviceLocator->get('FormElementManager');
+            $factory = new \Laminas\Form\Factory();
+            $formElements = $this->getServiceManager()->get('FormElementManager');
             $factory->setFormElementManager($formElements);
             $propertyForm = $factory->createForm($appConfigForm);
             // Adding Client Status as New field of Client Form
@@ -1417,11 +1417,11 @@ class MelisComClientController extends AbstractActionController
     /**
      * Validating Client Contact Posted Data and return as validated Datas
      * 
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function validateClientContactsAction()
     {
-        $translator = $this->serviceLocator->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
         $success = 0;
         $errors = array();
@@ -1443,15 +1443,15 @@ class MelisComClientController extends AbstractActionController
 
             
             // Getting Client Conatct Form from Config
-            $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+            $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
             $appConfigForm_1 = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_contact_form','meliscommerce_clients_contact_form');
-            $factory_1 = new \Zend\Form\Factory();
-            $formElements = $this->serviceLocator->get('FormElementManager');
+            $factory_1 = new \Laminas\Form\Factory();
+            $formElements = $this->getServiceManager()->get('FormElementManager');
             $factory_1->setFormElementManager($formElements);
             
             // Getting Client Contact Address Form from Config
             $appConfigForm_2 = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_addresses_form','meliscommerce_clients_addresses_form');
-            $factory_2 = new \Zend\Form\Factory();
+            $factory_2 = new \Laminas\Form\Factory();
             $factory_2->setFormElementManager($formElements);
             
             if (!empty($postValues['clientContacts']))
@@ -1515,7 +1515,7 @@ class MelisComClientController extends AbstractActionController
                         
                         if (!empty($val['cper_email']))
                         {
-                            $melisComClientService = $this->getServiceLocator()->get('MelisComClientService');
+                            $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
                             if ($melisComClientService->checkEmailExist($val['cper_email'], $val['cper_id']))
                             {
                                 $errors_1_temp['cper_email'] = array(
@@ -1671,11 +1671,11 @@ class MelisComClientController extends AbstractActionController
     /**
      * Validating Client Company Data from post and return as Validated Datas
      * 
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function validateClientCompanyAction()
     {
-        $translator = $this->serviceLocator->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
         $success = 0;
         $errors = array();
@@ -1691,10 +1691,10 @@ class MelisComClientController extends AbstractActionController
 
             
             // Getting Client Company Form from Config
-            $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+            $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
             $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_company_form','meliscommerce_clients_company_form');
-            $factory = new \Zend\Form\Factory();
-            $formElements = $this->serviceLocator->get('FormElementManager');
+            $factory = new \Laminas\Form\Factory();
+            $formElements = $this->getServiceManager()->get('FormElementManager');
             $factory->setFormElementManager($formElements);
             $propertyForm = $factory->createForm($appConfigForm);
             // Setting Posted Datas to Form
@@ -1774,11 +1774,11 @@ class MelisComClientController extends AbstractActionController
     /**
      * Validating Client Addresses and return Validated Datas
      * 
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function validateClientAddressesAction()
     {
-        $translator = $this->serviceLocator->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
         $success = 0;
         $errors = array();
@@ -1790,10 +1790,10 @@ class MelisComClientController extends AbstractActionController
         if($request->isPost())
         {
             // Getting Calient Address From from Config
-            $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+            $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
             $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_addresses_form','meliscommerce_clients_addresses_form');
-            $factory = new \Zend\Form\Factory();
-            $formElements = $this->serviceLocator->get('FormElementManager');
+            $factory = new \Laminas\Form\Factory();
+            $formElements = $this->getServiceManager()->get('FormElementManager');
             $factory->setFormElementManager($formElements);
             
             // Getting Datas from Post
@@ -1861,11 +1861,11 @@ class MelisComClientController extends AbstractActionController
      * Deleteing Existing Client Address
      * A hidden form from render and submitted using Post
      * 
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function deleteClientAddressesAction()
     {
-        $translator = $this->serviceLocator->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
         $success = 0;
         $errors = array();
@@ -1886,7 +1886,7 @@ class MelisComClientController extends AbstractActionController
                 if (is_array($clientAddressesIds))
                 {
                     // Deleting one by one by looping and pass to Service to execute deletion of the Address
-                    $melisComClientService = $this->getServiceLocator()->get('MelisComClientService');
+                    $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
                     foreach ($clientAddressesIds As $val)
                     {
                         $melisComClientService->deleteClientAddress($val);
@@ -1915,7 +1915,7 @@ class MelisComClientController extends AbstractActionController
 
     private function getTool()
     {
-        $tool = $this->getServiceLocator()->get('MelisCoreTool');
+        $tool = $this->getServiceManager()->get('MelisCoreTool');
         return $tool;
     }
 

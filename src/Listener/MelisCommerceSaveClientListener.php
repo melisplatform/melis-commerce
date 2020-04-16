@@ -9,25 +9,23 @@
 
 namespace MelisCommerce\Listener;
 
-use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\ListenerAggregateInterface;
+use Laminas\EventManager\EventManagerInterface;
+use Laminas\EventManager\ListenerAggregateInterface;
 
 use MelisCore\Listener\MelisCoreGeneralListener;
 
 class MelisCommerceSaveClientListener extends MelisCoreGeneralListener implements ListenerAggregateInterface
 {
-    public function attach(EventManagerInterface $events)
+    public function attach(EventManagerInterface $events, $priority = 1)
     {
         $sharedEvents      = $events->getSharedManager();
         
         $callBackHandler = $sharedEvents->attach(
             'MelisCommerce',
-            array(
-                'meliscommerce_clients_save_start'
-            ),
+            'meliscommerce_clients_save_start',
         	function($e){
         	    
-        		$sm = $e->getTarget()->getServiceLocator();   	
+        		$sm = $e->getTarget()->getEvent()->getApplication()->getServiceManager();
         		$melisCoreDispatchService = $sm->get('MelisCoreDispatch');
         		
         		list($success, $errors, $datas) = $melisCoreDispatchService->dispatchPluginAction(
@@ -35,15 +33,15 @@ class MelisCommerceSaveClientListener extends MelisCoreGeneralListener implement
         		    'meliscommerce',
         		    'action-client-tmp',
         		    'MelisCommerce\Controller\MelisComClient',
-        		    array('action' => 'validateClient')
-        		    );
+        		    ['action' => 'validateClient']
+                );
         		
         		list($success, $errors, $datas) = $melisCoreDispatchService->dispatchPluginAction(
         		    $e,
         		    'meliscommerce',
         		    'action-client-tmp',
         		    'MelisCommerce\Controller\MelisComClient',
-        		    array('action' => 'validateClientContacts')
+        		    ['action' => 'validateClientContacts']
     		    );
         		
         		list($success, $errors, $datas) = $melisCoreDispatchService->dispatchPluginAction(
@@ -51,7 +49,7 @@ class MelisCommerceSaveClientListener extends MelisCoreGeneralListener implement
         		    'meliscommerce',
         		    'action-client-tmp',
         		    'MelisCommerce\Controller\MelisComClient',
-        		    array('action' => 'validateClientAddresses')
+        		    ['action' => 'validateClientAddresses']
     		    );
         		
         		list($success, $errors, $datas) = $melisCoreDispatchService->dispatchPluginAction(
@@ -59,7 +57,7 @@ class MelisCommerceSaveClientListener extends MelisCoreGeneralListener implement
         		    'meliscommerce',
         		    'action-client-tmp',
         		    'MelisCommerce\Controller\MelisComClient',
-        		    array('action' => 'validateClientCompany')
+        		    ['action' => 'validateClientCompany']
     		    );
         		
         		list($success, $errors, $datas) = $melisCoreDispatchService->dispatchPluginAction(
@@ -67,8 +65,8 @@ class MelisCommerceSaveClientListener extends MelisCoreGeneralListener implement
         		    'meliscommerce',
         		    'action-client-tmp',
         		    'MelisCommerce\Controller\MelisComClient',
-        		    array('action' => 'deleteClientAddresses')
-        		    );
+        		    ['action' => 'deleteClientAddresses']
+                );
         	},
         100);
         

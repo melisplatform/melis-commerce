@@ -9,14 +9,14 @@
 
 namespace MelisCommerce\Service;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Authentication\AuthenticationService;
-use Zend\Authentication\Storage\Session;
-use Zend\Session\SessionManager;
-use Zend\Authentication\Adapter\DbTable as AuthAdapter;
-use Zend\Authentication\Result;
-use Zend\Session\Config\SessionConfig;
-use Zend\Stdlib\ArrayUtils;
+use Laminas\Authentication\AuthenticationService;
+use Laminas\Authentication\Storage\Session;
+use Laminas\ServiceManager\ServiceManager;
+use Laminas\Session\SessionManager;
+use Laminas\Authentication\Adapter\DbTable as AuthAdapter;
+use Laminas\Authentication\Result;
+use Laminas\Session\Config\SessionConfig;
+use Laminas\Stdlib\ArrayUtils;
 /**
  * 
  * This service handles the Authentication system of MelisCommerce.
@@ -24,7 +24,11 @@ use Zend\Stdlib\ArrayUtils;
  */
 class MelisComAuthenticationService extends Session
 {
-    protected $serviceLocator;
+    /**
+     * @var Laminas\ServiceManager\ServiceManager $serviceManager
+     */
+    protected $serviceManager;
+
     protected $authenticationService;
     protected $sessionManager;
     protected $session;
@@ -33,9 +37,8 @@ class MelisComAuthenticationService extends Session
     {
         $this->authenticationService = new AuthenticationService();
         $this->sessionManager = new SessionManager();
-        
-        if (!$this->hasIdentity())
-        {
+
+        if (!$this->hasIdentity()) {
             /**
              * Getting the current Site module name,
              * and use as Session name of the Site
@@ -48,15 +51,21 @@ class MelisComAuthenticationService extends Session
             $this->authenticationService->setStorage($this->session);
         }
     }
-    
-    public function setServiceLocator(ServiceLocatorInterface $sl)
+
+    /**
+     * @param ServiceManager $service
+     */
+    public function setServiceManager(ServiceManager $service)
     {
-        $this->serviceLocator = $sl;
+        $this->serviceManager = $service;
     }
-    
-    public function getServiceLocator()
+
+    /**
+     * @return Laminas\ServiceManager\ServiceManager
+     */
+    public function getServiceManager()
     {
-        return $this->serviceLocator;
+        return $this->serviceManager;
     }
     
     public function getStorage()
@@ -69,14 +78,14 @@ class MelisComAuthenticationService extends Session
      * @param $password
      * @param bool $rememberMe
      * @return array
-     * @throws \Zend\Authentication\Exception\ExceptionInterface
+     * @throws \Laminas\Authentication\Exception\ExceptionInterface
      */
     public function login($email, $password, $rememberMe = false)
     {
         $success = 0;
 
-        $translator = $this->getServiceLocator()->get('translator');
-        $clientSrv = $this->getServiceLocator()->get('MelisComClientService');
+        $translator = $this->getServiceManager()->get('translator');
+        $clientSrv = $this->getServiceManager()->get('MelisComClientService');
         $clientInfo = $clientSrv->getClientPersonByEmail($email);
 
         //check if email exist
@@ -86,7 +95,7 @@ class MelisComAuthenticationService extends Session
             $isCorrect = $this->isPasswordCorrect($password, $clientInfo->cper_password);
             if ($isCorrect)
             {
-                $dbAdapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+                $dbAdapter = $this->getServiceManager()->get('Laminas\Db\Adapter\Adapter');
                 $authAdapter = new AuthAdapter(
                     $dbAdapter,
                     'melis_ecom_client_person', // there is a method setTableName to do the same
@@ -110,7 +119,7 @@ class MelisComAuthenticationService extends Session
 
                         $storage->write($personIdentity);
 
-                        $config = $this->getServiceLocator()->get('config');
+                        $config = $this->getServiceManager()->get('config');
                         $ecomClientConfig = $config['plugins']['meliscommerce']['datas']['default']['session'];
 
                         /**

@@ -1,269 +1,276 @@
 <?php
 
-return array(
-    'plugins' => array(
-        'meliscommerce' => array(
-            'tools' => array(   
-                'meliscommerce_currency' => array(   
-                    'conf' => array(
+/**
+ * Melis Technology (http://www.melistechnology.com)
+ *
+ * @copyright Copyright (c) 2016 Melis Technology (http://www.melistechnology.com)
+ *
+ */
+
+return [
+    'plugins' => [
+        'meliscommerce' => [
+            'tools' => [
+                'meliscommerce_currency' => [
+                    'conf' => [
                         'title' => 'tr_meliscommerce_currencies',  
-                    ),
-                    'table' => array(
+                    ],
+                    'table' => [
                         'target' => '#tableComCurrencyList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComCurrency/getComCurrencyData',
                         'dataFunction' => '',
-                        'ajaxCallback' => 'reInitTableEcomCurrency();',
-                        'filters' => array(
-                            'left' => array(
-                                'country-table-limit' => array(
+                        'ajaxCallback' => 'reInitTableEcomCurrency(];',
+                        'filters' => [
+                            'left' => [
+                                'country-table-limit' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComCurrency',
                                     'action' => 'render-currency-table-filter-limit',
-                                ),
-                            ),
-                            'center' => array(
-                                'country-table-search' => array(
+                                ],
+                            ],
+                            'center' => [
+                                'country-table-search' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComCurrency',
                                     'action' => 'render-currency-table-filter-search',
-                                ),
-                            ),
-                            'right' => array(
-                                'country-table-refresh' => array(
+                                ],
+                            ],
+                            'right' => [
+                                'country-table-refresh' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComCurrency',
                                     'action' => 'render-currency-table-filter-refresh',
-                                ),
-                            ),
-                        ),
-                        'columns' => array(
-                            'cur_id' => array(
+                                ],
+                            ],
+                        ],
+                        'columns' => [
+                            'cur_id' => [
                                 'text' => 'tr_meliscommerce_currency_id',
-                                'css' => array('width' => '1%', 'padding-right' => '0'),
+                                'css' => ['width' => '1%', 'padding-right' => '0'],
                                 'sortable' => true,
                         
-                            ),
-                            'cur_default' => array(
+                            ],
+                            'cur_default' => [
                                 'text' => 'tr_meliscommerce_currency_default',
-                                'css' => array('width' => '3%', 'padding-right' => '0'),
+                                'css' => ['width' => '3%', 'padding-right' => '0'],
                                 'sortable' => true,
 
-                            ),
-                            'cur_status' => array(
+                            ],
+                            'cur_status' => [
                                 'text' => 'tr_meliscommerce_product_list_col_status',
-                                'css' => array('width' => '10%', 'padding-right' => '0'),
+                                'css' => ['width' => '10%', 'padding-right' => '0'],
                                 'sortable' => true,
 
-                            ),
-                            'cur_symbol' => array(
+                            ],
+                            'cur_symbol' => [
                                 'text' => 'tr_meliscommerce_currency_symbol',
-                                'css' => array('width' => '10%', 'padding-right' => '0'),
+                                'css' => ['width' => '10%', 'padding-right' => '0'],
                                 'sortable' => true,
-                            ),
-                            'cur_code' => array(
+                            ],
+                            'cur_code' => [
                                 'text' => 'tr_meliscommerce_currency_code',
-                                'css' => array('width' => '10%', 'padding-right' => '0'),
+                                'css' => ['width' => '10%', 'padding-right' => '0'],
                                 'sortable' => true,
-                            ),
-                            'cur_name' => array(
+                            ],
+                            'cur_name' => [
                                 'text' => 'tr_meliscommerce_currency_name',
-                                'css' => array('width' => '49%', 'padding-right' => '0'),
+                                'css' => ['width' => '49%', 'padding-right' => '0'],
                                 'sortable' => true,
                             
-                            ),
+                            ],
 
-                        ),
-                        'searchables' => array('cur_id', 'cur_name', 'cur_code', 'cur_symbol'),
-                        'actionButtons' => array(
-                            'default' => array(
+                        ],
+                        'searchables' => ['cur_id', 'cur_name', 'cur_code', 'cur_symbol'],
+                        'actionButtons' => [
+                            'default' => [
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComCurrency',
                                 'action' => 'render-currency-content-action-default',
-                            ),
-                            'edit' => array(
+                            ],
+                            'edit' => [
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComCurrency',
                                 'action' => 'render-currency-content-action-edit',
-                            ),
-                            'delete' => array(
+                            ],
+                            'delete' => [
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComCurrency',
                                 'action' => 'render-currency-content-action-delete',
-                            ),
-                        ),
-                    ),
-                    'modals' => array(),
-                    'forms' => array(
-                        'meliscommerce_currency_form' => array(
-                            'attributes' => array(
+                            ],
+                        ],
+                    ],
+                    'modals' => [],
+                    'forms' => [
+                        'meliscommerce_currency_form' => [
+                            'attributes' => [
                                 'name' => 'ecomCurrencyForm',
                                 'id' => 'ecomCurrencyForm',
                                 'method' => 'POST',
                                 'action' => '',
-                            ),
-                            'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
-                            'elements' => array(
-                                array(
-                                    'spec' => array(
+                            ],
+                            'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                            'elements' => [
+                                [
+                                    'spec' => [
                                         'name' => 'cur_id',
                                         'type' => 'hidden',
-                                        'options' => array(
-                                        ),
-                                        'attributes' => array(
+                                        'options' => [
+                                        ],
+                                        'attributes' => [
                                             'id' => 'id_cur_id',
-                                        ),
-                                    ),
-                                ),
-                                array(
-                                    'spec' => array(
+                                        ],
+                                    ],
+                                ],
+                                [
+                                    'spec' => [
                                         'name' => 'tmp_cur_code',
                                         'type' => 'hidden',
-                                        'options' => array(
-                                        ),
-                                        'attributes' => array(
+                                        'options' => [
+                                        ],
+                                        'attributes' => [
                                             'id' => 'id_tmp_cur_code',
-                                        ),
-                                    ),
-                                ),
-                                array(
-                                    'spec' => array(
+                                        ],
+                                    ],
+                                ],
+                                [
+                                    'spec' => [
                                         'name' => 'cur_code',
                                         'type' => 'MelisText',
-                                        'options' => array(
+                                        'options' => [
                                             'label' => 'tr_meliscommerce_currency_code',
                                             'tooltip' => 'tr_meliscommerce_currency_code tooltip',
-                                        ),
-                                        'attributes' => array(
+                                        ],
+                                        'attributes' => [
                                             'id' => 'id_cur_name',
                                             'value' => '',
                                             'required' => 'required',
-                                        ),
-                                    ),
-                                ),
+                                        ],
+                                    ],
+                                ],
                                 
-                                array(
-                                    'spec' => array(
+                                [
+                                    'spec' => [
                                         'name' => 'cur_name',
                                         'type' => 'MelisText',
-                                        'options' => array(
+                                        'options' => [
                                             'label' => 'tr_meliscommerce_currency_name',
                                             'tooltip' => 'tr_meliscommerce_currency_name tooltip',
-                                        ),
-                                        'attributes' => array(
+                                        ],
+                                        'attributes' => [
                                             'id' => 'id_cur_name',
                                             'value' => '',
                                             'required' => 'required',
-                                        ),
-                                    ),
-                                ),
+                                        ],
+                                    ],
+                                ],
                                 
-                                array(
-                                    'spec' => array(
+                                [
+                                    'spec' => [
                                         'name' => 'cur_symbol',
                                         'type' => 'MelisText',
-                                        'options' => array(
+                                        'options' => [
                                             'label' => 'tr_meliscommerce_currency_symbol',
                                             'tooltip' => 'tr_meliscommerce_currency_symbol tooltip',
-                                        ),
-                                        'attributes' => array(
+                                        ],
+                                        'attributes' => [
                                             'id' => 'id_cur_symbol',
                                             'value' => '',
                                             'required' => 'required',
-                                        ),
-                                    ),
-                                ),
+                                        ],
+                                    ],
+                                ],
 
-                            ),
-                            'input_filter' => array(
-                                'cur_code' => array(
+                            ],
+                            'input_filter' => [
+                                'cur_code' => [
                                     'name'     => 'cur_code',
                                     'required' => true,
-                                    'validators' => array(
-                                        array(
+                                    'validators' => [
+                                        [
                                             'name'    => 'StringLength',
-                                            'options' => array(
+                                            'options' => [
                                                 'encoding' => 'UTF-8',
                                                 'max'      => 8,
-                                                'messages' => array(
-                                                    \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_currency_code_long',
-                                                ),
-                                            ),
-                                        ),
-                                        array(
+                                                'messages' => [
+                                                    \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_currency_code_long',
+                                                ],
+                                            ],
+                                        ],
+                                        [
                                             'name' => 'NotEmpty',
-                                            'options' => array(
-                                                'messages' => array(
-                                                    \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_currency_code_empty',
-                                                ),
-                                            ),
-                                        ),
-                                    ),
-                                    'filters'  => array(
-                                        array('name' => 'StripTags'),
-                                        array('name' => 'StringTrim'),
-                                    ),
-                                ),
-                                'cur_name' => array(
+                                            'options' => [
+                                                'messages' => [
+                                                    \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_currency_code_empty',
+                                                ],
+                                            ],
+                                        ],
+                                    ],
+                                    'filters'  => [
+                                        ['name' => 'StripTags'],
+                                        ['name' => 'StringTrim'],
+                                    ],
+                                ],
+                                'cur_name' => [
                                     'name'     => 'cur_name',
                                     'required' => true,
-                                    'validators' => array(
-                                        array(
+                                    'validators' => [
+                                        [
                                             'name'    => 'StringLength',
-                                            'options' => array(
+                                            'options' => [
                                                 'encoding' => 'UTF-8',
                                                 'max'      => 45,
-                                                'messages' => array(
-                                                    \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_currency_name_long',
-                                                ),
-                                            ),
-                                        ),
-                                        array(
+                                                'messages' => [
+                                                    \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_currency_name_long',
+                                                ],
+                                            ],
+                                        ],
+                                        [
                                             'name' => 'NotEmpty',
-                                            'options' => array(
-                                                'messages' => array(
-                                                    \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_currency_name_empty',
-                                                ),
-                                            ),
-                                        ),
-                                    ),
-                                    'filters'  => array(
-                                        array('name' => 'StripTags'),
-                                        array('name' => 'StringTrim'),
-                                    ),
-                                ),
-                                'cur_symbol' => array(
+                                            'options' => [
+                                                'messages' => [
+                                                    \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_currency_name_empty',
+                                                ],
+                                            ],
+                                        ],
+                                    ],
+                                    'filters'  => [
+                                        ['name' => 'StripTags'],
+                                        ['name' => 'StringTrim'],
+                                    ],
+                                ],
+                                'cur_symbol' => [
                                     'name'     => 'cur_symbol',
                                     'required' => true,
-                                    'validators' => array(
-                                        array(
+                                    'validators' => [
+                                        [
                                             'name'    => 'StringLength',
-                                            'options' => array(
+                                            'options' => [
                                                 'encoding' => 'UTF-8',
                                                 'max'      => 5,
-                                                'messages' => array(
-                                                    \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_currency_symbol_long',
-                                                ),
-                                            ),
-                                        ),
-                                        array(
+                                                'messages' => [
+                                                    \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_currency_symbol_long',
+                                                ],
+                                            ],
+                                        ],
+                                        [
                                             'name' => 'NotEmpty',
-                                            'options' => array(
-                                                'messages' => array(
-                                                    \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_currency_symbol_empty',
-                                                ),
-                                            ),
-                                        ),
-                                    ),
-                                    'filters'  => array(
-                                        array('name' => 'StripTags'),
-                                        array('name' => 'StringTrim'),
-                                    ),
-                                ),
-                            ),
-                        ),
-                    ),
-                ),
-            ),
-        ),
-    ),
-);
+                                            'options' => [
+                                                'messages' => [
+                                                    \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_currency_symbol_empty',
+                                                ],
+                                            ],
+                                        ],
+                                    ],
+                                    'filters'  => [
+                                        ['name' => 'StripTags'],
+                                        ['name' => 'StringTrim'],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
+];

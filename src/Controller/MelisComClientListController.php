@@ -9,11 +9,11 @@
 
 namespace MelisCommerce\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Session\Container;
-use Zend\Http\Response;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\Session\Container;
+use Laminas\Http\Response;
+use MelisCore\Controller\AbstractActionController;
 
 class MelisComClientListController extends AbstractActionController
 {
@@ -22,7 +22,7 @@ class MelisComClientListController extends AbstractActionController
     /**
      * Render Client List Page
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientListPageAction()
     {
@@ -35,7 +35,7 @@ class MelisComClientListController extends AbstractActionController
     /**
      * Render Client List Header
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientListHeaderAction()
     {
@@ -48,7 +48,7 @@ class MelisComClientListController extends AbstractActionController
     /**
      * Render Client Add Client Button
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientListAddClientAction()
     {
@@ -60,7 +60,7 @@ class MelisComClientListController extends AbstractActionController
     
     /**
      * Render client widgets container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientListWidgetsAction()
     {
@@ -72,11 +72,11 @@ class MelisComClientListController extends AbstractActionController
     
     /**
      * renders the client list page client count widget
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientListWidgetsNumClientsAction()
     {
-        $clientSvc = $this->getServiceLocator()->get('MelisComClientService');
+        $clientSvc = $this->getServiceManager()->get('MelisComClientService');
         $clientCount = $clientSvc->getClientList();
         $view = new ViewModel();
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -87,11 +87,11 @@ class MelisComClientListController extends AbstractActionController
     
     /**
      * renders the client list page monthly clients
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientListWidgetsMonthClientsAction()
     {
-        $clientSvc = $this->getServiceLocator()->get('MelisComClientService');
+        $clientSvc = $this->getServiceManager()->get('MelisComClientService');
         $clientCount = $clientSvc->getWidgetClients('curMonth');
         $view = new ViewModel();
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -102,11 +102,11 @@ class MelisComClientListController extends AbstractActionController
     
     /**
      * renders the client list page average client count
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientListWidgetsAvgClientsAction()
     {
-        $clientSvc = $this->getServiceLocator()->get('MelisComClientService');
+        $clientSvc = $this->getServiceManager()->get('MelisComClientService');
         $clientCount = $clientSvc->getWidgetClients('avgMonth');
     
         $view = new ViewModel();
@@ -119,7 +119,7 @@ class MelisComClientListController extends AbstractActionController
     /**
      * Render Client List Content
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientListContentAction()
     {
@@ -132,16 +132,16 @@ class MelisComClientListController extends AbstractActionController
     /**
      * Render Client List Table, This will generate DataTable plugin for listing of Clients
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientListTableAction()
     {
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $melisTool->setMelisToolKey(self::PLUGIN_INDEX, 'meliscommerce_clients_list');
         
         // DataTable costume configuration
         $columns = $melisTool->getColumns();
-        $translator = $this->serviceLocator->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         $columns['actions'] = array('text' => $translator->translate('tr_meliscommerce_clients_common_label_action'));
         
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -155,7 +155,7 @@ class MelisComClientListController extends AbstractActionController
     /**
      * Render Client List custom Table Limit dropdown
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientListTableLimitAction()
     {
@@ -168,7 +168,7 @@ class MelisComClientListController extends AbstractActionController
     /**
      * Render Client List Custom Table Search input
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientListTableSearchAction()
     {
@@ -181,7 +181,7 @@ class MelisComClientListController extends AbstractActionController
     /**
      * Render Client custom page refresh button, this button attach to table plugin
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientListTableExportAction()
     {
@@ -194,7 +194,7 @@ class MelisComClientListController extends AbstractActionController
     /**
      * Render Client custom page refresh button, this button attach to table plugin
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientListTableRefreshAction()
     {
@@ -207,7 +207,7 @@ class MelisComClientListController extends AbstractActionController
     /**
      * Render Client List view button for client info
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientListTableViewAction()
     {
@@ -219,7 +219,7 @@ class MelisComClientListController extends AbstractActionController
     
     /**
      * renders the client list modal container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientListModalAction()
     {
@@ -234,15 +234,15 @@ class MelisComClientListController extends AbstractActionController
     
     public function renderClientListContentExportFormAction()
     {
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $datepickerInit = $melisTool->datePickerInit('date_start');
         $datepickerInit .= $melisTool->datePickerInit('date_end');
         
         $view = new ViewModel();
-        $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_client_list_export_form','meliscommerce_client_list_export_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $clientExportForm = $factory->createForm($appConfigForm);
         
@@ -256,7 +256,7 @@ class MelisComClientListController extends AbstractActionController
     /**
      * This method will return the List of Clients
      * 
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function getClientListAction()
     {
@@ -272,12 +272,12 @@ class MelisComClientListController extends AbstractActionController
             $locale = $container['melis-lang-locale'];
             
             // Melis Translation Service Manager
-            $melisTranslation = $this->getServiceLocator()->get('MelisCoreTranslation');
+            $melisTranslation = $this->getServiceManager()->get('MelisCoreTranslation');
             // Client Service Managers
-            $melisComClientService = $this->getServiceLocator()->get('MelisComClientService');
-            $melisEcomClientTable = $this->getServiceLocator()->get('MelisEcomClientTable');
+            $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
+            $melisEcomClientTable = $this->getServiceManager()->get('MelisEcomClientTable');
             
-            $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+            $melisTool = $this->getServiceManager()->get('MelisCoreTool');
             $melisTool->setMelisToolKey(self::PLUGIN_INDEX, 'meliscommerce_clients_list');
             
             $colId = array_keys($melisTool->getColumns());
@@ -296,7 +296,7 @@ class MelisComClientListController extends AbstractActionController
             $search = $this->getRequest()->getPost('search');
             $search = $search['value'];
             
-           $melisEcomClientPersonTable = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
+           $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
             $dataCount = $melisEcomClientPersonTable->getTotalData();
         
             $getData = $melisEcomClientPersonTable->getClientList(array(
@@ -324,7 +324,7 @@ class MelisComClientListController extends AbstractActionController
             // store fetched data for data modification (if needed)
             $contactData = $getData->toArray();
              
-            $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
+            $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
             
             foreach ($contactData As $val)
             {
@@ -368,7 +368,7 @@ class MelisComClientListController extends AbstractActionController
     public function sendExportToCsvAction()
     {
 
-        $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
 
         $csvConfig = $melisCoreConfig->getItem('meliscommerce/datas/default/export/csv');
         $csvFileName = $csvConfig['clientFileName'];
@@ -395,14 +395,14 @@ class MelisComClientListController extends AbstractActionController
         $textMessage = 'tr_meliscommerce_client_export_fail';
         $textTitle = 'tr_meliscommerce_clients_Client_listing';
         
-        $tool = $this->getServiceLocator()->get('MelisCoreTool');
-        $clientSvc = $this->getServiceLocator()->get('MelisComClientService');
+        $tool = $this->getServiceManager()->get('MelisCoreTool');
+        $clientSvc = $this->getServiceManager()->get('MelisComClientService');
         
         $view = new ViewModel();
-        $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_client_list_export_form','meliscommerce_client_list_export_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $clientExportForm = $factory->createForm($appConfigForm);
         
@@ -509,7 +509,7 @@ class MelisComClientListController extends AbstractActionController
     public function clientsExportToCsvAction()
     {
         
-        $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         
         $csvConfig = $melisCoreConfig->getItem('meliscommerce/datas/default/export/csv');
         $csvFileName = $csvConfig['clientFileName'];

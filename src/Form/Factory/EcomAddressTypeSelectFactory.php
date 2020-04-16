@@ -9,17 +9,16 @@
 
 namespace MelisCommerce\Form\Factory;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\ServiceManager;
 use MelisCore\Form\Factory\MelisSelectFactory;
+
 /**
  * MelisCommerce Address Type Select
  */
 class EcomAddressTypeSelectFactory extends MelisSelectFactory
 {
-    protected function loadValueOptions(ServiceLocatorInterface $formElementManager)
+    protected function loadValueOptions(ServiceManager $serviceManager)
     {
-        $serviceManager = $formElementManager->getServiceLocator();
-        
         // Getting Current Langauge ID
         $melisTool = $serviceManager->get('MelisCoreTool');
         $langId = $melisTool->getCurrentLocaleID();
@@ -27,7 +26,7 @@ class EcomAddressTypeSelectFactory extends MelisSelectFactory
         $melisEcomClientAddressTypeTransTable = $serviceManager->get('MelisEcomClientAddressTypeTransTable');
         $ecomAddressType = $melisEcomClientAddressTypeTransTable->getEntryByField('catypt_lang_id', $langId);
 
-        $valueoptions = array();
+        $valueoptions = [];
         $max = $ecomAddressType->count();
         for ($i = 0; $i < $max; $i++)
         {

@@ -9,18 +9,17 @@
 
 namespace MelisCommerce\Form\Factory\Plugin;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\ServiceManager;
 use MelisCore\Form\Factory\MelisSelectFactory;
-use Zend\Session\Container;
+use Laminas\Session\Container;
+
 /**
  * MelisCommerce Attributes Select
  */
 class EcomPluginAttributeSelectFactory extends MelisSelectFactory
 {
-    protected function loadValueOptions(ServiceLocatorInterface $formElementManager)
+    protected function loadValueOptions(ServiceManager $serviceManager)
     {
-        $serviceManager = $formElementManager->getServiceLocator();
-        
         // Getting Current Langauge ID
         $container = new Container('melisplugins');
         $langId = $container['melis-plugins-lang-id'];
@@ -28,7 +27,7 @@ class EcomPluginAttributeSelectFactory extends MelisSelectFactory
         $attrSrv = $serviceManager->get('MelisComAttributeService');
         $attrs = $attrSrv->getAttributeListAndValues(null, true, true, $langId);
 
-        $valueoptions = array();
+        $valueoptions = [];
         foreach ($attrs As $val)
         {
             $valueoptions[$val->attr_id] = $val->atrans_name;

@@ -9,40 +9,46 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
-use Zend\Db\Sql\Where;
-use Zend\Db\Sql\Predicate\PredicateSet;
-use Zend\Db\Sql\Predicate\Like;
-use Zend\Db\Sql\Predicate\Operator;
-use Zend\Db\Sql\Predicate\Predicate;
+use Laminas\Db\TableGateway\TableGateway;
+use Laminas\Db\Sql\Where;
+use Laminas\Db\Sql\Predicate\PredicateSet;
+use Laminas\Db\Sql\Predicate\Like;
+use Laminas\Db\Sql\Predicate\Operator;
+use Laminas\Db\Sql\Predicate\Predicate;
 class MelisEcomCountryTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_country';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'ctry_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'ctry_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
+
     public function getCountries()
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         $select->columns(array('*'));
         $select->join('melis_ecom_currency', 'melis_ecom_currency.cur_id = melis_ecom_country.ctry_currency_id', array('cur_symbol'), $select::JOIN_LEFT);
         $select->where->equalTo('ctry_status', 1);
         $select->order('ctry_name ASC');
 
         
-        $resultSet = $this->tableGateway->selectWith($select);
+        $resultSet = $this->getTableGateway()->selectWith($select);
         
         return $resultSet;
     }
     
     public function getCountryCurrency($countryId, $status = null)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         $select->columns(array('*'));
         $select->join('melis_ecom_currency', 'melis_ecom_currency.cur_id = melis_ecom_country.ctry_currency_id', array('*'), $select::JOIN_LEFT);
         $select->where->equalTo('ctry_id', $countryId);
@@ -52,14 +58,14 @@ class MelisEcomCountryTable extends MelisEcomGenericTable
             $select->where->equalTo('melis_ecom_country.ctry_status', 1);
         }
 
-        $resultSet = $this->tableGateway->selectWith($select);
+        $resultSet = $this->getTableGateway()->selectWith($select);
         return $resultSet;
     }
     
     public function getCountryList(array $options, $fixedCriteria = null)
     {
-	    $select = $this->tableGateway->getSql()->select();
-	    $result = $this->tableGateway->select();
+	    $select = $this->getTableGateway()->getSql()->select();
+	    $result = $this->getTableGateway()->select();
 	
 	    $where = !empty($options['where']['key']) ? $options['where']['key'] : '';
 	    $whereValue = !empty($options['where']['value']) ? $options['where']['value'] : '';
@@ -96,7 +102,7 @@ class MelisEcomCountryTable extends MelisEcomGenericTable
              
             if(!empty($dateFilterSql))
             {
-                $filters = array(new PredicateSet($likes,PredicateSet::COMBINED_BY_OR), new \Zend\Db\Sql\Predicate\Expression($dateFilterSql));
+                $filters = array(new PredicateSet($likes,PredicateSet::COMBINED_BY_OR), new \Laminas\Db\Sql\Predicate\Expression($dateFilterSql));
             }
             else
             {
@@ -122,7 +128,7 @@ class MelisEcomCountryTable extends MelisEcomGenericTable
 	        $select->order($order . ' ' . $orderDir);
 	
 	        
-	    $getCount = $this->tableGateway->selectWith($select);
+	    $getCount = $this->getTableGateway()->selectWith($select);
 	    $this->setCurrentDataCount((int) $getCount->count());
 	    
 	    
@@ -130,9 +136,9 @@ class MelisEcomCountryTable extends MelisEcomGenericTable
         $select->limit($limit);
         $select->offset($start);
 
-        $resultSet = $this->tableGateway->selectWith($select);
+        $resultSet = $this->getTableGateway()->selectWith($select);
         
-        $sql = $this->tableGateway->getSql();
+        $sql = $this->getTableGateway()->getSql();
         $raw = $sql->getSqlstringForSqlObject($select);
         
         return $resultSet;
@@ -144,10 +150,10 @@ class MelisEcomCountryTable extends MelisEcomGenericTable
      * @param int $categoryId, Id of category
      * @param boolean $onlyValid, only return active country if true else return all
      * 
-     * @return NULL|\Zend\Db\ResultSet\ResultSetInterface
+     * @return NULL|\Laminas\Db\ResultSet\ResultSetInterface
      */
     public function getCategoryCountriesByCategoryId($categoryId, $onlyValid = false){
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         $select->columns(array('*'));
         
@@ -162,7 +168,7 @@ class MelisEcomCountryTable extends MelisEcomGenericTable
         
         $select->where('melis_ecom_country_category.ccat_category_id ='.$categoryId);
         
-        $dataCategory = $this->tableGateway->selectWith($select);
+        $dataCategory = $this->getTableGateway()->selectWith($select);
         return $dataCategory;
     }
     

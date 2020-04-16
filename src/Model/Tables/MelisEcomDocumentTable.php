@@ -9,36 +9,42 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomDocumentTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_document';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'doc_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'doc_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
+
     public function getDocumentAndType($documentId) 
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         $select->columns(array('*'));
         
         $select->join('melis_ecom_doc_type', 'melis_ecom_doc_type.dtype_id = melis_ecom_document.doc_type_id', array('*'), $select::JOIN_LEFT);
         
         $select->where(array('doc_id' => $documentId));
         
-        $resultSet = $this->tableGateway->selectwith($select);
+        $resultSet = $this->getTableGateway()->selectwith($select);
         
         return $resultSet;
     }
     
     public function getDocumentsRelationAndDocType($docRelation = 'product', $relationId, $typeCode = null)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         $select->columns(array('*'));
         $clause = array();
     
@@ -52,14 +58,14 @@ class MelisEcomDocumentTable extends MelisEcomGenericTable
        
        $select->where($clause);
     
-        $resultSet = $this->tableGateway->selectwith($select);
+        $resultSet = $this->getTableGateway()->selectwith($select);
     
         return $resultSet;
     }
     
     public function getDocumentRelationsAndDocSubType($docRelation = 'product', $relationId, $typeId = null, $subTypeId = null)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         $select->columns(array('*'));
         $clause = array();
         
@@ -78,20 +84,20 @@ class MelisEcomDocumentTable extends MelisEcomGenericTable
         
         $select->where($clause);
         
-        $resultSet = $this->tableGateway->selectwith($select);
+        $resultSet = $this->getTableGateway()->selectwith($select);
         
         return $resultSet;
     }
     
     public function getDocumentsByParentTypeId($docRelation, $docRelationId)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         $select->join('melis_ecom_doc_relations', 'melis_ecom_doc_relations.rdoc_doc_id = melis_ecom_document.doc_id', array('*'), $select::JOIN_LEFT);
         
         $select->where('melis_ecom_doc_relations.rdoc_'.$docRelation.'_id ='.$docRelationId);
                 
-        $resultSet = $this->tableGateway->selectwith($select);
+        $resultSet = $this->getTableGateway()->selectwith($select);
         
         return $resultSet;
     }
@@ -99,7 +105,7 @@ class MelisEcomDocumentTable extends MelisEcomGenericTable
     public function getDocumentsByRelationsAndTypes($docRelation, $relationId, $typeCode1 = null, $typeCode2 = array())
     {
         
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         $select->join('melis_ecom_doc_relations', 'melis_ecom_doc_relations.rdoc_doc_id = melis_ecom_document.doc_id', array('*'), $select::JOIN_LEFT)
         ->join('melis_ecom_doc_type', 'melis_ecom_doc_type.dtype_id = melis_ecom_document.doc_type_id', array('*'), $select::JOIN_LEFT)
@@ -115,6 +121,6 @@ class MelisEcomDocumentTable extends MelisEcomGenericTable
            $select->where->in('doc_sub_type.dtype_code', $typeCode2);
        }
 //        echo $this->getRawSql($select); die();
-       return $this->tableGateway->selectWith($select);
+       return $this->getTableGateway()->selectWith($select);
     }
 }

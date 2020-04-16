@@ -31,7 +31,7 @@ class MelisComLinksService extends MelisComGeneralService
 	    // Retrieve cache version if front mode to avoid multiple calls
 	    $cacheKey = 'getPageLink_' . $typeLink . '_' . $id . '_' . $langId . '_' . $absolute;
         $cacheConfig = 'commerce_memory_services';
-        $melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
         $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
         if (!empty($results)) return $results;
 	    
@@ -66,7 +66,7 @@ class MelisComLinksService extends MelisComGeneralService
 	    // Retrieve cache version if front mode to avoid multiple calls
 	    $cacheKey = 'getPageIdAssociated_' . $typeLink . '_' . $id . '_' . $langId;
         $cacheConfig = 'commerce_memory_services';
-        $melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
         $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
         if (!empty($results)) return $results;
 	    
@@ -108,7 +108,7 @@ class MelisComLinksService extends MelisComGeneralService
 	    // Retrieve cache version if front mode to avoid multiple calls
 	    $cacheKey = 'getPageLinkCategory_' . $id . '_' . $langId . '_' . $absolute;
         $cacheConfig = 'commerce_memory_services';
-        $melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
         $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
         if (!empty($results)) return $results;
 	    
@@ -120,7 +120,7 @@ class MelisComLinksService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_get_page_link_category_start', $arrayParameters);
     
         // Service implementation start
-        $melisComCategoryService = $this->getServiceLocator()->get('MelisComCategoryService');
+        $melisComCategoryService = $this->getServiceManager()->get('MelisComCategoryService');
         $catSeo = $melisComCategoryService->getParentCategory($id, array(), true, $langId, true);
 
         krsort($catSeo);
@@ -150,7 +150,7 @@ class MelisComLinksService extends MelisComGeneralService
             if (empty($pageId))
             {
                 // default one
-                $commerceConfig = $this->getServiceLocator()->get('config');
+                $commerceConfig = $this->getServiceManager()->get('config');
                 $defaultCategoryPage = $commerceConfig['plugins']['meliscommerce']['datas']['seo_default_pages']['category'];
                 $pageId = $defaultCategoryPage;
             }
@@ -186,7 +186,7 @@ class MelisComLinksService extends MelisComGeneralService
 	    // Retrieve cache version if front mode to avoid multiple calls
 	    $cacheKey = 'getPageLinkProduct_' . $id . '_' . $langId . '_' . $absolute;
         $cacheConfig = 'commerce_memory_services';
-        $melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
         $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
         if (!empty($results)) return $results;
 	    
@@ -198,7 +198,7 @@ class MelisComLinksService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_get_page_link_product_start', $arrayParameters);
     
         // Service implementation start
-        $melisComProductService = $this->getServiceLocator()->get('MelisComProductService');
+        $melisComProductService = $this->getServiceManager()->get('MelisComProductService');
         
         $productDatas = $melisComProductService->getProductTitleAndSeoById($id, $langId);
 
@@ -211,7 +211,7 @@ class MelisComLinksService extends MelisComGeneralService
                 $pageId = $productDatas->eseo_page_id;
             else
             {
-                $commerceConfig = $this->getServiceLocator()->get('config');
+                $commerceConfig = $this->getServiceManager()->get('config');
                 $defaultProductPage = $commerceConfig['plugins']['meliscommerce']['datas']['seo_default_pages']['product'];
                 $pageId = $defaultProductPage;
             }
@@ -260,7 +260,7 @@ class MelisComLinksService extends MelisComGeneralService
 	    // Retrieve cache version if front mode to avoid multiple calls
 	    $cacheKey = 'getPageLinkVariant_' . $id . '_' . $langId . '_' . $absolute;
         $cacheConfig = 'commerce_memory_services';
-        $melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
         $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
         if (!empty($results)) return $results;
 	    
@@ -272,7 +272,7 @@ class MelisComLinksService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_get_page_link_variant_start', $arrayParameters);
     
         // Service implementation start
-        $melisComVariantService = $this->getServiceLocator()->get('MelisComVariantService');
+        $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
         
         $variantDatas = $melisComVariantService->getVariantAndSeoById($id, $langId);
 
@@ -285,7 +285,7 @@ class MelisComLinksService extends MelisComGeneralService
                 $pageId = $variantDatas->eseo_page_id;
             else
             {
-                $commerceConfig = $this->getServiceLocator()->get('config');
+                $commerceConfig = $this->getServiceManager()->get('config');
                 $defaultVariantPage = $commerceConfig['plugins']['meliscommerce']['datas']['seo_default_pages']['variant'];
                 $pageId = $defaultVariantPage;
             }
@@ -319,14 +319,14 @@ class MelisComLinksService extends MelisComGeneralService
 	    // Retrieve cache version if front mode to avoid multiple calls
 	    $cacheKey = 'assembleDomainAndLink_' . $id . '_' . $absolute . '_' . $pageUrl . '_' . $pageId . '_' . $link . '_' . $varName;
         $cacheConfig = 'commerce_memory_services';
-        $melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
         $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
         if (!empty($results)) return $results;
 	    
         // At this point, a pageId must have been found or it's an arror or misconfiguration
         if (!empty($pageId))
         {
-            $melisTree = $this->getServiceLocator()->get('MelisEngineTree');
+            $melisTree = $this->getServiceManager()->get('MelisEngineTree');
                 
             // if empty, no SEO url has been found, it's a classic url
             if ($pageUrl == '')

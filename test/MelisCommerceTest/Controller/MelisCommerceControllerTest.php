@@ -10,7 +10,7 @@
 namespace MelisCommerceTest\Controller;
 
 use MelisCore\ServiceManagerGrabber;
-use Zend\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
+use Laminas\Test\PHPUnit\Controller\AbstractHttpControllerTestCase;
 class MelisCommerceControllerTest extends AbstractHttpControllerTestCase
 {
     protected $traceError = false;

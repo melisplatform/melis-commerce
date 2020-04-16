@@ -11,11 +11,11 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
-use Zend\Paginator\Adapter\ArrayAdapter;
-use Zend\Paginator\Paginator;
-use Zend\Session\Container;
-use Zend\Stdlib\ArrayUtils;
-use Zend\View\Model\ViewModel;
+use Laminas\Paginator\Adapter\ArrayAdapter;
+use Laminas\Paginator\Paginator;
+use Laminas\Session\Container;
+use Laminas\Stdlib\ArrayUtils;
+use Laminas\View\Model\ViewModel;
 
 /**
  * This plugin implements the business logic of the
@@ -65,7 +65,7 @@ class MelisCommerceCartPlugin extends MelisTemplatingPlugin
      */
     public function front()
     {
-        $request = $this->getServiceLocator()->get('request');
+        $request = $this->getServiceManager()->get('request');
         
         $data = $this->getFormData();
         
@@ -80,12 +80,12 @@ class MelisCommerceCartPlugin extends MelisTemplatingPlugin
         $total = 0;
         $totalCurrency = '';
         
-        $ecomAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
-        $basketSrv = $this->getServiceLocator()->get('MelisComBasketService');
-        $prodSvc = $this->getServiceLocator()->get('MelisComProductService');
-//         $currencySvc = $this->getServiceLocator()->get('MelisComCurrencyService');
+        $ecomAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
+        $basketSrv = $this->getServiceManager()->get('MelisComBasketService');
+        $prodSvc = $this->getServiceManager()->get('MelisComProductService');
+//         $currencySvc = $this->$this->getServiceManager()->get('MelisComCurrencyService');
 
-        $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
+        $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
         
         $container = new Container('melisplugins');
         $lang = $container['melis-plugins-lang-id'];
@@ -181,8 +181,8 @@ class MelisCommerceCartPlugin extends MelisTemplatingPlugin
     public function createOptionsForms()
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
 
@@ -190,7 +190,7 @@ class MelisCommerceCartPlugin extends MelisTemplatingPlugin
         $render   = [];
         if (!empty($formConfig))
         {
-            $request = $this->getServiceLocator()->get('request');
+            $request = $this->getServiceManager()->get('request');
             $parameters = $request->getQuery()->toArray();
             if (!isset($parameters['validate'])){
                 $formData = $this->getFormData();
@@ -208,7 +208,7 @@ class MelisCommerceCartPlugin extends MelisTemplatingPlugin
                     $viewModelTab->modalForm = $form;
                     $viewModelTab->formData   = $formData;
 
-                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
                         'name' => $config['tab_title'],

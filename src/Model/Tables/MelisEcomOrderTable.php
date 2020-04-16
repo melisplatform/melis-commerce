@@ -9,36 +9,42 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
-use Zend\Db\Sql\Predicate\Predicate;
-use Zend\Db\Sql\Expression;
+use Laminas\Db\TableGateway\TableGateway;
+use Laminas\Db\Sql\Predicate\Predicate;
+use Laminas\Db\Sql\Expression;
 
 class MelisEcomOrderTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_order';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'ord_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'ord_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
-    public function getOrderList($orderStatusId = null, $onlyValid, $clientId = null, $clientPersonId = null, 
+
+    public function getOrderList($orderStatusId = null, $onlyValid, $clientId = null, $clientPersonId = null,
                                  $couponId = null, $reference = null, $start = 0, $limit = null, $order = 'ord_id', 
                                  $search = null, $startDate = null, $endDate = null)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         $select->quantifier('DISTINCT');
         $select->columns(array('ord_id'));
         
         //nested select for left join baskets
-        $basketQuery = new \Zend\Db\Sql\Select ('melis_ecom_order_basket');
+        $basketQuery = new \Laminas\Db\Sql\Select ('melis_ecom_order_basket');
         $basketQuery->columns(array('obas_order_id', 'products' => new Expression('sum(melis_ecom_order_basket.obas_quantity)')));
         $basketQuery->group('obas_order_id');
 
         //nested select for left join payments
-        $paymentQuery = new \Zend\Db\Sql\Select ('melis_ecom_order_payment');
+        $paymentQuery = new \Laminas\Db\Sql\Select ('melis_ecom_order_payment');
         $paymentQuery->columns(array('opay_order_id', 'price' => new Expression('sum(melis_ecom_order_payment.opay_price_total)')));
         $paymentQuery->group('opay_order_id');
 
@@ -116,13 +122,13 @@ class MelisEcomOrderTable extends MelisEcomGenericTable
 
 
 
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
     
     public function getOrderStatusByOrderId($orderId, $langId = null)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         $select->join('melis_ecom_order_status', 'melis_ecom_order_status.osta_id=melis_ecom_order.ord_status',
             array('*'),$select::JOIN_LEFT);
@@ -136,19 +142,19 @@ class MelisEcomOrderTable extends MelisEcomGenericTable
             $select->where('ostt_lang_id ='.$langId);
         }
 //         echo $select->getSqlString();die();
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
     
     public function getClientLastOrderByClientId($clientID)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         $select->where('ord_client_id ='. $clientID);
         $select->order('ord_id DESC');
         $select->limit(1);
         
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
 
@@ -158,7 +164,7 @@ class MelisEcomOrderTable extends MelisEcomGenericTable
      */
     public function getCurrentMonth($onlyValid = null)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         $select->where('YEAR(ord_date_creation) = YEAR(CURRENT_DATE())');
         $select->where('MONTH(ord_date_creation) = MONTH(CURRENT_DATE())');
 
@@ -166,7 +172,7 @@ class MelisEcomOrderTable extends MelisEcomGenericTable
             $select->where('ord_status != -1');
         }
 
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
 
@@ -181,14 +187,14 @@ class MelisEcomOrderTable extends MelisEcomGenericTable
             $sql .= 'where ord_status != -1 ';
         }
         $sql .= 'group by YEAR(`ord_date_creation`), MONTH(`ord_date_creation`)) AS average';
-        $resultData = $this->tableGateway->getAdapter()->driver->getConnection()->execute($sql);
+        $resultData = $this->getTableGateway()->getAdapter()->driver->getConnection()->execute($sql);
     
         return $resultData;
     }
     
     public function getClientOrderDetailsById($orderId, $clientId, $personId = null, $langId = null)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         $join = new Expression('melis_ecom_order_status.osta_id = melis_ecom_order.ord_status');
         $select->join('melis_ecom_order_status', $join, array('*'),$select::JOIN_LEFT);
@@ -216,40 +222,40 @@ class MelisEcomOrderTable extends MelisEcomGenericTable
             $select->where('ord_client_person_id ='.$personId);
         }
         
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
     
     public function getOrderPaymentWithTypeAndCouponByOrderId($orderId)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         
         $select->where('ord_id ='.$orderId);
         
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
     
     public function getOrderCouponByOrderId($orderId)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         $select->join('melis_ecom_coupon_order', 'melis_ecom_coupon_order.cord_order_id=melis_ecom_order.ord_id',
             array('*'),$select::JOIN_LEFT);
         
         $select->where('melis_ecom_coupon_order.cord_order_id ='.$orderId);
         
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
 
     public function getOrdersDataByDate($order = 'ASC')
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         $select->order(array('ord_date_creation' => $order));
 
-        $resultSet = $this->tableGateway->selectWith($select);
+        $resultSet = $this->getTableGateway()->selectWith($select);
         return $resultSet;
     }
 

@@ -9,19 +9,25 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomCivilityTransTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_civility_trans';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'civt_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'civt_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
+
     public function getCivilityByLangId($langId = null)
     {
         $select = $this->tableGateway->getSql()->select();

@@ -9,22 +9,28 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomVariantStockTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_variant_stock';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'stock_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'stock_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
+
     public function getStocksByVariantId($variantId, $countryId = null)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         $select->columns(array('*'));
         $clause = array();
         
@@ -37,7 +43,7 @@ class MelisEcomVariantStockTable extends MelisEcomGenericTable
             $select->where($clause);
         }
         
-        $resultSet = $this->tableGateway->selectwith($select);
+        $resultSet = $this->getTableGateway()->selectwith($select);
 
         return $resultSet;
     }

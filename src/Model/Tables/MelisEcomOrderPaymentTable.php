@@ -9,22 +9,28 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomOrderPaymentTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_order_payment';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'opay_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'opay_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
+
     public function getOrderPaymentByOrderId($orderId)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         $select->join('melis_ecom_order_payment_type', 'melis_ecom_order_payment_type.opty_id=melis_ecom_order_payment.opay_payment_type_id',
             array('*'),$select::JOIN_LEFT);
@@ -32,7 +38,7 @@ class MelisEcomOrderPaymentTable extends MelisEcomGenericTable
         $select->where('opay_order_id ='.$orderId);
         $select->order('opay_date_payment');
         
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
 }

@@ -9,16 +9,16 @@
 
 namespace MelisCommerce\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Session\Container;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\Session\Container;
+use MelisCore\Controller\AbstractActionController;
 
 class MelisComAttributeListController extends AbstractActionController
 {
     /**
      * renders the attribute list page container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeListPageAction()
     {
@@ -30,7 +30,7 @@ class MelisComAttributeListController extends AbstractActionController
     
     /**
      * renders the attribute list page header container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeListHeaderContainerAction()
     {
@@ -42,7 +42,7 @@ class MelisComAttributeListController extends AbstractActionController
     
     /**
      * renders the attribute list page left header container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeListHeaderLeftContainerAction()
     {
@@ -63,7 +63,7 @@ class MelisComAttributeListController extends AbstractActionController
         $textTitle = 'tr_meliscommerce_attribute_list_page';
         $this->getEventManager()->trigger('meliscommerce_attribute_delete_start', $this, array());
 
-        $attributeSvc = $this->getServiceLocator()->get('MelisComAttributeService');
+        $attributeSvc = $this->getServiceManager()->get('MelisComAttributeService');
 
         $response = array(
             'success' => $success,
@@ -79,7 +79,7 @@ class MelisComAttributeListController extends AbstractActionController
 
     /**
      * renders the attribute list page left header container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeListHeaderRightContainerAction()
     {
@@ -91,7 +91,7 @@ class MelisComAttributeListController extends AbstractActionController
     
     /**
      * renders the attribute list page header title
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeListHeaderTitleAction()
     {
@@ -103,7 +103,7 @@ class MelisComAttributeListController extends AbstractActionController
     
     /**
      * renders the add new attribute button
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeListAddAttributeAction()
     {
@@ -112,7 +112,7 @@ class MelisComAttributeListController extends AbstractActionController
     
     /**
      * renders the attribute list page content container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeListContentAction()
     {
@@ -124,7 +124,7 @@ class MelisComAttributeListController extends AbstractActionController
     
     /**
      * renders the attribute list page table
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeListContentTableAction()
     {
@@ -140,7 +140,7 @@ class MelisComAttributeListController extends AbstractActionController
     
     /**
      * renders the attribute list content table filter limit
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeListContentFilterLimitAction()
     {
@@ -149,7 +149,7 @@ class MelisComAttributeListController extends AbstractActionController
     
     /**
      * renders the attribute list content table filter search
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeListContentFilterSearchAction()
     {
@@ -158,7 +158,7 @@ class MelisComAttributeListController extends AbstractActionController
     
     /**
      * renders the attribute list content table filter refresh
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeListContentFilterRefreshAction()
     {
@@ -167,7 +167,7 @@ class MelisComAttributeListController extends AbstractActionController
     
     /**
      * renders the attribute list content table action info
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeListContentActionInfoAction()
     {
@@ -176,7 +176,7 @@ class MelisComAttributeListController extends AbstractActionController
     
     /**
      * renders the attribute list content table action delete
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeListContentActionDeleteAction()
     {
@@ -185,7 +185,7 @@ class MelisComAttributeListController extends AbstractActionController
     
     /**
      * retrieves the data for the attribute list table
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function getAttributeListDataAction()
     {
@@ -196,8 +196,8 @@ class MelisComAttributeListController extends AbstractActionController
         $draw = 0;
         $tableData = array();
         $langId = $this->getTool()->getCurrentLocaleID();
-        $attributeSvc = $this->getServiceLocator()->get('MelisComAttributeService');
-        $attributeTypeTable = $this->getServiceLocator()->get('MelisEcomAttributeTypeTable');
+        $attributeSvc = $this->getServiceManager()->get('MelisComAttributeService');
+        $attributeTypeTable = $this->getServiceManager()->get('MelisEcomAttributeTypeTable');
         $checked = '<span class="text-danger"><i class="fa fa-check"></i></span>';
         
         if($this->getRequest()->isPost()) {
@@ -289,7 +289,7 @@ class MelisComAttributeListController extends AbstractActionController
         $textTitle = 'tr_meliscommerce_attribute_list_page';
         $this->getEventManager()->trigger('meliscommerce_attribute_delete_start', $this, array());
         
-        $attributeSvc = $this->getServiceLocator()->get('MelisComAttributeService');
+        $attributeSvc = $this->getServiceManager()->get('MelisComAttributeService');
         
         if($this->getRequest()->isPost()){
             $postValues = get_object_vars($this->getRequest()->getPost());
@@ -320,7 +320,7 @@ class MelisComAttributeListController extends AbstractActionController
      */
     private function getTool()
     {
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_attribute_list');
     
         return $melisTool;

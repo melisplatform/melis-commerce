@@ -9,22 +9,28 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomAttributeValueTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_attribute_value';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'atval_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'atval_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
+
     public function getAttributeValuesById($attributeValueId)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         $select->columns(array('*'));
         $clause = array();
         
@@ -35,14 +41,14 @@ class MelisEcomAttributeValueTable extends MelisEcomGenericTable
             $select->where($clause);
         }
         
-        $resultSet = $this->tableGateway->selectwith($select);
+        $resultSet = $this->getTableGateway()->selectwith($select);
         
         return $resultSet;
     }
     
     public function getAttributeValuesList($attributeId = null, $langId = null, $start = null, $limit = null, $order = null, $search = null, $valCol = null)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         $clause = array();
         $select->quantifier('DISTINCT');
 
@@ -79,27 +85,27 @@ class MelisEcomAttributeValueTable extends MelisEcomGenericTable
             $select->order($order);
         }
         
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
     
     public function getUsedAttributeValuesByProduct($productId, $attributeId, $langId = null)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         $select->quantifier('DISTINCT');
         $select->join('melis_ecom_variant_attribute_value', 'melis_ecom_variant_attribute_value.vatv_attribute_value_id = melis_ecom_attribute_value.atval_id', array(), $select::JOIN_LEFT)
         ->join('melis_ecom_variant', 'melis_ecom_variant.var_id = melis_ecom_variant_attribute_value.vatv_variant_id', array(), $select::JOIN_LEFT);
         
         $select->where->equalTo('melis_ecom_attribute_value.atval_attribute_id', $attributeId);
         $select->where->equalTo('melis_ecom_variant.var_prd_id', $productId);
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
     
         return $resultData;
     }
     
     public function getAttributeValuesByAttributeId($attributeId, $langId)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         $select ->join('melis_ecom_attribute_type', 'melis_ecom_attribute_type.atype_id = melis_ecom_attribute_value.atval_type_id', array('atype_column_value'), $select::JOIN_LEFT)
         ->join('melis_ecom_attribute_value_trans', 'melis_ecom_attribute_value_trans.av_attribute_value_id = melis_ecom_attribute_value.atval_id', array('*'), $select::JOIN_LEFT);
@@ -108,14 +114,14 @@ class MelisEcomAttributeValueTable extends MelisEcomGenericTable
         
         $select->where->equalTo('melis_ecom_attribute_value_trans. avt_lang_id', $langId);
         
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
         
         return $resultData;
     }
 
     public function getParentAttributeByAttrId($attributeValueId)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         $select->columns(array('*'));
         $clause = array();
 
@@ -126,7 +132,7 @@ class MelisEcomAttributeValueTable extends MelisEcomGenericTable
             $select->where($clause);
         }
 
-        $resultSet = $this->tableGateway->selectwith($select);
+        $resultSet = $this->getTableGateway()->selectwith($select);
 
         return $resultSet;
     }

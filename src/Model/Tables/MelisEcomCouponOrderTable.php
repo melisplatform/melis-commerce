@@ -9,33 +9,39 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomCouponOrderTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_coupon_order';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'cord_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'cord_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
+
     public function checkUsedClientCoupon($couponId, $clientId)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         $select->join('melis_ecom_order', 'melis_ecom_order.ord_id = melis_ecom_coupon_order.cord_order_id', array('*'), $select::JOIN_LEFT);
         $select->where('melis_ecom_coupon_order.cord_coupon_id ='.$couponId);
         $select->where('melis_ecom_order.ord_client_id ='.$clientId);
         
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
     
     public function getAssociatedBasketItem($couponId, $orderId)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         $select->join('melis_ecom_order_basket', 'melis_ecom_order_basket.obas_id = melis_ecom_coupon_order.cord_basket_id', array('*'), $select::JOIN_LEFT);
         
@@ -43,14 +49,14 @@ class MelisEcomCouponOrderTable extends MelisEcomGenericTable
         
         $select->where->equalTo('melis_ecom_coupon_order.cord_order_id', $orderId);
         
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
         
         return $resultData;
     }
     
     public function getCouponDiscountedBasketItems($couponId, $orderId = null)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         $select->where->equalTo('cord_coupon_id', $couponId);
         
@@ -58,7 +64,7 @@ class MelisEcomCouponOrderTable extends MelisEcomGenericTable
             $select->where->equalTo('cord_order_id', $orderId);
         }
         
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
         
          return $resultData;
         

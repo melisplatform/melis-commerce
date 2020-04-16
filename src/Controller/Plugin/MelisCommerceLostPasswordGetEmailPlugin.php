@@ -12,11 +12,11 @@ namespace MelisCommerce\Controller\Plugin;
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
 
-use Zend\Mail\Message;
-use Zend\Mime\Message as MimeMessage;
-use Zend\Mime\Part as MimePart;
-use Zend\Mail\Transport\Sendmail;
-use Zend\View\Model\ViewModel;
+use Laminas\Mail\Message;
+use Laminas\Mime\Message as MimeMessage;
+use Laminas\Mime\Part as MimePart;
+use Laminas\Mail\Transport\Sendmail;
+use Laminas\View\Model\ViewModel;
 /**
  * This plugin implements the business logic of the
  * "lostPassword" plugin.
@@ -70,7 +70,7 @@ class MelisCommerceLostPasswordGetEmailPlugin extends MelisTemplatingPlugin
         $success = 0;
         $errors = array();
         
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
         $title = $translator->translate('tr_meliscommerce_plugin_lost_password_message');
         $message = '';
@@ -81,8 +81,8 @@ class MelisCommerceLostPasswordGetEmailPlugin extends MelisTemplatingPlugin
         $appConfigForm = (!empty($this->pluginFrontConfig['forms']['lost_password'])) ? $this->pluginFrontConfig['forms']['lost_password'] : array();
         $emailConfig = (!empty($formData['email'])) ? $formData['email'] : array();
         
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $lostPassword = $factory->createForm($appConfigForm);
         
@@ -101,9 +101,9 @@ class MelisCommerceLostPasswordGetEmailPlugin extends MelisTemplatingPlugin
             
             if ($lostPassword->isValid())
             {
-                $clientSrv = $this->getServiceLocator()->get('MelisComClientService');
+                $clientSrv = $this->getServiceManager()->get('MelisComClientService');
                 
-                $clientPersonTbl = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
+                $clientPersonTbl = $this->getServiceManager()->get('MelisEcomClientPersonTable');
                 
                 if(!empty($data['m_email']))
                 {
@@ -137,7 +137,7 @@ class MelisCommerceLostPasswordGetEmailPlugin extends MelisTemplatingPlugin
                         $emailConfig['email_content_tag_replace'] = array_merge($emailConfig['email_content_tag_replace'], $changePassConfig);
                         
                         // Sending email using MelisEngineSendMail Service
-                        $sendMailSvc = $this->getServiceLocator()->get('MelisEngineSendMail');
+                        $sendMailSvc = $this->getServiceManager()->get('MelisEngineSendMail');
                         $sendMailSvc->sendEmail(
                             $emailConfig['email_template_path'], $emailConfig['email_from'], $emailConfig['email_from_name'],
                             $emailConfig['email_to'], $emailConfig['email_to_name'], $emailConfig['email_subject'],
@@ -182,8 +182,8 @@ class MelisCommerceLostPasswordGetEmailPlugin extends MelisTemplatingPlugin
     public function createOptionsForms()
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
         
@@ -194,7 +194,7 @@ class MelisCommerceLostPasswordGetEmailPlugin extends MelisTemplatingPlugin
             foreach ($formConfig as $formKey => $config)
             {
                 $form = $factory->createForm($config);
-                $request = $this->getServiceLocator()->get('request');
+                $request = $this->getServiceManager()->get('request');
                 $parameters = $request->getQuery()->toArray();
                 
                 if (!isset($parameters['validate']))
@@ -205,7 +205,7 @@ class MelisCommerceLostPasswordGetEmailPlugin extends MelisTemplatingPlugin
                     $viewModelTab->modalForm = $form;
                     $viewModelTab->formData   = $this->getFormData();
                     
-                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
                         'name' => $config['tab_title'],

@@ -11,9 +11,9 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
-use Zend\Stdlib\ArrayUtils;
-use Zend\Session\Container;
-use Zend\View\Model\ViewModel;
+use Laminas\Stdlib\ArrayUtils;
+use Laminas\Session\Container;
+use Laminas\View\Model\ViewModel;
 /**
  * This plugin implements the business logic of the
  * "add to cart" plugin.
@@ -74,14 +74,14 @@ class MelisCommerceAddToCartPlugin extends MelisTemplatingPlugin
         
         $is_submit = ($this->pluginFrontConfig['m_add_to_cart_is_submit']) ? true : false;
         
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $addToCartForm = $factory->createForm($this->pluginFrontConfig['forms']['meliscommerce_add_to_cart_form']);
         
-        $ecomAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
-        $basketSrv = $this->getServiceLocator()->get('MelisComBasketService');
-        $translator = $this->getServiceLocator()->get('translator');
+        $ecomAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
+        $basketSrv = $this->getServiceManager()->get('MelisComBasketService');
+        $translator = $this->getServiceManager()->get('translator');
         
         $clientKey = $ecomAuthSrv->getId();
         $clientId = null;
@@ -120,7 +120,7 @@ class MelisCommerceAddToCartPlugin extends MelisTemplatingPlugin
             $varStock = 0;
             if ($variantId)
             {
-                $variantSrv = $this->getServiceLocator()->get('MelisComVariantService');
+                $variantSrv = $this->getServiceManager()->get('MelisComVariantService');
                 $varStock = $variantSrv->getVariantFinalStocks($variantId, $countryId);
                 
                 if ($varStock)
@@ -207,8 +207,8 @@ class MelisCommerceAddToCartPlugin extends MelisTemplatingPlugin
     public function createOptionsForms()
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
         
@@ -219,7 +219,7 @@ class MelisCommerceAddToCartPlugin extends MelisTemplatingPlugin
             foreach ($formConfig as $formKey => $config)
             {
                 $form = $factory->createForm($config);
-                $request = $this->getServiceLocator()->get('request');
+                $request = $this->getServiceManager()->get('request');
                 $parameters = $request->getQuery()->toArray();
                 
                 if (!isset($parameters['validate']))
@@ -230,7 +230,7 @@ class MelisCommerceAddToCartPlugin extends MelisTemplatingPlugin
                     $viewModelTab->modalForm = $form;
                     $viewModelTab->formData   = $this->getFormData();
                     
-                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
                         'name' => $config['tab_title'],

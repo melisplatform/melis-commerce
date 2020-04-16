@@ -9,7 +9,7 @@
 
 namespace MelisCommerce\Form\Factory;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\ServiceManager;
 use MelisCore\Form\Factory\MelisSelectFactory;
 
 /**
@@ -17,15 +17,13 @@ use MelisCore\Form\Factory\MelisSelectFactory;
  */
 class EcomCountriesSelectFactory extends MelisSelectFactory
 {
-	protected function loadValueOptions(ServiceLocatorInterface $formElementManager)
+	protected function loadValueOptions(ServiceManager $serviceManager)
 	{
-		$serviceManager = $formElementManager->getServiceLocator();
-
 		$melisEcomCountryTable = $serviceManager->get('MelisEcomCountryTable');
 		$ecomCountries = $melisEcomCountryTable->getCountries();
 
 		$translator = $serviceManager->get('translator');
-		$valueoptions = array();
+		$valueoptions = [];
 		$max = $ecomCountries->count();
 		$valueoptions[-1] = $translator->translate('tr_meliscommerce_documents_action_all_countries');
 		for ($i = 0; $i < $max; $i++)

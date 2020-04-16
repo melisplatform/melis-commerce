@@ -9,23 +9,29 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
-use Zend\Db\Sql\Where;
+use Laminas\Db\TableGateway\TableGateway;
+use Laminas\Db\Sql\Where;
 
 class MelisEcomAttributeTransTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_attribute_trans';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'atrans_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'atrans_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
+
     public function getAttributeTransById($attributeTransId, $langId = null)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         $select->columns(array('*'));
         $clause = array();
 
@@ -39,14 +45,14 @@ class MelisEcomAttributeTransTable extends MelisEcomGenericTable
             $select->where($clause);
         }
     
-        $resultSet = $this->tableGateway->selectwith($select);
+        $resultSet = $this->getTableGateway()->selectwith($select);
     
         return $resultSet;
     }
     
     public function getAttributeTransByAtributeId($attributeId, $langId = null)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         $select->columns(array('*'));
 
         $where = new Where();
@@ -61,7 +67,7 @@ class MelisEcomAttributeTransTable extends MelisEcomGenericTable
 
         $select->where($where);
     
-        $resultSet = $this->tableGateway->selectwith($select);
+        $resultSet = $this->getTableGateway()->selectwith($select);
     
         return $resultSet;
     }

@@ -1,147 +1,155 @@
-<?php 
-return array(
-    'plugins' => array(
-        'meliscommerce' => array(
-            'forms' => array(
-                'meliscommerce_categories' => array(
-                    'meliscommerce_categories_search_input' => array(
-                        'attributes' => array(
+<?php
+
+/**
+ * Melis Technology (http://www.melistechnology.com)
+ *
+ * @copyright Copyright (c) 2016 Melis Technology (http://www.melistechnology.com)
+ *
+ */
+
+return [
+    'plugins' => [
+        'meliscommerce' => [
+            'forms' => [
+                'meliscommerce_categories' => [
+                    'meliscommerce_categories_search_input' => [
+                        'attributes' => [
                             'name' => '',
                             'id' => 'categoryTreeViewSearchForm',
                             'method' => '',
                             'action' => '',
-                        ),
-                        'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
-                        'elements' => array(
-                            array(
-                                'spec' => array(
+                        ],
+                        'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                        'elements' => [
+                            [
+                                'spec' => [
                                     'name' => 'categoryTreeViewSearchInput',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => '',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'categoryTreeViewSearchInput',
                                         'placeholder' => 'tr_meliscommerce_categories_list_tree_view_search_input',
-                                    )
-                                )
-                            ),
-                        )
-                    ),
-                    'meliscommerce_categories_category_information_form' => array(
-                        'attributes' => array(
+                                    ]
+                                ]
+                            ],
+                        ]
+                    ],
+                    'meliscommerce_categories_category_information_form' => [
+                        'attributes' => [
                             'name' => '',
                             'id' => 'categoryMainInformationForm',
                             'method' => '',
                             'action' => '',
-                        ),
-                        'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
-                        'elements' => array(
-                            array(
-                                'spec' => array(
+                        ],
+                        'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                        'elements' => [
+                            [
+                                'spec' => [
                                     'name' => 'catt_id',
                                     'type' => 'hidden',
-                                )
-                            ),
-                            array(
-                                'spec' => array(
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'catt_lang_id',
                                     'type' => 'hidden',
-                                )
-                            ),
-                            array(
-                                'spec' => array(
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'catt_name',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_categories_category_information_form_cat_name',
                                         'tooltip' => 'tr_meliscommerce_categories_category_information_form_cat_name tooltip',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'catt_name',
-                                    )
-                                )
-                            ),
-                            array(
-                                'spec' => array(
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'catt_description',
                                     'type' => 'Textarea',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_categories_category_information_form_cat_desc',
                                         'tooltip' => 'tr_meliscommerce_categories_category_information_form_cat_desc tooltip',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'catt_description',
                                         'class' => 'form-control editme',
                                         'rows' => 10
-                                    )
-                                )
-                            ),
-                        ),
-                        'input_filter' => array(
-                            'catt_lang_id' => array(
+                                    ]
+                                ]
+                            ],
+                        ],
+                        'input_filter' => [
+                            'catt_lang_id' => [
                                 'name'     => 'catt_lang_id',
                                 'required' => true,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name' => 'NotEmpty',
-                                        'options' => array(
-                                            'messages' => array(
-                                                \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_categories_input_empty',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                        )
-                    ),
-                    'meliscommerce_categories_date_validty_form' => array(
-                        'attributes' => array(
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_categories_input_empty',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                        ]
+                    ],
+                    'meliscommerce_categories_date_validty_form' => [
+                        'attributes' => [
                             'name' => '',
                             'id' => '',
                             'method' => '',
                             'action' => '',
-                        ),
-                        'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
-                        'elements' => array(
-                            array(
-                                'spec' => array(
+                        ],
+                        'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                        'elements' => [
+                            [
+                                'spec' => [
                                     'name' => 'cat_date_valid_start',
                                     'type' => 'DateField',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_categories_category_valid_from',
                                         'tooltip' => 'tr_meliscommerce_categories_category_valid_from tooltip',
                                         'class' => 'd-flex flex-row justify-content-between'
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'dateId' => 'categoryValidateDates',
                                         'dateLabel' => 'tr_meliscommerce_categories_category_valid_from',
-                                    )
-                                )
-                            ),
-                            array(
-                                'spec' => array(
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'cat_date_valid_end',
                                     'type' => 'DateField',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_categories_category_valid_to',
                                         'tooltip' => 'tr_meliscommerce_categories_category_valid_to tooltip',
                                         'class' => 'd-flex flex-row justify-content-between'
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'dateId' => 'categoryValidateDates',
                                         'dateLabel' => 'tr_meliscommerce_categories_category_valid_to',
-                                    )
-                                )
-                            ),
-                        )
-                    ),
-                ),
-            ),
-        ),
-    ),
-);
+                                    ]
+                                ]
+                            ],
+                        ]
+                    ],
+                ],
+            ],
+        ],
+    ],
+];

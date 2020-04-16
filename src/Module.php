@@ -10,15 +10,15 @@
 namespace MelisCommerce;
 
 use MelisEngine\Service\MelisPageService;
-use Zend\Mvc\ModuleRouteListener;
-use Zend\Mvc\MvcEvent;
-use Zend\ModuleManager\ModuleManager;
-use Zend\Db\TableGateway\TableGateway;
-use Zend\Stdlib\Hydrator\ObjectProperty;
-use Zend\Db\ResultSet\HydratingResultSet;
-use Zend\Stdlib\ArrayUtils;
-use Zend\Session\Container;
-use Zend\ModuleManager\ModuleEvent;
+use Laminas\Mvc\ModuleRouteListener;
+use Laminas\Mvc\MvcEvent;
+use Laminas\ModuleManager\ModuleManager;
+use Laminas\Db\TableGateway\TableGateway;
+use Laminas\Stdlib\Hydrator\ObjectProperty;
+use Laminas\Db\ResultSet\HydratingResultSet;
+use Laminas\Stdlib\ArrayUtils;
+use Laminas\Session\Container;
+use Laminas\ModuleManager\ModuleEvent;
 
 use MelisCommerce\Listener\MelisCommerceCategoryListener;
 use MelisCommerce\Listener\MelisCommerceFlashMessengerListener;
@@ -61,69 +61,65 @@ class Module
         $moduleRouteListener->attach($eventManager);
         
         $container = new Container('meliscommerce');
-        $container['documents'] = array('docRelationType' => '', 'docRelationId' => 0);
+        $container['documents'] = ['docRelationType' => '', 'docRelationId' => 0];
         // Determines if Melis is loaded or Front is loaded
         $melisRoute = false;
         $sm = $e->getApplication()->getServiceManager();
         $routeMatch = $sm->get('router')->match($sm->get('request'));
         
-        if (!empty($routeMatch))
-        {
+        if (!empty($routeMatch)) {
             $routeName = $routeMatch->getMatchedRouteName();
             
             $module = explode('/', $routeName);
             
             $this->createTranslations($e, $routeMatch);
              
-            if (!empty($module[0]))
-            {
+            if (!empty($module[0])) {
                 if ($module[0] == 'melis-backoffice')
                     $melisRoute = true;
             }
         }
         
-        if ($melisRoute)
-        {
+        if ($melisRoute) {
             // attach listeners for Melis
-            $eventManager->attach(new MelisCommerceCategoryListener());
-            $eventManager->attach(new MelisCommerceFlashMessengerListener());
-            $eventManager->attach(new MelisCommerceSaveProductListener());
-            $eventManager->attach(new MelisCommerceValidateVariantListener());
-            $eventManager->attach(new MelisCommerceSaveOrderListener());
-            $eventManager->attach(new MelisCommerceSaveClientListener());
-            $eventManager->attach(new MelisCommerceSaveAttributeListener());
-            $eventManager->attach(new MelisCommerceProductPriceCountryDeletedListener());
-            $eventManager->attach(new MelisCommerceProductStockCountryDeletedListener());
-            $eventManager->attach(new MelisCommerceCategoryCountryLinkCountryDeletedListener());
-            $eventManager->attach(new MelisCommerceAttributeLanguageDeletedListener());
-            $eventManager->attach(new MelisCommerceCategoryLanguageDeletedListener());
-            $eventManager->attach(new MelisCommerceSEOLanguageDeletedListener());
-            $eventManager->attach(new MelisCommerceProductTextLanguageAddListener());
-            $eventManager->attach(new MelisCommerceProductTextLanguageDeleteListener());
-            $eventManager->attach(new MelisCommerceDocumentCountryDeletedListener());
-            $eventManager->attach(new MelisCommercePrdVarDuplicationListener());
-            $eventManager->attach(new MelisCommerceSaveProductStockEmailAlertListener());
+            (new MelisCommerceCategoryListener())->attach($eventManager);
+            (new MelisCommerceFlashMessengerListener())->attach($eventManager);
+            (new MelisCommerceSaveProductListener())->attach($eventManager);
+            (new MelisCommerceValidateVariantListener())->attach($eventManager);
+            (new MelisCommerceSaveOrderListener())->attach($eventManager);
+            (new MelisCommerceSaveClientListener())->attach($eventManager);
+            (new MelisCommerceSaveAttributeListener())->attach($eventManager);
+            (new MelisCommerceProductPriceCountryDeletedListener())->attach($eventManager);
+            (new MelisCommerceProductStockCountryDeletedListener())->attach($eventManager);
+            (new MelisCommerceCategoryCountryLinkCountryDeletedListener())->attach($eventManager);
+            (new MelisCommerceAttributeLanguageDeletedListener())->attach($eventManager);
+            (new MelisCommerceCategoryLanguageDeletedListener())->attach($eventManager);
+            (new MelisCommerceSEOLanguageDeletedListener())->attach($eventManager);
+            (new MelisCommerceProductTextLanguageAddListener())->attach($eventManager);
+            (new MelisCommerceProductTextLanguageDeleteListener())->attach($eventManager);
+            (new MelisCommerceDocumentCountryDeletedListener())->attach($eventManager);
+            (new MelisCommercePrdVarDuplicationListener())->attach($eventManager);
+            (new MelisCommerceSaveProductStockEmailAlertListener())->attach($eventManager);
             
-        }
-        else
-        {
+        } else {
             // attach listeners for Front
-            $eventManager->attach($sm->get('MelisCommerce\Listener\MelisCommerceSEOReformatToRoutePageUrlListener'));
-            $eventManager->attach($sm->get('MelisCommerce\Listener\MelisCommerceSEODispatchRouterCommerceUrlListener'));
-        
+            (new MelisCommerceSEOReformatToRoutePageUrlListener())->attach($eventManager);
+            (new MelisCommerceSEODispatchRouterCommerceUrlListener())->attach($eventManager);
+
+
             // Adding Commerce SEO meta datas to page
-            $eventManager->attach(new MelisCommerceSEOMetaPageListener());
+            (new MelisCommerceSEOMetaPageListener())->attach($eventManager);
             
             // Init session for services that uses session (checkout)
             $container = new Container('meliscommerce');
         }
         
-        $eventManager->attach(new MelisCommerceShipmentCostListener());
-        $eventManager->attach(new MelisCommerceCheckoutCouponListener());
-        $eventManager->attach(new MelisCommercePostCheckoutCouponListener());
-        $eventManager->attach(new MelisCommercePostPaymentListener());
-        $eventManager->attach(new MelisCommerceVariantCheckLowStockListener());
-        $eventManager->attach(new MelisCommerceVariantRestockListener());
+        (new MelisCommerceShipmentCostListener())->attach($eventManager);
+        (new MelisCommerceCheckoutCouponListener())->attach($eventManager);
+        (new MelisCommercePostCheckoutCouponListener())->attach($eventManager);
+        (new MelisCommercePostPaymentListener())->attach($eventManager);
+        (new MelisCommerceVariantCheckLowStockListener())->attach($eventManager);
+        (new MelisCommerceVariantRestockListener())->attach($eventManager);
         
     }
     
@@ -142,8 +138,7 @@ class Module
             if (!empty($tabUri[1]))
                 $uri1 = $tabUri[1];
             
-                if ($uri1 != 'melis')
-                {
+                if ($uri1 != 'melis') {
                     // No need of BO routes if we're in front
                     $configListener = $e->getConfigListener();
                     $config         = $configListener->getMergedConfig(false);
@@ -159,9 +154,8 @@ class Module
 
     public function getConfig()
     {
-
-    	$config = array();
-    	$configFiles = array(
+    	$config = [];
+    	$configFiles = [
 			include __DIR__ . '/../config/module.config.php',
 			include __DIR__ . '/../config/app.emails.php',
             include __DIR__ . '/../config/diagnostic.config.php',
@@ -261,7 +255,7 @@ class Module
             include __DIR__ . '/../config/dashboard-plugins/MelisCommerceDashboardPluginOrdersNumber.config.php',
             include __DIR__ . '/../config/dashboard-plugins/MelisCommerceDashboardPluginSalesRevenue.config.php',
             include __DIR__ . '/../config/dashboard-plugins/MelisCommerceDashboardPluginOrderMessages.config.php',
-    	);
+    	];
     	
     	foreach ($configFiles as $file) {
     		$config = ArrayUtils::merge($config, $file);
@@ -272,13 +266,13 @@ class Module
 
     public function getAutoloaderConfig()
     {
-        return array(
-            'Zend\Loader\StandardAutoloader' => array(
-                'namespaces' => array(
+        return [
+            'Laminas\Loader\StandardAutoloader' => [
+                'namespaces' => [
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
     }
     
     public function createTranslations($e, $routeMatch)
@@ -291,8 +285,7 @@ class Module
         // Checking if the Request is from Melis-BackOffice or Front
         $renderMode = (isset($param['renderMode'])) ? $param['renderMode'] : 'melis';
         $request = $sm->get('request');
-        if ($renderMode == 'melis')
-        {
+        if ($renderMode == 'melis') {
             // for templating plugins in page edition, page content lang. should be based from page lang.
             if ( (isset($param['renderType']) && isset($param['renderMode']) && isset($param['idpage']) ) || ($param['action'] == "getPlugin" && $param['controller'] == "MelisFront\Controller\MelisPluginRenderer")) {
                 $container = new Container('melisplugins');
@@ -301,21 +294,18 @@ class Module
                 $container = new Container('meliscore');
                 $locale = $container['melis-lang-locale'];
             }
-        }
-        else
-        {
+        } else {
             $container = new Container('melisplugins');
             $locale = $container['melis-plugins-lang-locale'];
         }
 
 
-        if(!empty($locale)) 
-        {   
+        if(!empty($locale)) {
             // Commerce sub modules langauge config
             // used to identify the folder and file name: 
             // Translation path:            module/MelisModuleConfig/languages/MelisCommerce/[locale].interface.[module].php'
             // Default translation path :   __DIR__ . '/../language/[module]/en_EN.interface.[module].php';
-            $commerceSubModules = array(
+            $commerceSubModules = [
                 'general',
                 'categories',
                 'products',
@@ -334,31 +324,31 @@ class Module
                 'assoc-var',
                 'duplication',
                 'settings',
-            );
+            ];
             
-            $translationType = array(
+            $translationType = [
                 'interface',
                 'forms',
-            );
+            ];
             
-            $translationList = array();
+            $translationList = [];
             if(file_exists($_SERVER['DOCUMENT_ROOT'].'/../module/MelisModuleConfig/config/translation.list.php')){
                 $translationList = include 'module/MelisModuleConfig/config/translation.list.php';
             }
             
             // Load translation files
-            foreach($commerceSubModules as $subModule){
+            foreach($commerceSubModules as $subModule) {
                 
-                foreach($translationType as $type){
+                foreach($translationType as $type) {
 
                     $transPath = '';
                     $moduleTrans = __NAMESPACE__."/$locale.$type.$subModule.php";
                     
-                    if(in_array($moduleTrans, $translationList)){
+                    if(in_array($moduleTrans, $translationList)) {
                         $transPath = "module/MelisModuleConfig/languages/".$moduleTrans;
                     }
                     
-                    if(empty($transPath)){
+                    if(empty($transPath)) {
                     
                         // if translation is not found, use melis default translations
                         $defaultLocale = (file_exists(__DIR__ . "/../language/$subModule/$locale.$type.$subModule.php"))? $locale : "en_EN";

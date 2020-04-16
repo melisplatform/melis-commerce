@@ -9,10 +9,10 @@
 
 namespace MelisCommerce\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\JsonModel;
-use Zend\Db\Sql\Sql;
-use Zend\Db\Adapter\Adapter as DbAdapter;
+use Laminas\View\Model\JsonModel;
+use Laminas\Db\Sql\Sql;
+use Laminas\Db\Adapter\Adapter as DbAdapter;
+use MelisCore\Controller\AbstractActionController;
 
 /**
  * Diagnostic controller.
@@ -216,7 +216,7 @@ class DiagnosticController extends AbstractActionController
     }
     private function getTranslationsForDiagnostic($translationKey, $args = array())
     {
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
 
 
         return $translationText;
@@ -280,7 +280,7 @@ class DiagnosticController extends AbstractActionController
 
     private function getTranslations($translationKey, $args = array())
     {
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         $translationText = vsprintf($translator->translate($translationKey), $args);
 
         return $translationText;

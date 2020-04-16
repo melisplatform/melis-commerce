@@ -9,15 +9,14 @@
 
 namespace MelisCommerce\Controller;
 
-use Zend\Json\Json;
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Session\Container;
+use Laminas\Json\Json;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\Session\Container;
+use MelisCore\Controller\AbstractActionController;
+
 class MelisComVariantListController extends AbstractActionController
 {
-
-    
     public function renderVariantListPageAction()
     {
     	$melisKey = $this->params()->fromRoute('melisKey', '');
@@ -28,7 +27,7 @@ class MelisComVariantListController extends AbstractActionController
     
     /**
      * renders the products variants tab table limit filter
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderProductsVariantTabTableLimitAction()
     {
@@ -37,7 +36,7 @@ class MelisComVariantListController extends AbstractActionController
     
     /**
      * renders the products variatns tab table search filter
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderProductsVariantTabTableSearchAction()
     {
@@ -46,7 +45,7 @@ class MelisComVariantListController extends AbstractActionController
     
     /**
      * renders the products variatns tab table list filter
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderProductsVariantTabTableListAction()
     {
@@ -55,7 +54,7 @@ class MelisComVariantListController extends AbstractActionController
     
     /**
      * renders the products variatns tab table Grid filter
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderProductsVariantTabTableGridAction()
     {
@@ -64,7 +63,7 @@ class MelisComVariantListController extends AbstractActionController
     
     /**
      * renders the products variatns tab table refresh filter
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderProductsVariantTabTableRefreshAction()
     {
@@ -73,7 +72,7 @@ class MelisComVariantListController extends AbstractActionController
     
     /**
      * renders the product variant table's edit button
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderToolVariantActionEditAction()
     {
@@ -82,7 +81,7 @@ class MelisComVariantListController extends AbstractActionController
     
     /**
      * renders the product variant tables' delete button
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderToolVariantActionDeleteAction()
     {
@@ -100,14 +99,14 @@ class MelisComVariantListController extends AbstractActionController
     
     /**
      * renders the products variants tab content container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderProductsPageContentTabVariantContentContainerAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
     
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_products');
         
         $columns = $melisTool->getColumns();
@@ -125,19 +124,19 @@ class MelisComVariantListController extends AbstractActionController
     /**
      * generates the data needed for variant list table
      * 
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function renderProductsVariantDataAction()
     {
         $getValues = get_object_vars($this->getRequest()->getQuery());//echo '<pre>'; print_r($this->getRequest()->getPost()); echo '</pre>'; die();
         $productId = $this->getRequest()->getPost('prodId');
-        $variantService = $this->getServiceLocator()->get('MelisComVariantService');
-        $attrSrv = $this->getServiceLocator()->get('MelisComAttributeService');
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $variantService = $this->getServiceManager()->get('MelisComVariantService');
+        $attrSrv = $this->getServiceManager()->get('MelisComAttributeService');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_products');
-        $viewHelperManager = $this->getServiceLocator()->get('ViewHelperManager');
+        $viewHelperManager = $this->getServiceManager()->get('ViewHelperManager');
         $toolTipTable = $viewHelperManager->get('ToolTipTable');
-        $docSvc = $this->getServiceLocator()->get('MelisComDocumentService');
+        $docSvc = $this->getServiceManager()->get('MelisComDocumentService');
     
         $colId = array();
         $dataCount = 0;
@@ -340,9 +339,9 @@ class MelisComVariantListController extends AbstractActionController
         $content = array();    
         $rows = array();
         $data = array();
-        $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
-        $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
-        $viewHelperManager = $this->getServiceLocator()->get('ViewHelperManager');
+        $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
+        $countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
+        $viewHelperManager = $this->getServiceManager()->get('ViewHelperManager');
         $table = $viewHelperManager->get('ToolTipTable');
         
         if($this->getRequest()->isPost()) {
@@ -417,7 +416,6 @@ class MelisComVariantListController extends AbstractActionController
                 $content[] = $tmp;
             }
             // TBODY START
-            
         }
         
         return new JsonModel(array(
@@ -432,7 +430,7 @@ class MelisComVariantListController extends AbstractActionController
      */
     public function updateVariantStatusAction()
     {
-        $varTbl = $this->getServiceLocator()->get('MelisEcomVariantTable');
+        $varTbl = $this->getServiceManager()->get('MelisEcomVariantTable');
         $variantId = (int) $this->getRequest()->getPost('id');
         $status = (int) $this->getRequest()->getPost('var_status');
 
@@ -453,7 +451,6 @@ class MelisComVariantListController extends AbstractActionController
         $container = new Container('meliscore');
         if (!empty($container['melis-lang-locale']))
             $sessionLocale = $container['melis-lang-locale'];
-    
     
             if($this->isWindows()) {
                 $sessionLocale = substr($sessionLocale, 0, 2);
@@ -486,9 +483,7 @@ class MelisComVariantListController extends AbstractActionController
                     $newVal = $tmpVal . $decimalPoint . $value[1];
                 }
             }
-    
-    
-    
+
             return $newVal;
     }
     
@@ -507,12 +502,9 @@ class MelisComVariantListController extends AbstractActionController
      */
     private function getTool()
     {
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_variants');
     
         return $melisTool;
-    
     }
-
-
 }

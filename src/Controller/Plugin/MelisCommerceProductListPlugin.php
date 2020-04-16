@@ -11,11 +11,11 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
-use Zend\Paginator\Paginator;
-use Zend\Paginator\Adapter\ArrayAdapter;
-use Zend\Session\Container;
-use Zend\View\Model\ViewModel;
-use Zend\Stdlib\ArrayUtils;
+use Laminas\Paginator\Paginator;
+use Laminas\Paginator\Adapter\ArrayAdapter;
+use Laminas\Session\Container;
+use Laminas\View\Model\ViewModel;
+use Laminas\Stdlib\ArrayUtils;
 /**
  * This plugin implements the business logic of the
  * "categoryListProducts" plugin.
@@ -62,8 +62,8 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
      */
     public function front()
     {
-        $categorySvc = $this->getServiceLocator()->get('MelisComCategoryService');
-        $productSearchSvc = $this->getServiceLocator()->get('MelisComProductSearchService');
+        $categorySvc = $this->getServiceManager()->get('MelisComCategoryService');
+        $productSearchSvc = $this->getServiceManager()->get('MelisComProductSearchService');
         
         $container = new Container('melisplugins');
         $lang = $container['melis-plugins-lang-id'];
@@ -91,7 +91,7 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
          * either an already formatted array or a query string
          */
         $selectedAttributes = $data['m_box_product_attribute_values_ids_selected'];
-        $attrSrv = $this->getServiceLocator()->get('MelisComAttributeService');
+        $attrSrv = $this->getServiceManager()->get('MelisComAttributeService');
         $attributeValueId = $attrSrv->checkSelectedAttributesFormat($selectedAttributes);
 
         // Pagination config
@@ -144,8 +144,8 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
     public function createOptionsForms()
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
         
@@ -153,7 +153,7 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
         $render   = [];
         if (!empty($formConfig))
         {
-            $request = $this->getServiceLocator()->get('request');
+            $request = $this->getServiceManager()->get('request');
             $parameters = $request->getQuery()->toArray();
             if (!isset($parameters['validate'])){
                 $formData = $this->getFormData();
@@ -172,7 +172,7 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
                     $viewModelTab->formData   = $formData;
                     
                     // Category Tree Start
-                    $langTable = $this->getServiceLocator()->get('MelisEcomLangTable');
+                    $langTable = $this->getServiceManager()->get('MelisEcomLangTable');
                     $langData = $langTable->langOrderByName();
                     $recLangData = array();
                     foreach($langData as $data)
@@ -190,7 +190,7 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
                     if($container)
                     {
                         $locale = $container['melis-lang-locale'];
-                        $melisEcomLangTable = $this->getServiceLocator()->get('MelisEcomLangTable');
+                        $melisEcomLangTable = $this->getServiceManager()->get('MelisEcomLangTable');
                         $currentLangData = $melisEcomLangTable->getEntryByField('elang_locale', $locale)->current();
                         
                         if (!empty($currentLang))
@@ -207,18 +207,18 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
                     // Category Tree End
                     
                     // Product Attributes Start
-                    $attrSrv = $this->getServiceLocator()->get('MelisComAttributeService');
+                    $attrSrv = $this->getServiceManager()->get('MelisComAttributeService');
                     $attrs = $attrSrv->getAttributeListAndValues(null, true, true, $langId);
                     $viewModelTab->attrs = $attrs;
                     // Product Attributes End
                     
                     // Product Text Types Start
-                    $prdTextTypeTbl = $this->getServiceLocator()->get('MelisEcomProductTextTypeTable');
+                    $prdTextTypeTbl = $this->getServiceManager()->get('MelisEcomProductTextTypeTable');
                     $prdTextTypes = $prdTextTypeTbl->fetchAll()->toArray();
                     $viewModelTab->prdTextTypes = $prdTextTypes;
                     // Product Text Types End
                     
-                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
                         'name' => $config['tab_title'],

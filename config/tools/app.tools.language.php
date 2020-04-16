@@ -1,245 +1,252 @@
 <?php
-return array(
-    'plugins' => array(
-        'meliscommerce' => array(
-            'tools' => array(
-                'meliscommerce_language' => array(
-                    'conf' => array(
+
+/**
+ * Melis Technology (http://www.melistechnology.com)
+ *
+ * @copyright Copyright (c) 2016 Melis Technology (http://www.melistechnology.com)
+ *
+ */
+
+return [
+    'plugins' => [
+        'meliscommerce' => [
+            'tools' => [
+                'meliscommerce_language' => [
+                    'conf' => [
                         'title' => 'tr_meliscommerce_language',
-                    ),
-                    'table' => array(
+                    ],
+                    'table' => [
                         'target' => '#tableComLanguageList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComLanguage/getComLangData',
                         'dataFunction' => '',
                         'ajaxCallback' => '',
-                        'filters' => array(
-                            'left' => array(
-                                'language-table-limit' => array(
+                        'filters' => [
+                            'left' => [
+                                'language-table-limit' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComLanguage',
                                     'action' => 'render-language-list-page-table-filter-limit',
-                                ),
-                            ),
-                            'center' => array(
-                                'language-table-search' => array(
+                                ],
+                            ],
+                            'center' => [
+                                'language-table-search' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComLanguage',
                                     'action' => 'render-language-list-page-table-filter-search',
-                                ),
-                            ),
-                            'right' => array(
-                                'language-table-refresh' => array(
+                                ],
+                            ],
+                            'right' => [
+                                'language-table-refresh' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComLanguage',
                                     'action' => 'render-language-list-page-table-filter-refresh',
-                                ),
-                            ),
-                        ),
-                        'columns' => array(
-                            'elang_id' => array(
+                                ],
+                            ],
+                        ],
+                        'columns' => [
+                            'elang_id' => [
                                 'text' => 'tr_meliscommerce_language_elang_id',
-                                'css' => array('width' => '1%', 'padding-right' => '0'),
+                                'css' => ['width' => '1%', 'padding-right' => '0'],
                                 'sortable' => true,
                             
-                            ),
-                            'elang_flag' => array(
+                            ],
+                            'elang_flag' => [
                                 'text' => 'tr_meliscommerce_country_ctry_flag',
-                                'css' => array('width' => '10%', 'padding-right' => '0'),
+                                'css' => ['width' => '10%', 'padding-right' => '0'],
                                 'sortable' => true,
 
-                            ),
-                            'elang_status' => array(
+                            ],
+                            'elang_status' => [
                                 'text' => 'tr_meliscommerce_product_list_col_status',
-                                'css' => array('width' => '10%', 'padding-right' => '0'),
+                                'css' => ['width' => '10%', 'padding-right' => '0'],
                                 'sortable' => true,
 
-                            ),
-                            'elang_locale' => array(
+                            ],
+                            'elang_locale' => [
                                 'text' => 'tr_meliscommerce_language_elang_locale',
-                                'css' => array('width' => '40%', 'padding-right' => '0'),
+                                'css' => ['width' => '40%', 'padding-right' => '0'],
                                 'sortable' => true,
                             
-                            ),
-                            'elang_name' => array(
+                            ],
+                            'elang_name' => [
                                 'text' => 'tr_meliscommerce_language_elang_name',
-                                'css' => array('width' => '40%', 'padding-right' => '0'),
+                                'css' => ['width' => '40%', 'padding-right' => '0'],
                                 'sortable' => true,
                             
-                            ),
-                        ),
-                        'searchables' => array('elang_id', 'elang_locale', 'elang_name'),
-                        'actionButtons' => array(
-                            'edit' => array(
+                            ],
+                        ],
+                        'searchables' => ['elang_id', 'elang_locale', 'elang_name'],
+                        'actionButtons' => [
+                            'edit' => [
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComLanguage',
                                 'action' => 'render-language-list-page-content-action-edit',
-                            ),
-                            'delete' => array(
+                            ],
+                            'delete' => [
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComLanguage',
                                 'action' => 'render-language-list-page-content-action-delete',
-                            ),
-                        ),
-                    ),
-                    'modals' => array(),
-                    'forms' => array(
-                        'meliscommerce_language_form' => array(
-                            'attributes' => array(
+                            ],
+                        ],
+                    ],
+                    'modals' => [],
+                    'forms' => [
+                        'meliscommerce_language_form' => [
+                            'attributes' => [
                                 'name' => 'ecomlanguageform',
                                 'id' => 'ecomlanguageform',
                                 'method' => 'POST',
                                 'action' => '',
-                            ),
-                            'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
-                            'elements' => array(
-                                array(
-                                    'spec' => array(
+                            ],
+                            'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                            'elements' => [
+                                [
+                                    'spec' => [
                                         'name' => 'elang_id',
                                         'type' => 'hidden',
-                                        'options' => array(
+                                        'options' => [
                                             //'label' => 'tr_meliscommerce_language_elang_id',
-                                        ),
-                                        'attributes' => array(
+                                        ],
+                                        'attributes' => [
                                             'id' => 'id_lang_id',
-                                        ),
-                                    ),
-                                ),
-                                array(
-                                    'spec' => array(
+                                        ],
+                                    ],
+                                ],
+                                [
+                                    'spec' => [
                                         'name' => 'elang_flag',
                                         'type' => 'file',
-                                        'options' => array(
+                                        'options' => [
                                             //'label' => 'tr_meliscommerce_country_ctry_flag',
-                                        ),
-                                        'attributes' => array(
+                                        ],
+                                        'attributes' => [
                                             'id' => 'id_elang_flag',
                                             'value' => '',
                                             'placeholder' => 'tr_meliscommerce_country_ctry_flag_choose',
                                             'data-buttonText' => 'Select Flag',
                                             'class' => 'filestyle',
-                                            'onchange' => 'imagePreview("#imgLangFlag", this);',
-                                        ),
-                                    ),
-                                ),
-                                array(
-                                    'spec' => array(
+                                            'onchange' => 'imagePreview("#imgLangFlag", this];',
+                                        ],
+                                    ],
+                                ],
+                                [
+                                    'spec' => [
                                         'name' => 'elang_name',
                                         'type' => 'MelisText',
-                                        'options' => array(
+                                        'options' => [
                                             'label' => 'tr_meliscommerce_language_elang_name',
                                             'tooltip' => 'tr_meliscommerce_language_elang_name tooltip',
-                                        ),
-                                        'attributes' => array(
+                                        ],
+                                        'attributes' => [
                                             'id' => 'id_lang_name',
                                             'value' => '',
                                             'required' => 'required'
-                                        ),
-                                    ),
-                                ),
+                                        ],
+                                    ],
+                                ],
 
-                                array(
-                                    'spec' => array(
+                                [
+                                    'spec' => [
                                         'name' => 'tmp_elang_name',
                                         'type' => 'hidden',
-                                        'options' => array(
-                                        ),
-                                        'attributes' => array(
+                                        'options' => [
+                                        ],
+                                        'attributes' => [
                                             'id' => 'id_tmp_elang_name',
                                             'value' => '',
-                                        ),
-                                    ),
-                                ),
-                                array(
-                                    'spec' => array(
+                                        ],
+                                    ],
+                                ],
+                                [
+                                    'spec' => [
                                         'name' => 'elang_locale',
                                         'type' => 'MelisText',
-                                        'options' => array(
+                                        'options' => [
                                             'label' => 'tr_meliscommerce_language_elang_locale',
                                             'tooltip' => 'tr_meliscommerce_language_elang_locale tooltip',
-                                        ),
-                                        'attributes' => array(
+                                        ],
+                                        'attributes' => [
                                             'id' => 'id_lang_locale',
                                             'value' => '',
                                             'required' => 'required'
-                                        ),
-                                    ),
-                                ),
-                                array(
-                                    'spec' => array(
+                                        ],
+                                    ],
+                                ],
+                                [
+                                    'spec' => [
                                         'name' => 'tmp_elang_locale',
                                         'type' => 'hidden',
-                                        'options' => array(
-                                        ),
-                                        'attributes' => array(
+                                        'options' => [
+                                        ],
+                                        'attributes' => [
                                             'id' => 'id_tmp_lang_locale',
                                             'value' => '',
-                                        ),
-                                    ),
-                                ),
-                            ),
-                            'input_filter' => array(
-                                'elang_locale' => array(
+                                        ],
+                                    ],
+                                ],
+                            ],
+                            'input_filter' => [
+                                'elang_locale' => [
                                     'name'     => 'elang_locale',
                                     'required' => true,
-                                    'validators' => array(
-                                        array(
+                                    'validators' => [
+                                        [
                                             'name'    => 'StringLength',
-                                            'options' => array(
+                                            'options' => [
                                                 'encoding' => 'UTF-8',
                                                 'max'      => 45,
-                                                'messages' => array(
-                                                    \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscore_tool_language_lang_locale_long',
-                                                ),
-                                            ),
-                                        ),
-                                        array(
+                                                'messages' => [
+                                                    \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscore_tool_language_lang_locale_long',
+                                                ],
+                                            ],
+                                        ],
+                                        [
                                             'name' => 'NotEmpty',
-                                            'options' => array(
-                                                'messages' => array(
-                                                    \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscore_tool_language_lang_locale_empty',
-                                                ),
-                                            ),
-                                        ),
-                                    ),
-                                    'filters'  => array(
-                                        array('name' => 'StripTags'),
-                                        array('name' => 'StringTrim'),
-                                    ),
-                                ),
-                                'elang_name' => array(
+                                            'options' => [
+                                                'messages' => [
+                                                    \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscore_tool_language_lang_locale_empty',
+                                                ],
+                                            ],
+                                        ],
+                                    ],
+                                    'filters'  => [
+                                        ['name' => 'StripTags'],
+                                        ['name' => 'StringTrim'],
+                                    ],
+                                ],
+                                'elang_name' => [
                                     'name'     => 'elang_name',
                                     'required' => true,
-                                    'validators' => array(
-                                        array(
+                                    'validators' => [
+                                        [
                                             'name'    => 'StringLength',
-                                            'options' => array(
+                                            'options' => [
                                                 'encoding' => 'UTF-8',
                                                 'max'      => 45,
-                                                'messages' => array(
-                                                    \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscore_tool_language_lang_name_long',
-                                                ),
-                                            ),
-                                        ),
-                                        array(
+                                                'messages' => [
+                                                    \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscore_tool_language_lang_name_long',
+                                                ],
+                                            ],
+                                        ],
+                                        [
                                             'name' => 'NotEmpty',
-                                            'options' => array(
-                                                'messages' => array(
-                                                    \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscore_tool_language_lang_name_empty',
-                                                ),
-                                            ),
-                                        ),
-                                    ),
-                                    'filters'  => array(
-                                        array('name' => 'StripTags'),
-                                        array('name' => 'StringTrim'),
-                                    ),
-                                ),
-                            ),
-                        ),
-                    ),
-                ),
-                
-            ),    
-        ),
-    ),
-);
+                                            'options' => [
+                                                'messages' => [
+                                                    \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscore_tool_language_lang_name_empty',
+                                                ],
+                                            ],
+                                        ],
+                                    ],
+                                    'filters'  => [
+                                        ['name' => 'StripTags'],
+                                        ['name' => 'StringTrim'],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
+];

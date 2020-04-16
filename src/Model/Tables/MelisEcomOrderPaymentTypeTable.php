@@ -9,17 +9,22 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomOrderPaymentTypeTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_order_payment_type';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'opty_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'opty_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
 }

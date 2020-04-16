@@ -9,23 +9,29 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\Sql\Predicate\Expression;
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomVariantAttributeValueTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_variant_attribute_value';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'vatv_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'vatv_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
+
     public function getVariantAttributeValuesById($variantId, $langId = 1)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         $select->columns(array('*'));
         $clause = array();
         
@@ -38,14 +44,14 @@ class MelisEcomVariantAttributeValueTable extends MelisEcomGenericTable
         
         $clause['melis_ecom_variant_atribute_value.vatv_variant_id'] = (int) $variantId;
         
-        $resultSet = $this->tableGateway->selectwith($select);
+        $resultSet = $this->getTableGateway()->selectwith($select);
 
         return $resultSet;
     }
 
     public function getVariantAttributeValueIdByVariantId($ids)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
 
         if(is_array($ids)) {
             $select->where->in('vatv_variant_id', $ids);
@@ -53,14 +59,14 @@ class MelisEcomVariantAttributeValueTable extends MelisEcomGenericTable
             $select->where->equalTo('vatv_variant_id', $ids);
         }
 
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
 
         return $resultData;
     }
 
     public function getVariantsByAttributeValueIds($attrValueIds, $isValid = true)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
 
         $select->columns(array(new Expression('DISTINCT(melis_ecom_variant.var_id) as var_id')));
 
@@ -72,7 +78,7 @@ class MelisEcomVariantAttributeValueTable extends MelisEcomGenericTable
 
         $select->where->in('melis_ecom_variant_attribute_value.vatv_attribute_value_id', $attrValueIds);
 
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
 
         return $resultData;
     }

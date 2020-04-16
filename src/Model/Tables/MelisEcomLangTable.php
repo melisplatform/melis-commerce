@@ -9,28 +9,34 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomLangTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_lang';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'elang_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'elang_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
+
     // get all lang ordered by name ASC
     public function langOrderByName()
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         $select->where->equalTo('elang_status', 1);
         $order = 'elang_name ASC';
         $select->order($order);
         
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
     

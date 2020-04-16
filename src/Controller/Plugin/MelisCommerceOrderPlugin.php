@@ -12,10 +12,10 @@ namespace MelisCommerce\Controller\Plugin;
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
 
-use Zend\Mvc\Controller\Plugin\Redirect;
-use Zend\Stdlib\ArrayUtils;
-use Zend\View\Model\ViewModel;
-use Zend\Session\Container;
+use Laminas\Mvc\Controller\Plugin\Redirect;
+use Laminas\Stdlib\ArrayUtils;
+use Laminas\View\Model\ViewModel;
+use Laminas\Session\Container;
 /**
  * This plugin implements the business logic of the
  * "order" plugin.
@@ -71,10 +71,10 @@ class MelisCommerceOrderPlugin extends MelisTemplatingPlugin
         $orderShippingDetailsView = array();
         $orderMessagesView = array();
         
-        $ecomAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
-        $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
-        $currencySvc = $this->getServiceLocator()->get('MelisComCurrencyService');
-        $couponSvc = $this->getServiceLocator()->get('MelisComCouponService');
+        $ecomAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
+        $orderSvc = $this->getServiceManager()->get('MelisComOrderService');
+        $currencySvc = $this->getServiceManager()->get('MelisComCurrencyService');
+        $couponSvc = $this->getServiceManager()->get('MelisComCouponService');
         
         $container = new Container('melisplugins');
         $langId = $container['melis-plugins-lang-id'];
@@ -231,17 +231,17 @@ class MelisCommerceOrderPlugin extends MelisTemplatingPlugin
         }
         
         // Use Address plugin
-        $orderAddressPlugin = $this->getServiceLocator()->get('ControllerPluginManager')->get('MelisCommerceOrderAddressPlugin');
+        $orderAddressPlugin = $this->getServiceManager()->get('ControllerPluginManager')->get('MelisCommerceOrderAddressPlugin');
         $addressParameters = ArrayUtils::merge($addressParameters, array('m_add_order_id' => $orderId));
         $orderAddressPluginView = $orderAddressPlugin->render($addressParameters);
         
         // Use shipping details plugin
-        $orderShippingDetailsPlugin = $this->getServiceLocator()->get('ControllerPluginManager')->get('MelisCommerceOrderShippingDetailsPlugin');
+        $orderShippingDetailsPlugin = $this->getServiceManager()->get('ControllerPluginManager')->get('MelisCommerceOrderShippingDetailsPlugin');
         $shippingParameters = ArrayUtils::merge($shippingParameters, array('m_sd_order_id' => $orderId));
         $orderShippingDetailsView = $orderShippingDetailsPlugin->render($shippingParameters);
         
         // Use order messages plugin
-        $orderMessagesPlugin = $this->getServiceLocator()->get('ControllerPluginManager')->get('MelisCommerceOrderMessagesPlugin');
+        $orderMessagesPlugin = $this->getServiceManager()->get('ControllerPluginManager')->get('MelisCommerceOrderMessagesPlugin');
         $messagesParamenters = ArrayUtils::merge($messagesParamenters, array('m_om_order_id' => $orderId));
         $orderMessagesView = $orderMessagesPlugin->render($messagesParamenters);
         
@@ -262,8 +262,8 @@ class MelisCommerceOrderPlugin extends MelisTemplatingPlugin
     public function createOptionsForms()
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
         
@@ -274,7 +274,7 @@ class MelisCommerceOrderPlugin extends MelisTemplatingPlugin
             foreach ($formConfig as $formKey => $config)
             {
                 $form = $factory->createForm($config);
-                $request = $this->getServiceLocator()->get('request');
+                $request = $this->getServiceManager()->get('request');
                 $parameters = $request->getQuery()->toArray();
                 
                 if (!isset($parameters['validate']))
@@ -285,7 +285,7 @@ class MelisCommerceOrderPlugin extends MelisTemplatingPlugin
                     $viewModelTab->modalForm = $form;
                     $viewModelTab->formData   = $this->getFormData();
                     
-                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
                         'name' => $config['tab_title'],

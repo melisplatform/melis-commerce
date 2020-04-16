@@ -9,19 +9,25 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomSeoTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_seo';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'eseo_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'eseo_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
+
     public function getSeoByTypeAndId($type, $id)
     {
         $select = $this->tableGateway->getSql()->select();

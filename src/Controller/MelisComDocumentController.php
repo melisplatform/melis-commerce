@@ -9,13 +9,14 @@
 
 namespace MelisCommerce\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Validator\File\Size;
-use Zend\Validator\File\IsImage;
-use Zend\File\Transfer\Adapter\Http;
-use Zend\Session\Container;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\Validator\File\Size;
+use Laminas\Validator\File\IsImage;
+use Laminas\File\Transfer\Adapter\Http;
+use Laminas\Session\Container;
+use MelisCore\Controller\AbstractActionController;
+
 class MelisComDocumentController extends AbstractActionController
 {
 
@@ -60,7 +61,7 @@ class MelisComDocumentController extends AbstractActionController
         if($docRelationId) {
             $data = $this->getDocSvc()->getDocumentsByRelationAndTypes($docRelationType, $docRelationId, 'IMG');
             if($data) {
-                $ctryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+                $ctryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
                 $countryName = null;
                 if($data) {
                     foreach($data as $doc) {
@@ -158,7 +159,7 @@ class MelisComDocumentController extends AbstractActionController
         $docId = (int) $this->params()->fromQuery('docId');
         $saveType = $this->params()->fromQuery('saveType');
 
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
         $docImageData = array();
         $fileData = array();
@@ -190,10 +191,10 @@ class MelisComDocumentController extends AbstractActionController
         }
         
         // Category Tree view Search Input
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_documents/'.$formUpload,$formUpload);
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $propertyForm = $factory->createForm($appConfigForm);
 
@@ -270,7 +271,7 @@ class MelisComDocumentController extends AbstractActionController
         $logTypeCode = '';
         $isImgTypeOk = true;
         $isImg = true;
-        $melisCoreConfig = $this->getServiceLocator()->get('MelisCoreConfig');
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         if($request->isPost()) {
 
             $this->getEventManager()->trigger('meliscommerce_document_update_'.$docType.'_start', $this, $request->getPost());
@@ -553,7 +554,7 @@ class MelisComDocumentController extends AbstractActionController
             if($relation && $uniqueId) {
                 $id = (int) $uniqueId; //$this->getUniqueId();
                 $data = $this->getDocSvc()->getDocumentsByRelationAndTypes($relation, $id, 'IMG');
-                $ctryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+                $ctryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
                 $countryName = null;
                 if($data) {
                     foreach($data->getDocument() as $doc) {
@@ -622,8 +623,8 @@ class MelisComDocumentController extends AbstractActionController
             $uniqueId = (int) $this->getRequest()->getPost('uniqueId');
             $type = $this->getRequest()->getPost('docType');
             $formType = in_array($this->getRequest()->getPost('formType'), $this->relationTypes) ? $this->getRequest()->getPost('formType') : 'undefined';
-            $docTable = $this->getServiceLocator()->get('MelisEcomDocumentTable');
-            $docRelTable = $this->getServiceLocator()->get('MelisEcomDocRelationsTable');
+            $docTable = $this->getServiceManager()->get('MelisEcomDocumentTable');
+            $docRelTable = $this->getServiceManager()->get('MelisEcomDocRelationsTable');
 
 
             if(in_array($type, $this->docTypes)) {
@@ -683,9 +684,9 @@ class MelisComDocumentController extends AbstractActionController
         if($request->isPost()) {
             $this->getEventManager()->trigger('meliscommerce_document_add_image_type_start', $this, $request->getPost());
 
-            $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
-            $factory = new \Zend\Form\Factory();
-            $formElements = $this->serviceLocator->get('FormElementManager');
+            $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
+            $factory = new \Laminas\Form\Factory();
+            $formElements = $this->getServiceManager()->get('FormElementManager');
             $appTextTypeForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_documents/meliscommerce_documents_image_type_form','meliscommerce_documents_image_type_form');
 
             $factory->setFormElementManager($formElements);
@@ -706,7 +707,7 @@ class MelisComDocumentController extends AbstractActionController
             $form->setData($postValues);
 
             if($form->isValid()) {
-                $docService = $this->getServiceLocator()->get('MelisComDocumentService');
+                $docService = $this->getServiceManager()->get('MelisComDocumentService');
                 $data = $form->getData();
                 $data['dtype_parent_id'] = 1; // IMG
                 $docTypeId = $docService->saveDocumentType($data['dtype_code'], $data['dtype_name'], $data['dtype_parent_id']);
@@ -760,9 +761,9 @@ class MelisComDocumentController extends AbstractActionController
         if($request->isPost()) {
             $this->getEventManager()->trigger('meliscommerce_document_add_file_type_start', $this, $request->getPost());
 
-            $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
-            $factory = new \Zend\Form\Factory();
-            $formElements = $this->serviceLocator->get('FormElementManager');
+            $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
+            $factory = new \Laminas\Form\Factory();
+            $formElements = $this->getServiceManager()->get('FormElementManager');
             $appTextTypeForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_documents/meliscommerce_documents_image_type_form','meliscommerce_documents_image_type_form');
 
             $factory->setFormElementManager($formElements);
@@ -783,7 +784,7 @@ class MelisComDocumentController extends AbstractActionController
             $form->setData($postValues);
 
             if($form->isValid()) {
-                $docService = $this->getServiceLocator()->get('MelisComDocumentService');
+                $docService = $this->getServiceManager()->get('MelisComDocumentService');
                 $data = $form->getData();
                 $data['dtype_parent_id'] = null;
                 $docTypeId = $docService->saveDocumentType($data['dtype_code'], $data['dtype_name'], $data['dtype_parent_id']);
@@ -825,7 +826,7 @@ class MelisComDocumentController extends AbstractActionController
 
     private function getTool()
     {
-        $melisCoreTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisCoreTool = $this->getServiceManager()->get('MelisCoreTool');
 
         return $melisCoreTool;
 
@@ -833,7 +834,7 @@ class MelisComDocumentController extends AbstractActionController
 
     public function getDocSvc()
     {
-        $docService = $this->getServiceLocator()->get('MelisComDocumentService');
+        $docService = $this->getServiceManager()->get('MelisComDocumentService');
         return $docService;
     }
 
@@ -857,10 +858,10 @@ class MelisComDocumentController extends AbstractActionController
 
     private function getDocForm($formConf)
     {
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_documents/'.$this->formString($formConf),$this->formString($formConf));
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $form = $factory->createForm($appConfigForm);
 
@@ -880,7 +881,7 @@ class MelisComDocumentController extends AbstractActionController
 
     private function getCountries()
     {
-        $melisEcomCountryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+        $melisEcomCountryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
         $ecomCountries = $melisEcomCountryTable->getCountries()->toArray();
         return $ecomCountries;
 
@@ -888,7 +889,7 @@ class MelisComDocumentController extends AbstractActionController
 
     private function getImageTypes()
     {
-        $docTypeSvc = $this->getServiceLocator()->get('MelisComDocumentService');
+        $docTypeSvc = $this->getServiceManager()->get('MelisComDocumentService');
         $ecomImageType = $docTypeSvc->getDocumentTypes(1);
         return $ecomImageType;
     }
@@ -959,7 +960,7 @@ class MelisComDocumentController extends AbstractActionController
 
     public function renameIfDuplicateFile($filePath)
     {
-        $docTable = $this->getServiceLocator()->get('MelisEcomDocumentTable');
+        $docTable = $this->getServiceManager()->get('MelisEcomDocumentTable');
         $docData = $docTable->getEntryByFieldUsingLike('doc_path', $filePath)->toArray();
         $totalFile = count($docData) ? ' (' .count($docData) . ')' : null;
         $fileDir = pathinfo($filePath, PATHINFO_DIRNAME);
@@ -992,7 +993,7 @@ class MelisComDocumentController extends AbstractActionController
 
     public function renameIfDuplicateName($name)
     {
-//         $docTable = $this->getServiceLocator()->get('MelisEcomDocumentTable');
+//         $docTable = $this->getServiceManager()->get('MelisEcomDocumentTable');
 //         $docData = $docTable->getEntryByFieldUsingLike('doc_name', $name)->toArray();
 
 //         $totalNames = count($docData) ? ' (' .count($docData) . ')' : null;

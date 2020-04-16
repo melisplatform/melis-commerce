@@ -9,27 +9,25 @@
 
 namespace MelisCommerce\Listener;
 
-use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\ListenerAggregateInterface;
+use Laminas\EventManager\EventManagerInterface;
+use Laminas\EventManager\ListenerAggregateInterface;
 
 use MelisCore\Listener\MelisCoreGeneralListener;
 
 class MelisCommerceSaveOrderListener extends MelisCoreGeneralListener implements ListenerAggregateInterface
 {
-    public function attach(EventManagerInterface $events)
+    public function attach(EventManagerInterface $events, $priority = 1)
     {
         $sharedEvents      = $events->getSharedManager();
         
         $callBackHandler = $sharedEvents->attach(
             'MelisCommerce',
-            array(
-                'meliscommerce_order_save_start'
-            ),
+            'meliscommerce_order_save_start',
         	function($e){
         	    
-        		$sm = $e->getTarget()->getServiceLocator();   	
+        		$sm = $e->getTarget()->getEvent()->getApplication()->getServiceManager();
         		$params = $e->getParams();
-        		$paramData = array();
+        		$paramData = [];
         		if(isset($params['data'])) {
         		    $paramData = $params['data'];
         		}
@@ -41,8 +39,8 @@ class MelisCommerceSaveOrderListener extends MelisCoreGeneralListener implements
         		    'meliscommerce',
         		    'order-valid-data',
         		    'MelisCommerce\Controller\MelisComOrder',
-        		    array('action' => 'validateOrderForm')
-        		    );
+        		    ['action' => 'validateOrderForm']
+                );
         		
         		if(!$success)
         		    return;        		
@@ -52,7 +50,7 @@ class MelisCommerceSaveOrderListener extends MelisCoreGeneralListener implements
     		        'meliscommerce',
     		        'order-valid-data',
     		        'MelisCommerce\Controller\MelisComOrder',
-    		        array('action' => 'validateAddressForm')
+    		        ['action' => 'validateAddressForm']
 		        );
     		    
     		    if(!$success)
@@ -63,8 +61,8 @@ class MelisCommerceSaveOrderListener extends MelisCoreGeneralListener implements
 		            'meliscommerce',
 		            'order-valid-data',
 		            'MelisCommerce\Controller\MelisComOrder',
-		            array('action' => 'validateShippingForm')
-		            );
+		            ['action' => 'validateShippingForm']
+                );
 		        
 		        if(!$success)
 		            return;
@@ -74,12 +72,11 @@ class MelisCommerceSaveOrderListener extends MelisCoreGeneralListener implements
 	                'meliscommerce',
 	                'order-valid-data',
 	                'MelisCommerce\Controller\MelisComOrder',
-	                array('action' => 'saveOrderData')
-	                );
+	                ['action' => 'saveOrderData']
+                );
 	            
 	            if(!$success)
 	                return;
-
         	},
         100);
         

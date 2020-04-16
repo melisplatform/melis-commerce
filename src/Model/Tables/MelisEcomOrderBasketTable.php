@@ -9,22 +9,28 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomOrderBasketTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_order_basket';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'obas_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'obas_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
+
     public function getOrderBaskets($orderId, $start = 0, $limit = null, $search = null, $order = 'obas_id ASC')
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         $select->columns(array('*'));
         $clause = array();
         
@@ -47,6 +53,6 @@ class MelisEcomOrderBasketTable extends MelisEcomGenericTable
         if(!empty($start)){
             $select->offset((int)$start);
         }
-        return $this->tableGateway->selectwith($select);
+        return $this->getTableGateway()->selectwith($select);
     }
 }

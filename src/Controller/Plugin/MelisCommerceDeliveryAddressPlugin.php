@@ -11,10 +11,10 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
-use Zend\Stdlib\ArrayUtils;
-use Zend\Mvc\Controller\Plugin\Redirect;
-use Zend\View\Model\JsonModel;
-use Zend\View\Model\ViewModel;
+use Laminas\Stdlib\ArrayUtils;
+use Laminas\Mvc\Controller\Plugin\Redirect;
+use Laminas\View\Model\JsonModel;
+use Laminas\View\Model\ViewModel;
 /**
  * This plugin implements the business logic of the
  * "deliveryAddress" plugin.
@@ -75,15 +75,15 @@ class MelisCommerceDeliveryAddressPlugin extends MelisTemplatingPlugin
         $clientAddress = array();
         $deletetAddress = false;
         
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
         $formData = $this->getFormData();
         
         $showSelectAddresData = ($formData['show_select_address_data']) ? true : false;
         
         // Creating Address form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $deliveryAddressForm = $this->pluginFrontConfig['forms']['delivery_address'];
         $deliveryAddressForm = $this->getFormMergedAndOrdered($deliveryAddressForm, 'delivery_address');
@@ -92,7 +92,7 @@ class MelisCommerceDeliveryAddressPlugin extends MelisTemplatingPlugin
         /**
          * Checking if client has been authenticated
          */
-        $melisComAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
+        $melisComAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
         if ($melisComAuthSrv->hasIdentity())
         {
             // Getting the current use Client Id and Person Id from session
@@ -102,7 +102,7 @@ class MelisCommerceDeliveryAddressPlugin extends MelisTemplatingPlugin
             if ($formData['delivery_address_delete_submit'] && !empty($formData['cadd_id']))
             {
                 // Retrieving address select from list of addresses
-                $clientSrv = $this->getServiceLocator()->get('MelisComClientService');
+                $clientSrv = $this->getServiceManager()->get('MelisComClientService');
                 $clientDelAddress = $clientSrv->getClientPersonAddressByAddressId($personId, $formData['cadd_id']);
                 
                 if (!empty($clientDelAddress))
@@ -131,7 +131,7 @@ class MelisCommerceDeliveryAddressPlugin extends MelisTemplatingPlugin
                     if ($deliveryAddressId != 'new_address')
                     {
                         // Retrieving address select from list of addresses
-                        $clientSrv = $this->getServiceLocator()->get('MelisComClientService');
+                        $clientSrv = $this->getServiceManager()->get('MelisComClientService');
                         $clientDelAddress = $clientSrv->getClientPersonAddressByAddressId($personId, $deliveryAddressId);
                         
                         $clientAddress = (Array) $clientDelAddress;
@@ -157,7 +157,7 @@ class MelisCommerceDeliveryAddressPlugin extends MelisTemplatingPlugin
             
             if ((!$is_submit && !$createNewAdd && empty($clientAddress)) || $deletetAddress)
             {
-                $clientSrv = $this->getServiceLocator()->get('MelisComClientService');
+                $clientSrv = $this->getServiceManager()->get('MelisComClientService');
                 $clientDelAddress = $clientSrv->getClientAddressesByClientPersonId($personId, $addressType);
                 
                 // Getting only the first Address of the client person
@@ -201,12 +201,12 @@ class MelisCommerceDeliveryAddressPlugin extends MelisTemplatingPlugin
                      * Retrieving the id of the address type
                      * using the address type code
                      */
-                    $clientAddTypeTbl = $this->getServiceLocator()->get('MelisEcomClientAddressTypeTable');
+                    $clientAddTypeTbl = $this->getServiceManager()->get('MelisEcomClientAddressTypeTable');
                     $clientAddType = $clientAddTypeTbl->getEntryByField('catype_code', $addressType)->current();
                     $data['cadd_type'] = $clientAddType->catype_id;
                     
                     // Saving Client person delivery addrress
-                    $clientSrv = $this->getServiceLocator()->get('MelisComClientService');
+                    $clientSrv = $this->getServiceManager()->get('MelisComClientService');
                     $deliveryAddressId = $clientSrv->saveClientAddress($data, $deliveryAddressId);
                     
                     
@@ -280,8 +280,8 @@ class MelisCommerceDeliveryAddressPlugin extends MelisTemplatingPlugin
     public function createOptionsForms()
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
         
@@ -292,7 +292,7 @@ class MelisCommerceDeliveryAddressPlugin extends MelisTemplatingPlugin
             foreach ($formConfig as $formKey => $config)
             {
                 $form = $factory->createForm($config);
-                $request = $this->getServiceLocator()->get('request');
+                $request = $this->getServiceManager()->get('request');
                 $parameters = $request->getQuery()->toArray();
                 
                 if (!isset($parameters['validate']))
@@ -303,7 +303,7 @@ class MelisCommerceDeliveryAddressPlugin extends MelisTemplatingPlugin
                     $viewModelTab->modalForm = $form;
                     $viewModelTab->formData   = $this->getFormData();
                     
-                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
                         'name' => $config['tab_title'],

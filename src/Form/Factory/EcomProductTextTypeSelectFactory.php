@@ -9,32 +9,29 @@
 
 namespace MelisCommerce\Form\Factory;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\ServiceManager;
 use MelisCore\Form\Factory\MelisSelectFactory;
-use Zend\Http\Request as HttpRequest;
+use Laminas\Http\Request as HttpRequest;
+
 /**
  * MelisCommerce Countries select factory
  */
 class EcomProductTextTypeSelectFactory extends MelisSelectFactory
 {
-	protected function loadValueOptions(ServiceLocatorInterface $formElementManager)
+	protected function loadValueOptions(ServiceManager $serviceManager)
 	{
-		$serviceManager = $formElementManager->getServiceLocator();
 		$request = new HttpRequest();
 		$productId = isset($_GET['productId']) ? (int) $_GET['productId'] : null; //$request->get('cpath', null);
 		$textTypeId = isset($_GET['textTypes']) ? (int) $_GET['textTypes'] : null;
-		$productTextData = array();
+		$productTextData = [];
 		$melisEcomProdTxtTypeTable = $serviceManager->get('MelisEcomProductTextTypeTable');
 		$melisEcomProdTxtTable     = $serviceManager->get('MelisEcomProductTextTable');
 		$ecomProdTxtType = $melisEcomProdTxtTypeTable->fetchAll();
 		
-		$valueoptions = array();
-		foreach($ecomProdTxtType as $prodTextType) {
-		    
+		$valueoptions = [];
+		foreach($ecomProdTxtType as $prodTextType)
 		    $valueoptions[$prodTextType->ptt_id] = $prodTextType->ptt_name;
-		}
-		
+
 		return $valueoptions;
 	}
-
 }

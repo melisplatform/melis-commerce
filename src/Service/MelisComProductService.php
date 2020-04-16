@@ -11,7 +11,7 @@ namespace MelisCommerce\Service;
 
 use MelisCommerce\Entity\MelisProduct;
 use MelisCommerce\Entity\MelisAttribute;
-use Zend\Session\Container;
+use Laminas\Session\Container;
 
 /**
  *
@@ -47,7 +47,7 @@ class MelisComProductService extends MelisComGeneralService
 	    // Sending service start event
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_list_start', $arrayParameters);
 	    
-        $prodTable = $this->getServiceLocator()->get('MelisEcomProductTable');
+        $prodTable = $this->getServiceManager()->get('MelisEcomProductTable');
         $products = $prodTable->getProductList($arrayParameters['categoryIds'], $arrayParameters['countryId'], $arrayParameters['onlyValid'], $arrayParameters['start'], 
                                                  $arrayParameters['limit'], $arrayParameters['orderColumn'], $arrayParameters['order'], $arrayParameters['search']);
         
@@ -73,7 +73,7 @@ class MelisComProductService extends MelisComGeneralService
         // Retrieve cache version if front mode to avoid multiple calls
 	    $cacheKey = 'product-' . $productId . '-getAssocProducts_' . $productId . '_' . $langId;
         $cacheConfig = 'commerce_big_services';
-        $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
         $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
         if (!empty($results)) return $results;
 	    
@@ -87,7 +87,7 @@ class MelisComProductService extends MelisComGeneralService
 	    // Service implementation start
 	    $entProd = new MelisProduct();
 	    $tmpData = array();
-	    $variantTable = $this->getServiceLocator()->get('MelisEcomVariantTable');
+	    $variantTable = $this->getServiceManager()->get('MelisEcomVariantTable');
 	    
 	    foreach($variantTable->getProductAssoc($arrayParameters['productId']) as $product){	        
 	        $results[] = $this->getProductById($product->assoc_prd_id, $arrayParameters['langId']);
@@ -130,7 +130,7 @@ class MelisComProductService extends MelisComGeneralService
 	        $tmp .= '_' . $type;
 	    $cacheKey = 'product-' . $productId . '-getProductById_' . $productId . '_' . $countryId . '_' . $docType . '_' . $tmp;
         $cacheConfig = 'commerce_big_services';
-        $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
         $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
         if (!empty($results)) return $results;
 	    
@@ -142,14 +142,14 @@ class MelisComProductService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_byid_start', $arrayParameters);
 
 	    // Service implementation start
-	    $prodTable = $this->getServiceLocator()->get('MelisEcomProductTable');
+	    $prodTable = $this->getServiceManager()->get('MelisEcomProductTable');
 	    $productData = $prodTable->getProduct($arrayParameters['productId']);
-	    $prodCatTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');
+	    $prodCatTable = $this->getServiceManager()->get('MelisEcomProductCategoryTable');
 	    
 	    $category = array();
 	    $prodDoc = array();
 
-	    $docSvc = $this->getServiceLocator()->get('MelisComDocumentService');
+	    $docSvc = $this->getServiceManager()->get('MelisComDocumentService');
 	    $prodDoc = $docSvc->getDocumentsByRelationAndTypes('product', $arrayParameters['productId'], $arrayParameters['docType'], $arrayParameters['docSubType']);
 	    $entProd = new MelisProduct();
         if($productData) {
@@ -217,7 +217,7 @@ class MelisComProductService extends MelisComGeneralService
         // Retrieve cache version if front mode to avoid multiple calls
 	    $cacheKey = 'product-' . $productId . '-getProductAttributesById_' . $productId . '_' . $langId;
         $cacheConfig = 'commerce_big_services';
-        $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
         $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
         if (!empty($results)) return $results;
 	    
@@ -229,8 +229,8 @@ class MelisComProductService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_attributes_byid_start', $arrayParameters);
 	    
 	    // Service implementation start
-        $prdAttrTable = $this->getServiceLocator()->get('MelisEcomProductAttributeTable');
-        $attrSvc = $this->getServiceLocator()->get('MelisComAttributeService');
+        $prdAttrTable = $this->getServiceManager()->get('MelisEcomProductAttributeTable');
+        $attrSvc = $this->getServiceManager()->get('MelisComAttributeService');
        
         
         foreach($prdAttrTable->getEntryByField('patt_product_id', $arrayParameters['productId']) as $data){
@@ -265,7 +265,7 @@ class MelisComProductService extends MelisComGeneralService
         // Retrieve cache version if front mode to avoid multiple calls
 	    $cacheKey = 'product-' . $productId . '-getProductTextsById_' . $productId . '_' . $productTextCode . '_' . $langId;
         $cacheConfig = 'commerce_big_services';
-        $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
         $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
         if (!empty($results)) return $results;
 	    
@@ -277,7 +277,7 @@ class MelisComProductService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_texts_byid_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $prodTextTable = $this->getServiceLocator()->get('MelisEcomProductTextTable');
+	    $prodTextTable = $this->getServiceManager()->get('MelisEcomProductTextTable');
 	    foreach($prodTextTable->getProductTextById($arrayParameters['productId'], $arrayParameters['productTextCode'], $arrayParameters['langId']) as $data) {
 	        $results[] = $data;
 	    }
@@ -308,7 +308,7 @@ class MelisComProductService extends MelisComGeneralService
         // Retrieve cache version if front mode to avoid multiple calls
 	    $cacheKey = 'product-' . $productId . '-getProductPricesById_' . $productId . '_' . $countryId;
         $cacheConfig = 'commerce_big_services';
-        $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
         $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
         if (!empty($results)) return $results;
 	    
@@ -320,7 +320,7 @@ class MelisComProductService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_prices_byid_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $priceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');
+	    $priceTable = $this->getServiceManager()->get('MelisEcomPriceTable');
 	    foreach($priceTable->getPricesByProductId($arrayParameters['productId'], $arrayParameters['countryId']) as $data) {
 	        $results[] = $data;
 	    }
@@ -348,7 +348,7 @@ class MelisComProductService extends MelisComGeneralService
         // Retrieve cache version if front mode to avoid multiple calls
 	    $cacheKey = 'product-' . $productId . '-getProductCategories_' . $productId;
         $cacheConfig = 'commerce_big_services';
-        $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
         $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
         if (!empty($results)) return $results;
 	    
@@ -360,7 +360,7 @@ class MelisComProductService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_get_product_categories_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $prodCatTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');
+	    $prodCatTable = $this->getServiceManager()->get('MelisEcomProductCategoryTable');
 	    $productCat = $prodCatTable->getProductCategories($arrayParameters['productId']);
 	    
 	    foreach ($productCat As $key => $val)
@@ -392,7 +392,7 @@ class MelisComProductService extends MelisComGeneralService
         // Retrieve cache version if front mode to avoid multiple calls
 	    $cacheKey = 'product-' . $productId . '-getProductFinalPrice_' . $productId . '_' . $countryId;
         $cacheConfig = 'commerce_big_services';
-        $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
         $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
         if (!empty($results)) return $results;
 	    
@@ -403,7 +403,7 @@ class MelisComProductService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_final_price_start', $arrayParameters);
 	
 	    // Service implementation start
-	    $priceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');
+	    $priceTable = $this->getServiceManager()->get('MelisEcomPriceTable');
 	    $productPrice = $priceTable->getProductFinalPrice($arrayParameters['productId'], $arrayParameters['countryId'])->current();
 
 	    if(!empty($productPrice))
@@ -448,7 +448,7 @@ class MelisComProductService extends MelisComGeneralService
         // Retrieve cache version if front mode to avoid multiple calls
 	    $cacheKey = 'product-' . $productId . '-getProductName_' . $productId . '_' . $langId;
         $cacheConfig = 'commerce_big_services';
-        $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
         $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
         if (!empty($results)) return $results;
 	    
@@ -457,7 +457,7 @@ class MelisComProductService extends MelisComGeneralService
 	    $results = array();
 	     
 	    // Sending service start event
-	    $prodTextTable = $this->getServiceLocator()->get('MelisEcomProductTextTable');
+	    $prodTextTable = $this->getServiceManager()->get('MelisEcomProductTextTable');
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_get_product_name_start', $arrayParameters);
 	
 	    // Service implementation start 
@@ -514,7 +514,7 @@ class MelisComProductService extends MelisComGeneralService
         // Retrieve cache version if front mode to avoid multiple calls
 	    $cacheKey = 'product-' . $productId . '-getProductTextByCode_' . $productId . '_' . $typeCode . '_' . $langId;
         $cacheConfig = 'commerce_big_services';
-        $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
         $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
         if (!empty($results)) return $results;
 	        
@@ -526,7 +526,7 @@ class MelisComProductService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_texts_bycode_start', $arrayParameters);
 	     
 	    // Service implementation start
-	    $prodTextTable = $this->getServiceLocator()->get('MelisEcomProductTextTable');
+	    $prodTextTable = $this->getServiceManager()->get('MelisEcomProductTextTable');
 	    $prodTextData = $prodTextTable->getProductTextById($arrayParameters['productId'], $arrayParameters['typeCode'], $arrayParameters['langId'])->current();
 	    $hasText = false;
 	    if($prodTextData) {
@@ -588,7 +588,7 @@ class MelisComProductService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_products_by_category_id_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $melisEcomProductTable = $this->getServiceLocator()->get('MelisEcomProductTable');
+	    $melisEcomProductTable = $this->getServiceManager()->get('MelisEcomProductTable');
 	    
 	    $product = $melisEcomProductTable->getProductsByCategoryId($arrayParameters['categoryId'], $arrayParameters['onlyValid'], $arrayParameters['langId'], $arrayParameters['order']);
 	    
@@ -617,7 +617,7 @@ class MelisComProductService extends MelisComGeneralService
 	     
 	    // Service implementation start
 	    
-	    $variantTable = $this->getServiceLocator()->get('MelisEcomVariantTable');
+	    $variantTable = $this->getServiceManager()->get('MelisEcomVariantTable');
 	    
 	    $prdVariants = $variantTable->getProductVariants($arrayParameters['productId'], $arrayParameters['onlyValid']);
 	    
@@ -659,10 +659,10 @@ class MelisComProductService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_save_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $translator = $this->getServiceLocator()->get('translator');
-	    $productTable = $this->getServiceLocator()->get('MelisEcomProductTable');
-	    $categorySvc = $this->getServiceLocator()->get('MelisComCategoryService');
-	    $variantTable = $this->getServiceLocator()->get('MelisEcomVariantTable');
+	    $translator = $this->getServiceManager()->get('translator');
+	    $productTable = $this->getServiceManager()->get('MelisEcomProductTable');
+	    $categorySvc = $this->getServiceManager()->get('MelisComCategoryService');
+	    $variantTable = $this->getServiceManager()->get('MelisEcomVariantTable');
 	    
 	    $prodStatus = isset($arrayParameters['product']['prd_status']) ? (int) $arrayParameters['product']['prd_status'] : 0;
 	    $prodId     = isset($arrayParameters['product']['prd_id']) ? (int) $arrayParameters['product']['prd_id'] : null;    
@@ -722,11 +722,11 @@ class MelisComProductService extends MelisComGeneralService
             if (!empty($arrayParameters['seo']))
             {
                 $productSeo = $arrayParameters['seo'];
-                $melisComSeoService = $this->getServiceLocator()->get('MelisComSeoService');
+                $melisComSeoService = $this->getServiceManager()->get('MelisComSeoService');
                 $result = $melisComSeoService->saveSeoDataAction('product', $arrayParameters['productId'], $productSeo);
             }
             
-            $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+            $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
             $melisEngineCacheSystem->deleteCacheByPrefix('product-' . $saveProductId, 'commerce_big_services');
             
         }catch(\Exception $e) {
@@ -767,8 +767,8 @@ class MelisComProductService extends MelisComGeneralService
 	    
 	    
 	    // Service implementation start
-	    $translator = $this->getServiceLocator()->get('translator');
-	    $productTextTable = $this->getServiceLocator()->get('MelisEcomProductTextTable');
+	    $translator = $this->getServiceManager()->get('translator');
+	    $productTextTable = $this->getServiceManager()->get('MelisEcomProductTextTable');
 	    $successFlag = true;
 	    try {
     	    if(isset($arrayParameters['productTexts']['ptxt_lang_id']) && $arrayParameters['productTexts']['ptxt_lang_id']) {
@@ -776,7 +776,7 @@ class MelisComProductService extends MelisComGeneralService
 	            
 	            if (!empty($arrayParameters['productTexts']['ptxt_prd_id']))
 	            {
-                    $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+                    $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
                     $melisEngineCacheSystem->deleteCacheByPrefix('product-' . $arrayParameters['productTexts']['ptxt_prd_id'], 'commerce_big_services');
 	            }
     	    }
@@ -816,8 +816,8 @@ class MelisComProductService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_save_attributes_start', $arrayParameters);	    
 	    
 	    // Service implementation start
-	    $translator = $this->getServiceLocator()->get('translator');
-	    $productAttributeTable = $this->getServiceLocator()->get('MelisEcomProductAttributeTable');
+	    $translator = $this->getServiceManager()->get('translator');
+	    $productAttributeTable = $this->getServiceManager()->get('MelisEcomProductAttributeTable');
         unset($arrayParameters['attributes']['patt_id']);
 
         try {
@@ -825,7 +825,7 @@ class MelisComProductService extends MelisComGeneralService
 
             if (!empty($arrayParameters['attributes']['patt_product_id']))
             {
-                $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+                $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
                 $melisEngineCacheSystem->deleteCacheByPrefix('product-' . $arrayParameters['attributes']['patt_product_id'], 'commerce_big_services');
             }
             
@@ -864,7 +864,7 @@ class MelisComProductService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_save_prices_start', $arrayParameters);
 	    
 	    // Service implementation start
-        $productPriceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');
+        $productPriceTable = $this->getServiceManager()->get('MelisEcomPriceTable');
         unset($arrayParameters['prices']['price_id']);
         
         try {
@@ -873,7 +873,7 @@ class MelisComProductService extends MelisComGeneralService
             
             if (!empty($arrayParameters['prices']['price_prd_id']))
             {
-                $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+                $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
                 $melisEngineCacheSystem->deleteCacheByPrefix('product-' . $arrayParameters['prices']['price_prd_id'], 'commerce_big_services');
             }
             
@@ -900,14 +900,14 @@ class MelisComProductService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_delete_start', $arrayParameters);
 	     
 	    // Service implementation start
-	    $prodTable = $this->getServiceLocator()->get('MelisEcomProductTable');
-	    $prodCatTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');
-	    $prodDocRelTable = $this->getServiceLocator()->get('MelisEcomDocRelationsTable');
-	    $docTable = $this->getServiceLocator()->get('MelisEcomDocumentTable');
-	    $priceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');
-	    $prodTextTable = $this->getServiceLocator()->get('MelisEcomProductTextTable');
-	    $prodAttrTable = $this->getServiceLocator()->get('MelisEcomProductAttributeTable');
-	    $melisComCategoryService = $this->getServiceLocator()->get('MelisComCategoryService');
+	    $prodTable = $this->getServiceManager()->get('MelisEcomProductTable');
+	    $prodCatTable = $this->getServiceManager()->get('MelisEcomProductCategoryTable');
+	    $prodDocRelTable = $this->getServiceManager()->get('MelisEcomDocRelationsTable');
+	    $docTable = $this->getServiceManager()->get('MelisEcomDocumentTable');
+	    $priceTable = $this->getServiceManager()->get('MelisEcomPriceTable');
+	    $prodTextTable = $this->getServiceManager()->get('MelisEcomProductTextTable');
+	    $prodAttrTable = $this->getServiceManager()->get('MelisEcomProductAttributeTable');
+	    $melisComCategoryService = $this->getServiceManager()->get('MelisComCategoryService');
 	    
 	    $productId = (int) $arrayParameters['prodId'];
 	    if($productId) {
@@ -929,7 +929,7 @@ class MelisComProductService extends MelisComGeneralService
 	            $data = $prodTable->getEntryById($productId)->current();
 	            if(!$data) {
 	                $results = true;
-                    $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+                    $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
                     $melisEngineCacheSystem->deleteCacheByPrefix('product-' . $productId, 'commerce_big_services');
 	            }
 	        }catch(\Exception $e) {
@@ -1012,7 +1012,7 @@ class MelisComProductService extends MelisComGeneralService
         // Retrieve cache version if front mode to avoid multiple calls
 	    $cacheKey = 'product-' . $productId . '-getProductVariantPriceById_' . $productId . '_' . $order . '_' . $priceColumn;
         $cacheConfig = 'commerce_big_services';
-        $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
         $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
         if (!empty($results)) return $results;
 	    
@@ -1024,8 +1024,8 @@ class MelisComProductService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_get_variant_price_start', $arrayParameters);	     
 	     
 	    // Service implementation start
-	    $productTbl = $this->getServiceLocator()->get('MelisEcomProductTable');
-	    $currencyTbl = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+	    $productTbl = $this->getServiceManager()->get('MelisEcomProductTable');
+	    $currencyTbl = $this->getServiceManager()->get('MelisEcomCurrencyTable');
 	    try {
 	        $prices = $productTbl->getProductVariantPriceById($arrayParameters['productId'], $arrayParameters['order'], $arrayParameters['priceColumn']);
 	        $column = $arrayParameters['priceColumn'];
@@ -1065,7 +1065,7 @@ class MelisComProductService extends MelisComGeneralService
         // Retrieve cache version if front mode to avoid multiple calls
 	    $cacheKey = 'product-' . $productId . '-getProductTitleAndSeoById_' . $productId . '_' . $langId;
         $cacheConfig = 'commerce_big_services';
-        $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
         $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
         if (!empty($results)) return $results;
 	    
@@ -1077,7 +1077,7 @@ class MelisComProductService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_product_titleseo_byid_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $productTbl = $this->getServiceLocator()->get('MelisEcomProductTable');
+	    $productTbl = $this->getServiceManager()->get('MelisEcomProductTable');
 	    try {
             $results = $productTbl->getProductTitleAndSeoById($arrayParameters['productId'], $arrayParameters['langId'])->current();
             
@@ -1119,13 +1119,13 @@ class MelisComProductService extends MelisComGeneralService
 	        'prd_price_net' => (!empty($prdPrice->price_net)) ? $prdPrice->price_net : '',
 	    );
 
-	    $productTbl = $this->getServiceLocator()->get('MelisEcomProductTable');
+	    $productTbl = $this->getServiceManager()->get('MelisEcomProductTable');
 	    $product = $productTbl->getEntryById($arrayParameters['productId'])->current();
 	    
 	    /**
 	     * Product image documents
 	     */
-	    $docSrv = $this->getServiceLocator()->get('MelisComDocumentService');
+	    $docSrv = $this->getServiceManager()->get('MelisComDocumentService');
 	    $prdDocsImages = $docSrv->getFinalImageFilePath('product', $arrayParameters['productId'], array('DEFAULT'));
 	    
 	    /**
@@ -1141,7 +1141,7 @@ class MelisComProductService extends MelisComGeneralService
 	    /**
 	     * Product categories
 	     */
-	    $catTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
+	    $catTable = $this->getServiceManager()->get('MelisEcomCategoryTable');
 	    $prdCats = $catTable->getProductCategoriesWithFinalTransalations($arrayParameters['productId'], $arrayParameters['langId'])->toArray();
 
 	    $product = array(
@@ -1179,7 +1179,7 @@ class MelisComProductService extends MelisComGeneralService
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_product_get_maximum_minimum_price_start', $arrayParameters);
 
-        $priceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');
+        $priceTable = $this->getServiceManager()->get('MelisEcomPriceTable');
         $result = $priceTable->getMaximumMinimumPrice($arrayParameters['type'], $arrayParameters['priceColumn'], $arrayParameters['from'])->current();
 
         // Adding results to parameters for events treatment if needed

@@ -9,9 +9,10 @@
 
 namespace MelisCommerce\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\JsonModel;
-use Zend\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\View\Model\ViewModel;
+use MelisCore\Controller\AbstractActionController;
+
 class MelisComCurrencyController extends AbstractActionController
 {
     public function renderCurrencyContainerAction()
@@ -120,7 +121,7 @@ class MelisComCurrencyController extends AbstractActionController
 
        
         $form = $this->getTool()->getForm('meliscommerce_currency_form');
-        $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+        $currencyTable = $this->getServiceManager()->get('MelisEcomCurrencyTable');
     
         if(is_numeric($id)) {
             $title = $this->getTool()->getTranslation('tr_meliscommerce_currency_form_edit');
@@ -139,7 +140,7 @@ class MelisComCurrencyController extends AbstractActionController
     
     public function getComCurrencyDataAction()
     {
-        $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+        $currencyTable = $this->getServiceManager()->get('MelisEcomCurrencyTable');
         
         $colId = array();
         $dataCount = 0;
@@ -230,7 +231,7 @@ class MelisComCurrencyController extends AbstractActionController
         );
         if($this->getRequest()->isPost()) {
             $hasErrorFlag = false;
-            $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+            $currencyTable = $this->getServiceManager()->get('MelisEcomCurrencyTable');
     
             $postData = get_object_vars($this->getRequest()->getPost());
             $postData = $this->getTool()->sanitizePost($postData);
@@ -294,7 +295,7 @@ class MelisComCurrencyController extends AbstractActionController
                 $errors = $form->getMessages();
             }
     
-            $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+            $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
             $appConfigForm = $melisMelisCoreConfig->getItem('meliscommerce/tools/meliscommerce_currency/forms/meliscommerce_currency_form');
             $appConfigForm = $appConfigForm['elements'];
     
@@ -325,7 +326,7 @@ class MelisComCurrencyController extends AbstractActionController
     public function deleteAction()
     {
         $this->getEventManager()->trigger('meliscommerce_currency_delete_start', $this, array());
-        $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+        $currencyTable = $this->getServiceManager()->get('MelisEcomCurrencyTable');
         $textMessage = 'tr_meliscommerce_currency_delete_failed';
     
         $id = null;
@@ -361,7 +362,7 @@ class MelisComCurrencyController extends AbstractActionController
     public function setDefaultCurrencyAction()
     {
         $this->getEventManager()->trigger('meliscommerce_currency_set_default_start', $this, array());
-        $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+        $currencyTable = $this->getServiceManager()->get('MelisEcomCurrencyTable');
         $textMessage = 'tr_meliscommerce_currency_set_default_failed';
         
         $id = null;
@@ -400,7 +401,7 @@ class MelisComCurrencyController extends AbstractActionController
     
     private function getTool()
     {
-        $tool = $this->getServiceLocator()->get('MelisCoreTool');
+        $tool = $this->getServiceManager()->get('MelisCoreTool');
         $tool->setMelisToolKey('meliscommerce', 'meliscommerce_currency');
     
         return $tool;
@@ -409,7 +410,7 @@ class MelisComCurrencyController extends AbstractActionController
     public function getDefaultCurrencyAction()
     {
         $this->getEventManager()->trigger('meliscommerce_currency_set_default_start', $this, array());
-        $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+        $currencyTable = $this->getServiceManager()->get('MelisEcomCurrencyTable');
         $textMessage = 'tr_meliscommerce_currency_set_default_failed';
 
         $id = null;
@@ -434,7 +435,7 @@ class MelisComCurrencyController extends AbstractActionController
     {
         $currencyId = $this->params()->fromPost('currencyId', null);
 
-        $currencyTable = $this->getServiceLocator()->get('MelisComCurrencyService');
+        $currencyTable = $this->getServiceManager()->get('MelisComCurrencyService');
         $countries = $currencyTable->getCountriesUsingCurrency($currencyId);
 
         $response = array(

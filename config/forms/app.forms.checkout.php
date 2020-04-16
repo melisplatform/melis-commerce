@@ -1,634 +1,642 @@
-<?php 
-return array(
-    'plugins' => array(
-        'meliscommerce' => array(
-            'forms' => array(
-                'meliscommerce_order_checkout' => array(
-                    'meliscommerce_order_checkout_billing_address_form' => array(
-                        'attributes' => array(
+<?php
+
+/**
+ * Melis Technology (http://www.melistechnology.com)
+ *
+ * @copyright Copyright (c) 2016 Melis Technology (http://www.melistechnology.com)
+ *
+ */
+
+return [
+    'plugins' => [
+        'meliscommerce' => [
+            'forms' => [
+                'meliscommerce_order_checkout' => [
+                    'meliscommerce_order_checkout_billing_address_form' => [
+                        'attributes' => [
                             'id' => 'EcomCheckoutBillingAddressForm'
-                        ),
-                        'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
-                        'elements' => array(
-                            array(
-                                'spec' => array(
+                        ],
+                        'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                        'elements' => [
+                            [
+                                'spec' => [
                                     'name' => 'cadd_id',
                                     'type' => 'EcomCheckoutBillingAddressSelect',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_order_checkout_address_billing_Select',
                                         'empty_option' => 'tr_meliscommerce_order_checkout_common_chooose',
                                         'disable_inarray_validator' => true,
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'orderCheckoutBillingSelect',
-                                    )
-                                )
-                            ),
-                        )
-                    ),
-                    'meliscommerce_order_checkout_delivery_address_form' => array(
-                        'attributes' => array(
+                                    ]
+                                ]
+                            ],
+                        ]
+                    ],
+                    'meliscommerce_order_checkout_delivery_address_form' => [
+                        'attributes' => [
                             'id' => 'EcomCheckoutDeliveryAddressForm'
-                        ),
-                        'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
-                        'elements' => array(
-                            array(
-                                'spec' => array(
+                        ],
+                        'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                        'elements' => [
+                            [
+                                'spec' => [
                                     'name' => 'cadd_id',
                                     'type' => 'EcomCheckoutDeliveryAddressSelect',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_order_checkout_address_delivery_Select',
                                         'empty_option' => 'tr_meliscommerce_order_checkout_common_chooose',
                                         'disable_inarray_validator' => true,
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'orderCheckoutDeliverySelect',
-                                    )
-                                )
-                            ),
-                        )
-                    ),
-                    'meliscommerce_order_checkout_address_form' => array(
-                        'attributes' => array(
+                                    ]
+                                ]
+                            ],
+                        ]
+                    ],
+                    'meliscommerce_order_checkout_address_form' => [
+                        'attributes' => [
                             'name' => '',
                             'id' => '',
                             'method' => '',
                             'action' => '',
-                        ),
-                        'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
-                        'elements' => array(
-                            array(
-                                'spec' => array(
+                        ],
+                        'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                        'elements' => [
+                            [
+                                'spec' => [
                                     'name' => 'cadd_client_id',
                                     'type' => 'hidden',
-                                )
-                            ),
-                            array(
-                                'spec' => array(
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'cadd_client_person',
                                     'type' => 'hidden',
-                                )
-                            ),
-                            array(
-                                'spec' => array(
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'cadd_type',
                                     'type' => 'hidden',
-                                )
-                            ),
-                            array(
-                                'spec' => array(
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'cadd_address_name',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_client_Contact_address_name',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'cadd_address_name',
-                                    )
-                                )
-                            ),
-                            array(
-                                'spec' => array(
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'cadd_civility',
                                     'type' => 'EcomCivilitySelect',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_client_Contact_civility',
                                         'empty_option' => 'tr_meliscommerce_clients_common_label_choose',
                                         'disable_inarray_validator' => true,
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'cadd_civility',
-                                    )
-                                )
-                            ),
-                            array(
-                                'spec' => array(
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'cadd_firstname',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_client_Contact_fname',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'cadd_firstname',
-                                    )
-                                )
-                            ),
-                            array(
-                                'spec' => array(
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'cadd_name',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_client_Contact_name',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'cadd_name',
-                                    )
-                                )
-                            ),
-                            array(
-                                'spec' => array(
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'cadd_middle_name',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_client_Contact_mname',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'cadd_middle_name',
-                                    )
-                                )
-                            ),
-                            array(
-                                'spec' => array(
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'cadd_num',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_client_Contact_address_street_num',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'cadd_num',
-                                    )
-                                )
-                            ),
-                            array(
-                                'spec' => array(
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'cadd_street',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_client_Contact_address_street_name',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'cadd_street',
-                                    )
-                                )
-                            ),
-                            array(
-                                'spec' => array(
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'cadd_building_name',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_client_Contact_address_building_name',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'cadd_building_name',
-                                    )
-                                )
-                            ),
-                            array(
-                                'spec' => array(
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'cadd_stairs',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_client_Contact_address_stairs',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'cadd_stairs',
-                                    )
-                                )
-                            ),
-                            array(
-                                'spec' => array(
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'cadd_city',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_client_Contact_address_city',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'cadd_city',
-                                    )
-                                )
-                            ),
-                            array(
-                                'spec' => array(
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'cadd_state',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_client_Contact_address_state',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'cadd_state',
-                                    )
-                                )
-                            ),
-                            array(
-                                'spec' => array(
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'cadd_country',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_client_Contact_address_country',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'cadd_country',
-                                    )
-                                )
-                            ),
-                            array(
-                                'spec' => array(
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'cadd_zipcode',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_client_Contact_address_zipcode',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'cadd_zipcode',
-                                    )
-                                )
-                            ),
-                            array(
-                                'spec' => array(
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'cadd_company',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_client_Contact_address_company_name',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'cadd_company',
-                                    )
-                                )
-                            ),
-                            array(
-                                'spec' => array(
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'cadd_phone_mobile',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_client_Contact_address_mobile_number',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'cadd_phone_mobile',
-                                    )
-                                )
-                            ),
-                            array(
-                                'spec' => array(
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'cadd_phone_landline',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_client_Contact_address_phone_landline',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'cadd_phone_landline',
-                                    )
-                                )
-                            ),
-                            array(
-                                'spec' => array(
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'cadd_complementary',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_client_Contact_address_additional_information',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'cadd_complementary',
-                                    )
-                                )
-                            ),
-                        ),
-                        'input_filter' => array(
-                            'cadd_address_name' => array(
+                                    ]
+                                ]
+                            ],
+                        ],
+                        'input_filter' => [
+                            'cadd_address_name' => [
                                 'name'     => 'cadd_address_name',
                                 'required' => true,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name'    => 'StringLength',
-                                        'options' => array(
+                                        'options' => [
                                             'encoding' => 'UTF-8',
                                             'max'      => 45,
-                                            'messages' => array(
-                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_45',
-                                            ),
-                                        ),
-                                    ),
-                                    array(
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_45',
+                                            ],
+                                        ],
+                                    ],
+                                    [
                                         'name' => 'NotEmpty',
-                                        'options' => array(
-                                            'messages' => array(
-                                                \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_client_Contact_input_empty',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'cadd_civility' => array(
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_client_Contact_input_empty',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'cadd_civility' => [
                                 'name'     => 'cadd_civility',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name' => 'NotEmpty',
-                                        'options' => array(
-                                            'messages' => array(
-                                                \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_client_Contact_input_empty',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'cadd_name' => array(
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_client_Contact_input_empty',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'cadd_name' => [
                                 'name'     => 'cadd_name',
                                 'required' => true,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name'    => 'StringLength',
-                                        'options' => array(
+                                        'options' => [
                                             'encoding' => 'UTF-8',
                                             'max'      => 45,
-                                            'messages' => array(
-                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_255',
-                                            ),
-                                        ),
-                                    ),
-                                    array(
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_255',
+                                            ],
+                                        ],
+                                    ],
+                                    [
                                         'name' => 'NotEmpty',
-                                        'options' => array(
-                                            'messages' => array(
-                                                \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_client_Contact_input_empty',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'cadd_firstname' => array(
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_client_Contact_input_empty',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'cadd_firstname' => [
                                 'name'     => 'cadd_firstname',
                                 'required' => true,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name'    => 'StringLength',
-                                        'options' => array(
+                                        'options' => [
                                             'encoding' => 'UTF-8',
                                             'max'      => 45,
-                                            'messages' => array(
-                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_255',
-                                            ),
-                                        ),
-                                    ),
-                                    array(
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_255',
+                                            ],
+                                        ],
+                                    ],
+                                    [
                                         'name' => 'NotEmpty',
-                                        'options' => array(
-                                            'messages' => array(
-                                                \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_client_Contact_input_empty',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'cadd_num' => array(
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_client_Contact_input_empty',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'cadd_num' => [
                                 'name'     => 'cadd_num',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name'    => 'StringLength',
-                                        'options' => array(
+                                        'options' => [
                                             'encoding' => 'UTF-8',
                                             'max'      => 10,
-                                            'messages' => array(
-                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_10',
-                                            ),
-                                        ),
-                                    )
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'cadd_stairs' => array(
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_10',
+                                            ],
+                                        ],
+                                    ]
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'cadd_stairs' => [
                                 'name'     => 'cadd_stairs',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name'    => 'StringLength',
-                                        'options' => array(
+                                        'options' => [
                                             'encoding' => 'UTF-8',
                                             'max'      => 10,
-                                            'messages' => array(
-                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_10',
-                                            ),
-                                        ),
-                                    )
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'cadd_building_name' => array(
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_10',
+                                            ],
+                                        ],
+                                    ]
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'cadd_building_name' => [
                                 'name'     => 'cadd_building_name',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name'    => 'StringLength',
-                                        'options' => array(
+                                        'options' => [
                                             'encoding' => 'UTF-8',
                                             'max'      => 45,
-                                            'messages' => array(
-                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_45',
-                                            ),
-                                        ),
-                                    )
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'cadd_company' => array(
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_45',
+                                            ],
+                                        ],
+                                    ]
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'cadd_company' => [
                                 'name'     => 'cadd_company',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name'    => 'StringLength',
-                                        'options' => array(
+                                        'options' => [
                                             'encoding' => 'UTF-8',
                                             'max'      => 100,
-                                            'messages' => array(
-                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_100',
-                                            ),
-                                        ),
-                                    )
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'cadd_street' => array(
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_100',
+                                            ],
+                                        ],
+                                    ]
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'cadd_street' => [
                                 'name'     => 'cadd_street',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name'    => 'StringLength',
-                                        'options' => array(
+                                        'options' => [
                                             'encoding' => 'UTF-8',
                                             'max'      => 255,
-                                            'messages' => array(
-                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_255',
-                                            ),
-                                        ),
-                                    )
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'cadd_zipcode' => array(
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_255',
+                                            ],
+                                        ],
+                                    ]
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'cadd_zipcode' => [
                                 'name'     => 'cadd_zipcode',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name'    => 'StringLength',
-                                        'options' => array(
+                                        'options' => [
                                             'encoding' => 'UTF-8',
                                             'max'      => 15,
-                                            'messages' => array(
-                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_15',
-                                            ),
-                                        ),
-                                    )
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'cadd_city' => array(
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_15',
+                                            ],
+                                        ],
+                                    ]
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'cadd_city' => [
                                 'name'     => 'cadd_city',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name'    => 'StringLength',
-                                        'options' => array(
+                                        'options' => [
                                             'encoding' => 'UTF-8',
                                             'max'      => 100,
-                                            'messages' => array(
-                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_100',
-                                            ),
-                                        ),
-                                    )
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'cadd_state' => array(
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_100',
+                                            ],
+                                        ],
+                                    ]
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'cadd_state' => [
                                 'name'     => 'cadd_state',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name'    => 'StringLength',
-                                        'options' => array(
+                                        'options' => [
                                             'encoding' => 'UTF-8',
                                             'max'      => 50,
-                                            'messages' => array(
-                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_50',
-                                            ),
-                                        ),
-                                    )
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'cadd_country' => array(
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_50',
+                                            ],
+                                        ],
+                                    ]
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'cadd_country' => [
                                 'name'     => 'cadd_country',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name'    => 'StringLength',
-                                        'options' => array(
+                                        'options' => [
                                             'encoding' => 'UTF-8',
                                             'max'      => 50,
-                                            'messages' => array(
-                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_50',
-                                            ),
-                                        ),
-                                    )
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'cadd_phone_mobile' => array(
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_50',
+                                            ],
+                                        ],
+                                    ]
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'cadd_phone_mobile' => [
                                 'name'     => 'cadd_phone_mobile',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name'    => 'StringLength',
-                                        'options' => array(
+                                        'options' => [
                                             'encoding' => 'UTF-8',
                                             'max'      => 45,
-                                            'messages' => array(
-                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_45',
-                                            ),
-                                        ),
-                                    )
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'cadd_phone_landline' => array(
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_45',
+                                            ],
+                                        ],
+                                    ]
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'cadd_phone_landline' => [
                                 'name'     => 'cadd_phone_landline',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name'    => 'StringLength',
-                                        'options' => array(
+                                        'options' => [
                                             'encoding' => 'UTF-8',
                                             'max'      => 45,
-                                            'messages' => array(
-                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_45',
-                                            ),
-                                        ),
-                                    )
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'cadd_complementary' => array(
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_45',
+                                            ],
+                                        ],
+                                    ]
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'cadd_complementary' => [
                                 'name'     => 'cadd_complementary',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name'    => 'StringLength',
-                                        'options' => array(
+                                        'options' => [
                                             'encoding' => 'UTF-8',
                                             'max'      => 255,
-                                            'messages' => array(
-                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_255',
-                                            ),
-                                        ),
-                                    )
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                        )
-                    ),
-                )
-            )
-        )
-    )
-);
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_255',
+                                            ],
+                                        ],
+                                    ]
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                        ]
+                    ],
+                ]
+            ]
+        ]
+    ]
+];

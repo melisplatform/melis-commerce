@@ -39,7 +39,7 @@ class MelisComCurrencyService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_get_currencies_start', $arrayParameters);
         
         // Service implementation start
-        $currencyTbl = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+        $currencyTbl = $this->getServiceManager()->get('MelisEcomCurrencyTable');
         $data = $currencyTbl->getCurrencies($arrayParameters['status'], $arrayParameters['start'], 
                                             $arrayParameters['limit'], $arrayParameters['order'], $arrayParameters['search']);
         foreach($data as $currency){
@@ -64,7 +64,7 @@ class MelisComCurrencyService extends MelisComGeneralService
         // Retrieve cache version if front mode to avoid multiple calls
 	    $cacheKey = 'getDefaultCurrency';
         $cacheConfig = 'commerce_memory_services';
-        $melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
         $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
         if (!empty($results)) return $results;
 	    
@@ -76,7 +76,7 @@ class MelisComCurrencyService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_get_default_currency_start', $arrayParameters);
         
         // Service implementation start
-        $currencyTbl = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+        $currencyTbl = $this->getServiceManager()->get('MelisEcomCurrencyTable');
         $results = $currencyTbl->getDefaultCurrency()->current();        
         // Service implementation end
         
@@ -100,7 +100,7 @@ class MelisComCurrencyService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_get_valid_children_by_lang_id', $arrayParameters);
 
         //implementation start
-        $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+        $currencyTable = $this->getServiceManager()->get('MelisEcomCurrencyTable');
         $isCurrencyUsed = $currencyTable->getCountriesUsingCurrency($arrayParameters['currencyId'])->toArray();
         //implementation end
 

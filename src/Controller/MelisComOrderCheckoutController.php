@@ -9,11 +9,11 @@
 
 namespace MelisCommerce\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Session\Container;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\Session\Container;
 use Composer\Json\JsonManipulator;
+use MelisCore\Controller\AbstractActionController;
 
 class MelisComOrderCheckoutController extends AbstractActionController
 {
@@ -24,7 +24,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * Creates translations for table actions in tools
      *
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function getDataTableTranslationsAction()
     {
@@ -32,7 +32,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $container = new Container('meliscore');
         $locale = $container['melis-lang-locale'];
 
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
 
         $transData = array(
             'sEmptyTable' => $translator->translate('tr_meliscommerce_select_country_empty'),
@@ -65,7 +65,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
 
     /**
      * Render Order Checkout page
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutPageAction(){
         $container = new Container('meliscommerce');
@@ -85,7 +85,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
 
     /**
      * Render Order Checkout page header
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutHeaderAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -96,7 +96,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
 
     /**
      * Render Order Checkout page content
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutContentAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -107,7 +107,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
 
     /**
      * Render Order Checkout First Step, Choosing Products
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutChooseProductAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -118,7 +118,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
 
     /**
      * Render Order Checkout Choose Product header
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutChooseProductHeaderAction()
     {
@@ -130,7 +130,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
 
     /**
      * Render Order Checkout Choose Product content
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutChooseProductContentAction()
     {
@@ -142,11 +142,11 @@ class MelisComOrderCheckoutController extends AbstractActionController
 
     /**
      * Order checkout setup the Country Id to Checkout session
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function orderCheckoutSetCountryAction()
     {
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
 
         $request = $this->getRequest();
 
@@ -166,7 +166,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
             if (!empty($container['checkout'][self::SITE_ID]['clientKey']))
             {
                 // cleaning the Client basket after selecting country
-                $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
+                $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
                 $melisComBasketService->emptyAnonymousBasket($container['checkout'][self::SITE_ID]['clientKey']);
             }
             // Set Country id to checkout countryId
@@ -189,13 +189,13 @@ class MelisComOrderCheckoutController extends AbstractActionController
 
     /**
      * Render Order Checkout Prodduct list
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutProductListAction()
     {
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
 
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $melisTool->setMelisToolKey(self::PLUGIN_INDEX, 'meliscommerce_order_checkout_product_list');
         $columns = $melisTool->getColumns();
         $columns['actions'] = array('text' => $translator->translate('tr_meliscommerce_order_checkout_product_variant'));
@@ -214,7 +214,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * Render Order Checkout Product basket
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutProductBasketAction()
     {
@@ -222,7 +222,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $container = new Container('meliscommerce');
         $clientKey = (!empty($container['checkout'][self::SITE_ID]['clientKey'])) ? $container['checkout'][self::SITE_ID]['clientKey'] : null;
 
-        $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
+        $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
 
         $action = $this->params()->fromQuery('action');
         $variantId = $this->params()->fromQuery('variantId');
@@ -252,14 +252,14 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $basketData = $melisComBasketService->getBasket(null, $clientKey);
 
         // Getting Current Langauge ID
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $langId = $melisTool->getCurrentLocaleID();
 
         $container = new Container('meliscommerce');
         $countryId = $container['checkout'][self::SITE_ID]['countryId'];
 
-        $melisComVariantService = $this->getServiceLocator()->get('MelisComVariantService');
-        $melisComProductService = $this->getServiceLocator()->get('MelisComProductService');
+        $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
+        $melisComProductService = $this->getServiceManager()->get('MelisComProductService');
 
         $basket = array();
         $total = 0;
@@ -297,7 +297,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
             }
         }
 
-        $melisEcomCountryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+        $melisEcomCountryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
         $countryCurrency = $melisEcomCountryTable->getCountryCurrency($countryId)->current();
 
         $countryCurrencySympbol = '';
@@ -317,7 +317,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * This method will return the list of product for Product list
      *
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function getProductListAction()
     {
@@ -329,20 +329,20 @@ class MelisComOrderCheckoutController extends AbstractActionController
 
         if($this->getRequest()->isPost()) {
 
-            $productTable = $this->getServiceLocator()->get('MelisEcomProductTable');
+            $productTable = $this->getServiceManager()->get('MelisEcomProductTable');
 
             $container = new Container('meliscommerce');
             if (!empty($container['checkout'][self::SITE_ID]['countryId']))
             {
                 // Getting Current Langauge ID
-                $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+                $melisTool = $this->getServiceManager()->get('MelisCoreTool');
                 $langId = $melisTool->getCurrentLocaleID();
 
                 $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_order_checkout_product_list');
                 $columns =  array_keys($melisTool->getColumns());
 
-                $prodSvc = $this->getServiceLocator()->get('MelisComProductService');
-                $docSvc = $this->getServiceLocator()->get('MelisComDocumentService');
+                $prodSvc = $this->getServiceManager()->get('MelisComProductService');
+                $docSvc = $this->getServiceManager()->get('MelisComDocumentService');
 
                 $order = $this->getRequest()->getPost('order');
                 $selColOrder = $columns[$order[0]['column']];
@@ -388,7 +388,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * This will return the Product variant list
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutProductVariantListAction()
     {
@@ -403,15 +403,15 @@ class MelisComOrderCheckoutController extends AbstractActionController
         {
             $countryId = $container['checkout'][self::SITE_ID]['countryId'];
 
-            $translator = $this->getServiceLocator()->get('translator');
+            $translator = $this->getServiceManager()->get('translator');
 
             // Getting Current Langauge ID
-            $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+            $melisTool = $this->getServiceManager()->get('MelisCoreTool');
             $langId = $melisTool->getCurrentLocaleID();
 
 
-            $melisComVariantService = $this->getServiceLocator()->get('MelisComVariantService');
-            $melisComProductService = $this->getServiceLocator()->get('MelisComProductService');
+            $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
+            $melisComProductService = $this->getServiceManager()->get('MelisComProductService');
             // Getting the list of Activated Variant from Variant Service using the ProductId
             $variantData = $melisComVariantService->getVariantListByProductId($productId, $langId, $countryId, true);
 
@@ -475,12 +475,12 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * This method will add variant to the Client basket
      *
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function addBasketAction()
     {
 
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
 
         $request = $this->getRequest();
 
@@ -496,7 +496,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
             $postValues = get_object_vars($this->getRequest()->getPost());
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
-            $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
+            $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
 
             // Adding variant to bakset quantity will automatocally 1 (One)
             // But if the Variant already exist in basket this will Add 1 to the Variant Quantity
@@ -539,11 +539,11 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * Checking client Basket if empty
      *
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function checkBasketAction()
     {
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
 
         $request = $this->getRequest();
 
@@ -561,7 +561,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
 
             $clientKey = (!empty($container['checkout'][self::SITE_ID]['clientKey'])) ? $container['checkout'][self::SITE_ID]['clientKey'] : null;
 
-            $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
+            $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
 
             // Getting the Client Basket
             $basketData = $melisComBasketService->getBasket(null, $clientKey);
@@ -592,12 +592,12 @@ class MelisComOrderCheckoutController extends AbstractActionController
      * Render Order Checkout product list Country selection
      * Country selection as datatable filter
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutProductListCountriesAction()
     {
-        $translator = $this->getServiceLocator()->get('translator');
-        $melisEcomCountryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+        $translator = $this->getServiceManager()->get('translator');
+        $melisEcomCountryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
         $ecomCountries = $melisEcomCountryTable->getCountries();
 
         $selectedCountry = '';
@@ -638,7 +638,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * Render Order Chekcout Product list Limit
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutProductListLimitAction()
     {
@@ -648,7 +648,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * Render Order Checkout Product list search input
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutProductListSearchAction()
     {
@@ -658,7 +658,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * Render Order Checkout Product list Refresh button
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutProductListRefreshAction()
     {
@@ -670,7 +670,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
      * This Button is attach to product row to view a Product variant list
      * in extra row.
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutProductListViewVariantAction()
     {
@@ -681,7 +681,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
      * Render Order Checkout Product List Select variant
      * This button attach to variant, this will add to Client basket
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutProductVariantListSelectVariantAction()
     {
@@ -691,7 +691,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * Render Order Checkout Choose Contact Step
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutChooseContactAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -703,7 +703,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * Render Order Checkout Choose contact header
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutChooseContactHeaderAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -716,14 +716,14 @@ class MelisComOrderCheckoutController extends AbstractActionController
      * Render Order Checkout Choose contact content
      * This content will provide Contact list in a table form
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutChooseContactContentAction(){
 
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
 
         // Getting Contact list table configuration from config
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $melisTool->setMelisToolKey(self::PLUGIN_INDEX, 'meliscommerce_order_checkout_contact_list');
         $columns = $melisTool->getColumns();
         $columns['actions'] = array('text' => $translator->translate('tr_meliscommerce_order_checkout_common_action'));
@@ -739,7 +739,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * This method will return the list of Active Contact
      *
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function getContactListAction()
     {
@@ -755,9 +755,9 @@ class MelisComOrderCheckoutController extends AbstractActionController
             $locale = $container['melis-lang-locale'];
 
             // Getting Contact list table configuration from config
-            $translator = $this->getServiceLocator()->get('translator');
-            $melisTranslation = $this->getServiceLocator()->get('MelisCoreTranslation');
-            $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+            $translator = $this->getServiceManager()->get('translator');
+            $melisTranslation = $this->getServiceManager()->get('MelisCoreTranslation');
+            $melisTool = $this->getServiceManager()->get('MelisCoreTool');
             $melisTool->setMelisToolKey(self::PLUGIN_INDEX, 'meliscommerce_order_checkout_contact_list');
 
             $colId = array_keys($melisTool->getColumns());
@@ -776,7 +776,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
             $search = $this->getRequest()->getPost('search');
             $search = $search['value'];
 
-            $melisEcomClientPersonTable = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
+            $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
             $dataCount = $melisEcomClientPersonTable->getTotalData();
 
             $getData = $melisEcomClientPersonTable->getContacts(array(
@@ -797,7 +797,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
             // store fetched data for data modification (if needed)
             $contactData = $getData->toArray();
 
-            $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
+            $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
 
             foreach ($contactData As $val)
             {
@@ -844,7 +844,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * Render Order Checkout Contact list limit
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutContactListLimitAction()
     {
@@ -854,7 +854,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * Render Order Cehckout Contact list search input
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutContactListSearchAction()
     {
@@ -864,7 +864,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * Render Order Checkout list Refresh button
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutContactListRefreshAction()
     {
@@ -876,7 +876,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
      * This action is attach to contact row, this will select the contact
      * as part of the checkout process
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutContactListSelectAction()
     {
@@ -887,11 +887,11 @@ class MelisComOrderCheckoutController extends AbstractActionController
      * This method will select a contact for checkout process
      * and store to checkout session
      *
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function selectContactAction()
     {
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
 
         $request = $this->getRequest();
 
@@ -908,7 +908,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
             $postValues = get_object_vars($request->getPost());
 
             // Getting the contact details from database
-            $melisEcomClientPersonTable = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
+            $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
             $contactData = $melisEcomClientPersonTable->getEntryById($postValues['contactId']);
             $contact = $contactData->current();
 
@@ -921,7 +921,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
             $clientId = $container['checkout'][self::SITE_ID]['clientId'];
             $clientKey = (!empty($container['checkout'][self::SITE_ID]['clientKey'])) ? $container['checkout'][self::SITE_ID]['clientKey'] : null;
 
-            $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
+            $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
             // After selecting contact this will clear the current Basket and create new entry for client basket
             // This process will avoid merging the old basket to the current basket
             $melisComBasketService->emptyPersistentBasket($clientId);
@@ -945,7 +945,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * Render Order Checkout Select address step
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutSelectAddressesAction()
     {
@@ -958,7 +958,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * Render Order Checkout Select address header
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutSelectAddressesHeaderAction()
     {
@@ -971,7 +971,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * Render Order Checkout Select address content
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutSelectAddressesContentAction()
     {
@@ -987,7 +987,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
      * This function will generate client billing addresses selection
      * and empty form for creating new billing address
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutBillingAddressAction()
     {
@@ -1006,7 +1006,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
             }
         }
 
-        $melisComOrderCheckoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
+        $melisComOrderCheckoutService = $this->getServiceManager()->get('MelisComOrderCheckoutService');
         $melisComOrderCheckoutService->setSiteId(self::SITE_ID);
 
         $emptyBillingAddress = $this->params()->fromQuery('emptyBillingAddress');
@@ -1048,11 +1048,11 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $clientAddId = ($this->params()->fromQuery('cadd_id')) ? $this->params()->fromQuery('cadd_id') : $checkoutBillingAddressId;
 
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_order_checkout/meliscommerce_order_checkout_billing_address_form','meliscommerce_order_checkout_billing_address_form');
 
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $propertyBillingAddressForm = $factory->createForm($appConfigForm);
 
@@ -1070,7 +1070,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
 
         if (!empty($clientAddId))
         {
-            $melisEcomClientAddressTable = $this->getServiceLocator()->get('MelisEcomClientAddressTable');
+            $melisEcomClientAddressTable = $this->getServiceManager()->get('MelisEcomClientAddressTable');
             $clientAddress = $melisEcomClientAddressTable->getEntryById($clientAddId);
 
             if (!empty($clientAddress) && !$sameAddress){
@@ -1109,11 +1109,11 @@ class MelisComOrderCheckoutController extends AbstractActionController
      * This function will generate client delivery addresses selection
      * and empty form for creating new delivery address
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutDeliveryAddressAction()
     {
-        $melisComOrderCheckoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
+        $melisComOrderCheckoutService = $this->getServiceManager()->get('MelisComOrderCheckoutService');
         $melisComOrderCheckoutService->setSiteId(self::SITE_ID);
 
         $container = new Container('meliscommerce');
@@ -1158,11 +1158,11 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $clientAddId = ($this->params()->fromQuery('cadd_id')) ? $this->params()->fromQuery('cadd_id') : $checkoutDeliveryAddressId;
 
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_order_checkout/meliscommerce_order_checkout_delivery_address_form','meliscommerce_order_checkout_delivery_address_form');
 
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $propertyDeliveryAddressForm = $factory->createForm($appConfigForm);
 
@@ -1180,7 +1180,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
 
         if (!empty($clientAddId))
         {
-            $melisEcomClientAddressTable = $this->getServiceLocator()->get('MelisEcomClientAddressTable');
+            $melisEcomClientAddressTable = $this->getServiceManager()->get('MelisEcomClientAddressTable');
             $clientAddress = $melisEcomClientAddressTable->getEntryById($clientAddId);
 
             if (!empty($clientAddress)){
@@ -1212,12 +1212,12 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * This method will validate Checkout addresses and store to checkout session
      *
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function selectAddressesAction()
     {
         $container = new Container('meliscommerce');
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         $request = $this->getRequest();
 
         // Default Values
@@ -1235,15 +1235,15 @@ class MelisComOrderCheckoutController extends AbstractActionController
 
 
             // Getting address form configuration from config
-            $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+            $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
             $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_order_checkout/meliscommerce_order_checkout_address_form','meliscommerce_order_checkout_address_form');
-            $factory = new \Zend\Form\Factory();
-            $formElements = $this->serviceLocator->get('FormElementManager');
+            $factory = new \Laminas\Form\Factory();
+            $formElements = $this->getServiceManager()->get('FormElementManager');
             $factory->setFormElementManager($formElements);
             $appConfigFormElements = $appConfigForm['elements'];
 
-            $melisEcomClientAddressTable = $this->getServiceLocator()->get('MelisEcomClientAddressTable');
-            $melisEcomClientPersonTable = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
+            $melisEcomClientAddressTable = $this->getServiceManager()->get('MelisEcomClientAddressTable');
+            $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
 
             $clientAddresses = array();
             $sameAddress = false;
@@ -1342,7 +1342,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
                     if (count($clientAddresses) == 2)
                     {
                         // Validating addresses using Checkout service
-                        $melisComOrderCheckoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
+                        $melisComOrderCheckoutService = $this->getServiceManager()->get('MelisComOrderCheckoutService');
                         $melisComOrderCheckoutService->setSiteId(self::SITE_ID);
                         $validatedAddresses = $melisComOrderCheckoutService->validateAddresses($clientAddresses['delivery'], $clientAddresses['billing']);
 
@@ -1365,7 +1365,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
 
                         if ($validatedAddresses['success'] == true)
                         {
-                            $clientSrv = $this->getServiceLocator()->get('MelisComClientService');
+                            $clientSrv = $this->getServiceManager()->get('MelisComClientService');
 
                             foreach ($validatedAddresses['addresses'] As $key => $val)
                             {
@@ -1402,7 +1402,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * Render Order Checkout Summary step
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutSummaryAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -1414,17 +1414,17 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * Render Order Checkout Summary Basket
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutSummaryBasketAction()
     {
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         $container = new Container('meliscommerce');
         $clientId = (!empty($container['checkout'][self::SITE_ID]['clientId'])) ? $container['checkout'][self::SITE_ID]['clientId'] : null;
         $clientKey = (!empty($container['checkout'][self::SITE_ID]['clientKey'])) ? $container['checkout'][self::SITE_ID]['clientKey'] : null;
 
-        $melisComOrderCheckoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
-        $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
+        $melisComOrderCheckoutService = $this->getServiceManager()->get('MelisComOrderCheckoutService');
+        $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
 
         $action = $this->params()->fromQuery('action');
         $variantId = $this->params()->fromQuery('variantId');
@@ -1467,11 +1467,11 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $basketData = $melisComBasketService->getBasket($clientId, $clientKey);
 
         // Getting Current Langauge ID
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $langId = $melisTool->getCurrentLocaleID();
 
-        $melisComVariantService = $this->getServiceLocator()->get('MelisComVariantService');
-        $melisComProductService = $this->getServiceLocator()->get('MelisComProductService');
+        $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
+        $melisComProductService = $this->getServiceManager()->get('MelisComProductService');
 
         $basket = array();
         $subTotal = 0;
@@ -1548,7 +1548,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $couponCode = $this->params()->fromQuery('couponCode');
 
         // Getting the Country currency, depend on country selected during step 1
-        $melisEcomCountryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+        $melisEcomCountryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
         $countryCurrency = $melisEcomCountryTable->getCountryCurrency($countryId)->current();
 
         $countryCurrencySympbol = '';
@@ -1578,17 +1578,17 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * Render Order Checkout Summary Billing Address
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutSummaryBillingAddressAction()
     {
         // Getting Current Langauge ID
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $langId = $melisTool->getCurrentLocaleID();
-        $melisEcomCivilityTransTable = $this->getServiceLocator()->get('MelisEcomCivilityTransTable');
-        $melisEcomCountryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+        $melisEcomCivilityTransTable = $this->getServiceManager()->get('MelisEcomCivilityTransTable');
+        $melisEcomCountryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
 
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_order_checkout/meliscommerce_order_checkout_address_form','meliscommerce_order_checkout_address_form');
         $appConfigFormElements = $appConfigForm['elements'];
 
@@ -1638,17 +1638,17 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * Reder Order Checkout Summary Delivery Address
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutSummaryDeliveryAddressAction()
     {
         // Getting Current Langauge ID
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $langId = $melisTool->getCurrentLocaleID();
-        $melisEcomCivilityTransTable = $this->getServiceLocator()->get('MelisEcomCivilityTransTable');
-        $melisEcomCountryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+        $melisEcomCivilityTransTable = $this->getServiceManager()->get('MelisEcomCivilityTransTable');
+        $melisEcomCountryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
 
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_order_checkout/meliscommerce_order_checkout_address_form','meliscommerce_order_checkout_address_form');
         $appConfigFormElements = $appConfigForm['elements'];
 
@@ -1698,11 +1698,11 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * This method will validate Client Basket and Addresses
      *
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function confirmOrderCheckoutSummaryAction()
     {
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
 
         $request = $this->getRequest();
 
@@ -1723,10 +1723,10 @@ class MelisComOrderCheckoutController extends AbstractActionController
             // Retrieving Client basket, 
             // In this process variant quatity, variant amount and other details about checkout will validate
             // to ensure everything is good before proceding to payment
-            $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
+            $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
             $basketData = $melisComBasketService->getBasket($clientId);
 
-            $couponSrv = $this->getServiceLocator()->get('MelisComCouponService');
+            $couponSrv = $this->getServiceManager()->get('MelisComCouponService');
 
             $couponCode = $request->getPost('couponCode');
 
@@ -1756,12 +1756,12 @@ class MelisComOrderCheckoutController extends AbstractActionController
                     if (!empty($container['checkout'][self::SITE_ID]['clientId']))
                     {
                         // Getting Current Langauge ID
-                        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+                        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
                         $langId = $melisTool->getCurrentLocaleID();
 
-                        $varSvc = $this->getServiceLocator()->get('MelisComVariantService');
+                        $varSvc = $this->getServiceManager()->get('MelisComVariantService');
 
-                        $melisComOrderCheckoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
+                        $melisComOrderCheckoutService = $this->getServiceManager()->get('MelisComOrderCheckoutService');
                         $melisComOrderCheckoutService->setSiteId(self::SITE_ID);
                         $clientBasket = $melisComOrderCheckoutService->checkoutStep1_prePayment($clientId);
 
@@ -1876,7 +1876,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * Render Order Checkout Summary Header
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutSummaryHeaderAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -1888,7 +1888,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * Render Order Checkout Summary Content
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutSummaryContentAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -1899,7 +1899,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
 
     /**
      * Render Order Checkout Payment Step
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutPaymentAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -1911,7 +1911,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * Render Order Checkout Payment header
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutPaymentHeaderAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -1922,7 +1922,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
 
     public function removeContactAction()
     {
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
 
         $request = $this->getRequest();
 
@@ -1939,7 +1939,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
             $postValues = get_object_vars($request->getPost());
 
             // Getting the contact details from database
-            $melisEcomClientPersonTable = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
+            $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
             $contactData = $melisEcomClientPersonTable->getEntryById($postValues['contactId']);
             $contact = $contactData->current();
 
@@ -1962,7 +1962,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
     /**
      * Render Order Checkout Payment Content
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutPaymentContentAction()
     {
@@ -1977,7 +1977,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
             $clientEmail = $container['checkout'][self::SITE_ID]['clientEmail'];
 
             // Retrieving the Checkout total cost
-            $melisComOrderCheckoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
+            $melisComOrderCheckoutService = $this->getServiceManager()->get('MelisComOrderCheckoutService');
             $melisComOrderCheckoutService->setSiteId(self::SITE_ID);
             $order = $melisComOrderCheckoutService->computeAllCosts($container['checkout'][self::SITE_ID]['clientId']);
             $totalCost = $order['costs']['total'];
@@ -2000,7 +2000,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $urlParam = http_build_query($param);
         $param['content'] = '<iframe class="order-checkout-payment-iframe" src="/melis/MelisCommerce/MelisComOrderCheckout/renderOrderCheckoutPaymentIframe?'.$urlParam.'"></iframe>';
 
-        $melisCoreGeneralSrv = $this->getServiceLocator()->get('MelisCoreGeneralService');
+        $melisCoreGeneralSrv = $this->getServiceManager()->get('MelisCoreGeneralService');
         $param = $melisCoreGeneralSrv->sendEvent('melis_commerce_order_checkout_payment_step', $param);
 
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -2014,7 +2014,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
      * Render Order Checkout payment Iframe
      * This will represent as payment Gateway/ Payment API
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutPaymentIframeAction()
     {
@@ -2041,11 +2041,11 @@ class MelisComOrderCheckoutController extends AbstractActionController
      * Render Order Cehckout Payment Done
      * This will represent the payment is done using Payment Gateway/API
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutPaymentDoneAction()
     {
-        $melisComOrderCheckoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
+        $melisComOrderCheckoutService = $this->getServiceManager()->get('MelisComOrderCheckoutService');
         $melisComOrderCheckoutService->setSiteId(self::SITE_ID);
         $melisComOrderCheckoutService->checkoutStep2_postPayment();
 
@@ -2059,12 +2059,12 @@ class MelisComOrderCheckoutController extends AbstractActionController
      * Render Order Checkout Confirmation
      * This method will return the result of the checkout process
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderCheckoutConfirmationAction()
     {
         $activateTab = $this->params()->fromQuery('activateTab');
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
 
         $result = array();
 
@@ -2073,7 +2073,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
         {
             // Retrieving order details
             $orderid = $container['checkout'][self::SITE_ID]['orderId'];
-            $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
+            $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
             $order = $melisEcomOrderTable->getEntryById($orderid)->current();
 
             if (!empty($order))
@@ -2130,7 +2130,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
 
     private function getTool()
     {
-        $tool = $this->getServiceLocator()->get('MelisCoreTool');
+        $tool = $this->getServiceManager()->get('MelisCoreTool');
         return $tool;
     }
 

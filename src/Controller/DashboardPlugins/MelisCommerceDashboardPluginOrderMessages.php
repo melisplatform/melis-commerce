@@ -9,9 +9,9 @@
 namespace MelisCommerce\Controller\DashboardPlugins;
 
 use MelisCore\Controller\DashboardPlugins\MelisCoreDashboardTemplatingPlugin;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Session\Container;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\Session\Container;
 
 class MelisCommerceDashboardPluginOrderMessages extends MelisCoreDashboardTemplatingPlugin
 {
@@ -30,7 +30,7 @@ class MelisCommerceDashboardPluginOrderMessages extends MelisCoreDashboardTempla
     public function orderMessages()
     {
         /** @var \MelisCore\Service\MelisCoreDashboardPluginsRightsService $dashboardPluginsService */
-        $dashboardPluginsService = $this->getServiceLocator()->get('MelisCoreDashboardPluginsService');
+        $dashboardPluginsService = $this->getServiceManager()->get('MelisCoreDashboardPluginsService');
         //get the class name to make it as a key to the plugin
         $path = explode('\\', __CLASS__);
         $className = array_pop($path);
@@ -158,7 +158,7 @@ class MelisCommerceDashboardPluginOrderMessages extends MelisCoreDashboardTempla
      */
     public function getOrders()
     {
-        $melisOrdersService = $this->getServiceLocator()->get('MelisComOrderService');
+        $melisOrdersService = $this->getServiceManager()->get('MelisComOrderService');
         $orders = $melisOrdersService->getOrderList(null, null, null, null, null, null, null, null, null, null, null, null, null);
 
         return $orders;
@@ -170,7 +170,7 @@ class MelisCommerceDashboardPluginOrderMessages extends MelisCoreDashboardTempla
      */
     public function formatDateByLangLocale($date)
     {
-        $melisTranslation = $this->getServiceLocator()->get('MelisCoreTranslation');
+        $melisTranslation = $this->getServiceManager()->get('MelisCoreTranslation');
         $langLocale = $this->getLangLocale();
         $formattedDate = strftime($melisTranslation->getDateFormatByLocate($langLocale), strtotime($date));
 

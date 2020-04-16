@@ -9,7 +9,7 @@
 
 namespace MelisCommerce\Service;
 
-use Zend\View\Model\JsonModel;
+use Laminas\View\Model\JsonModel;
 
 /**
  *
@@ -36,7 +36,7 @@ class MelisComPostPaymentService extends MelisComGeneralService
             
             $orderId = $postValues['order-id'];
             // Getting Client Id
-            $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
+            $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
             $orderData = $melisEcomOrderTable->getEntryById($orderId)->current();
             $clientId = $orderData->ord_client_id;
             

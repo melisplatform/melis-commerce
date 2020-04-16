@@ -9,42 +9,48 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
-use Zend\Db\Sql\Select;
-use Zend\Db\Metadata\Metadata;
-use Zend\Db\Sql\Where;
-use Zend\Db\Sql\Predicate\PredicateSet;
-use Zend\Db\Sql\Predicate\Like;
-use Zend\Db\Sql\Predicate\Operator;
-use Zend\Db\Sql\Predicate\Predicate;
+use Laminas\Db\TableGateway\TableGateway;
+use Laminas\Db\Sql\Select;
+use Laminas\Db\Metadata\Metadata;
+use Laminas\Db\Sql\Where;
+use Laminas\Db\Sql\Predicate\PredicateSet;
+use Laminas\Db\Sql\Predicate\Like;
+use Laminas\Db\Sql\Predicate\Operator;
+use Laminas\Db\Sql\Predicate\Predicate;
 
 class MelisEcomClientPersonTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_client_person';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'cper_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'cper_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
+
     public function getClientPersonByClientId($clientId)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         $select->join('melis_ecom_civility', 'melis_ecom_civility.civ_id=melis_ecom_client_person.cper_civility', 
                     array('*'), $select::JOIN_LEFT);
         
         $select->where('cper_client_id ='.$clientId);
         
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
     
     public function getClientPersonByPersonId($personId)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
     
         $select->join('melis_ecom_civility', 'melis_ecom_civility.civ_id=melis_ecom_client_person.cper_civility',
             array('*'), $select::JOIN_LEFT);
@@ -54,13 +60,13 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
         }
 
     
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
     
     public function getClientPersonByClientIdPersonIdAndPersonEmail($clientId, $personId = null, $personEmail = null)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         $select->join('melis_ecom_civility', 'melis_ecom_civility.civ_id=melis_ecom_client_person.cper_civility',
             array('*'), $select::JOIN_LEFT);
@@ -77,13 +83,13 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
         
         $select->order('cper_is_main_person DESC', 'cper_firstname', 'cper_name');
         
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
     
     public function getClientMainPersonByClientId($clientId)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         $select->join('melis_ecom_civility', 'melis_ecom_civility.civ_id=melis_ecom_client_person.cper_civility',
             array('*'), $select::JOIN_LEFT);
@@ -91,19 +97,19 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
         $select->where('cper_client_id ='.$clientId);
         $select->where('cper_is_main_person = 1');
         
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
     
     public function getContacts(array $options, $fixedCriteria = null)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
-        $cper_contact = new \Zend\Db\Sql\Predicate\Expression("CONCAT(COALESCE(`cper_firstname`,''),' ',COALESCE(`cper_middle_name`,''),' ',COALESCE(`cper_name`,'')) as cper_contact");
-        $max_order_date = new \Zend\Db\Sql\Predicate\Expression('(SELECT ord_date_creation FROM melis_ecom_order WHERE ord_client_person_id = cper_client_id ORDER BY ord_date_creation DESC LIMIT 1)'); 
+        $cper_contact = new \Laminas\Db\Sql\Predicate\Expression("CONCAT(COALESCE(`cper_firstname`,''),' ',COALESCE(`cper_middle_name`,''),' ',COALESCE(`cper_name`,'')) as cper_contact");
+        $max_order_date = new \Laminas\Db\Sql\Predicate\Expression('(SELECT ord_date_creation FROM melis_ecom_order WHERE ord_client_person_id = cper_client_id ORDER BY ord_date_creation DESC LIMIT 1)'); 
         $select->columns(array('*', $cper_contact, 'cper_last_order' => $max_order_date));
         
-        $result = $this->tableGateway->select();
+        $result = $this->getTableGateway()->select();
     
         $where = !empty($options['where']['key']) ? $options['where']['key'] : '';
         $whereValue = !empty($options['where']['value']) ? $options['where']['value'] : '';
@@ -142,7 +148,7 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
              
             if(!empty($dateFilterSql))
             {
-                $filters = array(new PredicateSet($likes,PredicateSet::COMBINED_BY_OR), new \Zend\Db\Sql\Predicate\Expression($dateFilterSql));
+                $filters = array(new PredicateSet($likes,PredicateSet::COMBINED_BY_OR), new \Laminas\Db\Sql\Predicate\Expression($dateFilterSql));
             }
             else
             {
@@ -171,7 +177,7 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
             $select->order($order . ' ' . $orderDir);
     
              
-            $getCount = $this->tableGateway->selectWith($select);
+            $getCount = $this->getTableGateway()->selectWith($select);
             $this->setCurrentDataCount((int) $getCount->count());
              
              
@@ -179,7 +185,7 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
             $select->limit($limit);
             $select->offset($start);
     
-            $resultSet = $this->tableGateway->selectWith($select);
+            $resultSet = $this->getTableGateway()->selectWith($select);
     
             return $resultSet;
     
@@ -187,13 +193,13 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
     
     public function getClientList(array $options, $fixedCriteria = null)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
     
-        $cper_contact = new \Zend\Db\Sql\Predicate\Expression("CONCAT(COALESCE(`cper_firstname`,''),' ',COALESCE(`cper_middle_name`,''),' ',COALESCE(`cper_name`,'')) as cli_person");
-        $max_order_date = new \Zend\Db\Sql\Predicate\Expression('(SELECT ord_date_creation FROM melis_ecom_order WHERE ord_client_id = cper_client_id ORDER BY ord_date_creation DESC LIMIT 1)');
+        $cper_contact = new \Laminas\Db\Sql\Predicate\Expression("CONCAT(COALESCE(`cper_firstname`,''),' ',COALESCE(`cper_middle_name`,''),' ',COALESCE(`cper_name`,'')) as cli_person");
+        $max_order_date = new \Laminas\Db\Sql\Predicate\Expression('(SELECT ord_date_creation FROM melis_ecom_order WHERE ord_client_id = cper_client_id ORDER BY ord_date_creation DESC LIMIT 1)');
         $select->columns(array('*', $cper_contact, 'cli_last_order' => $max_order_date));
     
-//         $result = $this->tableGateway->select();
+//         $result = $this->$this->getTableGateway()->select();
     
         $where = !empty($options['where']['key']) ? $options['where']['key'] : '';
         $whereValue = !empty($options['where']['value']) ? $options['where']['value'] : '';
@@ -236,7 +242,7 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
              
             if(!empty($dateFilterSql))
             {
-                $filters = array(new PredicateSet($likes,PredicateSet::COMBINED_BY_OR), new \Zend\Db\Sql\Predicate\Expression($dateFilterSql));
+                $filters = array(new PredicateSet($likes,PredicateSet::COMBINED_BY_OR), new \Laminas\Db\Sql\Predicate\Expression($dateFilterSql));
             }
             else
             {
@@ -261,7 +267,7 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
         if(!empty($order))
             $select->order($order . ' ' . $orderDir);
     
-        $getCount = $this->tableGateway->selectWith($select);
+        $getCount = $this->getTableGateway()->selectWith($select);
         $this->setCurrentDataCount((int) $getCount->count());
 
         // this is used in paginations
@@ -270,7 +276,7 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
 
         $select->group('cli_id');
 
-        $resultSet = $this->tableGateway->selectWith($select);
+        $resultSet = $this->getTableGateway()->selectWith($select);
 
 
         return $resultSet;
@@ -279,11 +285,11 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
     
     public function checkEmailExist($email, $personId)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         $select->where('cper_email = "'.$email.'"');
         $select->where('cper_id !='.$personId);
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
         
         return $resultData;
     }

@@ -2,8 +2,8 @@
 
 namespace MelisCommerce\Validator;
 
-use Zend\I18n\Validator\IsFloat;
-use Zend\Session\Container;
+use Laminas\I18n\Validator\IsFloat;
+use Laminas\Session\Container;
 class MelisPriceValidator extends IsFloat
 {
 

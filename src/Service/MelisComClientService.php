@@ -10,9 +10,9 @@
 namespace MelisCommerce\Service;
 
 use MelisCommerce\Entity\MelisClientPerson;
-use Zend\Crypt\BlockCipher;
-use Zend\Crypt\Symmetric\Mcrypt;
-use Zend\Http\Response;
+use Laminas\Crypt\BlockCipher;
+use Laminas\Crypt\Symmetric\Mcrypt;
+use Laminas\Http\Response;
 /**
  *
  * This service handles the client system of MelisCommerce.
@@ -45,9 +45,9 @@ class MelisComClientService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_list_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $melisEcomClientTable = $this->getServiceLocator()->get('MelisEcomClientTable');
-	    $melisEcomClientPersonTable = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
-	    $melisEcomClientAddressTable = $this->getServiceLocator()->get('MelisEcomClientAddressTable');
+	    $melisEcomClientTable = $this->getServiceManager()->get('MelisEcomClientTable');
+	    $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
+	    $melisEcomClientAddressTable = $this->getServiceManager()->get('MelisEcomClientAddressTable');
 	    
 	    // Get Client Data
 	    $clientData = $melisEcomClientTable->getClientList($arrayParameters['countryId'], $arrayParameters['dateCreationMin'], $arrayParameters['dateCreationMax'], $arrayParameters['onlyValid'], 
@@ -132,12 +132,12 @@ class MelisComClientService extends MelisComGeneralService
 	    $melisClient = new \MelisCommerce\Entity\MelisClient();
 	    
 	    // Set Client Data to MelisClient
-	    $melisEcomClientTable = $this->getServiceLocator()->get('MelisEcomClientTable');
+	    $melisEcomClientTable = $this->getServiceManager()->get('MelisEcomClientTable');
         $client = $melisEcomClientTable->getEntryById($arrayParameters['clientId'])->current();
         $melisClient->setClient($client);
 	        
         // Set Person Data to MelisClient
-        $melisEcomClientPersonTable = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
+        $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
         $clientPerson = $melisEcomClientPersonTable->getClientPersonByClientIdPersonIdAndPersonEmail($arrayParameters['clientId'], 
                                                                     $arrayParameters['personId'], $arrayParameters['personEmail']);
         $clientPersonData = array();
@@ -150,7 +150,7 @@ class MelisComClientService extends MelisComGeneralService
         $melisClient->setPersons($clientPersonData);
         
         // Set Addresses to MelisClient
-        $melisEcomClientAddressTable = $this->getServiceLocator()->get('MelisEcomClientAddressTable');
+        $melisEcomClientAddressTable = $this->getServiceManager()->get('MelisEcomClientAddressTable');
         $clientAddressData = $melisEcomClientAddressTable->getClientAddressByClientId($arrayParameters['clientId']);
         $clientAddress = array();
         foreach ($clientAddressData As $aVal)
@@ -188,12 +188,12 @@ class MelisComClientService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_export_client_start', $arrayParameters);
 	     
 	    // Service implementation start
-	    $melisCoreConfig = $this->getServiceLocator()->get('MelisCoreConfig');
+	    $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
 	    // get config for file name
 	    $csvConfig = $melisCoreConfig->getItem('meliscommerce/datas/default/export/csv');
 	    $csvFileName = $csvConfig['clientFileName'];
 	    $dir = $csvConfig['dir']; 
-	    $clientTable = $this->getServiceLocator()->get('MelisEcomClientTable');
+	    $clientTable = $this->getServiceManager()->get('MelisEcomClientTable');
 
 	    $clienData = $clientTable->fetchAll();
 	    $count = $clienData->count();
@@ -254,11 +254,11 @@ class MelisComClientService extends MelisComGeneralService
 	    $addresses = $arrayParameters['clientEntity']->getAddresses();
 	    $persons  = $arrayParameters['clientEntity']->getPersons();
 	    
-	    $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+	    $countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
 	    $country = $countryTable->getEntryByField('ctry_id', $client->cli_country_id);
 	    $countryName = ($country->count())? $country->current()->ctry_name : '';
 	    
-	    $langTable = $this->getServiceLocator()->get('MelisEcomLangTable');
+	    $langTable = $this->getServiceManager()->get('MelisEcomLangTable');
 	    $languages = $langTable->fetchAll();
 	    
 	    $content = array();
@@ -383,7 +383,7 @@ class MelisComClientService extends MelisComGeneralService
 	    $melisClientPerson = new \MelisCommerce\Entity\MelisClientPerson();
 	    
 	    // Set Person Data to MelisClientPerson
-	    $melisEcomClientPersonTable = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
+	    $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
 	    $clientPersonData = $melisEcomClientPersonTable->getClientPersonByPersonId($arrayParameters['personId']);
 	    $clientPerson = $clientPersonData->current();
 	    if (!empty($clientPerson))
@@ -394,7 +394,7 @@ class MelisComClientService extends MelisComGeneralService
 	    }
 	    
 	    // Set Addresses Data to MelisClientPerson
-	    $melisEcomClientAddressTable = $this->getServiceLocator()->get('MelisEcomClientAddressTable');
+	    $melisEcomClientAddressTable = $this->getServiceManager()->get('MelisEcomClientAddressTable');
 	    $clientAddressData = $melisEcomClientAddressTable->getPersonAddressByPersonId($arrayParameters['personId']);
 	    $clientAddress = array();
 	    foreach ($clientAddressData As $aVal)
@@ -436,8 +436,8 @@ class MelisComClientService extends MelisComGeneralService
 	    // Service implementation start
 	    $melisClientPerson = new \MelisCommerce\Entity\MelisClientPerson();
 	    
-	    $melisEcomClientPersonTable = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
-	    $melisEcomCivilityTransTable = $this->getServiceLocator()->get('MelisEcomCivilityTransTable');
+	    $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
+	    $melisEcomCivilityTransTable = $this->getServiceManager()->get('MelisEcomCivilityTransTable');
 	    $clientPersonData = $melisEcomClientPersonTable->getClientMainPersonByClientId($arrayParameters['clientId']);
 	    $clientPerson = $clientPersonData->current();
 	    if (!empty($clientPerson))
@@ -450,7 +450,7 @@ class MelisComClientService extends MelisComGeneralService
 	        $melisClientPerson->setPerson($clientPerson);
 	        
 	        // Set Addresses Data to MelisClientPerson
-	        $melisEcomClientAddressTable = $this->getServiceLocator()->get('MelisEcomClientAddressTable');
+	        $melisEcomClientAddressTable = $this->getServiceManager()->get('MelisEcomClientAddressTable');
 	        $clientAddressData = $melisEcomClientAddressTable->getPersonAddressByPersonId($clientPerson->cper_id);
 	        $clientAddress = array();
 	        foreach ($clientAddressData As $aVal)
@@ -490,7 +490,7 @@ class MelisComClientService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_addresses_byclientid_start', $arrayParameters);
 	     
 	    // Service implementation start
-	    $melisEcomClientAddressTable = $this->getServiceLocator()->get('MelisEcomClientAddressTable');
+	    $melisEcomClientAddressTable = $this->getServiceManager()->get('MelisEcomClientAddressTable');
 	    $clientAddress = $melisEcomClientAddressTable->getClientAddressByClientId($arrayParameters['clientId'], $arrayParameters['addressType']);
 	    foreach ($clientAddress As $val)
 	    {
@@ -525,7 +525,7 @@ class MelisComClientService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_addresses_byclientpersonid_start', $arrayParameters);
 	     
 	    // Service implementation start
-	    $melisEcomClientAddressTable = $this->getServiceLocator()->get('MelisEcomClientAddressTable');
+	    $melisEcomClientAddressTable = $this->getServiceManager()->get('MelisEcomClientAddressTable');
 	    $clientAddress = $melisEcomClientAddressTable->getPersonAddressByPersonId($arrayParameters['personId'], $arrayParameters['addressType'], $arrayParameters['caddId']);
 	    foreach ($clientAddress As $val)
 	    {
@@ -557,7 +557,7 @@ class MelisComClientService extends MelisComGeneralService
 	
 	    // Service implementation start
 	    
-	    $addrTable = $this->getServiceLocator()->get('MelisEcomClientAddressTable');
+	    $addrTable = $this->getServiceManager()->get('MelisEcomClientAddressTable');
 	    $address  = $addrTable->getClientPersonAddressByAddressId($arrayParameters['personId'], $arrayParameters['addrId']);
 	    if (!empty($address))
 	    {
@@ -583,7 +583,7 @@ class MelisComClientService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_addresses_byclientpersonid_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $melisEcomClientAddressTypeTransTable = $this->getServiceLocator()->get('MelisEcomClientAddressTypeTransTable');
+	    $melisEcomClientAddressTypeTransTable = $this->getServiceManager()->get('MelisEcomClientAddressTypeTransTable');
 	    $addTypeTrans = $melisEcomClientAddressTypeTransTable->getAddressTransByAddressTypeIdAndLangId($arrayParameters['addTypeId'], $arrayParameters['langId']);
 	    
 	    if (!is_null($arrayParameters['langId']))
@@ -625,7 +625,7 @@ class MelisComClientService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_company_byclientid_start', $arrayParameters);
 	     
 	    // Service implementation start
-	    $melisEcomClientCompanyTable = $this->getServiceLocator()->get('MelisEcomClientCompanyTable');
+	    $melisEcomClientCompanyTable = $this->getServiceManager()->get('MelisEcomClientCompanyTable');
 	    $clientCompany = $melisEcomClientCompanyTable->getClientCompanyByClientId($arrayParameters['clientId']);
 	    foreach ($clientCompany As $val)
 	    {
@@ -659,7 +659,7 @@ class MelisComClientService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_civility_list_start', $arrayParameters);
 	     
 	    // Service implementation start
-	    $melisEcomCivilityTransTable = $this->getServiceLocator()->get('MelisEcomCivilityTransTable');
+	    $melisEcomCivilityTransTable = $this->getServiceManager()->get('MelisEcomCivilityTransTable');
 	    $civility = $melisEcomCivilityTransTable->getCivilityByLangId($arrayParameters['langId']);
 	    foreach ($civility As $val)
 	    {
@@ -691,7 +691,7 @@ class MelisComClientService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_civility_list_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $melisEcomCivilityTransTable = $this->getServiceLocator()->get('MelisEcomCivilityTransTable');
+	    $melisEcomCivilityTransTable = $this->getServiceManager()->get('MelisEcomCivilityTransTable');
 	    
 	    // Set Person Data to MelisClientPerson
 	    $clientPersonCivilityTrans = $melisEcomCivilityTransTable->getCivilityTransByCivilityId($arrayParameters['civilityId'], $arrayParameters['langId']);
@@ -735,7 +735,7 @@ class MelisComClientService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_addresstype_list_start', $arrayParameters);
 	     
 	    // Service implementation start
-	    $melisEcomClientAddressTypeTransTable = $this->getServiceLocator()->get('MelisEcomClientAddressTypeTransTable');
+	    $melisEcomClientAddressTypeTransTable = $this->getServiceManager()->get('MelisEcomClientAddressTypeTransTable');
 	    $addressType = $melisEcomClientAddressTypeTransTable->getAddressTypeTransByLangId($arrayParameters['langId']);
 	    foreach ($addressType As $val)
 	    {
@@ -771,7 +771,7 @@ class MelisComClientService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_byemailandpassword_start', $arrayParameters);
 	
 	    // Service implementation start
-	    $melisEcomClientTable = $this->getServiceLocator()->get('MelisEcomClientTable');
+	    $melisEcomClientTable = $this->getServiceManager()->get('MelisEcomClientTable');
 	    $client = $melisEcomClientTable->getClientByEmailAndPassword($arrayParameters['personEmail'], $this->crypt($arrayParameters['personPassword']))->current();
 	    
 	    if (!empty($client))
@@ -815,7 +815,7 @@ class MelisComClientService extends MelisComGeneralService
 	    // Service implementation start
 	    if (!empty($arrayParameters['recoverKey']))
 	    {
-	        $clientPersonTbl = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
+	        $clientPersonTbl = $this->getServiceManager()->get('MelisEcomClientPersonTable');
 	        $clientPerson = $clientPersonTbl->getEntryByField('cper_password_recovery_key', $recoverKey)->current();
 	         
 	        if (!empty($clientPerson))
@@ -857,7 +857,7 @@ class MelisComClientService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_save_start', $arrayParameters);
 	     
 	    // Service implementation start
-	    $melisEcomClientTable = $this->getServiceLocator()->get('MelisEcomClientTable');
+	    $melisEcomClientTable = $this->getServiceManager()->get('MelisEcomClientTable');
 	    $clntId = null;
 	    
 	    try
@@ -972,8 +972,8 @@ class MelisComClientService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_persons_save_start', $arrayParameters);
 	
 	    // Service implementation start
-	    $melisEcomClientPersonTable = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
-	    $melisEcomClientAddressTable = $this->getServiceLocator()->get('MelisEcomClientAddressTable');
+	    $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
+	    $melisEcomClientAddressTable = $this->getServiceManager()->get('MelisEcomClientAddressTable');
 	    
         try
         {
@@ -1066,7 +1066,7 @@ class MelisComClientService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_check_email_exist_start', $arrayParameters);
 	     
 	    // Service implementation start
-	    $melisEcomClientPersonTable = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
+	    $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
 	    try 
 	    {
 	        $person = $melisEcomClientPersonTable->checkEmailExist($arrayParameters['email'], $arrayParameters['personId']);
@@ -1103,7 +1103,7 @@ class MelisComClientService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_passwordcryptdecrypt_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $authService = $this->getServiceLocator()->get('MelisComAuthenticationService');
+	    $authService = $this->getServiceManager()->get('MelisComAuthenticationService');
         $value = $authService->encryptPassword($arrayParameters['str']);
 	    // Adding results to parameters for events treatment if needed
 	    $arrayParameters['results'] = $value;
@@ -1153,7 +1153,7 @@ class MelisComClientService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_address_save_start', $arrayParameters);
 	
 	    // Service implementation start
-	    $melisEcomClientAddressTable = $this->getServiceLocator()->get('MelisEcomClientAddressTable');
+	    $melisEcomClientAddressTable = $this->getServiceManager()->get('MelisEcomClientAddressTable');
 	    
         try
         {
@@ -1224,7 +1224,7 @@ class MelisComClientService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_company_save_start', $arrayParameters);
 	
 	    // Service implementation start
-	    $melisEcomClientCompanyTable = $this->getServiceLocator()->get('MelisEcomClientCompanyTable');
+	    $melisEcomClientCompanyTable = $this->getServiceManager()->get('MelisEcomClientCompanyTable');
 	    try 
 	    {
 	        if (is_null($arrayParameters['companyId']))
@@ -1271,8 +1271,8 @@ class MelisComClientService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_addresstype_save_start', $arrayParameters);
 	
 	    // Service implementation start
-	    $melisEcomClientAddressTypeTable = $this->getServiceLocator()->get('MelisEcomClientAddressTypeTable');
-	    $melisEcomClientAddressTypeTransTable = $this->getServiceLocator()->get('MelisEcomClientAddressTypeTransTable');
+	    $melisEcomClientAddressTypeTable = $this->getServiceManager()->get('MelisEcomClientAddressTypeTable');
+	    $melisEcomClientAddressTypeTransTable = $this->getServiceManager()->get('MelisEcomClientAddressTypeTransTable');
 	    try 
 	    {
 	        if (!empty($arrayParameters['addressType'])&&is_array($arrayParameters['addressType']))
@@ -1326,8 +1326,8 @@ class MelisComClientService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_delete_start', $arrayParameters);
 	
 	    // Service implementation start
-	    $melisEcomClientTable = $this->getServiceLocator()->get('MelisEcomClientTable');
-	    $melisEcomBasketPersistentTable = $this->getServiceLocator()->get('MelisEcomBasketPersistentTable');
+	    $melisEcomClientTable = $this->getServiceManager()->get('MelisEcomClientTable');
+	    $melisEcomBasketPersistentTable = $this->getServiceManager()->get('MelisEcomBasketPersistentTable');
 	    
 	    try
 	    {
@@ -1377,7 +1377,7 @@ class MelisComClientService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_address_delete_start', $arrayParameters);
 	
 	    // Service implementation start
-	    $melisEcomClientAddressTable = $this->getServiceLocator()->get('MelisEcomClientAddressTable');
+	    $melisEcomClientAddressTable = $this->getServiceManager()->get('MelisEcomClientAddressTable');
 	    
 	    try
 	    {
@@ -1421,7 +1421,7 @@ class MelisComClientService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_company_delete_start', $arrayParameters);
 	
 	    // Service implementation start
-	    $melisEcomClientCompanyTable = $this->getServiceLocator()->get('MelisEcomClientCompanyTable');
+	    $melisEcomClientCompanyTable = $this->getServiceManager()->get('MelisEcomClientCompanyTable');
 	    
 	    try 
 	    {
@@ -1456,9 +1456,9 @@ class MelisComClientService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_client_address_delete_by_address_id_start', $arrayParameters);
 
         // Service implementation start
-        $melisComAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
+        $melisComAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
 
-        $addrTable   = $this->getServiceLocator()->get('MelisEcomClientAddressTable');
+        $addrTable   = $this->getServiceManager()->get('MelisEcomClientAddressTable');
         $addrData    = $addrTable->deleteById($addrId);
         $results     = 1;
         // Service implementation end
@@ -1486,7 +1486,7 @@ class MelisComClientService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_widget_client_start', $arrayParameters);
 	     
 	    // Service implementation start
-	    $clientTable = $this->getServiceLocator()->get('MelisEcomClientTable');
+	    $clientTable = $this->getServiceManager()->get('MelisEcomClientTable');
 	    switch($arrayParameters['identifier']){
 	        case 'curMonth':
 	            $results = $clientTable->getCurrentMonth()->count(); break;
@@ -1520,7 +1520,7 @@ class MelisComClientService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_get_person_by_email_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $clientPersonTbl = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
+	    $clientPersonTbl = $this->getServiceManager()->get('MelisEcomClientPersonTable');
 	    $results = $clientPersonTbl->getEntryByField('cper_email', $arrayParameters['email'])->current();
 	    // Service implementation end
 	    
@@ -1548,7 +1548,7 @@ class MelisComClientService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_client_save_password_recovery_key_start', $arrayParameters);
 	     
 	    // Service implementation start
-	    $clientPersonTbl = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
+	    $clientPersonTbl = $this->getServiceManager()->get('MelisEcomClientPersonTable');
 	    try{
 	        $results = $clientPersonTbl->save(array('cper_password_recovery_key' => $arrayParameters['recoverKey']), $arrayParameters['personId']);
 

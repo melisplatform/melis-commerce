@@ -9,13 +9,13 @@
 
 namespace MelisCommerce\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Session\Container;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\Session\Container;
+use MelisCore\Controller\AbstractActionController;
+
 class MelisComProductListController extends AbstractActionController
 {
-
     /**
      * Product List Page Container
      */
@@ -29,7 +29,7 @@ class MelisComProductListController extends AbstractActionController
     
     /**
      * Product Header Container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderProductListHeaderAction()
     {
@@ -42,7 +42,7 @@ class MelisComProductListController extends AbstractActionController
     
     /**
      * Displays the add Button in the headers
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderProductListHeaderAddAction()
     {
@@ -75,7 +75,7 @@ class MelisComProductListController extends AbstractActionController
     
     /**
      * Renders to the bulk action filter of the table
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderProductListContentFilterBulkAction()
     {
@@ -84,7 +84,7 @@ class MelisComProductListController extends AbstractActionController
     
     /**
      * Renders to the search action filter of the table
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderProductListContentFilterSearchAction()
     {
@@ -93,7 +93,7 @@ class MelisComProductListController extends AbstractActionController
     
     /**
      * Renders to the limit action filter of the table
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderProductListContentFilterLimitAction()
     {
@@ -102,7 +102,7 @@ class MelisComProductListController extends AbstractActionController
     
     /**
      * Renders to the grid view action of the table
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderProductListContentFilterGridViewAction()
     {
@@ -111,7 +111,7 @@ class MelisComProductListController extends AbstractActionController
     
     /**
      * Renders to the list view action of the table
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderProductListContentFilterListViewAction()
     {
@@ -120,7 +120,7 @@ class MelisComProductListController extends AbstractActionController
     
     /**
      * Renders to the refresh action of the table
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderProductListContentFilterRefreshAction()
     {
@@ -130,7 +130,7 @@ class MelisComProductListController extends AbstractActionController
     
     /**
      * Renders to the Edit Button in the table
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderProductListContentActionDeleteAction()
     {
@@ -139,7 +139,7 @@ class MelisComProductListController extends AbstractActionController
     
     /**
      * Renders to the Delete Button in the table
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderProductListContentActionEditAction()
     {
@@ -149,15 +149,15 @@ class MelisComProductListController extends AbstractActionController
     /**
      * This method return the list of Products
      * 
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function getProductsListAction()
     {
         $success = 0;
-        $prodSvc = $this->getServiceLocator()->get('MelisComProductService');
-        $categorySvc = $this->getServiceLocator()->get('MelisComCategoryService');
-        $docSvc = $this->getServiceLocator()->get('MelisComDocumentService');
-        $viewHelperManager = $this->getServiceLocator()->get('ViewHelperManager');
+        $prodSvc = $this->getServiceManager()->get('MelisComProductService');
+        $categorySvc = $this->getServiceManager()->get('MelisComCategoryService');
+        $docSvc = $this->getServiceManager()->get('MelisComDocumentService');
+        $viewHelperManager = $this->getServiceManager()->get('ViewHelperManager');
         $toolTipTable = $viewHelperManager->get('ToolTipTable');
         $langId = $this->getTool()->getCurrentLocaleID();
         
@@ -199,7 +199,7 @@ class MelisComProductListController extends AbstractActionController
             $toolTipTextTag = '<a id="row-%s" class="toolTipHoverEvent tooltipTable" data-productId="%s" data-hasqtip="1" aria-describedby="qtip-%s">%s</a>';
             // PRODUCT DETAILS
             $ctr = 0;
-            $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
+            $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
             $dataCount = $prodSvc->getProductList($langId, null, null, null, null, null, $selColOrder, $order[0]['dir'], $search);
             foreach($prodData as $prod) 
             {
@@ -257,7 +257,7 @@ class MelisComProductListController extends AbstractActionController
      */
     private function getTool() 
     {
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_products_list');
         
         return $melisTool;
@@ -272,7 +272,7 @@ class MelisComProductListController extends AbstractActionController
      */
     private function getTranslation($key, $args = null) 
     {
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         $text = vsprintf($translator->translate($key), $args);
         
         return $text;
@@ -335,7 +335,7 @@ class MelisComProductListController extends AbstractActionController
             $productId = (int) $this->getRequest()->getPost('productId');
             $variantId = (int) $this->getRequest()->getPost('variantId');
             
-            $productSvc = $this->getServiceLocator()->get('MelisComProductService'); // added by: JRago
+            $productSvc = $this->getServiceManager()->get('MelisComProductService'); // added by: JRago
 
             // $productId = (int) $this->params()->fromQuery('productId');
             $variants = $this->getProductVariantsData($productId);
@@ -344,7 +344,7 @@ class MelisComProductListController extends AbstractActionController
             $activeDom     = '<span class="text-success"><i class="fa fa-fw fa-circle"></i></span>';
             $inactiveDom   = '<span class="text-danger"><i class="fa fa-fw fa-circle"></i></span>';
             $attributesDom = '<span class="btn btn-default cell-val-table" style="border-radius: 4px;color: #7D7B7B;">%s</span>';
-            $viewHelperManager = $this->getServiceLocator()->get('ViewHelperManager');
+            $viewHelperManager = $this->getServiceManager()->get('ViewHelperManager');
             $table = $viewHelperManager->get('ToolTipTable');
             $langId = $this->getTool()->getCurrentLocaleID();
 
@@ -516,13 +516,13 @@ class MelisComProductListController extends AbstractActionController
     
     public function getProductVariantsData($productId) 
     {
-        $countriesTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
-        $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
+        $countriesTable = $this->getServiceManager()->get('MelisEcomCountryTable');
+        $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
         $countries =  $countriesTable->getCountries()->toArray();
         $langId = $this->getTool()->getCurrentLocaleID();
         $variantsData = $variantSvc->getVariantListByProductId($productId, $langId);
-        $docSvc = $this->getServiceLocator()->get('MelisComDocumentService');
-        $productSvc = $this->getServiceLocator()->get('MelisComProductService');
+        $docSvc = $this->getServiceManager()->get('MelisComDocumentService');
+        $productSvc = $this->getServiceManager()->get('MelisComProductService');
         
         $dataPrices = array();
         $variants = array();

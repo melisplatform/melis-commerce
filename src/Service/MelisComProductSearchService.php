@@ -48,7 +48,7 @@ class MelisComProductSearchService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_productsearch_bytextfields_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $prodTable = $this->getServiceLocator()->get('MelisEcomProductTable');
+	    $prodTable = $this->getServiceManager()->get('MelisEcomProductTable');
 
 	    $productData = $prodTable->getProductByTextAndType($arrayParameters['search'], 
                                                                 $arrayParameters['fieldsTypeCodes'], $arrayParameters['categoryId'], $arrayParameters['langId'], (int) $arrayParameters['onlyValid'],
@@ -144,7 +144,7 @@ class MelisComProductSearchService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_productsearch_byattvalues_pricerange_start', $arrayParameters);
 
 	    // Service implementation start
-	    $prodTable = $this->getServiceLocator()->get('MelisEcomProductTable');
+	    $prodTable = $this->getServiceManager()->get('MelisEcomProductTable');
 	    $product = new MelisProduct();
 	    
 	    $productData = $prodTable->getProductByAttributeValueIdsAndPriceRange($arrayParameters['attributeValuesIds'], (float) $arrayParameters['priceMin'], (float) $arrayParameters['priceMax'],
@@ -244,7 +244,7 @@ class MelisComProductSearchService extends MelisComGeneralService
 	     
 	    // Service implementation start
         $selectedVariants = array();
-	    $prodTable = $this->getServiceLocator()->get('MelisEcomProductTable');
+	    $prodTable = $this->getServiceManager()->get('MelisEcomProductTable');
 	    if(!empty($arrayParameters['attributeValuesIds']) && is_array($arrayParameters['attributeValuesIds'])) {
             $selectedVariants = $prodTable->getProductVariantByAttributesId($arrayParameters['attributeValuesIds']);
             if(empty($selectedVariants)){
@@ -274,7 +274,7 @@ class MelisComProductSearchService extends MelisComGeneralService
             
             $productData = array_unique($productData, SORT_REGULAR);
             
-            $prdSrv = $this->getServiceLocator()->get('MelisComProductService');
+            $prdSrv = $this->getServiceManager()->get('MelisComProductService');
             
             foreach ($productData As $val)
             {
@@ -320,7 +320,7 @@ class MelisComProductSearchService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_productsearch_product_by_category_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $prodTable = $this->getServiceLocator()->get('MelisEcomProductTable');
+	    $prodTable = $this->getServiceManager()->get('MelisEcomProductTable');
 	    
 	    $prods = $prodTable->getProductCategoryPriceByProductId(null, $arrayParameters['categoryId'], 
 	        $arrayParameters['langId'], $arrayParameters['countryId'], 
@@ -359,7 +359,7 @@ class MelisComProductSearchService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_productsearch_get_price_by_column_start', $arrayParameters);
 	     
 	    // Service implementation start
-	    $priceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');
+	    $priceTable = $this->getServiceManager()->get('MelisEcomPriceTable');
 	    $results = $priceTable->getPriceByColumnOrder($arrayParameters['order'], $arrayParameters['column'], $arrayParameters['categoryId'])->current(); 
 	    // Service implementation end
 	     

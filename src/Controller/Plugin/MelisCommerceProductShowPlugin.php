@@ -11,9 +11,9 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
-use Zend\View\Model\ViewModel;
-use Zend\Stdlib\ArrayUtils;
-use Zend\Session\Container;
+use Laminas\View\Model\ViewModel;
+use Laminas\Stdlib\ArrayUtils;
+use Laminas\Session\Container;
 /**
  * This plugin implements the business logic of the
  * "show porduct plugin" plugin.
@@ -63,7 +63,7 @@ class MelisCommerceProductShowPlugin extends MelisTemplatingPlugin
      */
     public function front()
     {
-        $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+        $viewRender = $this->getServiceManager()->get('ViewRenderer');
         
         $container = new Container('melisplugins');
         $langId = $container['melis-plugins-lang-id'];
@@ -72,7 +72,7 @@ class MelisCommerceProductShowPlugin extends MelisTemplatingPlugin
         $productId = ($this->pluginFrontConfig['m_product_id'])? $this->pluginFrontConfig['m_product_id'] : null;
         $countryId = ($this->pluginFrontConfig['m_product_country'])? $this->pluginFrontConfig['m_product_country'] : null;
         
-        $productSvc = $this->getServiceLocator()->get('MelisComProductService');
+        $productSvc = $this->getServiceManager()->get('MelisComProductService');
         
         // get variant, main variant is fetch by default
         $product = $productSvc->getProductById($productId, $langId, $countryId);
@@ -92,8 +92,8 @@ class MelisCommerceProductShowPlugin extends MelisTemplatingPlugin
     public function createOptionsForms()
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
         
@@ -104,7 +104,7 @@ class MelisCommerceProductShowPlugin extends MelisTemplatingPlugin
             foreach ($formConfig as $formKey => $config)
             {
                 $form = $factory->createForm($config);
-                $request = $this->getServiceLocator()->get('request');
+                $request = $this->getServiceManager()->get('request');
                 $parameters = $request->getQuery()->toArray();
                 
                 if (!isset($parameters['validate']))
@@ -115,7 +115,7 @@ class MelisCommerceProductShowPlugin extends MelisTemplatingPlugin
                     $viewModelTab->modalForm = $form;
                     $viewModelTab->formData   = $this->getFormData();
                     
-                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
                         'name' => $config['tab_title'],

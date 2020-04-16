@@ -9,7 +9,7 @@
 
 namespace MelisCommerce\Form\Factory;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\ServiceManager;
 use MelisCore\Form\Factory\MelisSelectFactory;
 
 /**
@@ -17,14 +17,12 @@ use MelisCore\Form\Factory\MelisSelectFactory;
  */
 class EcomCurrencyAllStatusSelectFactory extends MelisSelectFactory
 {
-	protected function loadValueOptions(ServiceLocatorInterface $formElementManager)
+	protected function loadValueOptions(ServiceManager $serviceManager)
 	{
-		$serviceManager = $formElementManager->getServiceLocator();
-
 		$melisEcomCurrencyTable = $serviceManager->get('MelisEcomCurrencyTable');
 		$melisEcomCurrencyData = $melisEcomCurrencyTable->fetchAll();
 		
-		$valueoptions = array();
+		$valueoptions = [];
 		
 		if($melisEcomCurrencyData) { 
 		    foreach($melisEcomCurrencyData as $currency) {

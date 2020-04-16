@@ -9,18 +9,17 @@
 
 namespace MelisCommerce\Form\Factory;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\ServiceManager;
 use MelisCore\Form\Factory\MelisSelectFactory;
-use Zend\Session\Container;
+use Laminas\Session\Container;
+
 /**
  * MelisCommerce Chechout Delivery Addresses Select Factory
  */
 class EcomCheckoutDeliveryAddressSelectFactory extends MelisSelectFactory
 {
-    protected function loadValueOptions(ServiceLocatorInterface $formElementManager)
+    protected function loadValueOptions(ServiceManager $serviceManager)
     {
-        $serviceManager = $formElementManager->getServiceLocator();
-        
         // Getting Current Langauge ID
         $melisTool = $serviceManager->get('MelisCoreTool');
         $langId = $melisTool->getCurrentLocaleID();

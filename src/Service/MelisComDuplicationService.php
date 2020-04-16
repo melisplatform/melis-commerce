@@ -32,7 +32,7 @@ class MelisComDuplicationService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_duplicate_validate_variant_start', $arrayParameters);
         
         // Service implementation start
-        $translator = $this->serviceLocator->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
         $variantSku = (!empty($arrayParameters['data']['variantSku'])) ? $arrayParameters['data']['variantSku'] : array();
         
@@ -43,10 +43,10 @@ class MelisComDuplicationService extends MelisComGeneralService
         if (!empty($variantSku))
         {
             // Retreiving the form from config
-            $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+            $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
             $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_duplications/meliscommerce_duplications_sku_form','meliscommerce_duplications_sku_form');
-            $factory = new \Zend\Form\Factory();
-            $formElements = $this->serviceLocator->get('FormElementManager');
+            $factory = new \Laminas\Form\Factory();
+            $formElements = $this->getServiceManager()->get('FormElementManager');
             $factory->setFormElementManager($formElements);
             $propertyForm = $factory->createForm($appConfigForm);
             
@@ -62,7 +62,7 @@ class MelisComDuplicationService extends MelisComGeneralService
             {
                 $propertyForm->setData($val);
                 // Retrieving variant details from Variant Service
-                $variantTable = $this->getServiceLocator()->get('MelisEcomVariantTable');
+                $variantTable = $this->getServiceManager()->get('MelisEcomVariantTable');
                 $variant = $variantTable->getEntryById($key)->current();
                 
                 if ($propertyForm->isValid())
@@ -177,8 +177,8 @@ class MelisComDuplicationService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_duplicate_product_start', $arrayParameters);
     
         // Service implementation start
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
-        $prdSrv = $this->getServiceLocator()->get('MelisComProductService');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
+        $prdSrv = $this->getServiceManager()->get('MelisComProductService');
         // Retrieving Product details from Product service
         $productEntity = $prdSrv->getProductById($arrayParameters['productId']);
         
@@ -282,8 +282,8 @@ class MelisComDuplicationService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_duplicate_variant_start', $arrayParameters);
         
         // Service implementation start
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
-        $varSrv = $this->getServiceLocator()->get('MelisComVariantService');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
+        $varSrv = $this->getServiceManager()->get('MelisComVariantService');
         
         foreach ($arrayParameters['variant'] As $key => $val)
         {
@@ -384,8 +384,8 @@ class MelisComDuplicationService extends MelisComGeneralService
         // Service implementation start
         if ($arrayParameters['duplicateImages'] || $arrayParameters['duplicateFiles'])
         {
-            $docTable    = $this->getServiceLocator()->get('MelisEcomDocumentTable');
-            $docRelTable = $this->getServiceLocator()->get('MelisEcomDocRelationsTable');
+            $docTable    = $this->getServiceManager()->get('MelisEcomDocumentTable');
+            $docRelTable = $this->getServiceManager()->get('MelisEcomDocRelationsTable');
             
             // Retrieving all type of documents
             $documents = $docTable->getDocumentsByParentTypeId($arrayParameters['docRelation'], $arrayParameters['docRelationId']);

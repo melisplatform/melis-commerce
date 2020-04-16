@@ -79,10 +79,10 @@ class MelisComBasketService extends MelisComGeneralService
         
         
         // Get persistent basket
-        $melisEcomBasketPersistentTable = $this->getServiceLocator()->get('MelisEcomBasketPersistentTable');
+        $melisEcomBasketPersistentTable = $this->getServiceManager()->get('MelisEcomBasketPersistentTable');
         $basketPersistent = $melisEcomBasketPersistentTable->getEntryByField('bper_client_id', $arrayParameters['clientId']);
         
-        $melisComVariantService = $this->getServiceLocator()->get('MelisComVariantService');
+        $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
         
         foreach ($basketPersistent As $val)
         {
@@ -125,10 +125,10 @@ class MelisComBasketService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_basket_anonymous_get_start', $arrayParameters);
     
         // Get anonymous basket
-        $melisEcomBasketAnonymousTable = $this->getServiceLocator()->get('MelisEcomBasketAnonymousTable');
+        $melisEcomBasketAnonymousTable = $this->getServiceManager()->get('MelisEcomBasketAnonymousTable');
         $basketAnonymous = $melisEcomBasketAnonymousTable->getEntryByField('bano_key', $arrayParameters['clientKey']);
         
-        $melisComVariantService = $this->getServiceLocator()->get('MelisComVariantService');
+        $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
         
         foreach ($basketAnonymous As $val)
         {
@@ -205,7 +205,7 @@ class MelisComBasketService extends MelisComGeneralService
     
     
         // First check if the variantId already exists in the basket
-        $melisEcomBasketPersistentTable = $this->getServiceLocator()->get('MelisEcomBasketPersistentTable');
+        $melisEcomBasketPersistentTable = $this->getServiceManager()->get('MelisEcomBasketPersistentTable');
         $persistent = $melisEcomBasketPersistentTable->getbasketPersistentByClientIdAndVariantId($arrayParameters['variantId'], $arrayParameters['clientId']);
         $persistentData = $persistent->current();
         
@@ -255,7 +255,7 @@ class MelisComBasketService extends MelisComGeneralService
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_basket_anonymous_add_variant_start', $arrayParameters);
 
-        $melisEcomBasketAnonymousTable = $this->getServiceLocator()->get('MelisEcomBasketAnonymousTable');
+        $melisEcomBasketAnonymousTable = $this->getServiceManager()->get('MelisEcomBasketAnonymousTable');
         $anonymous = $melisEcomBasketAnonymousTable->getBasketAnonymousByVarianIdAndClientKey($arrayParameters['variantId'], $arrayParameters['clientKey']);
         $anonymousData = $anonymous->current();
         // First check if the variantId already exists in the basket
@@ -339,7 +339,7 @@ class MelisComBasketService extends MelisComGeneralService
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_basket_anonymous_remove_variant_start', $arrayParameters);
     
-        $melisEcomBasketAnonymousTable = $this->getServiceLocator()->get('MelisEcomBasketAnonymousTable');
+        $melisEcomBasketAnonymousTable = $this->getServiceManager()->get('MelisEcomBasketAnonymousTable');
         $anonymous = $melisEcomBasketAnonymousTable->getBasketAnonymousByVarianIdAndClientKey($arrayParameters['variantId'], $arrayParameters['clientKey']);
         $anonymousData = $anonymous->current();
         
@@ -388,7 +388,7 @@ class MelisComBasketService extends MelisComGeneralService
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_basket_persistent_remove_variant_start', $arrayParameters);
     
-        $melisEcomBasketPersistentTable = $this->getServiceLocator()->get('MelisEcomBasketPersistentTable');
+        $melisEcomBasketPersistentTable = $this->getServiceManager()->get('MelisEcomBasketPersistentTable');
         $persistent = $melisEcomBasketPersistentTable->getbasketPersistentByClientIdAndVariantId($arrayParameters['variantId'], $arrayParameters['clientId']);
         $persistentData = $persistent->current();
         // First check if the variantId already exists in the basket
@@ -464,7 +464,7 @@ class MelisComBasketService extends MelisComGeneralService
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_basket_anonymous_empty_start', $arrayParameters);
         
-        $melisEcomBasketAnonymousTable = $this->getServiceLocator()->get('MelisEcomBasketAnonymousTable');
+        $melisEcomBasketAnonymousTable = $this->getServiceManager()->get('MelisEcomBasketAnonymousTable');
         $anonymous = $melisEcomBasketAnonymousTable->getEntryByField('bano_key', $arrayParameters['clientKey']);
         $anonymousData = $anonymous->current();
         // First check if the clientKey already exists in the basket
@@ -497,7 +497,7 @@ class MelisComBasketService extends MelisComGeneralService
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_basket_persistent_empty_start', $arrayParameters);
         
-        $melisEcomBasketPersistentTable = $this->getServiceLocator()->get('MelisEcomBasketPersistentTable');
+        $melisEcomBasketPersistentTable = $this->getServiceManager()->get('MelisEcomBasketPersistentTable');
         $persistent = $melisEcomBasketPersistentTable->getEntryByField('bper_client_id', $arrayParameters['clientId']);
         $persistentData = $persistent->current();
         // First check if the variantId already exists in the basket
@@ -533,7 +533,7 @@ class MelisComBasketService extends MelisComGeneralService
         
         
         // Remove all anonymous baskets which are older than $daysToKeep
-        $melisEcomBasketAnonymousTable = $this->getServiceLocator()->get('MelisEcomBasketAnonymousTable');
+        $melisEcomBasketAnonymousTable = $this->getServiceManager()->get('MelisEcomBasketAnonymousTable');
         $melisEcomBasketAnonymousTable->cleanAnonymousBaskets($daysToKeep);
         
         // Adding results to parameters for events treatment if needed
@@ -562,12 +562,12 @@ class MelisComBasketService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_basket_transfer_start', $arrayParameters);
         
         // Find anonymous basket
-        $melisEcomBasketAnonymousTable = $this->getServiceLocator()->get('MelisEcomBasketAnonymousTable');
+        $melisEcomBasketAnonymousTable = $this->getServiceManager()->get('MelisEcomBasketAnonymousTable');
         $basketAnonymous = $melisEcomBasketAnonymousTable->getEntryByField('bano_key', $arrayParameters['clientKey']);
         $basketAnonymousData = $basketAnonymous->toArray();
         
         // Find client account
-        $melisEcomClientTable = $this->getServiceLocator()->get('MelisEcomClientTable');
+        $melisEcomClientTable = $this->getServiceManager()->get('MelisEcomClientTable');
         $client = $melisEcomClientTable->getEntryById($arrayParameters['clientId']);
         $clientData = $client->current();
         
@@ -575,7 +575,7 @@ class MelisComBasketService extends MelisComGeneralService
         if (!empty($basketAnonymousData) && !empty($clientData))
         {
             
-            $melisEcomBasketPersistentTable = $this->getServiceLocator()->get('MelisEcomBasketPersistentTable');
+            $melisEcomBasketPersistentTable = $this->getServiceManager()->get('MelisEcomBasketPersistentTable');
             foreach ($basketAnonymousData As $val)
             {
                 // Creating Data array and save to Basket Persistent

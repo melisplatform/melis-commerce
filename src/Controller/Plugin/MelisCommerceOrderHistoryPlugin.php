@@ -11,12 +11,12 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
-use Zend\Paginator\Adapter\ArrayAdapter;
-use Zend\Paginator\Paginator;
-use Zend\Session\Container;
-use Zend\Mvc\Controller\Plugin\Redirect;
-use Zend\Stdlib\ArrayUtils;
-use Zend\View\Model\ViewModel;
+use Laminas\Paginator\Adapter\ArrayAdapter;
+use Laminas\Paginator\Paginator;
+use Laminas\Session\Container;
+use Laminas\Mvc\Controller\Plugin\Redirect;
+use Laminas\Stdlib\ArrayUtils;
+use Laminas\View\Model\ViewModel;
 
 /**
  * This plugin implements the business logic of the
@@ -81,10 +81,10 @@ class MelisCommerceOrderHistoryPlugin extends MelisTemplatingPlugin
         $pagePerPage      = !empty($data['order_history_per_page']) ? $data['order_history_per_page'] : null;
         $nbPageBeforeAfter      = !empty($data['order_history_page_before_after']) ? $data['order_history_page_before_after'] : 2;
 
-        $ecomAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
-        $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
+        $ecomAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
+        $orderSvc = $this->getServiceManager()->get('MelisComOrderService');
         $orderStatus = $orderSvc->getOrderStatusList($lang);
-        $currencySvc = $this->getServiceLocator()->get('MelisComCurrencyService');
+        $currencySvc = $this->getServiceManager()->get('MelisComCurrencyService');
         $currencies = $currencySvc->getCurrencies();
 
         if ($ecomAuthSrv->hasIdentity())
@@ -182,8 +182,8 @@ class MelisCommerceOrderHistoryPlugin extends MelisTemplatingPlugin
     public function createOptionsForms()
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
 
@@ -191,7 +191,7 @@ class MelisCommerceOrderHistoryPlugin extends MelisTemplatingPlugin
         $render   = [];
         if (!empty($formConfig))
         {
-            $request = $this->getServiceLocator()->get('request');
+            $request = $this->getServiceManager()->get('request');
             $parameters = $request->getQuery()->toArray();
             if (!isset($parameters['validate'])){
                 $formData = $this->getFormData();
@@ -209,7 +209,7 @@ class MelisCommerceOrderHistoryPlugin extends MelisTemplatingPlugin
                     $viewModelTab->modalForm = $form;
                     $viewModelTab->formData   = $formData;
 
-                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
                         'name' => $config['tab_title'],

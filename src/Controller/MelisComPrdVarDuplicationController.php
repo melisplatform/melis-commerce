@@ -9,10 +9,10 @@
 
 namespace MelisCommerce\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Session\Container;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\Session\Container;
+use MelisCore\Controller\AbstractActionController;
 
 /**
  * Products and Variants Duplication Controller
@@ -21,7 +21,7 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
 {
     /**
      * Render Duplicate button on Product list
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderDuplicateProductButtonAction()
     {
@@ -31,7 +31,7 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
     
     /**
      * Render Duplicate button on Variant list
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderDuplicateVariantButtonAction()
     {
@@ -41,7 +41,7 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
     
     /**
      * Modal container in duplicating Product/Variant
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderDuplicateModalAction()
     {
@@ -59,7 +59,7 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
      * Render Modal content in duplicating variant
      * This content also render the form for variant SKU
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantDuplicationFormAction()
     {
@@ -68,10 +68,10 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
         $variantId = $this->params()->fromQuery('variantId');
         
         // Retreiving the form from config
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_duplications/meliscommerce_duplications_sku_form','meliscommerce_duplications_sku_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $propertyForm = $factory->createForm($appConfigForm);
         
@@ -85,7 +85,7 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
             $propertyForm->setData($data);
             
             // Retrieving the Variant SKU for Labeling the Input form for Variant SKU
-            $varTbl = $this->getServiceLocator()->get('MelisEcomVariantTable');
+            $varTbl = $this->getServiceManager()->get('MelisEcomVariantTable');
             $variant = $varTbl->getEntryById($variantId)->current();
             $variantSku = $variant->var_sku;
         }
@@ -104,10 +104,10 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
         $productId = $this->params()->fromQuery('productId');
         
         // Retreiving the form from config
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_duplications/meliscommerce_duplications_sku_form','meliscommerce_duplications_sku_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $propertyForm = $factory->createForm($appConfigForm);
         
@@ -115,7 +115,7 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
         if ($productId)
         {
             // Retriving the Product variants
-            $varTbl = $this->getServiceLocator()->get('MelisEcomVariantTable');
+            $varTbl = $this->getServiceManager()->get('MelisEcomVariantTable');
             $prdVariants = $varTbl->getEntryByField('var_prd_id', $productId);
         }
         
@@ -132,11 +132,11 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
      * This method also use when duplicating the product if 
      * the selected product has variant(s)
      * 
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function duplicateVariantAction()
     {
-        $translator = $this->serviceLocator->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
         $varId = null;
         $success = 0;
@@ -193,7 +193,7 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
                 {
                     // Duplicating the Variant details using Duplication Service
                     $variantData = $datas['var_data'];
-                    $dupSrv = $this->getServiceLocator()->get('MelisComDuplicationService');
+                    $dupSrv = $this->getServiceManager()->get('MelisComDuplicationService');
                     // DuplicateVariant function will return the new added variant id if success, else this will return null
                     $varId = $dupSrv->duplicateVariant($variantData, $postValues['var_status'], $postValues['duplicate_images'], $postValues['duplicate_documents']);
                     
@@ -234,11 +234,11 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
     /**
      * This method will duplicate the selected product
      * 
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function duplicateProductAction()
     {
-        $translator = $this->serviceLocator->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
         $prdId = null;
         $success = 0;
@@ -280,7 +280,7 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
             if (empty($errors))
             {
                 // Duplicating the Product details using Duplication Service
-                $dupSrv = $this->getServiceLocator()->get('MelisComDuplicationService');
+                $dupSrv = $this->getServiceManager()->get('MelisComDuplicationService');
                 // DuplicateProduct function will return the new added product id if success, else this will return null
                 $prdId = $dupSrv->duplicateProduct($postValues['product_id'], $postValues['prd_status'], $postValues['duplicate_images'], $postValues['duplicate_documents']);
                 
@@ -337,7 +337,7 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
      * This method will validate variant data that submitted
      * This will also return the validated data, or errors from validation
      * 
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function validateVariantDataAction()
     {
@@ -345,7 +345,7 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
         $data = get_object_vars($this->getRequest()->getPost());
         $data = $this->getTool()->sanitizeRecursive($data);
         // Variant validated using Duliplication Service
-        $dupSrv = $this->getServiceLocator()->get('MelisComDuplicationService');
+        $dupSrv = $this->getServiceManager()->get('MelisComDuplicationService');
         $result = $dupSrv->validateVariantData($data);
         
         return new JsonModel($result);
@@ -353,7 +353,7 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
 
     private function getTool()
     {
-        $tool = $this->getServiceLocator()->get('MelisCoreTool');
+        $tool = $this->getServiceManager()->get('MelisCoreTool');
         return $tool;
     }
 
@@ -363,7 +363,7 @@ class MelisComPrdVarDuplicationController extends AbstractActionController
         $data = get_object_vars($this->getRequest()->getPost());
         $data = $this->getTool()->sanitizeRecursive($data);
         // Variant validated using Duliplication Service
-        $dupSrv = $this->getServiceLocator()->get('MelisComDuplicationService');
+        $dupSrv = $this->getServiceManager()->get('MelisComDuplicationService');
 
 
         return new JsonModel($result);

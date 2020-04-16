@@ -9,22 +9,28 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 use MelisCommerce\Model\MelisEcomCategory;
-use Zend\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Predicate\Expression;
 
 class MelisEcomCategoryTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_category';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'cat_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'cat_id';
+        $this->idField = self::PRIMARY_KEY;
         $this->cacheResults = true;
     }
-    
+
     public function disableCache()
     {
         $this->cacheResults = false;
@@ -42,7 +48,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
      */
     public function getCategoryChildrenListById($categoryId, $langId, $onlyValid, $start, $limit, $fatherId = null)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         if (is_null($fatherId))
         {
@@ -81,7 +87,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
 
         $select->order('cat_order ASC');
         
-        $dataCategory = $this->tableGateway->selectWith($select);
+        $dataCategory = $this->getTableGateway()->selectWith($select);
         
         return $dataCategory;
     }
@@ -90,21 +96,21 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
      * Get Category Deatils and Translation
      * @param int $categoryId
      * @param int $langId
-     * @return NULL|\Zend\Db\ResultSet\ResultSetInterface
+     * @return NULL|\Laminas\Db\ResultSet\ResultSetInterface
      */
     public function getCategoryTranslationBylangId($categoryId, $langId = null, $onlyValid = false)
     {
         // Retrieve cache version if front mode to avoid multiple calls
         $cacheKey = 'category-' . $categoryId . '_getCategoryTranslationBylangId_' . $categoryId . '_' . $langId;
         $cacheConfig = 'commerce_memory_services';
-        $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
         $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
         
         if (!empty($results)) {
             return $results;
         }
         
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         $select->columns(array('cat_id'));
         $select->join('melis_ecom_category_trans', 'melis_ecom_category_trans.catt_category_id = melis_ecom_category.'.$this->idField, array('*'), $select::JOIN_LEFT);
@@ -120,7 +126,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
             $select->where->equalTo('melis_ecom_lang.elang_status', 1);
         }
         
-        $dataCategory = $this->tableGateway->selectWith($select);
+        $dataCategory = $this->getTableGateway()->selectWith($select);
 		
 		if ($this->cacheResults) {
 		    $melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $dataCategory);
@@ -134,11 +140,11 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
      * @param int $categoryId
      * @param int $langId
      * @param boolean $onlyValid
-     * @return NULL|\Zend\Db\ResultSet\ResultSetInterface
+     * @return NULL|\Laminas\Db\ResultSet\ResultSetInterface
      */
     public function getCategoryProductsTextById($categoryId, $langId, $onlyValid){
         
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         $select->columns(array());
         $select->join('melis_ecom_product_category', 'melis_ecom_product_category.pcat_cat_id = melis_ecom_category.'.$this->idField,
@@ -158,7 +164,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
             $select->where('ptxt_lang_id = '.$langId);
         }
         
-        $dataCategory = $this->tableGateway->selectWith($select);
+        $dataCategory = $this->getTableGateway()->selectWith($select);
         return $dataCategory;
     }
  
@@ -171,7 +177,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
      */
     public function getSubCategoryIdById($categoryId, $onlyValid, $fatherId = 0, $langId = null)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         if (!is_null($langId))
         {
@@ -201,7 +207,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
         
         $select->order('cat_order ASC');
         
-        $dataCategory = $this->tableGateway->selectWith($select);
+        $dataCategory = $this->getTableGateway()->selectWith($select);
         
         return $dataCategory;
     }
@@ -213,7 +219,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
      * @return MelisEcomCategory Object
      */
     public function getCategoryByFatherId($fatherId = 0, $onlyValid = false){
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
 
         $select->columns(array('cat_id', 'cat_status', 'cat_father_cat_id'));
         
@@ -229,13 +235,13 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
 
         $select->order('cat_order ASC');
         
-        $dataCategory = $this->tableGateway->selectWith($select);
+        $dataCategory = $this->getTableGateway()->selectWith($select);
         
         return $dataCategory;
     }
     
     public function getCategoryTreeview($categoryId = null, $fatherId = null, $onlyValid = false){
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         $select->columns(array('cat_id', 'cat_status', 'cat_father_cat_id'));
         
@@ -259,7 +265,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
         
         $select->order('cat_order ASC');
         
-        $dataCategory = $this->tableGateway->selectWith($select);
+        $dataCategory = $this->getTableGateway()->selectWith($select);
         
         return $dataCategory;
     }
@@ -272,9 +278,9 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
      * @return MelisEcomCategory Object
      */
     public function getCategoryNameAsTextById($catId, $langId, $anyLang = false){
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
-        $select->columns(array(new \Zend\Db\Sql\Expression('CONCAT(cat_id," - ",catt_name) As text')));
+        $select->columns(array(new \Laminas\Db\Sql\Expression('CONCAT(cat_id," - ",catt_name) As text')));
         $select->join('melis_ecom_category_trans', 'melis_ecom_category_trans.catt_category_id = melis_ecom_category.'.$this->idField,
             array('catt_lang_id'), $select::JOIN_RIGHT);
         
@@ -289,7 +295,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
         $select->where('cat_id = '.$catId);
         
         
-        $dataCategoryTrans = $this->tableGateway->selectWith($select);
+        $dataCategoryTrans = $this->getTableGateway()->selectWith($select);
         
         return $dataCategoryTrans;
     }
@@ -301,13 +307,13 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
      */
     public function getChildrenCategoriesOrderedByOrder($fatherId){
         
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         $select->columns(array('cat_id','cat_father_cat_id','cat_order'));
         $select->where('cat_father_cat_id ='.$fatherId);
         $select->order('cat_order ASC');
         
-        $dataCategory = $this->tableGateway->selectWith($select);
+        $dataCategory = $this->getTableGateway()->selectWith($select);
         
         return $dataCategory;
     }
@@ -317,11 +323,11 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
 	    // Retrieve cache version if front mode to avoid multiple calls
         $cacheKey = 'categories_table_getParentCategory_' . $catId . '_' . $langId . '_' . $addSeo;
         $cacheConfig = 'commerce_big_services';
-		$melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 	    $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
 	    if (!empty($results)) return $results;
         
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         if (!is_null($langId))
         {
@@ -339,7 +345,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
         
         $select->where('cat_id ='.$catId);
         
-        $dataCategory = $this->tableGateway->selectWith($select);
+        $dataCategory = $this->getTableGateway()->selectWith($select);
         
         $dataCategory = $dataCategory->toArray();
         
@@ -352,7 +358,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
     
     public function getFatherCategory($catId, $langId)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
                 
         $select->join('melis_ecom_category_trans', 'melis_ecom_category_trans.catt_category_id = melis_ecom_category.cat_id', array('catt_name'), $select::JOIN_LEFT);
         
@@ -360,14 +366,14 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
         
         $select->where->equalTo('melis_ecom_category_trans.catt_lang_id', $langId);
         
-        $resultSet = $this->tableGateway->selectWith($select);
+        $resultSet = $this->getTableGateway()->selectWith($select);
         
         return $resultSet;
     }
     
 //     public function getCategoriesByIds($categoryIds, $onlyValid = false, $langId = null)
 //     {
-//         $select = $this->tableGateway->getSql()->select();
+//         $select = $this->$this->getTableGateway()->getSql()->select();
         
 //         if (!is_null($langId))
 //             $join = new Expression('melis_ecom_category_trans.catt_category_id = melis_ecom_category.'.$this->idField.' AND catt_lang_id ='.$langId);
@@ -393,14 +399,14 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
             
 //         $select->group($this->idField);
         
-//         $resultSet = $this->tableGateway->selectWith($select);
+//         $resultSet = $this->$this->getTableGateway()->selectWith($select);
         
 //         return $resultSet;
 //     }
     
     public function getCategoriesByIds($categoryIds, $onlyValid = false, $langId = null, $column = 'cat_id', $order = 'ASC')
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         if (!is_null($langId))
         {
@@ -437,14 +443,14 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
         
         $select->group($this->idField);
         
-        $resultSet = $this->tableGateway->selectWith($select);
+        $resultSet = $this->getTableGateway()->selectWith($select);
         
         return $resultSet;
     }
     
     public function getCategoryList($onlyValid = false, $langId = null)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         if (!is_null($langId))
         {
@@ -467,14 +473,14 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
         $select->group($this->idField);
         $select->order('catt_name ASC');
         
-        $resultSet = $this->tableGateway->selectWith($select);
+        $resultSet = $this->getTableGateway()->selectWith($select);
         
         return $resultSet;
     }
     
     public function getProductCategoriesWithFinalTransalations($productId, $langId = null)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
     
         $select->join('melis_ecom_product_category', 'melis_ecom_product_category.pcat_cat_id = melis_ecom_category.'.$this->idField, array(), $select::JOIN_LEFT);
         
@@ -491,14 +497,14 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
 
         $select->group($this->idField);
 
-        $resultSet = $this->tableGateway->selectWith($select);
+        $resultSet = $this->getTableGateway()->selectWith($select);
 
         return $resultSet;
     }
 
     public function getChildrenByLangId($fatherId, $langId, $valid, $order = false)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
 
         if (!is_null($langId)) {
             $join = new Expression('melis_ecom_category_trans.catt_category_id = melis_ecom_category.'.$this->idField.' AND catt_lang_id ='.$langId);
@@ -521,7 +527,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
             $select->order('catt_name ASC');
         }
 
-        $resultSet = $this->tableGateway->selectWith($select);
+        $resultSet = $this->getTableGateway()->selectWith($select);
 
         return $resultSet;
     }

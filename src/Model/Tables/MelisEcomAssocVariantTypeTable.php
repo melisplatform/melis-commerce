@@ -9,17 +9,22 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomAssocVariantTypeTable extends MelisEcomGenericTable
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
-    {
-        parent::__construct($tableGateway);
-        $this->idField = 'avart_id';
-    }
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_assoc_variants_type';
 
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'avart_id';
+
+    public function __construct()
+    {
+        $this->idField = self::PRIMARY_KEY;
+    }
 }

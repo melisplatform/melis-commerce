@@ -11,9 +11,9 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
-use Zend\Session\Container;
-use Zend\Stdlib\ArrayUtils;
-use Zend\View\Model\ViewModel;
+use Laminas\Session\Container;
+use Laminas\Stdlib\ArrayUtils;
+use Laminas\View\Model\ViewModel;
 /**
  * This plugin implements the business logic of the
  * "checkOutCart" plugin.
@@ -79,11 +79,11 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
         $container = new Container('melisplugins');
         $langId = $container['melis-plugins-lang-id'];
         
-        $translator = $this->getServiceLocator()->get('translator');
-        $ecomAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
-        $basketSrv = $this->getServiceLocator()->get('MelisComBasketService');
-        $variantSrv = $this->getServiceLocator()->get('MelisComVariantService');
-        $couponSrv = $this->getServiceLocator()->get('MelisComCouponService');
+        $translator = $this->getServiceManager()->get('translator');
+        $ecomAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
+        $basketSrv = $this->getServiceManager()->get('MelisComBasketService');
+        $variantSrv = $this->getServiceManager()->get('MelisComVariantService');
+        $couponSrv = $this->getServiceManager()->get('MelisComCouponService');
         
         $formData = $this->getFormData();
         $countryId                      = (!empty($formData['m_cc_country_id']))                 ? $formData['m_cc_country_id'] : null;
@@ -195,7 +195,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
         if ($ecomAuthSrv->hasIdentity())
         {
             $clientId = $ecomAuthSrv->getClientId();
-            $melisComOrderCheckoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
+            $melisComOrderCheckoutService = $this->getServiceManager()->get('MelisComOrderCheckoutService');
             $melisComOrderCheckoutService->setSiteId($siteId);
             $validatedBasket = $melisComOrderCheckoutService->validateBasket($clientId);
         }
@@ -206,7 +206,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
              * Checkouk Coupon Plugin
              * This plugin will validate the coupon if coupon code if submitted
              */
-            $pluginManager = $this->getServiceLocator()->get('ControllerPluginManager');
+            $pluginManager = $this->getServiceManager()->get('ControllerPluginManager');
             $checkoutCouponPlugin = $pluginManager->get('MelisCommerceCheckoutCouponPlugin');
             $checkoutCartCouponParameters = ArrayUtils::merge($checkoutCartCouponParameters, array(
                 'm_coupon_site_id' => $siteId
@@ -218,8 +218,8 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
             $generalCoupons = !empty($sessionCoupons['generalCoupons'])? $sessionCoupons['generalCoupons'] : array();
             $productCoupons = !empty($sessionCoupons['productCoupons'])? $sessionCoupons['productCoupons'] : array();
 
-            $melisComVariantService = $this->getServiceLocator()->get('MelisComVariantService');
-            $melisComProductService = $this->getServiceLocator()->get('MelisComProductService');
+            $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
+            $melisComProductService = $this->getServiceManager()->get('MelisComProductService');
             
             $tmp = array();
             foreach($productCoupons as $productCoupon)
@@ -388,8 +388,8 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
     public function createOptionsForms()
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
         
@@ -400,7 +400,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
             foreach ($formConfig as $formKey => $config)
             {
                 $form = $factory->createForm($config);
-                $request = $this->getServiceLocator()->get('request');
+                $request = $this->getServiceManager()->get('request');
                 $parameters = $request->getQuery()->toArray();
                 
                 if (!isset($parameters['validate']))
@@ -414,7 +414,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                     
                     
                     
-                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
                         'name' => $config['tab_title'],

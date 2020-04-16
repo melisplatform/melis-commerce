@@ -9,7 +9,7 @@
 
 namespace MelisCommerce\Form\Factory;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\ServiceManager;
 use MelisCore\Form\Factory\MelisSelectFactory;
 
 /**
@@ -17,14 +17,12 @@ use MelisCore\Form\Factory\MelisSelectFactory;
  */
 class EcomDocumentImageTypeSelectFactory extends MelisSelectFactory
 {
-	protected function loadValueOptions(ServiceLocatorInterface $formElementManager)
+	protected function loadValueOptions(ServiceManager $serviceManager)
 	{
-		$serviceManager = $formElementManager->getServiceLocator();
-
 		$docTypeSvc = $serviceManager->get('MelisComDocumentService');
 		$ecomImageType = $docTypeSvc->getDocumentTypes(1);
 
-		$valueoptions = array();
+		$valueoptions = [];
 		foreach($ecomImageType as $type) {
 		    $valueoptions[$type['dtype_id']] = $type['dtype_name'];
 		}

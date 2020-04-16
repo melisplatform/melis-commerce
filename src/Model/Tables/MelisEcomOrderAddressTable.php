@@ -9,37 +9,43 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomOrderAddressTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_order_address';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'oadd_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'oadd_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
+
     public function getOrderAddressesByOrderId($orderId)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         $select->where('oadd_order_id ='.$orderId);
         
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
     
     public function getorderAddressByOrderAddressIdandTypeId($orderAddressId, $typeId)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         $select->where('oadd_id ='.$orderAddressId);
         $select->where('oadd_type ='.$typeId);
         
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
     

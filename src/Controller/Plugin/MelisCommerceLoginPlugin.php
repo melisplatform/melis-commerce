@@ -12,8 +12,8 @@ namespace MelisCommerce\Controller\Plugin;
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
 
-use Zend\Mvc\Controller\Plugin\Redirect;
-use Zend\View\Model\ViewModel;
+use Laminas\Mvc\Controller\Plugin\Redirect;
+use Laminas\View\Model\ViewModel;
 /**
  * This plugin implements the business logic of the
  * "Login" plugin.
@@ -66,8 +66,8 @@ class MelisCommerceLoginPlugin extends MelisTemplatingPlugin
         // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
         $appConfigForm = (!empty($this->pluginFrontConfig['forms']['meliscommerce_login'])) ? $this->pluginFrontConfig['forms']['meliscommerce_login'] : array();
         
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $loginForm = $factory->createForm($appConfigForm);
         
@@ -94,7 +94,7 @@ class MelisCommerceLoginPlugin extends MelisTemplatingPlugin
                 /**
                  * Login using Commerce Authentication Service
                  */
-                $melisComAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
+                $melisComAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
                 $result = $melisComAuthSrv->login($m_login, $m_password, $m_remeber_me);
                 if ($result['success'] == 1)
                 {
@@ -103,7 +103,7 @@ class MelisCommerceLoginPlugin extends MelisTemplatingPlugin
                     $clientId = $melisComAuthSrv->getClientId();
                     $clientKey = $melisComAuthSrv->getClientKey();
                     
-                    $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
+                    $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
                     // Preparing the client Basket, which is added to Persistent basket
                     $melisComBasketService->getBasket($clientId, $clientKey);
                     
@@ -153,8 +153,8 @@ class MelisCommerceLoginPlugin extends MelisTemplatingPlugin
     public function createOptionsForms()
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
         
@@ -165,7 +165,7 @@ class MelisCommerceLoginPlugin extends MelisTemplatingPlugin
             foreach ($formConfig as $formKey => $config)
             {
                 $form = $factory->createForm($config);
-                $request = $this->getServiceLocator()->get('request');
+                $request = $this->getServiceManager()->get('request');
                 $parameters = $request->getQuery()->toArray();
                 
                 if (!isset($parameters['validate']))
@@ -176,7 +176,7 @@ class MelisCommerceLoginPlugin extends MelisTemplatingPlugin
                     $viewModelTab->modalForm = $form;
                     $viewModelTab->formData   = $this->getFormData();
                     
-                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
                         'name' => $config['tab_title'],
