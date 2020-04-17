@@ -11,16 +11,14 @@ namespace MelisCommerce\Listener;
 
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\EventManager\ListenerAggregateInterface;
+use MelisCore\Listener\MelisGeneralListener;
 
-use MelisCore\Listener\MelisCoreGeneralListener;
-
-class MelisCommerceProductPriceCountryDeletedListener extends MelisCoreGeneralListener implements ListenerAggregateInterface
+class MelisCommerceProductPriceCountryDeletedListener extends MelisGeneralListener implements ListenerAggregateInterface
 {
     public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $sharedEvents      = $events->getSharedManager();
-        
-        $callBackHandler = $sharedEvents->attach(
+        $this->attachEventListener(
+            $events,
             'MelisCommerce',
             'meliscommerce_country_delete_end',
         	function($e){
@@ -41,11 +39,8 @@ class MelisCommerceProductPriceCountryDeletedListener extends MelisCoreGeneralLi
         		    'MelisCommerce\Controller\MelisComPrice',
         		    ['action' => 'priceCountryDeleted']
                 );
-        		       		
-        		    
         	},
-        100);
-        
-        $this->listeners[] = $callBackHandler;
+        100
+        );
     }
 }

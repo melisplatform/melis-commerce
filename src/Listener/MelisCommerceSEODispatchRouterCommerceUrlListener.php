@@ -46,25 +46,24 @@ class MelisCommerceSEODispatchRouterCommerceUrlListener
     
     public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $sharedEvents      = $events->getSharedManager();
-        
-        $callBackHandler = $sharedEvents->attach(
+        $this->attachEventListener(
+            $events,
             '*',
         	'melisfront_site_dispatch_ready', 
-        	function(Event $e){
-        	    
-    	       $this->serviceManager = $e->getTarget()->getEvent()->getApplication()->getServiceManager();
-    	       $router = $this->serviceManager->get('router');
+        	function($e){
+
+    	        $this->serviceManager = $e->getTarget()->serviceManager;
+    	        $router = $this->serviceManager->get('router');
                 
-        	   $params = $e->getParams();
+        	    $params = $e->getParams();
         	   
-        	   // Page inactive, nothing to do
-        	   if ($params['301_type'] == 'seo301')
-        	       return;
+        	    // Page inactive, nothing to do
+        	    if ($params['301_type'] == 'seo301')
+        	        return;
         	       
-    	       if (!empty($params['categoryId']))
+    	        if (!empty($params['categoryId']))
     	           $routeName = 'melis-front/melis_front_commerce_category';
-    	       else 
+    	        else
     	           if (!empty($params['productId']))
     	               $routeName = 'melis-front/melis_front_commerce_product';
     	           else
@@ -196,9 +195,8 @@ class MelisCommerceSEODispatchRouterCommerceUrlListener
         	       }
         	   }
             },
-        100);
-        
-        $this->listeners[] = $callBackHandler;
+        100
+        );
     }
     
     public function check301Commerce($params, $routeItemConf, $seoObject)

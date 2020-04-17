@@ -12,15 +12,14 @@ namespace MelisCommerce\Listener;
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\EventManager\ListenerAggregateInterface;
 use Laminas\Session\Container;
-use MelisCore\Listener\MelisCoreGeneralListener;
+use MelisCore\Listener\MelisGeneralListener;
 
-class MelisCommercePostCheckoutCouponListener extends MelisCoreGeneralListener implements ListenerAggregateInterface
+class MelisCommercePostCheckoutCouponListener extends MelisGeneralListener implements ListenerAggregateInterface
 {
     public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $sharedEvents      = $events->getSharedManager();
-        
-        $callBackHandler = $sharedEvents->attach(
+        $this->attachEventListener(
+            $events,
             '*',
             'meliscommerce_service_checkout_post_order_computation_end',
         	function($e){
@@ -125,9 +124,7 @@ class MelisCommercePostCheckoutCouponListener extends MelisCoreGeneralListener i
                     }
         		}
         	},
-        	
-        100);
-        
-        $this->listeners[] = $callBackHandler;
+        100
+        );
     }
 }

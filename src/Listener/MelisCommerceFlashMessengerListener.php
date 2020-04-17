@@ -12,14 +12,14 @@ namespace MelisCommerce\Listener;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\EventManager\ListenerAggregateInterface;
-use MelisCore\Listener\MelisCoreGeneralListener;
+use MelisCore\Listener\MelisGeneralListener;
 
 /**
  * The flash messenger will add logs by
  * listening to a lot of events
  * 
  */
-class MelisCommerceFlashMessengerListener extends MelisCoreGeneralListener implements ListenerAggregateInterface
+class MelisCommerceFlashMessengerListener extends MelisGeneralListener implements ListenerAggregateInterface
 {
 	
     public function attach(EventManagerInterface $events, $priority = 1)
@@ -84,18 +84,6 @@ class MelisCommerceFlashMessengerListener extends MelisCoreGeneralListener imple
 
         $priority = -1000;
 
-        foreach ($eventsName As $event)
-            $this->listeners[] = $sharedEvents->attach($identifier, $event, [$this, 'logMessages'], $priority);
-    }
-
-    public function logMessages(EventInterface $event)
-    {
-        $sm = $event->getTarget()->getEvent()->getApplication()->getServiceManager();
-
-        $flashMessenger = $sm->get('MelisCoreFlashMessenger');
-        $params = $event->getParams();
-        $results = $event->getTarget()->forward()->dispatch(
-            \MelisCore\Controller\MelisFlashMessengerController::class,
-            array_merge(['action' => 'log'], $params))->getVariables();
+        $this->attachEventListener($events, $identifier, $eventsName, [$this, 'logMessages'], $priority);
     }
 }

@@ -11,16 +11,14 @@ namespace MelisCommerce\Listener;
 
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\EventManager\ListenerAggregateInterface;
+use MelisCore\Listener\MelisGeneralListener;
 
-use MelisCore\Listener\MelisCoreGeneralListener;
-
-class MelisCommerceCategoryListener extends MelisCoreGeneralListener implements ListenerAggregateInterface
+class MelisCommerceCategoryListener extends MelisGeneralListener implements ListenerAggregateInterface
 {
     public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $sharedEvents      = $events->getSharedManager();
-        
-        $callBackHandler = $sharedEvents->attach(
+        $this->attachEventListener(
+            $events,
             'MelisCommerce',
             'meliscommerce_category_save_start',
         	function($e){
@@ -61,8 +59,7 @@ class MelisCommerceCategoryListener extends MelisCoreGeneralListener implements 
                 );
         		
         	},
-        100);
-        
-        $this->listeners[] = $callBackHandler;
+        100
+        );
     }
 }

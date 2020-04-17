@@ -11,14 +11,14 @@ namespace MelisCommerce\Listener;
 
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\EventManager\ListenerAggregateInterface;
+use MelisCore\Listener\MelisGeneralListener;
 
-class MelisCommerceSaveProductStockEmailAlertListener implements ListenerAggregateInterface
+class MelisCommerceSaveProductStockEmailAlertListener extends MelisGeneralListener implements ListenerAggregateInterface
 {
     public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $sharedEvents      = $events->getSharedManager();
-        
-        $callBackHandler = $sharedEvents->attach(
+        $this->attachEventListener(
+            $events,
             'MelisCommerce',
             'meliscommerce_product_save_end',
         	function($e){
@@ -80,18 +80,7 @@ class MelisCommerceSaveProductStockEmailAlertListener implements ListenerAggrega
                     }
         		}
         	},
-        	
-        100);
-        
-        $this->listeners[] = $callBackHandler;
-    }
-    
-    public function detach(EventManagerInterface $events)
-    {
-        foreach ($this->listeners as $index => $listener) {
-            if ($events->detach($listener)) {
-                unset($this->listeners[$index]);
-            }
-        }
+        100
+        );
     }
 }

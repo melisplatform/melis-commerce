@@ -11,15 +11,14 @@ namespace MelisCommerce\Listener;
 
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\EventManager\ListenerAggregateInterface;
-use MelisCore\Listener\MelisCoreGeneralListener;
+use MelisCore\Listener\MelisGeneralListener;
 
-class MelisCommerceCategoryLanguageDeletedListener extends MelisCoreGeneralListener implements ListenerAggregateInterface
+class MelisCommerceCategoryLanguageDeletedListener extends MelisGeneralListener implements ListenerAggregateInterface
 {
     public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $sharedEvents = $events->getSharedManager();
-        
-        $callBackHandler = $sharedEvents->attach(
+        $this->attachEventListener(
+            $events,
             'MelisCommerce',
             'meliscommerce_language_delete_end',
         	function($e){
@@ -33,9 +32,7 @@ class MelisCommerceCategoryLanguageDeletedListener extends MelisCoreGeneralListe
         		    $melisEcomCategoryTransTable->deleteByField('catt_lang_id', $params['langId']);
         		}
         	},
-        	
-        100);
-        
-        $this->listeners[] = $callBackHandler;
+        100
+        );
     }
 }

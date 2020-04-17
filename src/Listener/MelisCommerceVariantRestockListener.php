@@ -11,15 +11,14 @@ namespace MelisCommerce\Listener;
 
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\EventManager\ListenerAggregateInterface;
-use MelisCore\Listener\MelisCoreGeneralListener;
+use MelisCore\Listener\MelisGeneralListener;
 
-class MelisCommerceVariantRestockListener extends MelisCoreGeneralListener implements ListenerAggregateInterface
+class MelisCommerceVariantRestockListener extends MelisGeneralListener implements ListenerAggregateInterface
 {
     public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $sharedEvents      = $events->getSharedManager();
-        
-        $callBackHandler = $sharedEvents->attach(
+        $this->attachEventListener(
+            $events,
             '*',
             'meliscommerce_service_variant_save_stocks_start',
         	function($e){
@@ -40,9 +39,7 @@ class MelisCommerceVariantRestockListener extends MelisCoreGeneralListener imple
         		    }
         		}
         	},
-        	
-        100);
-        
-        $this->listeners[] = $callBackHandler;
+        100
+        );
     }
 }

@@ -11,15 +11,14 @@ namespace MelisCommerce\Listener;
 
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\EventManager\ListenerAggregateInterface;
-use MelisCore\Listener\MelisCoreGeneralListener;
+use MelisCore\Listener\MelisGeneralListener;
 
-class MelisCommerceShipmentCostListener extends MelisCoreGeneralListener implements ListenerAggregateInterface
+class MelisCommerceShipmentCostListener extends MelisGeneralListener implements ListenerAggregateInterface
 {
     public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $sharedEvents      = $events->getSharedManager();
-        
-        $callBackHandler = $sharedEvents->attach(
+        $this->attachEventListener(
+            $events,
             '*',
             'meliscommerce_service_checkout_shipment_computation_end',
         	function($e){
@@ -30,9 +29,7 @@ class MelisCommerceShipmentCostListener extends MelisCoreGeneralListener impleme
         		$melisComShipmentCostService = $sm->get('MelisComShipmentCostService');
         		$params['results'] = $melisComShipmentCostService->computeShipmentCost(get_object_vars($params)['results']);
         	},
-        	
-        100);
-        
-        $this->listeners[] = $callBackHandler;
+        100
+        );
     }
 }

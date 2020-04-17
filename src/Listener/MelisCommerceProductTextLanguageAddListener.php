@@ -12,15 +12,14 @@ namespace MelisCommerce\Listener;
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\EventManager\ListenerAggregateInterface;
 
-use MelisCore\Listener\MelisCoreGeneralListener;
+use MelisCore\Listener\MelisGeneralListener;
 
-class MelisCommerceProductTextLanguageAddListener extends MelisCoreGeneralListener implements ListenerAggregateInterface
+class MelisCommerceProductTextLanguageAddListener extends MelisGeneralListener implements ListenerAggregateInterface
 {
     public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $sharedEvents      = $events->getSharedManager();
-        
-        $callBackHandler = $sharedEvents->attach(
+        $this->attachEventListener(
+            $events,
             'MelisCommerce',
             'meliscommerce_language_save_end',
         	function($e){
@@ -61,9 +60,7 @@ class MelisCommerceProductTextLanguageAddListener extends MelisCoreGeneralListen
         		    }
         		}
         	},
-        	
-        -1000);
-        
-        $this->listeners[] = $callBackHandler;
+        -1000
+        );
     }
 }

@@ -11,15 +11,14 @@ namespace MelisCommerce\Listener;
 
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\EventManager\ListenerAggregateInterface;
-use MelisCore\Listener\MelisCoreGeneralListener;
+use MelisCore\Listener\MelisGeneralListener;
 
-class MelisCommerceVariantCheckLowStockListener extends MelisCoreGeneralListener implements ListenerAggregateInterface
+class MelisCommerceVariantCheckLowStockListener extends MelisGeneralListener implements ListenerAggregateInterface
 {
     public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $sharedEvents      = $events->getSharedManager();
-        
-        $callBackHandler = $sharedEvents->attach(
+        $this->attachEventListener(
+            $events,
             '*',
             'meliscommerce_service_checkout_step2_postpayment_proccess_end',
         	function($e){
@@ -32,9 +31,7 @@ class MelisCommerceVariantCheckLowStockListener extends MelisCoreGeneralListener
         		    $orderSvc->checkStockLevelByOrderId($params['results']['orderId']);
         		}
         	},
-        	
-        100);
-        
-        $this->listeners[] = $callBackHandler;
+        100
+        );
     }
 }
