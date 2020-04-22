@@ -2650,7 +2650,9 @@ i.fa.fa-download {
 .row .pdc-heading {
     text-transform: capitalize;
 }
-
+/**
+ * Dashboard order messages
+ */
 .list-group-item.commerce-dashboard-plugin-order-messages {
     border-right: 0;
     border-left: 0;
@@ -2660,4 +2662,21 @@ i.fa.fa-download {
 .list-group-item.commerce-dashboard-plugin-order-messages:hover {
     background-color: #f1f1f1;
     text-decoration: none;
+}
+
+.commerce-dashboard-plugin-order-messages .label.label-inverse.pull-right {
+    color: #fff !important;
+}
+
+.label {
+    display: inline;
+    padding: .2em .6em .3em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25em;
 }
