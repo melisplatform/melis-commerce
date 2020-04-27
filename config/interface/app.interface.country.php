@@ -44,7 +44,7 @@ return [
 			                ],
 			                'forward' => [
 			                    'module' => 'MelisCommerce',
-			                    'controller' => 'MelisComcountry',
+			                    'controller' => 'MelisComCountry',
 			                    'action' => 'render-country-list-page',
 			                    'jscallback' => '',
 			                    'jsdatas' => []
@@ -58,7 +58,7 @@ return [
 			                        ],
 			                        'forward' => [
 			                            'module' => 'MelisCommerce',
-			                            'controller' => 'MelisComcountry',
+			                            'controller' => 'MelisComCountry',
 			                            'action' => 'render-country-list-page-header',
 			                            'jscallback' => '',
 			                            'jsdatas' => []
@@ -72,7 +72,7 @@ return [
 			                                ],
 			                                'forward' => [
 			                                    'module' => 'MelisCommerce',
-			                                    'controller' => 'MelisComcountry',
+			                                    'controller' => 'MelisComCountry',
 			                                    'action' => 'render-country-list-page-header-add',
 			                                    'jscallback' => '',
 			                                    'jsdatas' => []
@@ -88,7 +88,7 @@ return [
 			                        ],
 			                        'forward' => [
 			                            'module' => 'MelisCommerce',
-			                            'controller' => 'MelisComcountry',
+			                            'controller' => 'MelisComCountry',
 			                            'action' => 'render-country-list-page-content',
 			                            'jscallback' => '',
 			                            'jsdatas' => []
@@ -106,7 +106,7 @@ return [
 			                        ],
 			                        'forward' => [
 			                            'module' => 'MelisCommerce',
-			                            'controller' => 'MelisComcountry',
+			                            'controller' => 'MelisComCountry',
 			                            'action' => 'render-country-list-page-modal-container',
 			                             
 			                        ],
@@ -119,7 +119,7 @@ return [
 			                                ],
 			                                'forward' => [
 			                                    'module' => 'MelisCommerce',
-			                                    'controller' => 'MelisComcountry',
+			                                    'controller' => 'MelisComCountry',
 			                                    'action' => 'render-country-list-page-modal-form',
                                                 'jscallback' => 'initProductSwitch();'
 			                                ],
