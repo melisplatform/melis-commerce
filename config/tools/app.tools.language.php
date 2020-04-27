@@ -125,7 +125,7 @@ return [
                                             'placeholder' => 'tr_meliscommerce_country_ctry_flag_choose',
                                             'data-buttonText' => 'Select Flag',
                                             'class' => 'filestyle',
-                                            'onchange' => 'imagePreview("#imgLangFlag", this];',
+                                            'onchange' => 'imagePreview("#imgLangFlag", this);',
                                         ],
                                     ],
                                 ],

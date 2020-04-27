@@ -200,7 +200,7 @@ return [
                                         'id' => 'doc_path',
                                         'value' => '',
                                         'class' => 'filestyle',
-                                        'onchange' => 'imagePreview(".imgDocThumbnail", this];',
+                                        'onchange' => 'imagePreview(".imgDocThumbnail", this);',
                                     ],
                                 ],
                             ],
