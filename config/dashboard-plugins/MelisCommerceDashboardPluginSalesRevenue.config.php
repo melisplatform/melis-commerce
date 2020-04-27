@@ -50,7 +50,7 @@ return [
                         'description' => 'tr_melis_commerce_dashboard_plugin_sales_revenue_description',
                         'icon' => 'fa fa-dollar',
                         'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceDashboardPluginSalesRevenue.jpg',
-                        'jscallback' => 'commerceDashboardPluginSalesRevenue.loadChart(]',
+                        'jscallback' => 'commerceDashboardPluginSalesRevenue.loadChart()',
                         'max_lines' => 8,
                         'height' => 4,
                         'width' => 6,

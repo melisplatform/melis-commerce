@@ -16,15 +16,15 @@ return [
                         // Template path
                         'template_path' => ['MelisCommerce/ClientAccount'],
                         'id' => 'userAccount',
-                        // Parameters for the MelisCommerceProfilePlugin(]
+                        // Parameters for the MelisCommerceProfilePlugin()
                         'profile_parameter' => [],
-                        // Parameters for the MelisCommerceDeliveryAddressPlugin(]
+                        // Parameters for the MelisCommerceDeliveryAddressPlugin()
                         'delivery_address_parameter' => [],
-                        // Parameters for the MelisCommerceBillingAddressPlugin(]
+                        // Parameters for the MelisCommerceBillingAddressPlugin()
                         'billing_address_parameter' => [],
-                        // Parameters for the MelisCommerceCartPlugin(]
+                        // Parameters for the MelisCommerceCartPlugin()
                         'cart_parameter' => [],
-                        // Parameters for the MelisCommerceOrderHistoryPlugin(]
+                        // Parameters for the MelisCommerceOrderHistoryPlugin()
                         'order_list_paremeter' => [],
                         /**
                          * Sub plugins parameters

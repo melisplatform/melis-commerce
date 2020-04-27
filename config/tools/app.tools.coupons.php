@@ -16,7 +16,7 @@ return [
                         'target' => '#tableCouponList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComCouponList/getCouponListData',
                         'dataFunction' => 'initMelisCommerceCouponTbl',
-                        'ajaxCallback' => 'initCheckUsedCoupon(]',
+                        'ajaxCallback' => 'initCheckUsedCoupon()',
                         'filters' => [
                             'left' => [
                                 'coupon-list-table-filter-limit' => [
@@ -100,7 +100,7 @@ return [
                         'target' => '#clientList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComCoupon/getCouponClientData',
                         'dataFunction' => 'initCouponClient',
-                        'ajaxCallback' => 'initCouponClientTable(]',
+                        'ajaxCallback' => 'initCouponClientTable()',
                         'filters' => [
                             'left' => [
                                 'coupon-table-filter-limit' => [
@@ -178,7 +178,7 @@ return [
                         'target' => '#clientListAssigned',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComCoupon/getAssignedCouponClientData',
                         'dataFunction' => 'initCouponClient',
-                        'ajaxCallback' => 'initCheckClientUsedCoupon(]',
+                        'ajaxCallback' => 'initCheckClientUsedCoupon()',
                         'filters' => [
                             'left' => [
                                 'coupon-table-filter-limit-assigned' => [
@@ -369,7 +369,7 @@ return [
                         'target' => '#productListAssigned',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComCoupon/getCouponProductData',
                         'dataFunction' => 'initMelisCouponProduct',
-                        'ajaxCallback' => 'melisCommerce.initTooltipTable(]',
+                        'ajaxCallback' => 'melisCommerce.initTooltipTable()',
                         'filters' => [
                             'left' => [
                                 'coupon-table-filter-limit-assigned-product' => [
@@ -447,7 +447,7 @@ return [
                         'target' => '#productList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComCoupon/getCouponProductData',
                         'dataFunction' => 'initMelisCouponProduct',
-                        'ajaxCallback' => 'melisCommerce.initTooltipTable(], initCouponProductTable(]',
+                        'ajaxCallback' => 'melisCommerce.initTooltipTable(), initCouponProductTable()',
                         'filters' => [
                             'left' => [
                                 'coupon-table-filter-limit-assign-product' => [

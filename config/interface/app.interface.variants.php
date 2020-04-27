@@ -724,7 +724,7 @@ return [
                                                                                 'module' => 'MelisCommerce',
                                                                                 'controller' => 'MelisComVariant',
                                                                                 'action' => 'render-variant-tab-stocks-country-form',
-                                                                                'jscallback' => 'variantLoaded(];',
+                                                                                'jscallback' => 'variantLoaded();',
                                                                             ],
                                                                         ],
                                                                     ],

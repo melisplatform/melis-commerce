@@ -22,7 +22,7 @@ return [
                         'm_cc_var_qty' => [],
                         'm_cc_var_remove' => null,
                         
-                        // Paramaters of MelisCommerceCheckoutCouponPlugin(] plugin
+                        // Paramaters of MelisCommerceCheckoutCouponPlugin() plugin
                         'checkout_cart_coupon_parameters' => [],
                         
                         // Sub plugins

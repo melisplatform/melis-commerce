@@ -328,7 +328,7 @@ return [
                                                                              'module' => 'MelisCommerce',
                                                                              'controller' => 'MelisComProduct',
                                                                              'action' => 'render-products-page-content-tab-main-header-left',
-                                                                             'jscallback' => 'initProductSwitch(];'
+                                                                             'jscallback' => 'initProductSwitch();'
                                                                          ],
                                                                          'interface' => [
                                                                              'meliscommerce_products_page_content_tab_main_header' => [
@@ -591,7 +591,7 @@ return [
                                                                                                       'module' => 'MelisCommerce',
                                                                                                       'controller' => 'MelisComProduct',
                                                                                                       'action' => 'render-products-main-tab-attributes-add',
-                                                                                                      'jscallback' => 'initAttribute(];',
+                                                                                                      'jscallback' => 'initAttribute();',
                                                                                                   ],
                                                                                               ],
                                                                                             'meliscommerce_products_main_tab_attributes_content' => [
@@ -752,7 +752,7 @@ return [
                                                                                             'module' => 'MelisCommerce',
                                                                                             'controller' => 'MelisComProduct',
                                                                                             'action' => 'render-products-page-content-tab-text-modal-form-type-text',
-//                                                                                             'jscallback' => 'reInitProductTextTypeSelect(];',
+//                                                                                             'jscallback' => 'reInitProductTextTypeSelect();',
                                                                                         ],
                                                                                     ],
                                                                                      'meliscommerce_products_page_content_tab_text_product_modal_close' => [
@@ -765,7 +765,7 @@ return [
                                                                                             'module' => 'MelisCommerce',
                                                                                             'controller' => 'MelisComProduct',
                                                                                             'action' => 'render-products-page-content-tab-text-modal-close',
-//                                                                                             'jscallback' => 'reInitProductTextTypeSelect(];',
+//                                                                                             'jscallback' => 'reInitProductTextTypeSelect();',
                                                                                         ],
                                                                                     ],
                                                                                 ],

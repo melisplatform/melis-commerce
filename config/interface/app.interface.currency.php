@@ -109,7 +109,7 @@ return [
                                                 'module' => 'MelisCommerce',
                                                 'controller' => 'MelisComCurrency',
                                                 'action' => 'render-currency-modal-form',
-                                                'jscallback' => 'initProductSwitch(];'
+                                                'jscallback' => 'initProductSwitch();'
                                             ],
                                         ]
                                     ]

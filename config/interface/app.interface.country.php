@@ -121,7 +121,7 @@ return [
 			                                    'module' => 'MelisCommerce',
 			                                    'controller' => 'MelisComcountry',
 			                                    'action' => 'render-country-list-page-modal-form',
-                                                'jscallback' => 'initProductSwitch(];'
+                                                'jscallback' => 'initProductSwitch();'
 			                                ],
 			                            ]
 			                        ]

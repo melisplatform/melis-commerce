@@ -50,7 +50,7 @@ return [
                         'description' => 'tr_melis_commerce_dashboard_plugin_order_messages_description',
                         'icon' => 'fa fa-inbox',
                         'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceDashboardPluginOrderMessages.jpg',
-                        'jscallback' => 'commerceDashboardPluginOrderMessagesInit(]',
+                        'jscallback' => 'commerceDashboardPluginOrderMessagesInit()',
                         'max_lines' => 8,
                         'height' => 4,
                         'width' => 6,

@@ -70,7 +70,7 @@ return [
                                                 'id' => 'select_delivery_addresses',
                                                 'data-selectaddress' => 'select-address',
                                                 'class' => 'form-control',
-                                                'onchange' => 'this.form.submit(]'
+                                                'onchange' => 'this.form.submit()'
                                             ]
                                         ]
                                     ],

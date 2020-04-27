@@ -530,7 +530,7 @@ return [
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComClient',
                                 'action' => 'render-client-modal-contact-address-form',
-                                'jscallback' => 'initClientContactAddressForm(];'
+                                'jscallback' => 'initClientContactAddressForm();'
                             ],
                         ],
                         'meliscommerce_client_modal_address_form' => [

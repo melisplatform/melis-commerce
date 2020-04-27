@@ -49,7 +49,7 @@ return [
                         'description' => 'tr_melis_commerce_dashboard_plugin_orders_number_description',
                         'icon' => 'fa fa-shopping-cart',
                         'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceOrdersPlugin.jpg',
-                        'jscallback' => 'commerceDashboardOrdersLineGraphInit(]',
+                        'jscallback' => 'commerceDashboardOrdersLineGraphInit()',
                         'max_lines' => 8,
                         'height' => 4,
                         'width' => 6,

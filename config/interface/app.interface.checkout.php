@@ -136,7 +136,7 @@ return [
                                                         'module' => 'MelisCommerce',
                                                         'controller' => 'MelisComOrderCheckout',
                                                         'action' => 'render-order-checkout-product-basket',
-                                                        'jscallback' => 'productNextButtonState(];'
+                                                        'jscallback' => 'productNextButtonState();'
                                                     ],
                                                 ]
                                             ]

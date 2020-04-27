@@ -135,7 +135,7 @@ return [
                                                         'module' => 'MelisCommerce',
                                                         'controller' => 'MelisComCategoryList',
                                                         'action' => 'render-category-list-tree-view',
-                                                        'jscallback' => 'initCategoryTreeView(];'
+                                                        'jscallback' => 'initCategoryTreeView();'
                                                     ]
                                                 ]
                                             ]
@@ -239,7 +239,7 @@ return [
                                                                                 'module' => 'MelisCommerce',
                                                                                 'controller' => 'MelisComCategory',
                                                                                 'action' => 'render-category-form-status',
-                                                                                'jscallback' => 'initCategoryStatus(];'
+                                                                                'jscallback' => 'initCategoryStatus();'
                                                                             ]
                                                                         ]
                                                                     ]
