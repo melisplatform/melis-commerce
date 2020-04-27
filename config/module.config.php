@@ -151,7 +151,7 @@ return [
             'MelisEcomOrderShippingTable'                   => \MelisCommerce\Model\Tables\MelisEcomOrderShippingTable::class,
             'MelisEcomOrderStatusTable'                     => \MelisCommerce\Model\Tables\MelisEcomOrderStatusTable::class,
             'MelisEcomOrderStatusTransTable'                => \MelisCommerce\Model\Tables\MelisEcomOrderStatusTransTable::class,
-            'MelisEcomOrderTable'                           => \MelisCommerce\Model\Tables\MelisEcomOrderTabl::class,
+            'MelisEcomOrderTable'                           => \MelisCommerce\Model\Tables\MelisEcomOrderTable::class,
             'MelisEcomPriceTable'                           => \MelisCommerce\Model\Tables\MelisEcomPriceTable::class,
             'MelisEcomProductAttributeTable'                => \MelisCommerce\Model\Tables\MelisEcomProductAttributeTable::class,
             'MelisEcomProductCategoryTable'                 => \MelisCommerce\Model\Tables\MelisEcomProductCategoryTable::class,
