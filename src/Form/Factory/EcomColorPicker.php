@@ -10,16 +10,19 @@
 namespace MelisCommerce\Form\Factory; 
 
 use Laminas\Form\Element\Text;
-use Laminas\ServiceManager\FactoryInterface;
-use Laminas\ServiceManager\ServiceManager;
+use Psr\Container\ContainerInterface;
 
 /**
  * Melis commerce date field
  */
-
 class EcomColorPicker extends Text
 {
-    public function createService(ServiceManager $serviceManager)
+    /**
+     * @param ContainerInterface $container
+     * @param $requestedName
+     * @return Text
+     */
+    public function __invoke(ContainerInterface $container, $requestedName)
     { 
         $element = new Text;        
         $element->setAttribute('class', 'color-picker');
