@@ -2000,7 +2000,7 @@ class MelisComOrderCheckoutController extends AbstractActionController
         $urlParam = http_build_query($param);
         $param['content'] = '<iframe class="order-checkout-payment-iframe" src="/melis/MelisCommerce/MelisComOrderCheckout/renderOrderCheckoutPaymentIframe?'.$urlParam.'"></iframe>';
 
-        $melisCoreGeneralSrv = $this->getServiceManager()->get('MelisCoreGeneralService');
+        $melisCoreGeneralSrv = $this->getServiceManager()->get('MelisGeneralService');
         $param = $melisCoreGeneralSrv->sendEvent('melis_commerce_order_checkout_payment_step', $param);
 
         $melisKey = $this->params()->fromRoute('melisKey', '');

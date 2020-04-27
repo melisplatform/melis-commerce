@@ -23,7 +23,7 @@ class MelisCommerceProductTextLanguageDeleteListener extends MelisGeneralListene
             'meliscommerce_language_delete_end',
         	function($e){
         	    
-        		$sm = $e->getTarget()->getEvent()->getApplication()->getServiceManager();
+        		$sm = $e->getTarget()->getServiceManager();
         		$params = $e->getParams();
 
         		$langId = (int) $params['langId'];

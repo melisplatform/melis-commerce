@@ -23,7 +23,7 @@ class MelisCommercePostPaymentListener extends MelisGeneralListener implements L
             'meliscommerce_service_checkout_step2_postpayment_end',
         	function($e){
         	    
-        		$sm = $e->getTarget()->getEvent()->getApplication()->getServiceManager();
+        		$sm = $e->getTarget()->getServiceManager();
         		$params = $e->getParams();
         		
         		$postedValues = $sm->get('request')->getPost();

@@ -23,7 +23,7 @@ class MelisCommerceCategoryLanguageDeletedListener extends MelisGeneralListener 
             'meliscommerce_language_delete_end',
         	function($e){
         	    
-        		$sm = $e->getTarget()->getEvent()->getApplication()->getServiceManager();
+        		$sm = $e->getTarget()->getServiceManager();
         		$melisCoreDispatchService = $sm->get('MelisCoreDispatch');
         		$params = $e->getParams();
         		

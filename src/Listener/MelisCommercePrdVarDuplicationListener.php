@@ -27,7 +27,7 @@ class MelisCommercePrdVarDuplicationListener extends MelisGeneralListener implem
         ];
 
         $this->attachEventListener($events, $identifier, $eventNames, function(EventInterface $e) {
-            $sm = $e->getTarget()->getEvent()->getApplication()->getServiceManager();
+            $sm = $e->getTarget()->getServiceManager();
             $melisCoreDispatchService = $sm->get('MelisCoreDispatch');
 
             list($success, $errors, $datas) = $melisCoreDispatchService->dispatchPluginAction(

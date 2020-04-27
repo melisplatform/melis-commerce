@@ -23,7 +23,7 @@ class MelisCommerceValidateVariantListener extends MelisGeneralListener implemen
             'meliscommerce_variant_save_start',
         	function($e){
         	    
-        		$sm = $e->getTarget()->getEvent()->getApplication()->getServiceManager();
+        		$sm = $e->getTarget()->getServiceManager();
         		$params = $e->getParams();
         		$paramData = [];
         		if(isset($params['data'])) {

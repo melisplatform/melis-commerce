@@ -24,7 +24,7 @@ class MelisCommerceProductTextLanguageAddListener extends MelisGeneralListener i
             'meliscommerce_language_save_end',
         	function($e){
         	    
-        		$sm = $e->getTarget()->getEvent()->getApplication()->getServiceManager();
+        		$sm = $e->getTarget()->getServiceManager();
         		$params = $e->getParams();
 
         		$langId = (int) $params['langId'];

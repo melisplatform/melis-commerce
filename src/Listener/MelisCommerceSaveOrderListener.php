@@ -23,7 +23,7 @@ class MelisCommerceSaveOrderListener extends MelisGeneralListener implements Lis
             'meliscommerce_order_save_start',
         	function($e){
         	    
-        		$sm = $e->getTarget()->getEvent()->getApplication()->getServiceManager();
+        		$sm = $e->getTarget()->getServiceManager();
         		$params = $e->getParams();
         		$paramData = [];
         		if(isset($params['data'])) {

@@ -24,7 +24,7 @@ class MelisCommercePostCheckoutCouponListener extends MelisGeneralListener imple
             'meliscommerce_service_checkout_post_order_computation_end',
         	function($e){
         	    
-        		$sm = $e->getTarget()->getEvent()->getApplication()->getServiceManager();
+        		$sm = $e->getTarget()->getServiceManager();
         		$couponService = $sm->get('MelisComCouponService');
         		$couponOrderTable = $sm->get('MelisEcomCouponOrderTable');
         		$params = $e->getParams();

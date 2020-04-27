@@ -23,7 +23,7 @@ class MelisCommerceSaveProductListener extends MelisGeneralListener implements L
             'meliscommerce_product_save_start',
         	function($e){
         	    
-        		$sm = $e->getTarget()->getEvent()->getApplication()->getServiceManager();
+        		$sm = $e->getTarget()->getServiceManager();
         		$params = $e->getParams();
         		$paramData = [];
         		if(isset($params['data'])) {

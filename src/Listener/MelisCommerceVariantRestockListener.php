@@ -23,7 +23,7 @@ class MelisCommerceVariantRestockListener extends MelisGeneralListener implement
             'meliscommerce_service_variant_save_stocks_start',
         	function($e){
         	    
-        		$sm = $e->getTarget()->getEvent()->getApplication()->getServiceManager();
+        		$sm = $e->getTarget()->getServiceManager();
         		$stockTable = $sm->get('MelisEcomVariantStockTable');
         		$params = $e->getParams();
                 

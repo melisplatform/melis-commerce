@@ -23,7 +23,7 @@ class MelisCommerceSaveProductStockEmailAlertListener extends MelisGeneralListen
             'meliscommerce_product_save_end',
         	function($e){
         	    
-        		$sm = $e->getTarget()->getEvent()->getApplication()->getServiceManager();
+        		$sm = $e->getTarget()->getServiceManager();
         		$params = $e->getParams();
         		
         		if($params['success']){

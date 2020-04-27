@@ -23,7 +23,7 @@ class MelisCommerceCheckoutCouponListener extends MelisGeneralListener implement
             '*',
             'meliscommerce_service_checkout_order_computation_end',
         	function($e){
-        		$sm = $e->getTarget()->getEvent()->getApplication()->getServiceManager();
+        		$sm = $e->getTarget()->getServiceManager();
         		$couponTable = $sm->get('MelisEcomCouponTable');
         		$variantTable = $sm->get('MelisEcomVariantTable');
         		$translator = $sm->get('translator');

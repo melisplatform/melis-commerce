@@ -23,7 +23,7 @@ class MelisCommerceVariantCheckLowStockListener extends MelisGeneralListener imp
             'meliscommerce_service_checkout_step2_postpayment_proccess_end',
         	function($e){
         	    
-        		$sm = $e->getTarget()->getEvent()->getApplication()->getServiceManager();
+        		$sm = $e->getTarget()->getServiceManager();
         		$orderSvc = $sm->get('MelisComStockEmailAlertService');
         		$params = $e->getParams();
 

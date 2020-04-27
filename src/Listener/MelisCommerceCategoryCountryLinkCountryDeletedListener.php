@@ -24,7 +24,7 @@ class MelisCommerceCategoryCountryLinkCountryDeletedListener extends MelisGenera
             'meliscommerce_country_delete_end',
         	function($e){
         	    
-        		$sm = $e->getTarget()->getEvent()->getApplication()->getServiceManager();
+        		$sm = $e->getTarget()->getServiceManager();
         		$melisCoreDispatchService = $sm->get('MelisCoreDispatch');
         		$params = $e->getParams();
         		

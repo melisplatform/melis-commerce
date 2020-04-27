@@ -23,7 +23,7 @@ class MelisCommerceProductStockCountryDeletedListener extends MelisGeneralListen
             'meliscommerce_country_delete_end',
         	function($e){
         	    
-        		$sm = $e->getTarget()->getEvent()->getApplication()->getServiceManager();
+        		$sm = $e->getTarget()->getServiceManager();
         		$params = $e->getParams();
         		$paramData = [];
         		if(isset($params['data'])) {

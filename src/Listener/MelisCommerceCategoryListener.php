@@ -23,7 +23,7 @@ class MelisCommerceCategoryListener extends MelisGeneralListener implements List
             'meliscommerce_category_save_start',
         	function($e){
         	    
-        		$sm = $e->getTarget()->getEvent()->getApplication()->getServiceManager();
+        		$sm = $e->getTarget()->getServiceManager();
         		$melisCoreDispatchService = $sm->get('MelisCoreDispatch');
         		
         		list($success, $errors, $datas) = $melisCoreDispatchService->dispatchPluginAction(
