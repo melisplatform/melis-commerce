@@ -10,6 +10,11 @@
 namespace MelisCommerce\Model\Tables;
 
 use MelisCore\Model\Tables\MelisGenericTable;
+use Laminas\Db\Sql\Where;
+use Laminas\Db\Sql\Predicate\PredicateSet;
+use Laminas\Db\Sql\Predicate\Like;
+use Laminas\Db\Sql\Predicate\Operator;
+use Laminas\Db\Sql\Predicate\Predicate;
 
 class MelisEcomGenericTable extends  MelisGenericTable
 {
@@ -121,7 +126,7 @@ class MelisEcomGenericTable extends  MelisGenericTable
 	
         // this is used when searching
 	    if(!empty($where)) {
-	        $w = new Where();
+	        $w = new where();
 	        $p = new PredicateSet();
 	        $filters = array();
 	        $likes = array();
