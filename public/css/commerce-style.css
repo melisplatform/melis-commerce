@@ -2130,9 +2130,9 @@ span .fa-globe {
     table.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child:before {
         top: 41%
     }
-    #content {
+    /* #content {
         margin: 50px 0 0;
-    }
+    } */
     .navbar.main .nav.navbar-left > li > a {
         display: none;
     }
@@ -2635,10 +2635,48 @@ tr.last-tr td {
     background-color: #f0f0ef;
 }
 
+button:not(.melis-marketplace-product-action) i.fa.fa-download {
+    color: #7c7c7c;
+}
+
+button:not(.melis-marketplace-product-action):hover i.fa.fa-download {
+    color: #333;
+}
+
 i.fa.fa-download {
     color: #7c7c7c;
 }
 
-.btn:hover i.fa.fa-download {
-    color: #333;
+.row .pdc-heading {
+    text-transform: capitalize;
+}
+/**
+ * Dashboard order messages
+ */
+.list-group-item.commerce-dashboard-plugin-order-messages {
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+}
+
+.list-group-item.commerce-dashboard-plugin-order-messages:hover {
+    background-color: #f1f1f1;
+    text-decoration: none;
+}
+
+.commerce-dashboard-plugin-order-messages .label.label-inverse.pull-right {
+    color: #fff !important;
+}
+
+.label {
+    display: inline;
+    padding: .2em .6em .3em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25em;
 }

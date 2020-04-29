@@ -1187,7 +1187,8 @@ class MelisComCategoryController extends AbstractActionController
             $productService = $this->getServiceLocator()->get('MelisComProductService');
 
             // Tooltip anchor
-            $toolTipTextTag = '<a id="row-%s" class="toolTipCatHoverEvent tooltipTable" data-productId="%s" data-hasqtip="1" aria-describedby="qtip-%s">%s</a>';
+            // toolTipHoverEvent from toolTipCatHoverEvent specific for category but change to reflect same structure with product.tool.js
+            $toolTipTextTag = '<a id="row-%s" class="toolTipHoverEvent tooltipTable" data-productId="%s" data-hasqtip="1" aria-describedby="qtip-%s">%s</a>';
             $ctr = 0;
             $prodImage      = '<img src="%s" width="60" height="60" class="rounded-circle img-fluid"/>';
             foreach ($categoryProducts As $val){
