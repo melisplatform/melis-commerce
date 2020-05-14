@@ -476,6 +476,13 @@ $(function() {
 				$addCategory.attr("disabled", false);
 				$addCategory.attr("title", null);
 		}); */
+
+		$body.on("click", "#categoryTreeView .jstree-clicked", function() {
+			var $addCategory = $("#"+activeTabId+" .addCategory");
+
+				$addCategory.attr("disabled", false);
+				$addCategory.attr("title", null);
+		});
 		
 		// Open Single Node in JSTree
 		$body.on("click", ".cat-div .jstree-node .jstree-icon", function() {
