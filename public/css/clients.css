@@ -27,7 +27,7 @@
 .client-contact-address .default-card>.card-header,
 .client-contact-address .panel-default>.panel-heading {
     color: #fff;
-    background-color: #932e2a;
+    /* background-color: #932e2a; */
     border-color: #ddd;
 }
 .client-contact-address .card-header,
