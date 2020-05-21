@@ -43,7 +43,9 @@ body.lb-disable-scrolling {
 .lb-outerContainer {
   position: relative;
   background-color: white;
-  *zoom: 1;
+  /* *zoom: 1; */
+  transform: scale(1);
+	transform-origin: 0 0;
   width: 250px;
   height: 250px;
   margin: 0 auto;
@@ -141,7 +143,9 @@ body.lb-disable-scrolling {
 .lb-dataContainer {
   margin: 0 auto;
   padding-top: 5px;
-  *zoom: 1;
+  /* *zoom: 1; */
+  transform: scale(1);
+	transform-origin: 0 0;
   width: 100%;
   -moz-border-radius-bottomleft: 4px;
   -webkit-border-bottom-left-radius: 4px;
