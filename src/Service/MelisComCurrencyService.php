@@ -62,11 +62,15 @@ class MelisComCurrencyService extends MelisComGeneralService
     public function getDefaultCurrency()
     {
         // Retrieve cache version if front mode to avoid multiple calls
-	    $cacheKey = 'getDefaultCurrency';
+	    $cacheKey = 'currency-getDefaultCurrency';
         $cacheConfig = 'commerce_memory_services';
         $melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
-        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-        if (!empty($results)) return $results;
+//        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+//        if (!empty($results)) return $results;
+        $cache = $this->getServiceLocator()->get($cacheConfig);
+        if ($cache->hasItem($cacheKey)){
+            return $cache->getItem($cacheKey);
+        }
 	    
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());

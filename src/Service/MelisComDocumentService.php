@@ -103,8 +103,12 @@ class MelisComDocumentService extends MelisComGeneralService
 	    $cacheKey = $docRelation . '-' . $relationId . '-getDocumentsByRelation_' . $docRelation . '_' . $relationId;
         $cacheConfig = 'commerce_big_services';
         $melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
-        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-        if (!empty($results)) return $results;
+//        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+//        if (!empty($results)) return $results;
+        $cache = $this->getServiceLocator()->get($cacheConfig);
+        if ($cache->hasItem($cacheKey)){
+            return $cache->getItem($cacheKey);
+        }
 	    
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -165,8 +169,12 @@ class MelisComDocumentService extends MelisComGeneralService
 	    $cacheKey = $docRelation . '-' . $relationId . '-getDocumentsByRelationAndTypes_' . $typeCode1 . '_' . $tmp;
         $cacheConfig = 'commerce_big_services';
         $melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
-        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-        if (!empty($results)) return $results;
+//        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+//        if (!empty($results)) return $results;
+        $cache = $this->getServiceLocator()->get($cacheConfig);
+        if ($cache->hasItem($cacheKey)){
+            return $cache->getItem($cacheKey);
+        }
 	    
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -205,8 +213,12 @@ class MelisComDocumentService extends MelisComGeneralService
 	    $cacheKey = $docRelation . '-' . $relationId . '-getDocDefaultImageFilePath_' . $relationId;
         $cacheConfig = 'commerce_big_services';
         $melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
-        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-        if (!empty($results)) return $results;
+//        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+//        if (!empty($results)) return $results;
+        $cache = $this->getServiceLocator()->get($cacheConfig);
+        if ($cache->hasItem($cacheKey)){
+            return $cache->getItem($cacheKey);
+        }
 	    
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -281,8 +293,12 @@ class MelisComDocumentService extends MelisComGeneralService
 	    $cacheKey = $docRelation . '-' . $relationId . '-getFinalImageFilePath_' . $relationId . '_' . $tmp . '_' . $customDefaultImg;
         $cacheConfig = 'commerce_big_services';
         $melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
-        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-        if (!empty($results)) return $results;
+//        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+//        if (!empty($results)) return $results;
+        $cache = $this->getServiceLocator()->get($cacheConfig);
+        if ($cache->hasItem($cacheKey)){
+            return $cache->getItem($cacheKey);
+        }
 	    
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
