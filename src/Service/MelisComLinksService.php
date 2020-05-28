@@ -32,8 +32,12 @@ class MelisComLinksService extends MelisComGeneralService
 	    $cacheKey = 'getPageLink_' . $typeLink . '_' . $id . '_' . $langId . '_' . $absolute;
         $cacheConfig = 'commerce_memory_services';
         $melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
-        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-        if (!empty($results)) return $results;
+//        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+//        if (!empty($results)) return $results;
+        $cache = $this->getServiceLocator()->get($cacheConfig);
+        if ($cache->hasItem($cacheKey)){
+            return $cache->getItem($cacheKey);
+        }
 	    
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -67,8 +71,12 @@ class MelisComLinksService extends MelisComGeneralService
 	    $cacheKey = 'getPageIdAssociated_' . $typeLink . '_' . $id . '_' . $langId;
         $cacheConfig = 'commerce_memory_services';
         $melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
-        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-        if (!empty($results)) return $results;
+//        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+//        if (!empty($results)) return $results;
+        $cache = $this->getServiceLocator()->get($cacheConfig);
+        if ($cache->hasItem($cacheKey)){
+            return $cache->getItem($cacheKey);
+        }
 	    
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -106,11 +114,15 @@ class MelisComLinksService extends MelisComGeneralService
     public function getPageLinkCategory($id, $langId, $absolute = false, $onlyPageId = false)
     {
 	    // Retrieve cache version if front mode to avoid multiple calls
-	    $cacheKey = 'getPageLinkCategory_' . $id . '_' . $langId . '_' . $absolute;
+	    $cacheKey = 'category-getPageLinkCategory_' . $id . '_' . $langId . '_' . $absolute;
         $cacheConfig = 'commerce_memory_services';
         $melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
-        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-        if (!empty($results)) return $results;
+//        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+//        if (!empty($results)) return $results;
+        $cache = $this->getServiceLocator()->get($cacheConfig);
+        if ($cache->hasItem($cacheKey)){
+            return $cache->getItem($cacheKey);
+        }
 	    
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -184,11 +196,15 @@ class MelisComLinksService extends MelisComGeneralService
     public function getPageLinkProduct($id, $langId, $absolute = false, $onlyPageId = false)
     {
 	    // Retrieve cache version if front mode to avoid multiple calls
-	    $cacheKey = 'getPageLinkProduct_' . $id . '_' . $langId . '_' . $absolute;
+	    $cacheKey = 'product-getPageLinkProduct_' . $id . '_' . $langId . '_' . $absolute;
         $cacheConfig = 'commerce_memory_services';
         $melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
-        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-        if (!empty($results)) return $results;
+//        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+//        if (!empty($results)) return $results;
+        $cache = $this->getServiceLocator()->get($cacheConfig);
+        if ($cache->hasItem($cacheKey)){
+            return $cache->getItem($cacheKey);
+        }
 	    
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -258,11 +274,15 @@ class MelisComLinksService extends MelisComGeneralService
     public function getPageLinkVariant($id, $langId, $absolute = false, $onlyPageId = false)
     {
 	    // Retrieve cache version if front mode to avoid multiple calls
-	    $cacheKey = 'getPageLinkVariant_' . $id . '_' . $langId . '_' . $absolute;
+	    $cacheKey = 'variant-getPageLinkVariant_' . $id . '_' . $langId . '_' . $absolute;
         $cacheConfig = 'commerce_memory_services';
         $melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
-        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-        if (!empty($results)) return $results;
+//        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+//        if (!empty($results)) return $results;
+        $cache = $this->getServiceLocator()->get($cacheConfig);
+        if ($cache->hasItem($cacheKey)){
+            return $cache->getItem($cacheKey);
+        }
 	    
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -320,8 +340,12 @@ class MelisComLinksService extends MelisComGeneralService
 	    $cacheKey = 'assembleDomainAndLink_' . $id . '_' . $absolute . '_' . $pageUrl . '_' . $pageId . '_' . $link . '_' . $varName;
         $cacheConfig = 'commerce_memory_services';
         $melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
-        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-        if (!empty($results)) return $results;
+//        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+//        if (!empty($results)) return $results;
+        $cache = $this->getServiceLocator()->get($cacheConfig);
+        if ($cache->hasItem($cacheKey)){
+            return $cache->getItem($cacheKey);
+        }
 	    
         // At this point, a pageId must have been found or it's an arror or misconfiguration
         if (!empty($pageId))

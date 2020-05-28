@@ -671,6 +671,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             $clientMainPerson = $melisEcomClientPersonTable->getClientMainPersonByClientId($container['checkout'][$this->siteId]['clientId'])->current();
             
             $contactId = $container['checkout'][$this->siteId]['contactId'];
+            $ordDeliveryMethod = (!empty($container['checkout'][$this->siteId]['deliveryMethod']) ? $container['checkout'][$this->siteId]['deliveryMethod'] : 'delivery');
             
             $order = array(
                 'ord_client_id' => $container['checkout'][$this->siteId]['clientId'],
@@ -680,6 +681,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                 'ord_reference' => $orderReferenceCode['code'],
                 'ord_billing_address' => -1,
                 'ord_delivery_address' => -1,
+                'ord_delivery_method' => $ordDeliveryMethod,
                 'ord_date_creation' => date('Y-m-d H:i:s')
             );
             

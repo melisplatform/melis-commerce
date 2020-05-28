@@ -433,7 +433,7 @@ return array(
     ),
     'caches' => array(
         'commerce_memory_services' => array( 
-            'active' => false, // activate or deactivate Melis Cache for this conf
+            'active' => true, // activate or deactivate Melis Cache for this conf
             'adapter' => array(
                 'name'    => 'Memory',
                 'options' => array('ttl' => 0, 'namespace' => 'meliscommerce'),
@@ -446,8 +446,8 @@ return array(
                 // 'my_cache_key' => 60,
             )
         ),
-        'commerce_big_services' => array( 
-            'active' => false, // activate or deactivate Melis Cache for this conf
+        'commerce_big_services' => array(
+            'active' => true, // activate or deactivate Melis Cache for this conf
             'adapter' => array(
                 'name'    => 'Filesystem',
                 'options' => array(
