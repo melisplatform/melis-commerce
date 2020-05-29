@@ -247,7 +247,7 @@ class MelisComAttributeService extends MelisComGeneralService
         // Save cache key
         $melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $attrTrans);
 
-        return $attrVal;
+        return $attrTrans;
     }
 
     public function getAttributeText($attributeId, $langId)
