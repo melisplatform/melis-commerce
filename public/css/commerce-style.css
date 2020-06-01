@@ -711,7 +711,7 @@ div.melis-pdc *.btn {
 .client-contact-address .default-card>.card-header,
 .client-contact-address .panel-default>.panel-heading {
     color: #fff;
-    /* background-color: #932e2a; */
+    background-color: #e61c23;
     border-color: #ddd;
 }
 
