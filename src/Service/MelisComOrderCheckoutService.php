@@ -754,7 +754,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                     'obas_price_net' => $variantPrice->price_net,
                     'obas_price_gross' => $variantPrice->price_gross,
                     'obas_price_vat' => $variantPrice->price_vat_price,
-                    'obas_price_vat_percent' => $variantPrice->price_vat_percent,
+                    // 'obas_price_vat_percent' => $variantPrice->price_vat_percent,
                     'obas_price_other_tax' => $variantPrice->price_other_tax_price,
                 );
                 
