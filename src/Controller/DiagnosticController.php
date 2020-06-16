@@ -12,14 +12,14 @@ namespace MelisCommerce\Controller;
 use Laminas\View\Model\JsonModel;
 use Laminas\Db\Sql\Sql;
 use Laminas\Db\Adapter\Adapter as DbAdapter;
-use MelisCore\Controller\AbstractActionController;
+use MelisCore\Controller\MelisAbstractActionController;
 
 /**
  * Diagnostic controller.
  * Associated with /config/diagnostic.config.php
  * All tests run during diagnostics are found here
  */
-class DiagnosticController extends AbstractActionController
+class DiagnosticController extends MelisAbstractActionController
 {
     private $odbAdapter;
 

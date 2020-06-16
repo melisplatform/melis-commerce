@@ -15,9 +15,9 @@ use Laminas\Validator\File\Size;
 use Laminas\Validator\File\IsImage;
 use Laminas\File\Transfer\Adapter\Http;
 use Laminas\Session\Container;
-use MelisCore\Controller\AbstractActionController;
+use MelisCore\Controller\MelisAbstractActionController;
 
-class MelisComDocumentController extends AbstractActionController
+class MelisComDocumentController extends MelisAbstractActionController
 {
 
     protected $formType;

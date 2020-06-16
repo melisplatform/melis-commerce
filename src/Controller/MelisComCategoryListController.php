@@ -12,10 +12,10 @@ namespace MelisCommerce\Controller;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
 use Laminas\Session\Container;
-use MelisCore\Controller\AbstractActionController;
+use MelisCore\Controller\MelisAbstractActionController;
 
 
-class MelisComCategoryListController extends AbstractActionController
+class MelisComCategoryListController extends MelisAbstractActionController
 {
     /**
      * Render Categories page

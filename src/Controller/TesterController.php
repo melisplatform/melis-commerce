@@ -12,22 +12,10 @@ namespace MelisCommerce\Controller;
 use Laminas\View\Model\JsonModel;
 use Laminas\View\Model\ViewModel;
 use Laminas\Db\Metadata\Metadata;
-use MelisCore\Controller\AbstractActionController;
+use MelisCore\Controller\MelisAbstractActionController;
 
-class TesterController extends AbstractActionController
+class TesterController extends MelisAbstractActionController
 {
-    public function testsAction(){
-        $catSrv = $this->getServiceManager()->get('MelisComCategoryService');
-        
-//         $tmp = $catSrv->getSubCategoriesProducts(3, array(), 1);
-        $tmp = $catSrv->getCategoriesProductsByIds(array(3, 51, 52, 53), false, 1, true);
-        
-        echo '<pre>';
-        print_r($tmp);
-        echo '</pre>';
-        
-        return new JsonModel(array());
-    }
     public function displayTestAction()
     {
         $request = $this->getRequest();

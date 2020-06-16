@@ -13,9 +13,9 @@ use Laminas\View\Model\ViewModel;
 use Laminas\Session\Container;
 use Laminas\View\Model\JsonModel;
 use Laminas\Stdlib\ArrayUtils;
-use MelisCore\Controller\AbstractActionController;
+use MelisCore\Controller\MelisAbstractActionController;
 
-class MelisComClientController extends AbstractActionController
+class MelisComClientController extends MelisAbstractActionController
 {
     const PLUGIN_INDEX = 'meliscommerce';
     

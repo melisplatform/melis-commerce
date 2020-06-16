@@ -12,9 +12,9 @@ namespace MelisCommerce\Controller;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
 use Laminas\Session\Container;
-use MelisCore\Controller\AbstractActionController;
+use MelisCore\Controller\MelisAbstractActionController;
 
-class MelisComProductController extends AbstractActionController
+class MelisComProductController extends MelisAbstractActionController
 {
     /**
      * Main container of Product All View

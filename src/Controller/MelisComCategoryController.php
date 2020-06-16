@@ -12,9 +12,9 @@ namespace MelisCommerce\Controller;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
 use Laminas\Session\Container;
-use MelisCore\Controller\AbstractActionController;
+use MelisCore\Controller\MelisAbstractActionController;
 
-class MelisComCategoryController extends AbstractActionController
+class MelisComCategoryController extends MelisAbstractActionController
 {
     const PLUGIN_INDEX = 'meliscommerce';
     const TOOL_KEY = 'meliscommerce_categories';

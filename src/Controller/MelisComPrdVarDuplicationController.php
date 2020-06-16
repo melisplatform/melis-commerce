@@ -12,12 +12,12 @@ namespace MelisCommerce\Controller;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
 use Laminas\Session\Container;
-use MelisCore\Controller\AbstractActionController;
+use MelisCore\Controller\MelisAbstractActionController;
 
 /**
  * Products and Variants Duplication Controller
  */
-class MelisComPrdVarDuplicationController extends AbstractActionController
+class MelisComPrdVarDuplicationController extends MelisAbstractActionController
 {
     /**
      * Render Duplicate button on Product list

@@ -10,9 +10,9 @@
 namespace MelisCommerce\Controller;
 
 use Laminas\View\Model\ViewModel;
-use MelisCore\Controller\AbstractActionController;
+use MelisCore\Controller\MelisAbstractActionController;
 
-class MelisComSeoController extends AbstractActionController
+class MelisComSeoController extends MelisAbstractActionController
 {
     /**
      * This method Render SEO plugin

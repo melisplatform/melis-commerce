@@ -11,9 +11,9 @@ namespace MelisCommerce\Controller;
 
 use Laminas\View\Model\JsonModel;
 use Laminas\View\Model\ViewModel;
-use MelisCore\Controller\AbstractActionController;
+use MelisCore\Controller\MelisAbstractActionController;
 
-class MelisComLanguageController extends AbstractActionController
+class MelisComLanguageController extends MelisAbstractActionController
 {
 
 

@@ -13,9 +13,9 @@ use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
 use Laminas\Session\Container;
 use Laminas\Http\Response;
-use MelisCore\Controller\AbstractActionController;
+use MelisCore\Controller\MelisAbstractActionController;
 
-class MelisComOrderListController extends AbstractActionController
+class MelisComOrderListController extends MelisAbstractActionController
 {
     /**
      * renders the order list page container

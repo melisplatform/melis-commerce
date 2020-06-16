@@ -13,9 +13,9 @@ use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
 use Laminas\Session\Container;
 use Laminas\Stdlib\ArrayUtils;
-use MelisCore\Controller\AbstractActionController;
+use MelisCore\Controller\MelisAbstractActionController;
 
-class MelisComCouponController extends AbstractActionController
+class MelisComCouponController extends MelisAbstractActionController
 {
     /**
      * renders the page container

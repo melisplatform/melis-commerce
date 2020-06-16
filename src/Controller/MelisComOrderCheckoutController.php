@@ -13,9 +13,9 @@ use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
 use Laminas\Session\Container;
 use Composer\Json\JsonManipulator;
-use MelisCore\Controller\AbstractActionController;
+use MelisCore\Controller\MelisAbstractActionController;
 
-class MelisComOrderCheckoutController extends AbstractActionController
+class MelisComOrderCheckoutController extends MelisAbstractActionController
 {
     const PLUGIN_INDEX = 'meliscommerce';
     const TOOL_KEY = '';

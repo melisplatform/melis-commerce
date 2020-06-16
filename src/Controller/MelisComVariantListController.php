@@ -13,16 +13,16 @@ use Laminas\Json\Json;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
 use Laminas\Session\Container;
-use MelisCore\Controller\AbstractActionController;
+use MelisCore\Controller\MelisAbstractActionController;
 
-class MelisComVariantListController extends AbstractActionController
+class MelisComVariantListController extends MelisAbstractActionController
 {
     public function renderVariantListPageAction()
     {
-    	$melisKey = $this->params()->fromRoute('melisKey', '');
-    	$view = new ViewModel();
-    	$view->melisKey = $melisKey;
-    	return $view;
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        return $view;
     }
     
     /**
@@ -227,11 +227,11 @@ class MelisComVariantListController extends AbstractActionController
 //            $varStatChk = '<div class="make-switch '.$productId.'_variantStatusChk triggerVarUpdate" data-on-label="'.$this->getTool()->getTranslation('tr_meliscore_common_active').'" data-off-label="'.$this->getTool()->getTranslation('tr_meliscore_common_inactive').'" data-text-label="'.$this->getTool()->getTranslation('tr_meliscommerce_product_list_col_status').'">
 //                        <input type="checkbox" '.$variantStatus.' />
 //                    </div>';
-             
+            
             if($variant->var_main_variant){
                 $mainVariant = $varMain;
             }
-             
+            
             $toolTipTable->setTable('variantTable'.$variant->var_id, 'table-row-'.($ctr+1), 'border:1px solid;');
             $toolTipTable->setColumns($this->getToolTipColumns());
             
@@ -243,7 +243,7 @@ class MelisComVariantListController extends AbstractActionController
                 $sku = sprintf($toolTipTextTag, $variant->var_id, $variant->var_id, $this->getTool()->escapeHtml($variant->var_sku), ($ctr+1), $variant->var_sku) . $toolTipTable->render();
             }
             
-             
+            
             $imgData = $docSvc->getDocumentsByRelationAndTypes('variant', $variantObj->getId(), 'IMG', array('DEFAULT'));
             $variantimg = '';
             if($imgData) {
@@ -285,9 +285,9 @@ class MelisComVariantListController extends AbstractActionController
     }
     
     /**
-     * generates the tooltip table
-     * @return string[][]
-     */
+        * generates the tooltip table
+        * @return string[][]
+        */
     public function getToolTipColumns()
     {        
         $columns = array(
@@ -419,15 +419,15 @@ class MelisComVariantListController extends AbstractActionController
         }
         
         return new JsonModel(array(
-           'content' => $content
-       ));
+        'content' => $content
+    ));
     }
 
     /**
-     * Function to update the status of the variant
-     *
-     * @return JsonModel
-     */
+        * Function to update the status of the variant
+        *
+        * @return JsonModel
+        */
     public function updateVariantStatusAction()
     {
         $varTbl = $this->getServiceManager()->get('MelisEcomVariantTable');
@@ -497,9 +497,9 @@ class MelisComVariantListController extends AbstractActionController
     }
     
     /**
-     * Returns the Tool Service Class
-     * @return MelisCoreTool
-     */
+        * Returns the Tool Service Class
+        * @return MelisCoreTool
+        */
     private function getTool()
     {
         $melisTool = $this->getServiceManager()->get('MelisCoreTool');
