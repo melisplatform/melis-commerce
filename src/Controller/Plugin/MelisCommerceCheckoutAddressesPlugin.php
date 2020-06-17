@@ -101,6 +101,9 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
             $container['checkout'] = array();
         }
 
+        //set the delivery method choose by the client ot save in the order
+        $container['checkout'][$siteId]['deliveryMethod'] = $this->pluginFrontConfig['m_add_order_method'];
+
         $isSubmit = (!empty($this->pluginFrontConfig['m_add_is_submit'])) ? $this->pluginFrontConfig['m_add_is_submit'] : false;
         /**
          * we will going to used this to determine the form that we will

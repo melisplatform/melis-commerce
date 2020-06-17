@@ -119,8 +119,12 @@ class MelisComCategoryService extends MelisComGeneralService
         $cacheKey = 'category-' . $categoryId . '-getCategoryById_' . $categoryId . '_' . $langId;
         $cacheConfig = 'commerce_big_services';
         $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-        if (!empty($results)) return $results;
+//        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+//        if (!empty($results)) return $results;
+        $cache = $this->getServiceManager()->get($cacheConfig);
+        if ($cache->hasItem($cacheKey)){
+            return $cache->getItem($cacheKey);
+        }
         
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -190,8 +194,12 @@ class MelisComCategoryService extends MelisComGeneralService
         $cacheKey = 'category-' . $categoryId . '-getCategoryNameById_' . $categoryId . '_' . $langId;
         $cacheConfig = 'commerce_big_services';
         $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-        if (!empty($results)) return $results;
+//        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+//        if (!empty($results)) return $results;
+        $cache = $this->getServiceManager()->get($cacheConfig);
+        if ($cache->hasItem($cacheKey)){
+            return $cache->getItem($cacheKey);
+        }
         
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -210,7 +218,7 @@ class MelisComCategoryService extends MelisComGeneralService
 
         if (!empty($catTrans))
         {
-             // Getting the first available translation of the Category
+            // Getting the first available translation of the Category
             foreach ($catTrans As $val)
             {
                 if (!empty($val->catt_name) && $val->elang_id == $arrayParameters['langId']) 
@@ -265,8 +273,12 @@ class MelisComCategoryService extends MelisComGeneralService
         $cacheKey = 'category-' . $categoryId . '-getCategoryProductsById_' . $categoryId . '_' . $langId . '_'.$onlyValid;
         $cacheConfig = 'commerce_big_services';
         $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-        if (!empty($results)) return $results;
+//        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+//        if (!empty($results)) return $results;
+        $cache = $this->getServiceManager()->get($cacheConfig);
+        if ($cache->hasItem($cacheKey)){
+            return $cache->getItem($cacheKey);
+        }
         
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -421,12 +433,13 @@ class MelisComCategoryService extends MelisComGeneralService
         $cacheKey = 'category-' . $categoryId . '-getCategoryCountriesById_' . $categoryId;
         $cacheConfig = 'commerce_big_services';
         $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-        if (!empty($results))
-        {
-            return $results;
+//        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+//        if (!empty($results)) return $results;
+        $cache = $this->getServiceManager()->get($cacheConfig);
+        if ($cache->hasItem($cacheKey)){
+            return $cache->getItem($cacheKey);
         }
-        
+
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $results = array();
@@ -502,8 +515,12 @@ class MelisComCategoryService extends MelisComGeneralService
         $cacheKey = 'category-' . $categoryId . '-getCategoryTranslationById_' . $categoryId . '_' . $langId;
         $cacheConfig = 'commerce_big_services';
         $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-        if (!empty($results)) return $results;
+//        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+//        if (!empty($results)) return $results;
+        $cache = $this->getServiceManager()->get($cacheConfig);
+        if ($cache->hasItem($cacheKey)){
+            return $cache->getItem($cacheKey);
+        }
         
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -593,8 +610,12 @@ class MelisComCategoryService extends MelisComGeneralService
         $cacheKey = 'category-' . $categoryId . '-getSubCategoryIdByIdRecursive_' . $categoryId . '_' . $onlyValid . '_' . $fatherId . '_' . $langId;
         $cacheConfig = 'commerce_big_services';
         $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-        if (!empty($results)) return $results;
+//        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+//        if (!empty($results)) return $results;
+        $cache = $this->getServiceManager()->get($cacheConfig);
+        if ($cache->hasItem($cacheKey)){
+            return $cache->getItem($cacheKey);
+        }
         
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());

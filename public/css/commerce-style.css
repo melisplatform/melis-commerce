@@ -711,7 +711,7 @@ div.melis-pdc *.btn {
 .client-contact-address .default-card>.card-header,
 .client-contact-address .panel-default>.panel-heading {
     color: #fff;
-    background-color: #932e2a;
+    background-color: #e61c23;
     border-color: #ddd;
 }
 
@@ -2635,18 +2635,92 @@ tr.last-tr td {
     background-color: #f0f0ef;
 }
 
-button :not(.melis-marketplace-product-action) i.fa.fa-download {
+button:not(.melis-marketplace-product-action) i.fa.fa-download {
     color: #7c7c7c;
 }
 
-.btn:hover :not(.melis-marketplace-product-action) i.fa.fa-download {
+button:not(.melis-marketplace-product-action):hover i.fa.fa-download {
     color: #333;
 }
 
-/* button:hover i.fa.fa-download {
-    color: #fff;
-} */
+i.fa.fa-download {
+    color: #7c7c7c;
+}
 
 .row .pdc-heading {
     text-transform: capitalize;
+}
+/**
+ * Dashboard order messages
+ */
+.list-group-item.commerce-dashboard-plugin-order-messages {
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+}
+
+.list-group-item.commerce-dashboard-plugin-order-messages:hover {
+    background-color: #f1f1f1;
+    text-decoration: none;
+}
+
+.commerce-dashboard-plugin-order-messages .label.label-inverse.pull-right {
+    color: #fff !important;
+}
+
+.label {
+    display: inline;
+    padding: .2em .6em .3em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25em;
+}
+/*
+ * Datepicker issue on catalogs and coupons
+ * Calendar on dropdown
+ */
+.datepicker-dropdown {
+    min-width: 267px;
+}
+.datepicker-dropdown .datepicker-years span.year,
+.datepicker-dropdown .datepicker-months span.month,
+.datepicker-block .datepicker-years span.year,
+.datepicker-block .datepicker-months span.month {
+    display: block;
+    width: 23%;
+    height: 54px;
+    line-height: 54px;
+    float: left;
+    margin: 1%;
+    cursor: pointer;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+.datepicker-dropdown .datepicker-years span.year:hover,
+.datepicker-dropdown .datepicker-months span.month:hover,
+.datepicker-block .datepicker-years span.year:hover,
+.datepicker-block .datepicker-months span.month:hover {
+    background: #eee;
+}
+.datepicker-dropdown .datepicker-years span.year.active,
+.datepicker-dropdown .datepicker-months span.month.active,
+.datepicker-block .datepicker-years span.year.active,
+.datepicker-block .datepicker-months span.month.active {
+    color: #fff;
+    padding: 0 4px;
+}
+.datepicker-dropdown table thead tr th.next:hover,
+.datepicker-dropdown table thead tr th.prev:hover,
+.datepicker-dropdown table thead tr th.datepicker-switch:hover,
+.datepicker-block table thead tr th.next:hover,
+.datepicker-block table thead tr th.prev:hover,
+.datepicker-block table thead tr th.datepicker-switch:hover {
+    background: #eee;
+    cursor: pointer;
 }

@@ -671,6 +671,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             $clientMainPerson = $melisEcomClientPersonTable->getClientMainPersonByClientId($container['checkout'][$this->siteId]['clientId'])->current();
             
             $contactId = $container['checkout'][$this->siteId]['contactId'];
+            $ordDeliveryMethod = (!empty($container['checkout'][$this->siteId]['deliveryMethod']) ? $container['checkout'][$this->siteId]['deliveryMethod'] : 'delivery');
             
             $order = array(
                 'ord_client_id' => $container['checkout'][$this->siteId]['clientId'],
@@ -680,6 +681,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                 'ord_reference' => $orderReferenceCode['code'],
                 'ord_billing_address' => -1,
                 'ord_delivery_address' => -1,
+                'ord_delivery_method' => $ordDeliveryMethod,
                 'ord_date_creation' => date('Y-m-d H:i:s')
             );
             
@@ -752,6 +754,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                     'obas_price_net' => $variantPrice->price_net,
                     'obas_price_gross' => $variantPrice->price_gross,
                     'obas_price_vat' => $variantPrice->price_vat_price,
+                    // 'obas_price_vat_percent' => $variantPrice->price_vat_percent,
                     'obas_price_other_tax' => $variantPrice->price_other_tax_price,
                 );
                 

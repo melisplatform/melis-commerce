@@ -20,15 +20,15 @@ use MelisCommerce\Entity\MelisDocument;
 
 class MelisComCurrencyService extends MelisComGeneralService
 {
-     /**
-      * Returns a list of currencies
-      * @param int $status currency status
-      * @param int $start Query start
-      * @param int $limit Query limit
-      * @param int $order Query order
-      * @param string $search query search string
-      * @return object[]
-      */
+    /**
+     * Returns a list of currencies
+    * @param int $status currency status
+    * @param int $start Query start
+    * @param int $limit Query limit
+    * @param int $order Query order
+    * @param string $search query search string
+    * @return object[]
+    */
     public function getCurrencies($status = null, $start = null, $limit = null, $order = null, $search = null)
     {
         // Event parameters prepare
@@ -51,7 +51,7 @@ class MelisComCurrencyService extends MelisComGeneralService
         $arrayParameters['results'] = $results;
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_get_currencies_end', $arrayParameters);
-         
+        
         return $arrayParameters['results'];
     }
     
@@ -62,12 +62,16 @@ class MelisComCurrencyService extends MelisComGeneralService
     public function getDefaultCurrency()
     {
         // Retrieve cache version if front mode to avoid multiple calls
-	    $cacheKey = 'getDefaultCurrency';
+        $cacheKey = 'currency-getDefaultCurrency';
         $cacheConfig = 'commerce_memory_services';
-        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-        if (!empty($results)) return $results;
-	    
+        $melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
+//        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+//        if (!empty($results)) return $results;
+        $cache = $this->getServiceLocator()->get($cacheConfig);
+        if ($cache->hasItem($cacheKey)){
+            return $cache->getItem($cacheKey);
+        }
+        
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $results = array();
@@ -86,8 +90,8 @@ class MelisComCurrencyService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_get_default_currency_end', $arrayParameters);
 
         // Save cache key
-		$melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
-         
+        $melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
+        
         return $arrayParameters['results'];
     }
 
