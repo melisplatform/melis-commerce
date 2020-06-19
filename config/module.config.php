@@ -287,7 +287,7 @@ return [
         'invokables' => [
             'ToolTipTable' => \MelisCommerce\View\Helper\ToolTipTableHelper::class,
         ],
-        'asliases' => [
+        'aliases' => [
             'MelisCommerceLink' => \MelisCommerce\View\Helper\MelisCommerceLinksHelper::class
         ]
     ],
