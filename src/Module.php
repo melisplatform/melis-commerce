@@ -14,7 +14,6 @@ use Laminas\Mvc\ModuleRouteListener;
 use Laminas\Mvc\MvcEvent;
 use Laminas\ModuleManager\ModuleManager;
 use Laminas\Db\TableGateway\TableGateway;
-use Laminas\Stdlib\Hydrator\ObjectProperty;
 use Laminas\Db\ResultSet\HydratingResultSet;
 use Laminas\Stdlib\ArrayUtils;
 use Laminas\Session\Container;
