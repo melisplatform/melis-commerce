@@ -612,6 +612,9 @@ class MelisComOrderCheckoutController extends AbstractActionController
 
         $selectOptions = '<option value="" selected>'.$translator->translate('tr_meliscommerce_order_checkout_common_chooose').'</option>';
 
+        $genSelected = ($selectedCountry == -1) ? 'selected' : '';
+        $selectOptions .= '<option value="-1" '.$genSelected.'>'.$translator->translate('General').'</option>';
+
         foreach ($ecomCountries As $val)
         {
             if ($selectedCountry == $val->ctry_id)
