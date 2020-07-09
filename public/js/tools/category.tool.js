@@ -226,14 +226,14 @@ $(function() {
 		});
 		
 		// Category Tree Languages Dropdown
-		$body.on("click", ".category-tree-view-lang li a", function(){
+		$body.on("click", ".category-tree-view-lang.commerce-category-tree-view-lang li a", function(){
 			var $this 		= $(this),
 				langText 	= $this.text(),
 				langLocale 	= $this.data('locale');
 
 				categoryOpeningItemFlag = false;
 				
-				$('.cat-tree-view-languages span.filter-key').text(langText);		
+				$('.cat-tree-view-languages.commerce-category-tree-view-languages span.filter-key').text(langText);
 				$("#categoryTreeView").data('langlocale',langLocale);
 				$("#categoryTreeView").jstree(true).settings.core.data.data = [{name : "langlocale", value: langLocale}];
 				$("#categoryTreeView").jstree(true).refresh();

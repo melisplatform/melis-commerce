@@ -6,14 +6,14 @@
     $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
 ?>
 <div class="col-xs-12 col-lg-8" <?php echo $id. ' '.$data_melisKey?>>
-	<div class="cat-tree-view-languages filter-dropdown clearfix">
+	<div class="cat-tree-view-languages commerce-category-tree-view-languages filter-dropdown clearfix">
 		<a href="#" class="dropdown-toggle category-list-lang-dropdown" data-toggle="dropdown">
 			<?php //echo $this->currentLangImg; ?>
 			<i class="fa fa-language"></i>
 			<span class="filter-key"><?php echo $this->currentLangName; ?></span>
 			<span class="caret"></span>
 		</a>
-		<ul class="dropdown-menu category-tree-view-lang">
+		<ul class="dropdown-menu category-tree-view-lang commerce-category-tree-view-lang">
 			<?php foreach ($this->ecomLang As $val):?>
     			<li>
 
