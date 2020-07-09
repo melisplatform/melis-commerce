@@ -318,6 +318,7 @@ table.dataTable.uk-table-condensed .sorting_desc:after {
 *   ------------------------------------- */
 .imageDocumentContainer{
     height: 100%;
+    z-index: 0;
 }
 .imageDocumentContainer .imageDocumentItem {
     width: 33.333%;
@@ -326,6 +327,10 @@ table.dataTable.uk-table-condensed .sorting_desc:after {
 .imageDocumentContainer .imageDocumentItem img{
     display:block;
     width: 100%;
+}
+.images-dropdown {
+    position: relative;
+    z-index: 1;
 }
 
 /**
