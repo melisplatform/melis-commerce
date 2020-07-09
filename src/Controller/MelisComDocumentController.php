@@ -384,7 +384,7 @@ class MelisComDocumentController extends MelisAbstractActionController
                                         if ($adapter->isValid()) {
                                             $adapter->setDestination($comMediaDir);
                                             $savedDocFileName = 'public' . $this->renameIfDuplicateFile($comMediaPublicPath . $fileName);
-                                            $adapter->addFilter('File\Rename', array(
+                                            $adapter->addFilter('Rename', array(
                                                 'target' => $savedDocFileName,
                                                 'overwrite' => true,
                                             ));
@@ -420,7 +420,7 @@ class MelisComDocumentController extends MelisAbstractActionController
                                         if ($adapter->isValid()) {
                                             $adapter->setDestination($comMediaDir);
                                             $savedDocFileName = 'public' . $this->renameIfDuplicateFile($comMediaPublicPath . $fileName);
-                                            $adapter->addFilter('File\Rename', array(
+                                            $adapter->addFilter('Rename', array(
                                                 'target' => $savedDocFileName,
                                                 'overwrite' => true,
                                             ));
