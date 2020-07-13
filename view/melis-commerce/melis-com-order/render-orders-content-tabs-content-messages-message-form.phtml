@@ -4,12 +4,14 @@
         $id .= $this->orderId.'_'.$this->zoneconfig['conf']['id'];
     }
 ?>
-<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="add-message" style="display: none;">
-	<?php 
-	   $form = $this->messageForm;
-	   echo $this->form()->openTag($form);
-	   echo $this->melisFieldCollection($form);
-	   echo $this->form()->closeTag();
-	?>					
-	<a class="btn btn-success add-order-message"><i class="fa fa-send"></i> <?= $this->translate('tr_meliscommerce_orders_message_send')?></a>
+<div class="col-12 col-md-2">
+	<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="add-message" style="display: none;">
+		<?php 
+			$form = $this->messageForm;
+			echo $this->form()->openTag($form);
+			echo $this->melisFieldCollection($form);
+			echo $this->form()->closeTag();
+		?>					
+		<a class="btn btn-success add-order-message"><i class="fa fa-send"></i> <?= $this->translate('tr_meliscommerce_orders_message_send')?></a>
+	</div>
 </div>
