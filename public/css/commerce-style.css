@@ -1475,10 +1475,10 @@ textarea {
 .form-control {
     display: inline-block;
 }
-.add-message {
+/* .add-message {
     width: 50%;
     margin: 0 auto;
-}
+} */
 .message-post {
     padding: 10px 0;
     border-bottom: 1px solid #eee;
@@ -1871,8 +1871,13 @@ textarea {
     border: 1px solid #e5e5e5 !important;
 }
 .order-info-page .layout-timeline ul.timeline {
-    padding: 0 15px 15px 30px;
-    margin: -20px 0 0;
+    /* padding: 0 15px 15px 30px;
+    margin: -20px 0 0; */
+    padding: 0 0 15px 30px;
+    margin-left: 6rem;
+}
+.order-info-page .layout-timeline .innerAll {
+    padding-right: 0 !important;
 }
 .layout-timeline ul.timeline > li.active .type{
     color: #9e2b2b !important;
