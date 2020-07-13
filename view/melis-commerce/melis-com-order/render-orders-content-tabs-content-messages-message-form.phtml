@@ -4,7 +4,7 @@
         $id .= $this->orderId.'_'.$this->zoneconfig['conf']['id'];
     }
 ?>
-<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="add-message col-12 col-md-2" style="display: none;">
+<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="add-message" style="display: none;">
 	<?php 
 		$form = $this->messageForm;
 		echo $this->form()->openTag($form);
