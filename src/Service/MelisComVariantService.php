@@ -414,14 +414,14 @@ class MelisComVariantService extends MelisComGeneralService
 
 	
 	/**
-	 *
-	 * This method gets the price affected to a variant
-	 *
-	 * @param int $variantId Variant Id to look for
-	 * @param int $countryId If specified, stocks will be given only for the country specified
-	 *
-	 * @return MelisEcomPrice[] Price object
-	 */
+		*
+		* This method gets the price affected to a variant
+		*
+		* @param int $variantId Variant Id to look for
+		* @param int $countryId If specified, stocks will be given only for the country specified
+		*
+		* @return MelisEcomPrice[] Price object
+		*/
 	public function getVariantPricesById($variantId, $countryId = null)
 	{
 		// Retrieve cache version if front mode to avoid multiple calls
@@ -472,12 +472,12 @@ class MelisComVariantService extends MelisComGeneralService
 	}
 	
 	/**
-	 * This method will return the Variant final Price
-	 * 
-	 * @param int $variantId
-	 * @param int $countryId
-	 * @return MelisEcomPrice|null
-	 */
+		* This method will return the Variant final Price
+		* 
+		* @param int $variantId
+		* @param int $countryId
+		* @return MelisEcomPrice|null
+		*/
 	public function getVariantFinalPrice($variantId, $countryId)
 	{
 		// Retrieve cache version if front mode to avoid multiple calls
@@ -533,11 +533,11 @@ class MelisComVariantService extends MelisComGeneralService
 	}
 	
 	/**
-	 * This Method will return all the variants that are associated to the product's variants
-	 * 
-	 * @param int $productId Id of the product
-	 * @return array[] Array of variants|NULL
-	 */
+		* This Method will return all the variants that are associated to the product's variants
+		* 
+		* @param int $productId Id of the product
+		* @return array[] Array of variants|NULL
+		*/
 	public function getAssocVariantsByProductId($productId)
 	{
 		// Event parameters prepare
@@ -565,12 +565,12 @@ class MelisComVariantService extends MelisComGeneralService
 	}
 	
 	/**
-	 * This method will retrieve variant that has common attributes to other variant 
-	 * @param int $productId 
-	 * @param int $attributeId 
-	 * @param int $attributeValueId
-	 * @return MelisEcomVariant
-	 */
+		* This method will retrieve variant that has common attributes to other variant 
+		* @param int $productId 
+		* @param int $attributeId 
+		* @param int $attributeValueId
+		* @return MelisEcomVariant
+		*/
 	public function getVariantCommonAttr($productId, $attributeId, $attributeValueId)
 	{
 		// Event parameters prepare
@@ -596,11 +596,11 @@ class MelisComVariantService extends MelisComGeneralService
 	}
 	
 	/**
-	 * This method will retrieve variants
-	 * 
-	 * @param array $variantsIds
-	 * @return MelisEcomVariant
-	 */
+		* This method will retrieve variants
+		* 
+		* @param array $variantsIds
+		* @return MelisEcomVariant
+		*/
 	public function getVariantsAttrGroupByAttr($variantsIds)
 	{
 		// Event parameters prepare
@@ -628,14 +628,14 @@ class MelisComVariantService extends MelisComGeneralService
 	}
 	
 	/**
-	 * This method will return the Image Path of the variant
-	 * if the variant get the image with "STATIC" type 
-	 * this will try to get the image from Product
-	 * @param int $variantId
-	 * @param array $docType
-	 * @param string $customDefaultImg
-	 * @return String|null
-	 */
+		* This method will return the Image Path of the variant
+		* if the variant get the image with "STATIC" type 
+		* this will try to get the image from Product
+		* @param int $variantId
+		* @param array $docType
+		* @param string $customDefaultImg
+		* @return String|null
+		*/
 	public function getFinalVariantImage($variantId, $docType = array(), $customDefaultImg = null)
 	{
 		$tmp = '';
@@ -697,19 +697,19 @@ class MelisComVariantService extends MelisComGeneralService
 	}
 	
 	/**
-	 *
-	 * This method saves a variant in database.
-	 *
-	 * 
-	 * @param array[] $variant Reflects the melis_ecom_variant table
-	 * @param array[] $prices Reflects the melis_ecom_price table
-	 * @param array[] $stocks Reflects the melis_ecom_variant_stock table
-	 * @param int[] $attributeValues List of attribute values ids affected to the product
-	 * @param int[] $seo Reflects the melis_ecom_seo table
-	 * @param int $variantId If specified, an update will be done instead of an insert
-	 *
-	 * @return int|null The variant id created or updated, null if an error occured
-	 */
+		*
+		* This method saves a variant in database.
+		*
+		* 
+		* @param array[] $variant Reflects the melis_ecom_variant table
+		* @param array[] $prices Reflects the melis_ecom_price table
+		* @param array[] $stocks Reflects the melis_ecom_variant_stock table
+		* @param int[] $attributeValues List of attribute values ids affected to the product
+		* @param int[] $seo Reflects the melis_ecom_seo table
+		* @param int $variantId If specified, an update will be done instead of an insert
+		*
+		* @return int|null The variant id created or updated, null if an error occured
+		*/
 	public function saveVariant($variant, $prices = array(), $stocks = array(), 
 								$attributeValues = array(), $seo = array(), $variantId = null)
 	{
@@ -783,16 +783,16 @@ class MelisComVariantService extends MelisComGeneralService
 	}
 	
 	/**
-	 *
-	 * This method saves the attributes values for a variant
-	 * This will create/update entries and delete the one that could exist and not linked anymore,
-	 * the list of attributes values must be full.
-	 *
-	 * @param array[] $attributeValues List of attribute values ids affected to the variant
-	 * @param int[] $attributeValueId attribute value id to look for
-	 *
-	 * @return boolean True/false if the attributes were successfuly added to the product
-	 */
+		*
+		* This method saves the attributes values for a variant
+		* This will create/update entries and delete the one that could exist and not linked anymore,
+		* the list of attributes values must be full.
+		*
+		* @param array[] $attributeValues List of attribute values ids affected to the variant
+		* @param int[] $attributeValueId attribute value id to look for
+		*
+		* @return boolean True/false if the attributes were successfuly added to the product
+		*/
 	public function saveVariantAttributesValues($attributesValues, $attributeValueId = null)
 	{
 		// Event parameters prepare
@@ -829,15 +829,15 @@ class MelisComVariantService extends MelisComGeneralService
 	}
 	
 	/**
-	 *
-	 * This method saves the prices for a variant
-	 * This will update or save prices.
-	 *
-	 * @param array[] $prices Reflects the melis_ecom_price table
-	 * @param int $priceId Price Id to look for
-	 *
-	 * @return boolean True/false if the prices were successfuly added to the product
-	 */
+		*
+		* This method saves the prices for a variant
+		* This will update or save prices.
+		*
+		* @param array[] $prices Reflects the melis_ecom_price table
+		* @param int $priceId Price Id to look for
+		*
+		* @return boolean True/false if the prices were successfuly added to the product
+		*/
 	public function saveVariantPrices($prices, $priceId = null)
 	{
 		// Event parameters prepare
@@ -875,15 +875,15 @@ class MelisComVariantService extends MelisComGeneralService
 	}
 	
 	/**
-	 *
-	 * This method saves the stocks for a variant
-	 * This will update or save stocks.
-	 *
-	 * @param array[] $stocks Reflects the melis_ecom_variant_stock table
-	 * @param int $stocksId Stocks Id to look for
-	 *
-	 * @return boolean True/false if the stocks were successfuly added to the product
-	 */
+		*
+		* This method saves the stocks for a variant
+		* This will update or save stocks.
+		*
+		* @param array[] $stocks Reflects the melis_ecom_variant_stock table
+		* @param int $stocksId Stocks Id to look for
+		*
+		* @return boolean True/false if the stocks were successfuly added to the product
+		*/
 	public function saveVariantStocks($stocks, $stockId = null)
 	{
 		// Event parameters prepare
@@ -912,14 +912,14 @@ class MelisComVariantService extends MelisComGeneralService
 	}
 	
 	/**
-	 *
-	 * This method deletes the stocks for a variant
-	 * This will delete.
-	 *
-	 * @param int $variantPriceId Variant price id to look for
-	 *
-	 * @return boolean True/false if the price were successfuly deleted
-	 */
+		*
+		* This method deletes the stocks for a variant
+		* This will delete.
+		*
+		* @param int $variantPriceId Variant price id to look for
+		*
+		* @return boolean True/false if the price were successfuly deleted
+		*/
 	public function deleteVariantById($variantId)
 	{
 		// Event parameters prepare
@@ -977,14 +977,14 @@ class MelisComVariantService extends MelisComGeneralService
 	
 	
 	/**
-	 * 
-	 * This method deletes the price for a variant
-	 * This will delete.
-	 * 
-	 * @param int $variantPriceId Variant price id to look for
-	 * 
-	 * @return boolean True/false if the price were successfuly deleted
-	 */
+		* 
+		* This method deletes the price for a variant
+		* This will delete.
+		* 
+		* @param int $variantPriceId Variant price id to look for
+		* 
+		* @return boolean True/false if the price were successfuly deleted
+		*/
 	public function deleteVariantPriceById($variantPriceId)
 	{
 		// Event parameters prepare
@@ -1014,14 +1014,14 @@ class MelisComVariantService extends MelisComGeneralService
 	}
 	
 	/**
-	 *
-	 * This method deletes the stocks for a variant
-	 * This will delete.
-	 *
-	 * @param int $variantPriceId Variant stock id to look for
-	 *
-	 * @return boolean True/false if the price were successfuly deleted
-	 */
+		*
+		* This method deletes the stocks for a variant
+		* This will delete.
+		*
+		* @param int $variantPriceId Variant stock id to look for
+		*
+		* @return boolean True/false if the price were successfuly deleted
+		*/
 	public function deleteVariantStockById($variantStockId)
 	{
 		// Event parameters prepare
@@ -1050,14 +1050,14 @@ class MelisComVariantService extends MelisComGeneralService
 	}
 	
 	/**
-	 *
-	 * This method deletes the variant attribute value for a variant
-	 * This will delete.
-	 *
-	 * @param int $variantPriceId Variant attribute id to look for
-	 *
-	 * @return boolean True/false if the price were successfuly deleted
-	 */
+		*
+		* This method deletes the variant attribute value for a variant
+		* This will delete.
+		*
+		* @param int $variantPriceId Variant attribute id to look for
+		*
+		* @return boolean True/false if the price were successfuly deleted
+		*/
 	public function deleteVariantAttributeById($variantAttributeId)
 	{
 		// Event parameters prepare
@@ -1086,11 +1086,11 @@ class MelisComVariantService extends MelisComGeneralService
 	}
 	
 	/**
-	 * This function returns the variant and its SEO
-	 * @param int $variantId Id of the variant
-	 * @param int $langId language Id of the SEO
-	 * @return Object|false
-	 */
+		* This function returns the variant and its SEO
+		* @param int $variantId Id of the variant
+		* @param int $langId language Id of the SEO
+		* @return Object|false
+		*/
 	public function getVariantAndSeoById($variantId, $langId)
 	{
 		// Retrieve cache version if front mode to avoid multiple calls
@@ -1176,5 +1176,4 @@ class MelisComVariantService extends MelisComGeneralService
 
 		return $arrayParameters['results'];
 	}
-
 }

@@ -438,17 +438,17 @@ class MelisComDocumentService extends MelisComGeneralService
 	}
 	
 	/**
-	 *
-	 * This method saves a document in database and associates it to its relation (product/
-	 * category/variant/country)
-	 *
-	 * @param string $docRelation Key string among product/variant/category/country
-	 * @param int $relationId The id of the product/variant/category/country
-	 * @param array $document Reflects the melis_ecom_document table
-	 * @param int $documentId If specified, an update will be done instead of an insert
-	 *
-	 * @return int|null The document id created or updated, null if an error occured
-	 */
+		*
+		* This method saves a document in database and associates it to its relation (product/
+		* category/variant/country)
+		*
+		* @param string $docRelation Key string among product/variant/category/country
+		* @param int $relationId The id of the product/variant/category/country
+		* @param array $document Reflects the melis_ecom_document table
+		* @param int $documentId If specified, an update will be done instead of an insert
+		*
+		* @return int|null The document id created or updated, null if an error occured
+		*/
 	public function saveDocument($docRelation, $relationId, $docCountry = 0, $document, $documentId = null)
 	{
 		$savedDocId = null;
@@ -513,10 +513,10 @@ class MelisComDocumentService extends MelisComGeneralService
 	}
 	
 	/**
-	 * This method removes the document entry and document relationship entry
-	 * @param int $documentId
-	 * @return boolean true/false 
-	 */
+		* This method removes the document entry and document relationship entry
+		* @param int $documentId
+		* @return boolean true/false 
+		*/
 	public function deleteDocument($documentId)
 	{
 		// Event parameters prepare
@@ -552,5 +552,4 @@ class MelisComDocumentService extends MelisComGeneralService
 		
 		return $arrayParameters['results'];
 	}
-
 }
