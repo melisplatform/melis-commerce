@@ -64,10 +64,10 @@ class MelisComCurrencyService extends MelisComGeneralService
         // Retrieve cache version if front mode to avoid multiple calls
         $cacheKey = 'currency-getDefaultCurrency';
         $cacheConfig = 'commerce_memory_services';
-        $melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
 //        if (!empty($results)) return $results;
-        $cache = $this->getServiceLocator()->get($cacheConfig);
+        $cache = $this->getServiceManager()->get($cacheConfig);
         if ($cache->hasItem($cacheKey)){
             return $cache->getItem($cacheKey);
         }
