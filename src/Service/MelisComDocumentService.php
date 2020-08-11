@@ -290,7 +290,7 @@ class MelisComDocumentService extends MelisComGeneralService
 		$tmp = '';
 		foreach ($docType as $tCode)
 			$tmp .= '_' . $tCode;
-		$cacheKey = $docRelation . '-' . $relationId . '-getFinalImageFilePath_' . $relationId . '_' . $tmp . '_' . $customDefaultImg;
+		$cacheKey = $docRelation . '-' . $relationId . '-getFinalImageFilePath_' . $relationId . '_' . $tmp;
 		$cacheConfig = 'commerce_big_services';
 		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
