@@ -691,7 +691,8 @@ class MelisComVariantService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_variant_get_final_iamge_end', $arrayParameters);
 
 		// Save cache key
-		$this->setCacheServiceResults($cacheKey, $arrayParameters['results'], 'commerce_big_services');
+		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
+		$melisEngineCacheSystem->setCacheByKey($cacheKey, $arrayParameters['results'], 'commerce_big_services');
 		
 		return  $arrayParameters['results'];
 	}
