@@ -45,6 +45,8 @@ return [
                         // use same address flag
                         'm_add_use_same_address' => null,
 
+                        'm_add_order_method' => '',
+
                         /**
                          * This field is used to determine which address
                          * should the plugin will validate first (billing, delivery]
