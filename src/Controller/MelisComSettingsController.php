@@ -9,16 +9,16 @@
 
 namespace MelisCommerce\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use MelisCore\Controller\MelisAbstractActionController;
 
-class MelisComSettingsController extends AbstractActionController
+class MelisComSettingsController extends MelisAbstractActionController
 {
     
     /**
      * renders the page container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderSettingsPageAction()
     {
@@ -30,7 +30,7 @@ class MelisComSettingsController extends AbstractActionController
     
     /**
      * renders the page header container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
 
     public function renderSettingsHeaderContainerAction()
@@ -43,7 +43,7 @@ class MelisComSettingsController extends AbstractActionController
     
     /**
      * renders the page header left container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderSettingsHeaderLeftContainerAction()
     {
@@ -55,7 +55,7 @@ class MelisComSettingsController extends AbstractActionController
     
     /**
      * renders the page header left container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderSettingsHeaderRightContainerAction()
     {
@@ -67,7 +67,7 @@ class MelisComSettingsController extends AbstractActionController
      
     /**
      * renders the page header title
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderSettingsHeaderTitleAction()
     {
@@ -79,7 +79,7 @@ class MelisComSettingsController extends AbstractActionController
     
     /**
      * renders the page header save button
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderSettingsHeaderSaveAction()
     {
@@ -88,7 +88,7 @@ class MelisComSettingsController extends AbstractActionController
     
     /**
      * renders the page content container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderSettingsPageContentAction()
     {
@@ -100,7 +100,7 @@ class MelisComSettingsController extends AbstractActionController
     
     /**
      * renders the page tabs
-     * @return \Zend\View\Model\ViewModel render-coupon-page-tab-main
+     * @return \Laminas\View\Model\ViewModel render-coupon-page-tab-main
      */
     public function renderSettingsPageTabsMainAction()
     {
@@ -112,7 +112,7 @@ class MelisComSettingsController extends AbstractActionController
     
     /**
      * renders the tabs content header container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderSettingsTabsContentHeaderAction()
     {
@@ -124,7 +124,7 @@ class MelisComSettingsController extends AbstractActionController
     
     /**
      * renders the tabs content header left container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderSettingsTabsContentHeaderLeftAction()
     {
@@ -136,7 +136,7 @@ class MelisComSettingsController extends AbstractActionController
     
     /**
      * renders the tabs content header right container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderSettingsTabsContentHeaderRightAction()
     {
@@ -148,7 +148,7 @@ class MelisComSettingsController extends AbstractActionController
     
     /**
      * renders the tabs content header title
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderSettingsTabsContentHeaderTitleAction()
     {
@@ -160,7 +160,7 @@ class MelisComSettingsController extends AbstractActionController
     
     /**
      * renders the tabs content details container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderSettingsTabsContentDetailsAction()
     {
@@ -172,7 +172,7 @@ class MelisComSettingsController extends AbstractActionController
     
     /**
      * renders the tabs content details container left
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderSettingsTabsContentDetailsLeftAction()
     {
@@ -184,23 +184,23 @@ class MelisComSettingsController extends AbstractActionController
     
     /**
      * renders the tabs content details container left
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderSettingsTabsContentDetailsGeneralAction()
     {
         $generalForm = 'meliscommerce_settings_alert_form';
-        $melisCoreConfig = $this->getServiceLocator()->get('MelisCoreConfig');
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_settings/'.$generalForm,$generalForm);
         
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $alertForm = $factory->createForm($appConfigForm);
         
-        $userTable = $this->getServiceLocator()->get('MelisCoreTableUser');
-        $stockEmailAlertSvc = $this->getServiceLocator()->get('MelisComStockEmailAlertService');
+        $userTable = $this->getServiceManager()->get('MelisCoreTableUser');
+        $stockEmailAlertSvc = $this->getServiceManager()->get('MelisComStockEmailAlertService');
         $users = array();
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
         $stockLimit = '';
         $recipients = array();
@@ -209,7 +209,7 @@ class MelisComSettingsController extends AbstractActionController
         $productId = (int) $this->params()->fromQuery('productId', '');
         
         if(!empty($productId)){
-            $prodSvc = $this->getServiceLocator()->get('MelisComProductService');
+            $prodSvc = $this->getServiceManager()->get('MelisComProductService');
             $product = $prodSvc->getProductById($productId)->getProduct();
             
             $queryId = $productId;
@@ -301,21 +301,21 @@ class MelisComSettingsController extends AbstractActionController
         $textMessage = 'tr_meliscommerce_settings_save_failed';
         $textTitle = 'tr_meliscommerce_settings';
         
-        $stockEmailAlertSvc = $this->getServiceLocator()->get('MelisComStockEmailAlertService');
-        $stockEmailTable = $this->getServiceLocator()->get('MelisEcomStockEmailAlertTable');
+        $stockEmailAlertSvc = $this->getServiceManager()->get('MelisComStockEmailAlertService');
+        $stockEmailTable = $this->getServiceManager()->get('MelisEcomStockEmailAlertTable');
         
         $generalForm = 'meliscommerce_settings_alert_form';
-        $melisCoreConfig = $this->getServiceLocator()->get('MelisCoreConfig');
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_settings/'.$generalForm,$generalForm);
         
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $alertForm = $factory->createForm($appConfigForm);
         
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_coupon');
-        $translator = $this->serviceLocator->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
         $logTypeCode = 'ECOM_SAVE_SETTINGS';
         

@@ -9,16 +9,16 @@
 
 namespace MelisCommerce\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Session\Container;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\Session\Container;
+use MelisCore\Controller\MelisAbstractActionController;
 
-class MelisComCouponListController extends AbstractActionController
+class MelisComCouponListController extends MelisAbstractActionController
 {
     /**
      * renders the coupon list page container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderCouponListPageAction()
     {
@@ -30,7 +30,7 @@ class MelisComCouponListController extends AbstractActionController
     
     /**
      * renders the coupon list page header container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderCouponListHeaderContainerAction()
     {
@@ -42,7 +42,7 @@ class MelisComCouponListController extends AbstractActionController
     
     /**
      * renders the coupon list page left header container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderCouponListHeaderLeftContainerAction()
     {
@@ -54,7 +54,7 @@ class MelisComCouponListController extends AbstractActionController
     
     /**
      * renders the coupon list page right header container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderCouponListHeaderRightContainerAction()
     {
@@ -66,7 +66,7 @@ class MelisComCouponListController extends AbstractActionController
     
     /**
      * renders the order list page header title
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderCouponListHeaderTitleAction()
     {
@@ -78,7 +78,7 @@ class MelisComCouponListController extends AbstractActionController
     
     /**
      * renders the add new coupon button
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderCouponListAddCouponAction()
     {
@@ -87,7 +87,7 @@ class MelisComCouponListController extends AbstractActionController
     
     /**
      * renders the coupon list page content container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderCouponListContentAction()
     {
@@ -99,7 +99,7 @@ class MelisComCouponListController extends AbstractActionController
     
     /**
      * renders the coupon list page table
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderCouponListContentTableAction()
     {
@@ -115,7 +115,7 @@ class MelisComCouponListController extends AbstractActionController
     
     /**
      * renders the coupon list content table filter limit
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderCouponListContentFilterLimitAction()
     {
@@ -124,7 +124,7 @@ class MelisComCouponListController extends AbstractActionController
     
     /**
      * renders the coupon list content table filter search
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderCouponListContentFilterSearchAction()
     {
@@ -133,7 +133,7 @@ class MelisComCouponListController extends AbstractActionController
     
     /**
      * renders the coupon list content table filter refresh
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderCouponListContentFilterRefreshAction()
     {
@@ -142,7 +142,7 @@ class MelisComCouponListController extends AbstractActionController
     
     /**
      * renders the coupon list content table action info
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderCouponListContentActionInfoAction()
     {
@@ -150,7 +150,7 @@ class MelisComCouponListController extends AbstractActionController
     }
     private function getMelisKeyTool()
     {
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_coupon_list');
 
         return $melisTool;
@@ -159,7 +159,7 @@ class MelisComCouponListController extends AbstractActionController
 
     /**
      * renders the coupon list content table action delete
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderCouponListContentActionDeleteAction()
     {
@@ -168,7 +168,7 @@ class MelisComCouponListController extends AbstractActionController
     
     /**
      * retrieves the data for the coupon list table
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function getCouponListDataAction()
     {
@@ -179,8 +179,8 @@ class MelisComCouponListController extends AbstractActionController
         $dataFiltered = 0;
         $tableData = array();
         $langId = $this->getTool()->getCurrentLocaleID();
-        $couponSvc = $this->getServiceLocator()->get('MelisComCouponService');        
-        $couponOrderTable = $this->getServiceLocator()->get('MelisEcomCouponOrderTable');
+        $couponSvc = $this->getServiceManager()->get('MelisComCouponService');
+        $couponOrderTable = $this->getServiceManager()->get('MelisEcomCouponOrderTable');
         
         if($this->getRequest()->isPost()) {
             $colId = array_keys($this->getTool()->getColumns());
@@ -250,7 +250,7 @@ class MelisComCouponListController extends AbstractActionController
     /**
      * This method deletes coupons that are not assigned or unused coupons
      * 
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function deleteCouponAction()
     {
@@ -262,7 +262,7 @@ class MelisComCouponListController extends AbstractActionController
         $textMessage = 'tr_meliscommerce_coupon_delete_fail';
         $textTitle = 'tr_meliscommerce_coupon_list_page_coupon';
         
-        $couponSvc = $this->getServiceLocator()->get('MelisComCouponService');
+        $couponSvc = $this->getServiceManager()->get('MelisComCouponService');
         if($this->getRequest()->isPost()){
             $this->getEventManager()->trigger('meliscommerce_coupon_delete_start', $this, array());
             $postValues = get_object_vars($this->getRequest()->getPost());
@@ -293,7 +293,7 @@ class MelisComCouponListController extends AbstractActionController
      */
     private function getTool()
     {
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_coupon_list');
     
         return $melisTool;
@@ -301,7 +301,7 @@ class MelisComCouponListController extends AbstractActionController
     }
     public function testAction()
     {
-        $couponSvc = $this->getServiceLocator()->get('MelisComCouponService');
+        $couponSvc = $this->getServiceManager()->get('MelisComCouponService');
         $result = $couponSvc->getCouponList();
         echo '<pre>';
         print_r($result);

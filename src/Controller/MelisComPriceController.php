@@ -10,11 +10,12 @@
 
 namespace MelisCommerce\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Session\Container;
-class MelisComPriceController extends AbstractActionController
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\Session\Container;
+use MelisCore\Controller\MelisAbstractActionController;
+
+class MelisComPriceController extends MelisAbstractActionController
 {
     private function getPrefix()
     {
@@ -32,7 +33,7 @@ class MelisComPriceController extends AbstractActionController
     }
     /**
      * renders the tab head main tab
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderPricesTabAction()
     {
@@ -46,7 +47,7 @@ class MelisComPriceController extends AbstractActionController
     
     /**
      * renders the tab individual contents container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderPricesTabContentAction()
     {
@@ -60,7 +61,7 @@ class MelisComPriceController extends AbstractActionController
     
     /**
      * renders the tab individual content header container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderPricesTabContentHeaderContainerAction()
     {
@@ -74,7 +75,7 @@ class MelisComPriceController extends AbstractActionController
     
     /**
      * renders the tab individual content header left container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderPricesTabContentHeaderLeftAction()
     {
@@ -88,7 +89,7 @@ class MelisComPriceController extends AbstractActionController
     
     /**
      * renders the tab individual content header left container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderPricesTabContentHeaderRightAction()
     {
@@ -102,7 +103,7 @@ class MelisComPriceController extends AbstractActionController
     
     /**
      * renders the tab individual content header
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderPricesTabContentHeaderAction()
     {
@@ -116,7 +117,7 @@ class MelisComPriceController extends AbstractActionController
     
     /**
      * renders the tab individual general container, for main,price,stocks
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderPricesTabContentGeneralContainerAction()
     {
@@ -130,7 +131,7 @@ class MelisComPriceController extends AbstractActionController
     
     /**
      * renders the tab prices left content container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderPricesTabContentLeftContainerAction()
     {
@@ -144,7 +145,7 @@ class MelisComPriceController extends AbstractActionController
     
     /**
      * renders the sub content heading container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderPricesTabSubHeadingAction()
     {
@@ -158,7 +159,7 @@ class MelisComPriceController extends AbstractActionController
     
     /**
      * renders the sub content header text
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderPricesTabSubHeaderAction()
     {
@@ -172,7 +173,7 @@ class MelisComPriceController extends AbstractActionController
     
     /**
      * renders the tab prices right content container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderPricesTabContentRightContainerAction()
     {
@@ -186,7 +187,7 @@ class MelisComPriceController extends AbstractActionController
     
     /**
      * renders the prices country list
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderPricesCountryListAction()
     {
@@ -216,7 +217,7 @@ class MelisComPriceController extends AbstractActionController
                     		</a>
                     	</li>';
     
-        $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+        $countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
         $countries = $countryTable->getCountries();
         $ctyData[] = $ctyGeneral;
         foreach ($countries as $country){
@@ -247,7 +248,7 @@ class MelisComPriceController extends AbstractActionController
 
     /**
      * renders the tab prices country form for prices
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderPricesFormAction()
     {
@@ -259,15 +260,15 @@ class MelisComPriceController extends AbstractActionController
         $forms = [];
         $formId = '';
         
-        $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
-        $productSvc = $this->getServiceLocator()->get('MelisComProductService');
-        $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');   
-        $translator = $this->serviceLocator->get('translator');
+        $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
+        $productSvc = $this->getServiceManager()->get('MelisComProductService');
+        $countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
+        $translator = $this->getServiceManager()->get('translator');
         
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_prices/meliscommerce_prices_form','meliscommerce_prices_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $pricesForm = $factory->createForm($appConfigForm);
         
@@ -363,13 +364,13 @@ class MelisComPriceController extends AbstractActionController
         );
         $errors = array();
         $success = true;
-        $priceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');
+        $priceTable = $this->getServiceManager()->get('MelisEcomPriceTable');
         
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigPriceForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_prices/meliscommerce_prices_form','meliscommerce_prices_form');
         $priceForm = $factory->createForm($appConfigPriceForm);
 
@@ -423,7 +424,7 @@ class MelisComPriceController extends AbstractActionController
     
    /**
     * This method deletes the price entry if the country its affected is deleted
-    * @return \Zend\View\Model\JsonModel
+    * @return \Laminas\View\Model\JsonModel
     */
     public function priceCountryDeletedAction()
     {
@@ -432,8 +433,8 @@ class MelisComPriceController extends AbstractActionController
         $data = array();
         $countryId = -1;
    
-        $priceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');
-        $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+        $priceTable = $this->getServiceManager()->get('MelisEcomPriceTable');
+        $countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
         
         $countryId = (int) $this->getRequest()->getPost('id');
         
@@ -496,7 +497,7 @@ class MelisComPriceController extends AbstractActionController
 
     private function getTool()
     {
-        $tool = $this->getServiceLocator()->get('MelisCoreTool');
+        $tool = $this->getServiceManager()->get('MelisCoreTool');
         return $tool;
     }
 

@@ -11,7 +11,7 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
-use Zend\View\Model\ViewModel;
+use Laminas\View\Model\ViewModel;
 /**
  * This plugin implements the business logic of the
  * "category price filter" plugin.
@@ -65,7 +65,7 @@ class MelisCommerceProductPriceRangePlugin extends MelisTemplatingPlugin
         $priceColumn = $data['m_box_product_price_column'];
 
         // Retrieving the default Values for Product prices
-        $proService = $this->getServiceLocator()->get('MelisComProductService');
+        $proService = $this->getServiceManager()->get('MelisComProductService');
         $priceMin = $proService->getMaximumMinimumPrice('min', $priceColumn);
         $priceMax = $proService->getMaximumMinimumPrice('max', $priceColumn);
 
@@ -99,8 +99,8 @@ class MelisCommerceProductPriceRangePlugin extends MelisTemplatingPlugin
     public function createOptionsForms()
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
     
@@ -108,7 +108,7 @@ class MelisCommerceProductPriceRangePlugin extends MelisTemplatingPlugin
         $render   = [];
         if (!empty($formConfig))
         {
-            $request = $this->getServiceLocator()->get('request');
+            $request = $this->getServiceManager()->get('request');
             $parameters = $request->getQuery()->toArray();
             if (!isset($parameters['validate'])){
                 $formData = $this->getFormData();
@@ -126,7 +126,7 @@ class MelisCommerceProductPriceRangePlugin extends MelisTemplatingPlugin
                     $viewModelTab->modalForm = $form;
                     $viewModelTab->formData   = $formData;
     
-                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
                         'name' => $config['tab_title'],
@@ -188,13 +188,13 @@ class MelisCommerceProductPriceRangePlugin extends MelisTemplatingPlugin
      * Function to load the product price form
      *
      * @param $data
-     * @return \Zend\Form\ElementInterface
+     * @return \Laminas\Form\ElementInterface
      */
     private function loadProductPriceRangeForm($data)
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['product_price_range_form'];
         if (!empty($formConfig)) {

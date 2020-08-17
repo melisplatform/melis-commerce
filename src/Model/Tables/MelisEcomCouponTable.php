@@ -9,22 +9,28 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomCouponTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_coupon';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'coup_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'coup_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
+
     public function getCouponList($orderId, $clientId = null, $start = null, $limit = null, $order = null, $search = '')
     {
-        $select = $this->tableGateway->getSql()->select();    
+        $select = $this->getTableGateway()->getSql()->select();
         $clause = array();
         $select->quantifier('DISTINCT');
         $select->join('melis_ecom_coupon_order', 'melis_ecom_coupon_order.cord_coupon_id = melis_ecom_coupon.coup_id', array(), $select::JOIN_LEFT);
@@ -64,13 +70,13 @@ class MelisEcomCouponTable extends MelisEcomGenericTable
         }
         
 //         echo $select->getSqlString();die();
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
     
     public function getCouponByType($type, $orderId = null)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         $select->quantifier("DISTINCT");
         $select->join('melis_ecom_coupon_order', 'melis_ecom_coupon_order.cord_coupon_id = melis_ecom_coupon.coup_id', array(), $select::JOIN_LEFT);
         
@@ -84,7 +90,7 @@ class MelisEcomCouponTable extends MelisEcomGenericTable
             $select->where->equalTo('cord_order_id', $orderId);
         }
         
-        $resultSet = $this->tableGateway->selectWith($select);
+        $resultSet = $this->getTableGateway()->selectWith($select);
         
         return $resultSet;
     }

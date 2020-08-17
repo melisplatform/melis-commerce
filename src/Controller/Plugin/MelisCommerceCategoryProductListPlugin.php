@@ -11,9 +11,9 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
-use Zend\Session\Container;
-use Zend\Stdlib\ArrayUtils;
-use Zend\View\Model\ViewModel;
+use Laminas\Session\Container;
+use Laminas\Stdlib\ArrayUtils;
+use Laminas\View\Model\ViewModel;
 /**
  * This plugin implements the business logic of the
  * "categorySliderListProducts" plugin.
@@ -79,8 +79,8 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
         $prdOrder       = !empty($data['m_prd_order'])      ? $data['m_prd_order'] : 'ASC';
         $prdLimit       = !empty($data['m_prd_limit'])      ? $data['m_prd_limit'] : null;
         
-        $catSrv = $this->getServiceLocator()->get('MelisComCategoryService');
-        $prdSrv = $this->getServiceLocator()->get('MelisComProductService');
+        $catSrv = $this->getServiceManager()->get('MelisComCategoryService');
+        $prdSrv = $this->getServiceManager()->get('MelisComProductService');
         
         $cats = array();
         
@@ -139,8 +139,8 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
     public function createOptionsForms()
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
     
@@ -151,7 +151,7 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
             foreach ($formConfig as $formKey => $config)
             {
                 $form = $factory->createForm($config);
-                $request = $this->getServiceLocator()->get('request');
+                $request = $this->getServiceManager()->get('request');
                 $parameters = $request->getQuery()->toArray();
                 
                 if (!isset($parameters['validate']))
@@ -162,7 +162,7 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
                     $viewModelTab->modalForm = $form;
                     $viewModelTab->formData   = $this->getFormData();
                     
-                    $langTable = $this->getServiceLocator()->get('MelisEcomLangTable');
+                    $langTable = $this->getServiceManager()->get('MelisEcomLangTable');
                     $langData = $langTable->langOrderByName();
                     $recLangData = array();
                     foreach($langData as $data) 
@@ -179,7 +179,7 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
                     if($container) 
                     {
                         $locale = $container['melis-lang-locale'];
-                        $melisEcomLangTable = $this->getServiceLocator()->get('MelisEcomLangTable');
+                        $melisEcomLangTable = $this->getServiceManager()->get('MelisEcomLangTable');
                         $currentLangData = $melisEcomLangTable->getEntryByField('elang_locale', $locale)->current();
                         
                         if (!empty($currentLang))
@@ -192,7 +192,7 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
                     $viewModelTab->currentLangName = $currentLangName;
                     $viewModelTab->currentLangLocale = $locale;
                     
-                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
                         'name' => $config['tab_title'],
@@ -224,7 +224,7 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
                     {
                         if (empty($post['m_category_ids']))
                         {
-                            $translator = $this->getServiceLocator()->get('translator');
+                            $translator = $this->getServiceManager()->get('translator');
                             
                             $errors['m_category_ids'] = array(
                                 'label' => $translator->translate('tr_meliscommerce_plugin_category_product_list_category'),

@@ -11,9 +11,9 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
-use Zend\Session\Container;
-use Zend\View\Model\ViewModel;
-use Zend\Stdlib\ArrayUtils;
+use Laminas\Session\Container;
+use Laminas\View\Model\ViewModel;
+use Laminas\Stdlib\ArrayUtils;
 /**
  * This plugin implements the business logic of the
  * "checkoutConfirmSummary" plugin.
@@ -76,7 +76,7 @@ class MelisCommerceCheckoutConfirmSummaryPlugin extends MelisTemplatingPlugin
         /**
          * Login using the Commerce Athentication Service
          */
-        $melisComAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
+        $melisComAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
         $clientId = $melisComAuthSrv->getClientId();
         
         /**
@@ -97,7 +97,7 @@ class MelisCommerceCheckoutConfirmSummaryPlugin extends MelisTemplatingPlugin
          * )
          * 
          */
-        $melisComOrderCheckoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
+        $melisComOrderCheckoutService = $this->getServiceManager()->get('MelisComOrderCheckoutService');
         $melisComOrderCheckoutService->setSiteId($siteId);
         $checkoutAddOrderValidation = $melisComOrderCheckoutService->checkoutStep1_prePayment($clientId);
         
@@ -108,14 +108,14 @@ class MelisCommerceCheckoutConfirmSummaryPlugin extends MelisTemplatingPlugin
         }
         else
         {
-            $translator = $this->getServiceLocator()->get('translator');
+            $translator = $this->getServiceManager()->get('translator');
             foreach ($checkoutAddOrderValidation['errors'] As $key => $val)
             {
                 switch ($key)
                 {
                     case 'basket':
                         
-                        $melisComProductService = $this->getServiceLocator()->get('MelisComProductService');
+                        $melisComProductService = $this->getServiceManager()->get('MelisComProductService');
                         
                         $errors[$key] = array();
                         $prdName = '';
@@ -154,8 +154,8 @@ class MelisCommerceCheckoutConfirmSummaryPlugin extends MelisTemplatingPlugin
                         
                     case 'costs' :
                         
-                        $melisComVariantService = $this->getServiceLocator()->get('MelisComVariantService');
-                        $melisComProductService = $this->getServiceLocator()->get('MelisComProductService');
+                        $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
+                        $melisComProductService = $this->getServiceManager()->get('MelisComProductService');
                         
                         if (!empty($val['order']['errors']))
                         {
@@ -188,8 +188,8 @@ class MelisCommerceCheckoutConfirmSummaryPlugin extends MelisTemplatingPlugin
     public function createOptionsForms()
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
         
@@ -200,7 +200,7 @@ class MelisCommerceCheckoutConfirmSummaryPlugin extends MelisTemplatingPlugin
             foreach ($formConfig as $formKey => $config)
             {
                 $form = $factory->createForm($config);
-                $request = $this->getServiceLocator()->get('request');
+                $request = $this->getServiceManager()->get('request');
                 $parameters = $request->getQuery()->toArray();
                 
                 if (!isset($parameters['validate']))
@@ -211,7 +211,7 @@ class MelisCommerceCheckoutConfirmSummaryPlugin extends MelisTemplatingPlugin
                     $viewModelTab->modalForm = $form;
                     $viewModelTab->formData   = $this->getFormData();
                     
-                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
                         'name' => $config['tab_title'],

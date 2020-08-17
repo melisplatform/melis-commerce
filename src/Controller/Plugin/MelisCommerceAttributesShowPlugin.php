@@ -11,9 +11,9 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
-use Zend\Session\Container;
-use Zend\View\Model\ViewModel;
-use Zend\Stdlib\ArrayUtils;
+use Laminas\Session\Container;
+use Laminas\View\Model\ViewModel;
+use Laminas\Stdlib\ArrayUtils;
 /**
  * This plugin implements the business logic of the
  * "show attribute plugin" plugin.
@@ -72,7 +72,7 @@ class MelisCommerceAttributesShowPlugin extends MelisTemplatingPlugin
         $container = new Container('melisplugins');
         $lang = $container['melis-plugins-lang-id'];
         
-        $attributeSvc = $this->getServiceLocator()->get('MelisComAttributeService');
+        $attributeSvc = $this->getServiceManager()->get('MelisComAttributeService');
         // Array of attribute entities, refer to melis-commerce/src/entity/MelisAttribute
         $attributes = $attributeSvc->getUsedAttributeValuesByProductId($productId, true, $lang);
         
@@ -93,8 +93,8 @@ class MelisCommerceAttributesShowPlugin extends MelisTemplatingPlugin
     public function createOptionsForms()
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
         
@@ -105,7 +105,7 @@ class MelisCommerceAttributesShowPlugin extends MelisTemplatingPlugin
             foreach ($formConfig as $formKey => $config)
             {
                 $form = $factory->createForm($config);
-                $request = $this->getServiceLocator()->get('request');
+                $request = $this->getServiceManager()->get('request');
                 $parameters = $request->getQuery()->toArray();
                 
                 if (!isset($parameters['validate']))
@@ -116,7 +116,7 @@ class MelisCommerceAttributesShowPlugin extends MelisTemplatingPlugin
                     $viewModelTab->modalForm = $form;
                     $viewModelTab->formData   = $this->getFormData();
                     
-                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
                         'name' => $config['tab_title'],

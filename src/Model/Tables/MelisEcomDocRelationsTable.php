@@ -9,22 +9,28 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomDocRelationsTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_doc_relations';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'rdoc_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'rdoc_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
+
     public function getVariantsDocumentsById($variantId, $countryId = null)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         $select->columns(array('*'));
         $clause = array();
         
@@ -35,7 +41,7 @@ class MelisEcomDocRelationsTable extends MelisEcomGenericTable
         
         $clause['melis_ecom_doc_relations.rdoc_variant_id'] = (int) $variantId;
     
-        $resultSet = $this->tableGateway->selectwith($select);
+        $resultSet = $this->getTableGateway()->selectwith($select);
     
         return $resultSet;
 
@@ -44,7 +50,7 @@ class MelisEcomDocRelationsTable extends MelisEcomGenericTable
     
     public function getProductDefaultImageByProductId($productId = null, $countryId = null){
         
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         $select->join('melis_ecom_document', 'melis_ecom_document.doc_id = melis_ecom_doc_relations.rdoc_doc_id',
                         array('*'), $select::JOIN_LEFT);
@@ -61,7 +67,7 @@ class MelisEcomDocRelationsTable extends MelisEcomGenericTable
         
         $select->where('dtype_code = "DEFAULT"');
         
-        $resultSet = $this->tableGateway->selectwith($select);
+        $resultSet = $this->getTableGateway()->selectwith($select);
         
         $docData = $resultSet->current();
         
@@ -78,8 +84,8 @@ class MelisEcomDocRelationsTable extends MelisEcomGenericTable
     }
     
     public function getDocumentDefaultData($docParentId){
-        $select = $this->tableGateway->getSql()->select();
-        $resultSet = $this->tableGateway->selectwith($select);
+        $select = $this->getTableGateway()->getSql()->select();
+        $resultSet = $this->getTableGateway()->selectwith($select);
         
         $select->join('melis_ecom_document', 'melis_ecom_document.doc_id = melis_ecom_doc_relations.rdoc_doc_id',
             array('*'), $select::JOIN_LEFT);
@@ -95,7 +101,7 @@ class MelisEcomDocRelationsTable extends MelisEcomGenericTable
     
     public function getOneProductImageByProductId($productId){
     
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
     
         $select->join('melis_ecom_document', 'melis_ecom_document.doc_id = melis_ecom_doc_relations.rdoc_doc_id',
             array('*'), $select::JOIN_LEFT);
@@ -110,7 +116,7 @@ class MelisEcomDocRelationsTable extends MelisEcomGenericTable
         
         $select->limit(1);
         
-        $resultSet = $this->tableGateway->selectwith($select);
+        $resultSet = $this->getTableGateway()->selectwith($select);
         return $resultSet;
     }
 }

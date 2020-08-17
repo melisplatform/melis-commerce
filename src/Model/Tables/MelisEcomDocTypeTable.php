@@ -9,17 +9,22 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomDocTypeTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_doc_type';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'dtype_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'dtype_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
 }

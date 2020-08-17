@@ -1,118 +1,124 @@
 <?php
-return array(
-    'plugins' => array(
-        'meliscommerce' => array(
-            'conf' => array(
+
+/**
+ * Melis Technology (http://www.melistechnology.com)
+ *
+ * @copyright Copyright (c) 2016 Melis Technology (http://www.melistechnology.com)
+ *
+ */
+
+return [
+    'plugins' => [
+        'meliscommerce' => [
+            'conf' => [
                 'id' => 'id_meliscommerce_currency',
                 'name' => 'tr_meliscommerce_currency',
-            ),  
-            'ressources' => array(
-                'js' => array(
+            ],
+            'ressources' => [
+                'js' => [
                     '/MelisCommerce/js/tools/ecomCurrency.tool.js',
-                ),
-                'css' => array(),
-            ),
-            'interface' => array(
-                'meliscommerce_currency_lists' => array(
-                    'interface' => array(
-                        'meliscommerce_currency_left_menu' => array(
-                            'conf' => array(
+                ],
+                'css' => [],
+            ],
+            'interface' => [
+                'meliscommerce_currency_lists' => [
+                    'interface' => [
+                        'meliscommerce_currency_left_menu' => [
+                            'conf' => [
                                 'id' => 'id_meliscommerce_currency_conf',
                                 'melisKey' => 'meliscommerce_currency_conf',
                                 'name' => 'tr_meliscommerce_currencies',
                                 'icon' => 'fa fa-euro',
                                 'rights_checkbox_disable' => true,
-                            ),
-                        ),
-                        'meliscommerce_currency_conf' => array(
-                            'conf' => array(
+                            ],
+                        ],
+                        'meliscommerce_currency_conf' => [
+                            'conf' => [
                                 'id' => 'id_meliscommerce_currency_conf',
                                 'melisKey' => 'meliscommerce_currency_conf',
                                 'name' => 'tr_meliscommerce_currency',
-                            ),
-                            'forward' => array(
+                            ],
+                            'forward' => [
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComCurrency',
                                 'action' => 'render-currency-container',
-                            ),
-                            'interface' => array(
-                                'meliscommerce_currency_header'=> array(
-                                    'conf' => array(
+                            ],
+                            'interface' => [
+                                'meliscommerce_currency_header'=> [
+                                    'conf' => [
                                         'id' => 'id_meliscommerce_currency_header',
                                         'melisKey' => 'meliscommerce_currency_header',
                                         'name' => 'tr_meliscommerce_currency_header',
-                                    ),
-                                    'forward' => array(
+                                    ],
+                                    'forward' => [
                                         'module' => 'MelisCommerce',
                                         'controller' => 'MelisComCurrency',
                                         'action' => 'render-currency-header',
-                                    ),
-                                    'interface' => array(
-                                        'meliscommerce_currency_header_add'=> array(
-                                            'conf' => array(
+                                    ],
+                                    'interface' => [
+                                        'meliscommerce_currency_header_add'=> [
+                                            'conf' => [
                                                 'id' => 'id_meliscommerce_currency_header_add',
                                                 'melisKey' => 'meliscommerce_currency_header_add',
                                                 'name' => 'tr_meliscommerce_currency_form_add',
-                                            ),
-                                            'forward' => array(
+                                            ],
+                                            'forward' => [
                                                 'module' => 'MelisCommerce',
                                                 'controller' => 'MelisComCurrency',
                                                 'action' => 'render-currency-header-add',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'meliscommerce_currency_content' => array(
-                                    'conf' => array(
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'meliscommerce_currency_content' => [
+                                    'conf' => [
                                         'id' => 'id_meliscommerce_currency_content',
                                         'melisKey' => 'meliscommerce_currency_content',
                                         'name' => 'tr_meliscommerce_currency_content',
-                                    ),
-                                    'forward' => array(
+                                    ],
+                                    'forward' => [
                                         'module' => 'MelisCommerce',
                                         'controller' => 'MelisComCurrency',
                                         'action' => 'render-currency-content',
-                                    ),
-                                    'interface' => array(
+                                    ],
+                                    'interface' => [
                                         
-                                    ),
-                                ),
+                                    ],
+                                ],
                                 
-                                'meliscommerce_currency_content_modal_container' => array(
-                                    'conf' => array(
+                                'meliscommerce_currency_content_modal_container' => [
+                                    'conf' => [
                                         'id' => 'id_meliscommerce_currency_content_modal_container',
                                         'melisKey' => 'meliscommerce_currency_content_modal_container',
                                         'name' => 'tr_meliscommerce_currency_modal'
-                                    ),
-                                    'forward' => array(
+                                    ],
+                                    'forward' => [
                                         'module' => 'MelisCommerce',
                                         'controller' => 'MelisComCurrency',
                                         'action' => 'render-currency-modal-container',
                                 
-                                    ),
-                                    'interface' => array(
-                                        'meliscommerce_currency_content_modal_form' => array(
-                                            'conf' => array(
+                                    ],
+                                    'interface' => [
+                                        'meliscommerce_currency_content_modal_form' => [
+                                            'conf' => [
                                                 'id' => 'id_meliscommerce_currency_content_modal_form',
                                                 'melisKey' => 'meliscommerce_currency_content_modal_form',
                                                 'name' => 'tr_meliscommerce_currency_modal'
-                                            ),
-                                            'forward' => array(
+                                            ],
+                                            'forward' => [
                                                 'module' => 'MelisCommerce',
                                                 'controller' => 'MelisComCurrency',
                                                 'action' => 'render-currency-modal-form',
                                                 'jscallback' => 'initProductSwitch();'
-                                            ),
-                                        )
-                                    )
-                                ),
-                            ),
-                            
-                        ),
-                    ),
-                ),
-            ),
-        
-        ),
-    ),
-);
+                                            ],
+                                        ]
+                                    ]
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
+];

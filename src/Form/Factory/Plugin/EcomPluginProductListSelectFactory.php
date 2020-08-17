@@ -9,17 +9,15 @@
 namespace MelisCommerce\Form\Factory\Plugin;
 
 
+use Laminas\ServiceManager\ServiceManager;
 use MelisCore\Form\Factory\MelisSelectFactory;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Session\Container;
+use Laminas\Session\Container;
 
 class EcomPluginProductListSelectFactory extends MelisSelectFactory
 {
-    protected function loadValueOptions(ServiceLocatorInterface $formElementManager)
+    protected function loadValueOptions(ServiceManager $serviceManager)
     {
-        $valueoptions = array();
-
-        $serviceManager = $formElementManager->getServiceLocator();
+        $valueoptions = [];
 
         $productTble = $serviceManager->get('MelisEcomProductTable');
         $container = new Container('meliscore');

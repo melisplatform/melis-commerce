@@ -9,27 +9,23 @@
 
 namespace MelisCommerce\Listener;
 
-use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\ListenerAggregateInterface;
+use Laminas\EventManager\EventManagerInterface;
+use Laminas\EventManager\ListenerAggregateInterface;
+use MelisCore\Listener\MelisGeneralListener;
 
-use MelisCore\Listener\MelisCoreGeneralListener;
-
-class MelisCommerceSaveAttributeListener extends MelisCoreGeneralListener implements ListenerAggregateInterface
+class MelisCommerceSaveAttributeListener extends MelisGeneralListener implements ListenerAggregateInterface
 {
-    public function attach(EventManagerInterface $events)
+    public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $sharedEvents      = $events->getSharedManager();
-        
-        $callBackHandler = $sharedEvents->attach(
+        $this->attachEventListener(
+            $events,
             'MelisCommerce',
-            array(
-                'meliscommerce_attribute_save_start'
-            ),
+            'meliscommerce_attribute_save_start',
         	function($e){
         	    
-        		$sm = $e->getTarget()->getServiceLocator();   	
+        		$sm = $e->getTarget()->getServiceManager();
         		$params = $e->getParams();
-        		$paramData = array();
+        		$paramData = [];
         		if(isset($params['data'])) {
         		    $paramData = $params['data'];
         		}
@@ -41,8 +37,8 @@ class MelisCommerceSaveAttributeListener extends MelisCoreGeneralListener implem
         		    'meliscommerce',
         		    'attribute-valid-data',
         		    'MelisCommerce\Controller\MelisComAttribute',
-        		    array('action' => 'validateAttributeForm')
-        		    );
+        		    ['action' => 'validateAttributeForm']
+                );
         		
         		if(!$success)
         		    return;        		
@@ -52,7 +48,7 @@ class MelisCommerceSaveAttributeListener extends MelisCoreGeneralListener implem
     		        'meliscommerce',
     		        'attribute-valid-data',
     		        'MelisCommerce\Controller\MelisComAttribute',
-    		        array('action' => 'validateAttributeTransForm')
+    		        ['action' => 'validateAttributeTransForm']
 		        );
     		    
     		    if(!$success)
@@ -63,15 +59,13 @@ class MelisCommerceSaveAttributeListener extends MelisCoreGeneralListener implem
 		            'meliscommerce',
 		            'attribute-valid-data',
 		            'MelisCommerce\Controller\MelisComAttribute',
-		            array('action' => 'saveAttributeData')
-		            );
+		            ['action' => 'saveAttributeData']
+                );
 		         
 		        if(!$success)
 		            return;
-		        
         	},
-        100);
-        
-        $this->listeners[] = $callBackHandler;
+        100
+        );
     }
 }

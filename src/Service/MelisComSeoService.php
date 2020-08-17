@@ -9,7 +9,7 @@
 
 namespace MelisCommerce\Service;
 
-use Zend\View\Model\JsonModel;
+use Laminas\View\Model\JsonModel;
 
 /**
  * MelisCommerce SEO Service
@@ -24,7 +24,7 @@ class MelisComSeoService extends MelisComGeneralService
      * @param String $type
      * @param Array $seoPostValues
      * 
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function validateSEOData($type, $seoPostValues)
     {
@@ -38,28 +38,28 @@ class MelisComSeoService extends MelisComGeneralService
         $type = strtolower($arrayParameters['type']);
         $seoPostValues = $arrayParameters['seoPostValues'];
         
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         $success = 0;
         $errors = array();
         $seoData = array();
         
         // Getting Commerce Languages
-        $ecomLangtable = $this->serviceLocator->get('MelisEcomLangTable');
+        $ecomLangtable = $this->getServiceManager()->get('MelisEcomLangTable');
         $ecomLang = $ecomLangtable->fetchAll()->toArray();
         
         $hasManyLang = (count($ecomLang)>1) ? true : false;
         
-        $ecomSeotable = $this->serviceLocator->get('MelisEcomSeoTable');
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $ecomSeotable = $this->getServiceManager()->get('MelisEcomSeoTable');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_seo/meliscommerce_seo_form','meliscommerce_seo_form');
         
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         
         $appConfigFormElements = $appConfigForm['elements'];
         
-        $ecomLangtable = $this->serviceLocator->get('MelisEcomLangTable');
+        $ecomLangtable = $this->getServiceManager()->get('MelisEcomLangTable');
         
         $seoErrors = array();
         foreach ($seoPostValues As $key => $val)
@@ -186,7 +186,7 @@ class MelisComSeoService extends MelisComGeneralService
         $successFlag = true;
         
         // Service implementation start
-        $ecomSeotable = $this->serviceLocator->get('MelisEcomSeoTable');
+        $ecomSeotable = $this->getServiceManager()->get('MelisEcomSeoTable');
         
         foreach ($arrayParameters['seoData'] As $val)
         {
@@ -251,8 +251,8 @@ class MelisComSeoService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_save_seo_start', $arrayParameters);
         $successFlag = false;
         // Service implementation start
-        $ecomSeotable = $this->serviceLocator->get('MelisEcomSeoTable');
-        $enginePage = $this->getServiceLocator()->get('MelisEngineTree');
+        $ecomSeotable = $this->getServiceManager()->get('MelisEcomSeoTable');
+        $enginePage = $this->getServiceManager()->get('MelisEngineTree');
         
         $seo = $arrayParameters['seo'];
         $seoId = $arrayParameters['seoId'];
@@ -307,7 +307,7 @@ class MelisComSeoService extends MelisComGeneralService
         
         if (!is_null($type)&&!is_null($typeId))
         {
-            $ecomSeotable = $this->serviceLocator->get('MelisEcomSeoTable');
+            $ecomSeotable = $this->getServiceManager()->get('MelisEcomSeoTable');
             $seo = $ecomSeotable->getEntryByField('eseo_'.$type.'_id', $typeId);
             
             foreach ($seo As $val)

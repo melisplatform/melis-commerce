@@ -9,7 +9,7 @@
 
 namespace MelisCommerce\Service;
 
-use Zend\Session\Container;
+use Laminas\Session\Container;
 
 /**
  *
@@ -71,9 +71,9 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_checkout_basket_validate_start', $arrayParameters);
         
         // Variant Service Manager
-        $melisComVariantService = $this->getServiceLocator()->get('MelisComVariantService');
+        $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
         // Get the basket from the BasketService
-        $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
+        $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
         $clientBasket = $melisComBasketService->getBasket($arrayParameters['clientId']);
         
         $container = new Container('meliscommerce');
@@ -349,10 +349,10 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         );
         
         // Product and Variant Service managers
-        $melisComProductService = $this->getServiceLocator()->get('MelisComProductService');
-        $melisComVariantService = $this->getServiceLocator()->get('MelisComVariantService');
+        $melisComProductService = $this->getServiceManager()->get('MelisComProductService');
+        $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
         
-        $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
+        $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
         $clientBasket = $melisComBasketService->getBasket($arrayParameters['clientId']);
 
         // computation of variants based on price_net and quantity
@@ -604,10 +604,10 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         
         $orderReferenceCode = $this->generateOrderRefernceCode();
         
-        $melisComOrderService = $this->getServiceLocator()->get('MelisComOrderService');
-        $melisComCouponService = $this->getServiceLocator()->get('MelisComCouponService');
-        $melisEcomCouponProductTable = $this->getServiceLocator()->get('MelisEcomCouponProductTable');
-        $melisEcomProductTable = $this->getServiceLocator()->get('MelisEcomProductTable');
+        $melisComOrderService = $this->getServiceManager()->get('MelisComOrderService');
+        $melisComCouponService = $this->getServiceManager()->get('MelisComCouponService');
+        $melisEcomCouponProductTable = $this->getServiceManager()->get('MelisEcomCouponProductTable');
+        $melisEcomProductTable = $this->getServiceManager()->get('MelisEcomProductTable');
         
         $success = false;
         if ($basketValidity && $addressesValidity && $costsValidity && $orderReferenceCode['success'])
@@ -667,7 +667,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             $deliveryAdd['oadd_creation_date'] = date('Y-m-d H:i:s');
             $deliveryAddress[] = $deliveryAdd;
             
-            $melisEcomClientPersonTable = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
+            $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
             $clientMainPerson = $melisEcomClientPersonTable->getClientMainPersonByClientId($container['checkout'][$this->siteId]['clientId'])->current();
             
             $contactId = $container['checkout'][$this->siteId]['contactId'];
@@ -689,10 +689,10 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             $containerPlugin = new Container('melisplugins');
             $langId = $containerPlugin['melis-plugins-lang-id'];
             
-            $melisComProductService = $this->getServiceLocator()->get('MelisComProductService');
-            $melisComVariantService = $this->getServiceLocator()->get('MelisComVariantService');
-            $melisComCategoryService = $this->getServiceLocator()->get('MelisComCategoryService');
-            $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
+            $melisComProductService = $this->getServiceManager()->get('MelisComProductService');
+            $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
+            $melisComCategoryService = $this->getServiceManager()->get('MelisComCategoryService');
+            $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
             
             $clientBasket = $melisComBasketService->getBasket($container['checkout'][$this->siteId]['clientId']);
             
@@ -933,7 +933,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
 
         if ($arrayParameters['results']['success'] && !empty($arrayParameters['results']['orderId']))
         {
-            $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
+            $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
             $orderDetails = $melisEcomOrderTable->getEntryById($arrayParameters['results']['orderId'])->current();
 
             // Checking if the Order is existing
@@ -972,7 +972,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                     /**
                      * Retreiving Payment Type Id
                      */
-                    $paymentTypeTbl = $this->getServiceLocator()->get('MelisEcomOrderPaymentTypeTable');
+                    $paymentTypeTbl = $this->getServiceManager()->get('MelisEcomOrderPaymentTypeTable');
                     $paymentType = $paymentTypeTbl->getEntryByField('opty_code', $paymentData['paymentType'])->current();
                     $paymentTypeId = null;
                     if (!empty($paymentType))
@@ -984,7 +984,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                      * Retrieving the Currency of the payment 
                      * using the Currency code return by third party payment gateway
                      */
-                    $melisEcomCurrencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+                    $melisEcomCurrencyTable = $this->getServiceManager()->get('MelisEcomCurrencyTable');
                     $currency = $melisEcomCurrencyTable->getEntryByField('cur_code', $paymentData['transactionCourrencyCode'])->current();
                     
                     $currencyId = '-1';
@@ -1012,18 +1012,18 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                     unset($arrayParameters['results']['payment_details']['transactionPricepaidConfirm']);
                     unset($arrayParameters['results']['payment_details']['transactionCountryId']);
                     
-                    $melisEcomOrderPaymentTable = $this->getServiceLocator()->get('MelisEcomOrderPaymentTable');
+                    $melisEcomOrderPaymentTable = $this->getServiceManager()->get('MelisEcomOrderPaymentTable');
                     $melisEcomOrderPaymentTable->save($payment);
                     
                     // Save order
                     $melisEcomOrderTable->save($orderData, $arrayParameters['results']['orderId']);
                     
                     // Deduct Quantity of the Product/Variant
-                    $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
+                    $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
                     $clientBasket = $melisComBasketService->getBasket($arrayParameters['results']['clientId']);
                     
-                    $melisComVariantService = $this->getServiceLocator()->get('MelisComVariantService');
-                    $melisEcomVariantStockTable = $this->getServiceLocator()->get('MelisEcomVariantStockTable');
+                    $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
+                    $melisEcomVariantStockTable = $this->getServiceManager()->get('MelisEcomVariantStockTable');
                     
                     if (!is_null($clientBasket))
                     {
@@ -1046,9 +1046,9 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                     }
                     
                     // Use update coupon to used
-                    $couponOrderTable = $this->getServiceLocator()->get('MelisEcomCouponOrderTable');
+                    $couponOrderTable = $this->getServiceManager()->get('MelisEcomCouponOrderTable');
                     $usedOrderCoupons = $couponOrderTable->getEntryByField('cord_order_id', $orderId);
-                    $couponSrv = $this->getServiceLocator()->get('MelisComCouponService');
+                    $couponSrv = $this->getServiceManager()->get('MelisComCouponService');
                     
                     foreach($usedOrderCoupons as $orderCoupon){
                         $couponEntity = $couponSrv->getCouponById($orderCoupon->cord_coupon_id);
@@ -1059,7 +1059,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                     }
                     
                     // Empty Client Basket
-                    $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
+                    $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
                     $melisComBasketService->emptyBasket($arrayParameters['results']['clientId']);
                 }
             }
@@ -1082,7 +1082,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             'success' => true,
         );
         
-        $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
+        $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
         
         do {
             $orderReferenceCode = substr(str_shuffle(str_repeat("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 10)), 0, 10);
@@ -1238,7 +1238,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         );
         
         // Order service manager
-        $orderService = $this->getServiceLocator()->get('MelisComOrderService');
+        $orderService = $this->getServiceManager()->get('MelisComOrderService');
         $basket = $orderService->getOrderBasketByOrderId($arrayParameters['orderId']);
 
         // computation of variants based on price_net and quantity
@@ -1340,7 +1340,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             ),
         );
         
-        $orderService = $this->getServiceLocator()->get('MelisComOrderService');
+        $orderService = $this->getServiceManager()->get('MelisComOrderService');
         
         $shipments = $orderService->getOrderShippingByOrderId($arrayParameters['orderId']);
         $shippingDetails = array();
@@ -1403,8 +1403,8 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         $coupon = array();
         $prodCoupons = array();
         
-        $couponTable = $this->getServiceLocator()->get('MelisEcomCouponTable');
-        $couponProdTable = $this->getServiceLocator()->get('MelisEcomCouponProductTable');
+        $couponTable = $this->getServiceManager()->get('MelisEcomCouponTable');
+        $couponProdTable = $this->getServiceManager()->get('MelisEcomCouponProductTable');
         
         if(!empty($arrayParameters['couponCode'])){
             
@@ -1461,7 +1461,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                             if ($coupon->coup_type == '1'){
                                 
                                 // Checking if Client is assigned to this couponId
-                                $melisEcomCouponClientTable = $this->getServiceLocator()->get('MelisEcomCouponClientTable');
+                                $melisEcomCouponClientTable = $this->getServiceManager()->get('MelisEcomCouponClientTable');
                                 $couponClient = $melisEcomCouponClientTable->checkCouponClientExist($coupon->coup_id, $arrayParameters['clientId']);
                             
                                 if (empty($couponClient->current())){

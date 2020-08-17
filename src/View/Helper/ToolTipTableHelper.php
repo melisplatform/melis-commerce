@@ -1,7 +1,7 @@
 <?php
 namespace MelisCommerce\View\Helper;
 
-use Zend\View\Helper\AbstractHelper;
+use Laminas\View\Helper\AbstractHelper;
 
 /**
  * This class helps you create and render to a configurable HTML Table

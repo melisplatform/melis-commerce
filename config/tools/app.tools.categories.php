@@ -1,85 +1,92 @@
 <?php
 
-return array(
-    'plugins' => array(
-        'meliscommerce' => array(
-            'tools' => array(   
-                'meliscommerce_categories' => array(   
-                    'conf' => array(
+/**
+ * Melis Technology (http://www.melistechnology.com)
+ *
+ * @copyright Copyright (c) 2016 Melis Technology (http://www.melistechnology.com)
+ *
+ */
+
+return [
+    'plugins' => [
+        'meliscommerce' => [
+            'tools' => [
+                'meliscommerce_categories' => [
+                    'conf' => [
                         'title' => 'tr_meliscommerce_categories_tool_title',
                         'id' => 'id_meliscommerce_categories',
-                    ),
-                    'table' => array(
+                    ],
+                    'table' => [
                         // table ID
                         'target' => '#categoryProductListTbl',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComCategory/getCategoryProductList',
                         'dataFunction' => 'initCategoryProducts',
                         'ajaxCallback' => 'initCategoryProductsImgs();',
-                        'filters' => array(
-                            'left' => array(),
-                            'center' => array(),
-                            'right' => array(
-                                'category-product-list-export' => array(
+                        'filters' => [
+                            'left' => [],
+                            'center' => [],
+                            'right' => [
+                                'category-product-list-export' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComCategory',
                                     'action' => 'render-category-product-list-export',
-                                ),
-                                'category-product-list-refresh' => array(
+                                ],
+                                'category-product-list-refresh' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComCategory',
                                     'action' => 'render-category-product-list-refresh',
-                                ),
-                            ),
-                        ),
-                        'columns' => array(
-                            'pcat_order' => array(
+                                ],
+                            ],
+                        ],
+                        'columns' => [
+                            'pcat_order' => [
                                 'text' => '<i class="fa fa-plus"> </i> ',
-                                'css' => array('width' => '1%', 'visible' => false),
+                                'css' => ['width' => '1%', 'visible' => false],
                                 'sortable' => true,
-                            ),
-                            'prd_id' => array(
+                            ],
+                            'prd_id' => [
                                 'text' => 'tr_meliscommerce_categories_category_prd_id',
-                                'css' => array('width' => '1%'),
+                                'css' => ['width' => '1%'],
                                 'sortable' => false,
-                            ),
-                            'prd_img' => array(
+                            ],
+                            'prd_img' => [
                                 'text' => 'tr_meliscommerce_categories_category_prd_img',
-                                'css' => array('width' => '5%'),
+                                'css' => ['width' => '5%'],
                                 'sortable' => false,
-                            ),
-                            'prd_status' => array(
+                            ],
+                            'prd_status' => [
                                 'text' => 'tr_meliscommerce_categories_category_prd_status',
-                                'css' => array('width' => '1%'),
+                                'css' => ['width' => '1%'],
                                 'sortable' => false,
-                            ),
-                            'prd_name' => array(
+                            ],
+                            'prd_name' => [
                                 'text' => 'tr_meliscommerce_categories_category_prd_name',
-                                'css' => array('width' => '30%'),
+                                'css' => ['width' => '30%'],
                                 'sortable' => false,
-                            ),
-                            'prd_date_creation' => array(
+                            ],
+                            'prd_date_creation' => [
                                 'text' => 'tr_meliscommerce_categories_category_prd_date_creation',
-                                'css' => array('width' => '1%'),
+                                'css' => ['width' => '1%'],
                                 'sortable' => false,
-                            ),
-                        ),
+                            ],
+                        ],
                         // define what columns can be used in searching
-                        'searchables' => array(),
-                        'actionButtons' => array(
-                            'edit' => array(
+                        'searchables' => [],
+                        'actionButtons' => [
+                            'edit' => [
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComCategory',
                                 'action' => 'render-category-product-list-view',
-                            ),
-                            'delete' => array(
+                            ],
+                            'delete' => [
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComCategory',
                                 'action' => 'render-category-product-list-remove',
-                            ),
-                        )
-                    ),
-                ), // end 
-            ),
-        ),
-    ),
-);
+                            ],
+                        ]
+                    ],
+                ], // end
+            ],
+        ],
+    ],
+];

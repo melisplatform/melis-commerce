@@ -9,18 +9,16 @@
 
 namespace MelisCommerce\Form\Factory\Plugin;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
-use MelisCommerce\Form\Factory\EcomSelectFactory;
+use Laminas\ServiceManager\ServiceManager;
+use MelisCore\Form\Factory\MelisSelectFactory;
 
 /**
  * MelisCommerce Plugin Select Delivery Address
  */
-class EcomPluginBillingAddressSelectFactory extends EcomSelectFactory
+class EcomPluginBillingAddressSelectFactory extends MelisSelectFactory
 {
-    protected function loadValueOptions(ServiceLocatorInterface $formElementManager)
+    protected function loadValueOptions(ServiceManager $serviceManager)
     {
-        $serviceManager = $formElementManager->getServiceLocator();
-
         // user parameter
         $clientId         = null;
         $personId         = null;
@@ -28,10 +26,9 @@ class EcomPluginBillingAddressSelectFactory extends EcomSelectFactory
         $melisComAuthSrv  = $serviceManager->get('MelisComAuthenticationService');
         $translator       = $serviceManager->get('translator');
 
-        if($melisComAuthSrv->hasIdentity()) {
+        if($melisComAuthSrv->hasIdentity())
             $personId =  (int) $melisComAuthSrv->getPersonId();
-        }
-        
+
         $options = array();
         if(!is_null($personId)){
             $ecomAddresData = $clientSrv->getClientAddressesByClientPersonId($personId, 'BIL');
@@ -46,5 +43,4 @@ class EcomPluginBillingAddressSelectFactory extends EcomSelectFactory
 
         return $options;
     }
-
 }

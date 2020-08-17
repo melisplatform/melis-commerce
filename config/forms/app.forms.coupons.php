@@ -1,243 +1,251 @@
 <?php
-return array(
-    'plugins' => array(
-        'meliscommerce' => array(
-            'forms' => array(
-                'meliscommerce_coupon' => array(
-                    'meliscommerce_coupon_general_data' => array(
-                        'attributes' => array(
+
+/**
+ * Melis Technology (http://www.melistechnology.com)
+ *
+ * @copyright Copyright (c) 2016 Melis Technology (http://www.melistechnology.com)
+ *
+ */
+
+return [
+    'plugins' => [
+        'meliscommerce' => [
+            'forms' => [
+                'meliscommerce_coupon' => [
+                    'meliscommerce_coupon_general_data' => [
+                        'attributes' => [
                             'name' => 'coupon',
                             'id' => '',
                             'method' => 'POST',
                             'action' => '',
-                        ),
-                        'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
-                        'elements' => array(                           
-                            array(
-                                'spec' => array(
+                        ],
+                        'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                        'elements' => [
+                            [
+                                'spec' => [
                                     'name' => 'coup_code',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_coupon_code',
                                         'tooltip' => 'tr_meliscommerce_coupon_code tooltip',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'coup_code',
                                         'required' => 'required',
-                                    ),
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'coup_date_valid_start',
                                     'type' => 'DateField',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_coupon_date_start',
                                         'tooltip' => 'tr_meliscommerce_coupon_date_start tooltip',
                                         'class' => 'd-flex flex-row justify-content-between'
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'dateId' => 'couponStart',
                                         'dateLabel' => 'tr_meliscommerce_coupon_date_start',
-                                    ),
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'coup_id',
                                     'type' => 'hidden',
-                                    'options' => array(
-                                    ),
-                                    'attributes' => array(
+                                    'options' => [
+                                    ],
+                                    'attributes' => [
                                         'id' => '',
-                                    ),
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'coup_date_valid_end',
                                     'type' => 'DateField',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_coupon_date_end',
                                         'tooltip' => 'tr_meliscommerce_coupon_date_end tooltip',
                                         'class' => 'd-flex flex-row justify-content-between'
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'dateId' => 'couponEnd',
                                         'dateLabel' => 'tr_meliscommerce_coupon_date_end',
-                                    ),
-                                ),
-                            ),                           
-                        ),
-                        'input_filter' => array(
-                            'coup_code' => array(
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'input_filter' => [
+                            'coup_code' => [
                                 'name'     => 'coup_code',
                                 'required' => true,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name' => 'NotEmpty',
-                                        'options' => array(
-                                            'messages' => array(
-                                                \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_coupon_input_empty',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                        ),
-                    ),
-                    'meliscommerce_coupon_values' => array(
-                        'attributes' => array(
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_coupon_input_empty',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                        ],
+                    ],
+                    'meliscommerce_coupon_values' => [
+                        'attributes' => [
                             'name' => 'couponValues',
                             'id' => '',
                             'method' => 'POST',
                             'action' => '',
-                        ),
-                        'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
-                        'elements' => array(                            
-                            array(
-                                'spec' => array(
+                        ],
+                        'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                        'elements' => [
+                            [
+                                'spec' => [
                                     'name' => 'coup_percentage',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_coupon_percent',
                                         'tooltip' => 'tr_meliscommerce_coupon_percent tooltip',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => '',
-                                    ),
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'coup_discount_value',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_coupon_discount',
                                         'tooltip' => 'tr_meliscommerce_coupon_discount tooltip',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => '',
-                                    ),
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'coup_current_use_number',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_coupon_used',
                                         'tooltip' => 'tr_meliscommerce_coupon_used tooltip',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => '',
-                                    ),
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'coup_max_use_number',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_coupon_max',
                                         'tooltip' => 'tr_meliscommerce_coupon_max tooltip',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => '',
                                         'required' => 'required',
-                                    ),
-                                ),
-                            ),
-                        ),
-                        'input_filter' => array(
-                            'coup_percentage' => array(
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'input_filter' => [
+                            'coup_percentage' => [
                                 'name'     => 'coup_percentage',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
-                                        'name'    => '\Zend\I18n\Validator\IsFloat',
-                                        'options' => array(
-                                            'messages'=> array(
-                                                \Zend\I18n\Validator\IsFloat::NOT_FLOAT  => 'tr_meliscommerce_coupon_input_invalid_decimal'
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'coup_discount_value' => array(
+                                'validators' => [
+                                    [
+                                        'name'    => '\Laminas\I18n\Validator\IsFloat',
+                                        'options' => [
+                                            'messages'=> [
+                                                \Laminas\I18n\Validator\IsFloat::NOT_FLOAT  => 'tr_meliscommerce_coupon_input_invalid_decimal'
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'coup_discount_value' => [
                                 'name'     => 'coup_discount_value',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
-                                        'name'    => '\Zend\I18n\Validator\IsFloat',
-                                        'options' => array(
-                                            'messages'=> array(
-                                                \Zend\I18n\Validator\IsFloat::NOT_FLOAT  => 'tr_meliscommerce_coupon_input_invalid_decimal'
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'coup_current_use_number' => array(
+                                'validators' => [
+                                    [
+                                        'name'    => '\Laminas\I18n\Validator\IsFloat',
+                                        'options' => [
+                                            'messages'=> [
+                                                \Laminas\I18n\Validator\IsFloat::NOT_FLOAT  => 'tr_meliscommerce_coupon_input_invalid_decimal'
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'coup_current_use_number' => [
                                 'name'     => 'coup_current_use_number',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
-                                        'name'    => '\Zend\I18n\Validator\IsInt',
-                                        'options' => array(
-                                            'messages'=> array(
-                                                \Zend\I18n\Validator\IsInt::NOT_INT   => 'tr_meliscommerce_coupon_input_invalid_digit',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'coup_max_use_number' => array(
+                                'validators' => [
+                                    [
+                                        'name'    => '\Laminas\I18n\Validator\IsInt',
+                                        'options' => [
+                                            'messages'=> [
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT   => 'tr_meliscommerce_coupon_input_invalid_digit',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'coup_max_use_number' => [
                                 'name'     => 'coup_max_use_number',
                                 'required' => true,
-                                'validators' => array(
-                                    array(
-                                        'name'    => '\Zend\I18n\Validator\IsInt',
-                                        'options' => array(
-                                            'messages'=> array(
-                                                \Zend\I18n\Validator\IsInt::NOT_INT   => 'tr_meliscommerce_coupon_input_invalid_digit',
-                                            ),
-                                        ),
-                                    ),
-                                    array(
+                                'validators' => [
+                                    [
+                                        'name'    => '\Laminas\I18n\Validator\IsInt',
+                                        'options' => [
+                                            'messages'=> [
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT   => 'tr_meliscommerce_coupon_input_invalid_digit',
+                                            ],
+                                        ],
+                                    ],
+                                    [
                                         'name' => 'NotEmpty',
-                                        'options' => array(
-                                            'messages' => array(
-                                                \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_coupon_input_empty',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                        ),
-                    ),
-                ),
-            ),            
-        ),
-    ),
-);
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_coupon_input_empty',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
+];

@@ -9,29 +9,29 @@
 
 namespace MelisCommerce\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
+use Laminas\View\Model\ViewModel;
+use MelisCore\Controller\MelisAbstractActionController;
 
-class MelisComSeoController extends AbstractActionController
+class MelisComSeoController extends MelisAbstractActionController
 {
     /**
      * This method Render SEO plugin
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderSeoPluginAction()
     {
         $view = new ViewModel();
-        $translator = $this->serviceLocator->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
         // Getting Type of the request
         $zoneConfig = $this->params()->fromRoute('zoneconfig', array());
         
         // Category SEO Form
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_seo/meliscommerce_seo_form','meliscommerce_seo_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $propertyForm = $factory->createForm($appConfigForm);
         
@@ -73,7 +73,7 @@ class MelisComSeoController extends AbstractActionController
         if (!is_null($type)&&!is_null($typeId))
         {
             // Getting Seo Data
-            $melisComSeoService = $this->getServiceLocator()->get('MelisComSeoService');
+            $melisComSeoService = $this->getServiceManager()->get('MelisComSeoService');
             $seoData = $melisComSeoService->getSeoByType($type, $typeId);
             
             if($seoData)
@@ -83,7 +83,7 @@ class MelisComSeoController extends AbstractActionController
         }
         
         // Getting Commerce Languages
-        $ecomLangtable = $this->serviceLocator->get('MelisEcomLangTable');
+        $ecomLangtable = $this->getServiceManager()->get('MelisEcomLangTable');
         $ecomLang = $ecomLangtable->langOrderByName()->toArray();
         
         // Getting Form input and push to array with empty/null value as Default Value for multiple Form
@@ -105,8 +105,8 @@ class MelisComSeoController extends AbstractActionController
     public function  getAllSeoKeywordsAction()
     {
         $view = new ViewModel();
-        $translator = $this->serviceLocator->get('translator');
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $translator = $this->getServiceManager()->get('translator');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_seo/meliscommerce_seo_form','meliscommerce_seo_form');
 
         $view->setVariable('meliscommerce_seo_form', $propertyForm);

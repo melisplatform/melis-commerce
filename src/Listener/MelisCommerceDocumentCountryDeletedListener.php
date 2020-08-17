@@ -9,37 +9,29 @@
 
 namespace MelisCommerce\Listener;
 
-use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\ListenerAggregateInterface;
+use Laminas\EventManager\EventManagerInterface;
+use Laminas\EventManager\ListenerAggregateInterface;
 
-use MelisCore\Listener\MelisCoreGeneralListener;
+use MelisCore\Listener\MelisGeneralListener;
 
-class MelisCommerceDocumentCountryDeletedListener extends MelisCoreGeneralListener implements ListenerAggregateInterface
+class MelisCommerceDocumentCountryDeletedListener extends MelisGeneralListener implements ListenerAggregateInterface
 {
-    public function attach(EventManagerInterface $events)
+    public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $sharedEvents      = $events->getSharedManager();
-        
-        $callBackHandler = $sharedEvents->attach(
+        $this->attachEventListener(
+            $events,
             'MelisCommerce',
-            array(
-                'meliscommerce_country_delete_end'
-            ),
+            'meliscommerce_country_delete_end',
         	function($e){
         	    
-        		$sm = $e->getTarget()->getServiceLocator();   	
+        		$sm = $e->getTarget()->getServiceManager();
         		$params = $e->getParams();
-        		
-        		
+
         		$countryId = (int) $params['countryId'];
         		$docRelTable = $sm->get('MelisEcomDocRelationsTable');
-        		$docRelTable->update(array('rdoc_country_id' => '-1'), 'rdoc_country_id', $countryId);
-
-        		
+        		$docRelTable->update(['rdoc_country_id' => '-1'], 'rdoc_country_id', $countryId);
         	},
-        	
-        -1000);
-        
-        $this->listeners[] = $callBackHandler;
+        -1000
+        );
     }
 }

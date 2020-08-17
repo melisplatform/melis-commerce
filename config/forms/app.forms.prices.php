@@ -1,287 +1,294 @@
-<?php 
-    
-return array(
-    'plugins' => array(
-        'meliscommerce' => array(
-            'forms' => array(
-                'meliscommerce_prices' => array(
-                    'meliscommerce_prices_form' => array(
-                        'attributes' => array(
+<?php
+
+/**
+ * Melis Technology (http://www.melistechnology.com)
+ *
+ * @copyright Copyright (c) 2016 Melis Technology (http://www.melistechnology.com)
+ *
+ */
+
+return [
+    'plugins' => [
+        'meliscommerce' => [
+            'forms' => [
+                'meliscommerce_prices' => [
+                    'meliscommerce_prices_form' => [
+                        'attributes' => [
                             'name' => 'priceForm',
                             'id' => '',
                             'method' => 'POST',
                             'action' => 'melis/MelisCommerce/MelisComVariant/savePricesForm',
-                        ),
-                        'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
-                        'elements' => array(
-                            array(
-                                'spec' => array(
+                        ],
+                        'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                        'elements' => [
+                            [
+                                'spec' => [
                                     'name' => 'price_id',
                                     'type' => 'Hidden',
-                                    'options' => array(
-                                    ),
-                                    'attributes' => array(
-                                    ),
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
+                                    'options' => [
+                                    ],
+                                    'attributes' => [
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'price_country_id',
                                     'type' => 'Hidden',
-                                    'options' => array(
-                                    ),
-                                    'attributes' => array(
-                                    ),
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
+                                    'options' => [
+                                    ],
+                                    'attributes' => [
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'price_currency',
                                     'type' => 'Hidden',
-                                    'options' => array(
-                                    ),
-                                    'attributes' => array(
-                                    ),
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
+                                    'options' => [
+                                    ],
+                                    'attributes' => [
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'price_net',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_variant_prices_variant_price_label',
                                         'tooltip' => 'tr_meliscommerce_variant_prices_variant_price_label tooltip',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => '',
                                         'maxlength' => '10'
-                                    ),
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'price_gross',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_variant_prices_variant_price_gross_label',
                                         'tooltip' => 'tr_meliscommerce_variant_prices_variant_price_gross_label tooltip',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => '',
                                         'maxlength' => '10'
-                                    ),
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'price_vat_percent',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_variant_prices_variant_price_vat_percent_label',
                                         'tooltip' => 'tr_meliscommerce_variant_prices_variant_price_vat_percent_label tooltip',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => '',
                                         'maxlength' => '10'
-                                    ),
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'price_vat_price',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_variant_prices_variant_price_vat_price_label',
                                         'tooltip' => 'tr_meliscommerce_variant_prices_variant_price_vat_price_label tooltip',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => '',
                                         'maxlength' => '10'
-                                    ),
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'price_other_tax_price',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_variant_prices_variant_price_other_tax_price_label',
                                         'tooltip' => 'tr_meliscommerce_variant_prices_variant_price_other_tax_price_label tooltip',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => '',
                                         'maxlength' => '10'
-                                    ),
-                                ),
-                            ),
-                        ),
-                        'input_filter' => array(
-                            'price_id' => array(
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'input_filter' => [
+                            'price_id' => [
                                 'name'     => 'price_id',
                                 'required' => false,
-                                'validators' => array(),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'price_country_id' => array(
+                                'validators' => [],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'price_country_id' => [
                                 'name'     => 'price_country_id',
                                 'required' => false,
-                                'validators' => array(),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'price_currency' => array(
+                                'validators' => [],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'price_currency' => [
                                 'name'     => 'price_currency',
                                 'required' => false,
-                                'validators' => array(),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'price_net' => array(
+                                'validators' => [],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'price_net' => [
                                 'name'     => 'price_net',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name' => '\MelisCommerce\Validator\MelisPriceValidator',
-                                        'options' => array(
-                                            'messages' => array(
+                                        'options' => [
+                                            'messages' => [
                                                 \MelisCommerce\Validator\MelisPriceValidator::INVALID_PRICE => 'tr_meliscommerce_variant_prices_variant_price_digit_decimal_invalid',
-                                            ),
-                                        ),
-                                    ),
-                                    array(
-                                        'name' => '\Zend\Validator\GreaterThan',
-                                        'options' => array(
+                                            ],
+                                        ],
+                                    ],
+                                    [
+                                        'name' => '\Laminas\Validator\GreaterThan',
+                                        'options' => [
                                             'min' => -1,
-                                            'messages' => array(
-                                                \Zend\Validator\GreaterThan::NOT_GREATER => 'tr_meliscommerce_variant_prices_variant_price_digit_greater',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'price_gross' => array(
+                                            'messages' => [
+                                                \Laminas\Validator\GreaterThan::NOT_GREATER => 'tr_meliscommerce_variant_prices_variant_price_digit_greater',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'price_gross' => [
                                 'name'     => 'price_gross',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name' => '\MelisCommerce\Validator\MelisPriceValidator',
-                                        'options' => array(
-                                            'messages' => array(
+                                        'options' => [
+                                            'messages' => [
                                                 \MelisCommerce\Validator\MelisPriceValidator::INVALID_PRICE => 'tr_meliscommerce_variant_prices_variant_price_digit_decimal_invalid',
-                                            ),
-                                        ),
-                                    ),
-                                    array(
-                                        'name' => '\Zend\Validator\GreaterThan',
-                                        'options' => array(
+                                            ],
+                                        ],
+                                    ],
+                                    [
+                                        'name' => '\Laminas\Validator\GreaterThan',
+                                        'options' => [
                                             'min' => -1,
-                                            'messages' => array(
-                                                \Zend\Validator\GreaterThan::NOT_GREATER => 'tr_meliscommerce_variant_prices_variant_price_digit_greater',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'price_vat_percent' => array(
+                                            'messages' => [
+                                                \Laminas\Validator\GreaterThan::NOT_GREATER => 'tr_meliscommerce_variant_prices_variant_price_digit_greater',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'price_vat_percent' => [
                                 'name'     => 'price_vat_percent',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name' => '\MelisCommerce\Validator\MelisPriceValidator',
-                                        'options' => array(
-                                            'messages' => array(
+                                        'options' => [
+                                            'messages' => [
                                                 \MelisCommerce\Validator\MelisPriceValidator::INVALID_PRICE => 'tr_meliscommerce_variant_prices_variant_price_digit_decimal_invalid',
-                                            ),
-                                        ),
-                                    ),
-                                    array(
-                                        'name' => '\Zend\Validator\GreaterThan',
-                                        'options' => array(
+                                            ],
+                                        ],
+                                    ],
+                                    [
+                                        'name' => '\Laminas\Validator\GreaterThan',
+                                        'options' => [
                                             'min' => -1,
-                                            'messages' => array(
-                                                \Zend\Validator\GreaterThan::NOT_GREATER => 'tr_meliscommerce_variant_prices_variant_price_digit_greater',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'price_vat_price' => array(
+                                            'messages' => [
+                                                \Laminas\Validator\GreaterThan::NOT_GREATER => 'tr_meliscommerce_variant_prices_variant_price_digit_greater',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'price_vat_price' => [
                                 'name'     => 'price_vat_price',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name' => '\MelisCommerce\Validator\MelisPriceValidator',
-                                        'options' => array(
-                                            'messages' => array(
+                                        'options' => [
+                                            'messages' => [
                                                 \MelisCommerce\Validator\MelisPriceValidator::INVALID_PRICE => 'tr_meliscommerce_variant_prices_variant_price_digit_decimal_invalid',
-                                            ),
-                                        ),
-                                    ),
-                                    array(
-                                        'name' => '\Zend\Validator\GreaterThan',
-                                        'options' => array(
+                                            ],
+                                        ],
+                                    ],
+                                    [
+                                        'name' => '\Laminas\Validator\GreaterThan',
+                                        'options' => [
                                             'min' => -1,
-                                            'messages' => array(
-                                                \Zend\Validator\GreaterThan::NOT_GREATER => 'tr_meliscommerce_variant_prices_variant_price_digit_greater',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'price_other_tax_price' => array(
+                                            'messages' => [
+                                                \Laminas\Validator\GreaterThan::NOT_GREATER => 'tr_meliscommerce_variant_prices_variant_price_digit_greater',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'price_other_tax_price' => [
                                 'name'     => 'price_other_tax_price',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name' => '\MelisCommerce\Validator\MelisPriceValidator',
-                                        'options' => array(
-                                            'messages' => array(
+                                        'options' => [
+                                            'messages' => [
                                                 \MelisCommerce\Validator\MelisPriceValidator::INVALID_PRICE => 'tr_meliscommerce_variant_prices_variant_price_digit_decimal_invalid',
-                                            ),
-                                        ),
-                                    ),
-                                    array(
-                                        'name' => '\Zend\Validator\GreaterThan',
-                                        'options' => array(
+                                            ],
+                                        ],
+                                    ],
+                                    [
+                                        'name' => '\Laminas\Validator\GreaterThan',
+                                        'options' => [
                                             'min' => -1,
-                                            'messages' => array(
-                                                \Zend\Validator\GreaterThan::NOT_GREATER => 'tr_meliscommerce_variant_prices_variant_price_digit_greater',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                        ),
-                    ),
-                ),
-            ),   
-        ),
-    ),
-);
+                                            'messages' => [
+                                                \Laminas\Validator\GreaterThan::NOT_GREATER => 'tr_meliscommerce_variant_prices_variant_price_digit_greater',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
+];

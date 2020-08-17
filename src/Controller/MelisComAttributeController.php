@@ -9,16 +9,16 @@
 
 namespace MelisCommerce\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Session\Container;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\Session\Container;
+use MelisCore\Controller\MelisAbstractActionController;
 
-class MelisComAttributeController extends AbstractActionController
+class MelisComAttributeController extends MelisAbstractActionController
 {
     /**
      * renders the page container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributePageAction()
     {
@@ -33,7 +33,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the page header container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeHeaderAction()
     {
@@ -47,7 +47,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the page header left container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeHeaderLeftAction()
     {
@@ -61,7 +61,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the page header right container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeHeaderRightAction()
     {
@@ -75,7 +75,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the page header title
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeHeaderTitleAction()
     {
@@ -100,7 +100,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the page header save button
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeHeaderSaveAction()
     {
@@ -114,7 +114,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the page content container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributePageContentAction()
     {
@@ -128,7 +128,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the page main content container
-     * @return \Zend\View\Model\ViewModel render-coupon-page-tab-main
+     * @return \Laminas\View\Model\ViewModel render-coupon-page-tab-main
      */
     public function renderAttributePageTabsMainAction()
     {
@@ -142,7 +142,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the tabs content header container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeTabsContentHeaderAction()
     {
@@ -156,7 +156,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the tabs content header left container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeTabsContentHeaderLeftAction()
     {
@@ -170,7 +170,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the tabs content header right container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeTabsContentHeaderRightAction()
     {
@@ -184,7 +184,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the tabs content header status
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeTabsContentHeaderStatusAction()
     {
@@ -203,7 +203,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the tabs content header container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeTabsContentHeaderValuesAddAction()
     {
@@ -217,7 +217,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the tabs content header title
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeTabsContentHeaderTitleAction()
     {
@@ -231,7 +231,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the tabs content details container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeTabsContentDetailsAction()
     {
@@ -245,7 +245,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the tabs content details container left
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeTabsContentDetailsLeftAction()
     {
@@ -259,7 +259,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the tabs content details container right
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeTabsContentDetailsRightAction()
     {
@@ -273,7 +273,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the tabs content details sub header container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeTabsContentSubHeaderAction()
     {
@@ -287,7 +287,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the tabs content details sub header container left
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeTabsContentSubHeaderLeftAction()
     {
@@ -301,7 +301,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the tabs content details sub header container right
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeTabsContentSubHeaderRightAction()
     {
@@ -315,7 +315,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the tabs content details sub header container title
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeTabsContentSubHeaderTitleAction()
     {
@@ -329,7 +329,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the tabs content details sub details container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeTabsContentSubDetailsAction()
     {
@@ -343,16 +343,16 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the coupon form for general data
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeFormGeneralDataAction()
     {
         $generalForm = 'meliscommerce_attribute_general_data';
-        $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_attributes/'.$generalForm,$generalForm);
 
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $attributeForm = $factory->createForm($appConfigForm);
        
@@ -383,23 +383,23 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the tabs content details for labels
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeTabsContentDetailsLabelsAction()
     {
         //set svc
-        $langTable = $this->getServiceLocator()->get('MelisEcomLangTable');
-        $attributeSvc = $this->getServiceLocator()->get('MelisComAttributeService');
+        $langTable = $this->getServiceManager()->get('MelisEcomLangTable');
+        $attributeSvc = $this->getServiceManager()->get('MelisComAttributeService');
         $langs = array();
         $attribute = array();
         //set form config
         $attributeId = (int) $this->params()->fromQuery('attributeId', '');
         $attributeTrans = 'meliscommerce_attribute_text_trans';
-        $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_attributes/'.$attributeTrans,$attributeTrans);
         
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $attributeTransForm = $factory->createForm($appConfigForm);
         
@@ -435,7 +435,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the attribute content table filter limit
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeContentFilterLimitAction()
     {
@@ -444,7 +444,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the attribute content table filter search
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeContentFilterSearchAction()
     {
@@ -453,7 +453,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the attribute content table filter refresh
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeContentFilterRefreshAction()
     {
@@ -462,7 +462,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the attribute content table action info
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeContentActionInfoAction()
     {
@@ -471,7 +471,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the attribute content table action delete
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeContentActionDeleteAction()
     {
@@ -480,7 +480,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the tabs content details values table
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeTabsContentDetailsValuesTableAction()
     {
@@ -500,7 +500,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * retrieves the data for the attribute value table
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function getAttributeValueDataAction()
     {
@@ -511,8 +511,8 @@ class MelisComAttributeController extends AbstractActionController
         $dataFiltered = 0;
         $tableData = array();
         $langId = $this->getTool()->getCurrentLocaleID();
-        $attributeSvc = $this->getServiceLocator()->get('MelisComAttributeService');
-        $attributeTypeTable = $this->getServiceLocator()->get('MelisEcomAttributeTypeTable');
+        $attributeSvc = $this->getServiceManager()->get('MelisComAttributeService');
+        $attributeTypeTable = $this->getServiceManager()->get('MelisEcomAttributeTypeTable');
         $attributeId = $this->getRequest()->getPost('attributeId');
         
         if($attributeId) {
@@ -603,7 +603,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the order modal container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeModalAction()
     {
@@ -623,13 +623,13 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * renders the order modal container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderAttributeModalValueFormAction()
     {
-        $langTable = $this->getServiceLocator()->get('MelisEcomLangTable');
-        $attributeSvc = $this->getServiceLocator()->get('MelisComAttributeService');
-        $attributeTypeTable = $this->getServiceLocator()->get('MelisEcomAttributeTypeTable');
+        $langTable = $this->getServiceManager()->get('MelisEcomLangTable');
+        $attributeSvc = $this->getServiceManager()->get('MelisComAttributeService');
+        $attributeTypeTable = $this->getServiceManager()->get('MelisEcomAttributeTypeTable');
         $langs = array();
         $forms = array();
         $attributeValues = array();
@@ -647,15 +647,15 @@ class MelisComAttributeController extends AbstractActionController
         $atype_column_value = 'avt_v_'.$atype_column_value;
         
         $attrVal = 'meliscommerce_attribute_value_'.$atype_column_value;
-        $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_attributes/'.$attrVal,$attrVal);
         
         if($atype_column_value == 'avt_v_datetime'){
             $datepickerInit = $this->getTool()->datePickerInit('valueDate');
         }
         
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $attributeValueForm = $factory->createForm($appConfigForm);
         
@@ -710,7 +710,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * This method saves the attribute values and translations
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function saveAttributeValuesAction()
     {
@@ -726,9 +726,9 @@ class MelisComAttributeController extends AbstractActionController
         $textTitle = 'tr_meliscommerce_attribute_value';
         $this->getEventManager()->trigger('meliscommerce_attribute_value_save_start', $this, array());
 
-        $attributeSvc = $this->getServiceLocator()->get('MelisComAttributeService');
-        $attributeTypeTable = $this->getServiceLocator()->get('MelisEcomAttributeTypeTable');
-        $langTable = $this->getServiceLocator()->get('MelisEcomLangTable');
+        $attributeSvc = $this->getServiceManager()->get('MelisComAttributeService');
+        $attributeTypeTable = $this->getServiceManager()->get('MelisEcomAttributeTypeTable');
+        $langTable = $this->getServiceManager()->get('MelisEcomLangTable');
         
         if($this->getRequest()->isPost()){
             $postValues = get_object_vars($this->getRequest()->getPost());
@@ -745,11 +745,11 @@ class MelisComAttributeController extends AbstractActionController
             $atype_column_value = 'avt_v_'.$atype_column_value;
             
             $attrVal = 'meliscommerce_attribute_value_'.$atype_column_value;
-            $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+            $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
             $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_attributes/'.$attrVal,$attrVal);
             
-            $factory = new \Zend\Form\Factory();
-            $formElements = $this->serviceLocator->get('FormElementManager');
+            $factory = new \Laminas\Form\Factory();
+            $formElements = $this->getServiceManager()->get('FormElementManager');
             $factory->setFormElementManager($formElements);
             $attributeValueForm = $factory->createForm($appConfigForm);
             
@@ -856,7 +856,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * This method deletes the attribute value from the attribute value table
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function deleteAttributeValueAction()
     {
@@ -869,7 +869,7 @@ class MelisComAttributeController extends AbstractActionController
         $textTitle = 'tr_meliscommerce_attribute_page';
         $this->getEventManager()->trigger('meliscommerce_attribute_value_delete_start', $this, array());
         
-        $attributeSvc = $this->getServiceLocator()->get('MelisComAttributeService');
+        $attributeSvc = $this->getServiceManager()->get('MelisComAttributeService');
         
         if($this->getRequest()->isPost()){
             $postValues = get_object_vars($this->getRequest()->getPost());
@@ -975,7 +975,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * This method validates the attribute form
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function validateAttributeFormAction()
     {
@@ -984,11 +984,11 @@ class MelisComAttributeController extends AbstractActionController
         $success = 1;
         
         $generalForm = 'meliscommerce_attribute_general_data';
-        $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_attributes/'.$generalForm,$generalForm);
 
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
 
 
@@ -1024,11 +1024,11 @@ class MelisComAttributeController extends AbstractActionController
         $success = 1;
 
         $attributeTrans = 'meliscommerce_attribute_text_trans';
-        $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_attributes/'.$attributeTrans,$attributeTrans);
         
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
 
         $postValues = get_object_vars($this->getRequest()->getPost());
@@ -1068,7 +1068,7 @@ class MelisComAttributeController extends AbstractActionController
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
         
-        $attributeSvc = $this->getServiceLocator()->get('MelisComAttributeService');
+        $attributeSvc = $this->getServiceManager()->get('MelisComAttributeService');
         
         $container = new Container('meliscommerce');
         if (!empty($container['attribute-valid-data'])){
@@ -1126,7 +1126,7 @@ class MelisComAttributeController extends AbstractActionController
     
     /**
      * This method deletes the attribute translations entry if the language its affected is deleted
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function attributeTransLangDeletedAction()
     {
@@ -1135,9 +1135,9 @@ class MelisComAttributeController extends AbstractActionController
         $data = array();
         $countryId = -1;
          
-        $attributeTransTable = $this->getServiceLocator()->get('MelisEcomAttributeTransTable');
-        $attributeValueTransTable = $this->getServiceLocator()->get('MelisEcomAttributeValueTransTable');
-        $langTable = $this->getServiceLocator()->get('MelisEcomLangTable');
+        $attributeTransTable = $this->getServiceManager()->get('MelisEcomAttributeTransTable');
+        $attributeValueTransTable = $this->getServiceManager()->get('MelisEcomAttributeValueTransTable');
+        $langTable = $this->getServiceManager()->get('MelisEcomLangTable');
     
         $langId = (int) $this->getRequest()->getPost('id');
     
@@ -1164,7 +1164,7 @@ class MelisComAttributeController extends AbstractActionController
      */
     private function getTool()
     {
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_attribute');
     
         return $melisTool;
@@ -1178,7 +1178,7 @@ class MelisComAttributeController extends AbstractActionController
     private function setAttributeVariables($attributeId)
     {
         $layoutVar = array();
-        $attributeSvc = $this->getServiceLocator()->get('MelisComAttributeService');
+        $attributeSvc = $this->getServiceManager()->get('MelisComAttributeService');
         if($attributeId){
             $resultData = $attributeSvc->getAttributeById($attributeId);
             $layoutVar['attribute'] = $resultData->getAttribute();

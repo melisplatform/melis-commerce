@@ -10,11 +10,12 @@
 
 namespace MelisCommerce\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Session\Container;
-class MelisComAssociateVariantController extends AbstractActionController
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\Session\Container;
+use MelisCore\Controller\MelisAbstractActionController;
+
+class MelisComAssociateVariantController extends MelisAbstractActionController
 {
     private function getPrefix()
     {
@@ -166,15 +167,15 @@ class MelisComAssociateVariantController extends AbstractActionController
         if($this->getRequest()->isPost()) {
         
             // Getting Current Langauge ID
-            $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+            $melisTool = $this->getServiceManager()->get('MelisCoreTool');
             $langId = $melisTool->getCurrentLocaleID();
             
             $columns = array_keys($this->getTool2()->getColumns());
             
-            $productTable = $this->getServiceLocator()->get('MelisEcomProductTable');
+            $productTable = $this->getServiceManager()->get('MelisEcomProductTable');
     
-            $prodSvc = $this->getServiceLocator()->get('MelisComProductService');
-            $docSvc = $this->getServiceLocator()->get('MelisComDocumentService');
+            $prodSvc = $this->getServiceManager()->get('MelisComProductService');
+            $docSvc = $this->getServiceManager()->get('MelisComDocumentService');
     
             $order = $this->getRequest()->getPost('order');
             $selColOrder = $columns[$order[0]['column']];
@@ -223,7 +224,7 @@ class MelisComAssociateVariantController extends AbstractActionController
     /**
      * This will return the Product variant list
      *
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantAssocProductVariantsAction()
     {
@@ -236,15 +237,15 @@ class MelisComAssociateVariantController extends AbstractActionController
         $hasVariant = false;
         $variants = array();
     
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
 
         // Getting Current Langauge ID
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $langId = $melisTool->getCurrentLocaleID();
 
 
-        $melisComVariantService = $this->getServiceLocator()->get('MelisComVariantService');
-        $melisComProductService = $this->getServiceLocator()->get('MelisComProductService');
+        $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
+        $melisComProductService = $this->getServiceManager()->get('MelisComProductService');
         // Getting the list of Activated Variant from Variant Service using the ProductId
         $variantData = $melisComVariantService->getVariantListByProductId($productId, $langId, null, null, null, 0, null, $search);
 
@@ -287,7 +288,7 @@ class MelisComAssociateVariantController extends AbstractActionController
 
     public function getVariantsListAction()
     {
-        $variantsTable = $this->getServiceLocator()->get('MelisEcomVariantTable');
+        $variantsTable = $this->getServiceManager()->get('MelisEcomVariantTable');
 
         $colId = array();
         $dataCount = 0;
@@ -373,7 +374,7 @@ class MelisComAssociateVariantController extends AbstractActionController
 
     public function getVarAttributeId($variantId)
     {
-        $assocVarTable = $this->getServiceLocator()->get('MelisComVariantService');
+        $assocVarTable = $this->getServiceManager()->get('MelisComVariantService');
         $data = $assocVarTable->getVariantAttributesValuesById($variantId, $this->getTool2()->getCurrentLocaleID());
         $text = array();
         $ctr = 0;
@@ -383,7 +384,7 @@ class MelisComAssociateVariantController extends AbstractActionController
 
     public function getAssocVariantListAction()
     {
-        $variantsTable = $this->getServiceLocator()->get('MelisEcomAssocVariantTable');
+        $variantsTable = $this->getServiceManager()->get('MelisEcomAssocVariantTable');
 
         $colId = array();
         $dataCount = 0;
@@ -479,8 +480,8 @@ class MelisComAssociateVariantController extends AbstractActionController
             $assignedVar = (int) $this->getRequest()->getPost('assignVariantid');
             $assignTo  = (int) $this->getRequest()->getPost('assignToVariantId');
 
-            $table = $this->getServiceLocator()->get('MelisEcomAssocVariantTable');
-            $assocVarTable = $this->getServiceLocator()->get('MelisEcomAssocVariantTable');
+            $table = $this->getServiceManager()->get('MelisEcomAssocVariantTable');
+            $assocVarTable = $this->getServiceManager()->get('MelisEcomAssocVariantTable');
             $isAssociated = $assocVarTable->getVariantAssociationData($assignTo, $assignedVar)->current();
             if(empty($isAssociated)) {
                 $variantAssId = $assocVarTable->save(array(
@@ -528,7 +529,7 @@ class MelisComAssociateVariantController extends AbstractActionController
 
             $assignedVar = (int) $this->getRequest()->getPost('assignedVariantId');
             $variantId   = (int) $this->getRequest()->getPost('variantId');
-            $assocVarTable = $this->getServiceLocator()->get('MelisEcomAssocVariantTable');
+            $assocVarTable = $this->getServiceManager()->get('MelisEcomAssocVariantTable');
 
             $data = $assocVarTable->getVariantAssociationData($variantId, $assignedVar)->current();
             if($data) {
@@ -555,7 +556,7 @@ class MelisComAssociateVariantController extends AbstractActionController
 
     public function getTool1()
     {
-        $tool = $this->getServiceLocator()->get('MelisCoreTool');
+        $tool = $this->getServiceManager()->get('MelisCoreTool');
         $tool->setMelisToolKey('meliscommerce', 'meliscommerce_assoc_var');
 
         return $tool;
@@ -563,7 +564,7 @@ class MelisComAssociateVariantController extends AbstractActionController
 
     public function getTool2()
     {
-        $tool = $this->getServiceLocator()->get('MelisCoreTool');
+        $tool = $this->getServiceManager()->get('MelisCoreTool');
         $tool->setMelisToolKey('meliscommerce', 'meliscommerce_assoc_var2');
 
         return $tool;
@@ -571,7 +572,7 @@ class MelisComAssociateVariantController extends AbstractActionController
 
     public function getVarAttributeText($variantId)
     {
-        $assocVarTable = $this->getServiceLocator()->get('MelisComVariantService');
+        $assocVarTable = $this->getServiceManager()->get('MelisComVariantService');
         $data = $assocVarTable->getVariantAttributesValuesById($variantId, $this->getTool2()->getCurrentLocaleID());
         $text = array();
         $ctr = 0;
@@ -592,8 +593,8 @@ class MelisComAssociateVariantController extends AbstractActionController
 
     public function getProductTextByVarId($varId)
     {
-        $varSvc = $this->getServiceLocator()->get('MelisComVariantService');
-        $prodSvc = $this->getServiceLocator()->get('MelisComProductService');
+        $varSvc = $this->getServiceManager()->get('MelisComVariantService');
+        $prodSvc = $this->getServiceManager()->get('MelisComProductService');
         $getData = $varSvc->getVariantById( (int) $varId);
         $variantData = $getData->getVariant();
         if($variantData) {
@@ -606,8 +607,8 @@ class MelisComAssociateVariantController extends AbstractActionController
 
     public function getProductIdByVarId($varId)
     {
-        $varSvc = $this->getServiceLocator()->get('MelisComVariantService');
-        $prodSvc = $this->getServiceLocator()->get('MelisComProductService');
+        $varSvc = $this->getServiceManager()->get('MelisComVariantService');
+        $prodSvc = $this->getServiceManager()->get('MelisComProductService');
         $getData = $varSvc->getVariantById( (int) $varId);
         if($getData) {
             $varData = $getData->getVariant();
@@ -621,7 +622,7 @@ class MelisComAssociateVariantController extends AbstractActionController
     
     public function checkAssociation($var_one, $var_two )
     {
-        $variantAssocTable = $this->getServiceLocator()->get('MelisEcomAssocVariantTable');
+        $variantAssocTable = $this->getServiceManager()->get('MelisEcomAssocVariantTable');
         return $variantAssocTable->getVariantAssociationData($var_one, $var_two)->toArray();
     }
 

@@ -9,36 +9,34 @@
 
 namespace MelisCommerce\Listener;
 
-use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\ListenerAggregateInterface;
+use Laminas\EventManager\EventInterface;
+use Laminas\EventManager\EventManagerInterface;
+use Laminas\EventManager\ListenerAggregateInterface;
 
-use MelisCore\Listener\MelisCoreGeneralListener;
+use MelisCore\Listener\MelisGeneralListener;
 
-class MelisCommercePrdVarDuplicationListener extends MelisCoreGeneralListener implements ListenerAggregateInterface
+class MelisCommercePrdVarDuplicationListener extends MelisGeneralListener implements ListenerAggregateInterface
 {
-    public function attach(EventManagerInterface $events)
+    public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $sharedEvents      = $events->getSharedManager();
-        
-        $callBackHandler = $sharedEvents->attach(
-            'MelisCommerce',
-            array(
-                'meliscommerce_duplicate_variant_start',
-                'meliscommerce_duplicate_product_start'
-            ),
-        	function($e){
-        	    
-        		$sm = $e->getTarget()->getServiceLocator();   	
-        		$melisCoreDispatchService = $sm->get('MelisCoreDispatch');
-        		
-        		list($success, $errors, $datas) = $melisCoreDispatchService->dispatchPluginAction(
-        		    $e,
-        		    'meliscommerce',
-        		    'action-duplicate-tmp',
-        		    'MelisCommerce\Controller\MelisComPrdVarDuplication',
-        		    array('action' => 'validateVariantData')
-    		    );
-        	}
-    	);
+        $identifier = 'MelisCommerce';
+
+        $eventNames = [
+            'meliscommerce_duplicate_variant_start',
+            'meliscommerce_duplicate_product_start'
+        ];
+
+        $this->attachEventListener($events, $identifier, $eventNames, function(EventInterface $e) {
+            $sm = $e->getTarget()->getServiceManager();
+            $melisCoreDispatchService = $sm->get('MelisCoreDispatch');
+
+            list($success, $errors, $datas) = $melisCoreDispatchService->dispatchPluginAction(
+                $e,
+                'meliscommerce',
+                'action-duplicate-tmp',
+                'MelisCommerce\Controller\MelisComPrdVarDuplication',
+                ['action' => 'validateVariantData']
+            );
+        });
     }
 }

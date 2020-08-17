@@ -9,17 +9,20 @@
 
 namespace MelisCommerce\Form\Factory; 
 
-use Zend\Form\Element\Text;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\ServiceManager\FactoryInterface;
+use Laminas\Form\Element\Text;
+use Psr\Container\ContainerInterface;
 
 /**
  * Melis commerce date field
  */
-
-class EcomColorPicker extends Text implements FactoryInterface
+class EcomColorPicker extends Text
 {
-    public function createService(ServiceLocatorInterface $formElementManager)
+    /**
+     * @param ContainerInterface $container
+     * @param $requestedName
+     * @return Text
+     */
+    public function __invoke(ContainerInterface $container, $requestedName)
     { 
         $element = new Text;        
         $element->setAttribute('class', 'color-picker');

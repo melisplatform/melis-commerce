@@ -35,7 +35,7 @@ class MelisComStockEmailAlertService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_stock_email_alert_recipients_start', $arrayParameters);
          
         // Service implementation start
-        $emailAlertTable = $this->getServiceLocator()->get('MelisEcomStockEmailAlertTable');
+        $emailAlertTable = $this->getServiceManager()->get('MelisEcomStockEmailAlertTable');
         $emailAlerts = $emailAlertTable->getStockEmailRecipients($arrayParameters['productIds']);
 
         foreach($emailAlerts as $emailAlert){
@@ -71,7 +71,7 @@ class MelisComStockEmailAlertService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_stock_email_alert_save_start', $arrayParameters);
         
         // Service implementation start
-        $emailAlertTable = $this->getServiceLocator()->get('MelisEcomStockEmailAlertTable');
+        $emailAlertTable = $this->getServiceManager()->get('MelisEcomStockEmailAlertTable');
         try {
             $results = $emailAlertTable->save($arrayParameters['stockEmailAlert'], $arrayParameters['stockEmailAlertId']);
         }catch(\Exception $e){
@@ -104,7 +104,7 @@ class MelisComStockEmailAlertService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_stock_email_alert_delete_start', $arrayParameters);
         
         // Service implementation start
-       $emailAlertTable = $this->getServiceLocator()->get('MelisEcomStockEmailAlertTable');
+       $emailAlertTable = $this->getServiceManager()->get('MelisEcomStockEmailAlertTable');
         try {
             $results = $emailAlertTable->deleteById($arrayParameters['seaId']);
             $results = ($results)? true : false;
@@ -131,12 +131,12 @@ class MelisComStockEmailAlertService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_check_stock_level_start', $arrayParameters);
     
         // Service implementation start
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
          
-        $productSvc = $this->getServiceLocator()->get('MelisComProductService');
-        $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
-        $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
-        $emailAlertTable = $this->getServiceLocator()->get('MelisEcomStockEmailAlertTable');
+        $productSvc = $this->getServiceManager()->get('MelisComProductService');
+        $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
+        $orderSvc = $this->getServiceManager()->get('MelisComOrderService');
+        $emailAlertTable = $this->getServiceManager()->get('MelisEcomStockEmailAlertTable');
         
         $order = $orderSvc->getOrderById($arrayParameters['orderId']);
         $orderBasket = $order->getBasket();
@@ -208,8 +208,8 @@ class MelisComStockEmailAlertService extends MelisComGeneralService
             // and no mail, send notification email
             if(!is_null($stockLow) && $currentQuantity <= $stockLow && empty($mailSent)){
                 
-                $sendMailSvc = $this->getServiceLocator()->get('MelisEngineSendMail');
-                $config = $this->getServiceLocator()->get('config');
+                $sendMailSvc = $this->getServiceManager()->get('MelisEngineSendMail');
+                $config = $this->getServiceManager()->get('config');
                 $emailConfig = $config['plugins']['meliscommerce']['emails']['VARIANTSLOWSTOCK'];
     
                 $emailCode = $emailConfig['code'];

@@ -9,24 +9,13 @@
 
 namespace MelisCommerce\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\JsonModel;
-use Zend\View\Model\ViewModel;
-use Zend\Db\Metadata\Metadata;
-class TesterController extends AbstractActionController
+use Laminas\View\Model\JsonModel;
+use Laminas\View\Model\ViewModel;
+use Laminas\Db\Metadata\Metadata;
+use MelisCore\Controller\MelisAbstractActionController;
+
+class TesterController extends MelisAbstractActionController
 {
-    public function testsAction(){
-        $catSrv = $this->getServiceLocator()->get('MelisComCategoryService');
-        
-//         $tmp = $catSrv->getSubCategoriesProducts(3, array(), 1);
-        $tmp = $catSrv->getCategoriesProductsByIds(array(3, 51, 52, 53), false, 1, true);
-        
-        echo '<pre>';
-        print_r($tmp);
-        echo '</pre>';
-        
-        return new JsonModel(array());
-    }
     public function displayTestAction()
     {
         $request = $this->getRequest();
@@ -35,7 +24,7 @@ class TesterController extends AbstractActionController
         $searchProductFullRes = array();
         
         if($request->isPost()) {
-            $prodSearchSvc = $this->getServiceLocator()->get('MelisComProductSearchService');
+            $prodSearchSvc = $this->getServiceManager()->get('MelisComProductSearchService');
             $postData = $request->getPost()->getArrayCopy();
 
             $formType = $postData['actionType'];
@@ -90,10 +79,10 @@ class TesterController extends AbstractActionController
     
     public function testDocumentAction()
     {
-        $prodSvc = $this->getServiceLocator()->get('MelisComProductService');
+        $prodSvc = $this->getServiceManager()->get('MelisComProductService');
         $tmp = $prodSvc->getProductById(1, null, null);
         echo '<pre>'; print_r($tmp); echo '</pre>'; die();
-//         $varSvc = $this->getServiceLocator()->get('MelisComVariantService');
+//         $varSvc = $this->$this->getServiceManager()->get('MelisComVariantService');
 //         $tmp = $varSvc->getVariantById(1, 1, null, 'IMG', array('LARGE'));
 //         echo '<pre>'; print_r($tmp); echo '</pre>'; die();
        
@@ -102,7 +91,7 @@ class TesterController extends AbstractActionController
     public function testSeoCategoryAction()
     {
         
-        $categorySvc = $this->getServiceLocator()->get('MelisComCategoryService');
+        $categorySvc = $this->getServiceManager()->get('MelisComCategoryService');
         
         $data = $categorySvc->getCategorySeoById(3,2);
         echo '<pre>'; print_r($data); echo '</pre>'; die();
@@ -110,7 +99,7 @@ class TesterController extends AbstractActionController
     
     public function testAction()
     {
-        $stockAlertTable = $this->getServiceLocator()->get('MelisEcomStockEmailAlertTable');
+        $stockAlertTable = $this->getServiceManager()->get('MelisEcomStockEmailAlertTable');
         $data = $stockAlertTable->fetchAll();
         
         var_dump($data->toArray());
@@ -121,13 +110,13 @@ class TesterController extends AbstractActionController
     
     public function testingAction()
     {
-//         $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+//         $melisCoreConfig = $this->$this->getServiceManager()->get('MelisCoreConfig');
 //         $confOrder = $melisCoreConfig->getItem('meliscommerce/emails');
 //         $confOrder = $melisCoreConfig->getItem('meliscommerce/');
         
 //         echo '<pre>'; print_r($confOrder); echo '</pre>';
 //         die();
-           $stockEmailSvc = $this->getServiceLocator()->get('MelisComStockEmailAlertService');
+           $stockEmailSvc = $this->getServiceManager()->get('MelisComStockEmailAlertService');
            $stockEmailSvc->checkStockLevelByOrderId((int) $this->params()->fromQuery('orderId', ''));
            echo 'sending....';
            die();
@@ -135,7 +124,7 @@ class TesterController extends AbstractActionController
     
     public function checkMailConfigAction()
     {
-                $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+                $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
                 $confOrder = $melisCoreConfig->getItem('meliscommerce/emails');
 //                 $confOrder = $melisCoreConfig->getItem('meliscommerce/');
     
@@ -151,7 +140,7 @@ class TesterController extends AbstractActionController
      */
     private function getTranslation($key, $args = null)
     {
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         $text = vsprintf($translator->translate($key), $args);
     
         return $text;
@@ -159,7 +148,7 @@ class TesterController extends AbstractActionController
     
     public function testMailAction()
     {
-        $sendMailSvc = $this->getServiceLocator()->get('MelisEngineSendMail');
+        $sendMailSvc = $this->getServiceManager()->get('MelisEngineSendMail');
     
        
             $email_template_path = 'MelisDemoCommerce/emailLayout';
@@ -183,11 +172,11 @@ class TesterController extends AbstractActionController
     {
         $cacheKey = 'getPageLinkCategory_' . 12 . '_' . 1 . '_' . false;
         $cacheConfig = 'commerce_memory_services';
-        $melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
         $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
         echo 'cache<pre>'; var_dump($results); echo '</pre> cache_end';
         
-        $comLinkSrv = $this->getServiceLocator()->get('MelisComLinksService');
+        $comLinkSrv = $this->getServiceManager()->get('MelisComLinksService');
         $test = $comLinkSrv->getPageLink('category', 12, 1, false);
         echo '<pre>'; print_r($test); die();
     }

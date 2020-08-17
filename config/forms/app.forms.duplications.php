@@ -1,74 +1,82 @@
-<?php 
-return array(
-    'plugins' => array(
-        'meliscommerce' => array(
-            'forms' => array(
-                'meliscommerce_duplications' => array(
-                    'meliscommerce_duplications_sku_form' => array(
-                        'attributes' => array(
+<?php
+
+/**
+ * Melis Technology (http://www.melistechnology.com)
+ *
+ * @copyright Copyright (c) 2016 Melis Technology (http://www.melistechnology.com)
+ *
+ */
+
+return [
+    'plugins' => [
+        'meliscommerce' => [
+            'forms' => [
+                'meliscommerce_duplications' => [
+                    'meliscommerce_duplications_sku_form' => [
+                        'attributes' => [
                             'name' => '',
                             'id' => '',
                             'method' => '',
                             'action' => '',
-                        ),
-                        'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
-                        'elements' => array(
-                            array(
-                                'spec' => array(
+                        ],
+                        'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                        'elements' => [
+                            [
+                                'spec' => [
                                     'name' => 'var_sku',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_duplication_Var_sku',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'var_sku',
-                                    )
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
+                                    ]
+                                ],
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'var_id',
                                     'type' => 'hidden',
-                                    'options' => array(),
-                                    'attributes' => array(
+                                    'options' => [],
+                                    'attributes' => [
                                         'id' => 'var_id',
-                                    )
-                                )
-                            ),
-                        ),
-                        'input_filter' => array(
-                            'var_sku' => array(
+                                    ]
+                                ]
+                            ],
+                        ],
+                        'input_filter' => [
+                            'var_sku' => [
                                 'name'     => 'var_sku',
                                 'required' => true,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name' => 'NotEmpty',
-                                        'options' => array(
-                                            'messages' => array(
-                                                \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_duplication_input_empty',
-                                            ),
-                                        ),
-                                    ),
-                                    array(
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_duplication_input_empty',
+                                            ],
+                                        ],
+                                    ],
+                                    [
                                         'name'    => 'StringLength',
-                                        'options' => array(
+                                        'options' => [
                                             'encoding' => 'UTF-8',
                                             'max'      => 100,
-                                            'messages' => array(
-                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_duplication_input_too_long_100',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                        )
-                    ),
-                )
-            )
-        )
-    )
-);
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_duplication_input_too_long_100',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                        ]
+                    ],
+                ]
+            ]
+        ]
+    ]
+];

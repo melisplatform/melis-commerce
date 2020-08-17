@@ -9,35 +9,41 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomClientAddressTypeTransTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_client_address_type_trans';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'catypt_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'catypt_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
+
     public function getAddressTypeTransByLangId($langId = null)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         $select->join('melis_ecom_client_address_type', 'melis_ecom_client_address_type_trans.catypt_type_id = melis_ecom_client_address_type.catype_id', array('*'), $select::JOIN_LEFT);
         if (!is_null($langId))
         {
             $select->where('catypt_lang_id ='.$langId);
         }
         
-        $resullData = $this->tableGateway->selectWith($select);
+        $resullData = $this->getTableGateway()->selectWith($select);
         return $resullData;
     }
     
     public function getAddressTransByAddressTypeIdAndLangId($addTypeId, $langId = null)
     {
-        $select = $this->tableGateway->getSql()->select();        
+        $select = $this->getTableGateway()->getSql()->select();
 
         if($addTypeId) {
             $select->where('catypt_type_id ='.$addTypeId);
@@ -49,7 +55,7 @@ class MelisEcomClientAddressTypeTransTable extends MelisEcomGenericTable
         }
 
 
-        $resullData = $this->tableGateway->selectWith($select);
+        $resullData = $this->getTableGateway()->selectWith($select);
 
 
         return $resullData;

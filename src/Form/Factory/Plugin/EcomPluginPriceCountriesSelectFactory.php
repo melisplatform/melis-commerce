@@ -9,24 +9,22 @@
 
 namespace MelisCommerce\Form\Factory\Plugin;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
-use MelisCommerce\Form\Factory\EcomSelectFactory;
+use Laminas\ServiceManager\ServiceManager;
+use MelisCore\Form\Factory\MelisSelectFactory;
 
 /**
  * MelisCommerce Plugin Price Countries select factory
  */
-class EcomPluginPriceCountriesSelectFactory extends EcomSelectFactory
+class EcomPluginPriceCountriesSelectFactory extends MelisSelectFactory
 {
-    protected function loadValueOptions(ServiceLocatorInterface $formElementManager)
+    protected function loadValueOptions(ServiceManager $serviceManager)
     {
-        $serviceManager = $formElementManager->getServiceLocator();
-        
         $translator = $serviceManager->get('translator');
         
         $melisEcomCountryTable = $serviceManager->get('MelisEcomCountryTable');
         $ecomCountries = $melisEcomCountryTable->getCountries();
         
-        $valueoptions = array();
+        $valueoptions = [];
         $valueoptions[-1] = $translator->translate('tr_meliscommerce_general_text');
         
         $max = $ecomCountries->count();

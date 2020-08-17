@@ -9,18 +9,17 @@
 
 namespace MelisCommerce\Form\Factory;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Laminas\ServiceManager\ServiceManager;
 use MelisCore\Form\Factory\MelisSelectFactory;
-use Zend\Session\Container;
+use Laminas\Session\Container;
+
 /**
  * MelisCommerce Civility Select
  */
 class EcomCivilitySelectFactory extends MelisSelectFactory
 {
-    protected function loadValueOptions(ServiceLocatorInterface $formElementManager)
+    protected function loadValueOptions(ServiceManager $serviceManager)
     {
-        $serviceManager = $formElementManager->getServiceLocator();
-        
         // Getting Current Langauge ID
         $melisTool = $serviceManager->get('MelisCoreTool');
         $langId = $melisTool->getCurrentLocaleID();
@@ -29,7 +28,7 @@ class EcomCivilitySelectFactory extends MelisSelectFactory
         $ecomCivility = $melisEcomCivilityTransTable->getCivilityByLangId($langId);
 
         $translator = $serviceManager->get('translator');
-        $valueoptions = array();
+        $valueoptions = [];
         $max = $ecomCivility->count();
         for ($i = 0; $i < $max; $i++)
         {

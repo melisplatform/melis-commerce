@@ -9,15 +9,15 @@
 
 namespace MelisCommerce\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use MelisCore\Controller\MelisAbstractActionController;
 
-class MelisComOrderStatusController extends AbstractActionController
+class MelisComOrderStatusController extends MelisAbstractActionController
 {
     /**
      * renders the order status page container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderStatusPageAction()
     {
@@ -29,7 +29,7 @@ class MelisComOrderStatusController extends AbstractActionController
     
     /**
      * renders the order status page header container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderStatusHeaderContainerAction()
     {
@@ -41,7 +41,7 @@ class MelisComOrderStatusController extends AbstractActionController
     
     /**
      * renders the order status page left header container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderStatusHeaderLeftContainerAction()
     {
@@ -53,7 +53,7 @@ class MelisComOrderStatusController extends AbstractActionController
     
     /**
      * renders the order status page right header container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderStatusHeaderRightContainerAction()
     {
@@ -65,7 +65,7 @@ class MelisComOrderStatusController extends AbstractActionController
     
     /**
      * renders the order status page header title
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderStatusHeaderTitleAction()
     {
@@ -77,7 +77,7 @@ class MelisComOrderStatusController extends AbstractActionController
     
     /**
      * renders the order status add button
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderStatusAddAction()
     {
@@ -89,7 +89,7 @@ class MelisComOrderStatusController extends AbstractActionController
     
     /**
      * renders the order status page content container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderStatusContentAction()
     {
@@ -101,7 +101,7 @@ class MelisComOrderStatusController extends AbstractActionController
     
     /**
      * renders the order status content table filter limit
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderStatusContentFilterLimitAction()
     {
@@ -110,7 +110,7 @@ class MelisComOrderStatusController extends AbstractActionController
     
     /**
      * renders the order status content table filter search
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderStatusContentFilterSearchAction()
     {
@@ -119,7 +119,7 @@ class MelisComOrderStatusController extends AbstractActionController
     
     /**
      * renders the order status content table filter refresh
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderStatusContentFilterRefreshAction()
     {
@@ -128,7 +128,7 @@ class MelisComOrderStatusController extends AbstractActionController
     
     /**
      * renders the order status content table action info
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderStatusContentActionInfoAction()
     {
@@ -137,7 +137,7 @@ class MelisComOrderStatusController extends AbstractActionController
     
     /**
      * renders the order status content table action delete
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderStatusContentActionDeleteAction()
     {
@@ -146,7 +146,7 @@ class MelisComOrderStatusController extends AbstractActionController
     
     /**
      * renders the order list page table
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderStatusContentTableAction()
     {
@@ -163,7 +163,7 @@ class MelisComOrderStatusController extends AbstractActionController
     
     /**
      * renders the order status modal container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderStatusModalAction()
     {
@@ -178,7 +178,7 @@ class MelisComOrderStatusController extends AbstractActionController
     
     public function renderOrderStatusFormAction()
     {
-        $langTable = $this->getServiceLocator()->get('MelisEcomLangTable');
+        $langTable = $this->getServiceManager()->get('MelisEcomLangTable');
         
         $langs = array();
         $forms = array();
@@ -191,7 +191,7 @@ class MelisComOrderStatusController extends AbstractActionController
         
         $statusId = (int) $this->params()->fromQuery('ostaId', '');
         
-        $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
+        $orderSvc = $this->getServiceManager()->get('MelisComOrderService');
         
         if(!empty($statusId)){
             $modalName = 'tr_meliscommerce_order_status_form_edit';
@@ -200,7 +200,7 @@ class MelisComOrderStatusController extends AbstractActionController
                 $color = $orderStatus->osta_color_code;
                 $status = ($orderStatus->osta_status)? 'checked' : '';
                 
-                $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+                $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
                 $primeStatus = $melisCoreConfig->getItem('meliscommerce/datas/default/permanent_order_status');
                 if(in_array($orderStatus->osta_id, $primeStatus)){
                     $isPrime = 1;
@@ -208,11 +208,11 @@ class MelisComOrderStatusController extends AbstractActionController
             }
         }
         
-        $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_order_status/meliscommerce_order_status_form','meliscommerce_order_status_form');
         
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $orderStatusForm = $factory->createForm($appConfigForm);
         
@@ -267,7 +267,7 @@ class MelisComOrderStatusController extends AbstractActionController
         $errors  = array();
         $data = array();
 
-        $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
+        $orderSvc = $this->getServiceManager()->get('MelisComOrderService');
 
         $response = array(
             'success' => $success,
@@ -288,9 +288,9 @@ class MelisComOrderStatusController extends AbstractActionController
         $dataFilter = 0;
         $tableData = array();
         $primeStatus = array();
-        $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
+        $orderSvc = $this->getServiceManager()->get('MelisComOrderService');
         
-        $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $primeStatus = $melisCoreConfig->getItem('meliscommerce/datas/default/permanent_order_status');
         
         if($this->getRequest()->isPost()) {
@@ -379,11 +379,11 @@ class MelisComOrderStatusController extends AbstractActionController
         
         $this->getEventManager()->trigger('meliscommerce_order_status_save_start', $this, array());
         
-        $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_order_status/meliscommerce_order_status_form','meliscommerce_order_status_form');
         
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $orderStatusForm = $factory->createForm($appConfigForm);
         
@@ -451,7 +451,7 @@ class MelisComOrderStatusController extends AbstractActionController
                         }
                         $errors = array_merge($errors, $formError);
                     }else{
-                        $langTable = $this->getServiceLocator()->get('MelisEcomLangTable');
+                        $langTable = $this->getServiceManager()->get('MelisEcomLangTable');
                         $data = $orderTransForm->getData();
                         
                         foreach($translationForms as $form){
@@ -508,7 +508,7 @@ class MelisComOrderStatusController extends AbstractActionController
            
             // save status if there are no errors
             if(empty($errors)){
-                $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
+                $orderSvc = $this->getServiceManager()->get('MelisComOrderService');
                 $orderStatus = $orderStatusForm->getData();
                 $orderStatus['osta_status'] = $orderStatusData['osta_status'];
                $id =  $orderSvc->saveOrderStatus($orderStatus, $orderStatusTrans, $postValues['statusId']);
@@ -537,7 +537,7 @@ class MelisComOrderStatusController extends AbstractActionController
     /**
      * This method deletes order status that are not permanent statuses
      *
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function deleteOrderStatusAction()
     {
@@ -549,7 +549,7 @@ class MelisComOrderStatusController extends AbstractActionController
         $textMessage = 'tr_meliscommerce_coupon_delete_fail';
         $textTitle = 'tr_meliscommerce_order_status_tool_leftmenu';
     
-        $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
+        $orderSvc = $this->getServiceManager()->get('MelisComOrderService');
         if($this->getRequest()->isPost()){
             $this->getEventManager()->trigger('meliscommerce_order_status_delete_start', $this, array());
             $postValues = get_object_vars($this->getRequest()->getPost());
@@ -580,7 +580,7 @@ class MelisComOrderStatusController extends AbstractActionController
      */
     private function getTool()
     {
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_order_status');
     
         return $melisTool;

@@ -9,10 +9,11 @@
 
 namespace MelisCommerce\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\JsonModel;
-use Zend\View\Model\ViewModel;
-class MelisComLanguageController extends AbstractActionController
+use Laminas\View\Model\JsonModel;
+use Laminas\View\Model\ViewModel;
+use MelisCore\Controller\MelisAbstractActionController;
+
+class MelisComLanguageController extends MelisAbstractActionController
 {
 
 
@@ -113,13 +114,13 @@ class MelisComLanguageController extends AbstractActionController
         $title = $this->getTool()->getTranslation('tr_meliscommerce_language_add');
         $data = array();
         
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/tools/meliscommerce_language/forms/meliscommerce_language_form','meliscommerce_language_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $form = $factory->createForm($appConfigForm);
-        $langTable = $this->getServiceLocator()->get('MelisEcomLang');
+        $langTable = $this->getServiceManager()->get('MelisEcomLangTable');
         
         if($id) {
             $title = $this->getTool()->getTranslation('tr_meliscommerce_language_edit');
@@ -139,7 +140,7 @@ class MelisComLanguageController extends AbstractActionController
     
     private function getTool()
     {
-        $tool = $this->getServiceLocator()->get('MelisCoreTool');
+        $tool = $this->getServiceManager()->get('MelisCoreTool');
         $tool->setMelisToolKey('meliscommerce', 'meliscommerce_language');
         
         return $tool;
@@ -148,7 +149,7 @@ class MelisComLanguageController extends AbstractActionController
     
     public function getComLangDataAction()
     {
-        $langTable = $this->getServiceLocator()->get('MelisEcomLang');
+        $langTable = $this->getServiceManager()->get('MelisEcomLangTable');
 
         $colId = array();
         $dataCount = 0;
@@ -224,7 +225,7 @@ class MelisComLanguageController extends AbstractActionController
     }
     public function getAllComLangDataAction()
     {
-        $langTable = $this->getServiceLocator()->get('MelisEcomLang');
+        $langTable = $this->getServiceManager()->get('MelisEcomLangTable');
 
         $colId = array();
         $dataCount = 0;
@@ -302,7 +303,7 @@ class MelisComLanguageController extends AbstractActionController
         if($this->getRequest()->isPost()) {
             $hasErrorFlag = false;
             $isNameChecked = false;
-            $langTable = $this->getServiceLocator()->get('MelisEcomLangTable');
+            $langTable = $this->getServiceManager()->get('MelisEcomLangTable');
 
             $postData = get_object_vars($this->getRequest()->getPost());
             $postData = $this->getTool()->sanitizePost($postData);
@@ -382,7 +383,7 @@ class MelisComLanguageController extends AbstractActionController
                 $errors = $form->getMessages();
             }
             
-            $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+            $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
             $appConfigForm = $melisMelisCoreConfig->getItem('meliscommerce/tools/meliscommerce_language/forms/meliscommerce_language_form');
             $appConfigForm = $appConfigForm['elements'];
             
@@ -415,7 +416,7 @@ class MelisComLanguageController extends AbstractActionController
     {
         $response = array();
         $this->getEventManager()->trigger('meliscommerce_language_delete_start', $this, $response);
-        $langTable = $this->getServiceLocator()->get('MelisEcomLangTable');
+        $langTable = $this->getServiceManager()->get('MelisEcomLangTable');
         $textMessage = 'tr_meliscore_tool_language_delete_failed';
         
         $id = 0;
@@ -451,8 +452,8 @@ class MelisComLanguageController extends AbstractActionController
     
 //     private function hasAccess($key = 'meliscommerce_currency_lists')
 //     {
-//         $melisCoreAuth = $this->getServiceLocator()->get('MelisCoreAuth');
-//         $melisCoreRights = $this->getServiceLocator()->get('MelisCoreRights');
+//         $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
+//         $melisCoreRights = $this->getServiceManager()->get('MelisCoreRights');
 //         $xmlRights = $melisCoreAuth->getAuthRights();
         
 //         $isAccessible = $melisCoreRights->isAccessible($xmlRights, MelisCoreRightsService::MELISCORE_PREFIX_TOOLS, $key);

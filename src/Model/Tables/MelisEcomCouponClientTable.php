@@ -9,19 +9,25 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomCouponClientTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_coupon_client';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'ccli_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'ccli_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
+
     public function checkCouponClientExist($couponId, $clientId)
     {
         $select = $this->tableGateway->getSql()->select();

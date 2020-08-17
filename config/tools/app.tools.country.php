@@ -1,223 +1,231 @@
 <?php
-return array(
-    'plugins' => array(
-        'meliscommerce' => array(
-            'tools' => array(
-                'meliscommerce_country' => array(
-                    'conf' => array(
+
+/**
+ * Melis Technology (http://www.melistechnology.com)
+ *
+ * @copyright Copyright (c) 2016 Melis Technology (http://www.melistechnology.com)
+ *
+ */
+
+return [
+    'plugins' => [
+        'meliscommerce' => [
+            'tools' => [
+                'meliscommerce_country' => [
+                    'conf' => [
                         'title' => 'tr_meliscommerce_countries',
-                    ),
-                    'table' => array(
+                    ],
+                    'table' => [
                         'target' => '#tableComCountryList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComCountry/getComCountryData',
                         'dataFunction' => '',
                         'ajaxCallback' => '',
-                        'filters' => array(
-                            'left' => array(
-                                'country-table-limit' => array(
+                        'filters' => [
+                            'left' => [
+                                'country-table-limit' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComCountry',
                                     'action' => 'render-country-list-page-table-filter-limit',
-                                ),
-                            ),
-                            'center' => array(
-                                'country-table-search' => array(
+                                ],
+                            ],
+                            'center' => [
+                                'country-table-search' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComCountry',
                                     'action' => 'render-country-list-page-table-filter-search',
-                                ),
-                            ),
-                            'right' => array(
-                                'country-table-refresh' => array(
+                                ],
+                            ],
+                            'right' => [
+                                'country-table-refresh' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComCountry',
                                     'action' => 'render-country-list-page-table-filter-refresh',
-                                ),
-                            ),
-                        ),
-                        'columns' => array(
-                            'ctry_id' => array(
+                                ],
+                            ],
+                        ],
+                        'columns' => [
+                            'ctry_id' => [
                                 'text' => 'tr_meliscommerce_country_ctry_id',
-                                'css' => array('width' => '1%', 'padding-right' => '0'),
+                                'css' => ['width' => '1%', 'padding-right' => '0'],
                                 'sortable' => true,
                             
-                            ),
-                            'ctry_flag' => array(
+                            ],
+                            'ctry_flag' => [
                                 'text' => 'tr_meliscommerce_country_ctry_flag',
-                                'css' => array('width' => '10%', 'padding-right' => '0'),
+                                'css' => ['width' => '10%', 'padding-right' => '0'],
                                 'sortable' => false,
 
-                            ),
-                            'ctry_status' => array(
+                            ],
+                            'ctry_status' => [
                                 'text' => 'tr_meliscommerce_product_list_col_status',
-                                'css' => array('width' => '10%', 'padding-right' => '0'),
+                                'css' => ['width' => '10%', 'padding-right' => '0'],
                                 'sortable' => true,
 
-                            ),
-                            'ctry_name' => array(
+                            ],
+                            'ctry_name' => [
                                 'text' => 'tr_meliscommerce_country_ctry_name',
-                                'css' => array('width' => '40%', 'padding-right' => '0'),
+                                'css' => ['width' => '40%', 'padding-right' => '0'],
                                 'sortable' => true,
                             
-                            ),
-                            'cur_name' => array(
+                            ],
+                            'cur_name' => [
                                 'text' => 'tr_meliscommerce_country_ctry_currency_id',
-                                'css' => array('width' => '40%', 'padding-right' => '0'),
+                                'css' => ['width' => '40%', 'padding-right' => '0'],
                                 'sortable' => true,
                             
-                            ),
-                        ),
-                        'searchables' => array('melis_ecom_country.ctry_id', 'melis_ecom_country.ctry_name', 'melis_ecom_currency.cur_name', 'melis_ecom_currency.cur_symbol'),
-                        'actionButtons' => array(
-                            'edit' => array(
+                            ],
+                        ],
+                        'searchables' => ['melis_ecom_country.ctry_id', 'melis_ecom_country.ctry_name', 'melis_ecom_currency.cur_name', 'melis_ecom_currency.cur_symbol'],
+                        'actionButtons' => [
+                            'edit' => [
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComCountry',
                                 'action' => 'render-country-list-page-content-action-edit',
-                            ),
-                            'delete' => array(
+                            ],
+                            'delete' => [
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComCountry',
                                 'action' => 'render-country-list-page-content-action-delete',
-                            ),
-                        ),
-                    ),
-                    'modals' => array(),
-                    'forms' => array(
-                        'meliscommerce_country_form' => array(
-                            'attributes' => array(
+                            ],
+                        ],
+                    ],
+                    'modals' => [],
+                    'forms' => [
+                        'meliscommerce_country_form' => [
+                            'attributes' => [
                                 'name' => 'ecomCountryform',
                                 'id' => 'ecomCountryform',
                                 'method' => 'POST',
                                 'action' => '',
-                            ),
-                            'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
-                            'elements' => array(
-                                array(
-                                    'spec' => array(
+                            ],
+                            'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                            'elements' => [
+                                [
+                                    'spec' => [
                                         'name' => 'ctry_id',
                                         'type' => 'hidden',
-                                        'options' => array(
-                                        ),
-                                        'attributes' => array(
+                                        'options' => [
+                                        ],
+                                        'attributes' => [
                                             'id' => 'id_lang_id',
-                                        ),
-                                    ),
-                                ),
-                                array(
-                                    'spec' => array(
+                                        ],
+                                    ],
+                                ],
+                                [
+                                    'spec' => [
                                         'name' => 'tmp_ctry_name',
                                         'type' => 'hidden',
-                                        'options' => array(
-                                        ),
-                                        'attributes' => array(
+                                        'options' => [
+                                        ],
+                                        'attributes' => [
                                             'id' => 'id_tmp_ctry_name',
-                                        ),
-                                    ),
-                                ),
-                                array(
-                                    'spec' => array(
+                                        ],
+                                    ],
+                                ],
+                                [
+                                    'spec' => [
                                         'name' => 'ctry_flag',
                                         'type' => 'file',
-                                        'options' => array(
+                                        'options' => [
                                             //'label' => 'tr_meliscommerce_country_ctry_flag',
-                                        ),
-                                        'attributes' => array(
+                                        ],
+                                        'attributes' => [
                                             'id' => 'id_ctry_flag',
                                             'value' => '',
                                             'placeholder' => 'tr_meliscommerce_country_ctry_flag_choose',
                                             'data-buttonText' => 'Select Flag',
                                             'class' => 'filestyle',
                                             'onchange' => 'imagePreview("#imgCountryFlag", this);',
-                                        ),
-                                    ),
-                                ),
-                                array(
-                                    'spec' => array(
+                                        ],
+                                    ],
+                                ],
+                                [
+                                    'spec' => [
                                         'name' => 'ctry_name',
                                         'type' => 'MelisText',
-                                        'options' => array(
+                                        'options' => [
                                             'label' => 'tr_meliscommerce_country_ctry_name',
                                             'tooltip' => 'tr_meliscommerce_country_ctry_name tooltip',
-                                        ),
-                                        'attributes' => array(
+                                        ],
+                                        'attributes' => [
                                             'id' => 'id_lang_name',
                                             'value' => '',
                                             'required' => 'required',
-                                        ),
-                                    ),
-                                ),
-                                array(
-                                    'spec' => array(
+                                        ],
+                                    ],
+                                ],
+                                [
+                                    'spec' => [
                                         'name' => 'ctry_currency_id',
                                         'type' => 'EcomCurrencyAllStatusSelect',
-                                        'options' => array(
+                                        'options' => [
                                             'label' => 'tr_meliscommerce_country_ctry_select_empty',
                                             'tooltip' => 'tr_meliscommerce_country_ctry_select_empty tooltip',
                                             'empty_option' => 'tr_meliscommerce_categories_common_label_choose',
                                             'disable_inarray_validator' => true,
-                                        ),
-                                        'attributes' => array(
+                                        ],
+                                        'attributes' => [
                                             'id' => 'id_lang_locale',
                                             'value' => '',
-                                        ),
-                                    ),
-                                ),
-                            ),
-                            'input_filter' => array(
-                                'ctry_name' => array(
+                                        ],
+                                    ],
+                                ],
+                            ],
+                            'input_filter' => [
+                                'ctry_name' => [
                                     'name'     => 'ctry_name',
                                     'required' => true,
-                                    'validators' => array(
-                                        array(
+                                    'validators' => [
+                                        [
                                             'name'    => 'StringLength',
-                                            'options' => array(
+                                            'options' => [
                                                 'encoding' => 'UTF-8',
                                                 'max'      => 45,
-                                                'messages' => array(
-                                                    \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_country_ctry_name_long',
-                                                ),
-                                            ),
-                                        ),
-                                        array(
+                                                'messages' => [
+                                                    \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_country_ctry_name_long',
+                                                ],
+                                            ],
+                                        ],
+                                        [
                                             'name' => 'NotEmpty',
-                                            'options' => array(
-                                                'messages' => array(
-                                                    \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_country_ctry_name_empty',
-                                                ),
-                                            ),
-                                        ),
-                                    ),
-                                    'filters'  => array(
-                                        array('name' => 'StripTags'),
-                                        array('name' => 'StringTrim'),
-                                    ),
-                                ),
-                                'ctry_currency_id' => array(
+                                            'options' => [
+                                                'messages' => [
+                                                    \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_country_ctry_name_empty',
+                                                ],
+                                            ],
+                                        ],
+                                    ],
+                                    'filters'  => [
+                                        ['name' => 'StripTags'],
+                                        ['name' => 'StringTrim'],
+                                    ],
+                                ],
+                                'ctry_currency_id' => [
                                     'name'     => 'ctry_currency_id',
                                     'required' => false,
-                                    'validators' => array(
-                                        array(
+                                    'validators' => [
+                                        [
                                             'name'    => 'StringLength',
-                                            'options' => array(
+                                            'options' => [
                                                 'encoding' => 'UTF-8',
                                                 'max'      => 11,
-                                                'messages' => array(
-                                                    \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_country_ctry_currency_id_long',
-                                                ),
-                                            ),
-                                        ),
-                                    ),
-                                    'filters'  => array(
-                                        array('name' => 'StripTags'),
-                                        array('name' => 'StringTrim'),
-                                    ),
-                                ),
-                            ),
-                        ),
-                    ),
-                ),
+                                                'messages' => [
+                                                    \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_country_ctry_currency_id_long',
+                                                ],
+                                            ],
+                                        ],
+                                    ],
+                                    'filters'  => [
+                                        ['name' => 'StripTags'],
+                                        ['name' => 'StringTrim'],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
                 
-            ),    
-        ),
-    ),
-);
+            ],
+        ],
+    ],
+];

@@ -9,7 +9,7 @@
 
 namespace MelisCommerce\Service;
 use DateTime;
-use Zend\Http\Response;
+use Laminas\Http\Response;
 
 /**
  *
@@ -47,7 +47,7 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_list_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
+	    $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
 	    
         $orderData = $melisEcomOrderTable->getOrderList($arrayParameters['orderStatusId'] , $arrayParameters['onlyValid'],
                                                        $arrayParameters['clientId'], $arrayParameters['clientPersonId'], 
@@ -90,10 +90,10 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_byid_start', $arrayParameters);
 	     
 	    // Service implementation start
-	    $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
-	    $melisEcomClientTable = $this->getServiceLocator()->get('MelisEcomClientTable');
-	    $melisEcomClientSvc = $this->getServiceLocator()->get('MelisComClientService');
-	    $docSvc = $this->getServiceLocator()->get('MelisComDocumentService');
+	    $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
+	    $melisEcomClientTable = $this->getServiceManager()->get('MelisEcomClientTable');
+	    $melisEcomClientSvc = $this->getServiceManager()->get('MelisComClientService');
+	    $docSvc = $this->getServiceManager()->get('MelisComDocumentService');
 	    
 	    $melisOrder = new \MelisCommerce\Entity\MelisOrder();
 	    
@@ -177,13 +177,13 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_export_order_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $melisCoreConfig = $this->getServiceLocator()->get('MelisCoreConfig');
+	    $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
 	    // get config for file name
 	    $csvConfig = $melisCoreConfig->getItem('meliscommerce/datas/default/export/csv');
 	    $csvFileName = $csvConfig['orderFileName'];
 	    $dir = $csvConfig['dir'];
 	    
-	    $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
+	    $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
 	    
 	    $orderData = $melisEcomOrderTable->fetchAll();
 	    $count = $orderData->count();
@@ -240,9 +240,9 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_format_to_csv_start', $arrayParameters);
 	     
 	    // Service implementation start
-	    $orderStatusTransTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTransTable'); 
-	    $clientSvc = $this->getServiceLocator()->get('MelisComClientService');
-	    $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+	    $orderStatusTransTable = $this->getServiceManager()->get('MelisEcomOrderStatusTransTable');
+	    $clientSvc = $this->getServiceManager()->get('MelisComClientService');
+	    $countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
 	    
 	    $s = $arrayParameters['separator'];
 	    $e =  $arrayParameters['encapsulate'];
@@ -278,7 +278,7 @@ class MelisComOrderService extends MelisComGeneralService
 	    }
 	    
 	    //fetch currency
-	    $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+	    $currencyTable = $this->getServiceManager()->get('MelisEcomCurrencyTable');
 	    
 	    foreach($currencyTable->fetchAll() as $data){
 	        $currencies[] = $data;
@@ -354,7 +354,7 @@ class MelisComOrderService extends MelisComGeneralService
 	    
 	    // coupons
 	    // fetch order coupons
-	    $couponSvc= $this->getServiceLocator()->get('MelisComCouponService');
+	    $couponSvc= $this->getServiceManager()->get('MelisComCouponService');
 	    $couponData= $couponSvc->getCouponList($order->ord_id);
 	    if(!empty($couponData)){
 	        $content[] = 'COUPONS';
@@ -463,7 +463,7 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_status_byorderid_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
+	    $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
 	    foreach($melisEcomOrderTable->getOrderStatusByOrderId($arrayParameters['orderId'], $arrayParameters['langId']) as $status){
 	        $results[] = $status;
 	    }
@@ -495,9 +495,9 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_addresses_byorderid_start', $arrayParameters);
 	    
 	    // Service implementation start	    	    
-	    $melisEcomOrderAddressTable = $this->getServiceLocator()->get('MelisEcomOrderAddressTable');
-	    $melisEcomCivilityTransTable = $this->getServiceLocator()->get('MelisEcomCivilityTransTable');
-	    $melisEcomClientAddressTypeTransTable = $this->getServiceLocator()->get('MelisEcomClientAddressTypeTransTable');
+	    $melisEcomOrderAddressTable = $this->getServiceManager()->get('MelisEcomOrderAddressTable');
+	    $melisEcomCivilityTransTable = $this->getServiceManager()->get('MelisEcomCivilityTransTable');
+	    $melisEcomClientAddressTypeTransTable = $this->getServiceManager()->get('MelisEcomClientAddressTypeTransTable');
 	    foreach($melisEcomOrderAddressTable->getOrderAddressesByOrderId($arrayParameters['orderId']) as $address){
 	        $addressTrans = array();
 	        $civilityTrans = array();
@@ -539,7 +539,7 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_basket_byorderid_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $melisEcomOrderBasketTable = $this->getServiceLocator()->get('MelisEcomOrderBasketTable');
+	    $melisEcomOrderBasketTable = $this->getServiceManager()->get('MelisEcomOrderBasketTable');
 
 	    foreach ($melisEcomOrderBasketTable->getOrderBaskets($arrayParameters['orderId'], $arrayParameters['start'], $arrayParameters['limit'], $arrayParameters['search'], $arrayParameters['order']) as $basket){
 	        $results[] = $basket;
@@ -573,7 +573,7 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_shipping_byorderid_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $melisEcomOrderShippingTable = $this->getServiceLocator()->get('MelisEcomOrderShippingTable');
+	    $melisEcomOrderShippingTable = $this->getServiceManager()->get('MelisEcomOrderShippingTable');
 	    foreach($melisEcomOrderShippingTable->getOrderShippingByOrderId($arrayParameters['orderId']) as $shipping){
 	        $results[] =  $shipping;
 	    }
@@ -606,7 +606,7 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_message_byorderid_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $melisEcomOrderMessageTable = $this->getServiceLocator()->get('MelisEcomOrderMessageTable');
+	    $melisEcomOrderMessageTable = $this->getServiceManager()->get('MelisEcomOrderMessageTable');
 	    foreach($melisEcomOrderMessageTable->getOrderMessageByOrderId($arrayParameters['orderId']) as $message){
 	        $results[] = $message;
 	    }
@@ -639,8 +639,8 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_payment_byorderid_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $melisEcomOrderPaymentTable = $this->getServiceLocator()->get('MelisEcomOrderPaymentTable');
-	    $melisEcomOrderPaymentTypeTable = $this->getServiceLocator()->get('MelisEcomOrderPaymentTypeTable');
+	    $melisEcomOrderPaymentTable = $this->getServiceManager()->get('MelisEcomOrderPaymentTable');
+	    $melisEcomOrderPaymentTypeTable = $this->getServiceManager()->get('MelisEcomOrderPaymentTypeTable');
 	    foreach($melisEcomOrderPaymentTable->getEntryByField('opay_order_id', $arrayParameters['orderId']) as  $payment){
 	        $payment->payment_type = $melisEcomOrderPaymentTypeTable->getEntryByField('opty_id', $payment->opay_payment_type_id)->current();
 	        $results[] = $payment;
@@ -673,7 +673,7 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_status_list_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $melisEcomOrderStatusTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTable');
+	    $melisEcomOrderStatusTable = $this->getServiceManager()->get('MelisEcomOrderStatusTable');
 	    $status = $melisEcomOrderStatusTable->getOrderStatusListByLangId($arrayParameters['langId'], $arrayParameters['onlyValid']);
 	    foreach($status as $item){
 	        $results[] = $item;
@@ -707,8 +707,8 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_statuses_start', $arrayParameters);
 	     
 	    // Service implementation start
-	    $melisEcomOrderStatusTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTable');
-	    $orderStatusTransTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTransTable');
+	    $melisEcomOrderStatusTable = $this->getServiceManager()->get('MelisEcomOrderStatusTable');
+	    $orderStatusTransTable = $this->getServiceManager()->get('MelisEcomOrderStatusTransTable');
 	    
 	    $status = $melisEcomOrderStatusTable->getOrderStatusList(
 	        $arrayParameters['onlyValid'], $arrayParameters['start'], $arrayParameters['limit'], 
@@ -744,8 +744,8 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_status_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $melisEcomOrderStatusTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTable');
-	    $orderStatusTransTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTransTable');
+	    $melisEcomOrderStatusTable = $this->getServiceManager()->get('MelisEcomOrderStatusTable');
+	    $orderStatusTransTable = $this->getServiceManager()->get('MelisEcomOrderStatusTransTable');
 	     
 	    $status = $melisEcomOrderStatusTable->getEntryById($arrayParameters['orderStatusId'])->current();;
 	    
@@ -784,7 +784,7 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_paymenttype_list_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $melisEcomOrderPaymentTypeTable = $this->getServiceLocator()->get('MelisEcomOrderPaymentTypeTable');
+	    $melisEcomOrderPaymentTypeTable = $this->getServiceManager()->get('MelisEcomOrderPaymentTypeTable');
 	    $results = $melisEcomOrderPaymentTypeTable->fetchAll();
 	    // Service implementation end
 	    
@@ -806,7 +806,7 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_get_client_order_start', $arrayParameters);
 	     
 	    // Service implementation start
-	    $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
+	    $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
         	    
 	    $clientOrderData = $melisEcomOrderTable->getClientOrderDetailsById($arrayParameters['orderId'], $arrayParameters['clientId'], $arrayParameters['personId'], $arrayParameters['langId'])->current();
 	    if (!empty($clientOrderData))
@@ -833,7 +833,7 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_get_order_payment_payment_type_coupon_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
+	    $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
 	     
 	    $orderPayment = $melisEcomOrderTable->getOrderPaymentWithTypeAndCouponByOrderId($orderId)->current(); 
 	    
@@ -875,7 +875,7 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_save_start', $arrayParameters);
 	     
 	    // Service implementation start
-	    $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
+	    $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
 	    
 	    if (!empty($order)&&is_array($order))
 	    {
@@ -990,7 +990,7 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_address_save_start', $arrayParameters);
          
 	    // Service implementation start
-	    $melisEcomOrderAddressTable = $this->getServiceLocator()->get('MelisEcomOrderAddressTable');
+	    $melisEcomOrderAddressTable = $this->getServiceManager()->get('MelisEcomOrderAddressTable');
 	    try
 	    {
 	        if (!is_null($arrayParameters['addressId']))
@@ -1035,7 +1035,7 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_payment_save_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $melisEcomOrderPaymentTypeTable = $this->getServiceLocator()->get('MelisEcomOrderPaymentTypeTable');
+	    $melisEcomOrderPaymentTypeTable = $this->getServiceManager()->get('MelisEcomOrderPaymentTypeTable');
 	    try
 	    {
 	        $opayId = $melisEcomOrderPaymentTypeTable->save($arrayParameters['payment'], $arrayParameters['paymentId']);
@@ -1072,7 +1072,7 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_basket_save_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $melisEcomOrderBasketTable = $this->getServiceLocator()->get('MelisEcomOrderBasketTable');
+	    $melisEcomOrderBasketTable = $this->getServiceManager()->get('MelisEcomOrderBasketTable');
 	    try
 	    {
 	        $obasId = $melisEcomOrderBasketTable->save($arrayParameters['basket'], $arrayParameters['basketId']);
@@ -1110,7 +1110,7 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_shipping_save_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $melisEcomOrderShippingTable = $this->getServiceLocator()->get('MelisEcomOrderShippingTable');
+	    $melisEcomOrderShippingTable = $this->getServiceManager()->get('MelisEcomOrderShippingTable');
 	    try
 	    {
 	        $oshipId = $melisEcomOrderShippingTable->save($arrayParameters['shipping'], $arrayParameters['shippingId']);
@@ -1148,7 +1148,7 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_orderstatus_byorderid_update_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $melisEcomOrderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
+	    $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
 	    try
 	    {
 	        $orderStatus = array('ord_status' => $arrayParameters['newStatusId']);
@@ -1186,8 +1186,8 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_status_save_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $melisEcomOrderStatusTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTable');
-	    $melisEcomOrderStatusTransTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTransTable');
+	    $melisEcomOrderStatusTable = $this->getServiceManager()->get('MelisEcomOrderStatusTable');
+	    $melisEcomOrderStatusTransTable = $this->getServiceManager()->get('MelisEcomOrderStatusTransTable');
 	    try
 	    {
 	        unset($arrayParameters['orderStatus']['osta_id']);
@@ -1236,7 +1236,7 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_paymenttype_save_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $melisEcomOrderPaymentTypeTable = $this->getServiceLocator()->get('MelisEcomOrderPaymentTypeTable');
+	    $melisEcomOrderPaymentTypeTable = $this->getServiceManager()->get('MelisEcomOrderPaymentTypeTable');
 	    try
 	    {
 	        $optyId = $melisEcomOrderPaymentTypeTable->save($arrayParameters['paymentType'], $arrayParameters['orderPaymentTypeId']);
@@ -1272,7 +1272,7 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_message_save_start', $arrayParameters);
 	     
 	    // Service implementation start
-	    $orderMessageTable = $this->getServiceLocator()->get('MelisEcomOrderMessageTable');
+	    $orderMessageTable = $this->getServiceManager()->get('MelisEcomOrderMessageTable');
 	    try
 	    {
 	        $omsg_id = $orderMessageTable->save($arrayParameters['orderMessage'], $arrayParameters['orderMessageId']);
@@ -1304,8 +1304,8 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_status_delete_start', $arrayParameters);
 	
 	    // Service implementation start
-	    $orderStatusTbl = $this->getServiceLocator()->get('MelisEcomOrderStatusTable');
-	    $orderStatusTransTbl = $this->getServiceLocator()->get('MelisEcomOrderStatusTransTable');
+	    $orderStatusTbl = $this->getServiceManager()->get('MelisEcomOrderStatusTable');
+	    $orderStatusTransTbl = $this->getServiceManager()->get('MelisEcomOrderStatusTransTable');
 	    try
 	    {
 	        $results = $orderStatusTransTbl->deleteByField('ostt_status_id', $arrayParameters['orderStatusId']);
@@ -1338,7 +1338,7 @@ class MelisComOrderService extends MelisComGeneralService
 	    $arrayParameters = $this->sendEvent('meliscommerce_service_order_widget_order_start', $arrayParameters);
 	    
 	    // Service implementation start
-	    $orderTable = $this->getServiceLocator()->get('MelisEcomOrderTable');
+	    $orderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
 	    switch($arrayParameters['identifier']){
 	        case 'curMonth':
 	            $results = $orderTable->getCurrentMonth($arrayParameters['onlyValid'])->count(); break;

@@ -1,13 +1,18 @@
 <?php
 
-return array(
-    'plugins' => array(
-        'meliscommerce' => array(
-            'tools' => array(   
-                'meliscommerce_variants' => array(   
-                    
-                ),
-            ),
-        ),
-    ),
-);
+/**
+ * Melis Technology (http://www.melistechnology.com)
+ *
+ * @copyright Copyright (c) 2016 Melis Technology (http://www.melistechnology.com)
+ *
+ */
+
+return [
+    'plugins' => [
+        'meliscommerce' => [
+            'tools' => [
+                'meliscommerce_variants' => [],
+            ],
+        ],
+    ],
+];

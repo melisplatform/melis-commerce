@@ -1,261 +1,269 @@
-<?php 
-return array(
-    'plugins' => array(
-        'meliscommerce' => array(
-            'forms' => array(
-                'meliscommerce_seo' => array(
-                    'meliscommerce_seo_form' => array(
-                        'attributes' => array(
+<?php
+
+/**
+ * Melis Technology (http://www.melistechnology.com)
+ *
+ * @copyright Copyright (c) 2016 Melis Technology (http://www.melistechnology.com)
+ *
+ */
+
+return [
+    'plugins' => [
+        'meliscommerce' => [
+            'forms' => [
+                'meliscommerce_seo' => [
+                    'meliscommerce_seo_form' => [
+                        'attributes' => [
                             'name' => 'seoForm',
                             'id' => 'seoForm',
                             'method' => '',
                             'action' => '',
-                        ),
-                        'hydrator'  => 'Zend\Stdlib\Hydrator\ArraySerializable',
-                        'elements' => array(
-                            array(
-                                'spec' => array(
+                        ],
+                        'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                        'elements' => [
+                            [
+                                'spec' => [
                                     'name' => 'eseo_id',
                                     'type' => 'hidden',
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
+                                ],
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'eseo_lang_id',
                                     'type' => 'hidden',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_seo_Lang_id',
-                                    ),
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'eseo_page_id',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_seo_Page_id',
                                         'tooltip' => 'tr_meliscommerce_seo_Page_id tooltip',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'eseo_page_id',
-                                    ),
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'eseo_meta_title',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_seo_Meta_title',
                                         'tooltip' => 'tr_meliscommerce_seo_Meta_title tooltip',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'eseo_meta_title',
-                                    ),
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'eseo_meta_description',
                                     'type' => 'Textarea',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_seo_Meta_description',
                                         'tooltip' => 'tr_meliscommerce_seo_Meta_description tooltip',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'eseo_meta_description',
                                         'rows' => 5,
                                         'class' => 'melis-seo-desc form-control'
-                                    ),
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'eseo_url',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_seo_Url',
                                         'tooltip' => 'tr_meliscommerce_seo_Url tooltip',
-                                    ),
-                                    'attributes' => array(
+                                    ],
+                                    'attributes' => [
                                         'id' => 'eseo_url',
-                                    ),
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'eseo_url_redirect',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_seo_Url_redirect',
                                         'tooltip' => 'tr_meliscommerce_seo_Url_redirect tooltip',
-                                        'label_options' => array(
+                                        'label_options' => [
                                             'disable_html_escape' => true,
-                                        ),
-                                    ),
-                                    'attributes' => array(
+                                        ],
+                                    ],
+                                    'attributes' => [
                                         'id' => 'eseo_url_redirect',
-                                    ),
-                                ),
-                            ),
-                            array(
-                                'spec' => array(
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'eseo_url_301',
                                     'type' => 'MelisText',
-                                    'options' => array(
+                                    'options' => [
                                         'label' => 'tr_meliscommerce_seo_Url_301',
                                         'tooltip' => 'tr_meliscommerce_seo_Url_301 tooltip',
-                                        'label_options' => array(
+                                        'label_options' => [
                                             'disable_html_escape' => true,
-                                        ),
-                                    ),
-                                    'attributes' => array(
+                                        ],
+                                    ],
+                                    'attributes' => [
                                         'id' => 'eseo_url_301',
-                                    ),
-                                ),
-                            ),
-                        ),
-                        'input_filter' => array(
-                            'eseo_lang_id' => array(
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'input_filter' => [
+                            'eseo_lang_id' => [
                                 'name'     => 'eseo_lang_id',
                                 'required' => true,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name' => 'NotEmpty',
-                                        'options' => array(
-                                            'messages' => array(
-                                                \Zend\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_seo_Seo_input_empty',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'eseo_page_id' => array(
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_seo_Seo_input_empty',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'eseo_page_id' => [
                                 'name'     => 'eseo_page_id',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name'    => 'IsInt',
-                                        'options' => array(
-                                            'messages' => array(
-                                                Zend\I18n\Validator\IsInt::NOT_INT => 'tr_meliscommerce_seo_Page_id_invalid',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'eseo_meta_title' => array(
+                                        'options' => [
+                                            'messages' => [
+                                                Laminas\I18n\Validator\IsInt::NOT_INT => 'tr_meliscommerce_seo_Page_id_invalid',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'eseo_meta_title' => [
                                 'name'     => 'eseo_meta_title',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name'    => 'StringLength',
-                                        'options' => array(
+                                        'options' => [
                                             'encoding' => 'UTF-8',
                                             'max'      => 255,
-                                            'messages' => array(
-                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_seo_err_title_too_long_255',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'eseo_meta_description' => array(
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_seo_err_title_too_long_255',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'eseo_meta_description' => [
                                 'name'     => 'eseo_meta_description',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name'    => 'StringLength',
-                                        'options' => array(
+                                        'options' => [
                                             'encoding' => 'UTF-8',
                                             'max'      => 255,
-                                            'messages' => array(
-                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_seo_err_desc_too_long_255',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'eseo_url' => array(
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_seo_err_desc_too_long_255',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'eseo_url' => [
                                 'name'     => 'eseo_url',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name'    => 'StringLength',
-                                        'options' => array(
+                                        'options' => [
                                             'encoding' => 'UTF-8',
                                             'max'      => 255,
-                                            'messages' => array(
-                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_seo_err_url_too_long_255',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'eseo_url_redirect' => array(
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_seo_err_url_too_long_255',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'eseo_url_redirect' => [
                                 'name'     => 'eseo_url_redirect',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name'    => 'StringLength',
-                                        'options' => array(
+                                        'options' => [
                                             'encoding' => 'UTF-8',
                                             'max'      => 255,
-                                            'messages' => array(
-                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_seo_err_url_redirect_too_long_255',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                            'eseo_url_301' => array(
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_seo_err_url_redirect_too_long_255',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'eseo_url_301' => [
                                 'name'     => 'eseo_url_301',
                                 'required' => false,
-                                'validators' => array(
-                                    array(
+                                'validators' => [
+                                    [
                                         'name'    => 'StringLength',
-                                        'options' => array(
+                                        'options' => [
                                             'encoding' => 'UTF-8',
                                             'max'      => 255,
-                                            'messages' => array(
-                                                \Zend\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_seo_err_url_301_too_long_255',
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                                'filters'  => array(
-                                    array('name' => 'StripTags'),
-                                    array('name' => 'StringTrim'),
-                                ),
-                            ),
-                        ),
-                    ),
-                )
-            )
-        )
-    )
-);
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_seo_err_url_301_too_long_255',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                        ],
+                    ],
+                ]
+            ]
+        ]
+    ]
+];

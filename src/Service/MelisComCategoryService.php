@@ -10,7 +10,7 @@
 namespace MelisCommerce\Service;
 
 use MelisCommerce\Model\MelisCategory;
-use Zend\Stdlib\ArrayUtils;
+use Laminas\Stdlib\ArrayUtils;
 /**
  *
  * This service handles the category system of MelisCommerce.
@@ -41,7 +41,7 @@ class MelisComCategoryService extends MelisComGeneralService
         
         // Service implementation start
         
-        $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
+        $melisEcomCategoryTable = $this->getServiceManager()->get('MelisEcomCategoryTable');
         // Getting Categories under Category ID
         $melisCategoryData = $this->getCategoryListByIdRecursive($arrayParameters['categoryId'], $arrayParameters['langId'], $arrayParameters['onlyValid'], $arrayParameters['start'], $arrayParameters['limit']);
         
@@ -81,7 +81,7 @@ class MelisComCategoryService extends MelisComGeneralService
         $limit = $arrayParameters['limit'];
         $fatherId = $arrayParameters['fatherId'];
         
-        $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
+        $melisEcomCategoryTable = $this->getServiceManager()->get('MelisEcomCategoryTable');
         
         $dataCategoryData = $melisEcomCategoryTable->getCategoryChildrenListById($categoryId, $langId, $onlyValid, $start, $limit, $fatherId);
 
@@ -118,10 +118,10 @@ class MelisComCategoryService extends MelisComGeneralService
         // Retrieve cache version if front mode to avoid multiple calls
         $cacheKey = 'category-' . $categoryId . '-getCategoryById_' . $categoryId . '_' . $langId;
         $cacheConfig = 'commerce_big_services';
-        $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
 //        if (!empty($results)) return $results;
-        $cache = $this->getServiceLocator()->get($cacheConfig);
+        $cache = $this->getServiceManager()->get($cacheConfig);
         if ($cache->hasItem($cacheKey)){
             return $cache->getItem($cacheKey);
         }
@@ -136,7 +136,7 @@ class MelisComCategoryService extends MelisComGeneralService
         // Service implementation start
         $melisCategory = new \MelisCommerce\Entity\MelisCategory();
         
-        $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
+        $melisEcomCategoryTable = $this->getServiceManager()->get('MelisEcomCategoryTable');
         
         // Getting Categories under Category ID
         $melisCategoryDataRes = $melisEcomCategoryTable->getEntryById($arrayParameters['categoryId']);
@@ -193,10 +193,10 @@ class MelisComCategoryService extends MelisComGeneralService
         // Retrieve cache version if front mode to avoid multiple calls
         $cacheKey = 'category-' . $categoryId . '-getCategoryNameById_' . $categoryId . '_' . $langId;
         $cacheConfig = 'commerce_big_services';
-        $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
 //        if (!empty($results)) return $results;
-        $cache = $this->getServiceLocator()->get($cacheConfig);
+        $cache = $this->getServiceManager()->get($cacheConfig);
         if ($cache->hasItem($cacheKey)){
             return $cache->getItem($cacheKey);
         }
@@ -218,7 +218,7 @@ class MelisComCategoryService extends MelisComGeneralService
 
         if (!empty($catTrans))
         {
-             // Getting the first available translation of the Category
+            // Getting the first available translation of the Category
             foreach ($catTrans As $val)
             {
                 if (!empty($val->catt_name) && $val->elang_id == $arrayParameters['langId']) 
@@ -272,10 +272,10 @@ class MelisComCategoryService extends MelisComGeneralService
         // Retrieve cache version if front mode to avoid multiple calls
         $cacheKey = 'category-' . $categoryId . '-getCategoryProductsById_' . $categoryId . '_' . $langId . '_'.$onlyValid;
         $cacheConfig = 'commerce_big_services';
-        $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
 //        if (!empty($results)) return $results;
-        $cache = $this->getServiceLocator()->get($cacheConfig);
+        $cache = $this->getServiceManager()->get($cacheConfig);
         if ($cache->hasItem($cacheKey)){
             return $cache->getItem($cacheKey);
         }
@@ -290,8 +290,8 @@ class MelisComCategoryService extends MelisComGeneralService
         // Service implementation start
         $melisProduct = new \MelisCommerce\Entity\MelisProduct();
         
-        $melisComProductService = $this->getServiceLocator()->get('MelisComProductService');
-        $melisEcomProductCategoryTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');
+        $melisComProductService = $this->getServiceManager()->get('MelisComProductService');
+        $melisEcomProductCategoryTable = $this->getServiceManager()->get('MelisEcomProductCategoryTable');
         
         $categorProductsData = $melisEcomProductCategoryTable->getCategoryProductsByCategoryId($arrayParameters['categoryId'], $arrayParameters['onlyValid']);
         
@@ -324,8 +324,8 @@ class MelisComCategoryService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_categories_products_byids_start', $arrayParameters);
         
         // Service implementation start
-        $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
-        $prdSrv = $this->getServiceLocator()->get('MelisComProductService');
+        $melisEcomCategoryTable = $this->getServiceManager()->get('MelisEcomCategoryTable');
+        $prdSrv = $this->getServiceManager()->get('MelisComProductService');
         
         $category = $melisEcomCategoryTable->getCategoriesByIds($arrayParameters['categoryIds'], $arrayParameters['onlyvalid'], $arrayParameters['langId'],  $arrayParameters['column'],  $arrayParameters['order']);
         
@@ -364,7 +364,7 @@ class MelisComCategoryService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_categories_products_byids_start', $arrayParameters);
         
         // Service implementation start
-        $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
+        $melisEcomCategoryTable = $this->getServiceManager()->get('MelisEcomCategoryTable');
         $categories = $melisEcomCategoryTable->getCategoriesByIds($arrayParameters['categoryIds'], $arrayParameters['onlyvalid'], $arrayParameters['langId'],  $arrayParameters['column'],  $arrayParameters['order']);
         
         foreach ($categories As $key => $val)
@@ -394,8 +394,8 @@ class MelisComCategoryService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_categories_products_byids_start', $arrayParameters);
         
         // Service implementation start
-        $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
-        $prdSrv = $this->getServiceLocator()->get('MelisComProductService');
+        $melisEcomCategoryTable = $this->getServiceManager()->get('MelisEcomCategoryTable');
+        $prdSrv = $this->getServiceManager()->get('MelisComProductService');
         
         $subCats = $melisEcomCategoryTable->getEntryByField('cat_father_cat_id', $categoryId);
         
@@ -432,10 +432,10 @@ class MelisComCategoryService extends MelisComGeneralService
         // Retrieve cache version if front mode to avoid multiple calls
         $cacheKey = 'category-' . $categoryId . '-getCategoryCountriesById_' . $categoryId;
         $cacheConfig = 'commerce_big_services';
-        $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
 //        if (!empty($results)) return $results;
-        $cache = $this->getServiceLocator()->get($cacheConfig);
+        $cache = $this->getServiceManager()->get($cacheConfig);
         if ($cache->hasItem($cacheKey)){
             return $cache->getItem($cacheKey);
         }
@@ -451,12 +451,12 @@ class MelisComCategoryService extends MelisComGeneralService
         
         if (!is_null($arrayParameters['categoryId']))
         {
-            $melisEcomCountryCategoryTable = $this->getServiceLocator()->get('MelisEcomCountryCategoryTable');
+            $melisEcomCountryCategoryTable = $this->getServiceManager()->get('MelisEcomCountryCategoryTable');
             $catCountriesData = $melisEcomCountryCategoryTable->getEntryByField('ccat_category_id', $arrayParameters['categoryId'])->current();
             
             if (!empty($catCountriesData))
             {
-                $melisEcomCountryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+                $melisEcomCountryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
                 
                 if ($catCountriesData->ccat_country_id == '-1')
                 {
@@ -514,10 +514,10 @@ class MelisComCategoryService extends MelisComGeneralService
         // Retrieve cache version if front mode to avoid multiple calls
         $cacheKey = 'category-' . $categoryId . '-getCategoryTranslationById_' . $categoryId . '_' . $langId;
         $cacheConfig = 'commerce_big_services';
-        $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
 //        if (!empty($results)) return $results;
-        $cache = $this->getServiceLocator()->get($cacheConfig);
+        $cache = $this->getServiceManager()->get($cacheConfig);
         if ($cache->hasItem($cacheKey)){
             return $cache->getItem($cacheKey);
         }
@@ -530,7 +530,7 @@ class MelisComCategoryService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_get_category_translations_start', $arrayParameters);
         
         // Service implementation start
-        $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
+        $melisEcomCategoryTable = $this->getServiceManager()->get('MelisEcomCategoryTable');
         $melisCategoryTranslation = $melisEcomCategoryTable->getCategoryTranslationBylangId($arrayParameters['categoryId'], $arrayParameters['langId'], $arrayParameters['onlyValid']);
         
         foreach ($melisCategoryTranslation As $val)
@@ -609,10 +609,10 @@ class MelisComCategoryService extends MelisComGeneralService
         // Retrieve cache version if front mode to avoid multiple calls
         $cacheKey = 'category-' . $categoryId . '-getSubCategoryIdByIdRecursive_' . $categoryId . '_' . $onlyValid . '_' . $fatherId . '_' . $langId;
         $cacheConfig = 'commerce_big_services';
-        $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
 //        if (!empty($results)) return $results;
-        $cache = $this->getServiceLocator()->get($cacheConfig);
+        $cache = $this->getServiceManager()->get($cacheConfig);
         if ($cache->hasItem($cacheKey)){
             return $cache->getItem($cacheKey);
         }
@@ -629,7 +629,7 @@ class MelisComCategoryService extends MelisComGeneralService
         $fatherId = $arrayParameters['fatherId'];
         $langId = $arrayParameters['langId'];
         
-        $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
+        $melisEcomCategoryTable = $this->getServiceManager()->get('MelisEcomCategoryTable');
         
         
         $dataCategoryData = $melisEcomCategoryTable->getSubCategoryIdById($categoryId, $onlyValid, $fatherId, $langId)->toArray();
@@ -677,7 +677,7 @@ class MelisComCategoryService extends MelisComGeneralService
         /**
          * Retreiving Category data using Category service
          */
-        $categoryTbl = $this->getServiceLocator()->get('MelisEcomCategoryTable');
+        $categoryTbl = $this->getServiceManager()->get('MelisEcomCategoryTable');
         $categoryRes = $categoryTbl->getParentCategory($arrayParameters['parentId'], $arrayParameters['langId'], $arrayParameters['addSeo']);
         
         if (!empty($categoryRes))
@@ -732,7 +732,7 @@ class MelisComCategoryService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_save_start', $arrayParameters);
         
         // Service implementation start
-        $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
+        $melisEcomCategoryTable = $this->getServiceManager()->get('MelisEcomCategoryTable');
         
         $catId = null;
         try
@@ -770,7 +770,7 @@ class MelisComCategoryService extends MelisComGeneralService
             
             // SEO Service
             $categorySeo = $arrayParameters['categorySeo'];
-            $melisComSeoService = $this->getServiceLocator()->get('MelisComSeoService');
+            $melisComSeoService = $this->getServiceManager()->get('MelisComSeoService');
             $result = $melisComSeoService->saveSeoDataAction('category', $catId, $categorySeo);
             
             if ($result!=true)
@@ -778,7 +778,7 @@ class MelisComCategoryService extends MelisComGeneralService
                 return null;
             }
             
-            $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+            $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
             $melisEngineCacheSystem->deleteCacheByPrefix('category-' . $catId, 'commerce_big_services');
             $melisEngineCacheSystem->deleteCacheByPrefix('categories', 'commerce_big_services');
             
@@ -816,7 +816,7 @@ class MelisComCategoryService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_save_translations_start', $arrayParameters);
         $successFlag = false;
         // Service implementation start
-        $melisEcomCategoryTransTable = $this->getServiceLocator()->get('MelisEcomCategoryTransTable');
+        $melisEcomCategoryTransTable = $this->getServiceManager()->get('MelisEcomCategoryTransTable');
         
         $categoryTranslations = $arrayParameters['categoryTranslations'];
         $categoryTranslationId = $arrayParameters['categoryTranslationId'];
@@ -848,7 +848,7 @@ class MelisComCategoryService extends MelisComGeneralService
         
         if (!empty($categoryTranslations['catt_category_id']))
         {
-            $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+            $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
             $melisEngineCacheSystem->deleteCacheByPrefix('category-' . $categoryTranslations['catt_category_id'], 'commerce_big_services');
             $melisEngineCacheSystem->deleteCacheByPrefix('categories', 'commerce_big_services');
         }
@@ -884,7 +884,7 @@ class MelisComCategoryService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_save_countries_start', $arrayParameters);
         $successFlag = false;
         // Service implementation start
-        $melisEcomCountryCategoryTable = $this->getServiceLocator()->get('MelisEcomCountryCategoryTable');
+        $melisEcomCountryCategoryTable = $this->getServiceManager()->get('MelisEcomCountryCategoryTable');
         
         // Deleting existing data that has same Category ID
         $numDeleted = $melisEcomCountryCategoryTable->deleteByField('ccat_category_id',$arrayParameters['categoryId']);
@@ -904,7 +904,7 @@ class MelisComCategoryService extends MelisComGeneralService
             }
         }
         // Service implementation end
-        $melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
         $melisEngineCacheSystem->deleteCacheByPrefix('category-' . $categoryId, 'commerce_big_services');
         $melisEngineCacheSystem->deleteCacheByPrefix('categories', 'commerce_big_services');
         
@@ -933,7 +933,7 @@ class MelisComCategoryService extends MelisComGeneralService
         
         if (!is_null($arrayParameters['categoryId']))
         {
-            $ecomSeotable = $this->serviceLocator->get('MelisEcomSeoTable');
+            $ecomSeotable = $this->getServiceManager()->get('MelisEcomSeoTable');
             $data = $ecomSeotable->getCategorySeoById($arrayParameters['categoryId'], $arrayParameters['langId']);
             foreach($data as $seo){
                 array_push($results, $seo);
@@ -968,7 +968,7 @@ class MelisComCategoryService extends MelisComGeneralService
         $langId = $arrayParameters['langId'];
         $onlyValid= $arrayParameters['onlyValid'];
         
-        $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
+        $melisEcomCategoryTable = $this->getServiceManager()->get('MelisEcomCategoryTable');
         $categoryData = $melisEcomCategoryTable->getCategoryByFatherId($fatherId, $onlyValid);
 
         $catData = $categoryData->toArray();
@@ -976,7 +976,7 @@ class MelisComCategoryService extends MelisComGeneralService
         /**
          * TEMPORARY, NEED TO CREATE GENERAL HELPER FOR THIS
          */
-        $escaper = new \Zend\Escaper\Escaper('utf-8');
+        $escaper = new \Laminas\Escaper\Escaper('utf-8');
 
         foreach ($catData As $key => $val)
         {
@@ -1042,7 +1042,7 @@ class MelisComCategoryService extends MelisComGeneralService
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_product_add_start', $arrayParameters);
         
-        $melisEcomProductCategoryTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');
+        $melisEcomProductCategoryTable = $this->getServiceManager()->get('MelisEcomProductCategoryTable');
         
         try
         {
@@ -1103,7 +1103,7 @@ class MelisComCategoryService extends MelisComGeneralService
         
         $catProdId = $arrayParameters['categoryProductId'];
         
-        $melisEcomProductCategoryTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');
+        $melisEcomProductCategoryTable = $this->getServiceManager()->get('MelisEcomProductCategoryTable');
         
         try
         {
@@ -1150,7 +1150,7 @@ class MelisComCategoryService extends MelisComGeneralService
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_product_delete_start', $arrayParameters);
         
-        $melisEcomProductCategoryTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');
+        $melisEcomProductCategoryTable = $this->getServiceManager()->get('MelisEcomProductCategoryTable');
         $categoryProduct = $melisEcomProductCategoryTable->getEntryById($arrayParameters['categoryProductId'])->current();
         if (!empty($categoryProduct))
         {
@@ -1161,7 +1161,7 @@ class MelisComCategoryService extends MelisComGeneralService
                 $melisEcomProductCategoryTable->deleteById($arrayParameters['categoryProductId']);
                 
                 // Reorder all Category Products after deletion
-                $melisEcomProductCategoryTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');
+                $melisEcomProductCategoryTable = $this->getServiceManager()->get('MelisEcomProductCategoryTable');
                 $categoryProducts = $melisEcomProductCategoryTable->getCategoryProductsByCategoryId($categoryId)->toArray();
                 
                 $ctr = 1;
@@ -1204,7 +1204,7 @@ class MelisComCategoryService extends MelisComGeneralService
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_product_reorder_start', $arrayParameters);
         $categoryId = (int) $arrayParameters['categoryId'];
-        $productCategoryTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');
+        $productCategoryTable = $this->getServiceManager()->get('MelisEcomProductCategoryTable');
         $prodCatData = $productCategoryTable->getEntryByField('pcat_cat_id', $categoryId)->toArray();
         $orders = array();
         $prodCatIds = array();
@@ -1278,7 +1278,7 @@ class MelisComCategoryService extends MelisComGeneralService
         /**
          * Retreiving Category data using Category service
          */
-        $categoryTbl = $this->getServiceLocator()->get('MelisEcomCategoryTable');
+        $categoryTbl = $this->getServiceManager()->get('MelisEcomCategoryTable');
         $categoryRes = $categoryTbl->getFatherCategory($arrayParameters['categoryId'], $arrayParameters['langId']);
         
         if($categoryRes->count()){
@@ -1310,7 +1310,7 @@ class MelisComCategoryService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_get_valid_children_by_lang_id', $arrayParameters);
 
         //implementation start
-        $categoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
+        $categoryTable = $this->getServiceManager()->get('MelisEcomCategoryTable');
         $categories = $categoryTable->getChildrenByLangId($arrayParameters['fatherId'], $arrayParameters['langId'], $arrayParameters['valid'], $arrayParameters['order']);
 
         $results = $categories;

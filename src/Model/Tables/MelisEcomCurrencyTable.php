@@ -9,22 +9,28 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomCurrencyTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_currency';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'cur_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'cur_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
+
     public function getCurrencies($status = null, $start = null, $limit = null, $order = null, $search = null)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
 
         if(!is_null($search)){
@@ -51,7 +57,7 @@ class MelisEcomCurrencyTable extends MelisEcomGenericTable
             $select->order($order);
         }
         
-        $resultSet = $this->tableGateway->selectWith($select);
+        $resultSet = $this->getTableGateway()->selectWith($select);
         
         return $resultSet;
         
@@ -59,25 +65,25 @@ class MelisEcomCurrencyTable extends MelisEcomGenericTable
     
     public function getDefaultCurrency()
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         $select->where->equalTo('cur_default', 1);
         
-        $resultSet = $this->tableGateway->selectWith($select);
+        $resultSet = $this->getTableGateway()->selectWith($select);
         
         return $resultSet;
     }
 
     public function getCountriesUsingCurrency($currencyId)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         $select->join('melis_ecom_country', 'melis_ecom_country.ctry_currency_id = melis_ecom_currency.cur_id',
             array('*'), $select::JOIN_LEFT);
 
         $select->where->equalTo('cur_id', $currencyId);
         $select->where->equalTo('ctry_status', 1);
 
-        $resultSet = $this->tableGateway->selectWith($select);
+        $resultSet = $this->getTableGateway()->selectWith($select);
 
         return $resultSet;
     }

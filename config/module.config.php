@@ -7,363 +7,293 @@
  *
  */
 
-return array(
-    'router' => array(
-        'routes' => array(
-        	'melis-backoffice' => array(
-                'child_routes' => array(
-                    'application-MelisCommerce' => array(
+return [
+    'router' => [
+        'routes' => [
+            'melis-backoffice' => [
+                'child_routes' => [
+                    'application-MelisCommerce' => [
                         'type'    => 'Literal',
-                        'options' => array(
+                        'options' => [
                             'route'    => 'MelisCommerce',
-                            'defaults' => array(
+                            'defaults' => [
                                 '__NAMESPACE__' => 'MelisCommerce\Controller',
                                 'controller'    => 'Index',
                                 'action'        => 'index',
-                            ),
-                        ),
+                            ],
+                        ],
                         'may_terminate' => true,
-                        'child_routes' => array(
-                            'default' => array(
+                        'child_routes' => [
+                            'default' => [
                                 'type'    => 'Segment',
-                                'options' => array(
+                                'options' => [
                                     'route'    => '/[:controller[/:action]]',
-                                    'constraints' => array(
+                                    'constraints' => [
                                         'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
                                         'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-                                    ),
-                                    'defaults' => array(
-                                    ),
-                                ),
-                            ),
-                        ),
-                    ),
-                ),    
-        	),
-        	'melis-front' => array(
-        	    'child_routes' => array(
-					'melis_front_commerce_category' => array(
-						'type'    => 'regex',
-						'options' => array(
-							'regex'    => '/cid/(?<categoryId>[0-9]+)',
-							'defaults' => array(
-        						'controller' => 'MelisFront\Controller\Index',
-        						'action'     => 'index',
-        						'renderType' => 'melis_zf2_mvc',
-        						'renderMode' => 'front',
-        						'preview'	 => false,
-							),
-					       'spec' => '%categoryId'
-						),
-					),
-					'melis_front_commerce_product' => array(
-						'type'    => 'regex',
-						'options' => array(
-							'regex'    => '/pid/(?<productId>[0-9]+)',
-							'defaults' => array(
-        						'controller' => 'MelisFront\Controller\Index',
-        						'action'     => 'index',
-        						'renderType' => 'melis_zf2_mvc',
-        						'renderMode' => 'front',
-        						'preview'	 => false,
-							),
-					       'spec' => '%productId'
-						),
-					),
-					'melis_front_commerce_variant' => array(
-						'type'    => 'regex',
-						'options' => array(
-							'regex'    => '/vid/(?<variantId>[0-9]+)',
-							'defaults' => array(
-        						'controller' => 'MelisFront\Controller\Index',
-        						'action'     => 'index',
-        						'renderType' => 'melis_zf2_mvc',
-        						'renderMode' => 'front',
-        						'preview'	 => false,
-							),
-					       'spec' => '%variantId'
-						),
-					),
-        	    ),
-        	),    
-        ),
-    ),
-    'translator' => array(
-        'locale' => 'en_EN',
-    ),
-    'service_manager' => array(
-        'aliases' => array(
-            'translator' => 'MvcTranslator',
-            'MelisEcomCategoryTable' => 'MelisCommerce\Model\Tables\MelisEcomCategoryTable',
-            'MelisEcomCategoryTransTable' => 'MelisCommerce\Model\Tables\MelisEcomCategoryTransTable',
-            'MelisEcomCountryCategoryTable' => 'MelisCommerce\Model\Tables\MelisEcomCountryCategoryTable',
-            'MelisEcomLangTable' => 'MelisCommerce\Model\Tables\MelisEcomLangTable',
-            'MelisEcomDocumentTable' => 'MelisCommerce\Model\Tables\MelisEcomDocumentTable',
-            'MelisEcomDocTypeTable' => 'MelisCommerce\Model\Tables\MelisEcomDocTypeTable',
-            'MelisEcomProductTable' => 'MelisCommerce\Model\Tables\MelisEcomProductTable',
-            'MelisEcomProductTextTable' => 'MelisCommerce\Model\Tables\MelisEcomProductTextTable',
-            'MelisEcomProductTextTypeTable' => 'MelisCommerce\Model\Tables\MelisEcomProductTextTypeTable',
-            'MelisEcomVariantTable' => 'MelisCommerce\Model\Tables\MelisEcomVariantTable',
-            'MelisEcomCountryTable' => 'MelisCommerce\Model\Tables\MelisEcomCountryTable',
-            'MelisEcomPriceTable' => 'MelisCommerce\Model\Tables\MelisEcomPriceTable',
-            'MelisEcomVariantStockTable' => 'MelisCommerce\Model\Tables\MelisEcomVariantStockTable',
-            'MelisEcomProductCategoryTable' => 'MelisCommerce\Model\Tables\MelisEcomProductCategoryTable',
-            'MelisEcomProductAttributeTable' => 'MelisCommerce\Model\Tables\MelisEcomProductAttributeTable',
-            'MelisEcomProductVariantAttributeValueTable' => 'MelisCommerce\Model\Tables\MelisEcomVariantAttributeValueTable',
-            'MelisEcomLang' => 'MelisCommerce\Model\Tables\MelisEcomLangTable',
-            'MelisEcomDocRelationsTable' => 'MelisCommerce\Model\Tables\MelisEcomDocRelationsTable',
-            'MelisEcomAttributeTrans' => 'MelisCommerce\Model\Tables\MelisEcomAttributeTransTable',
-            'MelisEcomSeoTable' => 'MelisCommerce\Model\Tables\MelisEcomSeoTable',
-            'MelisEcomStockEmailAlertTable' => 'MelisCommerce\Model\Tables\MelisEcomStockEmailAlertTable',
-            'MelisEcomAttributeTypeTable' => 'MelisCommerce\Model\Tables\MelisEcomAttributeTypeTable',
-            'MelisEcomAttributeTable' => 'MelisCommerce\Model\Tables\MelisEcomAttributeTable',
-            'MelisEcomAttributeTransTable' => 'MelisCommerce\Model\Tables\MelisEcomAttributeTransTable',
-            'MelisEcomAttributeValueTable' => 'MelisCommerce\Model\Tables\MelisEcomAttributeValueTable',
-            'MelisEcomAttributeValueTransTable' => 'MelisCommerce\Model\Tables\MelisEcomAttributeValueTransTable',
-            'MelisEcomClientTable' => 'MelisCommerce\Model\Tables\MelisEcomClientTable',
-            'MelisEcomClientPersonTable' => 'MelisCommerce\Model\Tables\MelisEcomClientPersonTable',
-            'MelisEcomClientAddressTable' => 'MelisCommerce\Model\Tables\MelisEcomClientAddressTable',
-            'MelisEcomClientCompanyTable' => 'MelisCommerce\Model\Tables\MelisEcomClientCompanyTable',
-            'MelisEcomCivilityTransTable' => 'MelisCommerce\Model\Tables\MelisEcomCivilityTransTable',
-            'MelisEcomClientAddressTypeTable' => 'MelisCommerce\Model\Tables\MelisEcomClientAddressTypeTable',
-            'MelisEcomClientAddressTypeTransTable' => 'MelisCommerce\Model\Tables\MelisEcomClientAddressTypeTransTable',
-            'MelisEcomBasketPersistentTable' => 'MelisCommerce\Model\Tables\MelisEcomBasketPersistentTable',
-            'MelisEcomBasketAnonymousTable' => 'MelisCommerce\Model\Tables\MelisEcomBasketAnonymousTable',
-            'MelisEcomOrderTable' => 'MelisCommerce\Model\Tables\MelisEcomOrderTable',
-            'MelisEcomOrderAddressTable' => 'MelisCommerce\Model\Tables\MelisEcomOrderAddressTable',
-            'MelisEcomCouponTable' => 'MelisCommerce\Model\Tables\MelisEcomCouponTable',
-            'MelisEcomCouponOrderTable' => 'MelisCommerce\Model\Tables\MelisEcomCouponOrderTable',
-            'MelisEcomCouponClientTable' => 'MelisCommerce\Model\Tables\MelisEcomCouponClientTable',
-            'MelisEcomCouponProductTable' => 'MelisCommerce\Model\Tables\MelisEcomCouponProductTable',
-            'MelisEcomOrderPaymentTable' => 'MelisCommerce\Model\Tables\MelisEcomOrderPaymentTable',
-            'MelisEcomOrderPaymentTypeTable' => 'MelisCommerce\Model\Tables\MelisEcomOrderPaymentTypeTable',
-            'MelisEcomOrderStatusTable' => 'MelisCommerce\Model\Tables\MelisEcomOrderStatusTable',
-            'MelisEcomOrderStatusTransTable' => 'MelisCommerce\Model\Tables\MelisEcomOrderStatusTransTable',
-            'MelisEcomOrderMessageTable' => 'MelisCommerce\Model\Tables\MelisEcomOrderMessageTable',
-            'MelisEcomOrderShippingTable' => 'MelisCommerce\Model\Tables\MelisEcomOrderShippingTable',
-            'MelisEcomOrderBasketTable' => 'MelisCommerce\Model\Tables\MelisEcomOrderBasketTable',
-            'MelisEcomCurrencyTable' => 'MelisCommerce\Model\Tables\MelisEcomCurrencyTable',
-            'MelisEcomAssocVariantTable'      => 'MelisCommerce\Model\Tables\MelisEcomAssocVariantTable',
-            'MelisEcomAssocVariantTypeTable'  => 'MelisCommerce\Model\Tables\MelisEcomAssocVariantTypeTable',
-            
-        ),
-        'factories' => array(
-            //services
-            'MelisComAuthenticationService'=> 'MelisCommerce\Service\Factory\MelisComAuthenticationServiceFactory',
-            'MelisComAttributeService'     => 'MelisCommerce\Service\Factory\MelisComAttributeServiceFactory',
-            'MelisComBasketService'        => 'MelisCommerce\Service\Factory\MelisComBasketServiceFactory',
-            'MelisComCategoryService'      => 'MelisCommerce\Service\Factory\MelisComCategoryServiceFactory',
-            'MelisComClientService'        => 'MelisCommerce\Service\Factory\MelisComClientServiceFactory',
-            'MelisComCouponService'        => 'MelisCommerce\Service\Factory\MelisComCouponServiceFactory',
-            'MelisComDocumentService'      => 'MelisCommerce\Service\Factory\MelisComDocumentServiceFactory',
-            'MelisComHead'                 => 'MelisCommerce\Service\Factory\MelisComHeadServiceFactory',
-            'MelisComOrderCheckoutService' => 'MelisCommerce\Service\Factory\MelisComOrderCheckoutServiceFactory',
-            'MelisComOrderService'         => 'MelisCommerce\Service\Factory\MelisComOrderServiceFactory',
-            'MelisComPostPaymentService'   => 'MelisCommerce\Service\Factory\MelisComPostPaymentServiceFactory',
-            'MelisComProductSearchService' => 'MelisCommerce\Service\Factory\MelisComProductSearchServiceFactory',
-            'MelisComProductService'       => 'MelisCommerce\Service\Factory\MelisComProductServiceFactory',
-            'MelisComSeoService'           => 'MelisCommerce\Service\Factory\MelisComSeoServiceFactory',
-            'MelisComShipmentCostService'  => 'MelisCommerce\Service\Factory\MelisComShipmentCostServiceFactory',
-            'MelisComStockEmailAlertService'=> 'MelisCommerce\Service\Factory\MelisComStockEmailAlertServiceFactory',
-            'MelisComVariantService'       => 'MelisCommerce\Service\Factory\MelisComVariantServiceFactory',
-            'MelisComDuplicationService'   => 'MelisCommerce\Service\Factory\MelisComDuplicationServiceFactory',
-            'MelisComCurrencyService'      => 'MelisCommerce\Service\Factory\MelisComCurrencyServiceFactory',
-            
-            'MelisComLinksService'   => 'MelisCommerce\Service\Factory\MelisComLinksServiceFactory',
-            
-            //db tables
-            'MelisCommerce\Model\Tables\MelisEcomAttributeTable'             => 'MelisCommerce\Model\Tables\Factory\MelisEcomAttributeTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomAttributeTransTable'        => 'MelisCommerce\Model\Tables\Factory\MelisEcomAttributeTransTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomAttributeTypeTable'         => 'MelisCommerce\Model\Tables\Factory\MelisEcomAttributeTypeTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomAttributeValueTable'        => 'MelisCommerce\Model\Tables\Factory\MelisEcomAttributeValueTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomAttributeValueTransTable'   => 'MelisCommerce\Model\Tables\Factory\MelisEcomAttributeValueTransTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomAssocVariantTable'          => 'MelisCommerce\Model\Tables\Factory\MelisEcomAssocVariantTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomAssocVariantTypeTable'      => 'MelisCommerce\Model\Tables\Factory\MelisEcomAssocVariantTypeTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomBasketAnonymousTable'       => 'MelisCommerce\Model\Tables\Factory\MelisEcomBasketAnonymousTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomBasketPersistentTable'      => 'MelisCommerce\Model\Tables\Factory\MelisEcomBasketPersistentTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomCategoryTable'              => 'MelisCommerce\Model\Tables\Factory\MelisEcomCategoryTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomCategoryTransTable'         => 'MelisCommerce\Model\Tables\Factory\MelisEcomCategoryTransTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomCivilityTable'              => 'MelisCommerce\Model\Tables\Factory\MelisEcomCivilityTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomCivilityTransTable'         => 'MelisCommerce\Model\Tables\Factory\MelisEcomCivilityTransTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomClientAddressTable'         => 'MelisCommerce\Model\Tables\Factory\MelisEcomClientAddressTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomClientAddressTypeTable'     => 'MelisCommerce\Model\Tables\Factory\MelisEcomClientAddressTypeTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomClientAddressTypeTransTable'=> 'MelisCommerce\Model\Tables\Factory\MelisEcomClientAddressTypeTransTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomClientCompanyTable'         => 'MelisCommerce\Model\Tables\Factory\MelisEcomClientCompanyTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomClientPersonTable'          => 'MelisCommerce\Model\Tables\Factory\MelisEcomClientPersonTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomClientTable'                => 'MelisCommerce\Model\Tables\Factory\MelisEcomClientTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomCountryCategoryTable'       => 'MelisCommerce\Model\Tables\Factory\MelisEcomCountryCategoryTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomCountryTable'               => 'MelisCommerce\Model\Tables\Factory\MelisEcomCountryTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomCouponClientTable'          => 'MelisCommerce\Model\Tables\Factory\MelisEcomCouponClientTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomCouponOrderTable'           => 'MelisCommerce\Model\Tables\Factory\MelisEcomCouponOrderTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomCouponProductTable'         => 'MelisCommerce\Model\Tables\Factory\MelisEcomCouponProductTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomCouponTable'                => 'MelisCommerce\Model\Tables\Factory\MelisEcomCouponTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomCurrencyTable'              => 'MelisCommerce\Model\Tables\Factory\MelisEcomCurrencyTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomDocRelationsTable'          => 'MelisCommerce\Model\Tables\Factory\MelisEcomDocRelationsTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomDocTypeTable'               => 'MelisCommerce\Model\Tables\Factory\MelisEcomDocTypeTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomDocumentTable'              => 'MelisCommerce\Model\Tables\Factory\MelisEcomDocumentTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomLangTable'                  => 'MelisCommerce\Model\Tables\Factory\MelisEcomLangTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomOrderAddressTable'          => 'MelisCommerce\Model\Tables\Factory\MelisEcomOrderAddressTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomOrderBasketTable'           => 'MelisCommerce\Model\Tables\Factory\MelisEcomOrderBasketTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomOrderMessageTable'          => 'MelisCommerce\Model\Tables\Factory\MelisEcomOrderMessageTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomOrderPaymentTable'          => 'MelisCommerce\Model\Tables\Factory\MelisEcomOrderPaymentTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomOrderPaymentTypeTable'      => 'MelisCommerce\Model\Tables\Factory\MelisEcomOrderPaymentTypeTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomOrderShippingTable'         => 'MelisCommerce\Model\Tables\Factory\MelisEcomOrderShippingTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomOrderStatusTable'           => 'MelisCommerce\Model\Tables\Factory\MelisEcomOrderStatusTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomOrderStatusTransTable'      => 'MelisCommerce\Model\Tables\Factory\MelisEcomOrderStatusTransTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomOrderTable'                 => 'MelisCommerce\Model\Tables\Factory\MelisEcomOrderTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomPriceTable'                 => 'MelisCommerce\Model\Tables\Factory\MelisEcomPriceTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomProductAttributeTable'      => 'MelisCommerce\Model\Tables\Factory\MelisEcomProductAttributeTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomProductCategoryTable'       => 'MelisCommerce\Model\Tables\Factory\MelisEcomProductCategoryTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomProductTable'               => 'MelisCommerce\Model\Tables\Factory\MelisEcomProductTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomProductTextTable'           => 'MelisCommerce\Model\Tables\Factory\MelisEcomProductTextTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomProductTextTypeTable'       => 'MelisCommerce\Model\Tables\Factory\MelisEcomProductTextTypeTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomSeoTable'                   => 'MelisCommerce\Model\Tables\Factory\MelisEcomSeoTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomStockEmailAlertTable'       => 'MelisCommerce\Model\Tables\Factory\MelisEcomStockEmailAlertTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomVariantAttributeValueTable' => 'MelisCommerce\Model\Tables\Factory\MelisEcomVariantAttributeValueTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomVariantStockTable'          => 'MelisCommerce\Model\Tables\Factory\MelisEcomVariantStockTableFactory',
-            'MelisCommerce\Model\Tables\MelisEcomVariantTable'               => 'MelisCommerce\Model\Tables\Factory\MelisEcomVariantTableFactory',
-            
-            //listeners
-            'MelisCommerce\Listener\MelisCommerceSEODispatchRouterCommerceUrlListener' => 'MelisCommerce\Listener\Factory\MelisCommerceSEODispatchRouterCommerceUrlListenerFactory',
-            'MelisCommerce\Listener\MelisCommerceSEOReformatToRoutePageUrlListener'    => 'MelisCommerce\Listener\Factory\MelisCommerceSEOReformatToRoutePageUrlListenerFactory',
-            
-        ),
-        'abstract_factories' => array(
-            'Zend\Cache\Service\StorageCacheAbstractServiceFactory',
-        )
-    ),
-    'controllers' => array(
-        'invokables' => array(
-            'MelisCommerce\Controller\MelisComCategoryList' => 'MelisCommerce\Controller\MelisComCategoryListController',
-            'MelisCommerce\Controller\MelisComCategory' => 'MelisCommerce\Controller\MelisComCategoryController',
-            'MelisCommerce\Controller\MelisComProductList' => 'MelisCommerce\Controller\MelisComProductListController',
-            'MelisCommerce\Controller\MelisComProduct' => 'MelisCommerce\Controller\MelisComProductController',
-            'MelisCommerce\Controller\MelisComVariantList' => 'MelisCommerce\Controller\MelisComVariantListController',
-            'MelisCommerce\Controller\MelisComVariant' => 'MelisCommerce\Controller\MelisComVariantController',
-            'MelisCommerce\Controller\MelisComDocument' => 'MelisCommerce\Controller\MelisComDocumentController',
-            'MelisCommerce\Controller\MelisComClientList' => 'MelisCommerce\Controller\MelisComClientListController',
-            'MelisCommerce\Controller\MelisComClient' => 'MelisCommerce\Controller\MelisComClientController',
-            'MelisCommerce\Controller\MelisComOrder' => 'MelisCommerce\Controller\MelisComOrderController',
-            'MelisCommerce\Controller\MelisComOrderCheckout' => 'MelisCommerce\Controller\MelisComOrderCheckoutController',
-            'MelisCommerce\Controller\MelisComOrderList' => 'MelisCommerce\Controller\MelisComOrderListController',
-            'MelisCommerce\Controller\MelisComPrice' => 'MelisCommerce\Controller\MelisComPriceController',
-            'MelisCommerce\Controller\MelisComSeo' => 'MelisCommerce\Controller\MelisComSeoController',
-            'MelisCommerce\Controller\MelisComCouponList' => 'MelisCommerce\Controller\MelisComCouponListController',
-            'MelisCommerce\Controller\MelisComCoupon' => 'MelisCommerce\Controller\MelisComCouponController',
-            'MelisCommerce\Controller\MelisComCurrency' => 'MelisCommerce\Controller\MelisComCurrencyController',
-            'MelisCommerce\Controller\MelisComAttributeList' => 'MelisCommerce\Controller\MelisComAttributeListController', 
-            'MelisCommerce\Controller\MelisComAttribute' => 'MelisCommerce\Controller\MelisComAttributeController',
-            'MelisCommerce\Controller\MelisComLanguage' => 'MelisCommerce\Controller\MelisComLanguageController',
-            'MelisCommerce\Controller\MelisComCountry' => 'MelisCommerce\Controller\MelisComCountryController',
-            'MelisCommerce\Controller\Tester' => 'MelisCommerce\Controller\TesterController',
-            'MelisCommerce\Controller\Diagnostic' => 'MelisCommerce\Controller\DiagnosticController',
-            'MelisCommerce\Controller\MelisComAssociateVariant' => 'MelisCommerce\Controller\MelisComAssociateVariantController',
-            'MelisCommerce\Controller\MelisComPrdVarDuplication' => 'MelisCommerce\Controller\MelisComPrdVarDuplicationController',
-            'MelisCommerce\Controller\MelisComOrderStatus' => 'MelisCommerce\Controller\MelisComOrderStatusController',
-            'MelisCommerce\Controller\MelisComSettings' => 'MelisCommerce\Controller\MelisComSettingsController',
-        ),
-    ),
-    'controller_plugins' => array(
-        'invokables' => array(
-            // Category plugins
-            'MelisCommerceCategoryProductListPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCategoryProductListPlugin',
-            'MelisCommerceCategoryTreePlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCategoryTreePlugin',
-            
-            // Product plugins
-            'MelisCommerceProductSearchPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceProductSearchPlugin',
-            'MelisCommerceProductPriceRangePlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceProductPriceRangePlugin',
-            'MelisCommerceProductAttributePlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceProductAttributePlugin',
-            'MelisCommerceProductListPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceProductListPlugin',
-            'MelisCommerceRelatedProductsPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceRelatedProductsPlugin',
-            'MelisCommerceProductShowPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceProductShowPlugin',
-            'MelisCommerceAttributesShowPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceAttributesShowPlugin',
-            
-            // Client plugins
-            'MelisCommerceRegisterPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceRegisterPlugin',
-            'MelisCommerceLoginPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceLoginPlugin',
-            'MelisCommerceLostPasswordGetEmailPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceLostPasswordGetEmailPlugin',
-            'MelisCommerceLostPasswordResetPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceLostPasswordResetPlugin',
-            'MelisCommerceAccountPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceAccountPlugin',
-            'MelisCommerceProfilePlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceProfilePlugin',
-            'MelisCommerceDeliveryAddressPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceDeliveryAddressPlugin',
-            'MelisCommerceBillingAddressPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceBillingAddressPlugin',
-            
-            // Orders
-            'MelisCommerceAddToCartPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceAddToCartPlugin',
-            
-            
-            'MelisCommerceSelectAddressPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceSelectAddressPlugin',
-            'MelisCommerceCheckoutPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutPlugin',
-            'MelisCommerceCheckoutCartPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutCartPlugin',
-            'MelisCommerceCheckoutCouponPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutCouponPlugin',
-            'MelisCommerceCheckoutAddressesPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutAddressesPlugin',
-            'MelisCommerceCheckoutSummaryPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutSummaryPlugin',
-            'MelisCommerceCheckoutConfirmSummaryPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutConfirmSummaryPlugin',
-            'MelisCommerceCheckoutConfirmPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCheckoutConfirmPlugin',
-            'MelisCommerceCartPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceCartPlugin',
-            'MelisCommerceOrderHistoryPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceOrderHistoryPlugin',
-            'MelisCommerceOrderPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceOrderPlugin',
-            'MelisCommerceOrderAddressPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceOrderAddressPlugin',
-            'MelisCommerceOrderShippingDetailsPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceOrderShippingDetailsPlugin',
-            'MelisCommerceOrderMessagesPlugin' => 'MelisCommerce\Controller\Plugin\MelisCommerceOrderMessagesPlugin',
-            // Dashboard plugins
-            'MelisCommerceDashboardPluginOrdersNumber' => 'MelisCommerce\Controller\DashboardPlugins\MelisCommerceDashboardPluginOrdersNumber',
-            'MelisCommerceDashboardPluginSalesRevenue' => 'MelisCommerce\Controller\DashboardPlugins\MelisCommerceDashboardPluginSalesRevenue',
-            'MelisCommerceDashboardPluginOrderMessages' => 'MelisCommerce\Controller\DashboardPlugins\MelisCommerceDashboardPluginOrderMessages',
-        )
-    ),
-    'form_elements' => array(
-        'factories' => array(
-            'EcomSelectFactory'                     => 'MelisCommerce\Form\Factory\EcomSelectFactory',
-            'EcomCountriesSelect'                   => 'MelisCommerce\Form\Factory\EcomCountriesSelectFactory',
-            'EcomCountriesNoAllCountriesSelect'     => 'MelisCommerce\Form\Factory\EcomCountriesNoAllCountriesSelectFactory',
-            'EcomProductTextTypeSelect'             => 'MelisCommerce\Form\Factory\EcomProductTextTypeSelectFactory',
-            'EcomLanguageSelect'                    => 'MelisCommerce\Form\Factory\EcomLanguageSelectFactory',
-            'EcomDocumentFileSelect'                => 'MelisCommerce\Form\Factory\EcomDocumentFileSelectFactory',
-            'EcomDocumentImageTypeSelect'           => 'MelisCommerce\Form\Factory\EcomDocumentImageTypeSelectFactory',
-            'EcomCivilitySelect'                    => 'MelisCommerce\Form\Factory\EcomCivilitySelectFactory',
-            'EcomAddressTypeSelect'                 => 'MelisCommerce\Form\Factory\EcomAddressTypeSelectFactory',
-            'EcomOrderStatusSelect'                 => 'MelisCommerce\Form\Factory\EcomOrderStatusSelectFactory',
-            'EcomOrderStatusAllSelect'              => 'MelisCommerce\Form\Factory\EcomOrderStatusAllSelectFactory',
-            'EcomDateField'                         => 'MelisCommerce\Form\Factory\EcomDateFieldFactory',
-            'EcomAttributeTypeSelect'               => 'MelisCommerce\Form\Factory\EcomAttributeTypeSelectFactory',
-            'EcomCurrencySelect'                    => 'MelisCommerce\Form\Factory\EcomCurrencySelectFactory',
-            'EcomCheckoutBillingAddressSelect'      => 'MelisCommerce\Form\Factory\EcomCheckoutBillingAddressSelectFactory',
-            'EcomCheckoutDeliveryAddressSelect'     => 'MelisCommerce\Form\Factory\EcomCheckoutDeliveryAddressSelectFactory',
-            'EcomCatalogListSelect'                 => 'MelisCommerce\Form\Factory\EcomCatalogListSelectFactory',
+                                    ],
+                                    'defaults' => [
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'melis-front' => [
+                'child_routes' => [
+                    'melis_front_commerce_category' => [
+                        'type'    => 'regex',
+                        'options' => [
+                            'regex'    => '/cid/(?<categoryId>[0-9]+)',
+                            'defaults' => [
+                                'controller' => 'MelisFront\Controller\Index',
+                                'action'     => 'index',
+                                'renderType' => 'melis_zf2_mvc',
+                                'renderMode' => 'front',
+                                'preview'	 => false,
+                            ],
+                            'spec' => '%categoryId'
+                        ],
+                    ],
+                    'melis_front_commerce_product' => [
+                        'type'    => 'regex',
+                        'options' => [
+                            'regex'    => '/pid/(?<productId>[0-9]+)',
+                            'defaults' => [
+                                'controller' => 'MelisFront\Controller\Index',
+                                'action'     => 'index',
+                                'renderType' => 'melis_zf2_mvc',
+                                'renderMode' => 'front',
+                                'preview'	 => false,
+                            ],
+                            'spec' => '%productId'
+                        ],
+                    ],
+                    'melis_front_commerce_variant' => [
+                        'type'    => 'regex',
+                        'options' => [
+                            'regex'    => '/vid/(?<variantId>[0-9]+)',
+                            'defaults' => [
+                                'controller' => 'MelisFront\Controller\Index',
+                                'action'     => 'index',
+                                'renderType' => 'melis_zf2_mvc',
+                                'renderMode' => 'front',
+                                'preview'	 => false,
+                            ],
+                            'spec' => '%variantId'
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
+    'service_manager' => [
+        'aliases' => [
+            // Services
+            'MelisComAuthenticationService'                 => \MelisCommerce\Service\MelisComAuthenticationService::class,
+            'MelisComAttributeService'                      => \MelisCommerce\Service\MelisComAttributeService::class,
+            'MelisComBasketService'                         => \MelisCommerce\Service\MelisComBasketService::class,
+            'MelisComCategoryService'                       => \MelisCommerce\Service\MelisComCategoryService::class,
+            'MelisComClientService'                         => \MelisCommerce\Service\MelisComClientService::class,
+            'MelisComCouponService'                         => \MelisCommerce\Service\MelisComCouponService::class,
+            'MelisComDocumentService'                       => \MelisCommerce\Service\MelisComDocumentService::class,
+            'MelisComHead'                                  => \MelisCommerce\Service\MelisComHeadService::class,
+            'MelisComOrderCheckoutService'                  => \MelisCommerce\Service\MelisComOrderCheckoutService::class,
+            'MelisComOrderService'                          => \MelisCommerce\Service\MelisComOrderService::class,
+            'MelisComPostPaymentService'                    => \MelisCommerce\Service\MelisComPostPaymentService::class,
+            'MelisComProductSearchService'                  => \MelisCommerce\Service\MelisComProductSearchService::class,
+            'MelisComProductService'                        => \MelisCommerce\Service\MelisComProductService::class,
+            'MelisComSeoService'                            => \MelisCommerce\Service\MelisComSeoService::class,
+            'MelisComShipmentCostService'                   => \MelisCommerce\Service\MelisComShipmentCostService::class,
+            'MelisComStockEmailAlertService'                => \MelisCommerce\Service\MelisComStockEmailAlertService::class,
+            'MelisComVariantService'                        => \MelisCommerce\Service\MelisComVariantService::class,
+            'MelisComDuplicationService'                    => \MelisCommerce\Service\MelisComDuplicationService::class,
+            'MelisComCurrencyService'                       => \MelisCommerce\Service\MelisComCurrencyService::class,
+            'MelisComLinksService'                          => \MelisCommerce\Service\MelisComLinksService::class,
 
-            'EcomCountriesAllStatusSelect'          => 'MelisCommerce\Form\Factory\EcomCountriesAllStatusSelectFactory',
-            'EcomCurrencyAllStatusSelect'           => 'MelisCommerce\Form\Factory\EcomCurrencyAllStatusSelectFactory',
-            'EcomLanguageAllStatusSelect'           => 'MelisCommerce\Form\Factory\EcomLanguageAllStatusSelectFactory',
-            'EcomColorPicker'                       => 'MelisCommerce\Form\Factory\EcomColorPicker',
-            
+            // Tables
+            'MelisEcomAttributeTable'                       => \MelisCommerce\Model\Tables\MelisEcomAttributeTable::class,
+            'MelisEcomAttributeTransTable'                  => \MelisCommerce\Model\Tables\MelisEcomAttributeTransTable::class,
+            'MelisEcomAttributeTypeTable'                   => \MelisCommerce\Model\Tables\MelisEcomAttributeTypeTable::class,
+            'MelisEcomAttributeValueTable'                  => \MelisCommerce\Model\Tables\MelisEcomAttributeValueTable::class,
+            'MelisEcomAttributeValueTransTable'             => \MelisCommerce\Model\Tables\MelisEcomAttributeValueTransTable::class,
+            'MelisEcomAssocVariantTable'                    => \MelisCommerce\Model\Tables\MelisEcomAssocVariantTable::class,
+            'MelisEcomAssocVariantTypeTable'                => \MelisCommerce\Model\Tables\MelisEcomAssocVariantTypeTable::class,
+            'MelisEcomBasketAnonymousTable'                 => \MelisCommerce\Model\Tables\MelisEcomBasketAnonymousTable::class,
+            'MelisEcomBasketPersistentTable'                => \MelisCommerce\Model\Tables\MelisEcomBasketPersistentTable::class,
+            'MelisEcomCategoryTable'                        => \MelisCommerce\Model\Tables\MelisEcomCategoryTable::class,
+            'MelisEcomCategoryTransTable'                   => \MelisCommerce\Model\Tables\MelisEcomCategoryTransTable::class,
+            'MelisEcomCivilityTable'                        => \MelisCommerce\Model\Tables\MelisEcomCivilityTable::class,
+            'MelisEcomCivilityTransTable'                   => \MelisCommerce\Model\Tables\MelisEcomCivilityTransTable::class,
+            'MelisEcomClientAddressTable'                   => \MelisCommerce\Model\Tables\MelisEcomClientAddressTable::class,
+            'MelisEcomClientAddressTypeTable'               => \MelisCommerce\Model\Tables\MelisEcomClientAddressTypeTable::class,
+            'MelisEcomClientAddressTypeTransTable'          => \MelisCommerce\Model\Tables\MelisEcomClientAddressTypeTransTable::class,
+            'MelisEcomClientCompanyTable'                   => \MelisCommerce\Model\Tables\MelisEcomClientCompanyTable::class,
+            'MelisEcomClientPersonTable'                    => \MelisCommerce\Model\Tables\MelisEcomClientPersonTable::class,
+            'MelisEcomClientTable'                          => \MelisCommerce\Model\Tables\MelisEcomClientTable::class,
+            'MelisEcomCountryCategoryTable'                 => \MelisCommerce\Model\Tables\MelisEcomCountryCategoryTable::class,
+            'MelisEcomCountryTable'                         => \MelisCommerce\Model\Tables\MelisEcomCountryTable::class,
+            'MelisEcomCouponClientTable'                    => \MelisCommerce\Model\Tables\MelisEcomCouponClientTable::class,
+            'MelisEcomCouponOrderTable'                     => \MelisCommerce\Model\Tables\MelisEcomCouponOrderTable::class,
+            'MelisEcomCouponProductTable'                   => \MelisCommerce\Model\Tables\MelisEcomCouponProductTable::class,
+            'MelisEcomCouponTable'                          => \MelisCommerce\Model\Tables\MelisEcomCouponTable::class,
+            'MelisEcomCurrencyTable'                        => \MelisCommerce\Model\Tables\MelisEcomCurrencyTable::class,
+            'MelisEcomDocRelationsTable'                    => \MelisCommerce\Model\Tables\MelisEcomDocRelationsTable::class,
+            'MelisEcomDocTypeTable'                         => \MelisCommerce\Model\Tables\MelisEcomDocTypeTable::class,
+            'MelisEcomDocumentTable'                        => \MelisCommerce\Model\Tables\MelisEcomDocumentTable::class,
+            'MelisEcomLangTable'                            => \MelisCommerce\Model\Tables\MelisEcomLangTable::class,
+            'MelisEcomOrderAddressTable'                    => \MelisCommerce\Model\Tables\MelisEcomOrderAddressTable::class,
+            'MelisEcomOrderBasketTable'                     => \MelisCommerce\Model\Tables\MelisEcomOrderBasketTable::class,
+            'MelisEcomOrderMessageTable'                    => \MelisCommerce\Model\Tables\MelisEcomOrderMessageTable::class,
+            'MelisEcomOrderPaymentTable'                    => \MelisCommerce\Model\Tables\MelisEcomOrderPaymentTable::class,
+            'MelisEcomOrderPaymentTypeTable'                => \MelisCommerce\Model\Tables\MelisEcomOrderPaymentTypeTable::class,
+            'MelisEcomOrderShippingTable'                   => \MelisCommerce\Model\Tables\MelisEcomOrderShippingTable::class,
+            'MelisEcomOrderStatusTable'                     => \MelisCommerce\Model\Tables\MelisEcomOrderStatusTable::class,
+            'MelisEcomOrderStatusTransTable'                => \MelisCommerce\Model\Tables\MelisEcomOrderStatusTransTable::class,
+            'MelisEcomOrderTable'                           => \MelisCommerce\Model\Tables\MelisEcomOrderTable::class,
+            'MelisEcomPriceTable'                           => \MelisCommerce\Model\Tables\MelisEcomPriceTable::class,
+            'MelisEcomProductAttributeTable'                => \MelisCommerce\Model\Tables\MelisEcomProductAttributeTable::class,
+            'MelisEcomProductCategoryTable'                 => \MelisCommerce\Model\Tables\MelisEcomProductCategoryTable::class,
+            'MelisEcomProductTable'                         => \MelisCommerce\Model\Tables\MelisEcomProductTable::class,
+            'MelisEcomProductTextTable'                     => \MelisCommerce\Model\Tables\MelisEcomProductTextTable::class,
+            'MelisEcomProductTextTypeTable'                 => \MelisCommerce\Model\Tables\MelisEcomProductTextTypeTable::class,
+            'MelisEcomSeoTable'                             => \MelisCommerce\Model\Tables\MelisEcomSeoTable::class,
+            'MelisEcomStockEmailAlertTable'                 => \MelisCommerce\Model\Tables\MelisEcomStockEmailAlertTable::class,
+            'MelisEcomProductVariantAttributeValueTable'    => \MelisCommerce\Model\Tables\MelisEcomVariantAttributeValueTable::class,
+            'MelisEcomVariantStockTable'                    => \MelisCommerce\Model\Tables\MelisEcomVariantStockTable::class,
+            'MelisEcomVariantTable'                         => \MelisCommerce\Model\Tables\MelisEcomVariantTable::class,
+        ],
+        'abstract_factories' => [
+            'Laminas\Cache\Service\StorageCacheAbstractServiceFactory',
+        ]
+    ],
+    'controllers' => [
+        'invokables' => [
+            'MelisCommerce\Controller\MelisComCategoryList'         => \MelisCommerce\Controller\MelisComCategoryListController::class,
+            'MelisCommerce\Controller\MelisComCategory'             => \MelisCommerce\Controller\MelisComCategoryController::class,
+            'MelisCommerce\Controller\MelisComProductList'          => \MelisCommerce\Controller\MelisComProductListController::class,
+            'MelisCommerce\Controller\MelisComProduct'              => \MelisCommerce\Controller\MelisComProductController::class,
+            'MelisCommerce\Controller\MelisComVariantList'          => \MelisCommerce\Controller\MelisComVariantListController::class,
+            'MelisCommerce\Controller\MelisComVariant'              => \MelisCommerce\Controller\MelisComVariantController::class,
+            'MelisCommerce\Controller\MelisComDocument'             => \MelisCommerce\Controller\MelisComDocumentController::class,
+            'MelisCommerce\Controller\MelisComClientList'           => \MelisCommerce\Controller\MelisComClientListController::class,
+            'MelisCommerce\Controller\MelisComClient'               => \MelisCommerce\Controller\MelisComClientController::class,
+            'MelisCommerce\Controller\MelisComOrder'                => \MelisCommerce\Controller\MelisComOrderController::class,
+            'MelisCommerce\Controller\MelisComOrderCheckout'        => \MelisCommerce\Controller\MelisComOrderCheckoutController::class,
+            'MelisCommerce\Controller\MelisComOrderList'            => \MelisCommerce\Controller\MelisComOrderListController::class,
+            'MelisCommerce\Controller\MelisComPrice'                => \MelisCommerce\Controller\MelisComPriceController::class,
+            'MelisCommerce\Controller\MelisComSeo'                  => \MelisCommerce\Controller\MelisComSeoController::class,
+            'MelisCommerce\Controller\MelisComCouponList'           => \MelisCommerce\Controller\MelisComCouponListController::class,
+            'MelisCommerce\Controller\MelisComCoupon'               => \MelisCommerce\Controller\MelisComCouponController::class,
+            'MelisCommerce\Controller\MelisComCurrency'             => \MelisCommerce\Controller\MelisComCurrencyController::class,
+            'MelisCommerce\Controller\MelisComAttributeList'        => \MelisCommerce\Controller\MelisComAttributeListController::class,
+            'MelisCommerce\Controller\MelisComAttribute'            => \MelisCommerce\Controller\MelisComAttributeController::class,
+            'MelisCommerce\Controller\MelisComLanguage'             => \MelisCommerce\Controller\MelisComLanguageController::class,
+            'MelisCommerce\Controller\MelisComCountry'              => \MelisCommerce\Controller\MelisComCountryController::class,
+            'MelisCommerce\Controller\Tester'                       => \MelisCommerce\Controller\TesterController::class,
+            'MelisCommerce\Controller\Diagnostic'                   => \MelisCommerce\Controller\DiagnosticController::class,
+            'MelisCommerce\Controller\MelisComAssociateVariant'     => \MelisCommerce\Controller\MelisComAssociateVariantController::class,
+            'MelisCommerce\Controller\MelisComPrdVarDuplication'    => \MelisCommerce\Controller\MelisComPrdVarDuplicationController::class,
+            'MelisCommerce\Controller\MelisComOrderStatus'          => \MelisCommerce\Controller\MelisComOrderStatusController::class,
+            'MelisCommerce\Controller\MelisComSettings'             => \MelisCommerce\Controller\MelisComSettingsController::class,
+        ],
+    ],
+    'controller_plugins' => [
+        'invokables' => [
+            // Category plugins
+            'MelisCommerceCategoryProductListPlugin'            => \MelisCommerce\Controller\Plugin\MelisCommerceCategoryProductListPlugin::class,
+            'MelisCommerceCategoryTreePlugin'                   => \MelisCommerce\Controller\Plugin\MelisCommerceCategoryTreePlugin::class,
+
+            // Product plugins
+            'MelisCommerceProductSearchPlugin'                  => \MelisCommerce\Controller\Plugin\MelisCommerceProductSearchPlugin::class,
+            'MelisCommerceProductPriceRangePlugin'              => \MelisCommerce\Controller\Plugin\MelisCommerceProductPriceRangePlugin::class,
+            'MelisCommerceProductAttributePlugin'               => \MelisCommerce\Controller\Plugin\MelisCommerceProductAttributePlugin::class,
+            'MelisCommerceProductListPlugin'                    => \MelisCommerce\Controller\Plugin\MelisCommerceProductListPlugin::class,
+            'MelisCommerceRelatedProductsPlugin'                => \MelisCommerce\Controller\Plugin\MelisCommerceRelatedProductsPlugin::class,
+            'MelisCommerceProductShowPlugin'                    => \MelisCommerce\Controller\Plugin\MelisCommerceProductShowPlugin::class,
+            'MelisCommerceAttributesShowPlugin'                 => \MelisCommerce\Controller\Plugin\MelisCommerceAttributesShowPlugin::class,
+
+            // Client plugins
+            'MelisCommerceRegisterPlugin'                       => \MelisCommerce\Controller\Plugin\MelisCommerceRegisterPlugin::class,
+            'MelisCommerceLoginPlugin'                          => \MelisCommerce\Controller\Plugin\MelisCommerceLoginPlugin::class,
+            'MelisCommerceLostPasswordGetEmailPlugin'           => \MelisCommerce\Controller\Plugin\MelisCommerceLostPasswordGetEmailPlugin::class,
+            'MelisCommerceLostPasswordResetPlugin'              => \MelisCommerce\Controller\Plugin\MelisCommerceLostPasswordResetPlugin::class,
+            'MelisCommerceAccountPlugin'                        => \MelisCommerce\Controller\Plugin\MelisCommerceAccountPlugin::class,
+            'MelisCommerceProfilePlugin'                        => \MelisCommerce\Controller\Plugin\MelisCommerceProfilePlugin::class,
+            'MelisCommerceDeliveryAddressPlugin'                => \MelisCommerce\Controller\Plugin\MelisCommerceDeliveryAddressPlugin::class,
+            'MelisCommerceBillingAddressPlugin'                 => \MelisCommerce\Controller\Plugin\MelisCommerceBillingAddressPlugin::class,
+
+            // Orders
+            'MelisCommerceAddToCartPlugin'                      => \MelisCommerce\Controller\Plugin\MelisCommerceAddToCartPlugin::class,
+            'MelisCommerceCheckoutPlugin'                       => \MelisCommerce\Controller\Plugin\MelisCommerceCheckoutPlugin::class,
+            'MelisCommerceCheckoutCartPlugin'                   => \MelisCommerce\Controller\Plugin\MelisCommerceCheckoutCartPlugin::class,
+            'MelisCommerceCheckoutCouponPlugin'                 => \MelisCommerce\Controller\Plugin\MelisCommerceCheckoutCouponPlugin::class,
+            'MelisCommerceCheckoutAddressesPlugin'              => \MelisCommerce\Controller\Plugin\MelisCommerceCheckoutAddressesPlugin::class,
+            'MelisCommerceCheckoutSummaryPlugin'                => \MelisCommerce\Controller\Plugin\MelisCommerceCheckoutSummaryPlugin::class,
+            'MelisCommerceCheckoutConfirmSummaryPlugin'         => \MelisCommerce\Controller\Plugin\MelisCommerceCheckoutConfirmSummaryPlugin::class,
+            'MelisCommerceCheckoutConfirmPlugin'                => \MelisCommerce\Controller\Plugin\MelisCommerceCheckoutConfirmPlugin::class,
+            'MelisCommerceCartPlugin'                           => \MelisCommerce\Controller\Plugin\MelisCommerceCartPlugin::class,
+            'MelisCommerceOrderHistoryPlugin'                   => \MelisCommerce\Controller\Plugin\MelisCommerceOrderHistoryPlugin::class,
+            'MelisCommerceOrderPlugin'                          => \MelisCommerce\Controller\Plugin\MelisCommerceOrderPlugin::class,
+            'MelisCommerceOrderAddressPlugin'                   => \MelisCommerce\Controller\Plugin\MelisCommerceOrderAddressPlugin::class,
+            'MelisCommerceOrderShippingDetailsPlugin'           => \MelisCommerce\Controller\Plugin\MelisCommerceOrderShippingDetailsPlugin::class,
+            'MelisCommerceOrderMessagesPlugin'                  => \MelisCommerce\Controller\Plugin\MelisCommerceOrderMessagesPlugin::class,
+
+            // Dashboard plugins
+            'MelisCommerceDashboardPluginOrdersNumber'          => \MelisCommerce\Controller\DashboardPlugins\MelisCommerceDashboardPluginOrdersNumber::class,
+            'MelisCommerceDashboardPluginSalesRevenue'          => \MelisCommerce\Controller\DashboardPlugins\MelisCommerceDashboardPluginSalesRevenue::class,
+            'MelisCommerceDashboardPluginOrderMessages'         => \MelisCommerce\Controller\DashboardPlugins\MelisCommerceDashboardPluginOrderMessages::class,
+        ]
+    ],
+    'form_elements' => [
+        'factories' => [
+            'EcomCountriesSelect'                   => \MelisCommerce\Form\Factory\EcomCountriesSelectFactory::class,
+            'EcomCountriesNoAllCountriesSelect'     => \MelisCommerce\Form\Factory\EcomCountriesNoAllCountriesSelectFactory::class,
+            'EcomProductTextTypeSelect'             => \MelisCommerce\Form\Factory\EcomProductTextTypeSelectFactory::class,
+            'EcomLanguageSelect'                    => \MelisCommerce\Form\Factory\EcomLanguageSelectFactory::class,
+            'EcomDocumentFileSelect'                => \MelisCommerce\Form\Factory\EcomDocumentFileSelectFactory::class,
+            'EcomDocumentImageTypeSelect'           => \MelisCommerce\Form\Factory\EcomDocumentImageTypeSelectFactory::class,
+            'EcomCivilitySelect'                    => \MelisCommerce\Form\Factory\EcomCivilitySelectFactory::class,
+            'EcomAddressTypeSelect'                 => \MelisCommerce\Form\Factory\EcomAddressTypeSelectFactory::class,
+            'EcomOrderStatusSelect'                 => \MelisCommerce\Form\Factory\EcomOrderStatusSelectFactory::class,
+            'EcomOrderStatusAllSelect'              => \MelisCommerce\Form\Factory\EcomOrderStatusAllSelectFactory::class,
+
+            'EcomAttributeTypeSelect'               => \MelisCommerce\Form\Factory\EcomAttributeTypeSelectFactory::class,
+            'EcomCurrencySelect'                    => \MelisCommerce\Form\Factory\EcomCurrencySelectFactory::class,
+            'EcomCheckoutBillingAddressSelect'      => \MelisCommerce\Form\Factory\EcomCheckoutBillingAddressSelectFactory::class,
+            'EcomCheckoutDeliveryAddressSelect'     => \MelisCommerce\Form\Factory\EcomCheckoutDeliveryAddressSelectFactory::class,
+            'EcomCatalogListSelect'                 => \MelisCommerce\Form\Factory\EcomCatalogListSelectFactory::class,
+
+            'EcomCountriesAllStatusSelect'          => \MelisCommerce\Form\Factory\EcomCountriesAllStatusSelectFactory::class,
+            'EcomCurrencyAllStatusSelect'           => \MelisCommerce\Form\Factory\EcomCurrencyAllStatusSelectFactory::class,
+            'EcomLanguageAllStatusSelect'           => \MelisCommerce\Form\Factory\EcomLanguageAllStatusSelectFactory::class,
+            'EcomColorPicker'                       => \MelisCommerce\Form\Factory\EcomColorPicker::class,
+
             // Plugins
-            'EcomPluginCivilitySelect'              => 'MelisCommerce\Form\Factory\Plugin\EcomPluginCivilitySelectFactory',
-            'EcomPluginCountriesSelect'             => 'MelisCommerce\Form\Factory\Plugin\EcomPluginCountriesSelectFactory',
-            'EcomPluginLanguageSelect'              => 'MelisCommerce\Form\Factory\Plugin\EcomPluginLanguageSelectFactory',
-            'EcomPluginAddressTypeSelect'           => 'MelisCommerce\Form\Factory\Plugin\EcomPluginAddressTypeSelectFactory',
-            'EcomPluginDeliveryAddressSelect'       => 'MelisCommerce\Form\Factory\Plugin\EcomPluginDeliveryAddressSelectFactory',
-            'EcomPluginBillingAddressSelect'        => 'MelisCommerce\Form\Factory\Plugin\EcomPluginBillingAddressSelectFactory',
-            'EcomPluginCategoryListSelect'          => 'MelisCommerce\Form\Factory\Plugin\EcomPluginCategoryListSelectFactory',
-            'EcomPluginAttributeSelect'             => 'MelisCommerce\Form\Factory\Plugin\EcomPluginAttributeSelectFactory',
-            'EcomPluginPriceCountriesSelect'        => 'MelisCommerce\Form\Factory\Plugin\EcomPluginPriceCountriesSelectFactory',
-            'EcomPluginProductListSelect'           => 'MelisCommerce\Form\Factory\Plugin\EcomPluginProductListSelectFactory',
-        )
-    ),
-    'view_helpers' => array(
-        'invokables' => array(
-            'ToolTipTable' => 'MelisCommerce\View\Helper\ToolTipTableHelper',
-        ),
-        'factories' => array(
-            'MelisCommerceLink' => 'MelisCommerce\View\Helper\Factory\MelisCommerceLinksHelperFactory',
-        ),    
-    ),
-    'view_manager' => array(
-        'display_not_found_reason' => true,
-        'display_exceptions'       => true,
-        'doctype'                  => 'HTML5',
-        'template_map' => array(
-            'layout/layout' => __DIR__ . '/../view/layout/default.phtml',
+            'EcomPluginCivilitySelect'              => \MelisCommerce\Form\Factory\Plugin\EcomPluginCivilitySelectFactory::class,
+            'EcomPluginCountriesSelect'             => \MelisCommerce\Form\Factory\Plugin\EcomPluginCountriesSelectFactory::class,
+            'EcomPluginLanguageSelect'              => \MelisCommerce\Form\Factory\Plugin\EcomPluginLanguageSelectFactory::class,
+            'EcomPluginAddressTypeSelect'           => \MelisCommerce\Form\Factory\Plugin\EcomPluginAddressTypeSelectFactory::class,
+            'EcomPluginDeliveryAddressSelect'       => \MelisCommerce\Form\Factory\Plugin\EcomPluginDeliveryAddressSelectFactory::class,
+            'EcomPluginBillingAddressSelect'        => \MelisCommerce\Form\Factory\Plugin\EcomPluginBillingAddressSelectFactory::class,
+            'EcomPluginCategoryListSelect'          => \MelisCommerce\Form\Factory\Plugin\EcomPluginCategoryListSelectFactory::class,
+            'EcomPluginAttributeSelect'             => \MelisCommerce\Form\Factory\Plugin\EcomPluginAttributeSelectFactory::class,
+            'EcomPluginPriceCountriesSelect'        => \MelisCommerce\Form\Factory\Plugin\EcomPluginPriceCountriesSelectFactory::class,
+            'EcomPluginProductListSelect'           => \MelisCommerce\Form\Factory\Plugin\EcomPluginProductListSelectFactory::class,
+        ]
+    ],
+    'view_helpers' => [
+        'invokables' => [
+            'ToolTipTable' => \MelisCommerce\View\Helper\ToolTipTableHelper::class,
+        ],
+        'aliases' => [
+            'MelisCommerceLink' => \MelisCommerce\View\Helper\MelisCommerceLinksHelper::class
+        ]
+    ],
+    'view_manager' => [
+        'template_map' => [
+            'layout/layout'                                         => __DIR__ . '/../view/layout/default.phtml',
             // Email Layout
             'MelisCommerce/emailLayout'                             => __DIR__ . '/../view/layout/email-layout.phtml',
             // Plugins layout
@@ -399,71 +329,71 @@ return array(
             'MelisCommerceCheckout/checkout-summary'                => __DIR__ . '/../view/plugins/checkout/checkout-summary.phtml',
             'MelisCommerceCheckout/checkout-confirm-summary'        => __DIR__ . '/../view/plugins/checkout/checkout-confirm-summary.phtml',
             'MelisCommerceCheckout/checkout-confirm'                => __DIR__ . '/../view/plugins/checkout/checkout-confirm.phtml',
-            
+
             'MelisCommerceCategory/category-product-list'           => __DIR__ . '/../view/plugins/categories/category-product-list.phtml',
             'MelisCommerceCategory/category-tree'                   => __DIR__ . '/../view/plugins/categories/category-tree.phtml',
             'MelisCommerce/category-product-list-tree-config'       => __DIR__ . '/../view/plugins/categories/category-product-list-tree-config.phtml',
             'MelisCommerce/category-tree-config'                    => __DIR__ . '/../view/plugins/categories/category-tree-config.phtml',
-            
+
             'MelisCommerceCart/cart'                                => __DIR__ . '/../view/plugins/cart/cart.phtml',
 
-            'MelisCommerceOrder/add-to-cart'                         => __DIR__ . '/../view/plugins/order/add-to-cart.phtml',
+            'MelisCommerceOrder/add-to-cart'                        => __DIR__ . '/../view/plugins/order/add-to-cart.phtml',
             'MelisCommerceOrder/order-history'                      => __DIR__ . '/../view/plugins/order/order-history.phtml',
             'MelisCommerceOrder/order-history-paginator'            => __DIR__ . '/../view/plugins/order/order-history-paginator.phtml',
             'MelisCommerceOrder/order-details'                      => __DIR__ . '/../view/plugins/order/order-details.phtml',
             'MelisCommerceOrder/order-addresses'                    => __DIR__ . '/../view/plugins/order/order-addresses.phtml',
             'MelisCommerceOrder/order-shipping-details'             => __DIR__ . '/../view/plugins/order/order-shipping-details.phtml',
             'MelisCommerceOrder/order-messages'                     => __DIR__ . '/../view/plugins/order/order-messages.phtml',
-            
+
             // Plugin common form config layout
             'MelisCommerce/plugin-common-form-config'               => __DIR__ . '/../view/plugins/common/plugin-common-form-config.phtml',
             'MelisCommerce/plugin-common-pagination'                => __DIR__ . '/../view/plugins/common/plugin-common-pagination.phtml',
 
             // Dashboard plugins
-            'MelisCommerceDashboardPluginOrdersNumber/dashboard/commerce-orders'        => __DIR__ . '/../view/dashboard-plugins/commerce-dashboard-plugin-orders-number.phtml',
-            'MelisCommerceDashboardPluginSalesRevenue/dashboard/commerce-sales-revenue' => __DIR__ . '/../view/dashboard-plugins/commerce-dashboard-plugin-sales-revenue.phtml',
-            'MelisCommerceDashboardPluginOrderMessages/commerce-orders-messages'         => __DIR__ . '/../view/dashboard-plugins/commerce-dashboard-plugin-order-messages.phtml',
-        ),
-        'template_path_stack' => array(
+            'MelisCommerceDashboardPluginOrdersNumber/dashboard/commerce-orders'            => __DIR__ . '/../view/dashboard-plugins/commerce-dashboard-plugin-orders-number.phtml',
+            'MelisCommerceDashboardPluginSalesRevenue/dashboard/commerce-sales-revenue'     => __DIR__ . '/../view/dashboard-plugins/commerce-dashboard-plugin-sales-revenue.phtml',
+            'MelisCommerceDashboardPluginOrderMessages/commerce-orders-messages'            => __DIR__ . '/../view/dashboard-plugins/commerce-dashboard-plugin-order-messages.phtml',
+        ],
+        'template_path_stack' => [
             __DIR__ . '/../view',
-        ),
-        'strategies' => array(
+        ],
+        'strategies' => [
             'ViewJsonStrategy',
-        ),
-    ),
-    'caches' => array(
-        'commerce_memory_services' => array( 
+        ],
+    ],
+    'caches' => [
+        'commerce_memory_services' => [ 
             'active' => true, // activate or deactivate Melis Cache for this conf
-            'adapter' => array(
+            'adapter' => [
                 'name'    => 'Memory',
-                'options' => array('ttl' => 0, 'namespace' => 'meliscommerce'),
-            ),
-            'plugins' => array(
-                'exception_handler' => array('throw_exceptions' => false),
-            ),
-            'ttls' => array(
-                // add a specific ttl for a specific cache key (found via regexp)
+                'options' => ['ttl' => 0, 'namespace' => 'meliscommerce'],
+            ],
+            'plugins' => [
+                'exception_handler' => ['throw_exceptions' => false],
+            ],
+            'ttls' => [
+                // add a specific ttl for a specific cache key (found via regexp]
                 // 'my_cache_key' => 60,
-            )
-        ),
-        'commerce_big_services' => array(
+            ]
+        ],
+        'commerce_big_services' => [
             'active' => true, // activate or deactivate Melis Cache for this conf
-            'adapter' => array(
+            'adapter' => [
                 'name'    => 'Filesystem',
-                'options' => array(
-                    'ttl' => 60 * 60 * 24, // 24hrs 
+                'options' => [
+                    'ttl' => 60 * 60 * 24, // 24hrs
                     'namespace' => 'meliscommerce',
                     'cache_dir' => $_SERVER['DOCUMENT_ROOT'] . '/../cache'
-                ),
-            ),
-            'plugins' => array(
-                'exception_handler' => array('throw_exceptions' => false),
+                ],
+            ],
+            'plugins' => [
+                'exception_handler' => ['throw_exceptions' => false],
                 'Serializer'
-            ),
-            'ttls' => array(
-                // add a specific ttl for a specific cache key (found via regexp)
+            ],
+            'ttls' => [
+                // add a specific ttl for a specific cache key (found via regexp]
                 // 'my_cache_key' => 60,
-            )
-        ),
-    ),
-);
+            ]
+        ],
+    ],
+];

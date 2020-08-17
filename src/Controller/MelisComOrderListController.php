@@ -9,17 +9,17 @@
 
 namespace MelisCommerce\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Session\Container;
-use Zend\Http\Response;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\Session\Container;
+use Laminas\Http\Response;
+use MelisCore\Controller\MelisAbstractActionController;
 
-class MelisComOrderListController extends AbstractActionController
+class MelisComOrderListController extends MelisAbstractActionController
 {
     /**
      * renders the order list page container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderListPageAction()
     {
@@ -31,7 +31,7 @@ class MelisComOrderListController extends AbstractActionController
     
     /**
      * renders the order list page header container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderListHeaderContainerAction()
     {
@@ -43,7 +43,7 @@ class MelisComOrderListController extends AbstractActionController
     
     /**
      * renders the order list page left header container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderListHeaderLeftContainerAction()
     {
@@ -55,7 +55,7 @@ class MelisComOrderListController extends AbstractActionController
     
     /**
      * renders the order list page right header container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderListHeaderRightContainerAction()
     {
@@ -67,7 +67,7 @@ class MelisComOrderListController extends AbstractActionController
     
     /**
      * renders the order list page header title
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderListHeaderTitleAction()
     {
@@ -79,7 +79,7 @@ class MelisComOrderListController extends AbstractActionController
     
     /**
      * renders the order list page content container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderListWidgetsAction()
     {
@@ -91,11 +91,11 @@ class MelisComOrderListController extends AbstractActionController
     
     /**
      * renders the order list page content container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderListWidgetsNumOrdersAction()
     {
-        $melisComOrderService = $this->getServiceLocator()->get('MelisComOrderService');
+        $melisComOrderService = $this->getServiceManager()->get('MelisComOrderService');
         $orderCount = $melisComOrderService->getOrderList(null, true);
         $view = new ViewModel();
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -106,11 +106,11 @@ class MelisComOrderListController extends AbstractActionController
     
     /**
      * renders the order list page content container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderListWidgetsMonthOrdersAction()
     {
-        $melisComOrderService = $this->getServiceLocator()->get('MelisComOrderService');
+        $melisComOrderService = $this->getServiceManager()->get('MelisComOrderService');
         $orderCount = $melisComOrderService->getWidgetOrders('curMonth', true);
         $view = new ViewModel();
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -121,11 +121,11 @@ class MelisComOrderListController extends AbstractActionController
     
     /**
      * renders the order list page content container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderListWidgetsAvgOrdersAction()
     {
-        $melisComOrderService = $this->getServiceLocator()->get('MelisComOrderService');
+        $melisComOrderService = $this->getServiceManager()->get('MelisComOrderService');
         $orderCount = $melisComOrderService->getWidgetOrders('avgMonth', true);
         
         $view = new ViewModel();
@@ -137,7 +137,7 @@ class MelisComOrderListController extends AbstractActionController
     
     /**
      * renders the order list page content container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderListContentAction()
     {
@@ -149,12 +149,12 @@ class MelisComOrderListController extends AbstractActionController
     
     /**
      * renders the order list page table
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderListContentTableAction()
     {
         $status = array();
-        $orderStatusTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTable');
+        $orderStatusTable = $this->getServiceManager()->get('MelisEcomOrderStatusTable');
         
         foreach($orderStatusTable->fetchAll() as $orderStatus){
             $status[] = $orderStatus;
@@ -173,13 +173,13 @@ class MelisComOrderListController extends AbstractActionController
     
     /**
      * renders the order list content table filter bulk
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderListContentFilterBulkAction()
     {
         $status = $this->getRequest()->getPost('osta_id');
         $options = '<option  value="">'.$this->getTool()->getTranslation('tr_meliscommerce_order_list_filter_status').'</option>';
-        $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
+        $orderSvc = $this->getServiceManager()->get('MelisComOrderService');
         $langId = $this->getTool()->getCurrentLocaleID();
         foreach($orderSvc->getOrderStatusList($langId, false) as $orderStatus){
                 $selected  = ($orderStatus->osta_id == $status)? 'selected' : ''; 
@@ -192,7 +192,7 @@ class MelisComOrderListController extends AbstractActionController
     
     /**
      * renders the order list content table filter limit
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderListContentFilterLimitAction()
     {
@@ -201,7 +201,7 @@ class MelisComOrderListController extends AbstractActionController
     
     /**
      * renders the order list content table filter search
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderListContentFilterDateAction()
     {
@@ -210,7 +210,7 @@ class MelisComOrderListController extends AbstractActionController
     
     /**
      * renders the order list content table filter search
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderListContentFilterSearchAction()
     {
@@ -219,7 +219,7 @@ class MelisComOrderListController extends AbstractActionController
     
     /**
      * renders the order list content table filter grid view
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderListContentFilterGridViewAction()
     {
@@ -228,7 +228,7 @@ class MelisComOrderListController extends AbstractActionController
     
     /**
      * renders the order list content table filter list view
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderListContentFilterListViewAction()
     {
@@ -237,7 +237,7 @@ class MelisComOrderListController extends AbstractActionController
     
     /**
      * renders the order list content table filter export
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderListContentFilterExportAction()
     {
@@ -245,7 +245,7 @@ class MelisComOrderListController extends AbstractActionController
     }
     /**
      * renders the order list content table filter refresh
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderListContentFilterRefreshAction()
     {
@@ -254,7 +254,7 @@ class MelisComOrderListController extends AbstractActionController
     
     /**
      * renders the order list content table action info
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderListContentActionInfoAction()
     {
@@ -263,7 +263,7 @@ class MelisComOrderListController extends AbstractActionController
     
     /**
      * renders the order list modal container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderListModalAction()
     {   
@@ -278,7 +278,7 @@ class MelisComOrderListController extends AbstractActionController
     
     /**
      * renders the order list add new order button
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderListAddOrderAction()
     {
@@ -287,15 +287,15 @@ class MelisComOrderListController extends AbstractActionController
     
     /**
      * renders the order list modal for updating order status
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderListContentStatusFormAction()
     {
         $orderId = (int) $this->params()->fromQuery('orderId');
-        $melisComOrderService = $this->getServiceLocator()->get('MelisComOrderService');
+        $melisComOrderService = $this->getServiceManager()->get('MelisComOrderService');
 //         $tabId = $this->params()->fromQuery('tabId');
         $status = array();
-        $orderStatusTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTable');
+        $orderStatusTable = $this->getServiceManager()->get('MelisEcomOrderStatusTable');
         foreach($orderStatusTable->fetchAll() as $orderStatus){
             if($orderStatus->osta_id != -1){
                 $status[] = $orderStatus;
@@ -304,10 +304,10 @@ class MelisComOrderListController extends AbstractActionController
         
         
         $view = new ViewModel();
-        $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_order_list/meliscommerce_order_list_status_form','meliscommerce_order_list_status_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);        
         $updateStatusForm = $factory->createForm($appConfigForm);
         $order = $melisComOrderService->getOrderStatusByOrderId($orderId, $this->getTool()->getCurrentLocaleID())[0];
@@ -323,7 +323,7 @@ class MelisComOrderListController extends AbstractActionController
     
     /**
      * renders the order list modal for updating order export
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderListContentExportFormAction()
     {
@@ -332,16 +332,16 @@ class MelisComOrderListController extends AbstractActionController
         $datepickerInit .= $this->getTool()->datePickerInit('date_end');
         
         $status = array();
-        $orderStatusTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTable');
+        $orderStatusTable = $this->getServiceManager()->get('MelisEcomOrderStatusTable');
         foreach($orderStatusTable->fetchAll() as $orderStatus){
             $status[] = $orderStatus;
         }
         
         $view = new ViewModel();
-        $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_order_list/meliscommerce_order_list_export_form','meliscommerce_order_list_export_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);        
         $orderExportForm = $factory->createForm($appConfigForm);
 
@@ -356,11 +356,11 @@ class MelisComOrderListController extends AbstractActionController
     public function getOrderListDataAction()
     {
         $success = 0;
-        $melisComOrderService = $this->getServiceLocator()->get('MelisComOrderService');
-        $clientCompanyTable = $this->getServiceLocator()->get('MelisEcomClientCompanyTable');
-        $clientPersonTable = $this->getServiceLocator()->get('MelisEcomClientPersonTable');
-        $civilityTransTable = $this->getServiceLocator()->get('MelisEcomCivilityTransTable');
-        $melisCoreConfig = $this->getServiceLocator()->get('MelisCoreConfig');
+        $melisComOrderService = $this->getServiceManager()->get('MelisComOrderService');
+        $clientCompanyTable = $this->getServiceManager()->get('MelisEcomClientCompanyTable');
+        $clientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
+        $civilityTransTable = $this->getServiceManager()->get('MelisEcomCivilityTransTable');
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         
         $confOrder = $melisCoreConfig->getItem('meliscommerce/conf/orderStatus');
         $colId = array();
@@ -511,7 +511,7 @@ class MelisComOrderListController extends AbstractActionController
 
     public function sendOrdersExportToCsvAction()
     {
-        $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $csvConfig = $melisCoreConfig->getItem('meliscommerce/datas/default/export/csv');
         $csvFileName = $csvConfig['orderFileName'];
         $dir = $csvConfig['dir'];
@@ -537,10 +537,10 @@ class MelisComOrderListController extends AbstractActionController
         $orderId = null;
         $textMessage = 'tr_meliscommerce_order_page_save_fail';
         $textTitle = 'tr_meliscommerce_order_page';
-        $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
-        $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
-        $variantStockTbl = $this->getServiceLocator()->get('MelisEcomVariantStockTable');
-        $melisCoreConfig = $this->getServiceLocator()->get('MelisCoreConfig');
+        $orderSvc = $this->getServiceManager()->get('MelisComOrderService');
+        $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
+        $variantStockTbl = $this->getServiceManager()->get('MelisEcomVariantStockTable');
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         
         $confOrder = $melisCoreConfig->getItem('meliscommerce/conf/orderStatus');
         
@@ -608,13 +608,13 @@ class MelisComOrderListController extends AbstractActionController
         $textMessage = 'tr_meliscommerce_order_export_fail';
         $textTitle = 'tr_meliscommerce_order_page';
         
-        $tool = $this->getServiceLocator()->get('MelisCoreTool');
-        $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
+        $tool = $this->getServiceManager()->get('MelisCoreTool');
+        $orderSvc = $this->getServiceManager()->get('MelisComOrderService');
         
-        $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_order_list/meliscommerce_order_list_export_form','meliscommerce_order_list_export_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $orderExportForm = $factory->createForm($appConfigForm);
         
@@ -722,7 +722,7 @@ class MelisComOrderListController extends AbstractActionController
     
     public function ordersExportToCsvAction()
     {
-        $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $csvConfig = $melisCoreConfig->getItem('meliscommerce/datas/default/export/csv');
         $csvFileName = $csvConfig['orderFileName'];
         $dir = $csvConfig['dir'];
@@ -747,7 +747,7 @@ class MelisComOrderListController extends AbstractActionController
      */
     private function getTool()
     {
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_order_list');
     
         return $melisTool;

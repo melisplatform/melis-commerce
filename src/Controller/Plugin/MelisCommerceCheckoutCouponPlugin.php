@@ -12,10 +12,10 @@ namespace MelisCommerce\Controller\Plugin;
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
 
-use Zend\Mvc\Controller\Plugin\Redirect;
-use Zend\Session\Container;
-use Zend\View\Model\ViewModel;
-use Zend\Stdlib\ArrayUtils;
+use Laminas\Mvc\Controller\Plugin\Redirect;
+use Laminas\Session\Container;
+use Laminas\View\Model\ViewModel;
+use Laminas\Stdlib\ArrayUtils;
 /**
  * This plugin implements the business logic of the
  * "coupon" plugin.
@@ -70,11 +70,11 @@ class MelisCommerceCheckoutCouponPlugin extends MelisTemplatingPlugin
         $success = 0;
         $items = array();
         
-        $couponSrv = $this->getServiceLocator()->get('MelisComCouponService');
-        $basketSrv = $this->getServiceLocator()->get('MelisComBasketService');
-        $checkoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
-        $translator = $this->getServiceLocator()->get('translator');
-        $ecomAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
+        $couponSrv = $this->getServiceManager()->get('MelisComCouponService');
+        $basketSrv = $this->getServiceManager()->get('MelisComBasketService');
+        $checkoutService = $this->getServiceManager()->get('MelisComOrderCheckoutService');
+        $translator = $this->getServiceManager()->get('translator');
+        $ecomAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
         
         $siteId         = (!empty($this->pluginFrontConfig['m_coupon_site_id']))        ? $this->pluginFrontConfig['m_coupon_site_id'] : '';
         $isMultiple     = (!empty($this->pluginFrontConfig['m_coupon_multiple']))       ? $this->pluginFrontConfig['m_coupon_multiple'] : false;
@@ -83,8 +83,8 @@ class MelisCommerceCheckoutCouponPlugin extends MelisTemplatingPlugin
         $couponRemove   = (!empty($this->pluginFrontConfig['m_coupon_remove']))         ? $this->pluginFrontConfig['m_coupon_remove'] : null;
         
         $appConfigForm  = (!empty($this->pluginFrontConfig['forms']['meliscommerce_checkout_coupon_form'])) ? $this->pluginFrontConfig['forms']['meliscommerce_checkout_coupon_form'] : $this->pluginConfig['forms']['meliscommerce_checkout_coupon_form'];
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $couponForm = $factory->createForm($appConfigForm);
         
@@ -268,8 +268,8 @@ class MelisCommerceCheckoutCouponPlugin extends MelisTemplatingPlugin
     public function createOptionsForms()
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
         
@@ -280,7 +280,7 @@ class MelisCommerceCheckoutCouponPlugin extends MelisTemplatingPlugin
             foreach ($formConfig as $formKey => $config)
             {
                 $form = $factory->createForm($config);
-                $request = $this->getServiceLocator()->get('request');
+                $request = $this->getServiceManager()->get('request');
                 $parameters = $request->getQuery()->toArray();
                 
                 if (!isset($parameters['validate']))
@@ -291,7 +291,7 @@ class MelisCommerceCheckoutCouponPlugin extends MelisTemplatingPlugin
                     $viewModelTab->modalForm = $form;
                     $viewModelTab->formData   = $this->getFormData();
                     
-                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
                         'name' => $config['tab_title'],

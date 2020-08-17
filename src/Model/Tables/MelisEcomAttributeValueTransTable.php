@@ -9,19 +9,25 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomAttributeValueTransTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_attribute_value_trans';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'avt_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'avt_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
+
     public function getAttributeValueTransbyId($attributeValueTransId, $langId = null)
     {
         $select = $this->tableGateway->getSql()->select();

@@ -9,30 +9,28 @@
 
 namespace MelisCommerce\Listener;
 
-use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\ListenerAggregateInterface;
-use Zend\Session\Container;
+use Laminas\EventManager\EventManagerInterface;
+use Laminas\EventManager\ListenerAggregateInterface;
+use Laminas\Session\Container;
+use MelisCore\Listener\MelisGeneralListener;
 
-class MelisCommercePostCheckoutCouponListener implements ListenerAggregateInterface
+class MelisCommercePostCheckoutCouponListener extends MelisGeneralListener implements ListenerAggregateInterface
 {
-    public function attach(EventManagerInterface $events)
+    public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $sharedEvents      = $events->getSharedManager();
-        
-        $callBackHandler = $sharedEvents->attach(
+        $this->attachEventListener(
+            $events,
             '*',
-            array(
-                'meliscommerce_service_checkout_post_order_computation_end'
-            ),
+            'meliscommerce_service_checkout_post_order_computation_end',
         	function($e){
         	    
-        		$sm = $e->getTarget()->getServiceLocator();
+        		$sm = $e->getTarget()->getServiceManager();
         		$couponService = $sm->get('MelisComCouponService');
         		$couponOrderTable = $sm->get('MelisEcomCouponOrderTable');
         		$params = $e->getParams();
         		
-        		if ($params['results']['success'])
-        		{
+        		if ($params['results']['success']) {
+
         		    $productCoupons = $couponService->getCouponByType('product', $params['results']['orderId']);
         		    $generalCoupons = $couponService->getCouponByType('general', $params['results']['orderId']);
                     
@@ -126,18 +124,7 @@ class MelisCommercePostCheckoutCouponListener implements ListenerAggregateInterf
                     }
         		}
         	},
-        	
-        100);
-        
-        $this->listeners[] = $callBackHandler;
-    }
-    
-    public function detach(EventManagerInterface $events)
-    {
-        foreach ($this->listeners as $index => $listener) {
-            if ($events->detach($listener)) {
-                unset($this->listeners[$index]);
-            }
-        }
+        100
+        );
     }
 }

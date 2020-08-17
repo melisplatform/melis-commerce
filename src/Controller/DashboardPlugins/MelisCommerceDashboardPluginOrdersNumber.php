@@ -9,9 +9,9 @@
 namespace MelisCommerce\Controller\DashboardPlugins;
 
 use MelisCore\Controller\DashboardPlugins\MelisCoreDashboardTemplatingPlugin;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Session\Container;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\Session\Container;
 
 class MelisCommerceDashboardPluginOrdersNumber extends MelisCoreDashboardTemplatingPlugin
 {
@@ -29,15 +29,15 @@ class MelisCommerceDashboardPluginOrdersNumber extends MelisCoreDashboardTemplat
     public function commerceOrders()
     {
         /** @var \MelisCore\Service\MelisCoreDashboardPluginsRightsService $dashboardPluginsService */
-        $dashboardPluginsService = $this->getServiceLocator()->get('MelisCoreDashboardPluginsService');
+        $dashboardPluginsService = $this->getServiceManager()->get('MelisCoreDashboardPluginsService');
         //get the class name to make it as a key to the plugin
         $path = explode('\\', __CLASS__);
         $className = array_pop($path);
         $isAccessable = $dashboardPluginsService->canAccess($className);
 
-        $melisOrdersService = $this->getServiceLocator()->get('MelisComOrderService');
-        $melisTranslation = $this->getServiceLocator()->get('MelisCoreTranslation');
-        $melisCoreConfig = $this->getServiceLocator()->get('MelisCoreConfig');
+        $melisOrdersService = $this->getServiceManager()->get('MelisComOrderService');
+        $melisTranslation = $this->getServiceManager()->get('MelisCoreTranslation');
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
 
         //get language locale and id
         $container = new Container('meliscore');
@@ -96,7 +96,7 @@ class MelisCommerceDashboardPluginOrdersNumber extends MelisCoreDashboardTemplat
         }
 
         $status = [];
-        $orderStatusTable = $this->getServiceLocator()->get('MelisEcomOrderStatusTable');
+        $orderStatusTable = $this->getServiceManager()->get('MelisEcomOrderStatusTable');
 
         foreach($orderStatusTable->fetchAll() as $orderStatus){
             $status[] = $orderStatus;
@@ -129,7 +129,7 @@ class MelisCommerceDashboardPluginOrdersNumber extends MelisCoreDashboardTemplat
             $chartFor = get_object_vars($this->getController()->getRequest()->getPost());
             $chartFor = isset($chartFor['chartFor']) ? $chartFor['chartFor'] : 'monthly';
 
-            $melisCommerceOrdersService = $this->getServiceLocator()->get('MelisComOrderService');
+            $melisCommerceOrdersService = $this->getServiceManager()->get('MelisComOrderService');
 
             // Last Date/value of the Graph will be the Current Date
             if ($chartFor == 'hourly') {
@@ -190,7 +190,7 @@ class MelisCommerceDashboardPluginOrdersNumber extends MelisCoreDashboardTemplat
      */
     private function getTool($pluginKey, $toolKey)
     {
-        $tool = $this->getServiceLocator()->get('MelisCoreTool');
+        $tool = $this->getServiceManager()->get('MelisCoreTool');
         $tool->setMelisToolKey($pluginKey, $toolKey);
         return $tool;
     }

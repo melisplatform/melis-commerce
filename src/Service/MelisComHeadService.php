@@ -2,31 +2,16 @@
 
 namespace MelisCommerce\Service;
 
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
 use MelisEngine\Model\MelisPage;
-use Zend\Filter\HtmlEntities;
+use Laminas\Filter\HtmlEntities;
 
-class MelisComHeadService implements ServiceLocatorAwareInterface
+class MelisComHeadService extends MelisComGeneralService
 {
-	protected $serviceLocator;
-	
-	public function setServiceLocator(ServiceLocatorInterface $sl)
-	{
-		$this->serviceLocator = $sl;
-		return $this;
-	}
-	
-	public function getServiceLocator()
-	{
-		return $this->serviceLocator;
-	}	
-	
 	public function updateTitleAndDescription($typeItem, $idItem, $contentGenerated)
 	{
 		$newContent = $contentGenerated;
 		
-		$melisEcomSeoTable = $this->serviceLocator->get('MelisEcomSeoTable');
+		$melisEcomSeoTable = $this->getServiceManager()->get('MelisEcomSeoTable');
 		$datasComSeo = $melisEcomSeoTable->getEntryByField($typeItem, $idItem);
 		if (!empty($datasComSeo))
 		{

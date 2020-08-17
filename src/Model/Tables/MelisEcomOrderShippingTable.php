@@ -9,27 +9,33 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomOrderShippingTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_order_shipping';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'oship_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'oship_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
+
     public function getOrderShippingByOrderId($orderId)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         $select->where('oship_order_id ='.$orderId);
         $select->order('oship_date_sent');
         
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
     

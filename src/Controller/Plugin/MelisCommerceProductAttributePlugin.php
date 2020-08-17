@@ -11,8 +11,8 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
-use Zend\Session\Container;
-use Zend\View\Model\ViewModel;
+use Laminas\Session\Container;
+use Laminas\View\Model\ViewModel;
 /**
  * This plugin implements the business logic of the
  * "Filter menu attribute value" plugin.
@@ -68,7 +68,7 @@ class MelisCommerceProductAttributePlugin extends MelisTemplatingPlugin
         
         $attributeId = !empty($data['attribute_id']) ? $data['attribute_id'] : null;
         // Product Attributes Start
-        $attrSrv = $this->getServiceLocator()->get('MelisComAttributeService');
+        $attrSrv = $this->getServiceManager()->get('MelisComAttributeService');
         $attrs = $attrSrv->getAttributeListAndValues($attributeId, true, true, $langId);
 
         $selectedAttrVal = $attrSrv->checkSelectedAttributesFormat($data['m_box_product_attribute_values_ids_selected']);
@@ -89,8 +89,8 @@ class MelisCommerceProductAttributePlugin extends MelisTemplatingPlugin
     public function createOptionsForms()
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
     
@@ -98,7 +98,7 @@ class MelisCommerceProductAttributePlugin extends MelisTemplatingPlugin
         $render   = [];
         if (!empty($formConfig))
         {
-            $request = $this->getServiceLocator()->get('request');
+            $request = $this->getServiceManager()->get('request');
             $parameters = $request->getQuery()->toArray();
             if (!isset($parameters['validate'])){
                 $formData = $this->getFormData();
@@ -116,7 +116,7 @@ class MelisCommerceProductAttributePlugin extends MelisTemplatingPlugin
                     $viewModelTab->modalForm = $form;
                     $viewModelTab->formData   = $formData;
     
-                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
                         'name' => $config['tab_title'],

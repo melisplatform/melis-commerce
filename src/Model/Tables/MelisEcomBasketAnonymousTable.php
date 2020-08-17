@@ -9,19 +9,25 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomBasketAnonymousTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_basket_anonymous';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'bano_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'bano_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
+
     public function getBasketAnonymousByVarianIdAndClientKey($variantId, $clientKey)
     {
         $select = $this->tableGateway->getSql()->select();

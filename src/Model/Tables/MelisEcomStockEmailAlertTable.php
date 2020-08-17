@@ -9,26 +9,32 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomStockEmailAlertTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_stock_email_alert';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'sea_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'sea_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
+
     public function getStockEmailRecipients($productIds = array(-1))
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         
         $select->where->in('sea_prd_id', array($productIds));
         
-        $resultSet = $this->tableGateway->selectWith($select);
+        $resultSet = $this->getTableGateway()->selectWith($select);
         
         return $resultSet;
     }
@@ -40,13 +46,13 @@ class MelisEcomStockEmailAlertTable extends MelisEcomGenericTable
         if ($this->getEntryById($id)->current())
         {
             unset($datas['sea_id']);
-            $this->tableGateway->update($datas, array($this->idField => $id));
+            $this->getTableGateway()->update($datas, array($this->idField => $id));
             return $id;
         }
         else
         {
-            $this->tableGateway->insert($datas);
-            $insertedId = $this->tableGateway->lastInsertValue;
+            $this->getTableGateway()->insert($datas);
+            $insertedId = $this->getTableGateway()->lastInsertValue;
             return $insertedId;
         }
     }

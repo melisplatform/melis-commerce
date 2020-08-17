@@ -9,17 +9,22 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomOrderStatusTransTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_order_status_trans';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'ostt_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'ostt_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
 }

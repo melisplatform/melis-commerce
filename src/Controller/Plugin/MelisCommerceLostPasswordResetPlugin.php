@@ -12,12 +12,12 @@ namespace MelisCommerce\Controller\Plugin;
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
 
-use Zend\Mail\Message;
-use Zend\Mime\Message as MimeMessage;
-use Zend\Mime\Part as MimePart;
-use Zend\Mail\Transport\Sendmail;
-use Zend\View\Model\ViewModel;
-use Zend\Stdlib\ArrayUtils;
+use Laminas\Mail\Message;
+use Laminas\Mime\Message as MimeMessage;
+use Laminas\Mime\Part as MimePart;
+use Laminas\Mail\Transport\Sendmail;
+use Laminas\View\Model\ViewModel;
+use Laminas\Stdlib\ArrayUtils;
 /**
  * This plugin implements the business logic of the
  * "lostPasswordReset" plugin.
@@ -78,8 +78,8 @@ class MelisCommerceLostPasswordResetPlugin extends MelisTemplatingPlugin
         
         $appConfigForm = (!empty($this->pluginFrontConfig['forms']['lost_password_reset'])) ? $this->pluginFrontConfig['forms']['lost_password_reset'] : array();
         
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $lostPasswordReset = $factory->createForm($appConfigForm);
         
@@ -89,8 +89,8 @@ class MelisCommerceLostPasswordResetPlugin extends MelisTemplatingPlugin
         $data['m_autologin'] = (!empty($formData['m_autologin'])) ? $formData['m_autologin'] : false;
         $data['m_redirection_link_ok'] = (!empty($formData['m_redirection_link_ok'])) ? $formData['m_redirection_link_ok'] : '';
         
-        $clientSrv = $this->getServiceLocator()->get('MelisComClientService');
-        $translator = $this->getServiceLocator()->get('translator');
+        $clientSrv = $this->getServiceManager()->get('MelisComClientService');
+        $translator = $this->getServiceManager()->get('translator');
         $clientPerson = $clientSrv->getClientPersonByRecoveryKey($data['m_recovery_key']);
         
         if (empty($clientPerson))
@@ -121,7 +121,7 @@ class MelisCommerceLostPasswordResetPlugin extends MelisTemplatingPlugin
                     
                     if ($data['m_autologin'])
                     {
-                        $pluginManager = $this->getServiceLocator()->get('ControllerPluginManager');
+                        $pluginManager = $this->getServiceManager()->get('ControllerPluginManager');
                         
                         $login = $pluginManager->get('MelisCommerceLoginPlugin');
                         // Adding the custom link the user is already identify
@@ -180,8 +180,8 @@ class MelisCommerceLostPasswordResetPlugin extends MelisTemplatingPlugin
     public function createOptionsForms()
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
         
@@ -192,7 +192,7 @@ class MelisCommerceLostPasswordResetPlugin extends MelisTemplatingPlugin
             foreach ($formConfig as $formKey => $config)
             {
                 $form = $factory->createForm($config);
-                $request = $this->getServiceLocator()->get('request');
+                $request = $this->getServiceManager()->get('request');
                 $parameters = $request->getQuery()->toArray();
                 
                 if (!isset($parameters['validate']))
@@ -203,7 +203,7 @@ class MelisCommerceLostPasswordResetPlugin extends MelisTemplatingPlugin
                     $viewModelTab->modalForm = $form;
                     $viewModelTab->formData   = $this->getFormData();
                     
-                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
                         'name' => $config['tab_title'],

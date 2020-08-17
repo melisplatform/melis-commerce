@@ -11,10 +11,10 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
-use Zend\Paginator\Adapter\ArrayAdapter;
-use Zend\Paginator\Paginator;
-use Zend\Stdlib\ArrayUtils;
-use Zend\View\Model\ViewModel;
+use Laminas\Paginator\Adapter\ArrayAdapter;
+use Laminas\Paginator\Paginator;
+use Laminas\Stdlib\ArrayUtils;
+use Laminas\View\Model\ViewModel;
 /**
  * This plugin implements the business logic of the
  * "Product search box" plugin.
@@ -66,7 +66,7 @@ class MelisCommerceProductSearchPlugin extends MelisTemplatingPlugin
         $categoryProductList = array();
         $data = $this->getFormData();
 
-        $productSearchSvc = $this->getServiceLocator()->get('MelisComProductSearchService');
+        $productSearchSvc = $this->getServiceManager()->get('MelisComProductSearchService');
 
         $searchKey = !empty($data['m_box_product_search']) ? $data['m_box_product_search'] : null;
 
@@ -101,13 +101,13 @@ class MelisCommerceProductSearchPlugin extends MelisTemplatingPlugin
 
     /**
      * @param $data
-     * @return \Zend\Form\ElementInterface
+     * @return \Laminas\Form\ElementInterface
      */
     private function loadProductSearchForm($data)
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['product_search_form'];
         if (!empty($formConfig)) {
@@ -125,8 +125,8 @@ class MelisCommerceProductSearchPlugin extends MelisTemplatingPlugin
     public function createOptionsForms()
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
     
@@ -134,7 +134,7 @@ class MelisCommerceProductSearchPlugin extends MelisTemplatingPlugin
         $render   = [];
         if (!empty($formConfig))
         {
-            $request = $this->getServiceLocator()->get('request');
+            $request = $this->getServiceManager()->get('request');
             $parameters = $request->getQuery()->toArray();
             if (!isset($parameters['validate'])){
                 $formData = $this->getFormData();
@@ -152,7 +152,7 @@ class MelisCommerceProductSearchPlugin extends MelisTemplatingPlugin
                     $viewModelTab->modalForm = $form;
                     $viewModelTab->formData   = $formData;
     
-                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
                         'name' => $config['tab_title'],

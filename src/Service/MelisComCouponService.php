@@ -35,7 +35,7 @@ class MelisComCouponService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_get_client_coupons_start', $arrayParameters);
         
         // Service implementation start
-        $couponTable = $this->getServiceLocator()->get('MelisEcomCouponTable');
+        $couponTable = $this->getServiceManager()->get('MelisEcomCouponTable');
         foreach($couponTable->getCouponList($arrayParameters['orderId'], $arrayParameters['clientId'], 
                                             $arrayParameters['start'], $arrayParameters['limit'], 
                                             $arrayParameters['order'], $arrayParameters['search']) as $coupon){
@@ -62,8 +62,8 @@ class MelisComCouponService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_get_client_coupons_start', $arrayParameters);
         
         // Service implementation start
-        $productSvc = $this->getServiceLocator()->get('MelisComProductService');
-        $productTable = $this->getServiceLocator()->get('MelisEcomProductTable');
+        $productSvc = $this->getServiceManager()->get('MelisComProductService');
+        $productTable = $this->getServiceManager()->get('MelisEcomProductTable');
         foreach($productTable->getCouponProductList($arrayParameters['couponId'], $arrayParameters['assigned'],
             $arrayParameters['start'], $arrayParameters['limit'],
             $arrayParameters['order'], $arrayParameters['search']) as $productCoupon){
@@ -97,7 +97,7 @@ class MelisComCouponService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_get_coupons_start', $arrayParameters);
         
         // Service implementation start
-        $couponTable = $this->getServiceLocator()->get('MelisEcomCouponTable');
+        $couponTable = $this->getServiceManager()->get('MelisEcomCouponTable');
         $melisCoupon = new \MelisCommerce\Entity\MelisCoupon();
         foreach($couponTable->getEntryById($arrayParameters['couponId']) as $coupon){
             $melisCoupon->setId($coupon->coup_id);
@@ -132,7 +132,7 @@ class MelisComCouponService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_get_coupon_discounted_basket_items_start', $arrayParameters);
         
         // Service implementation start
-        $couponOrderTable = $this->getServiceLocator()->get('MelisEcomCouponOrderTable');
+        $couponOrderTable = $this->getServiceManager()->get('MelisEcomCouponOrderTable');
         $data = $couponOrderTable->getCouponDiscountedBasketItems($arrayParameters['couponId'], $arrayParameters['orderId']);
         
         foreach($data as $couponOrder){
@@ -166,7 +166,7 @@ class MelisComCouponService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_get_coupons_by_type_start', $arrayParameters);
         
         // Service implementation start
-        $couponTable = $this->getServiceLocator()->get('MelisEcomCouponTable');
+        $couponTable = $this->getServiceManager()->get('MelisEcomCouponTable');
         $coupons = array();
         try{
            $coupons =  $couponTable->getCouponByType($arrayParameters['type'], $arrayParameters['orderId']);
@@ -208,7 +208,7 @@ class MelisComCouponService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_coupon_save_start', $arrayParameters);
         
         // Service implementation start
-        $couponTable = $this->getServiceLocator()->get('MelisEcomCouponTable');
+        $couponTable = $this->getServiceManager()->get('MelisEcomCouponTable');
         try{
             $results = $couponTable->save($arrayParameters['coupon'], $arrayParameters['couponId']);
         }catch(\Exception $e){
@@ -242,7 +242,7 @@ class MelisComCouponService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_coupon_client_save_start', $arrayParameters);
         
         // Service implementation start
-        $couponClientTable = $this->getServiceLocator()->get('MelisEcomCouponClientTable');
+        $couponClientTable = $this->getServiceManager()->get('MelisEcomCouponClientTable');
         try{
             $results = $couponClientTable->save($arrayParameters['couponClient'], $arrayParameters['ccli_id']);
         }catch(\Exception $e){
@@ -276,7 +276,7 @@ class MelisComCouponService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_coupon_client_save_start', $arrayParameters);
         
         // Service implementation start
-        $couponProductTable = $this->getServiceLocator()->get('MelisEcomCouponProductTable');
+        $couponProductTable = $this->getServiceManager()->get('MelisEcomCouponProductTable');
         try{
             $results = $couponProductTable->save($arrayParameters['couponProduct'], $arrayParameters['cprod_id']);
         }catch(\Exception $e){
@@ -310,9 +310,9 @@ class MelisComCouponService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_coupon_client_save_start', $arrayParameters);
         
         // Service implementation start
-        $couponTable = $this->getServiceLocator()->get('MelisEcomCouponTable');
-        $couponClientTable = $this->getServiceLocator()->get('MelisEcomCouponClientTable');
-        $couponProductTable = $this->getServiceLocator()->get('MelisEcomCouponProductTable');
+        $couponTable = $this->getServiceManager()->get('MelisEcomCouponTable');
+        $couponClientTable = $this->getServiceManager()->get('MelisEcomCouponClientTable');
+        $couponProductTable = $this->getServiceManager()->get('MelisEcomCouponProductTable');
         try {
             $results = $couponClientTable->deleteByField('ccli_coupon_id', $arrayParameters['couponId']);
             $results = $couponProductTable->deleteByField('cprod_coupon_id', $arrayParameters['couponId']);
@@ -356,8 +356,8 @@ class MelisComCouponService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_coupon_check_validity_start', $arrayParameters);
         
         // Service implementation start
-        $couponTable = $this->getServiceLocator()->get('MelisEcomCouponTable');
-        $couponProductTable = $this->getServiceLocator()->get('MelisEcomCouponProductTable');
+        $couponTable = $this->getServiceManager()->get('MelisEcomCouponTable');
+        $couponProductTable = $this->getServiceManager()->get('MelisEcomCouponProductTable');
         $coupon = $couponTable->getEntryByField('coup_code', $arrayParameters['code'])->current();
         
         if (!empty($coupon))
@@ -431,7 +431,7 @@ class MelisComCouponService extends MelisComGeneralService
                             if ($coupon->coup_type == '1')
                             {
                                 // Checking if Client is assigned to this couponId
-                                $melisEcomCouponClientTable = $this->getServiceLocator()->get('MelisEcomCouponClientTable');
+                                $melisEcomCouponClientTable = $this->getServiceManager()->get('MelisEcomCouponClientTable');
                                 $couponClient = $melisEcomCouponClientTable->checkCouponClientExist($coupon->coup_id, $arrayParameters['clientId'])->current();
                         
                                 if (empty($couponClient))
@@ -505,7 +505,7 @@ class MelisComCouponService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_coupon_add_to_order_start', $arrayParameters);
         
         // Service implementation start
-        $couponOrderTable = $this->getServiceLocator()->get('MelisEcomCouponOrderTable');
+        $couponOrderTable = $this->getServiceManager()->get('MelisEcomCouponOrderTable');
         try{
             $results = $couponOrderTable->save($arrayParameters['couponOrderData'], $arrayParameters['couponOrderId']);
         }catch(\Exception $e){
@@ -547,14 +547,14 @@ class MelisComCouponService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_coupon_use_start', $arrayParameters);
         
         // Service implementation start
-        $couponTable = $this->getServiceLocator()->get('MelisEcomCouponTable');
+        $couponTable = $this->getServiceManager()->get('MelisEcomCouponTable');
         
         $results = $this->validateCoupon($arrayParameters['code'], $arrayParameters['clientId']);
         
         if ($results['success'])
         {
             $coupon = $results['coupon'];
-            $couponTable = $this->getServiceLocator()->get('MelisEcomCouponTable');
+            $couponTable = $this->getServiceManager()->get('MelisEcomCouponTable');
             
             $data = array(
                 'coup_current_use_number' => $coupon->coup_current_use_number + 1
@@ -562,7 +562,7 @@ class MelisComCouponService extends MelisComGeneralService
             
             $results['couponId'] = $couponTable->save($data, $coupon->coup_id);
             
-            $melisEcomCouponOrderTable = $this->getServiceLocator()->get('MelisEcomCouponOrderTable');
+            $melisEcomCouponOrderTable = $this->getServiceManager()->get('MelisEcomCouponOrderTable');
             
             $data = array(
                 'cord_coupon_id' => $coupon->coup_id,

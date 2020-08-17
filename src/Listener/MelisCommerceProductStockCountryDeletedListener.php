@@ -9,27 +9,23 @@
 
 namespace MelisCommerce\Listener;
 
-use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\ListenerAggregateInterface;
+use Laminas\EventManager\EventManagerInterface;
+use Laminas\EventManager\ListenerAggregateInterface;
+use MelisCore\Listener\MelisGeneralListener;
 
-use MelisCore\Listener\MelisCoreGeneralListener;
-
-class MelisCommerceProductStockCountryDeletedListener extends MelisCoreGeneralListener implements ListenerAggregateInterface
+class MelisCommerceProductStockCountryDeletedListener extends MelisGeneralListener implements ListenerAggregateInterface
 {
-    public function attach(EventManagerInterface $events)
+    public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $sharedEvents      = $events->getSharedManager();
-        
-        $callBackHandler = $sharedEvents->attach(
+        $this->attachEventListener(
+            $events,
             'MelisCommerce',
-            array(
-                'meliscommerce_country_delete_end'
-            ),
+            'meliscommerce_country_delete_end',
         	function($e){
         	    
-        		$sm = $e->getTarget()->getServiceLocator();   	
+        		$sm = $e->getTarget()->getServiceManager();
         		$params = $e->getParams();
-        		$paramData = array();
+        		$paramData = [];
         		if(isset($params['data'])) {
         		    $paramData = $params['data'];
         		}
@@ -41,13 +37,10 @@ class MelisCommerceProductStockCountryDeletedListener extends MelisCoreGeneralLi
         		    'meliscommerce',
         		    'country-deleted-data',
         		    'MelisCommerce\Controller\MelisComVariant',
-        		    array('action' => 'stockCountryDeleted')
-        		    );
-        		       		
-        		    
+        		    ['action' => 'stockCountryDeleted']
+                );
         	},
-        100);
-        
-        $this->listeners[] = $callBackHandler;
+        100
+        );
     }
 }

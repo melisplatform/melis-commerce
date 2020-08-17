@@ -9,27 +9,23 @@
 
 namespace MelisCommerce\Listener;
 
-use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\ListenerAggregateInterface;
+use Laminas\EventManager\EventManagerInterface;
+use Laminas\EventManager\ListenerAggregateInterface;
+use MelisCore\Listener\MelisGeneralListener;
 
-use MelisCore\Listener\MelisCoreGeneralListener;
-
-class MelisCommerceSaveProductListener extends MelisCoreGeneralListener implements ListenerAggregateInterface
+class MelisCommerceSaveProductListener extends MelisGeneralListener implements ListenerAggregateInterface
 {
-    public function attach(EventManagerInterface $events)
+    public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $sharedEvents      = $events->getSharedManager();
-        
-        $callBackHandler = $sharedEvents->attach(
+        $this->attachEventListener(
+            $events,
             'MelisCommerce',
-            array(
-                'meliscommerce_product_save_start'
-            ),
+            'meliscommerce_product_save_start',
         	function($e){
         	    
-        		$sm = $e->getTarget()->getServiceLocator();   	
+        		$sm = $e->getTarget()->getServiceManager();
         		$params = $e->getParams();
-        		$paramData = array();
+        		$paramData = [];
         		if(isset($params['data'])) {
         		    $paramData = $params['data'];
         		}
@@ -41,15 +37,16 @@ class MelisCommerceSaveProductListener extends MelisCoreGeneralListener implemen
         		    'meliscommerce',
         		    'product-tmp-data',
         		    'MelisCommerce\Controller\MelisComProduct',
-        		    array_merge(array('action' => 'saveProductData'), array('data' => $paramData))
-        		    );
+        		    array_merge(
+        		        ['action' => 'saveProductData'],
+                        ['data' => $paramData]
+                    )
+                );
         		 
         		if(!$success)
         		    return;
-
         	},
-        100);
-        
-        $this->listeners[] = $callBackHandler;
+        100
+        );
     }
 }

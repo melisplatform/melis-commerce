@@ -9,9 +9,9 @@
 namespace MelisCommerce\Controller\DashboardPlugins;
 
 use MelisCore\Controller\DashboardPlugins\MelisCoreDashboardTemplatingPlugin;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Session\Container;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\Session\Container;
 
 class MelisCommerceDashboardPluginSalesRevenue extends MelisCoreDashboardTemplatingPlugin
 {
@@ -26,7 +26,7 @@ class MelisCommerceDashboardPluginSalesRevenue extends MelisCoreDashboardTemplat
     public function commerceSalesRevenue()
     {
         /** @var \MelisCore\Service\MelisCoreDashboardPluginsRightsService $dashboardPluginsService */
-        $dashboardPluginsService = $this->getServiceLocator()->get('MelisCoreDashboardPluginsService');
+        $dashboardPluginsService = $this->getServiceManager()->get('MelisCoreDashboardPluginsService');
         //get the class name to make it as a key to the plugin
         $path = explode('\\', __CLASS__);
         $className = array_pop($path);
@@ -52,7 +52,7 @@ class MelisCommerceDashboardPluginSalesRevenue extends MelisCoreDashboardTemplat
 
             //$pluginConfig['activeFilter'] = $chartFor;
 
-            $melisCommerceOrdersService = $this->getServiceLocator()->get('MelisComOrderService');
+            $melisCommerceOrdersService = $this->getServiceManager()->get('MelisComOrderService');
             // Last Date/value of the Graph will be the Current Date
             if($chartFor == 'hourly') {
                 $curdate = date('Y-m-d H:i');

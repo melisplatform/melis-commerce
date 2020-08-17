@@ -45,7 +45,7 @@ class MelisComVariantService extends MelisComGeneralService
 		
 		// Service implementation start
 	
-		$variantTable = $this->getServiceLocator()->get('MelisEcomVariantTable');
+		$variantTable = $this->getServiceManager()->get('MelisEcomVariantTable');
 		$results = $variantTable->getVariantByProdId($arrayParameters['productId'], $arrayParameters['onlyValid'], $arrayParameters['isMain'], $arrayParameters['start'], $arrayParameters['limit'], $arrayParameters['search'], $arrayParameters['order']);       
 		
 		//elminate duplicate entries
@@ -86,11 +86,11 @@ class MelisComVariantService extends MelisComGeneralService
 			$tmp .= '_' . $type;
 		$cacheKey = 'variant-' . $variantId . '-getVariantById_' . $variantId . '_' . $langId . '_' . $countryId . '_' . $docType . '_' . $tmp;
 		$cacheConfig = 'commerce_big_services';
-		$melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
+		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
 //        if (!empty($results)) return $results;
 
-		$cache = $this->getServiceLocator()->get($cacheConfig);
+		$cache = $this->getServiceManager()->get($cacheConfig);
 		if ($cache->hasItem($cacheKey)){
 			return $cache->getItem($cacheKey);
 		}
@@ -103,8 +103,8 @@ class MelisComVariantService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_variant_byid_start', $arrayParameters);
 		
 		// Service implementation start	   
-		$variantTable = $this->getServiceLocator()->get('MelisEcomVariantTable');
-		$docService = $this->getServiceLocator()->get('MelisComDocumentService');
+		$variantTable = $this->getServiceManager()->get('MelisEcomVariantTable');
+		$docService = $this->getServiceManager()->get('MelisComDocumentService');
 		$entVariant = new MelisVariant();
 		$variant = array();
 		$data = array();
@@ -156,7 +156,7 @@ class MelisComVariantService extends MelisComGeneralService
 		
 		// Service implementation start
 	
-		$variantTable = $this->getServiceLocator()->get('MelisEcomVariantTable');
+		$variantTable = $this->getServiceManager()->get('MelisEcomVariantTable');
 		$results = $variantTable->getEntryByField('var_sku', $arrayParameters['variantSKU']);
 		if($results){
 			$results->toArray()[0];
@@ -195,7 +195,7 @@ class MelisComVariantService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_variant_main_byproductid_start', $arrayParameters);
 		
 		// Service implementation start
-		$variantTable = $this->getServiceLocator()->get('MelisEcomVariantTable');
+		$variantTable = $this->getServiceManager()->get('MelisEcomVariantTable');
 		$mainVariant = $variantTable->getMainVariantById($arrayParameters['productId'], $arrayParameters['langId'])->current();
 		
 		if($mainVariant) { 
@@ -231,7 +231,7 @@ class MelisComVariantService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_variant_product_byid_start', $arrayParameters);
 		
 		// Service implementation start
-		$productTbl = $this->getServiceLocator()->get('MelisEcomProductTable');
+		$productTbl = $this->getServiceManager()->get('MelisEcomProductTable');
 		$results = $productTbl->getProductByVariantId($arrayParameters['variantId'])->current();
 
 		// Adding results to parameters for events treatment if needed
@@ -262,7 +262,7 @@ class MelisComVariantService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_variant_stocks_start', $arrayParameters);
 
 		// Service implementation start
-		$stocksTable = $this->getServiceLocator()->get('MelisEcomVariantStockTable');
+		$stocksTable = $this->getServiceManager()->get('MelisEcomVariantStockTable');
 		if($arrayParameters['variantId']){
 			$datas = $stocksTable->getStocksByVariantId($arrayParameters['variantId'], $arrayParameters['countryId']);
 		}
@@ -297,7 +297,7 @@ class MelisComVariantService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_variant_final_stocks_start', $arrayParameters);
 		
 		// Sending service start event
-		$stocksTable = $this->getServiceLocator()->get('MelisEcomVariantStockTable');
+		$stocksTable = $this->getServiceManager()->get('MelisEcomVariantStockTable');
 		$variantStocks = $stocksTable->getEntryByField('stock_var_id', $arrayParameters['variantId']);
 		
 		$generalStocks = array();
@@ -371,11 +371,11 @@ class MelisComVariantService extends MelisComGeneralService
 		// Retrieve cache version if front mode to avoid multiple calls
 		$cacheKey = 'variant-' . $variantId . '-getVariantAttributesValuesById_' . $variantId . '_' . $langId;
 		$cacheConfig = 'commerce_big_services';
-		$melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
+		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
 //        if (!empty($results)) return $results;
 
-		$cache = $this->getServiceLocator()->get($cacheConfig);
+		$cache = $this->getServiceManager()->get($cacheConfig);
 		if ($cache->hasItem($cacheKey)){
 			return $cache->getItem($cacheKey);
 		}
@@ -389,8 +389,8 @@ class MelisComVariantService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_variant_attributesvalues_start', $arrayParameters);
 		
 		// Service implementation start	    
-		$varAttrTable = $this->getServiceLocator()->get('MelisEcomProductVariantAttributeValueTable');
-		$attrService = $this->getServiceLocator()->get('MelisComAttributeService');
+		$varAttrTable = $this->getServiceManager()->get('MelisEcomProductVariantAttributeValueTable');
+		$attrService = $this->getServiceManager()->get('MelisComAttributeService');
 		
 		$varAttrs = $varAttrTable->getEntryByField('vatv_variant_id', $arrayParameters['variantId']);
 		foreach($varAttrs as $varAttr){
@@ -427,11 +427,11 @@ class MelisComVariantService extends MelisComGeneralService
 		// Retrieve cache version if front mode to avoid multiple calls
 		$cacheKey = 'variant-' . $variantId . '-getVariantPricesById_' . $variantId . '_' . $countryId;
 		$cacheConfig = 'commerce_big_services';
-		$melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
+		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
 //        if (!empty($results)) return $results;
 
-		$cache = $this->getServiceLocator()->get($cacheConfig);
+		$cache = $this->getServiceManager()->get($cacheConfig);
 		if ($cache->hasItem($cacheKey)){
 			return $cache->getItem($cacheKey);
 		}
@@ -445,7 +445,7 @@ class MelisComVariantService extends MelisComGeneralService
 		
 		// Service implementation start	  
 		
-		$priceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');
+		$priceTable = $this->getServiceManager()->get('MelisEcomPriceTable');
 		if($arrayParameters['variantId'])
 		{
 			$datas = $priceTable->getPricesByVariantId($arrayParameters['variantId'], $arrayParameters['countryId']);
@@ -483,10 +483,10 @@ class MelisComVariantService extends MelisComGeneralService
 		// Retrieve cache version if front mode to avoid multiple calls
 		$cacheKey = 'variant-' . $variantId . '-getVariantFinalPrice_' . $variantId . '_' . $countryId;
 		$cacheConfig = 'commerce_big_services';
-		$melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
+		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
 //        if (!empty($results)) return $results;
-		$cache = $this->getServiceLocator()->get($cacheConfig);
+		$cache = $this->getServiceManager()->get($cacheConfig);
 		if ($cache->hasItem($cacheKey)){
 			return $cache->getItem($cacheKey);
 		}
@@ -498,7 +498,7 @@ class MelisComVariantService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_variant_final_prices_start', $arrayParameters);
 		
 		// Service implementation start
-		$priceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');
+		$priceTable = $this->getServiceManager()->get('MelisEcomPriceTable');
 		$variantPrice = $priceTable->getVariantFinalPrice($arrayParameters['variantId'], $arrayParameters['countryId'])->current();
 		
 		if(!empty($variantPrice))
@@ -511,9 +511,9 @@ class MelisComVariantService extends MelisComGeneralService
 		}
 		
 		/**
-			* If the Variant Country price has no data
-			* this will try to get the General price of the Variant
-			*/
+		 * If the Variant Country price has no data
+		 * this will try to get the General price of the Variant
+		 */
 		if (empty($arrayParameters['countryId']) && empty($variantPrice))
 		{
 			// Retreiving the General price of the Variant
@@ -547,12 +547,12 @@ class MelisComVariantService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_variant_get_assoc_variants_by_product_start', $arrayParameters);
 		
 		// Service implementation start
-	$variantTbl = $this->getServiceLocator()->get('MelisEcomVariantTable');	   
-	$assocVariants = $variantTbl->getAssocVariantsByProductId($arrayParameters['productId']);
-	
-	foreach($assocVariants as $assocVariant){
+		$variantTbl = $this->getServiceManager()->get('MelisEcomVariantTable');
+		$assocVariants = $variantTbl->getAssocVariantsByProductId($arrayParameters['productId']);
+		
+		foreach($assocVariants as $assocVariant){
 			$results[] = $this->getVariantById($assocVariant->var_id);
-	}
+		}
 	
 		// Service implementation end
 		
@@ -581,7 +581,7 @@ class MelisComVariantService extends MelisComGeneralService
 		
 		// Service implementation start
 		
-		$variantTbl = $this->getServiceLocator()->get('MelisEcomVariantTable');
+		$variantTbl = $this->getServiceManager()->get('MelisEcomVariantTable');
 		
 		$results = $variantTbl->getVariantCommonAttr($arrayParameters['productId'], $arrayParameters['attributeId'], $arrayParameters['attributeValueId']);
 		
@@ -611,7 +611,7 @@ class MelisComVariantService extends MelisComGeneralService
 		
 		// Service implementation start
 		
-		$variantTbl = $this->getServiceLocator()->get('MelisEcomVariantTable');
+		$variantTbl = $this->getServiceManager()->get('MelisEcomVariantTable');
 		
 		foreach($variantTbl->getVariantsAttrGroupByAttr($arrayParameters['variantsIds']) as $result){
 			$results[] = $result;
@@ -645,11 +645,10 @@ class MelisComVariantService extends MelisComGeneralService
 		$tmpCustomDefaultImg = str_replace('/', '', $tmpCustomDefaultImg);
 		$cacheKey = 'variant-' . $variantId . '-getFinalVariantImage_' . $variantId . '_' . $tmp . '_' . $tmpCustomDefaultImg;
 		$cacheConfig = 'commerce_big_services';
-		$melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
 //        $results = $this->getCacheServiceResults($cacheKey, $cacheConfig);
 //        if (!empty($results)) return $results;
 
-		$cache = $this->getServiceLocator()->get($cacheConfig);
+		$cache = $this->getServiceManager()->get($cacheConfig);
 		if ($cache->hasItem($cacheKey)){
 			return $cache->getItem($cacheKey);
 		}
@@ -661,16 +660,16 @@ class MelisComVariantService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_variant_get_final_iamge_start', $arrayParameters);
 		
 		// Service implementation start
-		$docSrv = $this->getServiceLocator()->get('MelisComDocumentService');
+		$docSrv = $this->getServiceManager()->get('MelisComDocumentService');
 		$data = $docSrv->getFinalImageFilePath('variant', $arrayParameters['variantId'], $arrayParameters['docType'], $arrayParameters['customDefaultImg']);
 		
 		if (!empty($data))
 		{
 			/**
-				* Checking if the image type
-				* if the type is STATIC this will try to get the image from
-				* Product image
-				*/
+			 * Checking if the image type
+			 * if the type is STATIC this will try to get the image from
+			 * Product image
+			 */
 			if ($data['imageType'] != 'STATIC')
 			{
 				$results = $data['imagePath'];
@@ -692,8 +691,9 @@ class MelisComVariantService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_variant_get_final_iamge_end', $arrayParameters);
 
 		// Save cache key
+		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 		$melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
-
+		
 		return  $arrayParameters['results'];
 	}
 	
@@ -722,8 +722,8 @@ class MelisComVariantService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_variant_save_start', $arrayParameters);
 		
 		// Service implementation start
-		$variantTable = $this->getServiceLocator()->get('MelisEcomVariantTable');
-		$varAttrTable = $this->getServiceLocator()->get('MelisEcomProductVariantAttributeValueTable');        
+		$variantTable = $this->getServiceManager()->get('MelisEcomVariantTable');
+		$varAttrTable = $this->getServiceManager()->get('MelisEcomProductVariantAttributeValueTable');
 		
 		try{
 			$successFlag = true;
@@ -764,11 +764,11 @@ class MelisComVariantService extends MelisComGeneralService
 			// SEO Service
 			if(!empty($arrayParameters['seo'])){
 				$variantSeo = $arrayParameters['seo'];
-				$melisComSeoService = $this->getServiceLocator()->get('MelisComSeoService');
+				$melisComSeoService = $this->getServiceManager()->get('MelisComSeoService');
 				$melisComSeoService->saveSeoDataAction('variant', $variantId, $variantSeo);
 			}
 
-			$melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+			$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 			$melisEngineCacheSystem->deleteCacheByPrefix('variant-' . $variantId, 'commerce_big_services');
 			
 			$results = $variantId;
@@ -804,14 +804,14 @@ class MelisComVariantService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_variant_save_attributesvalues_start', $arrayParameters);
 		
 		// Service implementation start
-		$variantAttributeTable = $this->getServiceLocator()->get('MelisEcomProductVariantAttributeValueTable');  
+		$variantAttributeTable = $this->getServiceManager()->get('MelisEcomProductVariantAttributeValueTable');
 		try{
 			$results = true;
 			$variantAttributeTable->save($arrayParameters['attributesValues'],$arrayParameters['attributeValueId']);
 			
 			if (!empty($arrayParameters['attributesValues']['vatv_variant_id']))
 			{
-				$melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+				$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 				$melisEngineCacheSystem->deleteCacheByPrefix('variant-' . $arrayParameters['attributesValues']['vatv_variant_id'], 'commerce_big_services');
 			}
 			
@@ -849,22 +849,22 @@ class MelisComVariantService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_variant_save_prices_start', $arrayParameters);
 		
 		// Service implementation start
-	$priceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');    
-	$productSvc = $this->getServiceLocator()->get('MelisComProductService');
-	try{
-		$results = true;
-		$results = (bool) $priceTable->save($arrayParameters['prices'], $arrayParameters['priceId']);
+		$priceTable = $this->getServiceManager()->get('MelisEcomPriceTable');
+		$productSvc = $this->getServiceManager()->get('MelisComProductService');
+		try{
+			$results = true;
+			$results = (bool) $priceTable->save($arrayParameters['prices'], $arrayParameters['priceId']);
 
-		if (!empty($arrayParameters['prices']['price_var_id']))
-		{
-				$melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
-				$melisEngineCacheSystem->deleteCacheByPrefix('variant-' . $arrayParameters['prices']['price_var_id'], 'commerce_big_services');
+			if (!empty($arrayParameters['prices']['price_var_id']))
+			{
+					$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
+					$melisEngineCacheSystem->deleteCacheByPrefix('variant-' . $arrayParameters['prices']['price_var_id'], 'commerce_big_services');
+			}
+			
+			//$priceTable->save($arrayParameters['prices'],$arrayParameters['priceId']);
+		}catch(\Exception $e){
+			$results = false; 
 		}
-		
-		//$priceTable->save($arrayParameters['prices'],$arrayParameters['priceId']);
-	}catch(\Exception $e){
-		$results = false; 
-	}
 		// Service implementation end
 
 		// Adding results to parameters for events treatment if needed
@@ -895,7 +895,7 @@ class MelisComVariantService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_variant_save_stocks_start', $arrayParameters);
 		
 		// Service implementation start
-		$stockTable = $this->getServiceLocator()->get('MelisEcomVariantStockTable');
+		$stockTable = $this->getServiceManager()->get('MelisEcomVariantStockTable');
 		try{
 			$results = true;
 			$stockTable->save($arrayParameters['stocks'],$arrayParameters['stockId']);
@@ -931,8 +931,8 @@ class MelisComVariantService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_variant_delete_start', $arrayParameters);
 	
 		// Service implementation start
-		$varTable = $this->getServiceLocator()->get('MelisEcomVariantTable');
-		$docSvc = $this->getServiceLocator()->get('MelisComDocumentService');
+		$varTable = $this->getServiceManager()->get('MelisEcomVariantTable');
+		$docSvc = $this->getServiceManager()->get('MelisComDocumentService');
 		$docs = $docSvc->getDocumentsByRelation('variant', $arrayParameters['variantId']);
 		try{
 			$results = $varTable->deleteById($arrayParameters['variantId']);
@@ -960,7 +960,7 @@ class MelisComVariantService extends MelisComGeneralService
 				}
 			}
 
-			$melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+			$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 			$melisEngineCacheSystem->deleteCacheByPrefix('variant-' . $arrayParameters['variantId'], 'commerce_big_services');
 		
 		}catch(\Exception $e){
@@ -996,7 +996,7 @@ class MelisComVariantService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_variant_delete_price_start', $arrayParameters);
 		
 		// Service implementation start
-		$priceTable = $this->getServiceLocator()->get('MelisEcomPriceTable');
+		$priceTable = $this->getServiceManager()->get('MelisEcomPriceTable');
 		try{
 			$results = true;
 			$priceTable->deleteByField('price_var_id', $arrayParameters['variantPriceId']);
@@ -1033,7 +1033,7 @@ class MelisComVariantService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_variant_delete_stocks_start', $arrayParameters);
 	
 		// Service implementation start
-		$stockTable = $this->getServiceLocator()->get('MelisEcomVariantStockTable');
+		$stockTable = $this->getServiceManager()->get('MelisEcomVariantStockTable');
 		try{
 			$results = true;
 			$stockTable->deleteByField('stock_var_id', $arrayParameters['variantStockId']);
@@ -1069,7 +1069,7 @@ class MelisComVariantService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_variant_delete_attribute_start', $arrayParameters);
 	
 		// Service implementation start
-		$varAttrValTable = $this->getServiceLocator()->get('MelisEcomProductVariantAttributeValueTable');
+		$varAttrValTable = $this->getServiceManager()->get('MelisEcomProductVariantAttributeValueTable');
 		try{
 			$results = true;
 			$varAttrValTable->deleteByField('vatv_variant_id', $arrayParameters['variantAttributeId']);
@@ -1097,11 +1097,11 @@ class MelisComVariantService extends MelisComGeneralService
 		// Retrieve cache version if front mode to avoid multiple calls
 		$cacheKey = 'variant-' . $variantId . '-getVariantAndSeoById_' . $variantId . '_' . $langId;
 		$cacheConfig = 'commerce_big_services';
-		$melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
+		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
 //        if (!empty($results)) return $results;
 
-		$cache = $this->getServiceLocator()->get($cacheConfig);
+		$cache = $this->getServiceManager()->get($cacheConfig);
 		if ($cache->hasItem($cacheKey)){
 			return $cache->getItem($cacheKey);
 		}
@@ -1114,7 +1114,7 @@ class MelisComVariantService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_variant_seo_byid_start', $arrayParameters);
 		
 		// Service implementation start
-		$variantTbl = $this->getServiceLocator()->get('MelisEcomVariantTable');
+		$variantTbl = $this->getServiceManager()->get('MelisEcomVariantTable');
 		try {
 			$results = $variantTbl->getVariantAndSeoById($arrayParameters['variantId'], $arrayParameters['langId'])->current();
 		
@@ -1140,11 +1140,11 @@ class MelisComVariantService extends MelisComGeneralService
 		// Retrieve cache version if front mode to avoid multiple calls
 		$cacheKey = 'variant-getVariantsByAttributeValueIds_' . implode('', $attrValueIds) . '_' . $langId;
 		$cacheConfig = 'commerce_big_services';
-		$melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
+		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
 //        if (!empty($results)) return $results;
 
-		$cache = $this->getServiceLocator()->get($cacheConfig);
+		$cache = $this->getServiceManager()->get($cacheConfig);
 		if ($cache->hasItem($cacheKey)){
 			return $cache->getItem($cacheKey);
 		}
@@ -1157,7 +1157,7 @@ class MelisComVariantService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_get_variant_by_attribute_values_ids_start', $arrayParameters);
 
 
-		$varAttrvalsTbl = $this->getServiceLocator()->get('MelisEcomProductVariantAttributeValueTable');
+		$varAttrvalsTbl = $this->getServiceManager()->get('MelisEcomProductVariantAttributeValueTable');
 
 		$variants = $varAttrvalsTbl->getVariantsByAttributeValueIds($arrayParameters['attrValueIds'], $arrayParameters['langId'], $arrayParameters['isValid']);
 
@@ -1177,5 +1177,4 @@ class MelisComVariantService extends MelisComGeneralService
 
 		return $arrayParameters['results'];
 	}
-
 }

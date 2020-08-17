@@ -9,23 +9,21 @@
 
 namespace MelisCommerce\Listener;
 
-use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\ListenerAggregateInterface;
+use Laminas\EventManager\EventManagerInterface;
+use Laminas\EventManager\ListenerAggregateInterface;
+use MelisCore\Listener\MelisGeneralListener;
 
-class MelisCommerceVariantRestockListener implements ListenerAggregateInterface
+class MelisCommerceVariantRestockListener extends MelisGeneralListener implements ListenerAggregateInterface
 {
-    public function attach(EventManagerInterface $events)
+    public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $sharedEvents      = $events->getSharedManager();
-        
-        $callBackHandler = $sharedEvents->attach(
+        $this->attachEventListener(
+            $events,
             '*',
-            array(
-                'meliscommerce_service_variant_save_stocks_start'
-            ),
+            'meliscommerce_service_variant_save_stocks_start',
         	function($e){
         	    
-        		$sm = $e->getTarget()->getServiceLocator();   	
+        		$sm = $e->getTarget()->getServiceManager();
         		$stockTable = $sm->get('MelisEcomVariantStockTable');
         		$params = $e->getParams();
                 
@@ -41,18 +39,7 @@ class MelisCommerceVariantRestockListener implements ListenerAggregateInterface
         		    }
         		}
         	},
-        	
-        100);
-        
-        $this->listeners[] = $callBackHandler;
-    }
-    
-    public function detach(EventManagerInterface $events)
-    {
-        foreach ($this->listeners as $index => $listener) {
-            if ($events->detach($listener)) {
-                unset($this->listeners[$index]);
-            }
-        }
+        100
+        );
     }
 }

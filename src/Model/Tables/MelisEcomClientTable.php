@@ -9,19 +9,25 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomClientTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_client';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'cli_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'cli_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
+
     public function getClientList($countryId = null, $dateCreationMin = null, $dateCreationMax = null, 
 	                              $onlyValid = null, $start = 0, $limit = null, $order = array(), $search = null)
     {

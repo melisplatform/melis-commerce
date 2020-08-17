@@ -11,10 +11,10 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
-use Zend\Code\Scanner\Util;
-use Zend\Stdlib\ArrayUtils;
-use Zend\Session\Container;
-use Zend\View\Model\ViewModel;
+use Laminas\Code\Scanner\Util;
+use Laminas\Stdlib\ArrayUtils;
+use Laminas\Session\Container;
+use Laminas\View\Model\ViewModel;
 /**
  * This plugin implements the business logic of the
  * "Registration" plugin.
@@ -69,11 +69,11 @@ class MelisCommerceRegisterPlugin extends MelisTemplatingPlugin
         $appConfigForm = (!empty($this->pluginFrontConfig['forms']['meliscommerce_registration'])) ? $this->pluginFrontConfig['forms']['meliscommerce_registration'] : array();
         $appConfigForm = $this->getFormMergedAndOrdered($appConfigForm, 'meliscommerce_registration');
 
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $registrationForm = $factory->createForm($appConfigForm);
-        $melisComClientService = $this->getServiceLocator()->get('MelisComClientService');
+        $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
         
         // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
         $is_submit              = (!empty($this->pluginFrontConfig['m_registration_is_submit'])) ? $this->pluginFrontConfig['m_registration_is_submit'] : false;
@@ -102,7 +102,7 @@ class MelisCommerceRegisterPlugin extends MelisTemplatingPlugin
                 if ($clientPerson)
                 {
                     $isExist = true;
-                    $translator = $this->getServiceLocator()->get('translator');
+                    $translator = $this->getServiceManager()->get('translator');
                     $errors['cper_email'] = array(
                         'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
                         'emailExist' => $translator->translate('tr_meliscommerce_client_Contact_email_address_exist'),
@@ -121,7 +121,7 @@ class MelisCommerceRegisterPlugin extends MelisTemplatingPlugin
                 // Getting the language id from CMS to Commerce language
                 $container = new Container('melisplugins');
                 $langLocale = $container['melis-plugins-lang-locale'];
-                $ecomLang = $this->getServiceLocator()->get('MelisEcomLangTable');
+                $ecomLang = $this->getServiceManager()->get('MelisEcomLangTable');
                 $ecomLangData = $ecomLang->getEntryByField('elang_locale', $langLocale)->current();
                 
                 // Preparing the person data
@@ -153,14 +153,14 @@ class MelisCommerceRegisterPlugin extends MelisTemplatingPlugin
                         /**
                          * Login using Commerce Authentication Service
                          */
-                        $melisComAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
+                        $melisComAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
                         $melisComAuthSrv->login($data['cper_email'], $data['cper_password']);
 
                         // This will transfer basket items from anonymous to persistent basket if there is one
                         $clientId = $melisComAuthSrv->getClientId();
                         $clientKey = $melisComAuthSrv->getClientKey();
 
-                        $melisComBasketService = $this->getServiceLocator()->get('MelisComBasketService');
+                        $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
                         // Preparing the client Basket, which is added to Persistent basket
                         $melisComBasketService->getBasket($clientId, $clientKey);
                     }
@@ -212,8 +212,8 @@ class MelisCommerceRegisterPlugin extends MelisTemplatingPlugin
     public function createOptionsForms()
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
         
@@ -224,7 +224,7 @@ class MelisCommerceRegisterPlugin extends MelisTemplatingPlugin
             foreach ($formConfig as $formKey => $config)
             {
                 $form = $factory->createForm($config);
-                $request = $this->getServiceLocator()->get('request');
+                $request = $this->getServiceManager()->get('request');
                 $parameters = $request->getQuery()->toArray();
                 
                 if (!isset($parameters['validate']))
@@ -235,7 +235,7 @@ class MelisCommerceRegisterPlugin extends MelisTemplatingPlugin
                     $viewModelTab->modalForm = $form;
                     $viewModelTab->formData   = $this->getFormData();
                     
-                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
                         'name' => $config['tab_title'],

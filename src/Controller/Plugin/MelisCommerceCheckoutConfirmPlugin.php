@@ -11,9 +11,9 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
-use Zend\Session\Container;
-use Zend\Stdlib\ArrayUtils;
-use Zend\View\Model\ViewModel;
+use Laminas\Session\Container;
+use Laminas\Stdlib\ArrayUtils;
+use Laminas\View\Model\ViewModel;
 /**
  * This plugin implements the business logic of the
  * "order" plugin.
@@ -70,12 +70,12 @@ class MelisCommerceCheckoutConfirmPlugin extends MelisTemplatingPlugin
         $orderAddressPluginView = '';
         $errMsg = '';
         
-        $translator = $this->getServiceLocator()->get('translator');
-        $pluginManager = $this->getServiceLocator()->get('ControllerPluginManager');
-        $ecomAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
-        $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
-        $currencyTbl = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
-        $couponSvc = $this->getServiceLocator()->get('MelisComCouponService');
+        $translator = $this->getServiceManager()->get('translator');
+        $pluginManager = $this->getServiceManager()->get('ControllerPluginManager');
+        $ecomAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
+        $orderSvc = $this->getServiceManager()->get('MelisComOrderService');
+        $currencyTbl = $this->getServiceManager()->get('MelisEcomCurrencyTable');
+        $couponSvc = $this->getServiceManager()->get('MelisComCouponService');
         
         $container = new Container('melisplugins');
         $langId = $container['melis-plugins-lang-id'];
@@ -234,8 +234,8 @@ class MelisCommerceCheckoutConfirmPlugin extends MelisTemplatingPlugin
     public function createOptionsForms()
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
         
@@ -246,7 +246,7 @@ class MelisCommerceCheckoutConfirmPlugin extends MelisTemplatingPlugin
             foreach ($formConfig as $formKey => $config)
             {
                 $form = $factory->createForm($config);
-                $request = $this->getServiceLocator()->get('request');
+                $request = $this->getServiceManager()->get('request');
                 $parameters = $request->getQuery()->toArray();
                 
                 if (!isset($parameters['validate']))
@@ -257,7 +257,7 @@ class MelisCommerceCheckoutConfirmPlugin extends MelisTemplatingPlugin
                     $viewModelTab->modalForm = $form;
                     $viewModelTab->formData   = $this->getFormData();
                     
-                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
                         'name' => $config['tab_title'],

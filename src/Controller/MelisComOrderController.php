@@ -9,16 +9,16 @@
 
 namespace MelisCommerce\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Session\Container;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\Session\Container;
+use MelisCore\Controller\MelisAbstractActionController;
 
-class MelisComOrderController extends AbstractActionController
+class MelisComOrderController extends MelisAbstractActionController
 {
     /**
      * renders the page container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersPageAction()
     {
@@ -38,7 +38,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the page header container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersHeaderContainerAction()
     {
@@ -52,7 +52,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders teh page header left container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersHeaderLeftContainerAction()
     {
@@ -66,7 +66,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the page header title
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersHeaderTitleAction()
     {
@@ -80,7 +80,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the page header right container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersHeaderRightContainerAction()
     {
@@ -94,7 +94,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the orders header save button
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersHeaderRightContainerSaveAction()
     {
@@ -112,7 +112,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the orders header cancel button
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersHeaderRightContainerCancelAction()
     {
@@ -124,7 +124,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the orders content container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentAction()
     {
@@ -138,7 +138,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the orders tabs container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsAction()
     {
@@ -152,7 +152,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the orders tab template
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabAction()
     {
@@ -166,7 +166,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the tabs content container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentAction()
     {
@@ -180,7 +180,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the tabs content template
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentContainerAction()
     {
@@ -194,7 +194,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the tabs content header container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentHeaderAction()
     {
@@ -208,7 +208,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the tab content header left container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentLeftHeaderAction()
     {
@@ -222,7 +222,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the tab content header right container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentRightHeaderAction()
     {
@@ -236,7 +236,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the tab content header title
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentLeftHeaderTitleAction()
     {
@@ -250,7 +250,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the tab content details container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentDetailsAction()
     {
@@ -264,7 +264,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the orders content tab main left details container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentMainDetailsLeftAction()
     {
@@ -278,7 +278,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the orders content tab sub header container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentDetailsSubHeaderAction()
     {
@@ -292,7 +292,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the orders content tab sub header left container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentDetailsSubHeaderLeftAction()
     {
@@ -306,7 +306,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the orders content tab sub header right container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentDetailsSubHeaderRightAction()
     {
@@ -320,7 +320,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the orders content tab sub header title
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentDetailsSubHeaderTitleAction()
     {
@@ -334,7 +334,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the orders content tabs content details sub contents container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentDetailsSubContentAction()
     {
@@ -349,11 +349,11 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * render the main sub content order form
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentMainOrderFormAction()
     {
-        $melisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         
         $confOrder = $melisCoreConfig->getItem('meliscommerce/conf/orderStatus');
         $statusAttrib = array();
@@ -370,7 +370,7 @@ class MelisComOrderController extends AbstractActionController
             $currStatus = $this->layout()->order->ord_status;
         }
         
-        $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
+        $orderSvc = $this->getServiceManager()->get('MelisComOrderService');
         $langId = $this->getTool()->getCurrentLocaleID();
         
         $statuses = $orderSvc->getOrderStatusList($langId, true);
@@ -404,8 +404,8 @@ class MelisComOrderController extends AbstractActionController
        
         $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_orders/'.$infoForm,$infoForm);
         
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         
         $orderInfoForm = $factory->createForm($appConfigForm);
@@ -434,7 +434,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the orders content tab basket list
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentBasketListAction()
     {
@@ -453,7 +453,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the orders content tab address left container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentAddressDetailsLeftAction()
     {
@@ -467,11 +467,11 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the orders content tab address tabs
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentAddressDetailsTabsAction()
     {   
-        $addTypeTable = $this->getServiceLocator()->get('MelisEcomClientAddressTypeTransTable');
+        $addTypeTable = $this->getServiceManager()->get('MelisEcomClientAddressTypeTransTable');
         $addressTypes = array();
         
         $types = $addTypeTable->getAddressTypeTransByLangId($this->getTool()->getCurrentLocaleID());
@@ -492,7 +492,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the orders content tab address right container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentAddressDetailsRightAction()
     {
@@ -506,16 +506,16 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the orders content tab address form
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentAddressDetailsAddressFormAction()
     {
         $forms = array();
-        $addTypeTable = $this->getServiceLocator()->get('MelisEcomClientAddressTypeTransTable');
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $addTypeTable = $this->getServiceManager()->get('MelisEcomClientAddressTypeTransTable');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_orders/meliscommerce_order_address_form','meliscommerce_order_address_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $addressForm = $factory->createForm($appConfigForm);
         $types = $addTypeTable->getAddressTypeTransByLangId($this->getTool()->getCurrentLocaleID());
@@ -547,7 +547,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the orders content tab content details div col-xs-12 col-md-12
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentDetailsLargeAction()
     {
@@ -561,7 +561,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the orders content tab content payment list
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentPaymentDetailsContentListAction()
     {        
@@ -572,9 +572,9 @@ class MelisComOrderController extends AbstractActionController
         });
         $coupons = array();
         $pays = array();
-        $couponSvc = $this->getServiceLocator()->get('MelisComCouponService');
-        $couponOrderTable = $this->getServiceLocator()->get('MelisEcomCouponOrderTable');
-        $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+        $couponSvc = $this->getServiceManager()->get('MelisComCouponService');
+        $couponOrderTable = $this->getServiceManager()->get('MelisEcomCouponOrderTable');
+        $currencyTable = $this->getServiceManager()->get('MelisEcomCurrencyTable');
         foreach($payments as $payment){
             $payment->opay_date_payment = $this->getTool()->dateFormatLocale($payment->opay_date_payment);
             $currency = $currencyTable->getEntryById($payment->opay_currency_id)->current();
@@ -604,15 +604,15 @@ class MelisComOrderController extends AbstractActionController
         $view->melisKey = $melisKey;
         $view->orderId = $orderId;
 
-        $melisCoreGeneralService = $this->getServiceLocator()->get('MelisCoreGeneralService');
-        $melisCoreGeneralService->sendEvent('melisorder_payment_details_view', array('view' => $view));
+        $melisGeneralService = $this->getServiceManager()->get('MelisGeneralService');
+        $melisGeneralService->sendEvent('melisorder_payment_details_view', array('view' => $view));
 
         return $view;
     }
     
     /**
      * renders the content tab messages right head add shipping button
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentShippingRightHeaderAddAction()
     {
@@ -626,16 +626,16 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the orders content tab content shipping list
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentShippingDetailsContentListAction()
     {
         $orderId = (int) $this->params()->fromQuery('orderId', '');
         $this->setOrderVariables($orderId);
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_orders/meliscommerce_order_shipping_form','meliscommerce_order_shipping_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $shippingForm = $factory->createForm($appConfigForm);
         $ships = $this->layout()->shipping;
@@ -667,7 +667,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the content tab messages right head add message button
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentMessagesRightHeaderAddAction()
     {
@@ -681,7 +681,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the orders content tab messages details container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentMessagesDetailsAction()
     {
@@ -695,14 +695,14 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the orders content tab messages message form
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentMessagesMessageFormAction()
     {
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigMessageForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_orders/meliscommerce_order_message_form','meliscommerce_order_message_form');
         $messageform = $factory->createForm($appConfigMessageForm);
         $view = new ViewModel();
@@ -716,7 +716,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the orders content tab messages timeline container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentMessagesTimelineContainerAction()
     {
@@ -730,7 +730,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the order content basket table filter limit
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderContentFilterLimitAction()
     {
@@ -739,7 +739,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the order content basket table filter search
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderContentFilterSearchAction()
     {
@@ -748,7 +748,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the order content table filter refresh
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderContentFilterRefreshAction()
     {
@@ -757,7 +757,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the order content action info
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderContentActionInfoAction()
     {
@@ -766,15 +766,15 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the orders content tab messages timeline 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrdersContentTabsContentMessagesTimelineAction()
     {
         $messages = array();
         $orderId = (int) $this->params()->fromQuery('orderId', '');
-        $clientSvc  = $this->getServiceLocator()->get('MelisComClientService');
+        $clientSvc  = $this->getServiceManager()->get('MelisComClientService');
         $this->setOrderVariables($orderId);
-        $userTable = $this->getServiceLocator()->get('MelisCoreTableUser');
+        $userTable = $this->getServiceManager()->get('MelisCoreTableUser');
 
         $image = '';
         foreach($this->layout()->messages as $orderMessage){
@@ -825,7 +825,7 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the order modal container
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderModalAction()
     {
@@ -840,16 +840,16 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * renders the order modal content for adding new shipping
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderOrderModalContentShippingFormAction()
     {
         $orderId = (int) $this->params()->fromQuery('orderId');
         
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_orders/meliscommerce_order_shipping_form','meliscommerce_order_shipping_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $shippingForm = $factory->createForm($appConfigForm);
         
@@ -865,18 +865,18 @@ class MelisComOrderController extends AbstractActionController
     
     /**
      * returns the basket data list
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function getBasketDataAction()
     {   
         $getValues = get_object_vars($this->getRequest()->getQuery());
         $orderId = $this->getRequest()->getPost('orderId');
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         $melisTool = $this->getTool();
-        $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
-        $docService = $this->getServiceLocator()->get('MelisComDocumentService');
-        $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
-        $prodSvc = $this->getServiceLocator()->get('MelisComProductService');
+        $orderSvc = $this->getServiceManager()->get('MelisComOrderService');
+        $docService = $this->getServiceManager()->get('MelisComDocumentService');
+        $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
+        $prodSvc = $this->getServiceManager()->get('MelisComProductService');
         
         $colId = array();
         $dataCount = 0;
@@ -970,7 +970,7 @@ class MelisComOrderController extends AbstractActionController
         $container = new Container('meliscommerce');
         unset($container['order-valid-data']);
         //get services        
-        $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
+        $orderSvc = $this->getServiceManager()->get('MelisComOrderService');
         // trigger validate and saving
         if($this->getRequest()->isPost()){
             $this->getEventManager()->trigger('meliscommerce_order_save_start', $this, array());
@@ -1013,10 +1013,10 @@ class MelisComOrderController extends AbstractActionController
     
     public function saveOrderDataAction()
     {
-        $orderSvc = $this->getServiceLocator()->get('MelisComOrderService');
-        $variantSvc = $this->getServiceLocator()->get('MelisComVariantService');
-        $variantStockTbl = $this->getServiceLocator()->get('MelisEcomVariantStockTable');
-        $melisCoreConfig = $this->getServiceLocator()->get('MelisCoreConfig');
+        $orderSvc = $this->getServiceManager()->get('MelisComOrderService');
+        $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
+        $variantStockTbl = $this->getServiceManager()->get('MelisEcomVariantStockTable');
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $confOrder = $melisCoreConfig->getItem('meliscommerce/conf/orderStatus');
         $success = false;
         $errors = array();
@@ -1093,11 +1093,11 @@ class MelisComOrderController extends AbstractActionController
         $data['order'] = array();
         $errors = array();
         $success = true;
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigOrderForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_orders/meliscommerce_order_information_form','meliscommerce_order_information_form');
         $postValues = get_object_vars($this->getRequest()->getPost());
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
@@ -1137,10 +1137,10 @@ class MelisComOrderController extends AbstractActionController
         $postValues = get_object_vars($this->getRequest()->getPost());
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
         
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigAddressForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_orders/meliscommerce_order_address_form','meliscommerce_order_address_form');
         if(!empty($postValues['address'])){
             foreach($postValues['address'] as $key => $value){               
@@ -1189,10 +1189,10 @@ class MelisComOrderController extends AbstractActionController
         $success = true;
         $postValues = get_object_vars($this->getRequest()->getPost());
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigShippingForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_orders/meliscommerce_order_shipping_form','meliscommerce_order_shipping_form');
         
         if(!empty($postValues['orderShippingForm'])){
@@ -1227,12 +1227,12 @@ class MelisComOrderController extends AbstractActionController
         $textMessage = 'tr_meliscommerce_order_message_save_fail';
         $textTitle = 'tr_meliscommerce_order_page';
         $this->getEventManager()->trigger('meliscommerce_order_message_save_start', $this, array());
-        $melisComOrderService = $this->getServiceLocator()->get('MelisComOrderService');
+        $melisComOrderService = $this->getServiceManager()->get('MelisComOrderService');
         
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigMessageForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_orders/meliscommerce_order_message_form','meliscommerce_order_message_form');
         $messageForm = $factory->createForm($appConfigMessageForm);
         
@@ -1311,7 +1311,7 @@ class MelisComOrderController extends AbstractActionController
     {
         $layoutVar = array();
         $langId =  $this->getTool()->getCurrentLocaleID();
-        $melisComOrderService = $this->getServiceLocator()->get('MelisComOrderService');
+        $melisComOrderService = $this->getServiceManager()->get('MelisComOrderService');
         
         $resultData = $melisComOrderService->getOrderById($orderId, $this->getTool()->getCurrentLocaleID());
         
@@ -1345,7 +1345,7 @@ class MelisComOrderController extends AbstractActionController
      */
     private function getTool()
     {
-        $melisTool = $this->getServiceLocator()->get('MelisCoreTool');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_order_basket_list');
     
         return $melisTool;
@@ -1356,11 +1356,11 @@ class MelisComOrderController extends AbstractActionController
         $data['order'] = array();
         $errors = array();
         $success = true;
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
 
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigOrderForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_orders/meliscommerce_order_information_form','meliscommerce_order_information_form');
 
 

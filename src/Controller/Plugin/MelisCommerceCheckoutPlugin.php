@@ -11,9 +11,9 @@ namespace MelisCommerce\Controller\Plugin;
 
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
-use Zend\Session\Container;
-use Zend\Stdlib\ArrayUtils;
-use Zend\View\Model\ViewModel;
+use Laminas\Session\Container;
+use Laminas\Stdlib\ArrayUtils;
+use Laminas\View\Model\ViewModel;
 /**
  * This plugin implements the business logic of the
  * "checkOut" plugin.
@@ -81,8 +81,8 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
         $checkout = null;
         $showSteps = true;
         $redirect = null;
-        $pluginManager = $this->getServiceLocator()->get('ControllerPluginManager');
-        $translator = $this->getServiceLocator()->get('translator');
+        $pluginManager = $this->getServiceManager()->get('ControllerPluginManager');
+        $translator = $this->getServiceManager()->get('translator');
         
         $data = $this->getFormData();
         
@@ -122,7 +122,7 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                 /**
                  * Login using the Commerce Athentication Service
                  */
-                $melisComAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
+                $melisComAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
                 
                 /**
                  * Checking if the user has Loggedin
@@ -195,7 +195,7 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                 /**
                  * Login using the Commerce Athentication Service
                  */
-                $melisComAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
+                $melisComAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
                 
                 /**
                  * Checking if the user has Loggedin
@@ -235,7 +235,7 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                 /**
                  * Login using the Commerce Athentication Service
                  */
-                $melisComAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
+                $melisComAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
                 
                 /**
                  * Checking if the user has Loggedin
@@ -293,7 +293,7 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                 /**
                  * Login using the Commerce Athentication Service
                  */
-                $melisComAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
+                $melisComAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
                 
                 /**
                  * Checking if the user has Loggedin
@@ -317,7 +317,7 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                 {
                     $clientId = $melisComAuthSrv->getClientId();
                     // Retrieving the Checkout total cost
-                    $melisComOrderCheckoutService = $this->getServiceLocator()->get('MelisComOrderCheckoutService');
+                    $melisComOrderCheckoutService = $this->getServiceManager()->get('MelisComOrderCheckoutService');
                     $melisComOrderCheckoutService->setSiteId($siteId);
                     $order = $melisComOrderCheckoutService->computeAllCosts($clientId);
                     $totalCost = $order['costs']['total'];
@@ -335,12 +335,12 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                         );
                         
                         $showSteps = false;
-                        $melisEngineGeneralService = $this->getServiceLocator()->get('MelisEngineGeneralService');
+                        $melisGeneralService = $this->getServiceManager()->get('MelisGeneralService');
                         /**
                          * You need to create a listener that will listen to this event
                          * in order for you
                          */
-                        $checkoutPaymentEvent = $melisEngineGeneralService->sendEvent('meliscommerce_checkout_plugin_payment', $param, $this);
+                        $checkoutPaymentEvent = $melisGeneralService->sendEvent('meliscommerce_checkout_plugin_payment', $param, $this);
                         $checkout = $checkoutPaymentEvent['checkout'];
                     }
                 }
@@ -351,7 +351,7 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                 /**
                  * Login using the Commerce Athentication Service
                  */
-                $melisComAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
+                $melisComAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
 
                 /**
                  * Checking if the user has Loggedin
@@ -456,8 +456,8 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
     public function createOptionsForms()
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
         
@@ -468,7 +468,7 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
             foreach ($formConfig as $formKey => $config)
             {
                 $form = $factory->createForm($config);
-                $request = $this->getServiceLocator()->get('request');
+                $request = $this->getServiceManager()->get('request');
                 $parameters = $request->getQuery()->toArray();
                 
                 if (!isset($parameters['validate']))
@@ -482,7 +482,7 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                     
                     
                     
-                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
                         'name' => $config['tab_title'],

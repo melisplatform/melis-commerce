@@ -9,6 +9,7 @@
 
 namespace MelisCommerce\Service;
 
+use MelisCommerce\Entity\MelisDocument;
 
 /**
  *
@@ -16,7 +17,6 @@ namespace MelisCommerce\Service;
  * Documents can be anything: images, word, pdf, etc.
  *
  */
-use MelisCommerce\Entity\MelisDocument; 
 class MelisComDocumentService extends MelisComGeneralService
 {
 	/**
@@ -37,7 +37,7 @@ class MelisComDocumentService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_document_byid_start', $arrayParameters);
 		
 		// Service implementation start
-		$docTable = $this->getServiceLocator()->get('MelisEcomDocumentTable');
+		$docTable = $this->getServiceManager()->get('MelisEcomDocumentTable');
 		if($arrayParameters['documentId']) {
 			$entDoc = new MelisDocument();
 			$docData = $docTable->getDocumentAndType($arrayParameters['documentId'])->current();
@@ -72,7 +72,7 @@ class MelisComDocumentService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_document_relation_by_doc_id_start', $arrayParameters);
 		
 		// Service implementation start
-		$docRelTable = $this->getServiceLocator()->get('MelisEcomDocRelationsTable');
+		$docRelTable = $this->getServiceManager()->get('MelisEcomDocRelationsTable');
 		$docRelData = $docRelTable->getEntryByField('rdoc_doc_id', $arrayParameters['documentId'])->current();
 		if($docRelData) {
 			$results = $docRelData;
@@ -102,10 +102,10 @@ class MelisComDocumentService extends MelisComGeneralService
 		// Retrieve cache version if front mode to avoid multiple calls
 		$cacheKey = $docRelation . '-' . $relationId . '-getDocumentsByRelation_' . $docRelation . '_' . $relationId;
 		$cacheConfig = 'commerce_big_services';
-		$melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
+		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
 //        if (!empty($results)) return $results;
-		$cache = $this->getServiceLocator()->get($cacheConfig);
+		$cache = $this->getServiceManager()->get($cacheConfig);
 		if ($cache->hasItem($cacheKey)){
 			return $cache->getItem($cacheKey);
 		}
@@ -118,8 +118,8 @@ class MelisComDocumentService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_document_byrelation_start', $arrayParameters);
 		
 		// Service implementation start
-		$docRelTable = $this->getServiceLocator()->get('MelisEcomDocRelationsTable');
-		$docTable = $this->getServiceLocator()->get('MelisEcomDocumentTable');
+		$docRelTable = $this->getServiceManager()->get('MelisEcomDocRelationsTable');
+		$docTable = $this->getServiceManager()->get('MelisEcomDocumentTable');
 		$storeDocData = array();
 		if($arrayParameters['docRelation']) {
 			$docRelData = $docRelTable->getEntryByField('rdoc_'.$arrayParameters['docRelation'].'_id', $arrayParameters['relationId'])->toArray();
@@ -168,10 +168,10 @@ class MelisComDocumentService extends MelisComGeneralService
 			$tmp .= '_' . $tCode;
 		$cacheKey = $docRelation . '-' . $relationId . '-getDocumentsByRelationAndTypes_' . $typeCode1 . '_' . $tmp;
 		$cacheConfig = 'commerce_big_services';
-		$melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
+		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
 //        if (!empty($results)) return $results;
-		$cache = $this->getServiceLocator()->get($cacheConfig);
+		$cache = $this->getServiceManager()->get($cacheConfig);
 		if ($cache->hasItem($cacheKey)){
 			return $cache->getItem($cacheKey);
 		}
@@ -184,7 +184,7 @@ class MelisComDocumentService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_document_byrelation_types_start', $arrayParameters);
 		
 		// Service implementation start
-		$docTable = $this->getServiceLocator()->get('MelisEcomDocumentTable');
+		$docTable = $this->getServiceManager()->get('MelisEcomDocumentTable');
 		$documents = $docTable->getDocumentsByRelationsAndTypes($arrayParameters['docRelation'], $arrayParameters['relationId'], $arrayParameters['typeCode1'], $arrayParameters['typeCode2']);
 		foreach($documents as $document){
 			$results[] = $document;
@@ -212,10 +212,10 @@ class MelisComDocumentService extends MelisComGeneralService
 		// Retrieve cache version if front mode to avoid multiple calls
 		$cacheKey = $docRelation . '-' . $relationId . '-getDocDefaultImageFilePath_' . $relationId;
 		$cacheConfig = 'commerce_big_services';
-		$melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
+		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
 //        if (!empty($results)) return $results;
-		$cache = $this->getServiceLocator()->get($cacheConfig);
+		$cache = $this->getServiceManager()->get($cacheConfig);
 		if ($cache->hasItem($cacheKey)){
 			return $cache->getItem($cacheKey);
 		}
@@ -292,10 +292,10 @@ class MelisComDocumentService extends MelisComGeneralService
 			$tmp .= '_' . $tCode;
 		$cacheKey = $docRelation . '-' . $relationId . '-getFinalImageFilePath_' . $relationId . '_' . $tmp;
 		$cacheConfig = 'commerce_big_services';
-		$melisEngineCacheSystem = $this->serviceLocator->get('MelisEngineCacheSystem');
+		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
 //        if (!empty($results)) return $results;
-		$cache = $this->getServiceLocator()->get($cacheConfig);
+		$cache = $this->getServiceManager()->get($cacheConfig);
 		if ($cache->hasItem($cacheKey)){
 			return $cache->getItem($cacheKey);
 		}
@@ -372,7 +372,7 @@ class MelisComDocumentService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_document_types_start', $arrayParameters);
 		
 		// Service implementation start
-		$docTypeTable = $this->getServiceLocator()->get('MelisEcomDocTypeTable');
+		$docTypeTable = $this->getServiceManager()->get('MelisEcomDocTypeTable');
 		$docTypeData  = $docTypeTable->getEntryByField('dtype_parent_type_id', (int) $arrayParameters['parentId'])->toArray();
 		if($docTypeData) {
 			$results = $docTypeData;
@@ -409,7 +409,7 @@ class MelisComDocumentService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_document_save_type_start', $arrayParameters);
 		
 		// Service implementation start
-		$docTypeTable = $this->getServiceLocator()->get('MelisEcomDocTypeTable');
+		$docTypeTable = $this->getServiceManager()->get('MelisEcomDocTypeTable');
 		$docTypeData = $docTypeTable->getEntryByField('dtype_code', $arrayParameters['typeCode'])->current();
 		$data = array(
 			'dtype_code' => $arrayParameters['typeCode'],
@@ -460,8 +460,8 @@ class MelisComDocumentService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_document_save_start', $arrayParameters);
 		
 		// Service implementation start
-		$docRelTable = $this->getServiceLocator()->get('MelisEcomDocRelationsTable');
-		$docTable    = $this->getServiceLocator()->get('MelisEcomDocumentTable');
+		$docRelTable = $this->getServiceManager()->get('MelisEcomDocRelationsTable');
+		$docTable    = $this->getServiceManager()->get('MelisEcomDocumentTable');
 		
 		$docRelData  = $docRelTable->getEntryById($arrayParameters['documentId'])->current();
 		$data = array(
@@ -491,7 +491,7 @@ class MelisComDocumentService extends MelisComGeneralService
 				$docRelTable->save(array_merge($data, array('rdoc_doc_id' => $savedDocId)));
 			}
 			
-			$melisEngineCacheSystem = $this->getServiceLocator()->get('MelisEngineCacheSystem');
+			$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 			$melisEngineCacheSystem->deleteCacheByPrefix($docRelation . '-' . $relationId, 'commerce_big_services');
 			
 			
@@ -531,8 +531,8 @@ class MelisComDocumentService extends MelisComGeneralService
 		$docData = $this->getDocumentById($id);
 		try {
 			if($docData) {
-				$docTable = $this->getServiceLocator()->get('MelisEcomDocumentTable');
-				$docRelTable = $this->getServiceLocator()->get('MelisEcomDocRelationsTable');
+				$docTable = $this->getServiceManager()->get('MelisEcomDocumentTable');
+				$docRelTable = $this->getServiceManager()->get('MelisEcomDocRelationsTable');
 				if($docTable->deleteById($id)) {
 					$results = (bool) $docRelTable->deleteByField('rdoc_doc_id', $id);
 				}
@@ -552,5 +552,4 @@ class MelisComDocumentService extends MelisComGeneralService
 		
 		return $arrayParameters['results'];
 	}
-
 }

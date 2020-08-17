@@ -9,17 +9,22 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomProductAttributeTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
-    {
-        parent::__construct($tableGateway);
-        $this->idField = 'patt_id';
-    }
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_product_attribute';
 
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'patt_id';
+
+    public function __construct()
+    {
+        $this->idField = self::PRIMARY_KEY;
+    }
 }

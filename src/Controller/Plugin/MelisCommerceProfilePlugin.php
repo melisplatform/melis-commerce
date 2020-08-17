@@ -12,10 +12,10 @@ namespace MelisCommerce\Controller\Plugin;
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
 
-use Zend\Mvc\Controller\Plugin\Redirect;
-use Zend\View\Model\JsonModel;
-use Zend\Stdlib\ArrayUtils;
-use Zend\View\Model\ViewModel;
+use Laminas\Mvc\Controller\Plugin\Redirect;
+use Laminas\View\Model\JsonModel;
+use Laminas\Stdlib\ArrayUtils;
+use Laminas\View\Model\ViewModel;
 /**
  * This plugin implements the business logic of the
  * "profile" plugin.
@@ -70,17 +70,17 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
         $errors = array();
         $message = '';
         
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
         // Getting the Profile form from config
         $appConfigForm = (!empty($this->pluginFrontConfig['forms']['meliscommerce_profile'])) ? $this->pluginFrontConfig['forms']['meliscommerce_profile'] : array();
         
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $profile = $factory->createForm($appConfigForm);
         
-        $melisComAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
+        $melisComAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
         /**
          * If the Authentication doesn't have identity
          * this will redirect to the $redirection_link_not_loggedin
@@ -105,7 +105,7 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
              *      $preData[$key] = (!$is_submit) ? $val : '';
              */
             $preData = array();
-            $clientSrv = $this->getServiceLocator()->get('MelisComClientService');
+            $clientSrv = $this->getServiceManager()->get('MelisComClientService');
             $clientPersonEntity = $clientSrv->getClientByIdAndClientPerson($clientId, $personId);
             
             if(!empty($clientPersonEntity))
@@ -261,7 +261,7 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
          * Removing the Password value to avoid dislying in form input and
          * adding custom label for password and confirm password as guide in creating password
          */
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         $profile->get('cper_password')->setValue('');
         $profile->get('cper_password')->setLabel($profile->get('cper_password')->getLabel().' <i class="fa fa-info-circle fa-lg" title="'.$translator->translate('tr_meliscommerce_client_tooltip_password').'"></i>');
         $profile->get('cper_confirm_password')->setValue('');
@@ -291,8 +291,8 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
     public function createOptionsForms()
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
         
@@ -303,7 +303,7 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
             foreach ($formConfig as $formKey => $config)
             {
                 $form = $factory->createForm($config);
-                $request = $this->getServiceLocator()->get('request');
+                $request = $this->getServiceManager()->get('request');
                 $parameters = $request->getQuery()->toArray();
                 
                 if (!isset($parameters['validate']))
@@ -314,7 +314,7 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
                     $viewModelTab->modalForm = $form;
                     $viewModelTab->formData   = $this->getFormData();
                     
-                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
                         'name' => $config['tab_title'],

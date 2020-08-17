@@ -9,29 +9,35 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomAssocVariantTable extends MelisEcomGenericTable
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_assoc_variant';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'avar_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'avar_id';
+        $this->idField = self::PRIMARY_KEY;
     }
 
     public function getVariantAssociationData($varOne, $varTwo)
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         $varOne = (int) $varOne;
         $varTwo = (int) $varTwo;
 
         $select->columns(array('*'));
 
         $select->where->nest->equalTo('avar_one', $varOne)->and->equalTo('avar_two', $varTwo)->unnest;
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
 
 
@@ -39,7 +45,7 @@ class MelisEcomAssocVariantTable extends MelisEcomGenericTable
     
     public function getVariantAssociationById($variantId, $searchValue = null, $start = 0, $limit = null, $column = null, $order = 'ASC')
     {
-        $select = $this->tableGateway->getSql()->select();
+        $select = $this->getTableGateway()->getSql()->select();
         $select->join('melis_ecom_variant', 'melis_ecom_variant.var_id = melis_ecom_assoc_variant.avar_two', array('*'), $select::JOIN_LEFT)
                 ->join('melis_ecom_product_text', 'melis_ecom_product_text.ptxt_prd_id = melis_ecom_variant.var_prd_id', array(), $select::JOIN_LEFT)
                 ->join('melis_ecom_product', 'melis_ecom_product.prd_id = melis_ecom_variant.var_prd_id', array(), $select::JOIN_LEFT);
@@ -68,7 +74,7 @@ class MelisEcomAssocVariantTable extends MelisEcomGenericTable
         
         $select->group('melis_ecom_variant.var_id');
         
-        $resultData = $this->tableGateway->selectWith($select);
+        $resultData = $this->getTableGateway()->selectWith($select);
         
         return $resultData;
     }

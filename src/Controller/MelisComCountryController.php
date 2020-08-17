@@ -9,10 +9,11 @@
 
 namespace MelisCommerce\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\JsonModel;
-use Zend\View\Model\ViewModel;
-class MelisComCountryController extends AbstractActionController
+use Laminas\View\Model\JsonModel;
+use Laminas\View\Model\ViewModel;
+use MelisCore\Controller\MelisAbstractActionController;
+
+class MelisComCountryController extends MelisAbstractActionController
 {
 
 
@@ -114,13 +115,13 @@ class MelisComCountryController extends AbstractActionController
         $title = $this->getTool()->getTranslation('tr_meliscommerce_country_new_country');
         $data = array();
         
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/tools/meliscommerce_country/forms/meliscommerce_country_form','meliscommerce_country_form');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $form = $factory->createForm($appConfigForm);
-        $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+        $countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
         
         if($id) {
             $title = $this->getTool()->getTranslation('tr_meliscommerce_CountrY_edit_country');
@@ -140,7 +141,7 @@ class MelisComCountryController extends AbstractActionController
     
     private function getTool()
     {
-        $tool = $this->getServiceLocator()->get('MelisCoreTool');
+        $tool = $this->getServiceManager()->get('MelisCoreTool');
         $tool->setMelisToolKey('meliscommerce', 'meliscommerce_country');
         
         return $tool;
@@ -149,8 +150,8 @@ class MelisComCountryController extends AbstractActionController
     
     public function getComCountryDataAction()
     {
-        $ctryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
-        $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+        $ctryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
+        $currencyTable = $this->getServiceManager()->get('MelisEcomCurrencyTable');
 
         $colId = array();
         $dataCount = 0;
@@ -229,7 +230,7 @@ class MelisComCountryController extends AbstractActionController
     
     private function getCountryCurrency($currencyId) 
     {
-        $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+        $currencyTable = $this->getServiceManager()->get('MelisEcomCurrencyTable');
         $data = $currencyTable->getEntryById($currencyId)->current();
         $currency = '';
         if($data) {
@@ -249,7 +250,7 @@ class MelisComCountryController extends AbstractActionController
 
     private function getAllCurrency($currencyId)
     {
-        $currencyTable = $this->getServiceLocator()->get('MelisEcomCurrencyTable');
+        $currencyTable = $this->getServiceManager()->get('MelisEcomCurrencyTable');
         $data = $currencyTable->getEntryById($currencyId)->current();
         $currency = '';
 
@@ -272,7 +273,7 @@ class MelisComCountryController extends AbstractActionController
         );
         if($this->getRequest()->isPost()) {
             $hasErrorFlag = false;
-            $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+            $countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
 
             $postData = get_object_vars($this->getRequest()->getPost());
             $postData = $this->getTool()->sanitizePost($postData);
@@ -347,7 +348,7 @@ class MelisComCountryController extends AbstractActionController
                 $errors = $form->getMessages();
             }
             
-            $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+            $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
             $appConfigForm = $melisMelisCoreConfig->getItem('meliscommerce/tools/meliscommerce_country/forms/meliscommerce_country_form');
             $appConfigForm = $appConfigForm['elements'];
             
@@ -379,7 +380,7 @@ class MelisComCountryController extends AbstractActionController
     {
         $response = array();
         $this->getEventManager()->trigger('meliscommerce_country_delete_start', $this, $response);
-        $countryTable = $this->getServiceLocator()->get('MelisEcomCountryTable');
+        $countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
         $textMessage = 'tr_meliscommerce_country_delete_failed';
         
         $id = null;
@@ -414,8 +415,8 @@ class MelisComCountryController extends AbstractActionController
     
 //     private function hasAccess($key = 'meliscommerce_currency_lists')
 //     {
-//         $melisCoreAuth = $this->getServiceLocator()->get('MelisCoreAuth');
-//         $melisCoreRights = $this->getServiceLocator()->get('MelisCoreRights');
+//         $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
+//         $melisCoreRights = $this->getServiceManager()->get('MelisCoreRights');
 //         $xmlRights = $melisCoreAuth->getAuthRights();
         
 //         $isAccessible = $melisCoreRights->isAccessible($xmlRights, MelisCoreRightsService::MELISCORE_PREFIX_TOOLS, $key);

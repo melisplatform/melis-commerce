@@ -9,18 +9,18 @@
 
 namespace MelisCommerce\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Zend\Session\Container;
+use Laminas\View\Model\ViewModel;
+use Laminas\View\Model\JsonModel;
+use Laminas\Session\Container;
+use MelisCore\Controller\MelisAbstractActionController;
 
 
-class MelisComCategoryListController extends AbstractActionController
+class MelisComCategoryListController extends MelisAbstractActionController
 {
     /**
      * Render Categories page
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderCategoriesPageAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -31,7 +31,7 @@ class MelisComCategoryListController extends AbstractActionController
     
     /**
      * Render Category List
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderCategoryListAction(){
     	$melisKey = $this->params()->fromRoute('melisKey', '');
@@ -42,7 +42,7 @@ class MelisComCategoryListController extends AbstractActionController
 
     public function searchCategoryTreeViewAction($categoryData, $fatherId, $newParent){
         $datas = $categoryData;
-        $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
+        $melisEcomCategoryTable = $this->getServiceManager()->get('MelisEcomCategoryTable');
         $catData = $melisEcomCategoryTable->getChildrenCategoriesOrderedByOrder($fatherId);
         $catDatas = $catData->toArray();
 
@@ -56,7 +56,7 @@ class MelisComCategoryListController extends AbstractActionController
     /**
      * Render Category List Header
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderCategoryListHeaderAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -68,7 +68,7 @@ class MelisComCategoryListController extends AbstractActionController
     /**
      * Render Category List Content
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderCategoryListContentAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -80,7 +80,7 @@ class MelisComCategoryListController extends AbstractActionController
     /**
      * Render Category List Header Add Catalog Button
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderCategoryListHeaderAddCatalogAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -92,7 +92,7 @@ class MelisComCategoryListController extends AbstractActionController
     /**
      * Render Category List Header Add Category Button
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderCategoryListHeaderAddCategoryAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -104,14 +104,14 @@ class MelisComCategoryListController extends AbstractActionController
     /**
      * Render Category List Serch Input
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderCategoryListSearchInputAction(){
         // Category Tree view Search Input
-        $melisMelisCoreConfig = $this->serviceLocator->get('MelisCoreConfig');
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_categories/meliscommerce_categories_search_input','meliscommerce_categories_search_input');
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->serviceLocator->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $propertyForm = $factory->createForm($appConfigForm);
         
@@ -126,11 +126,11 @@ class MelisComCategoryListController extends AbstractActionController
      * Render Category List Tree View
      * This method also return the list for Commerce Languages
      * 
-     * @return \Zend\View\Model\ViewModel
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderCategoryListTreeViewAction(){
         
-        $melisEcomLangTable = $this->getServiceLocator()->get('MelisEcomLangTable');
+        $melisEcomLangTable = $this->getServiceManager()->get('MelisEcomLangTable');
         $ecomLang = $melisEcomLangTable->langOrderByName();
         $ecomLangData = $ecomLang->toArray(); 
         
@@ -161,7 +161,7 @@ class MelisComCategoryListController extends AbstractActionController
     /**
      * This method return Datas of the Category Tree view
      * 
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function getCategoryTreeViewAction(){
         
@@ -177,11 +177,11 @@ class MelisComCategoryListController extends AbstractActionController
         }
         
         // Getting the Current language
-        $melisComCategoryService = $this->getServiceLocator()->get('MelisComCategoryService');
+        $melisComCategoryService = $this->getServiceManager()->get('MelisComCategoryService');
         $currentLang = $melisComCategoryService->getEcomLang($langLocale);
         
         // Getting Category Tree View form the Category Service
-        $melisComCategoryService = $this->getServiceLocator()->get('MelisComCategoryService');
+        $melisComCategoryService = $this->getServiceManager()->get('MelisComCategoryService');
         $categoryListData = $melisComCategoryService->getCategoryTreeview(null, $currentLang->elang_id);
 
         // Category Tree View Preparation
@@ -202,10 +202,10 @@ class MelisComCategoryListController extends AbstractActionController
      */
     public function prepareCategoryDataForTreeView($categoryList, $selected = false, $openedStateParent = array(), $idAndNameOnly = false, $categoryChecked = array(), $langId = null){
 
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
-        $melisEcomProductCategoryTable = $this->getServiceLocator()->get('MelisEcomProductCategoryTable');
-        $categorySvc = $this->getServiceLocator()->get('MelisComCategoryService');
+        $melisEcomProductCategoryTable = $this->getServiceManager()->get('MelisEcomProductCategoryTable');
+        $categorySvc = $this->getServiceManager()->get('MelisComCategoryService');
         foreach ($categoryList As $key => $val)
         {
             
@@ -329,10 +329,10 @@ class MelisComCategoryListController extends AbstractActionController
     /**
      * Saving Category Tree View form moving to another parent category
      * 
-     * @return \Zend\View\Model\JsonModel
+     * @return \Laminas\View\Model\JsonModel
      */
     public function saveCategoryTreeViewAction(){
-        $translator = $this->getServiceLocator()->get('translator');
+        $translator = $this->getServiceManager()->get('translator');
         
         // Initialize Response Variable into Default Values
         $status  = 0;
@@ -381,7 +381,7 @@ class MelisComCategoryListController extends AbstractActionController
      */
     public function udpateCategoryTreeViewAction($categoryData, $fatherId, $newParent){
         $datas = $categoryData;
-        $melisEcomCategoryTable = $this->getServiceLocator()->get('MelisEcomCategoryTable');
+        $melisEcomCategoryTable = $this->getServiceManager()->get('MelisEcomCategoryTable');
         $catData = $melisEcomCategoryTable->getChildrenCategoriesOrderedByOrder($fatherId);
         $catDatas = $catData->toArray();
         

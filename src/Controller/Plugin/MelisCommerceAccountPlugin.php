@@ -12,9 +12,9 @@ namespace MelisCommerce\Controller\Plugin;
 use MelisEngine\Controller\Plugin\MelisTemplatingPlugin;
 use MelisFront\Navigation\MelisFrontNavigation;
 
-use Zend\Mvc\Controller\Plugin\Redirect;
-use Zend\View\Model\ViewModel;
-use Zend\Stdlib\ArrayUtils;
+use Laminas\Mvc\Controller\Plugin\Redirect;
+use Laminas\View\Model\ViewModel;
+use Laminas\Stdlib\ArrayUtils;
 /**
  * This plugin implements the business logic of the
  * "account" plugin.
@@ -64,7 +64,7 @@ class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
      */
     public function front()
     {
-        $pluginManager = $this->getServiceLocator()->get('ControllerPluginManager');
+        $pluginManager = $this->getServiceManager()->get('ControllerPluginManager');
         
         $data = $this->getFormData();
         
@@ -121,12 +121,12 @@ class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
     {
         $address  = array();
          
-        $melisComAuthSrv = $this->getServiceLocator()->get('MelisComAuthenticationService');
+        $melisComAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
         
         if ($melisComAuthSrv->hasIdentity())
         {
             $personId = $melisComAuthSrv->getPersonId();
-            $clientSrv = $this->getServiceLocator()->get('MelisComClientService');
+            $clientSrv = $this->getServiceManager()->get('MelisComClientService');
             $address = $clientSrv->getClientPersonAddressByAddressId($personId, $addId);
         }
          
@@ -139,8 +139,8 @@ class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
     public function createOptionsForms()
     {
         // construct form
-        $factory = new \Zend\Form\Factory();
-        $formElements = $this->getServiceLocator()->get('FormElementManager');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
         
@@ -151,7 +151,7 @@ class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
             foreach ($formConfig as $formKey => $config)
             {
                 $form = $factory->createForm($config);
-                $request = $this->getServiceLocator()->get('request');
+                $request = $this->getServiceManager()->get('request');
                 $parameters = $request->getQuery()->toArray();
                 
                 if (!isset($parameters['validate']))
@@ -165,7 +165,7 @@ class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
                     
                     
                     
-                    $viewRender = $this->getServiceLocator()->get('ViewRenderer');
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
                         'name' => $config['tab_title'],

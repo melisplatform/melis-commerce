@@ -1,6 +1,14 @@
 <?php
-return array(
-    'plugins' => array(
+
+/**
+ * Melis Technology (http://www.melistechnology.com)
+ *
+ * @copyright Copyright (c) 2016 Melis Technology (http://www.melistechnology.com)
+ *
+ */
+
+return [
+    'plugins' => [
         'meliscore' => [
             'interface' => [
                 'melis_dashboardplugin' => [
@@ -21,22 +29,22 @@ return array(
                 ]
             ],
         ],
-        'meliscommerce' => array(
-            'ressources' => array(
-                'css' => array(
+        'meliscommerce' => [
+            'ressources' => [
+                'css' => [
 
-                ),
-                'js' => array(
+                ],
+                'js' => [
                     '/MelisCommerce/plugins/js/MelisCommerceDashboardPluginOrderMessages.js',
-                ),
-            ),
-            'interface' => array(
-                'MelisCommerceDashboardPluginOrderMessages' => array(
-                    'conf' => array(
+                ],
+            ],
+            'interface' => [
+                'MelisCommerceDashboardPluginOrderMessages' => [
+                    'conf' => [
                         'name' => 'MelisCommerceDashboardPluginOrderMessages',
                         'melisKey' => 'MelisCommerceDashboardPluginOrderMessages'
-                    ),
-                    'datas' => array(
+                    ],
+                    'datas' => [
                         'plugin_id' => 'MelisCommerceDashboardPluginOrderMessages',
                         'name' => 'tr_melis_commerce_dashboard_plugin_order_messages',
                         'description' => 'tr_melis_commerce_dashboard_plugin_order_messages_description',
@@ -51,7 +59,7 @@ return array(
                         'deleteCallback' => 'commerceDasboardPluginOrderMessagesDelete',
                         /*
                          * if set this plugin will belong to a specific marketplace section,
-                           * if not it will go directly to ( Others ) section
+                           * if not it will go directly to ( Others ] section
                            *  - available section for dashboard plugins as of 2019-05-16
                            *    - MelisCore
                            *    - MelisCms
@@ -62,16 +70,16 @@ return array(
                            *    - CustomProjects
                          */
                         'section' => 'MelisCommerce',
-                    ),
-                    'forward' => array(
+                    ],
+                    'forward' => [
                         'module' => 'MelisCommerce',
                         'plugin' => 'MelisCommerceDashboardPluginOrderMessages',
                         'function' => 'orderMessages',
                         'jscallback' => '',
-                        'jsdatas' => array()
-                    ),
-                ),
-            ),
-        ),
-    ),
-);
+                        'jsdatas' => []
+                    ],
+                ],
+            ],
+        ],
+    ],
+];

@@ -9,19 +9,25 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Zend\Db\TableGateway\TableGateway;
+use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomOrderStatusTable extends MelisEcomGenericTable 
 {
-    protected $tableGateway;
-    protected $idField;
-    
-    public function __construct(TableGateway $tableGateway)
+    /**
+     * Model table
+     */
+    const TABLE = 'melis_ecom_order_status';
+
+    /**
+     * Table primary key
+     */
+    const PRIMARY_KEY = 'osta_id';
+
+    public function __construct()
     {
-        parent::__construct($tableGateway);
-        $this->idField = 'osta_id';
+        $this->idField = self::PRIMARY_KEY;
     }
-    
+
     public function getOrderStatusListByLangId($langId = null, $onlyValid = null)
     {
         $select = $this->tableGateway->getSql()->select();

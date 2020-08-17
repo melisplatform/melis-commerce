@@ -9,25 +9,21 @@
 
 namespace MelisCommerce\Listener;
 
-use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\ListenerAggregateInterface;
+use Laminas\EventManager\EventManagerInterface;
+use Laminas\EventManager\ListenerAggregateInterface;
+use MelisCore\Listener\MelisGeneralListener;
 
-use MelisCore\Listener\MelisCoreGeneralListener;
-
-class MelisCommerceCategoryListener extends MelisCoreGeneralListener implements ListenerAggregateInterface
+class MelisCommerceCategoryListener extends MelisGeneralListener implements ListenerAggregateInterface
 {
-    public function attach(EventManagerInterface $events)
+    public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $sharedEvents      = $events->getSharedManager();
-        
-        $callBackHandler = $sharedEvents->attach(
+        $this->attachEventListener(
+            $events,
             'MelisCommerce',
-            array(
-                'meliscommerce_category_save_start'
-            ),
+            'meliscommerce_category_save_start',
         	function($e){
         	    
-        		$sm = $e->getTarget()->getServiceLocator();   	
+        		$sm = $e->getTarget()->getServiceManager();
         		$melisCoreDispatchService = $sm->get('MelisCoreDispatch');
         		
         		list($success, $errors, $datas) = $melisCoreDispatchService->dispatchPluginAction(
@@ -35,36 +31,35 @@ class MelisCommerceCategoryListener extends MelisCoreGeneralListener implements 
         		    'meliscommerce',
         		    'action-category-tmp',
         		    'MelisCommerce\Controller\MelisComCategory',
-        		    array('action' => 'getCategory')
-        		    );
+        		    ['action' => 'getCategory']
+                );
         		
         		list($success, $errors, $datas) = $melisCoreDispatchService->dispatchPluginAction(
         		    $e,
         		    'meliscommerce',
         		    'action-category-tmp',
         		    'MelisCommerce\Controller\MelisComCategory',
-        		    array('action' => 'validateCategoryTranslations')
-        		    );
+        		    ['action' => 'validateCategoryTranslations']
+                );
         		
         		list($success, $errors, $datas) = $melisCoreDispatchService->dispatchPluginAction(
         		    $e,
         		    'meliscommerce',
         		    'action-category-tmp',
         		    'MelisCommerce\Controller\MelisComCategory',
-        		    array('action' => 'getCategoryCountries')
-        		    );
+        		    ['action' => 'getCategoryCountries']
+                );
         		
         		list($success, $errors, $datas) = $melisCoreDispatchService->dispatchPluginAction(
         		    $e,
         		    'meliscommerce',
         		    'action-category-tmp',
         		    'MelisCommerce\Controller\MelisComCategory',
-        		    array('action' => 'validateCategorySeo')
-        		    );
+        		    ['action' => 'validateCategorySeo']
+                );
         		
         	},
-        100);
-        
-        $this->listeners[] = $callBackHandler;
+        100
+        );
     }
 }
