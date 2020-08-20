@@ -19,6 +19,9 @@ return [
                 'js' => [
                     '/MelisCommerce/js/tools/coupon.tool.js',
                 ],
+                'css' => [
+                    '/MelisCommerce/css/coupons.css',
+                ]
             ],
             'datas' => [],
             'interface' => [
