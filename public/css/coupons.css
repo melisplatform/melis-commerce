@@ -7,3 +7,7 @@
 .filter-bar .row .fb-dt-left .order-list-table-filter-date-order {
     float: left;
 }
+
+.datepicker-dropdown tbody tr td {
+    cursor: pointer;
+}
