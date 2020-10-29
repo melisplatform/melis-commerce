@@ -211,7 +211,8 @@ class Module
 	        include __DIR__ . '/../config/tools/app.tools.language.php',
 	        include __DIR__ . '/../config/tools/app.tools.country.php',
             include __DIR__ . '/../config/tools/app.tools.assoc_var.php',
-	    
+            include __DIR__ . '/../config/tools/app.tools.clients_group.php',
+
     	    // categories plugin configs
     	    include __DIR__ . '/../config/plugins/categories/MelisCommerceCategoryProductListPlugin.php',
             include __DIR__ . '/../config/plugins/categories/MelisCommerceCategoryTreePlugin.php',

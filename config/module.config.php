@@ -111,6 +111,7 @@ return [
             'MelisComDuplicationService'                    => \MelisCommerce\Service\MelisComDuplicationService::class,
             'MelisComCurrencyService'                       => \MelisCommerce\Service\MelisComCurrencyService::class,
             'MelisComLinksService'                          => \MelisCommerce\Service\MelisComLinksService::class,
+            'MelisComClientGroupsService'                   => \MelisCommerce\Service\MelisComClientGroupsService::class,
 
             // Tables
             'MelisEcomAttributeTable'                       => \MelisCommerce\Model\Tables\MelisEcomAttributeTable::class,
@@ -163,6 +164,7 @@ return [
             'MelisEcomProductVariantAttributeValueTable'    => \MelisCommerce\Model\Tables\MelisEcomVariantAttributeValueTable::class,
             'MelisEcomVariantStockTable'                    => \MelisCommerce\Model\Tables\MelisEcomVariantStockTable::class,
             'MelisEcomVariantTable'                         => \MelisCommerce\Model\Tables\MelisEcomVariantTable::class,
+            'MelisEcomClientGroupsTable'                    => \MelisCommerce\Model\Tables\MelisEcomClientGroupsTable::class,
         ],
         'abstract_factories' => [
             'Laminas\Cache\Service\StorageCacheAbstractServiceFactory',
