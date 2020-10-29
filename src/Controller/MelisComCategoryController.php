@@ -258,10 +258,10 @@ class MelisComCategoryController extends MelisAbstractActionController
             $categoryData = $melisComCategoryService->getCategoryById($catId);
             $category = $categoryData->getCategory();
 
-            $validFrom = empty($category->cat_date_valid_start) ? null : ((string) $category->cat_date_valid_start != '0000-00-00 00:00:00') ?
-                strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($category->cat_date_valid_start)) : null;
-            $validTo = empty($category->cat_date_valid_end) ? null : ((string) $category->cat_date_valid_end  != '0000-00-00 00:00:00') ?
-                strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($category->cat_date_valid_end)) : null;
+            $validFrom = empty($category->cat_date_valid_start) ? null : (((string) $category->cat_date_valid_start != '0000-00-00 00:00:00') ?
+                strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($category->cat_date_valid_start)) : null);
+            $validTo = empty($category->cat_date_valid_end) ? null : (((string) $category->cat_date_valid_end  != '0000-00-00 00:00:00') ?
+                strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($category->cat_date_valid_end)) : null);
 
             if (!is_null($validFrom))
             {
@@ -345,7 +345,7 @@ class MelisComCategoryController extends MelisAbstractActionController
             $categoryData = $melisComCategoryService->getCategoryById($catId);
             $category = $categoryData->getCategory();
 
-            $view->categorystatus = empty($category->cat_status) ? '' : ($category->cat_status) ? 'checked' : '';
+            $view->categorystatus = empty($category->cat_status) ? '' : (($category->cat_status) ? 'checked' : '');
         }
 
         $view->melisKey = $melisKey;
