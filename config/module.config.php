@@ -197,6 +197,7 @@ return [
             'MelisCommerce\Controller\MelisComPrdVarDuplication'    => \MelisCommerce\Controller\MelisComPrdVarDuplicationController::class,
             'MelisCommerce\Controller\MelisComOrderStatus'          => \MelisCommerce\Controller\MelisComOrderStatusController::class,
             'MelisCommerce\Controller\MelisComSettings'             => \MelisCommerce\Controller\MelisComSettingsController::class,
+            'MelisCommerce\Controller\MelisComClientsGroup'         => \MelisCommerce\Controller\MelisComClientsGroupController::class,
         ],
     ],
     'controller_plugins' => [

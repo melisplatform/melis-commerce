@@ -65,6 +65,12 @@ return [
                                         'type' => 'meliscommerce/interface/meliscommerce_order_status_tool/interface/meliscommerce_order_status_tool_leftmenu'
                                     ],
                                 ],
+                                'meliscommerce_clients_group_list' => [
+                                    'conf' => [
+                                        'type' => 'meliscommerce/interface/meliscommerce_clients_group_tool/interface/meliscommerce_clients_group_tool_leftmenu'
+                                    ],
+                                ],
+
                                 'meliscommerce_settings' => [
                                     'conf' => [
                                         'type' => 'meliscommerce/interface/meliscommerce_settings/interface/meliscommerce_settings_leftmenu'
