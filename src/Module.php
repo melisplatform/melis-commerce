@@ -176,6 +176,7 @@ class Module
 	        include __DIR__ . '/../config/interface/app.interface.country.php',
             include __DIR__ . '/../config/interface/app.interface.assoc-var.php',
             include __DIR__ . '/../config/interface/app.interface.duplications.php',
+            include __DIR__ . '/../config/interface/app.interface.groups.php',
             include __DIR__ . '/../config/interface/app.interface.settings.php',
 	    
 			include __DIR__ . '/../config/forms/app.forms.general.php',
@@ -322,6 +323,7 @@ class Module
                 'country',
                 'assoc-var',
                 'duplication',
+                'clients-group',
                 'settings',
             ];
             
