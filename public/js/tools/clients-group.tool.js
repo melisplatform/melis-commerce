@@ -6,12 +6,30 @@ $(function(){
         melisHelper.createModal("id_meliscommerce_clients_group_tool_content_modal", "meliscommerce_clients_group_tool_content_modal", false, {}, modalUrl);
     });
 
+    /**
+     * Open modal to update record
+     */
+    $body.on("click", ".btnEditClientGroup", function(){
+        var current_row = $(this).parents('tr');//Get the current row
+        if (current_row.hasClass('child')) {//Check if the current row is a child row
+            current_row = current_row.prev();//If it is, then point to the row before it (its 'parent')
+        }
+        var groupId = current_row.data("cgroup-id");
+        var modalUrl = '/melis/MelisCore/MelisGenericModal/emptyGenericModal';
+        melisHelper.createModal("id_meliscommerce_clients_group_tool_content_modal", "meliscommerce_clients_group_tool_content_modal", false, {"groupId":groupId}, modalUrl);
+    });
+
     $body.on("click", ".btnSaveClientsGroup", function(){
+        var _this = $(this);
+        var groupId = _this.data("group-id");
+
         melisCoreTool.pending(".btnSaveClientsGroup");
         var data = $("form#clientsGroupForm").serializeArray();
+        //include group id
+        data.push({name: "groupId", value: groupId});
         $.ajax({
             type 		: 'POST',
-            url  		: '/melis/MelisCommerce/MelisComClientsGroupController/addClientsGroup',
+            url  		: '/melis/MelisCommerce/MelisComClientsGroupController/saveClientsGroup',
             data 		: data,
         }).done(function(data) {
             if(data.success){

@@ -95,11 +95,11 @@ class MelisComClientsGroupController extends MelisAbstractActionController
     public function renderClientsGroupToolContentModalAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
-        $id = $this->params()->fromRoute('groupId', $this->params()->fromQuery('groupId', null));
+        $groupId = $this->params()->fromRoute('groupId', $this->params()->fromQuery('groupId', null));
         $title = $this->getTool()->getTranslation('tr_meliscommerce_clients_group_add_group');
         $icon = 'plus';
 
-        if($id) {
+        if($groupId) {
             $title = $this->getTool()->getTranslation('tr_meliscommerce_clients_group_edit_group');
             $icon = 'pencil';
         }
@@ -108,6 +108,7 @@ class MelisComClientsGroupController extends MelisAbstractActionController
         $view->melisKey = $melisKey;
         $view->title = $title;
         $view->icon = $icon;
+        $view->groupId = $groupId;
 
         return $view;
     }
@@ -117,11 +118,16 @@ class MelisComClientsGroupController extends MelisAbstractActionController
      */
     public function renderClientsGroupToolContentModalFormAction()
     {
-        $id = $this->params()->fromRoute('groupId', $this->params()->fromQuery('groupId', null));
+        $groupId = $this->params()->fromRoute('groupId', $this->params()->fromQuery('groupId', null));
 
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $data = array();
         $form = $this->getForm();
+        if(!empty($groupId)){
+            $groupSrv = $this->getServiceManager()->get('MelisComClientGroupsService');
+            $formData = get_object_vars($groupSrv->getClientsGroupById($groupId));
+            $form->setData($formData);
+        }
 
         $view = new ViewModel();
         $view->melisKey = $melisKey;
@@ -217,7 +223,7 @@ class MelisComClientsGroupController extends MelisAbstractActionController
     /**
      * @return JsonModel
      */
-    public function addClientsGroupAction()
+    public function saveClientsGroupAction()
     {
         $success = 0;
         $message = 'tr_meliscommerce_clients_group_save_ko';
@@ -226,7 +232,7 @@ class MelisComClientsGroupController extends MelisAbstractActionController
 
         $translator = $this->getServiceManager()->get('translator');
         $postData = $this->getRequest()->getPost()->toArray();
-        $id = $postData['groupId'] ?? null;
+        $groupId = $postData['groupId'] ?? null;
         //remove id in the post
         if(isset($postData['groupId']))
             unset($postData['groupId']);
@@ -238,7 +244,7 @@ class MelisComClientsGroupController extends MelisAbstractActionController
         // is valid
         if ($groupForm->isValid()) {
             $groupSrv = $this->getServiceManager()->get('MelisComClientGroupsService');
-            $res = $groupSrv->saveClientsGroup($postData, $id);
+            $res = $groupSrv->saveClientsGroup($postData, $groupId);
             if($res){
                 $success = 1;
                 $message = $translator->translate('tr_meliscommerce_clients_group_save_ok');
@@ -255,8 +261,8 @@ class MelisComClientsGroupController extends MelisAbstractActionController
             'success' => $success,
             'textMessage' => $translator->translate($message),
             'errors' => $errors,
-            'typeCode' => !empty($id) ? 'UPDATE_CLIENTS_GROUP' : 'ADD_CLIENTS_GROUP',
-            'itemId' => $id
+            'typeCode' => !empty($groupId) ? 'UPDATE_CLIENTS_GROUP' : 'ADD_CLIENTS_GROUP',
+            'itemId' => $groupId
         ];
 
         return new JsonModel($results);
