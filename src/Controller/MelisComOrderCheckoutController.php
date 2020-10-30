@@ -159,7 +159,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
 
         if($request->isPost()) {
 
-            $data = get_object_vars($request->getPost());
+            $data = $request->getPost()->toArray();
             $countryId = $data['countryId'];
             $container = new Container('meliscommerce');
             // check if the clientKey is set no checkout session
@@ -493,7 +493,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
         $catParents = '';
 
         if($request->isPost()) {
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
             $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
@@ -908,7 +908,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
 
         if($request->isPost())
         {
-            $postValues = get_object_vars($request->getPost());
+            $postValues = $request->getPost()->toArray();
 
             // Getting the contact details from database
             $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
@@ -1233,7 +1233,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
 
         if($request->isPost())
         {
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
 
@@ -1939,7 +1939,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
 
         if($request->isPost())
         {
-            $postValues = get_object_vars($request->getPost());
+            $postValues = $request->getPost()->toArray();
 
             // Getting the contact details from database
             $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');

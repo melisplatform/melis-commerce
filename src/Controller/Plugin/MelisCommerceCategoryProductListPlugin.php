@@ -206,7 +206,7 @@ class MelisCommerceCategoryProductListPlugin extends MelisTemplatingPlugin
                     $success = false;
                     $errors = array();
                     
-                    $post = get_object_vars($request->getPost());
+                    $post = $request->getPost()->toArray();
                     if (in_array($formKey, array('melis_commerce_plugin_category_product_list_config', 'melis_commerce_plugin_category_product_list_product_config')))
                     {
                         $form->setData($post);

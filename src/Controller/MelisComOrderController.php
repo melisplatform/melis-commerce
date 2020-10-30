@@ -869,7 +869,7 @@ class MelisComOrderController extends MelisAbstractActionController
      */
     public function getBasketDataAction()
     {   
-        $getValues = get_object_vars($this->getRequest()->getQuery());
+        $getValues = $this->getRequest()->getQuery()->toArray();
         $orderId = $this->getRequest()->getPost('orderId');
         $translator = $this->getServiceManager()->get('translator');
         $melisTool = $this->getTool();
@@ -981,7 +981,7 @@ class MelisComOrderController extends MelisAbstractActionController
                     $textMessage = 'tr_meliscommerce_order_page_save_success';
                     
                     // Getting Order Client details
-                    $postValues = get_object_vars($this->getRequest()->getPost());
+                    $postValues = $this->getRequest()->getPost()->toArray();
                     $postValues = $this->getTool()->sanitizeRecursive($postValues);
                     $orderId =  $postValues['orderId'];
                     $clientData = $orderSvc->getOrderById($orderId);
@@ -1022,7 +1022,7 @@ class MelisComOrderController extends MelisAbstractActionController
         $errors = array();
         $data = array();
         $container = new Container('meliscommerce');
-        $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getRequest()->getPost()->toArray();
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
         
         if (!empty($container['order-valid-data'])){
@@ -1099,7 +1099,7 @@ class MelisComOrderController extends MelisAbstractActionController
         
         $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigOrderForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_orders/meliscommerce_order_information_form','meliscommerce_order_information_form');
-        $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getRequest()->getPost()->toArray();
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
         // form validations
@@ -1134,7 +1134,7 @@ class MelisComOrderController extends MelisAbstractActionController
         $success = true;
         $address['delivery'] = array();
         $address['billing'] = array();
-        $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getRequest()->getPost()->toArray();
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
         
         $factory = new \Laminas\Form\Factory();
@@ -1187,7 +1187,7 @@ class MelisComOrderController extends MelisAbstractActionController
         $data['shipping'] = array();
         $errors = array();
         $success = true;
-        $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getRequest()->getPost()->toArray();
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
         $factory = new \Laminas\Form\Factory();
         $formElements = $this->getServiceManager()->get('FormElementManager');
@@ -1237,7 +1237,7 @@ class MelisComOrderController extends MelisAbstractActionController
         $messageForm = $factory->createForm($appConfigMessageForm);
         
         if($this->getRequest()->isPost()){
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
             $order = $melisComOrderService->getOrderById($postValues['orderId'], $this->getTool()->getCurrentLocaleID())->getOrder();
             $userId = !empty($this->getTool()->getCurrentUserId())? $this->getTool()->getCurrentUserId(): '';

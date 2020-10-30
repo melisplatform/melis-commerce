@@ -32,8 +32,7 @@ class MelisCommerceCheckoutCouponListener extends MelisGeneralListener implement
         		$params = $e->getParams();
 
         		// Getting $_GET[] parameters for CouponCode
-        		$getValues = $sm->get('request')->getQuery();
-        		$getValues = get_object_vars($getValues);
+        		$getValues = $sm->get('request')->getQuery()->toArray();
 
         		if ($params['results']['success'])
         		{

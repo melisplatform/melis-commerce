@@ -179,7 +179,7 @@ class MelisCommerceDashboardPluginOrderMessages extends MelisCoreDashboardTempla
 
     public function getFilter($request)
     {
-        $filter = get_object_vars($request->getPost());
+        $filter = $request->getPost()->toArray();
 
         if (isset($filter['filter'])) {
             return $filter['filter'];

@@ -292,7 +292,7 @@ class MelisComAttributeListController extends MelisAbstractActionController
         $attributeSvc = $this->getServiceManager()->get('MelisComAttributeService');
         
         if($this->getRequest()->isPost()){
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $attributeId = $postValues['attributeId'];
             $success = $attributeSvc->deleteAttributeById($attributeId);
             if($success){

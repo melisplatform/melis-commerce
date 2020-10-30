@@ -305,7 +305,7 @@ class MelisComLanguageController extends MelisAbstractActionController
             $isNameChecked = false;
             $langTable = $this->getServiceManager()->get('MelisEcomLangTable');
 
-            $postData = get_object_vars($this->getRequest()->getPost());
+            $postData = $this->getRequest()->getPost()->toArray();
             $postData = $this->getTool()->sanitizePost($postData);
             $this->getEventManager()->trigger('meliscommerce_language_save_start', $this, $postData);
             if($postData['elang_id']) {

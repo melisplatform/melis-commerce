@@ -276,7 +276,7 @@ class MelisComDocumentController extends MelisAbstractActionController
 
             $this->getEventManager()->trigger('meliscommerce_document_update_'.$docType.'_start', $this, $request->getPost());
 
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
             $logTypeCode = 'ECOM_'.strtoupper($postValues['docRelationType']).'_'.strtoupper($postValues['docType']);
@@ -702,7 +702,7 @@ class MelisComDocumentController extends MelisAbstractActionController
             $filter->add($customFilters[$typeUpload]['dtype_code']);
             $form->setInputFilter($filter);
 
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
             $form->setData($postValues);
 
@@ -779,7 +779,7 @@ class MelisComDocumentController extends MelisAbstractActionController
             $filter->add($customFilters[$typeUpload]['dtype_code']);
             $form->setInputFilter($filter);
            
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
             $form->setData($postValues);
 

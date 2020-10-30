@@ -546,7 +546,7 @@ class MelisComOrderListController extends MelisAbstractActionController
         
         if($this->getRequest()->isPost()){
             $this->getEventManager()->trigger('meliscommerce_order_status_save_start', $this, array());
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
             $orderId = $postValues['ord_id'];
             unset($postValues['ord_id']);
@@ -627,7 +627,7 @@ class MelisComOrderListController extends MelisAbstractActionController
         $lang = $orderSvc->getEcomLang();
         
         if($this->getRequest()->isPost()){
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             
             // convert date to generic for date comparison
             if(!empty($postValues['date_start'])){

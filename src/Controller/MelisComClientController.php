@@ -54,7 +54,7 @@ class MelisComClientController extends MelisAbstractActionController
         
         if($request->isPost())
         {
-            $postValues = get_object_vars($request->getPost());
+            $postValues = $request->getPost()->toArray();
             
             if (!empty($postValues['clientId']))
             {
@@ -702,7 +702,7 @@ class MelisComClientController extends MelisAbstractActionController
             $appConfigFormElements = $appConfigForm['elements'];
             
             // Gtting Data from Post and Set as values to the Client Contact Form
-            $postValues = get_object_vars($request->getPost());
+            $postValues = $request->getPost()->toArray();
             $propertyForm->setData($postValues);
             
             if(!empty($postValues['cper_email'])){
@@ -816,7 +816,7 @@ class MelisComClientController extends MelisAbstractActionController
         
         if ($request->getPost())
         {
-            $postValues = get_object_vars($request->getPost());
+            $postValues = $request->getPost()->toArray();
             $propertyForm->setData($postValues);
             // Client Id
             $clientId = $postValues['clientId'];
@@ -859,7 +859,7 @@ class MelisComClientController extends MelisAbstractActionController
             $propertyForm = $factory->createForm($appConfigForm);
 
             // Getting Data from Post and set data to Client Address Form
-            $postValues = get_object_vars($request->getPost());
+            $postValues = $request->getPost()->toArray();
             $propertyForm->setData($postValues);
             // Getting Client Address form elements/fields
             $appConfigFormElements = $appConfigForm['elements'];
@@ -937,7 +937,7 @@ class MelisComClientController extends MelisAbstractActionController
         
         // Getting values
         $request = $this->getRequest();
-        $postValues = get_object_vars($request->getPost());
+        $postValues = $request->getPost()->toArray();
             
         $translator = $this->getServiceManager()->get('translator');
         
@@ -1004,7 +1004,7 @@ class MelisComClientController extends MelisAbstractActionController
             $propertyForm = $factory->createForm($appConfigForm);
             
             // Getting Posted data in a form of array and set Data to the Client Address form
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
             $propertyForm->setData($postValues);
@@ -1094,7 +1094,7 @@ class MelisComClientController extends MelisAbstractActionController
         
         // Getting Data from post in a form of array
         $request = $this->getRequest();
-        $postValues = get_object_vars($request->getPost());
+        $postValues = $request->getPost()->toArray();
         
         $translator = $this->getServiceManager()->get('translator');
         
@@ -1269,7 +1269,7 @@ class MelisComClientController extends MelisAbstractActionController
             $addressesData = $this->getTool()->sanitizeRecursive($datas['clientAddresses']);
             
             // Getting Data from Post in array form
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
 
@@ -1354,7 +1354,7 @@ class MelisComClientController extends MelisAbstractActionController
         
         if($request->isPost())
         {
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
             // Getting Client Form from Config
@@ -1438,7 +1438,7 @@ class MelisComClientController extends MelisAbstractActionController
         
         if($request->isPost())
         {
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
             
@@ -1686,7 +1686,7 @@ class MelisComClientController extends MelisAbstractActionController
         
         if($request->isPost())
         {
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
             
@@ -1797,7 +1797,7 @@ class MelisComClientController extends MelisAbstractActionController
             $factory->setFormElementManager($formElements);
             
             // Getting Datas from Post
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
             
@@ -1874,7 +1874,7 @@ class MelisComClientController extends MelisAbstractActionController
         
         if($request->isPost())
         {
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
             

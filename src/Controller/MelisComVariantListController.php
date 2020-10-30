@@ -128,7 +128,7 @@ class MelisComVariantListController extends MelisAbstractActionController
      */
     public function renderProductsVariantDataAction()
     {
-        $getValues = get_object_vars($this->getRequest()->getQuery());//echo '<pre>'; print_r($this->getRequest()->getPost()); echo '</pre>'; die();
+        $getValues = $this->getRequest()->getQuery()->toArray();//echo '<pre>'; print_r($this->getRequest()->getPost()); echo '</pre>'; die();
         $productId = $this->getRequest()->getPost('prodId');
         $variantService = $this->getServiceManager()->get('MelisComVariantService');
         $attrSrv = $this->getServiceManager()->get('MelisComAttributeService');

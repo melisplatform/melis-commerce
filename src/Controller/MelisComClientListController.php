@@ -415,7 +415,7 @@ class MelisComClientListController extends MelisAbstractActionController
         $lang = $clientSvc->getEcomLang();
         
         if($this->getRequest()->isPost()){
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             
             // convert date to generic for date comparison
             if(!empty($postValues['date_start'])){

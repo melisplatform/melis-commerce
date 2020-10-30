@@ -321,7 +321,7 @@ class MelisComSettingsController extends MelisAbstractActionController
         
         if($this->getRequest()->isPost()){
             
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $melisTool->sanitizeRecursive($postValues);
             
             $alertForm->setData($postValues);

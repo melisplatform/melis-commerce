@@ -374,7 +374,7 @@ class MelisComPriceController extends MelisAbstractActionController
         $appConfigPriceForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_prices/meliscommerce_prices_form','meliscommerce_prices_form');
         $priceForm = $factory->createForm($appConfigPriceForm);
 
-        $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getRequest()->getPost()->toArray();
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
         if(!empty($postValues['priceForm'])){
             foreach($postValues['priceForm'] as $price){

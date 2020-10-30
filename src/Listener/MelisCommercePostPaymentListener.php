@@ -21,18 +21,16 @@ class MelisCommercePostPaymentListener extends MelisGeneralListener implements L
             $events,
             '*',
             'meliscommerce_service_checkout_step2_postpayment_end',
-        	function($e){
-        	    
-        		$sm = $e->getTarget()->getServiceManager();
-        		$params = $e->getParams();
-        		
-        		$postedValues = $sm->get('request')->getPost();
-        		
-        		$postedValues = get_object_vars($postedValues);
-        		
-        		$melisComPostPaymentService = $sm->get('MelisComPostPaymentService');
-        		$params['results'] = $melisComPostPaymentService->processPostPayment(get_object_vars($params)['results'], $postedValues);
-        	},
+            function($e){
+                
+                $sm = $e->getTarget()->getServiceManager();
+                $params = $e->getParams();
+                
+                $postedValues = $sm->get('request')->getPost()->toArray();
+                
+                $melisComPostPaymentService = $sm->get('MelisComPostPaymentService');
+                $params['results'] = $melisComPostPaymentService->processPostPayment(get_object_vars($params)['results'], $postedValues);
+            },
         100
         );
     }

@@ -847,7 +847,7 @@ class MelisComVariantController extends MelisAbstractActionController
                 'seo_data' => array(),
             ),
         );
-        $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getRequest()->getPost()->toArray();
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
         $melisComSeoService = $this->getServiceManager()->get('MelisComSeoService');
 
@@ -888,7 +888,7 @@ class MelisComVariantController extends MelisAbstractActionController
                     $data = $container['variant-tmp-data']['datas'];
             }
 
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
             
             if (!empty($postValues['variantId'])){
@@ -1010,7 +1010,7 @@ class MelisComVariantController extends MelisAbstractActionController
         
         $variantTable = $this->getServiceManager()->get('MelisEcomVariantTable');
 
-        $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getRequest()->getPost()->toArray();
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
         
         if(!empty($postValues['variant'])){
@@ -1078,7 +1078,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $appConfigStockForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_variants/meliscommerce_variants_stocks_form','meliscommerce_variants_stocks_form');
         $stockForm = $factory->createForm($appConfigStockForm);
 
-        $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getRequest()->getPost()->toArray();
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
         if(!empty($postValues['stockForm'])){
             foreach($postValues['stockForm'] as $stock){
@@ -1129,7 +1129,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $errors = array();
         $success = true;
         $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
-        $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getRequest()->getPost()->toArray();
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
         
         if(!empty($postValues['attrVal'])){            
@@ -1160,7 +1160,7 @@ class MelisComVariantController extends MelisAbstractActionController
                 'seo_data' => array(),
             ),
         );
-        $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getRequest()->getPost()->toArray();
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
         $melisComSeoService = $this->getServiceManager()->get('MelisComSeoService');
         if(!empty($postValues['variant_seo'])){
@@ -1181,7 +1181,7 @@ class MelisComVariantController extends MelisAbstractActionController
         
         $varSvc = $this->getServiceManager()->get('MelisComVariantService');
         if($this->getRequest()->isPost()){
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             
             $variantId = $postValues['var_id'];
             
