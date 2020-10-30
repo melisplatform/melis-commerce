@@ -85,6 +85,35 @@ return [
                                                 'jscallback' => '',
                                                 'jsdatas' => []
                                             ],
+                                            'interface' => [
+                                                'meliscommerce_clients_group_tool_content_modal' => [
+                                                    'conf' => [
+                                                        'id' => 'id_meliscommerce_clients_group_tool_content_modal',
+                                                        'melisKey' => 'meliscommerce_clients_group_tool_content_modal',
+                                                        'name' => 'tr_meliscommerce_clients_group_tool_content_modal'
+                                                    ],
+                                                    'forward' => [
+                                                        'module' => 'MelisCommerce',
+                                                        'controller' => 'MelisComClientsGroup',
+                                                        'action' => 'render-clients-group-tool-content-modal',
+                                                    ],
+                                                    'interface' => [
+                                                        'meliscommerce_clients_group_tool_content_modal_form' => [
+                                                            'conf' => [
+                                                                'id' => 'id_meliscommerce_clients_group_tool_content_modal_form',
+                                                                'melisKey' => 'meliscommerce_clients_group_tool_content_modal_form',
+                                                                'name' => 'tr_meliscommerce_clients_group_add_group'
+                                                            ],
+                                                            'forward' => [
+                                                                'module' => 'MelisCommerce',
+                                                                'controller' => 'MelisComClientsGroup',
+                                                                'action' => 'render-clients-group-tool-content-modal-form',
+                                                                'jscallback' => ''
+                                                            ],
+                                                        ]
+                                                    ]
+                                                ],
+                                            ]
                                         ],
                                     ],
                                 ],

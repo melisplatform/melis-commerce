@@ -1,3 +1,19 @@
+$(function(){
+    var $body 		= $("body");
+        // zoneId 		= "id_meliscommerce_clients_group_tool_content_modal",
+        // melisKey 	= 'meliscommerce_clients_group_tool_content_modal',
+        // modalUrl 	= '/melis/MelisCommerce/MelisComClientsGroup/renderClientsGroupToolContentModal';
+
+    $body.on("click", "#btnAddClientGroup", function() {
+        var modalUrl = '/melis/MelisCore/MelisGenericModal/emptyGenericModal';
+        melisHelper.createModal("id_meliscommerce_clients_group_tool_content_modal", "meliscommerce_clients_group_tool_content_modal", false, {}, modalUrl);
+        //
+        // melisCoreTool.pending("#btnAddClientGroup");
+        // melisHelper.createModal(zoneId, melisKey, false, {groupId: null, saveType : "new"},  modalUrl, function() {
+        //     melisCoreTool.done("#btnAddClientGroup");
+        // });
+    });
+});
 window.clientsGroupTableCallBack = function()
 {
     var tbody = $("#tableClientsGroupsList tbody");

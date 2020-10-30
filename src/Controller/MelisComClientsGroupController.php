@@ -92,6 +92,52 @@ class MelisComClientsGroupController extends MelisAbstractActionController
     /**
      * @return ViewModel
      */
+    public function renderClientsGroupToolContentModalAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $id = $this->params()->fromRoute('groupId', $this->params()->fromQuery('groupId', null));
+        $title = $this->getTool()->getTranslation('tr_meliscommerce_clients_group_add_group');
+        $icon = 'plus';
+
+        if($id) {
+            $title = $this->getTool()->getTranslation('tr_meliscommerce_clients_group_edit_group');
+            $icon = 'pencil';
+        }
+
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        $view->title = $title;
+        $view->icon = $icon;
+
+        return $view;
+    }
+
+    /**
+     * @return ViewModel
+     */
+    public function renderClientsGroupToolContentModalFormAction()
+    {
+        $id = $this->params()->fromRoute('groupId', $this->params()->fromQuery('groupId', null));
+
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $data = array();
+
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
+        $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/tools/meliscommerce_clients_group/forms/meliscommerce_clients_group_form','meliscommerce_clients_group_form');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+        $form = $factory->createForm($appConfigForm);
+
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        $view->form = $form;
+        return $view;
+    }
+
+    /**
+     * @return ViewModel
+     */
     public function renderClientsGroupToolContentAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');

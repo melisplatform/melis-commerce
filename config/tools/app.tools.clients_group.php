@@ -74,6 +74,37 @@ return [
                             ],
                         ],
                     ],
+                    'modals' => [],
+                    'forms' => [
+                        'meliscommerce_clients_group_form' => [
+                            'attributes' => [
+                                'name' => 'clientsGroupForm',
+                                'id' => 'clientsGroupForm',
+                                'method' => 'POST',
+                                'action' => '',
+                            ],
+                            'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                            'elements' => [
+                                [
+                                    'spec' => [
+                                        'name' => 'cgroup_name',
+                                        'type' => 'MelisText',
+                                        'options' => [
+                                            'label' => 'tr_meliscommerce_clients_group_name_fld',
+                                            'tooltip' => 'tr_meliscommerce_clients_group_name_fld tooltip',
+                                        ],
+                                        'attributes' => [
+                                            'id' => 'cgroup_name',
+                                            'required' => true
+                                        ],
+                                    ],
+                                ],
+                            ],
+                            'input_filter' => [
+
+                            ],
+                        ],
+                    ],
                 ],
                 
             ],
