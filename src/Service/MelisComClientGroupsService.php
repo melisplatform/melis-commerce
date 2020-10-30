@@ -55,6 +55,35 @@ class MelisComClientGroupsService extends MelisComGeneralService
     }
 
     /**
+     * @param $data
+     * @param null $id
+     * @return mixed
+     */
+    public function saveClientsGroup($data, $id = null)
+    {
+        //if status is not given, we set it to 1
+        if(!isset($data['cgroup_status']))
+            $data['cgroup_status'] = 1;
+
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_save_clients_group_start', $arrayParameters);
+
+        // Service implementation start
+        $group = $this->getServiceManager()->get('MelisEcomClientGroupsTable');
+        $results = $group->save($arrayParameters['data'], $arrayParameters['id']);
+        // Service implementation end
+
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_save_clients_group_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
+
+    /**
      * @return mixed
      */
     public function getClientGroupsTotalData()

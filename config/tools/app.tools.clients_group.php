@@ -90,8 +90,8 @@ return [
                                         'name' => 'cgroup_name',
                                         'type' => 'MelisText',
                                         'options' => [
-                                            'label' => 'tr_meliscommerce_clients_group_name_fld',
-                                            'tooltip' => 'tr_meliscommerce_clients_group_name_fld tooltip',
+                                            'label' => 'tr_meliscommerce_clients_group_cgroup_name_fld',
+                                            'tooltip' => 'tr_meliscommerce_clients_group_cgroup_name_fld tooltip',
                                         ],
                                         'attributes' => [
                                             'id' => 'cgroup_name',
@@ -101,7 +101,24 @@ return [
                                 ],
                             ],
                             'input_filter' => [
-
+                                'cgroup_name' => [
+                                    'name'     => 'cgroup_name',
+                                    'required' => true,
+                                    'validators' => [
+                                        [
+                                            'name' => 'NotEmpty',
+                                            'options' => [
+                                                'messages' => [
+                                                    \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_clients_group_required_field',
+                                                ],
+                                            ],
+                                        ],
+                                    ],
+                                    'filters'  => [
+                                        ['name' => 'StripTags'],
+                                        ['name' => 'StringTrim'],
+                                    ],
+                                ],
                             ],
                         ],
                     ],

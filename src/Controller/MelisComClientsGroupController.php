@@ -121,13 +121,7 @@ class MelisComClientsGroupController extends MelisAbstractActionController
 
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $data = array();
-
-        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
-        $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/tools/meliscommerce_clients_group/forms/meliscommerce_clients_group_form','meliscommerce_clients_group_form');
-        $factory = new \Laminas\Form\Factory();
-        $formElements = $this->getServiceManager()->get('FormElementManager');
-        $factory->setFormElementManager($formElements);
-        $form = $factory->createForm($appConfigForm);
+        $form = $this->getForm();
 
         $view = new ViewModel();
         $view->melisKey = $melisKey;
@@ -218,6 +212,69 @@ class MelisComClientsGroupController extends MelisAbstractActionController
             'recordsFiltered' => count($recordsFiltered),
             'data' => $tableData,
         ));
+    }
+
+    /**
+     * @return JsonModel
+     */
+    public function addClientsGroupAction()
+    {
+        $success = 0;
+        $message = 'tr_meliscommerce_clients_group_save_ko';
+        $textTitle = 'tr_meliscommerce_clients_group';
+        $errors = [];
+
+        $translator = $this->getServiceManager()->get('translator');
+        $postData = $this->getRequest()->getPost()->toArray();
+        $id = $postData['groupId'] ?? null;
+        //remove id in the post
+        if(isset($postData['groupId']))
+            unset($postData['groupId']);
+
+        // get group form
+        $groupForm = $this->getForm();
+        // set data to validated the posted data
+        $groupForm->setData($postData);
+        // is valid
+        if ($groupForm->isValid()) {
+            $groupSrv = $this->getServiceManager()->get('MelisComClientGroupsService');
+            $res = $groupSrv->saveClientsGroup($postData, $id);
+            if($res){
+                $success = 1;
+                $message = $translator->translate('tr_meliscommerce_clients_group_save_ok');
+            }
+        }else{
+            $errors = $groupForm->getMessages();
+            foreach ($errors as $keyError => $valueError){
+                $errors[$keyError]['label'] = $translator->translate("tr_meliscommerce_clients_group_".$keyError."_fld");
+            }
+        }
+
+        $results = [
+            'textTitle' => $translator->translate($textTitle),
+            'success' => $success,
+            'textMessage' => $translator->translate($message),
+            'errors' => $errors,
+            'typeCode' => !empty($id) ? 'UPDATE_CLIENTS_GROUP' : 'ADD_CLIENTS_GROUP',
+            'itemId' => $id
+        ];
+
+        return new JsonModel($results);
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getForm()
+    {
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
+        $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/tools/meliscommerce_clients_group/forms/meliscommerce_clients_group_form','meliscommerce_clients_group_form');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+        $form = $factory->createForm($appConfigForm);
+
+        return $form;
     }
 
     /**
