@@ -2,6 +2,41 @@
 $form = $this->form;
 $form->prepare();
 echo $this->form()->openTag($form);
-echo $this->melisFieldCollection($form);
+foreach ($form->getElements() As $key => $val)
+{
+    if($this->groupId == 1 && $key == 'cgroup_status')
+        echo '<div class="form-group hidden">';
+    else
+        echo '<div class="form-group">';
+
+    if ($val->getLabel())
+    {
+        if(!empty($val->getLabel())) {
+            $required = '';
+            if (!empty($val->getAttribute('required'))) {
+                $required = ' <sup>*</sup>';
+            }
+            echo $this->formLabel()->openTag($val);
+            echo $val->getLabel();
+            echo $required;
+            echo $this->formLabel()->closeTag();
+        }
+    }
+
+    if($key == 'cgroup_status'){
+        $status = (int) $val->getValue() ? 'checked="checked"' : ''?>
+        <div class="">
+            <input type="hidden" name="cgroup_status" value="0">
+            <div id="cgroup_status_switch" class="make-switch" data-on-label="<?= $this->translate('tr_meliscore_common_active');?>" data-off-label="<?php echo $this->translate('tr_meliscore_common_inactive')?>" data-text-label="<?php echo $this->translate('tr_meliscore_common_status')?>">
+                <input type="checkbox" name="cgroup_status" id="cgroup_status" <?= $status; ?> value="1">
+            </div>
+            <script type="text/javascript"> $("#cgroup_status_switch").bootstrapSwitch();</script>
+        </div>
+    <?php
+    }else {
+        echo $this->formElement($val, array('class' => 'form-control'));
+    }
+    echo '</div>';
+}
 echo $this->form()->closeTag();
 ?>

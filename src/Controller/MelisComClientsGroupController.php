@@ -132,6 +132,7 @@ class MelisComClientsGroupController extends MelisAbstractActionController
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->form = $form;
+        $view->groupId = $groupId;
         return $view;
     }
 
