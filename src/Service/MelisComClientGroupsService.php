@@ -65,6 +65,9 @@ class MelisComClientGroupsService extends MelisComGeneralService
         if(!isset($data['cgroup_status']))
             $data['cgroup_status'] = 1;
 
+        if(!isset($data['cgroup_date_creation']))
+            $data['cgroup_date_creation'] = date('Y-m-d H:i:s');
+
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         // Sending service start event
