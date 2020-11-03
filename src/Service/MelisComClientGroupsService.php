@@ -108,6 +108,30 @@ class MelisComClientGroupsService extends MelisComGeneralService
     }
 
     /**
+     * @param $id
+     * @return mixed
+     */
+    public function deleteClientsGroupById($id)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_delete_clients_group_by_id_start', $arrayParameters);
+
+        // Service implementation start
+        $group = $this->getServiceManager()->get('MelisEcomClientGroupsTable');
+        $results = $group->deleteById($arrayParameters['id']);
+        // Service implementation end
+
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_delete_clients_group_by_id_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
+
+    /**
      * @return mixed
      */
     public function getClientGroupsTotalData()

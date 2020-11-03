@@ -269,6 +269,38 @@ class MelisComClientsGroupController extends MelisAbstractActionController
     }
 
     /**
+     * @return JsonModel
+     */
+    public function deleteClientsGroupAction()
+    {
+        $success = 0;
+        $message = 'tr_meliscommerce_clients_group_delete_ko';
+        $textTitle = 'tr_meliscommerce_clients_group';
+        $errors = [];
+
+        $translator = $this->getServiceManager()->get('translator');
+        $postData = $this->getRequest()->getPost()->toArray();
+        $groupId = $postData['groupId'] ?? 0;
+
+        $groupSrv = $this->getServiceManager()->get('MelisComClientGroupsService');
+        $res = $groupSrv->deleteClientsGroupById($groupId);
+        if($res){
+            $success = 1;
+            $message = $translator->translate('tr_meliscommerce_clients_group_delete_ok');
+        }
+
+        $results = [
+            'textTitle' => $translator->translate($textTitle),
+            'success' => $success,
+            'textMessage' => $translator->translate($message),
+            'typeCode' => 'DELETE_CLIENTS_GROUP',
+            'itemId' => $groupId
+        ];
+
+        return new JsonModel($results);
+    }
+
+    /**
      * @return mixed
      */
     private function getForm()
