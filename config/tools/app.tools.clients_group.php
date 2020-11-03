@@ -87,6 +87,26 @@ return [
                             'elements' => [
                                 [
                                     'spec' => [
+                                        'name' => 'cgroup_status',
+                                        'type' => 'Checkbox',
+                                        'options' => [
+                                            'label' => '',
+                                            'tooltip' => '',
+                                            'switch_options' => [
+                                                'label-on' => 'tr_meliscore_common_active',
+                                                'label-off' => 'tr_meliscore_common_inactive',
+                                                'label' => 'tr_meliscore_common_status',
+                                                'icon' => "glyphicon glyphicon-resize-horizontal",
+                                            ],
+                                        ],
+                                        'attributes' => [
+                                            'id' => 'cgroup_status',
+                                            'value' => 1,
+                                        ],
+                                    ],
+                                ],
+                                [
+                                    'spec' => [
                                         'name' => 'cgroup_name',
                                         'type' => 'MelisText',
                                         'options' => [
