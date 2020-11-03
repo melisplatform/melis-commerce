@@ -248,7 +248,8 @@ class MelisComClientsGroupController extends MelisAbstractActionController
             $res = $groupSrv->saveClientsGroup($postData, $groupId);
             if($res){
                 $success = 1;
-                $message = $translator->translate('tr_meliscommerce_clients_group_save_ok');
+                $value = !empty($groupId) ? 'updated' : 'added';
+                $message = sprintf($translator->translate('tr_meliscommerce_clients_group_save_ok'), $value);
             }
         }else{
             $errors = $groupForm->getMessages();
@@ -265,6 +266,8 @@ class MelisComClientsGroupController extends MelisAbstractActionController
             'typeCode' => !empty($groupId) ? 'UPDATE_CLIENTS_GROUP' : 'ADD_CLIENTS_GROUP',
             'itemId' => $groupId
         ];
+
+        $this->saveLogs($results);
 
         return new JsonModel($results);
     }
@@ -298,6 +301,8 @@ class MelisComClientsGroupController extends MelisAbstractActionController
             'itemId' => $groupId
         ];
 
+        $this->saveLogs($results);
+
         return new JsonModel($results);
     }
 
@@ -325,5 +330,15 @@ class MelisComClientsGroupController extends MelisAbstractActionController
         $tool->setMelisToolKey('meliscommerce', 'meliscommerce_clients_group');
 
         return $tool;
+    }
+
+    /**
+     * save logs
+     *
+     * @param $response
+     */
+    private function saveLogs($response)
+    {
+        $this->getEventManager()->trigger('meliscommerce_clients_group_flash_messenger', $this, $response);
     }
 }
