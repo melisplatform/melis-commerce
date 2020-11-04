@@ -748,6 +748,10 @@ div.melis-pdc *.btn {
     color: #f9bb49;
 }
 
+div#clients_group_list select{
+    width: auto !important;
+}
+
 /** -------------------------------------
 *       A-STYLE
 *       a-style.css

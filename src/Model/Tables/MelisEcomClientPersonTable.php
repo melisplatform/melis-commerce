@@ -209,6 +209,8 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
     
         $start = (int) $options['start'];
         $limit = (int) $options['limit'] === -1 ? $this->getTotalData() : (int) $options['limit'];
+
+        $groupId = $options['groupId'];
     
         $columns = $options['columns'];
          
@@ -226,9 +228,14 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
             array('*'), $select::JOIN_LEFT);
         
         $select->join('melis_ecom_client_company', 'melis_ecom_client_company.ccomp_client_id = melis_ecom_client.cli_id', array('cli_company' => 'ccomp_name'), $select::JOIN_LEFT);
-        
+        $select->join('melis_ecom_client_groups', 'melis_ecom_client_groups.cgroup_id=melis_ecom_client.cli_group_id',
+            array('cgroup_name'),$select::JOIN_LEFT);
+
         $select->where('cper_is_main_person = 1');
-        
+
+        if(!is_null($groupId) && $groupId != "")
+            $select->where->equalTo('cli_group_id', $groupId);
+
         // this is used when searching
         if(!empty($where)) {
             $w = new Where();

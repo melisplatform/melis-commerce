@@ -576,6 +576,11 @@ $(function() {
                     $tabContent.find(".clientOrderListRefresh").trigger("click");
                 }
         });
+
+        //clienst group filter
+        $body.on("change", "#clientsGroupSelect", function(){
+            $("#clientListTbl").DataTable().ajax.reload();
+        });
 });
 
 window.clientHighlightErrors = function(success, errors, divContainer){
@@ -684,3 +689,10 @@ window.initClientContactAddressForm = function(){
         $addFormModal.find("#cadd_name").val( $("#"+tabId+"_contact_form").find("#cper_name").val() );
         $addFormModal.find("#cadd_middle_name").val( $("#"+tabId+"_contact_form").find("#cper_middle_name").val() );
 }
+
+window.initClientsFilters = function(d){
+    //clients group filter
+    if ( $("#clientsGroupSelect").length ) {
+        d.cgroup_id = $('#clientsGroupSelect').val();
+    }
+};
