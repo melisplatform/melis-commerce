@@ -23,6 +23,23 @@ return [
                         'elements' => [
                             [
                                 'spec' => [
+                                    'name' => 'cli_group_id',
+                                    'type' => 'EcomOrderClientsGroupSelect',
+                                    'options' => [
+                                        'label' => 'tr_meliscommerce_clients_group_common_group',
+                                        'empty_option' => 'tr_meliscommerce_clients_common_label_choose',
+                                        'disable_inarray_validator' => true,
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'cli_group_id',
+                                        'class' => 'form-control',
+                                        'required' => false,
+                                        'value' => 1,
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'cli_country_id',
                                     'type' => 'EcomCountriesNoAllCountriesSelect',
                                     'options' => [
@@ -32,11 +49,16 @@ return [
                                     ],
                                     'attributes' => [
                                         'id' => 'cli_country_id',
+                                        'class' => 'form-control',
                                     ]
                                 ]
                             ],
                         ],
                         'input_filter' => [
+                            'cli_group_id' => [
+                                'name'     => 'cli_group_id',
+                                'required' => false,
+                            ],
                             'cli_country_id' => [
                                 'name'     => 'cli_country_id',
                                 'required' => true,

@@ -261,6 +261,7 @@ return [
             'EcomAddressTypeSelect'                 => \MelisCommerce\Form\Factory\EcomAddressTypeSelectFactory::class,
             'EcomOrderStatusSelect'                 => \MelisCommerce\Form\Factory\EcomOrderStatusSelectFactory::class,
             'EcomOrderStatusAllSelect'              => \MelisCommerce\Form\Factory\EcomOrderStatusAllSelectFactory::class,
+            'EcomOrderClientsGroupSelect'           => \MelisCommerce\Form\Factory\EcomClientsGroupSelectFactory::class,
 
             'EcomAttributeTypeSelect'               => \MelisCommerce\Form\Factory\EcomAttributeTypeSelectFactory::class,
             'EcomCurrencySelect'                    => \MelisCommerce\Form\Factory\EcomCurrencySelectFactory::class,

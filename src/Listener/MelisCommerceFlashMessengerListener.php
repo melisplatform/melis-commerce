@@ -80,6 +80,7 @@ class MelisCommerceFlashMessengerListener extends MelisGeneralListener implement
             'meliscommerce_language_save_end',
             'meliscommerce_checkout_order_add',
             'meliscommerce_settings_save_end',
+            'meliscommerce_clients_group_flash_messenger',
         ];
 
         $priority = -1000;

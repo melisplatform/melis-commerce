@@ -894,6 +894,10 @@ class MelisComClientService extends MelisComGeneralService
 			{
 				$arrayParameters['client']['cli_date_edit'] = date('Y-m-d H:i:s');
 			}
+
+			if(empty($arrayParameters['client']['cli_group_id']))
+				$arrayParameters['client']['cli_group_id'] = 1; //set group to General
+				
 			$clntId = $melisEcomClientTable->save($arrayParameters['client'], $arrayParameters['clientId']);
 		}
 		catch (\Exception $e)

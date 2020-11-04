@@ -37,6 +37,8 @@ class MelisEcomClientTable extends MelisEcomGenericTable
             array(),$select::JOIN_LEFT);
         $select->join('melis_ecom_client_company', 'melis_ecom_client_company.ccomp_client_id=melis_ecom_client.cli_id',
             array(),$select::JOIN_LEFT);
+        $select->join('melis_ecom_client_groups', 'melis_ecom_client_groups.cgroup_id=melis_ecom_client.cli_group_id',
+            array('cgroup_name'),$select::JOIN_LEFT);
         
         if (!is_null($countryId)){
             $select->where('melis_ecom_client.cli_country_id ='.$countryId);
@@ -67,7 +69,8 @@ class MelisEcomClientTable extends MelisEcomGenericTable
             $select->where->NEST->like('cli_id', $search)
             ->or->like('melis_ecom_client_person.cper_name', $search)
             ->or->like('melis_ecom_client_person.cper_firstname', $search)
-            ->or->like('melis_ecom_client_company.ccomp_name', $search);
+            ->or->like('melis_ecom_client_company.ccomp_name', $search)
+            ->or->like('melis_ecom_client_groups.cgroup_name', $search);
         }
         
         if (!is_null($start) && is_numeric($start))
@@ -80,7 +83,7 @@ class MelisEcomClientTable extends MelisEcomGenericTable
         }
         
         $select->order(array('cli_id' => $order));
-        
+
         $resultData = $this->tableGateway->selectWith($select);
         return $resultData;
     }

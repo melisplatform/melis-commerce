@@ -20,7 +20,7 @@ return [
                         // table ID
                         'target' => '#clientListTbl',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComClientList/getClientList',
-                        'dataFunction' => '',
+                        'dataFunction' => 'initClientsFilters',
                         'ajaxCallback' => '',
                         'filters' => [
                             'left' => [
@@ -28,6 +28,11 @@ return [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComClientList',
                                     'action' => 'render-client-list-table-limit',
+                                ],
+                                'meliscommerce-clients-group-filter' => [
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComClientList',
+                                    'action' => 'render-client-list-table-group-filter',
                                 ],
                             ],
                             'center' => [
@@ -59,6 +64,11 @@ return [
                             'cli_status' => [
                                 'text' => 'tr_meliscommerce_clients_table_Client_status',
                                 'css' => ['width' => '5%', 'padding-right' => '0'],
+                                'sortable' => true,
+                            ],
+                            'cgroup_name' => [
+                                'text' => 'tr_meliscommerce_clients_group_common_group',
+                                'css' => ['width' => '10%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],
                             'cli_person' => [

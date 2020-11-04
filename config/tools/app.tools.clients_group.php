@@ -87,6 +87,20 @@ return [
                             'elements' => [
                                 [
                                     'spec' => [
+                                        'name' => 'cgroup_status',
+                                        'type' => 'Checkbox',
+                                        'options' => [
+                                            'label' => '',
+                                            'tooltip' => '',
+                                        ],
+                                        'attributes' => [
+                                            'id' => 'cgroup_status',
+                                            'value' => 1,
+                                        ],
+                                    ],
+                                ],
+                                [
+                                    'spec' => [
                                         'name' => 'cgroup_name',
                                         'type' => 'MelisText',
                                         'options' => [

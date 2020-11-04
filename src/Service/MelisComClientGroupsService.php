@@ -65,6 +65,9 @@ class MelisComClientGroupsService extends MelisComGeneralService
         if(!isset($data['cgroup_status']))
             $data['cgroup_status'] = 1;
 
+        if(!isset($data['cgroup_date_creation']))
+            $data['cgroup_date_creation'] = date('Y-m-d H:i:s');
+
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         // Sending service start event
@@ -79,6 +82,54 @@ class MelisComClientGroupsService extends MelisComGeneralService
         $arrayParameters['results'] = $results;
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_save_clients_group_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
+
+    /**
+     * @param $id
+     * @return mixed
+     */
+    public function getClientsGroupById($id)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_clients_group_by_id_start', $arrayParameters);
+
+        // Service implementation start
+        $group = $this->getServiceManager()->get('MelisEcomClientGroupsTable');
+        $results = $group->getEntryById($arrayParameters['id'])->current();
+        // Service implementation end
+
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_clients_group_by_id_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
+
+    /**
+     * @param $id
+     * @return mixed
+     */
+    public function deleteClientsGroupById($id)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_delete_clients_group_by_id_start', $arrayParameters);
+
+        // Service implementation start
+        $group = $this->getServiceManager()->get('MelisEcomClientGroupsTable');
+        $results = $group->deleteById($arrayParameters['id']);
+        // Service implementation end
+
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_delete_clients_group_by_id_end', $arrayParameters);
 
         return $arrayParameters['results'];
     }

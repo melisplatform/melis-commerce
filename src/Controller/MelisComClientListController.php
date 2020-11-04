@@ -203,6 +203,25 @@ class MelisComClientListController extends MelisAbstractActionController
         $view->melisKey = $melisKey;
         return $view;
     }
+
+    /**
+     * @return ViewModel
+     */
+    public function renderClientListTableGroupFilterAction()
+    {
+        $groupService = $this->getServiceManager()->get('MelisComClientGroupsService');
+        $groups = $groupService->getClientsGroupList(null,null,'ASC','cgroup_name',null,null, $status = 1);
+
+        $translator = $this->getServiceManager()->get('translator');
+        $options = '<option  value="">'.$translator->translate('Select').'</option>';
+        foreach($groups as $val){
+            $options .= '<option value="'.$val['cgroup_id'].'">'.$val['cgroup_name'].'</option>';
+        }
+
+        $view =  new ViewModel();
+        $view->options = $options;
+        return $view;
+    }
     
     /**
      * Render Client List view button for client info
@@ -295,6 +314,8 @@ class MelisComClientListController extends MelisAbstractActionController
             
             $search = $this->getRequest()->getPost('search');
             $search = $search['value'];
+
+            $groupId = $this->getRequest()->getPost('cgroup_id', null);
             
            $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
             $dataCount = $melisEcomClientPersonTable->getTotalData();
@@ -312,6 +333,7 @@ class MelisComClientListController extends MelisAbstractActionController
                 'limit' => $length,
                 'columns' => $melisTool->getSearchableColumns(),
                 'date_filter' => array(),
+                'groupId' => $groupId
             ));
             
 //             if(!empty($search)){
@@ -325,7 +347,7 @@ class MelisComClientListController extends MelisAbstractActionController
             $contactData = $getData->toArray();
              
             $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
-            
+
             foreach ($contactData As $val)
             {
                 $contactStatus = '<i class="fa fa-circle text-danger"></i>';
@@ -345,6 +367,7 @@ class MelisComClientListController extends MelisAbstractActionController
                 $rowdata = array(
                     'DT_RowId' => $val['cli_id'],
                     'cli_id' => $val['cli_id'],
+                    'cgroup_name' => $val['cgroup_name'],
                     'cli_status' => $contactStatus,
                     'cli_company' => $val['cli_company'],
                     'cli_date_creation' => $clientCreated,
