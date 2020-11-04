@@ -95,10 +95,12 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
 
         $clientKey = $ecomAuthSrv->getId();
         $clientId = null;
+        $clientGroupId = null;
         if ($ecomAuthSrv->hasIdentity())
         {
             $clientId = $ecomAuthSrv->getClientId();
             $clientKey = $ecomAuthSrv->getClientKey();
+            $clientGroupId = $ecomAuthSrv->getIdentity()->cli_group_id;
         }
         
         /**
@@ -253,12 +255,12 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                 }
                 
                 // Getting the Final Price of the variant
-                $varPrice = $melisComVariantService->getVariantFinalPrice($variantId, $countryId);
+                $varPrice = $melisComVariantService->getVariantFinalPrice($variantId, $countryId, $clientGroupId);
 
                 if (empty($varPrice))
                 {
                     // If the variant price not set on variant page this will try to get from the Product Price
-                    $varPrice = $melisComProductService->getProductFinalPrice($productId, $countryId);
+                    $varPrice = $melisComProductService->getProductFinalPrice($productId, $countryId, $clientGroupId);
                 }
 
                 // Compute variant total amount

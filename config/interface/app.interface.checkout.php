@@ -63,6 +63,45 @@ return [
                                 'action' => 'render-order-checkout-content',
                             ],
                             'interface' => [
+                                'meliscommerce_order_checkout_choose_contact_step' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_order_checkout_choose_contact_step',
+                                        'name' => 'tr_meliscommerce_order_checkout_Choose_contact',
+                                        'melisKey' => 'meliscommerce_order_checkout_choose_contact_step',
+                                        'icon' => 'glyphicons user'
+                                    ],
+                                    'forward' => [
+                                        'module' => 'MelisCommerce',
+                                        'controller' => 'MelisComOrderCheckout',
+                                        'action' => 'render-order-checkout-choose-contact',
+                                    ],
+                                    'interface' => [
+                                        'meliscommerce_order_checkout_choose_contact_step_header' => [
+                                            'conf' => [
+                                                'id' => 'id_meliscommerce_order_checkout_choose_contact_step_header',
+                                                'name' => 'tr_meliscommerce_order_checkout_Choose_contact',
+                                                'melisKey' => 'meliscommerce_order_checkout_choose_contact_step_header',
+                                            ],
+                                            'forward' => [
+                                                'module' => 'MelisCommerce',
+                                                'controller' => 'MelisComOrderCheckout',
+                                                'action' => 'render-order-checkout-choose-contact-header',
+                                            ],
+                                        ],
+                                        'meliscommerce_order_checkout_choose_contact_step_content' => [
+                                            'conf' => [
+                                                'id' => 'id_meliscommerce_order_checkout_choose_contact_step_content',
+                                                'name' => 'tr_meliscommerce_order_checkout_choose_contact_step_content',
+                                                'melisKey' => 'meliscommerce_order_checkout_choose_contact_step_content',
+                                            ],
+                                            'forward' => [
+                                                'module' => 'MelisCommerce',
+                                                'controller' => 'MelisComOrderCheckout',
+                                                'action' => 'render-order-checkout-choose-contact-content',
+                                            ],
+                                        ]
+                                    ]
+                                ],
                                 'meliscommerce_order_checkout_choose_product_step' => [
                                     'conf' => [
                                         'id' => 'id_meliscommerce_order_checkout_choose_product_step',
@@ -140,45 +179,6 @@ return [
                                                     ],
                                                 ]
                                             ]
-                                        ]
-                                    ]
-                                ],
-                                'meliscommerce_order_checkout_choose_contact_step' => [
-                                    'conf' => [
-                                        'id' => 'id_meliscommerce_order_checkout_choose_contact_step',
-                                        'name' => 'tr_meliscommerce_order_checkout_Choose_contact',
-                                        'melisKey' => 'meliscommerce_order_checkout_choose_contact_step',
-                                        'icon' => 'glyphicons user'
-                                    ],
-                                    'forward' => [
-                                        'module' => 'MelisCommerce',
-                                        'controller' => 'MelisComOrderCheckout',
-                                        'action' => 'render-order-checkout-choose-contact',
-                                    ],
-                                    'interface' => [
-                                        'meliscommerce_order_checkout_choose_contact_step_header' => [
-                                            'conf' => [
-                                                'id' => 'id_meliscommerce_order_checkout_choose_contact_step_header',
-                                                'name' => 'tr_meliscommerce_order_checkout_Choose_contact',
-                                                'melisKey' => 'meliscommerce_order_checkout_choose_contact_step_header',
-                                            ],
-                                            'forward' => [
-                                                'module' => 'MelisCommerce',
-                                                'controller' => 'MelisComOrderCheckout',
-                                                'action' => 'render-order-checkout-choose-contact-header',
-                                            ],
-                                        ],
-                                        'meliscommerce_order_checkout_choose_contact_step_content' => [
-                                            'conf' => [
-                                                'id' => 'id_meliscommerce_order_checkout_choose_contact_step_content',
-                                                'name' => 'tr_meliscommerce_order_checkout_choose_contact_step_content',
-                                                'melisKey' => 'meliscommerce_order_checkout_choose_contact_step_content',
-                                            ],
-                                            'forward' => [
-                                                'module' => 'MelisCommerce',
-                                                'controller' => 'MelisComOrderCheckout',
-                                                'action' => 'render-order-checkout-choose-contact-content',
-                                            ],
                                         ]
                                     ]
                                 ],

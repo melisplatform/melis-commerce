@@ -106,32 +106,30 @@ return [
                         'columns' => [
                             'cper_id' => [
                                 'text' => 'tr_meliscommerce_checkout_tbl_cper_id',
-                                'css' => ['width' => '5%'],
                                 'sortable' => true,
                             ],
                             'cper_status' => [
                                 'text' => 'tr_meliscommerce_checkout_tbl_cper_status',
-                                'css' => ['width' => '5%'],
                                 'sortable' => true,
                             ],
                             'cper_contact' => [
                                 'text' => 'tr_meliscommerce_checkout_tbl_cper_contact',
-                                'css' => ['width' => '25%'],
+                                'sortable' => true,
+                            ],
+                            'group_name' => [
+                                'text' => 'tr_meliscommerce_checkout_tbl_group',
                                 'sortable' => true,
                             ],
                             'cper_email' => [
                                 'text' => 'tr_meliscommerce_checkout_tbl_cper_email',
-                                'css' => ['width' => '25%'],
                                 'sortable' => true,
                             ],
                             'cper_num_orders' => [
                                 'text' => '<i class="fa fa fa-cart-plus fa-lg checkoutSelectContactOrderHeader"></i>',
-                                'css' => ['width' => '10%'],
                                 'sortable' => false,
                             ],
                             'cper_last_order' => [
                                 'text' => 'tr_meliscommerce_checkout_tbl_cper_last_order',
-                                'css' => ['width' => '15%'],
                                 'sortable' => true,
                             ],
                         ],

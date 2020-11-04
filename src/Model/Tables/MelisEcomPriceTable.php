@@ -29,7 +29,7 @@ class MelisEcomPriceTable extends MelisEcomGenericTable
         $this->idField = self::PRIMARY_KEY;
     }
 
-    public function getPricesByVariantId($variantId, $countryId = null)
+    public function getPricesByVariantId($variantId, $countryId = null, $groupId = 1)
     {
         $select = $this->getTableGateway()->getSql()->select();
         $clause = array();
@@ -37,7 +37,9 @@ class MelisEcomPriceTable extends MelisEcomGenericTable
         $select->join('melis_ecom_currency', 'melis_ecom_currency.cur_id = melis_ecom_price.price_currency',
             array('*'), $select::JOIN_LEFT);
 
-        $select->where->equalTo('melis_ecom_price.price_var_id', (int) $variantId);
+        $select->where->equalTo('melis_ecom_price.price_var_id', (int) $variantId)
+            ->and->equalTo('melis_ecom_price.price_group_id', $groupId);
+            
         if(!is_null($countryId)) {
             $select->where->and->equalTo('melis_ecom_price.price_country_id', (int) $countryId)->and->equalTo('melis_ecom_currency.cur_status', 1);
         }
@@ -47,7 +49,7 @@ class MelisEcomPriceTable extends MelisEcomGenericTable
         return $resultSet;
     }
     
-    public function getPricesByProductId($productId, $countryId = null)
+    public function getPricesByProductId($productId, $countryId = null, $groupId = 1)
     {
         $select = $this->getTableGateway()->getSql()->select();
 
@@ -56,7 +58,8 @@ class MelisEcomPriceTable extends MelisEcomGenericTable
         $select->join('melis_ecom_currency', 'melis_ecom_country.ctry_currency_id = melis_ecom_currency.cur_id',
             array('cur_code', 'cur_symbol'), $select::JOIN_LEFT);
 
-        $select->where->equalTo('melis_ecom_price.price_prd_id', (int) $productId);
+        $select->where->equalTo('melis_ecom_price.price_prd_id', (int) $productId)
+            ->and->equalTo('melis_ecom_price.price_group_id', $groupId);
 
         if(!is_null($countryId)) {
             if($countryId == '-1'){
@@ -71,16 +74,15 @@ class MelisEcomPriceTable extends MelisEcomGenericTable
         return $resultSet;
     }
     
-    public function getVariantFinalPrice($variantId, $countryId)
+    public function getVariantFinalPrice($variantId, $countryId, $groupId = 1)
     {
         $select = $this->getTableGateway()->getSql()->select();
         
-        if ($countryId == -1)
-        {   // General price with a default currency
+        if ($countryId == -1) {   
+            // General price with a default currency
             $join = new Expression('melis_ecom_currency.cur_id = melis_ecom_price.price_currency OR cur_default = 1');
         }
-        else
-        {
+        else {
             $join = new Expression('melis_ecom_currency.cur_id = melis_ecom_price.price_currency');
         }
         
@@ -88,22 +90,22 @@ class MelisEcomPriceTable extends MelisEcomGenericTable
         
         $select->where->equalTo('price_var_id', $variantId)
                 ->and->equalTo('price_country_id', $countryId)
+                ->and->equalTo('price_group_id', $groupId)
                 ->and->equalTo('melis_ecom_currency.cur_status', 1);
         
         $resultSet = $this->getTableGateway()->selectwith($select);
         return $resultSet;
     }
     
-    public function getProductFinalPrice($productId, $countryId)
+    public function getProductFinalPrice($productId, $countryId, $groupId = 1)
     {
         $select = $this->getTableGateway()->getSql()->select();
         
-        if ($countryId == -1)
-        {   // General price with a default currency
+        if ($countryId == -1) {   
+            // General price with a default currency
             $join = new Expression('melis_ecom_currency.cur_id = melis_ecom_price.price_currency OR cur_default = 1');
         }
-        else
-        {
+        else {
             $join = new Expression('melis_ecom_currency.cur_id = melis_ecom_price.price_currency');
         }
         
@@ -111,6 +113,7 @@ class MelisEcomPriceTable extends MelisEcomGenericTable
         
         $select->where->equalTo('price_prd_id', $productId)
                 ->and->equalTo('price_country_id', $countryId)
+                ->and->equalTo('price_group_id', $groupId)
                 ->and->equalTo('melis_ecom_currency.cur_status', 1);
         
         $resultSet = $this->getTableGateway()->selectwith($select);

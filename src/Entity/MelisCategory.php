@@ -20,66 +20,66 @@ class MelisCategory
 
 	public function getId()
 	{
-	    return $this->id;
+		return $this->id;
 	}
 	
 	public function setId($id)
 	{
-	    $this->id = $id;
+		$this->id = $id;
 	}
 	
 	public function getCategory()
 	{
-	    return $this->category;
+		return $this->category;
 	}
 	
 	public function setCategory($category)
 	{
-	    $this->category = $category;
+		$this->category = $category;
 	}
 	
 	public function getTranslations()
 	{
-	    return $this->translations;
+		return $this->translations;
 	}
 	
 	public function setTranslations($translations)
 	{
-	    $this->translations = $translations;
+		$this->translations = $translations;
 	}
 	
 	public function getSeo()
 	{
-	    return $this->seo;
+		return $this->seo;
 	}
 	
 	public function setSeo($seo)
 	{
-	    $this->seo = $seo;
+		$this->seo = $seo;
 	}
 	
 	public function getCountries()
 	{
-	    return $this->countries;
+		return $this->countries;
 	}
 	
 	public function setCountries($countries)
 	{
-	    $this->countries = $countries;
+		$this->countries = $countries;
 	}
 	
 	public function getChildren()
 	{
-	    return $this->children;
+		return $this->children;
 	}
 	
 	public function setChildren($children)
 	{
-	    $this->children = $children;
+		$this->children = $children;
 	}
 	
-    public function getArrayCopy()
-    {
-        return get_object_vars($this);
-    }
+	public function getArrayCopy()
+	{
+		return get_object_vars($this);
+	}
 }

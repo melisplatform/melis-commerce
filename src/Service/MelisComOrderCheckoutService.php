@@ -367,6 +367,11 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         {
             $container = new Container('meliscommerce');
             $clientCountryId = $container['checkout'][$this->siteId]['countryId'];
+
+            // Check Client Group
+            $melisComClientSrv = $this->getServiceManager()->get('MelisComClientService');
+            $client = $melisComClientSrv->getClientById($arrayParameters['clientId']);
+            $clientGroupId = $client->cli_group_id;
             
             foreach ($clientBasket As $val)
             {
@@ -379,7 +384,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                 if (!empty($variant))
                 {
                     // Variant Service that will return Variant final Price
-                    $variantPrice = $melisComVariantService->getVariantFinalPrice($variantId, $clientCountryId);
+                    $variantPrice = $melisComVariantService->getVariantFinalPrice($variantId, $clientCountryId, $clientGroupId);
     
                     /**
                      * If the Variant Final price not set, this will try to get price from the product
@@ -387,7 +392,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                      */
                     if (empty($variantPrice))
                     {
-                        $variantPrice = $melisComProductService->getProductFinalPrice($productId, $clientCountryId);
+                        $variantPrice = $melisComProductService->getProductFinalPrice($productId, $clientCountryId, $clientGroupId);
                     }
                     
                     // Check if Variant final price has result
@@ -734,12 +739,15 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                     break;
                 }
                 
-                $variantPrice = $melisComVariantService->getVariantFinalPrice($variant->var_id, $clientCountryId);
+                // Check Client Group
+                $melisComClientSrv = $this->getServiceManager()->get('MelisComClientService');
+                $client = $melisComClientSrv->getClientById($arrayParameters['clientId']);
+                $clientGroupId = $client->cli_group_id;
+
+                $variantPrice = $melisComVariantService->getVariantFinalPrice($variant->var_id, $clientCountryId, $clientGroupId);
                 
                 if (empty($variantPrice))
-                {
-                    $variantPrice = $melisComProductService->getProductFinalPrice($productId, $clientCountryId);
-                }
+                    $variantPrice = $melisComProductService->getProductFinalPrice($productId, $clientCountryId, $clientGroupId);
                 
                 $data = array(
                     'obas_id' => null,

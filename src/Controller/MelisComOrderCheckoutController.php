@@ -163,11 +163,12 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
             $countryId = $data['countryId'];
             $container = new Container('meliscommerce');
             // check if the clientKey is set no checkout session
-            if (!empty($container['checkout'][self::SITE_ID]['clientKey']))
+            if (!empty($container['checkout'][self::SITE_ID]['clientId']))
             {
                 // cleaning the Client basket after selecting country
                 $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
-                $melisComBasketService->emptyAnonymousBasket($container['checkout'][self::SITE_ID]['clientKey']);
+                $melisComBasketService->emptyPersistentBasket($container['checkout'][self::SITE_ID]['clientId']);
+                // $melisComBasketService->emptyAnonymousBasket($container['checkout'][self::SITE_ID]['clientKey']);
             }
             // Set Country id to checkout countryId
             // CountryId will be the base data for collecting details from the Products and variants
@@ -220,6 +221,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     {
 
         $container = new Container('meliscommerce');
+        $clientId = (!empty($container['checkout'][self::SITE_ID]['clientId'])) ? $container['checkout'][self::SITE_ID]['clientId'] : null;
         $clientKey = (!empty($container['checkout'][self::SITE_ID]['clientKey'])) ? $container['checkout'][self::SITE_ID]['clientKey'] : null;
 
         $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
@@ -228,18 +230,15 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
         $variantId = $this->params()->fromQuery('variantId');
         $variantQty = (int) $this->params()->fromQuery('variantQty');
 
-        if (!empty($variantId))
-        {
-            if ($action == 'add')
-            {
+        if (!empty($variantId)) {
+            if ($action == 'add') {
                 /**
                  * This method will add the variant to basket if the variant is not yet exist to the client basket
                  * If the Variant exist to the basket this will Add the quantity of the variant
                  */
                 $melisComBasketService->addVariantToBasket($variantId, $variantQty, null, $clientKey);
             }
-            elseif ($action == 'deduct')
-            {
+            elseif ($action == 'deduct') {
                 /**
                  * This method will deduct the quantity of the variant,
                  * and if the variant quantity is Zero this will remove the variant from clients basket
@@ -248,8 +247,8 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
             }
         }
 
-        // Getting the client basket list using Client key
-        $basketData = $melisComBasketService->getBasket(null, $clientKey);
+        // Getting the client basket list using Client ID and Client key
+        $basketData = $melisComBasketService->getBasket($clientId, $clientKey);
 
         // Getting Current Langauge ID
         $melisTool = $this->getServiceManager()->get('MelisCoreTool');
@@ -258,11 +257,17 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
         $container = new Container('meliscommerce');
         $countryId = $container['checkout'][self::SITE_ID]['countryId'];
 
+        // Check Client Group
+        $melisComClientSrv = $this->getServiceManager()->get('MelisComClientService');
+        $client = $melisComClientSrv->getClientById($clientId);
+        $clientGroupId = !empty($client) ? $client->cli_group_id : null;
+
         $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
         $melisComProductService = $this->getServiceManager()->get('MelisComProductService');
 
         $basket = array();
         $total = 0;
+
         if (!is_null($basketData)){
             foreach ($basketData As $val)
             {
@@ -273,12 +278,12 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                 $varSku = $variant->getVariant()->var_sku;
 
                 // Getting the Final Price of the variant
-                $varPrice = $melisComVariantService->getVariantFinalPrice($variantId, $countryId);
+                $varPrice = $melisComVariantService->getVariantFinalPrice($variantId, $countryId, $clientGroupId);
 
                 if (empty($varPrice))
                 {
                     // If the variant price not set on variant page this will try to get from the Product Price
-                    $varPrice = $melisComProductService->getProductFinalPrice($productId, $countryId);
+                    $varPrice = $melisComProductService->getProductFinalPrice($productId, $countryId, $clientGroupId);
                 }
 
                 // Compute variant total amount
@@ -415,6 +420,12 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
             // Getting the list of Activated Variant from Variant Service using the ProductId
             $variantData = $melisComVariantService->getVariantListByProductId($productId, $langId, $countryId, true);
 
+            // Check Client Group
+            $clientId = $container['checkout'][self::SITE_ID]['clientId'];
+            $melisComClientSrv = $this->getServiceManager()->get('MelisComClientService');
+            $client = $melisComClientSrv->getClientById($clientId);
+            $clientGroupId = !empty($client) ? $client->cli_group_id : null;
+
             foreach ($variantData As $val)
             {
                 $hasVariant = true;
@@ -423,12 +434,12 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                 $variant = $val->getVariant();
 
                 // Getting the Final Price of the variant
-                $varPrice = $melisComVariantService->getVariantFinalPrice($variantId, $countryId);
+                $varPrice = $melisComVariantService->getVariantFinalPrice($variantId, $countryId, $clientGroupId);
 
                 if (empty($varPrice))
                 {
                     // If the variant price not set on variant page this will try to get from the Product Price
-                    $varPrice = $melisComProductService->getProductFinalPrice($variant->var_prd_id, $countryId);
+                    $varPrice = $melisComProductService->getProductFinalPrice($variant->var_prd_id, $countryId, $clientGroupId);
                 }
 
                 // Getting the Final Stocks of the Variant
@@ -559,12 +570,13 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
         {
             $container = new Container('meliscommerce');
 
+            $clientId = (!empty($container['checkout'][self::SITE_ID]['clientId'])) ? $container['checkout'][self::SITE_ID]['clientId'] : null;
             $clientKey = (!empty($container['checkout'][self::SITE_ID]['clientKey'])) ? $container['checkout'][self::SITE_ID]['clientKey'] : null;
 
             $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
 
             // Getting the Client Basket
-            $basketData = $melisComBasketService->getBasket(null, $clientKey);
+            $basketData = $melisComBasketService->getBasket($clientId, $clientKey);
 
             // Checking if the Client basket is not empty, else this will return error message
             if (!is_null($basketData))
@@ -801,6 +813,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
             $contactData = $getData->toArray();
 
             $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
+            $melisComClientSrv = $this->getServiceManager()->get('MelisComClientService');
 
             foreach ($contactData As $val)
             {
@@ -821,12 +834,18 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                 $contactOrder = $contactOrderData->toArray();
                 $contactNumOrders = count($contactOrder);
                 $lastOrder = !empty($val['cper_last_order'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cper_last_order'])), 0, 10) : '';
+                $groupName = null;
+                $clientGroup = $melisComClientSrv->getClientGroup($val['cper_client_id']);
+
+                if (!empty($clientGroup))
+                    $groupName = $clientGroup->cgroup_name;
 
                 $rowdata = array(
                     'DT_RowId' => $val['cper_id'],
                     'cper_id' => $val['cper_id'],
                     'cper_status' => $contactStatus,
                     'cper_contact' => $contactName,
+                    'group_name' => $groupName,
                     'cper_email' => $this->getTool()->sanitize($val['cper_email']),
                     'cper_num_orders' => $contactNumOrders,
                     'cper_last_order' => $lastOrder,
@@ -2122,19 +2141,15 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
         return $view;
     }
 
-    public function testAction(){
-        $container = new Container('meliscommerce');
-//         var_dump($container['checkout'][self::SITE_ID]['sameAddress']);
-        echo '<pre>';
-        print_r($container['checkout']);
-        echo '</pre>';
-        die();
-    }
-
     private function getTool()
     {
         $tool = $this->getServiceManager()->get('MelisCoreTool');
         return $tool;
     }
 
+    public function testAction()
+    {
+        $container = new Container('meliscommerce');
+        dd($container['checkout']);
+    }
 }

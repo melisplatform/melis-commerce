@@ -1,31 +1,31 @@
 <?php 
-    $id = 'id="'.$this->productId.'_'.$this->zoneconfig['conf']['id'] .'"';
-    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+	$id = 'id="'.$this->productId.'_'.$this->zoneconfig['conf']['id'] .'"';
+	$data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
 ?>
 <div class="checkout-product-variant-list" <?php echo $id.' '.$data_melisKey; ?>>
-    <?php foreach ($this->variants As $val):?>
-        <div class="order-variant">
-            <div class="float-left">
-                <span class="dtr-title"><strong><?php echo $val['label']?>: </strong><?php echo $val['var_sku']?></span>
-            </div>
-            <div class="float-right">
-                <?php if ($val['available']):?>
-                	<span class="btn btn-default cell-val-table"><?php echo $val['var_price']?></span>
-                	<button class="btn btn-success orderCheckoutVariantAddBasket" data-variantid="<?php echo $val['var_id']?>" title="<?php echo $this->translate('tr_meliscommerce_general_common_add')?>"><i class="fa fa-plus"></i></button>
-            	<?php else:?>
-            		<div class="variant-not-available">
-            			<p><?php echo $this->translate('tr_meliscommerce_order_checkout_product_not_available')?></p>
-            		</div>
-            	<?php endif;?>
-            </div>  
-        </div>
-    <?php endforeach;?>
+	<?php foreach ($this->variants As $val):?>
+		<div class="order-variant">
+			<div class="float-left">
+				<span class="dtr-title"><strong><?php echo $val['label']?>: </strong><?php echo $val['var_sku']?></span>
+			</div>
+			<div class="float-right">
+				<?php if ($val['available']):?>
+					<span class="btn btn-default cell-val-table"><?php echo $val['var_price']?></span>
+					<button class="btn btn-success orderCheckoutVariantAddBasket" data-variantid="<?php echo $val['var_id']?>" title="<?php echo $this->translate('tr_meliscommerce_general_common_add')?>"><i class="fa fa-plus"></i></button>
+				<?php else:?>
+					<div class="variant-not-available">
+						<p><?php echo $this->translate('tr_meliscommerce_order_checkout_product_not_available')?></p>
+					</div>
+				<?php endif;?>
+			</div>  
+		</div>
+	<?php endforeach;?>
 	<?php if ($this->hasVariant):?>
 		<?php if (empty($this->variants)):?>
 			<div class="me-file-cont">
-    			<p><?php echo $this->translate('tr_meliscommerce_order_checkout_product_country_no_variant')?></p>
-    		</div>
-    	<?php endif;?>
+				<p><?php echo $this->translate('tr_meliscommerce_order_checkout_product_country_no_variant')?></p>
+			</div>
+		<?php endif;?>
 	<?php else:?>
 		<div class="me-file-cont">
 			<p><?php echo $this->translate('tr_meliscommerce_order_checkout_product_no_variant')?></p>

@@ -422,7 +422,7 @@ class MelisComVariantService extends MelisComGeneralService
 		*
 		* @return MelisEcomPrice[] Price object
 		*/
-	public function getVariantPricesById($variantId, $countryId = null)
+	public function getVariantPricesById($variantId, $countryId = null, $groupId = 1)
 	{
 		// Retrieve cache version if front mode to avoid multiple calls
 		$cacheKey = 'variant-' . $variantId . '-getVariantPricesById_' . $variantId . '_' . $countryId;
@@ -448,7 +448,7 @@ class MelisComVariantService extends MelisComGeneralService
 		$priceTable = $this->getServiceManager()->get('MelisEcomPriceTable');
 		if($arrayParameters['variantId'])
 		{
-			$datas = $priceTable->getPricesByVariantId($arrayParameters['variantId'], $arrayParameters['countryId']);
+			$datas = $priceTable->getPricesByVariantId($arrayParameters['variantId'], $arrayParameters['countryId'], $arrayParameters['groupId']);
 		}        
 		
 		if($datas)
@@ -478,14 +478,12 @@ class MelisComVariantService extends MelisComGeneralService
 		* @param int $countryId
 		* @return MelisEcomPrice|null
 		*/
-	public function getVariantFinalPrice($variantId, $countryId)
+	public function getVariantFinalPrice($variantId, $countryId, $groupId = 1)
 	{
 		// Retrieve cache version if front mode to avoid multiple calls
-		$cacheKey = 'variant-' . $variantId . '-getVariantFinalPrice_' . $variantId . '_' . $countryId;
+		$cacheKey = 'variant-' . $variantId . '-getVariantFinalPrice-' . implode('-', [$variantId, $countryId, $groupId]);
 		$cacheConfig = 'commerce_big_services';
 		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-//        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-//        if (!empty($results)) return $results;
 		$cache = $this->getServiceManager()->get($cacheConfig);
 		if ($cache->hasItem($cacheKey)){
 			return $cache->getItem($cacheKey);
@@ -499,7 +497,7 @@ class MelisComVariantService extends MelisComGeneralService
 		
 		// Service implementation start
 		$priceTable = $this->getServiceManager()->get('MelisEcomPriceTable');
-		$variantPrice = $priceTable->getVariantFinalPrice($arrayParameters['variantId'], $arrayParameters['countryId'])->current();
+		$variantPrice = $priceTable->getVariantFinalPrice($arrayParameters['variantId'], $arrayParameters['countryId'], $arrayParameters['groupId'])->current();
 		
 		if(!empty($variantPrice))
 		{
@@ -517,7 +515,7 @@ class MelisComVariantService extends MelisComGeneralService
 		if (empty($arrayParameters['countryId']) && empty($variantPrice))
 		{
 			// Retreiving the General price of the Variant
-			$results = $this->getVariantFinalPrice($arrayParameters['variantId'], -1);
+			$results = $this->getVariantFinalPrice($arrayParameters['variantId'], -1, 1);
 		}
 		// Service implementation end
 		
@@ -553,7 +551,6 @@ class MelisComVariantService extends MelisComGeneralService
 		foreach($assocVariants as $assocVariant){
 			$results[] = $this->getVariantById($assocVariant->var_id);
 		}
-	
 		// Service implementation end
 		
 		// Adding results to parameters for events treatment if needed

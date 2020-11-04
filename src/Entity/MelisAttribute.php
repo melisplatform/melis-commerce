@@ -17,36 +17,36 @@ class MelisAttribute
 
 	public function getId()
 	{
-	    return $this->id;
+		return $this->id;
 	}
 	
 	public function setId($id)
 	{
-	    $this->id = $id;
+		$this->id = $id;
 	}
 	
 	public function getAttribute()
 	{
-	    return $this->attribute;
+		return $this->attribute;
 	}
 	
 	public function setAttribute($attribute)
 	{
-	    $this->attribute = $attribute;
+		$this->attribute = $attribute;
 	}
 	
 	public function getAttributeValues()
 	{
-	    return $this->attributeValues;
+		return $this->attributeValues;
 	}
 	
 	public function setAttributeValues($attributeValues)
 	{
-	    $this->attributeValues = $attributeValues;
+		$this->attributeValues = $attributeValues;
 	}
 	
-    public function getArrayCopy()
-    {
-        return get_object_vars($this);
-    }
+	public function getArrayCopy()
+	{
+		return get_object_vars($this);
+	}
 }

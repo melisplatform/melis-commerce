@@ -16,26 +16,26 @@ class MelisCoupon
 
 	public function getId()
 	{
-	    return $this->id;
+		return $this->id;
 	}
 	
 	public function setId($id)
 	{
-	    $this->id = $id;
+		$this->id = $id;
 	}
 	
 	public function getCoupon()
 	{
-	    return $this->coupon;
+		return $this->coupon;
 	}
 	
 	public function setCoupon($coupon)
 	{
-	    $this->coupon = $coupon;
+		$this->coupon = $coupon;
 	}
 	
-    public function getArrayCopy()
-    {
-        return get_object_vars($this);
-    }
+	public function getArrayCopy()
+	{
+		return get_object_vars($this);
+	}
 }

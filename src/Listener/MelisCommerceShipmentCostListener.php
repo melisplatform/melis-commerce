@@ -27,7 +27,8 @@ class MelisCommerceShipmentCostListener extends MelisGeneralListener implements 
                 $params = $e->getParams();
                 
                 $melisComShipmentCostService = $sm->get('MelisComShipmentCostService');
-                $params['results'] = $melisComShipmentCostService->computeShipmentCost(get_object_vars($params)['results']);
+
+                $params['results'] = $melisComShipmentCostService->computeShipmentCost($params['results']);
             },
         100
         );

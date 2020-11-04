@@ -19,56 +19,56 @@ class MelisClient
 
 	public function getId()
 	{
-	    return $this->id;
+		return $this->id;
 	}
 	
 	public function setId($id)
 	{
-	    $this->id = $id;
+		$this->id = $id;
 	}
 	
 	public function getClient()
 	{
-	    return $this->client;
+		return $this->client;
 	}
 	
 	public function setClient($client)
 	{
-	    $this->client = $client;
+		$this->client = $client;
 	}
 	
 	public function getPersons()
 	{
-	    return $this->persons;
+		return $this->persons;
 	}
 	
 	public function setPersons($persons)
 	{
-	    $this->persons = $persons;
+		$this->persons = $persons;
 	}
 	
 	public function getAddresses()
 	{
-	    return $this->addresses;
+		return $this->addresses;
 	}
 	
 	public function setAddresses($addresses)
 	{
-	    $this->addresses = $addresses;
+		$this->addresses = $addresses;
 	}
 	
 	public function getCompany()
 	{
-	    return $this->company;
+		return $this->company;
 	}
 	
 	public function setCompany($company)
 	{
-	    $this->company = $company;
+		$this->company = $company;
 	}
 	
-    public function getArrayCopy()
-    {
-        return get_object_vars($this);
-    }
+	public function getArrayCopy()
+	{
+		return get_object_vars($this);
+	}
 }

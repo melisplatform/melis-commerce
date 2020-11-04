@@ -24,106 +24,106 @@ class MelisOrder
 
 	public function getId()
 	{
-	    return $this->id;
+		return $this->id;
 	}
 	
 	public function setId($id)
 	{
-	    $this->id = $id;
+		$this->id = $id;
 	}
 	
 	public function getClient()
 	{
-	    return $this->client;
+		return $this->client;
 	}
 	
 	public function setClient($client)
 	{
-	    $this->client = $client;
+		$this->client = $client;
 	}
 	
 	public function getPerson()
 	{
-	    return $this->person;
+		return $this->person;
 	}
 	
 	public function setPerson($person)
 	{
-	    $this->person = $person;
+		$this->person = $person;
 	}
 	
 	public function getOrder()
 	{
-	    return $this->order;
+		return $this->order;
 	}
 	
 	public function setOrder($order)
 	{
-	    $this->order = $order;
+		$this->order = $order;
 	}
 	
 	public function getAddresses()
 	{
-	    return $this->addresses;
+		return $this->addresses;
 	}
 	
 	public function setAddresses($addresses)
 	{
-	    $this->addresses = $addresses;
+		$this->addresses = $addresses;
 	}
 	
 	public function getBasket()
 	{
-	    return $this->basket;
+		return $this->basket;
 	}
 	
 	public function setBasket($basket)
 	{
-	    $this->basket = $basket;
+		$this->basket = $basket;
 	}
 	
 	public function getPayment()
 	{
-	    return $this->payment;
+		return $this->payment;
 	}
 	
 	public function setPayment($payment)
 	{
-	    $this->payment = $payment;
+		$this->payment = $payment;
 	}
 	
 	public function getShipping()
 	{
-	    return $this->shipping;
+		return $this->shipping;
 	}
 	
 	public function setShipping($shipping)
 	{
-	    $this->shipping = $shipping;
+		$this->shipping = $shipping;
 	}
 	
 	public function getMessages()
 	{
-	    return $this->messages;
+		return $this->messages;
 	}
 	
 	public function setMessages($messages)
 	{
-	    $this->messages = $messages;
+		$this->messages = $messages;
 	}
 
 	public function getDocuments()
 	{
-	    return $this->documents;
+		return $this->documents;
 	}
 	
 	public function setDocuments($documents)
 	{
-	    $this->documents = $documents;
+		$this->documents = $documents;
 	}
 	
-    public function getArrayCopy()
-    {
-        return get_object_vars($this);
-    }
+	public function getArrayCopy()
+	{
+		return get_object_vars($this);
+	}
 }

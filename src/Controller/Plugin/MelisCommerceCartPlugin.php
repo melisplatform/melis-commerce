@@ -92,10 +92,12 @@ class MelisCommerceCartPlugin extends MelisTemplatingPlugin
         
         $clientKey = $ecomAuthSrv->getId();
         $clientId = null;
+        $clientGroupId = null;
         if ($ecomAuthSrv->hasIdentity())
         {
             $clientId = $ecomAuthSrv->getClientId();
             $clientKey = $ecomAuthSrv->getClientKey();
+            $clientGroupId = $ecomAuthSrv->getIdentity()->cli_group_id;
         }
         
         //remove item from cart/basket
@@ -135,14 +137,11 @@ class MelisCommerceCartPlugin extends MelisTemplatingPlugin
                  * Getting the final price of the Variant
                  * or this will try to get the Price from the Product
                  */
-                $variantPrice = $variantSvc->getVariantFinalPrice($var->getId(), $countryId);
+                $variantPrice = $variantSvc->getVariantFinalPrice($var->getId(), $countryId, $clientGroupId);
                 if (empty($variantPrice))
-                {
-                    $variantPrice = $prodSvc->getProductFinalPrice($var->getVariant()->var_prd_id, $countryId);
-                }
+                    $variantPrice = $prodSvc->getProductFinalPrice($var->getVariant()->var_prd_id, $countryId, $clientGroupId);
                 
-                if (!empty($variantPrice))
-                {
+                if (!empty($variantPrice)) {
                     $variant['price'] = $variantPrice->price_net;
                     $variant['cur_symbol'] = $variantPrice->cur_symbol;
                     
@@ -151,8 +150,7 @@ class MelisCommerceCartPlugin extends MelisTemplatingPlugin
                     $total = $total + $itemTotal;
                     array_push($basket, $variant);
                 }
-                else 
-                {
+                else {
                     // Removing the Variant from the Cart if the doesn't have price
                     $basketSrv->removeVariantFromBasket($var->getId(), 0, $clientId, $clientKey);
                 }

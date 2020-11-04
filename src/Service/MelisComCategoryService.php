@@ -264,8 +264,6 @@ class MelisComCategoryService extends MelisComGeneralService
      * @param int $categoryId Category Id to look for
      * @param int $langId If specified, translations of products will be limited to that lang
      * @param boolean $onlyValid if true, returns only active products
-     *
-     * @return MelisProduct|null Product object
      */
     public function getCategoryProductsById($categoryId, $langId = null, $onlyValid = false)
     {
@@ -288,8 +286,6 @@ class MelisComCategoryService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_products_byid_start', $arrayParameters);
         
         // Service implementation start
-        $melisProduct = new \MelisCommerce\Entity\MelisProduct();
-        
         $melisComProductService = $this->getServiceManager()->get('MelisComProductService');
         $melisEcomProductCategoryTable = $this->getServiceManager()->get('MelisEcomProductCategoryTable');
         

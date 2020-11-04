@@ -29,7 +29,7 @@ class MelisCommercePostPaymentListener extends MelisGeneralListener implements L
                 $postedValues = $sm->get('request')->getPost()->toArray();
                 
                 $melisComPostPaymentService = $sm->get('MelisComPostPaymentService');
-                $params['results'] = $melisComPostPaymentService->processPostPayment(get_object_vars($params)['results'], $postedValues);
+                $params['results'] = $melisComPostPaymentService->processPostPayment($params['results'], $postedValues);
             },
         100
         );

@@ -416,10 +416,10 @@ class MelisComProductService extends MelisComGeneralService
 	 * @param tin $countryId
 	 * @return MelisEcomPrice|null
 	 */
-	public function getProductFinalPrice($productId, $countryId)
+	public function getProductFinalPrice($productId, $countryId, $groupId = 1)
 	{
 		// Retrieve cache version if front mode to avoid multiple calls
-		$cacheKey = 'product-' . $productId . '-getProductFinalPrice_' . $productId . '_' . $countryId;
+		$cacheKey = 'product-' . $productId . '-getProductFinalPrice-' . implode('-', [$productId, $countryId, $groupId]);
 		$cacheConfig = 'commerce_big_services';
 		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
@@ -433,25 +433,21 @@ class MelisComProductService extends MelisComGeneralService
 	
 		// Service implementation start
 		$priceTable = $this->getServiceManager()->get('MelisEcomPriceTable');
-		$productPrice = $priceTable->getProductFinalPrice($arrayParameters['productId'], $arrayParameters['countryId'])->current();
+		$productPrice = $priceTable->getProductFinalPrice($arrayParameters['productId'], $arrayParameters['countryId'], $arrayParameters['groupId'])->current();
 
-		if(!empty($productPrice))
-		{
+		if(!empty($productPrice)) {
 			// Just to be sure that data on Price is in Numeric data type
 			if (is_numeric($productPrice->price_net))
-			{
 				$results = $productPrice;
-			}
 		}
 
 		/**
 		 * If the Product Country price has no data
 		 * this will try to get the General price of the Product
 		 */
-		if (empty($arrayParameters['countryId']) && empty($productPrice))
-		{
+		if (empty($arrayParameters['countryId']) && empty($productPrice)) {
 			// Retreiving the General price of the Product
-			$results = $this->getProductFinalPrice($arrayParameters['productId'], -1);
+			$results = $this->getProductFinalPrice($arrayParameters['productId'], -1, 1);
 		}
 		// Service implementation end
 		
