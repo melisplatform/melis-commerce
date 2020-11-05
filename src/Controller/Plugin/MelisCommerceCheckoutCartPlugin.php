@@ -100,7 +100,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
         {
             $clientId = $ecomAuthSrv->getClientId();
             $clientKey = $ecomAuthSrv->getClientKey();
-            $clientGroupId = $ecomAuthSrv->getIdentity()->cli_group_id;
+            $clientGroupId = $ecomAuthSrv->getClientGroup();
         }
         
         /**
