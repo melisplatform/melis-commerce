@@ -659,6 +659,19 @@ div.melis-pdc *.btn {
         padding: 6px 10px;
     }
 }
+
+[data-toggle=collapse-widget] .collapse:not(.list){
+    padding: 25px;
+}
+
+.variant-prices-forms .widget .widget-head{
+    background: #e61c23;
+}
+
+.variant-prices-forms .widget .widget-head h4{
+    color: #ffffff;
+}
+
 /* @media (min-width: 320px) and (max-width: 715px) {
     .dtActionCls .btn {
         padding: 6px 10px;

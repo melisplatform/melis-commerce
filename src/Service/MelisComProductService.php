@@ -323,7 +323,7 @@ class MelisComProductService extends MelisComGeneralService
 	 *
 	 * @return MelisEcomPrice[] Price object
 	 */
-	public function getProductPricesById($productId, $countryId = null)
+	public function getProductPricesById($productId, $countryId = null, $groupId = 1)
 	{
 		// Retrieve cache version if front mode to avoid multiple calls
 		$cacheKey = 'product-' . $productId . '-getProductPricesById_' . $productId . '_' . $countryId;
@@ -346,7 +346,7 @@ class MelisComProductService extends MelisComGeneralService
 		
 		// Service implementation start
 		$priceTable = $this->getServiceManager()->get('MelisEcomPriceTable');
-		foreach($priceTable->getPricesByProductId($arrayParameters['productId'], $arrayParameters['countryId']) as $data) {
+		foreach($priceTable->getPricesByProductId($arrayParameters['productId'], $arrayParameters['countryId'], $arrayParameters['groupId']) as $data) {
 			$results[] = $data;
 		}
 		// Service implementation end

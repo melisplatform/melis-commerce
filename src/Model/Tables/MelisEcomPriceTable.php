@@ -37,9 +37,11 @@ class MelisEcomPriceTable extends MelisEcomGenericTable
         $select->join('melis_ecom_currency', 'melis_ecom_currency.cur_id = melis_ecom_price.price_currency',
             array('*'), $select::JOIN_LEFT);
 
-        $select->where->equalTo('melis_ecom_price.price_var_id', (int) $variantId)
-            ->and->equalTo('melis_ecom_price.price_group_id', $groupId);
-            
+        $select->where->equalTo('melis_ecom_price.price_var_id', (int)$variantId);
+
+        if($groupId >= 1)
+            $select->where->equalTo('melis_ecom_price.price_group_id', $groupId);
+
         if(!is_null($countryId)) {
             $select->where->and->equalTo('melis_ecom_price.price_country_id', (int) $countryId)->and->equalTo('melis_ecom_currency.cur_status', 1);
         }
@@ -58,8 +60,10 @@ class MelisEcomPriceTable extends MelisEcomGenericTable
         $select->join('melis_ecom_currency', 'melis_ecom_country.ctry_currency_id = melis_ecom_currency.cur_id',
             array('cur_code', 'cur_symbol'), $select::JOIN_LEFT);
 
-        $select->where->equalTo('melis_ecom_price.price_prd_id', (int) $productId)
-            ->and->equalTo('melis_ecom_price.price_group_id', $groupId);
+        $select->where->equalTo('melis_ecom_price.price_prd_id', (int) $productId);
+
+        if($groupId >= 1)
+            $select->where->equalTo('melis_ecom_price.price_group_id', $groupId);
 
         if(!is_null($countryId)) {
             if($countryId == '-1'){
