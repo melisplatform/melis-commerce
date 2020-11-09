@@ -10,14 +10,14 @@
 <div <?= $id. ' '. $data_melisKey?> class="tab-content variant-prices-forms">
 	<?php
 	foreach($this->data as $key => $groups){?>
-    <div id="<?= $groups['tab_id']?>" class="tab-pane">
+    <div id="<?= $groups['tab_id']?>" class="tab-pane prices-accordion">
     <?php
 	    foreach($groups['data'] as $groupId => $group){
 	        $status = $groupId == 1 ? 'false' : 'true';
 	        $show = $groupId == 1 ? 'show' : '';
 	        ?>
             <div class="widget" data-toggle="collapse-widget" data-collapse-closed="<?= $status; ?>">
-                <div class="widget-head">
+                <div class="widget-head melis-primary-bg">
                     <h4 class="heading"><?= $this->translate('Group').': '.$group['group_name']; ?></h4>
                 </div>
                 <div class="widget-body <?= $show;?>">

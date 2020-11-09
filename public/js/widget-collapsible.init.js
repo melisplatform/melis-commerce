@@ -27,6 +27,13 @@ function widgetCollapsibleInit() {
 			
 			// bind the toggle button
 			$(this).find('.collapse-toggle').on('click', function(){
+				//close all accordion before toggling the selected one
+				var accordionCont = $(".prices-accordion.active");
+				$.each(accordionCont, function(){
+					var widget = $(this).find(".widget[data-collapse-closed=false]");
+					widget.find('.widget-body').collapse('toggle');
+				});
+				//toogle the selected accordion
 				$(this).parents('.widget:first').find('.widget-body').collapse('toggle');
 			});
 		});
