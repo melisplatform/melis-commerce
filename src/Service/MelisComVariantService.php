@@ -494,29 +494,33 @@ class MelisComVariantService extends MelisComGeneralService
 		$results = array();
 		// Sending service start event
 		$arrayParameters = $this->sendEvent('meliscommerce_service_variant_final_prices_start', $arrayParameters);
-		
+
 		// Service implementation start
 		$priceTable = $this->getServiceManager()->get('MelisEcomPriceTable');
 		$variantPrice = $priceTable->getVariantFinalPrice($arrayParameters['variantId'], $arrayParameters['countryId'], $arrayParameters['groupId'])->current();
-		
-		if(!empty($variantPrice))
-		{
-			// Just to be sure that data on Price is in Numeric data type
-			if (is_numeric($variantPrice->price_net))
-			{
-				$results = $variantPrice;
-			}
-		}
-		
-		/**
-		 * If the Variant Country price has no data
-		 * this will try to get the General price of the Variant
-		 */
-		if (empty($arrayParameters['countryId']) && empty($variantPrice))
-		{
-			// Retreiving the General price of the Variant
-			$results = $this->getVariantFinalPrice($arrayParameters['variantId'], -1, 1);
-		}
+
+        /**
+         * Look for prices in the generals
+         */
+        //look for group general price in the country
+		if(empty($variantPrice))
+            $variantPrice = $priceTable->getVariantFinalPrice($arrayParameters['variantId'], $arrayParameters['countryId'])->current();
+		//look for price inside general and in given group
+		if(empty($variantPrice))
+            $variantPrice = $priceTable->getVariantFinalPrice($arrayParameters['variantId'], -1, $arrayParameters['groupId'])->current();
+        //look price inside general and group general
+		if(empty($variantPrice))
+            $variantPrice = $priceTable->getVariantFinalPrice($arrayParameters['variantId'], -1)->current();
+
+        if(!empty($variantPrice))
+        {
+            // Just to be sure that data on Price is in Numeric data type
+            if (is_numeric($variantPrice->price_net))
+            {
+                $results = $variantPrice;
+            }
+        }
+
 		// Service implementation end
 		
 		// Adding results to parameters for events treatment if needed

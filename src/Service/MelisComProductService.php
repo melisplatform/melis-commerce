@@ -435,20 +435,25 @@ class MelisComProductService extends MelisComGeneralService
 		$priceTable = $this->getServiceManager()->get('MelisEcomPriceTable');
 		$productPrice = $priceTable->getProductFinalPrice($arrayParameters['productId'], $arrayParameters['countryId'], $arrayParameters['groupId'])->current();
 
+        /**
+         * Look for prices in the generals
+         */
+        //look for group general price in the country
+        if(empty($productPrice))
+            $productPrice = $priceTable->getProductFinalPrice($arrayParameters['productId'], $arrayParameters['countryId'])->current();
+        //look for price inside general and in given group
+        if(empty($productPrice))
+            $productPrice = $priceTable->getProductFinalPrice($arrayParameters['productId'], -1, $arrayParameters['groupId'])->current();
+        //look price inside general and group general
+        if(empty($productPrice))
+            $productPrice = $priceTable->getProductFinalPrice($arrayParameters['productId'], -1)->current();
+
 		if(!empty($productPrice)) {
 			// Just to be sure that data on Price is in Numeric data type
 			if (is_numeric($productPrice->price_net))
 				$results = $productPrice;
 		}
 
-		/**
-		 * If the Product Country price has no data
-		 * this will try to get the General price of the Product
-		 */
-		if (empty($arrayParameters['countryId']) && empty($productPrice)) {
-			// Retreiving the General price of the Product
-			$results = $this->getProductFinalPrice($arrayParameters['productId'], -1, 1);
-		}
 		// Service implementation end
 		
 		// Adding results to parameters for events treatment if needed
