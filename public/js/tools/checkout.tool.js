@@ -310,6 +310,11 @@ $(function() {
 
 					setTimeout(function() {
 						melisHelper.zoneReload(
+							"id_meliscommerce_order_checkout_product_list",
+							"meliscommerce_order_checkout_product_list"
+						);
+
+						melisHelper.zoneReload(
 							"id_meliscommerce_order_checkout_product_bakset",
 							"meliscommerce_order_checkout_product_bakset"
 						);
