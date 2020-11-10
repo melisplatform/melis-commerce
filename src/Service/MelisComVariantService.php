@@ -504,13 +504,13 @@ class MelisComVariantService extends MelisComGeneralService
          */
         //look for group general price in the country
 		if(empty($variantPrice))
-            $variantPrice = $priceTable->getVariantFinalPrice($arrayParameters['variantId'], $arrayParameters['countryId'])->current();
+            $variantPrice = $this->getVariantFinalPrice($arrayParameters['variantId'], $arrayParameters['countryId']);
 		//look for price inside general and in given group
 		if(empty($variantPrice))
-            $variantPrice = $priceTable->getVariantFinalPrice($arrayParameters['variantId'], -1, $arrayParameters['groupId'])->current();
+            $variantPrice = $this->getVariantFinalPrice($arrayParameters['variantId'], -1, $arrayParameters['groupId']);
         //look price inside general and group general
 		if(empty($variantPrice))
-            $variantPrice = $priceTable->getVariantFinalPrice($arrayParameters['variantId'], -1)->current();
+            $variantPrice = $this->getVariantFinalPrice($arrayParameters['variantId'], -1);
 
         if(!empty($variantPrice))
         {

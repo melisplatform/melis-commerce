@@ -422,8 +422,8 @@ class MelisComProductService extends MelisComGeneralService
 		$cacheKey = 'product-' . $productId . '-getProductFinalPrice-' . implode('-', [$productId, $countryId, $groupId]);
 		$cacheConfig = 'commerce_big_services';
 		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-//        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-//        if (!empty($results)) return $results;
+        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+        if (!empty($results)) return $results;
 		
 		// Event parameters prepare
 		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -440,13 +440,13 @@ class MelisComProductService extends MelisComGeneralService
          */
         //look for group general price in the country
         if(empty($productPrice))
-            $productPrice = $priceTable->getProductFinalPrice($arrayParameters['productId'], $arrayParameters['countryId'])->current();
+            $productPrice = $this->getProductFinalPrice($arrayParameters['productId'], $arrayParameters['countryId']);
         //look for price inside general and in given group
         if(empty($productPrice))
-            $productPrice = $priceTable->getProductFinalPrice($arrayParameters['productId'], -1, $arrayParameters['groupId'])->current();
+            $productPrice = $this->getProductFinalPrice($arrayParameters['productId'], -1, $arrayParameters['groupId']);
         //look price inside general and group general
         if(empty($productPrice))
-            $productPrice = $priceTable->getProductFinalPrice($arrayParameters['productId'], -1)->current();
+            $productPrice = $this->getProductFinalPrice($arrayParameters['productId'], -1);
 
 		if(!empty($productPrice)) {
 			// Just to be sure that data on Price is in Numeric data type
