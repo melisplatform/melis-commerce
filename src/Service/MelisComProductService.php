@@ -440,13 +440,13 @@ class MelisComProductService extends MelisComGeneralService
          */
         //look for group general price in the country
         if(empty($productPrice))
-            $productPrice = $this->getProductFinalPrice($arrayParameters['productId'], $arrayParameters['countryId']);
+            $productPrice = $priceTable->getProductFinalPrice($arrayParameters['productId'], $arrayParameters['countryId'])->current();
         //look for price inside general and in given group
         if(empty($productPrice))
-            $productPrice = $this->getProductFinalPrice($arrayParameters['productId'], -1, $arrayParameters['groupId']);
+            $productPrice = $priceTable->getProductFinalPrice($arrayParameters['productId'], -1, $arrayParameters['groupId'])->current();
         //look price inside general and group general
         if(empty($productPrice))
-            $productPrice = $this->getProductFinalPrice($arrayParameters['productId'], -1);
+            $productPrice = $priceTable->getProductFinalPrice($arrayParameters['productId'], -1)->current();
 
 		if(!empty($productPrice)) {
 			// Just to be sure that data on Price is in Numeric data type
