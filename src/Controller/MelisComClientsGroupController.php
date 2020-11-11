@@ -248,7 +248,7 @@ class MelisComClientsGroupController extends MelisAbstractActionController
             $res = $groupSrv->saveClientsGroup($postData, $groupId);
             if($res){
                 $success = 1;
-                $value = !empty($groupId) ? 'updated' : 'added';
+                $value = !empty($groupId) ? $translator->translate('tr_meliscommerce_clients_group_common_updated') : $translator->translate('tr_meliscommerce_clients_group_common_saved');
                 $message = sprintf($translator->translate('tr_meliscommerce_clients_group_save_ok'), $value);
             }
         }else{
