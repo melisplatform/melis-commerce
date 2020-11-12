@@ -281,6 +281,10 @@ class MelisComClientService extends MelisComGeneralService
 		$countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
 		$country = $countryTable->getEntryByField('ctry_id', $client->cli_country_id);
 		$countryName = ($country->count())? $country->current()->ctry_name : '';
+
+		$clientGrouTable = $this->getServiceManager()->get('MelisEcomClientGroupsTable');
+		$clientGroup = $clientGrouTable->getEntryById($client->cli_group_id)->current();
+		$groupName = $clientGroup ? $clientGroup->cgroup_name : '';
 		
 		$langTable = $this->getServiceManager()->get('MelisEcomLangTable');
 		$languages = $langTable->fetchAll();
@@ -291,6 +295,7 @@ class MelisComClientService extends MelisComGeneralService
 		$line1[] = $client->cli_id;
 		$line1[] = $client->cli_status;
 		$line1[] = $client->cli_country_id;
+		$line1[] = $groupName;
 		$line1[] = $countryName;
 		$line1[] = $client->cli_date_creation;
 		$tmp = array();
