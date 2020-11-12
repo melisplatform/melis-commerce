@@ -126,6 +126,8 @@ class MelisComClientsGroupController extends MelisAbstractActionController
         if(!empty($groupId)){
             $groupSrv = $this->getServiceManager()->get('MelisComClientGroupsService');
             $formData = get_object_vars($groupSrv->getClientsGroupById($groupId));
+            //decode group name
+            $formData['cgroup_name'] = html_entity_decode($formData['cgroup_name']);
             $form->setData($formData);
         }
 
@@ -233,6 +235,7 @@ class MelisComClientsGroupController extends MelisAbstractActionController
 
         $translator = $this->getServiceManager()->get('translator');
         $postData = $this->getRequest()->getPost()->toArray();
+        $postData['cgroup_name'] = htmlentities($postData['cgroup_name']);
         $groupId = $postData['groupId'] ?? null;
         //remove id in the post
         if(isset($postData['groupId']))

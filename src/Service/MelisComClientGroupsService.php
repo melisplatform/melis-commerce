@@ -34,6 +34,10 @@ class MelisComClientGroupsService extends MelisComGeneralService
         
         // Service implementation start
         $group = $this->getServiceManager()->get('MelisEcomClientGroupsTable');
+        //convert $arrayParameters['searchValue'] to htmlentities so it can be find in the db
+        if(!empty($arrayParameters['searchValue']))
+            $arrayParameters['searchValue'] = htmlentities($arrayParameters['searchValue']);
+
         $results = $group->getClientsGroupList(
             $arrayParameters['start'],
             $arrayParameters['limit'],
