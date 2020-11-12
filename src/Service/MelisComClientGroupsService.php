@@ -34,6 +34,10 @@ class MelisComClientGroupsService extends MelisComGeneralService
         
         // Service implementation start
         $group = $this->getServiceManager()->get('MelisEcomClientGroupsTable');
+        //convert $arrayParameters['searchValue'] to htmlentities so it can be find in the db
+        if(!empty($arrayParameters['searchValue']))
+            $arrayParameters['searchValue'] = htmlentities($arrayParameters['searchValue']);
+
         $results = $group->getClientsGroupList(
             $arrayParameters['start'],
             $arrayParameters['limit'],
@@ -67,6 +71,8 @@ class MelisComClientGroupsService extends MelisComGeneralService
 
         if(!isset($data['cgroup_date_creation']))
             $data['cgroup_date_creation'] = date('Y-m-d H:i:s');
+        if(!empty($data['cgroup_name']))
+            $data['cgroup_name'] = htmlentities($data['cgroup_name']);
 
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());

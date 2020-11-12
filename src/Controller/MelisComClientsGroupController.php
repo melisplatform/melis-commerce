@@ -126,6 +126,8 @@ class MelisComClientsGroupController extends MelisAbstractActionController
         if(!empty($groupId)){
             $groupSrv = $this->getServiceManager()->get('MelisComClientGroupsService');
             $formData = get_object_vars($groupSrv->getClientsGroupById($groupId));
+            //decode group name
+            $formData['cgroup_name'] = html_entity_decode($formData['cgroup_name']);
             $form->setData($formData);
         }
 
@@ -153,7 +155,7 @@ class MelisComClientsGroupController extends MelisAbstractActionController
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->tableColumns = $columns;
-        $view->getToolDataTableConfig = $this->getTool()->getDataTableConfiguration(null, null, null, array('order' => '[[ 2, "ASC" ]]'));
+        $view->getToolDataTableConfig = $this->getTool()->getDataTableConfiguration(null, null, null, array('order' => '[[ 0, "DESC" ]]'));
         return $view;
     }
 
@@ -248,7 +250,7 @@ class MelisComClientsGroupController extends MelisAbstractActionController
             $res = $groupSrv->saveClientsGroup($postData, $groupId);
             if($res){
                 $success = 1;
-                $value = !empty($groupId) ? 'updated' : 'added';
+                $value = !empty($groupId) ? $translator->translate('tr_meliscommerce_clients_group_common_updated') : $translator->translate('tr_meliscommerce_clients_group_common_saved');
                 $message = sprintf($translator->translate('tr_meliscommerce_clients_group_save_ok'), $value);
             }
         }else{

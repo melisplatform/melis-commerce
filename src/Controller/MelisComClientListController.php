@@ -213,7 +213,7 @@ class MelisComClientListController extends MelisAbstractActionController
         $groups = $groupService->getClientsGroupList(null,null,'ASC','cgroup_name',null,null, $status = 1);
 
         $translator = $this->getServiceManager()->get('translator');
-        $options = '<option  value="">'.$translator->translate('Select').'</option>';
+        $options = '<option  value="">'.$translator->translate('tr_meliscommerce_clients_common_label_all').'</option>';
         foreach($groups as $val){
             $options .= '<option value="'.$val['cgroup_id'].'">'.$val['cgroup_name'].'</option>';
         }

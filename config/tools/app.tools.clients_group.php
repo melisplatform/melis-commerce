@@ -50,7 +50,7 @@ return [
                             'cgroup_status' => [
                                 'text' => 'Status',
                                 'css' => ['width' => '10%', 'padding-right' => '0'],
-                                'sortable' => false,
+                                'sortable' => true,
 
                             ],
                             'cgroup_name' => [
