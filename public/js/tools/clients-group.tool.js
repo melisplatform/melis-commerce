@@ -42,7 +42,7 @@ $(function(){
             }
 
             melisCore.flashMessenger();
-            melisCoreTool.pending(".btnSaveClientsGroup");
+            melisCoreTool.done(".btnSaveClientsGroup");
         }).fail(function(xhr) {
             melisCoreTool.pending(".btnSaveClientsGroup");
             alert( translations.tr_meliscore_error_message );

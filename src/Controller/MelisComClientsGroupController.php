@@ -153,7 +153,7 @@ class MelisComClientsGroupController extends MelisAbstractActionController
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->tableColumns = $columns;
-        $view->getToolDataTableConfig = $this->getTool()->getDataTableConfiguration(null, null, null, array('order' => '[[ 2, "ASC" ]]'));
+        $view->getToolDataTableConfig = $this->getTool()->getDataTableConfiguration(null, null, null, array('order' => '[[ 0, "DESC" ]]'));
         return $view;
     }
 
