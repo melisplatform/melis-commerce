@@ -235,7 +235,6 @@ class MelisComClientsGroupController extends MelisAbstractActionController
 
         $translator = $this->getServiceManager()->get('translator');
         $postData = $this->getRequest()->getPost()->toArray();
-        $postData['cgroup_name'] = htmlentities($postData['cgroup_name']);
         $groupId = $postData['groupId'] ?? null;
         //remove id in the post
         if(isset($postData['groupId']))
