@@ -27,7 +27,6 @@ return [
                                     'type' => 'EcomOrderClientsGroupSelect',
                                     'options' => [
                                         'label' => 'tr_meliscommerce_clients_group_common_group',
-                                        'empty_option' => 'tr_meliscommerce_clients_common_label_choose',
                                         'disable_inarray_validator' => true,
                                     ],
                                     'attributes' => [
