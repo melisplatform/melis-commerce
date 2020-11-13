@@ -236,14 +236,14 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                  * This method will add the variant to basket if the variant is not yet exist to the client basket
                  * If the Variant exist to the basket this will Add the quantity of the variant
                  */
-                $melisComBasketService->addVariantToBasket($variantId, $variantQty, null, $clientKey);
+                $melisComBasketService->addVariantToBasket($variantId, $variantQty, $clientId, $clientKey);
             }
             elseif ($action == 'deduct') {
                 /**
                  * This method will deduct the quantity of the variant,
                  * and if the variant quantity is Zero this will remove the variant from clients basket
                  */
-                $melisComBasketService->removeVariantFromBasket($variantId, $variantQty, null, $clientKey);
+                $melisComBasketService->removeVariantFromBasket($variantId, $variantQty, $clientId, $clientKey);
             }
         }
 
@@ -526,9 +526,11 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                 $clientKey = md5(uniqid(date('YmdHis')));
                 $container['checkout'][self::SITE_ID]['clientKey'] = $clientKey;
             }
+            
+            $clientId = (!empty($container['checkout'][self::SITE_ID]['clientId'])) ? $container['checkout'][self::SITE_ID]['clientId'] : null;
 
             // Add Variant to Client Basket
-            $basketId = $melisComBasketService->addVariantToBasket($variantId, $quantity, null, $clientKey);
+            $basketId = $melisComBasketService->addVariantToBasket($variantId, $quantity, $clientId, $clientKey);
 
             if (!is_null($basketId))
             {
@@ -2150,6 +2152,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     public function testAction()
     {
         $container = new Container('meliscommerce');
+        // unset($container['checkout']);
         dd($container['checkout']);
     }
 }
