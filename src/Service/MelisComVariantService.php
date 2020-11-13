@@ -77,9 +77,9 @@ class MelisComVariantService extends MelisComGeneralService
 	 *
 	 * @return MelisVariant|null Variant object
 	 */
-	public function getVariantById($variantId, $langId = null, $countryId = null, $docType = null, $docSubType = array())
+	public function getVariantById($variantId, $langId = null, $countryId = null, $docType = null, $docSubType = array(), $groupId = null)
 	{
-		
+
 		// Retrieve cache version if front mode to avoid multiple calls
 		$tmp = '';
 		foreach($docSubType as $type)
@@ -92,7 +92,7 @@ class MelisComVariantService extends MelisComGeneralService
 
 		$cache = $this->getServiceManager()->get($cacheConfig);
 		if ($cache->hasItem($cacheKey)){
-			return $cache->getItem($cacheKey);
+//			return $cache->getItem($cacheKey);
 		}
 		
 		// Event parameters prepare
@@ -109,18 +109,18 @@ class MelisComVariantService extends MelisComGeneralService
 		$variant = array();
 		$data = array();
 		$results = $variantTable->getVariants($arrayParameters['variantId']);
-		
+
 		if($results){
-		foreach($results as $result){
-			
-			$entVariant->setId($arrayParameters['variantId']);
-			$entVariant->setVariant($result);
-			$entVariant->setAttributeValues($this->getVariantAttributesValuesById($arrayParameters['variantId'], $arrayParameters['langId']));
-			$entVariant->setStocks($this->getVariantStocksById($arrayParameters['variantId'], $arrayParameters['countryId']));
-			$entVariant->setPrices($this->getVariantPricesById($arrayParameters['variantId'], $arrayParameters['countryId']));
-			$entVariant->setDocuments($docService->getDocumentsByRelationAndTypes('variant', $arrayParameters['variantId'], $arrayParameters['docType'], $arrayParameters['docSubType']));
-			$data = $entVariant;
-		}
+            foreach($results as $result){
+
+                $entVariant->setId($arrayParameters['variantId']);
+                $entVariant->setVariant($result);
+                $entVariant->setAttributeValues($this->getVariantAttributesValuesById($arrayParameters['variantId'], $arrayParameters['langId']));
+                $entVariant->setStocks($this->getVariantStocksById($arrayParameters['variantId'], $arrayParameters['countryId']));
+                $entVariant->setPrices($this->getVariantPricesById($arrayParameters['variantId'], $arrayParameters['countryId'], $arrayParameters['groupId']));
+                $entVariant->setDocuments($docService->getDocumentsByRelationAndTypes('variant', $arrayParameters['variantId'], $arrayParameters['docType'], $arrayParameters['docSubType']));
+                $data = $entVariant;
+            }
 		}	    
 		// Service implementation end
 		
