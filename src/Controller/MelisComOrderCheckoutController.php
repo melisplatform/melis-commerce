@@ -1316,32 +1316,41 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                     }
                     else
                     {
-                        $propertyForm = $factory->createForm($appConfigForm);
-                        $propertyForm->setData($val);
 
-                        if ($propertyForm->isValid())
+                        $validateForm = true;
+                        //skipping validation on billing if sameAddress is set
+                        if ($key == 'billing' && $val['sameAddress'] == 1)
+                            $validateForm = false;
+
+                        if ($validateForm)
                         {
-                            $clientAddress = $propertyForm->getData();
-                            $clientAddresses[$key] = $clientAddress;
-                        }
-                        else
-                        {
-                            $error = $propertyForm->getMessages();
-                            foreach ($error as $keyError => $valueError)
+                            $propertyForm = $factory->createForm($appConfigForm);
+                            $propertyForm->setData($val);
+
+                            if ($propertyForm->isValid())
                             {
-                                // Preparing form Id en-order to locate the error occured
-                                // This process is for multiple form
-                                $error[$keyError]['form'][] = $key.'AddressOrderCheckoutForm';
+                                $clientAddress = $propertyForm->getData();
+                                $clientAddresses[$key] = $clientAddress;
                             }
-                            $errors = array_merge_recursive($errors, $error);
-
-                            foreach ($errors as $keyError => $valueError)
+                            else
                             {
-                                foreach ($appConfigFormElements as $keyForm => $valueForm)
+                                $error = $propertyForm->getMessages();
+                                foreach ($error as $keyError => $valueError)
                                 {
-                                    if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
+                                    // Preparing form Id en-order to locate the error occured
+                                    // This process is for multiple form
+                                    $error[$keyError]['form'][] = $key.'AddressOrderCheckoutForm';
+                                }
+                                $errors = array_merge_recursive($errors, $error);
+
+                                foreach ($errors as $keyError => $valueError)
+                                {
+                                    foreach ($appConfigFormElements as $keyForm => $valueForm)
                                     {
-                                        $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                                        if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
+                                        {
+                                            $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                                        }
                                     }
                                 }
                             }
