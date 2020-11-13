@@ -127,7 +127,7 @@ class MelisComProductService extends MelisComGeneralService
 	 *
 	 * @return MelisProduct|null Product object
 	 */
-	public function getProductById($productId, $langId = null, $countryId = null, $docType = null, $docSubType = array(), $groupId = null)
+	public function getProductById($productId, $langId = null, $countryId = null, $groupId = -1, $docType = null, $docSubType = array())
 	{
 		// Retrieve cache version if front mode to avoid multiple calls
 		$tmp = '';

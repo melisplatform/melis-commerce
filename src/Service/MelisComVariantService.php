@@ -72,12 +72,13 @@ class MelisComVariantService extends MelisComGeneralService
 	 * @param int $variantId Variant Id to look for
 	 * @param int $langId If specified, translations of attribute values will be limited to that lang
 	 * @param int $countryId Country id, variant stocks and prices will be filtered if specified
-	 * @param string $docType Key identifier for filtering variant documents, filters are 'IMG' or 'FILE'
+	 * @param int $groupId Client Group id
+     * @param string $docType Key identifier for filtering variant documents, filters are 'IMG' or 'FILE'
 	 * @param array @docSubType key identified for filtering document sub type, filters are array('DEFAULT','SMALL','LARGE','MEDIUM')
 	 *
 	 * @return MelisVariant|null Variant object
 	 */
-	public function getVariantById($variantId, $langId = null, $countryId = null, $docType = null, $docSubType = array(), $groupId = null)
+	public function getVariantById($variantId, $langId = null, $countryId = null, $groupId = -1, $docType = null, $docSubType = array())
 	{
 
 		// Retrieve cache version if front mode to avoid multiple calls
@@ -92,7 +93,7 @@ class MelisComVariantService extends MelisComGeneralService
 
 		$cache = $this->getServiceManager()->get($cacheConfig);
 		if ($cache->hasItem($cacheKey)){
-//			return $cache->getItem($cacheKey);
+			return $cache->getItem($cacheKey);
 		}
 		
 		// Event parameters prepare
