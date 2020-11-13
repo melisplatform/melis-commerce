@@ -127,7 +127,7 @@ class MelisComProductService extends MelisComGeneralService
 	 *
 	 * @return MelisProduct|null Product object
 	 */
-	public function getProductById($productId, $langId = null, $countryId = null, $docType = null, $docSubType = array())
+	public function getProductById($productId, $langId = null, $countryId = null, $docType = null, $docSubType = array(), $groupId = null)
 	{
 		// Retrieve cache version if front mode to avoid multiple calls
 		$tmp = '';
@@ -191,7 +191,7 @@ class MelisComProductService extends MelisComGeneralService
 				$entProd->setCategories($category);
 				$entProd->setAttributes($this->getProductAttributesById($arrayParameters['productId'], $arrayParameters['langId']));
 				$entProd->setTexts($this->getProductTextsById($arrayParameters['productId'], null, $arrayParameters['langId']));
-				$entProd->setPrice($this->getProductPricesById($arrayParameters['productId'], $arrayParameters['countryId']));                
+				$entProd->setPrice($this->getProductPricesById($arrayParameters['productId'], $arrayParameters['countryId'], $arrayParameters['groupId']));
 				$entProd->setDocuments($prodDoc);
 			}
 		}
