@@ -290,7 +290,7 @@ class MelisComDuplicationService extends MelisComGeneralService
         foreach ($arrayParameters['variant'] As $key => $val)
         {
             // Retrieving Variant details from Variant Service
-            $variantEntity = $varSrv->getVariantById($val['var_id'], null, null, null, [], -1);
+            $variantEntity = $varSrv->getVariantById($val['var_id']);
             $variant = $variantEntity->getVariant();
             
             // Creating new Variant Data entry
