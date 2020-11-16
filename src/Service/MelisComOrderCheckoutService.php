@@ -1003,7 +1003,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                     $payment = array(
                         'opay_order_id' => $orderId,
                         'opay_price_total' => $totalCost,
-                        'opay_price_order' => $order['costs']['order']['total'],
+                        'opay_price_order' => $order['costs']['order']['totalWithoutCoupon'],
                         'opay_price_shipping' => $order['costs']['shipment']['total'],
                         'opay_currency_id' => $currencyId,
                         'opay_payment_type_id' => $paymentTypeId,
