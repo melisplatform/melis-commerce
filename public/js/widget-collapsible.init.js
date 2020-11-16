@@ -16,7 +16,7 @@ function widgetCollapsibleInit() {
 		{
 			// append toggle button
 			if (!$(this).find('.widget-head > .collapse-toggle').length)
-				$('<span class="collapse-toggle"></span>').appendTo($(this).find('.widget-head'));
+				$('<span class="collapse-toggle"></span>').prependTo($(this).find('.widget-head'));
 			
 			// make the widget body collapsible
 			$(this).find('.widget-body').not('.collapse').addClass('collapse');
@@ -26,7 +26,7 @@ function widgetCollapsibleInit() {
 				$(this).find('.widget-body').addClass('in');
 			
 			// bind the toggle button
-			$(this).find('.collapse-toggle').on('click', function(){
+			$(this).find('.accordionTitle').on('click', function(){
 				//close all accordion before toggling the selected one
 				var accordionCont = $(".prices-accordion.active");
 				$.each(accordionCont, function(){

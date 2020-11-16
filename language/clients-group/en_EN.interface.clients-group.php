@@ -4,7 +4,7 @@
         'tr_meliscommerce_clients_group_common_group' => 'Group',
         'tr_meliscommerce_clients_group_common_saved' => 'saved',
         'tr_meliscommerce_clients_group_common_updated' => 'updated',
-        'tr_meliscommerce_clients_group_description' => 'Clients can be associated to groups in order to make them have special rules depending of the rules such as different prices for products. Create groups here and then affect the clients to a group.',
+        'tr_meliscommerce_clients_group_description' => 'This tool is to create groups. <br> Clients can be associated to these groups, allowing the implementation of specific rules for different groups of clients (example : different product prices per group).<br>Create the groups here then affect the clients to the groups from the "Clients" tool.',
         'tr_meliscommerce_clients_group_add_group' => 'Add group',
         'tr_meliscommerce_clients_group_edit_group' => 'Edit group',
         'tr_meliscommerce_clients_group_save_ko' => 'Cannot save clients group',
