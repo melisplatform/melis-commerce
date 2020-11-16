@@ -38,10 +38,10 @@ return [
                         */
                         'section' => 'MelisCommerce',
                         'subcategory' => [
-                            'id' => 'CART',
-                            'title' => 'tr_meliscommerce_car_Cart'
+                            'id' => 'CLIENTS',
+                            'title' => 'tr_meliscommerce_clients_Clients'
                         ],
-                        'name' => '\tr_meliscommerce_order_history_name',
+                        'name' => 'tr_meliscommerce_order_history_name',
                         'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceOrderHistoryPlugin.jpg',
                         'description' => '\tr_meliscommerce_order_history_description',
                         // List the files to be automatically included for the correct display of the plugin
