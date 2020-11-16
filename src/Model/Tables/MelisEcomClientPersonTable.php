@@ -134,6 +134,9 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
         
         $select->join('melis_ecom_client', 'melis_ecom_client.cli_id=melis_ecom_client_person.cper_client_id',
             array('*'), $select::JOIN_LEFT);
+
+        $select->join('melis_ecom_client_groups', 'melis_ecom_client_groups.cgroup_id=melis_ecom_client.cli_group_id',
+            array('*'), $select::JOIN_LEFT);
     
         // this is used when searching
         if(!empty($where)) {

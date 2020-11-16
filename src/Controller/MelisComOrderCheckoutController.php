@@ -836,18 +836,13 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                 $contactOrder = $contactOrderData->toArray();
                 $contactNumOrders = count($contactOrder);
                 $lastOrder = !empty($val['cper_last_order'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cper_last_order'])), 0, 10) : '';
-                $groupName = null;
-                $clientGroup = $melisComClientSrv->getClientGroup($val['cper_client_id']);
-
-                if (!empty($clientGroup))
-                    $groupName = $clientGroup->cgroup_name;
 
                 $rowdata = array(
                     'DT_RowId' => $val['cper_id'],
                     'cper_id' => $val['cper_id'],
                     'cper_status' => $contactStatus,
                     'cper_contact' => $contactName,
-                    'group_name' => $groupName,
+                    'cgroup_name' => $val['cgroup_name'],
                     'cper_email' => $this->getTool()->sanitize($val['cper_email']),
                     'cper_num_orders' => $contactNumOrders,
                     'cper_last_order' => $lastOrder,
@@ -1234,10 +1229,10 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * This method will validate Checkout addresses and store to checkout session
-     *
-     * @return \Laminas\View\Model\JsonModel
-     */
+        * This method will validate Checkout addresses and store to checkout session
+        *
+        * @return \Laminas\View\Model\JsonModel
+        */
     public function selectAddressesAction()
     {
         $container = new Container('meliscommerce');
@@ -1433,10 +1428,10 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order Checkout Summary step
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout Summary step
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutSummaryAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
@@ -1445,10 +1440,10 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order Checkout Summary Basket
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout Summary Basket
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutSummaryBasketAction()
     {
         $translator = $this->getServiceManager()->get('translator');
@@ -1609,10 +1604,10 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order Checkout Summary Billing Address
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout Summary Billing Address
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutSummaryBillingAddressAction()
     {
         // Getting Current Langauge ID
@@ -1669,10 +1664,10 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Reder Order Checkout Summary Delivery Address
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Reder Order Checkout Summary Delivery Address
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutSummaryDeliveryAddressAction()
     {
         // Getting Current Langauge ID
@@ -1729,10 +1724,10 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * This method will validate Client Basket and Addresses
-     *
-     * @return \Laminas\View\Model\JsonModel
-     */
+        * This method will validate Client Basket and Addresses
+        *
+        * @return \Laminas\View\Model\JsonModel
+        */
     public function confirmOrderCheckoutSummaryAction()
     {
         $translator = $this->getServiceManager()->get('translator');
@@ -1907,10 +1902,10 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order Checkout Summary Header
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout Summary Header
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutSummaryHeaderAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
@@ -1919,10 +1914,10 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order Checkout Summary Content
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout Summary Content
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutSummaryContentAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
@@ -1931,9 +1926,9 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order Checkout Payment Step
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout Payment Step
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutPaymentAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
@@ -1942,10 +1937,10 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order Checkout Payment header
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout Payment header
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutPaymentHeaderAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
@@ -1993,10 +1988,10 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
         return new JsonModel($response);
     }
     /**
-     * Render Order Checkout Payment Content
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout Payment Content
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutPaymentContentAction()
     {
         $orderId = null;
@@ -2044,11 +2039,11 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order Checkout payment Iframe
-     * This will represent as payment Gateway/ Payment API
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout payment Iframe
+        * This will represent as payment Gateway/ Payment API
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutPaymentIframeAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -2071,11 +2066,11 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order Cehckout Payment Done
-     * This will represent the payment is done using Payment Gateway/API
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Cehckout Payment Done
+        * This will represent the payment is done using Payment Gateway/API
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutPaymentDoneAction()
     {
         $melisComOrderCheckoutService = $this->getServiceManager()->get('MelisComOrderCheckoutService');
@@ -2089,11 +2084,11 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order Checkout Confirmation
-     * This method will return the result of the checkout process
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout Confirmation
+        * This method will return the result of the checkout process
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutConfirmationAction()
     {
         $activateTab = $this->params()->fromQuery('activateTab');

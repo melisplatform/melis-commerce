@@ -116,7 +116,7 @@ return [
                                 'text' => 'tr_meliscommerce_checkout_tbl_cper_contact',
                                 'sortable' => true,
                             ],
-                            'group_name' => [
+                            'cgroup_name' => [
                                 'text' => 'tr_meliscommerce_checkout_tbl_group',
                                 'sortable' => true,
                             ],
