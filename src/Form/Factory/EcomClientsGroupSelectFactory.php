@@ -26,7 +26,7 @@ class EcomClientsGroupSelectFactory extends MelisSelectFactory
 		$valueoptions = [];
 
 		foreach($groups as $key => $val){
-            $valueoptions[$val['cgroup_id']] = $val['cgroup_name'];
+            $valueoptions[$val['cgroup_id']] = html_entity_decode($val['cgroup_name']);
         }
 
 		return $valueoptions;
