@@ -72,7 +72,7 @@ class MelisCommerceProductShowPlugin extends MelisTemplatingPlugin
         $productId = ($this->pluginFrontConfig['m_product_id'])? $this->pluginFrontConfig['m_product_id'] : null;
         $countryId = ($this->pluginFrontConfig['m_product_country'])? $this->pluginFrontConfig['m_product_country'] : null;
 
-        $clientGroupId = null;
+        $clientGroupId = 1;
         $ecomAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
         if ($ecomAuthSrv->hasIdentity())
             $clientGroupId = $ecomAuthSrv->getClientGroup();
