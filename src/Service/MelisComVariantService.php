@@ -32,7 +32,7 @@ class MelisComVariantService extends MelisComGeneralService
 	 *
 	 * @return MelisVariant[] Variant object
 	 */
-	public function getVariantListByProductId($productId, $langId = null, $countryId = null,
+	public function getVariantListByProductId($productId, $langId = null, $countryId = null, $groupId = -1,
 											$onlyValid = null, $isMain = null, $start = 0, $limit = null, $search = '', $order = 'var_id')
 	{
 		// Event parameters prepare
@@ -51,7 +51,7 @@ class MelisComVariantService extends MelisComGeneralService
 		//elminate duplicate entries
 		if($results){
 			foreach($results as $result){
-				$variantList[] = $this->getVariantById($result->var_id, $arrayParameters['langId'], $arrayParameters['countryId']);
+				$variantList[] = $this->getVariantById($result->var_id, $arrayParameters['langId'], $arrayParameters['countryId'], $arrayParameters['groupId']);
 			}
 		}
 		// Service implementation end
@@ -186,7 +186,7 @@ class MelisComVariantService extends MelisComGeneralService
 	 *
 	 * @return MelisVariant|null Variant object
 	 */
-	public function getMainVariantByProductId($productId, $langId = null, $countryId = null)
+	public function getMainVariantByProductId($productId, $langId = null, $countryId = null, $groupId = 1)
 	{
 		// Event parameters prepare
 		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -200,7 +200,9 @@ class MelisComVariantService extends MelisComGeneralService
 		$mainVariant = $variantTable->getMainVariantById($arrayParameters['productId'], $arrayParameters['langId'])->current();
 		
 		if($mainVariant) { 
-			$results = $this->getVariantById($mainVariant->var_id, $arrayParameters['langId'], $countryId);
+
+			dd($arrayParameters['groupId']);
+			$results = $this->getVariantById($mainVariant->var_id, $arrayParameters['langId'], $arrayParameters['countryId'], $arrayParameters['groupId']);
 		}
 		// Service implementation end
 		
@@ -432,6 +434,8 @@ class MelisComVariantService extends MelisComGeneralService
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
 //        if (!empty($results)) return $results;
 
+
+
 		$cache = $this->getServiceManager()->get($cacheConfig);
 		if ($cache->hasItem($cacheKey)){
 			return $cache->getItem($cacheKey);
@@ -441,6 +445,7 @@ class MelisComVariantService extends MelisComGeneralService
 		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
 		$results = array();
 		$datas = array();	    
+
 		// Sending service start event
 		$arrayParameters = $this->sendEvent('meliscommerce_service_variant_prices_start', $arrayParameters);
 		
@@ -450,7 +455,10 @@ class MelisComVariantService extends MelisComGeneralService
 		if($arrayParameters['variantId'])
 		{
 			$datas = $priceTable->getPricesByVariantId($arrayParameters['variantId'], $arrayParameters['countryId'], $arrayParameters['groupId']);
-		}        
+		} 
+		
+		
+		// dd($datas->toArray());
 		
 		if($datas)
 		{
@@ -458,7 +466,8 @@ class MelisComVariantService extends MelisComGeneralService
 			{                
 				$results[] = $data;
 			}
-		}        
+		}   
+		
 		// Service implementation end
 		
 		// Adding results to parameters for events treatment if needed

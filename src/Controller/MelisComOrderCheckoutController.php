@@ -418,7 +418,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
             $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
             $melisComProductService = $this->getServiceManager()->get('MelisComProductService');
             // Getting the list of Activated Variant from Variant Service using the ProductId
-            $variantData = $melisComVariantService->getVariantListByProductId($productId, $langId, $countryId, true);
+            $variantData = $melisComVariantService->getVariantListByProductId($productId, $langId, $countryId, -1, true);
 
             // Check Client Group
             $clientId = $container['checkout'][self::SITE_ID]['clientId'];

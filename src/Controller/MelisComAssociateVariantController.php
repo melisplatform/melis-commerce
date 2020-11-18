@@ -247,7 +247,7 @@ class MelisComAssociateVariantController extends MelisAbstractActionController
         $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
         $melisComProductService = $this->getServiceManager()->get('MelisComProductService');
         // Getting the list of Activated Variant from Variant Service using the ProductId
-        $variantData = $melisComVariantService->getVariantListByProductId($productId, $langId, null, null, null, 0, null, $search);
+        $variantData = $melisComVariantService->getVariantListByProductId($productId, $langId, null, -1, null, null, 0, null, $search);
 
         foreach ($variantData As $val)
         {
