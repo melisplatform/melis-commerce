@@ -533,13 +533,17 @@ class MelisComClientListController extends MelisAbstractActionController
     {
         
         $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
-        
+        $tool = $this->getServiceManager()->get('MelisCoreTool');
+
         $csvConfig = $melisCoreConfig->getItem('meliscommerce/datas/default/export/csv');
         $csvFileName = $csvConfig['clientFileName'];
         $dir = $csvConfig['dir'];
         
         $csvData = file_get_contents($dir.$csvFileName);
-        
+        //fixed special characters problem
+        $csvData = $tool->sanitize($csvData);
+        $csvData = mb_convert_encoding($csvData, 'UTF-16LE', 'UTF-8');
+
         // Getting Current Langauge ID
         $response = new Response();
         $headers  = $response->getHeaders();
@@ -552,6 +556,4 @@ class MelisComClientListController extends MelisAbstractActionController
         return $response;
 
     }
-
-    
 }
