@@ -200,8 +200,6 @@ class MelisComVariantService extends MelisComGeneralService
 		$mainVariant = $variantTable->getMainVariantById($arrayParameters['productId'], $arrayParameters['langId'])->current();
 		
 		if($mainVariant) { 
-
-			dd($arrayParameters['groupId']);
 			$results = $this->getVariantById($mainVariant->var_id, $arrayParameters['langId'], $arrayParameters['countryId'], $arrayParameters['groupId']);
 		}
 		// Service implementation end
