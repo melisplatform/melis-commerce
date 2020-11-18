@@ -43,7 +43,11 @@ class MelisEcomPriceTable extends MelisEcomGenericTable
             $select->where->equalTo('melis_ecom_price.price_group_id', $groupId);
 
         if(!is_null($countryId)) {
-            $select->where->and->equalTo('melis_ecom_price.price_country_id', (int) $countryId)->and->equalTo('melis_ecom_currency.cur_status', 1);
+            $select->where->and->equalTo('melis_ecom_price.price_country_id', (int) $countryId);
+            
+            if($countryId != - 1){
+                $select->where->equalTo('melis_ecom_currency.cur_status', 1);
+            }
         }
 
         $resultSet = $this->getTableGateway()->selectwith($select);
