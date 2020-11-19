@@ -198,7 +198,7 @@ class MelisComVariantService extends MelisComGeneralService
 		// Service implementation start
 		$variantTable = $this->getServiceManager()->get('MelisEcomVariantTable');
 		$mainVariant = $variantTable->getMainVariantById($arrayParameters['productId'], $arrayParameters['langId'])->current();
-		
+
 		if($mainVariant) { 
 			$results = $this->getVariantById($mainVariant->var_id, $arrayParameters['langId'], $arrayParameters['countryId'], $arrayParameters['groupId']);
 		}
@@ -505,29 +505,22 @@ class MelisComVariantService extends MelisComGeneralService
 
 		// Service implementation start
 		$priceTable = $this->getServiceManager()->get('MelisEcomPriceTable');
-		$variantPrice = $priceTable->getVariantFinalPrice($arrayParameters['variantId'], $arrayParameters['countryId'], $arrayParameters['groupId'])->current();
+		$results = $this->validatePrice($priceTable->getVariantFinalPrice($arrayParameters['variantId'], $arrayParameters['countryId'], $arrayParameters['groupId'])->current());
 
         /**
          * Look for prices in the generals
          */
         //look for group general price in the country
-		if(empty($variantPrice))
-            $variantPrice = $priceTable->getVariantFinalPrice($arrayParameters['variantId'], $arrayParameters['countryId'])->current();
+		if(empty($results))
+            $results = $this->validatePrice($priceTable->getVariantFinalPrice($arrayParameters['variantId'], $arrayParameters['countryId'])->current());
+		
 		//look for price inside general and in given group
-		if(empty($variantPrice))
-            $variantPrice = $priceTable->getVariantFinalPrice($arrayParameters['variantId'], -1, $arrayParameters['groupId'])->current();
-        //look price inside general and group general
-		if(empty($variantPrice))
-            $variantPrice = $priceTable->getVariantFinalPrice($arrayParameters['variantId'], -1)->current();
-
-        if(!empty($variantPrice))
-        {
-            // Just to be sure that data on Price is in Numeric data type
-            if (is_numeric($variantPrice->price_net))
-            {
-                $results = $variantPrice;
-            }
-        }
+		if(empty($results))
+            $results = $this->validatePrice($priceTable->getVariantFinalPrice($arrayParameters['variantId'], -1, $arrayParameters['groupId'])->current());
+		
+		//look price inside general and group general
+		if(empty($results))
+            $results = $this->validatePrice($priceTable->getVariantFinalPrice($arrayParameters['variantId'], -1)->current());
 
 		// Service implementation end
 		
@@ -540,6 +533,23 @@ class MelisComVariantService extends MelisComGeneralService
 		$melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
 		
 		return  $arrayParameters['results'];
+	}
+
+	/**
+	 * Validating Product final price
+	 */
+	private function validatePrice($variantPrice)
+	{
+		$results = null;
+
+		if(!empty($variantPrice)) {
+			// Just to be sure that data on Price is in Numeric data type
+			if (is_numeric((float)$variantPrice->price_net) && !is_null($variantPrice->price_net)) {
+				$results = $variantPrice;
+			}
+		}
+
+		return $results;
 	}
 	
 	/**

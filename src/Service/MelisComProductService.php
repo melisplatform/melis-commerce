@@ -430,32 +430,28 @@ class MelisComProductService extends MelisComGeneralService
 		$results = array();
 		// Sending service start event
 		$arrayParameters = $this->sendEvent('meliscommerce_service_product_final_price_start', $arrayParameters);
-	
+
 		// Service implementation start
 		$priceTable = $this->getServiceManager()->get('MelisEcomPriceTable');
-		$productPrice = $priceTable->getProductFinalPrice($arrayParameters['productId'], $arrayParameters['countryId'], $arrayParameters['groupId'])->current();
+		$results = $this->validatePrice($priceTable->getProductFinalPrice($arrayParameters['productId'], $arrayParameters['countryId'], $arrayParameters['groupId'])->current());
 
         /**
          * Look for prices in the generals
          */
         //look for group general price in the country
-        if(empty($productPrice))
-            $productPrice = $priceTable->getProductFinalPrice($arrayParameters['productId'], $arrayParameters['countryId'])->current();
+        if(empty($results)) 
+			$results = $this->validatePrice($priceTable->getProductFinalPrice($arrayParameters['productId'], $arrayParameters['countryId'])->current());
+	
         //look for price inside general and in given group
-        if(empty($productPrice))
-            $productPrice = $priceTable->getProductFinalPrice($arrayParameters['productId'], -1, $arrayParameters['groupId'])->current();
-        //look price inside general and group general
-        if(empty($productPrice))
-            $productPrice = $priceTable->getProductFinalPrice($arrayParameters['productId'], -1)->current();
-
-		if(!empty($productPrice)) {
-			// Just to be sure that data on Price is in Numeric data type
-			if (is_numeric($productPrice->price_net))
-				$results = $productPrice;
-		}
+        if(empty($results))
+            $results = $this->validatePrice($priceTable->getProductFinalPrice($arrayParameters['productId'], -1, $arrayParameters['groupId'])->current());
+		
+			//look price inside general and group general
+        if(empty($results))
+			$results = $this->validatePrice($priceTable->getProductFinalPrice($arrayParameters['productId'], -1)->current());
 
 		// Service implementation end
-		
+
 		// Adding results to parameters for events treatment if needed
 		$arrayParameters['results'] = $results;
 		// Sending service end event
@@ -465,6 +461,23 @@ class MelisComProductService extends MelisComGeneralService
 		$melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
 	
 		return  $arrayParameters['results'];
+	}
+
+	/**
+	 * Validating Product final price
+	 */
+	private function validatePrice($productPrice)
+	{
+		$results = null;
+
+		if(!empty($productPrice)) {
+			// Just to be sure that data on Price is in Numeric data type
+			if (is_numeric((float)$productPrice->price_net) && !is_null($productPrice->price_net)) {
+				$results = $productPrice;
+			}
+		}
+
+		return $results;
 	}
 	
 	/**
