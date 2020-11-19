@@ -150,4 +150,8 @@ return array(
     'tr_meliscommerce_plugin_related_product_description' => 'The plugin display the products related to the selected product',
     'tr_meliscommerce_plugin_related_product_default_product' => 'Default product',
     'tr_meliscommerce_plugin_related_product_default_product_tooltip' => 'Select a product to display its related products',
+
+    // Price
+    'tr_meliscommerce_plugin_product_price_range_name' => 'Product Price Range',
+    'tr_meliscommerce_plugin_product_price_range_description' => 'Filter per product price range',
 );

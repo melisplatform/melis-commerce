@@ -150,4 +150,8 @@ return array(
     'tr_meliscommerce_plugin_related_product_description' => 'Le plugin affiche les produits associés au produit sélectionné',
     'tr_meliscommerce_plugin_related_product_default_product' => 'Produit par défaut',
     'tr_meliscommerce_plugin_related_product_default_product_tooltip' => 'Choisissez un produit pour afficher ses produits associés',
+
+    // Price
+    'tr_meliscommerce_plugin_product_price_range_name' => 'Fourchette de prix',
+    'tr_meliscommerce_plugin_product_price_range_description' => 'Filtre par fourchette de prix des produits',
 );
