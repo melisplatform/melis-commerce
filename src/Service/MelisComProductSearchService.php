@@ -230,7 +230,7 @@ class MelisComProductSearchService extends MelisComGeneralService
 	 */
 	public function searchProductFull($search, $fieldsTypeCodes = array(),
 									$attributeValuesIds = array(), $priceMin = null, $priceMax = null,
-									$langId = null, $categoryId = array(), $countryId = null, 
+									$langId = null, $categoryId = array(), $countryId = null, $groupId = null,
 									$onlyValid = true, $start = 0, $limit = null, $sort = null, $priceColumn = null)
 	{
 		// Event parameters prepare
@@ -239,7 +239,7 @@ class MelisComProductSearchService extends MelisComGeneralService
 	
 		// Sending service start event
 		$arrayParameters = $this->sendEvent('meliscommerce_service_productsearch_full_pricerange_start', $arrayParameters);
-		
+
 		// Service implementation start
 		$selectedVariants = array();
 		$prodTable = $this->getServiceManager()->get('MelisEcomProductTable');
@@ -263,6 +263,7 @@ class MelisComProductSearchService extends MelisComGeneralService
 					$productData[] = $product;
 				}else{
 					if(!empty($product->price)){
+						// dump($product);
 						$productData[] = $product;
 					}
 				}
@@ -280,7 +281,7 @@ class MelisComProductSearchService extends MelisComGeneralService
 				 * Retieving basic details of a single product
 				 * from Product service
 				 */
-				$results[] = $prdSrv->getProductBasicDetails($val->prd_id, $countryId, $langId);
+				$results[] = $prdSrv->getProductBasicDetails($val->prd_id, $arrayParameters['countryId'], $arrayParameters['groupId'], $arrayParameters['langId']);
 			}
 			
 		}

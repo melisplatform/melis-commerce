@@ -103,6 +103,11 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
             $categoryId = array_merge($categoryId, $this->categoryIdIterator($categorySvc->getAllSubCategoryIdById($catId, $onlyValid)));
         }
 
+        $ecomAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
+        $clientGroupId = 1;
+        if ($ecomAuthSrv->hasIdentity())
+            $clientGroupId = $ecomAuthSrv->getClientGroup();
+
         $categoryProductList = $productSearchSvc->searchProductFull(
             $search,                        // $search
             $fieldType,                     // $fieldsTypeCodes           
@@ -112,6 +117,7 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
             $lang,                          // $langId
             array_unique($categoryId),      // $categoryId
             $country,                       // $countryId
+            $clientGroupId,                 // Client group ID
             $onlyValid,                     // $onlyValid
             null,                           // $start
             null,                           // $limit

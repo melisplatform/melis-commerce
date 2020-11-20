@@ -1156,7 +1156,7 @@ class MelisComProductService extends MelisComGeneralService
 		return $arrayParameters['results'];
 	}
 	
-	public function getProductBasicDetails($productId, $countryId = null, $langId = null)
+	public function getProductBasicDetails($productId, $countryId = null, $groupId = null, $langId = null)
 	{
 		// Event parameters prepare
 		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -1170,8 +1170,7 @@ class MelisComProductService extends MelisComGeneralService
 		/**
 		 * Product prices
 		 */
-		$prdPrice = $this->getProductFinalPrice($arrayParameters['productId'], $arrayParameters['countryId']);
-
+		$prdPrice = $this->getProductFinalPrice($arrayParameters['productId'], $arrayParameters['countryId'], $arrayParameters['groupId']);
 		$prdPriceDetails = array(
 			'prd_currency_symbol' => (!empty($prdPrice->cur_symbol)) ? $prdPrice->cur_symbol : '',
 			'prd_currency_code' => (!empty($prdPrice->cur_code)) ? $prdPrice->cur_code : '',
