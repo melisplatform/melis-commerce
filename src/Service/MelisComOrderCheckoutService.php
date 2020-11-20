@@ -399,8 +399,8 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                     if (!is_null($variantPrice))
                     {
                         $varianTotalAmount = $variantPrice->price_net * $variantQty;
-                        if ($varianTotalAmount > 0)
-                        {
+                        // if ($varianTotalAmount > 0)
+                        // {
                             $variantDetails[$variantId] = array(
                                 'unit_price' => $variantPrice->price_net, 
                                 'quantity' => $variantQty,
@@ -408,12 +408,12 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                                 'total_price' => $varianTotalAmount,
                             );
                             $totalCost += $varianTotalAmount;
-                        }
-                        else
-                        {
-                            // KO : Variant total Amount is 0 (Zero)
-                            $errors[$variantId] = 'MELIS_COMMERCE_CHECKOUT_ERROR_PRODUCT_PRICE_IS_ZERO';
-                        }
+                        // }
+                        // else
+                        // {
+                        //     // KO : Variant total Amount is 0 (Zero)
+                        //     $errors[$variantId] = 'MELIS_COMMERCE_CHECKOUT_ERROR_PRODUCT_PRICE_IS_ZERO';
+                        // }
                     }
                     else 
                     {
