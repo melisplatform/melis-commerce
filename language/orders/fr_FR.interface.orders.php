@@ -12,6 +12,7 @@
         'tr_meliscommerce_orders_content_tab_paymnet' => 'Paiement',
         'tr_meliscommerce_orders_content_tab_shipping' => 'Livraison',
         'tr_meliscommerce_orders_content_tab_messages' => 'Messages',
+        'tr_meliscommerce_orders_content_tab_return_products' => 'Retours',
         'tr_meliscommerce_orders_content_tabs_content_main_left_header_title' => 'Propriétés',
         'tr_meliscommerce_orders_content_tabs_content_baskets_left_header_title' => 'Panier',
         'tr_meliscommerce_orders_content_tabs_content_address_left_header_title' => 'Adresses',

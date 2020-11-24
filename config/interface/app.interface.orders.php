@@ -556,6 +556,21 @@ return [
                                                         'action' => 'render-orders-content-tab',
                                                     ],
                                                 ],
+                                                'meliscommerce_orders_content_tab_return_products' => [
+                                                    'conf' => [
+                                                        'id' => 'id_meliscommerce_orders_content_tab_return_products',
+                                                        'melisKey' => 'meliscommerce_orders_content_tab_return_products',
+                                                        'name' => 'tr_meliscommerce_orders_content_tab_return_products',
+                                                        'href' => 'id_meliscommerce_orders_content_tab_content_return_products',
+                                                        'icon' => 'glyphicons cart_out',
+                                                        'active' => '',
+                                                    ],
+                                                    'forward' => [
+                                                        'module' => 'MelisCommerce',
+                                                        'controller' => 'MelisComOrder',
+                                                        'action' => 'render-orders-content-tab',
+                                                    ],
+                                                ],
                                             ],
                                         ],
                                         'meliscommerce_orders_content_tabs_content' => [
