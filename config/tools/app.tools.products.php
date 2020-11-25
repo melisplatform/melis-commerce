@@ -118,7 +118,7 @@ return [
                     'table' => [
                         'target' => '#tableProductList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComProductList/getProductsList',
-                        'dataFunction' => '',
+                        'dataFunction' => 'initProductsTableData',
                         'ajaxCallback' => 'melisCommerce.initTooltipTable();',
                         'filters' => [
                             'left' => [
@@ -140,6 +140,11 @@ return [
                                     'controller' => 'MelisComProductList',
                                     'action' => 'render-product-list-content-filter-search'
                                 ],
+                                'product-list-table-category-and-catalog-filter' => [
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComProductList',
+                                    'action' => 'render-product-list-table-category-and-catalog-filter'
+                                ]
                                 /* 'product-list-table-filter-search' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComProductList',

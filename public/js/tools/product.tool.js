@@ -51,6 +51,7 @@ window.initProductCategoryList = function(productId, langLocale) {
             })
             .on('loaded.jstree', function (e, data) {
                 melisCommerce.pendingZoneDone("productCategorySearchZone");
+                setProductCategoryFilter($(this).attr('id'));
             })
             .jstree({
                 "types" : {
@@ -186,6 +187,8 @@ window.reInitProductTextTypeSelect = function(productId) {
             });
 }
 
+var productTableFilterSelectedCategories = [];
+
 $(function() {
     var $body = $("body");
 
@@ -204,6 +207,7 @@ $(function() {
                     btn.attr("disabled", false);
                 });
         });
+
 
         $body.on("click", ".addProductCategory", function() {
             var btn                 = $(this),
@@ -255,6 +259,26 @@ $(function() {
                 }
 
                 $("#id_meliscommerce_products_main_tab_categories_modal_container").modal("hide");
+        });
+
+        $body.on("click", ".productCategoryFilter", function(){
+            zoneId      = 'id_meliscommerce_products_main_tab_categories_modal';
+            melisKey    = 'meliscommerce_products_main_tab_categories_modal';
+            modalUrl    = '/melis/MelisCommerce/MelisComProduct/renderProductModal';
+
+            melisHelper.createModal(zoneId, melisKey, false, {productId: 0, isFilter: true}, modalUrl);
+        });
+
+        $body.on('click', '.filterProductCategory', function () {
+            productTableFilterSelectedCategories = [];
+            $.each($('#0_productCategoryList').jstree().get_checked(true), function(){
+                productTableFilterSelectedCategories.push(parseInt(this.id));
+            });
+
+            console.log(productTableFilterSelectedCategories);
+
+            $('#id_meliscommerce_products_main_tab_categories_modal_container').modal('hide');
+            $('#tableProductList').DataTable().ajax.reload();
         });
 
         $body.on("click", ".product-category-tree-view-lang li a", function() {
@@ -854,3 +878,15 @@ $(function() {
                 return strInt;
         }
 });
+
+window.initProductsTableData = function (tableData) {
+    tableData.selectedCategories = productTableFilterSelectedCategories;
+}
+
+window.setProductCategoryFilter = function (id) {
+    if (id == '0_productCategoryList') {
+        $.each(productTableFilterSelectedCategories, function(key, value) {
+            $('#0_productCategoryList').jstree().check_node(value + '_categoryId');
+        });
+    }
+}

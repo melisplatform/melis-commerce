@@ -145,6 +145,12 @@ class MelisComProductListController extends MelisAbstractActionController
     {
         return new ViewModel();
     }
+
+
+    /**
+     * Renders the category filter
+     */
+    public function renderProductListTableCategoryAndCatalogFilterAction() {}
     
     /**
      * This method return the list of Products
@@ -184,8 +190,10 @@ class MelisComProductListController extends MelisAbstractActionController
         
             $search = $this->getRequest()->getPost('search');
             $search = $search['value'];
-            
-            $prodData = $prodSvc->getProductList($langId, null, null, null, $start, $length, $selColOrder, $order[0]['dir'], $search);
+
+            $selectedCategories = $this->getRequest()->getPost('selectedCategories', []);
+
+            $prodData = $prodSvc->getProductList($langId, $selectedCategories, null, null, $start, $length, $selColOrder, $order[0]['dir'], $search);
             $checkBox = '<div class="checkbox checkbox-single margin-none" data-product-id="%s">
                             <label class="checkbox-custom">
                                 <i class="fa fa-fw fa-square-o"></i>
@@ -200,7 +208,7 @@ class MelisComProductListController extends MelisAbstractActionController
             // PRODUCT DETAILS
             $ctr = 0;
             $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
-            $dataCount = $prodSvc->getProductList($langId, null, null, null, null, null, $selColOrder, $order[0]['dir'], $search);
+            $dataCount = $prodSvc->getProductList($langId, $selectedCategories, null, null, null, null, $selColOrder, $order[0]['dir'], $search);
             foreach($prodData as $prod) 
             {
                 $prodText = $prodSvc->getProductName($prod->getProduct()->prd_id, $langId);
