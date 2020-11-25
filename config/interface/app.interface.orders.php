@@ -561,7 +561,7 @@ return [
                                                         'id' => 'id_meliscommerce_orders_content_tab_return_products',
                                                         'melisKey' => 'meliscommerce_orders_content_tab_return_products',
                                                         'name' => 'tr_meliscommerce_orders_content_tab_return_products',
-                                                        'href' => 'id_meliscommerce_orders_content_tab_content_return_products',
+                                                        'href' => 'id_meliscommerce_orders_content_tabs_content_return_products',
                                                         'icon' => 'glyphicons cart_out',
                                                         'active' => '',
                                                     ],
@@ -1381,6 +1381,88 @@ return [
                                                                         ],
                                                                     ],
                                                                 ],
+                                                            ],
+                                                        ],
+                                                    ],
+                                                ],
+                                                'meliscommerce_orders_content_tabs_content_return_products' => [
+                                                    'conf' => [
+                                                        'id' => 'id_meliscommerce_orders_content_tabs_content_return_products',
+                                                        'melisKey' => 'meliscommerce_orders_content_tabs_content_return_products',
+                                                        'name' => 'tr_meliscommerce_orders_content_tab_return_products',
+                                                        'active' => '',
+                                                    ],
+                                                    'forward' => [
+                                                        'module' => 'MelisCommerce',
+                                                        'controller' => 'MelisComOrder',
+                                                        'action' => 'render-orders-content-tabs-content-container',
+                                                    ],
+                                                    'interface' => [
+                                                        'meliscommerce_orders_content_tabs_content_return_products_header' => [
+                                                            'conf' => [
+                                                                'id' => 'id_meliscommerce_orders_content_tabs_content_return_products_header',
+                                                                'melisKey' => 'meliscommerce_orders_content_tabs_content_return_products_header',
+                                                                'name' => 'tr_meliscommerce_orders_content_tabs_content_return_products_header',
+                                                            ],
+                                                            'forward' => [
+                                                                'module' => 'MelisCommerce',
+                                                                'controller' => 'MelisComOrder',
+                                                                'action' => 'render-orders-content-tabs-content-header',
+                                                            ],
+                                                            'interface' => [
+                                                                'meliscommerce_orders_content_tabs_content_return_products_left_header' => [
+                                                                    'conf' => [
+                                                                        'id' => 'id_meliscommerce_orders_content_tabs_content_return_products_left_header',
+                                                                        'melisKey' => 'meliscommerce_orders_content_tabs_content_return_products_left_header',
+                                                                        'name' => 'tr_meliscommerce_orders_content_tabs_content_return_products_left_header',
+                                                                    ],
+                                                                    'forward' => [
+                                                                        'module' => 'MelisCommerce',
+                                                                        'controller' => 'MelisComOrder',
+                                                                        'action' => 'render-orders-content-tabs-content-left-header',
+                                                                    ],
+                                                                    'interface' => [
+                                                                        'meliscommerce_orders_content_tabs_content_return_products_left_header_title' => [
+                                                                            'conf' => [
+                                                                                'id' => 'id_meliscommerce_orders_content_tabs_content_return_products_left_header_title',
+                                                                                'melisKey' => 'meliscommerce_orders_content_tabs_content_return_products_left_header_title',
+                                                                                'name' => 'tr_meliscommerce_orders_content_tabs_content_return_products_left_header_title',
+                                                                            ],
+                                                                            'forward' => [
+                                                                                'module' => 'MelisCommerce',
+                                                                                'controller' => 'MelisComOrder',
+                                                                                'action' => 'render-orders-content-tabs-content-left-header-title',
+                                                                            ],
+                                                                        ],
+                                                                    ],
+                                                                ],
+                                                                'meliscommerce_orders_content_tabs_content_return_products_right_header' => [
+                                                                    'conf' => [
+                                                                        'id' => 'id_meliscommerce_orders_content_tabs_content_return_products_right_header',
+                                                                        'melisKey' => 'meliscommerce_orders_content_tabs_content_return_products_right_header',
+                                                                        'name' => 'tr_meliscommerce_orders_content_tabs_content_return_products_right_header',
+                                                                    ],
+                                                                    'forward' => [
+                                                                        'module' => 'MelisCommerce',
+                                                                        'controller' => 'MelisComOrder',
+                                                                        'action' => 'render-orders-content-tabs-content-right-header',
+                                                                    ],
+                                                                    'interface' => [
+
+                                                                    ],
+                                                                ],
+                                                            ],
+                                                        ],
+                                                        'meliscommerce_orders_content_tabs_content_return_products_content' => [
+                                                            'conf' => [
+                                                                'id' => 'id_meliscommerce_orders_content_tabs_content_return_products_content',
+                                                                'melisKey' => 'meliscommerce_orders_content_tabs_content_return_products_content',
+                                                                'name' => 'tr_meliscommerce_orders_content_tabs_content_return_products_content',
+                                                            ],
+                                                            'forward' => [
+                                                                'module' => 'MelisCommerce',
+                                                                'controller' => 'MelisComOrderProductReturn',
+                                                                'action' => 'render-order-product-return-content',
                                                             ],
                                                         ],
                                                     ],

@@ -21,6 +21,7 @@
 	    'tr_meliscommerce_orders_content_tabs_content_messages_left_header_title' => 'Messages',
 	    'tr_meliscommerce_orders_content_tabs_content_messages_right_header_add' => 'Add message',
 	    'tr_meliscommerce_orders_content_tabs_content_shipping_right_header_add' => 'Add a shipping',
+	    'tr_meliscommerce_orders_content_tabs_content_return_products_left_header_title' => 'Return of products',
 	    
 	    // order list table
 	    'tr_meliscommerce_order_list_header_title' => 'Order list',

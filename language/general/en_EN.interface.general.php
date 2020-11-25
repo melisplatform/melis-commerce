@@ -28,6 +28,7 @@
 	    'tr_meliscommerce_general_common_site' => 'Site',
 	    'tr_meliscommerce_general_common_no_result_found' => 'No result found',
 	    'tr_meliscommerce_general_common_pagination' => 'Pagination',
+	    'tr_meliscommerce_general_common_id' => 'ID',
 
 	    'tr_meliscommerce_general_text' => 'General', 
 	    'tr_meliscommerce_general_permission_error_label' => 'Permission denied',

@@ -112,6 +112,7 @@ return [
             'MelisComCurrencyService'                       => \MelisCommerce\Service\MelisComCurrencyService::class,
             'MelisComLinksService'                          => \MelisCommerce\Service\MelisComLinksService::class,
             'MelisComClientGroupsService'                   => \MelisCommerce\Service\MelisComClientGroupsService::class,
+            'MelisComOrderProductReturnService'             => \MelisCommerce\Service\MelisComOrderProductReturnService::class,
 
             // Tables
             'MelisEcomAttributeTable'                       => \MelisCommerce\Model\Tables\MelisEcomAttributeTable::class,
@@ -165,6 +166,8 @@ return [
             'MelisEcomVariantStockTable'                    => \MelisCommerce\Model\Tables\MelisEcomVariantStockTable::class,
             'MelisEcomVariantTable'                         => \MelisCommerce\Model\Tables\MelisEcomVariantTable::class,
             'MelisEcomClientGroupsTable'                    => \MelisCommerce\Model\Tables\MelisEcomClientGroupsTable::class,
+            'MelisEcomOrderProductReturnTable'              => \MelisCommerce\Model\Tables\MelisEcomOrderProductReturnTable::class,
+            'MelisEcomOrderProductReturnDetailsTable'       => \MelisCommerce\Model\Tables\MelisEcomOrderProductReturnDetailsTable::class,
         ],
         'abstract_factories' => [
             'Laminas\Cache\Service\StorageCacheAbstractServiceFactory',
@@ -200,6 +203,7 @@ return [
             'MelisCommerce\Controller\MelisComOrderStatus'          => \MelisCommerce\Controller\MelisComOrderStatusController::class,
             'MelisCommerce\Controller\MelisComSettings'             => \MelisCommerce\Controller\MelisComSettingsController::class,
             'MelisCommerce\Controller\MelisComClientsGroup'         => \MelisCommerce\Controller\MelisComClientsGroupController::class,
+            'MelisCommerce\Controller\MelisComOrderProductReturn'   => \MelisCommerce\Controller\MelisComOrderProductReturnController::class,
         ],
     ],
     'controller_plugins' => [
