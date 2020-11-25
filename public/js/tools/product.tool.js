@@ -275,8 +275,6 @@ $(function() {
                 productTableFilterSelectedCategories.push(parseInt(this.id));
             });
 
-            console.log(productTableFilterSelectedCategories);
-
             $('#id_meliscommerce_products_main_tab_categories_modal_container').modal('hide');
             $('#tableProductList').DataTable().ajax.reload();
         });
