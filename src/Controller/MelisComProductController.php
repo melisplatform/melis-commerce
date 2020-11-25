@@ -380,6 +380,7 @@ class MelisComProductController extends MelisAbstractActionController
     public function renderProductsMainTabCategoriesModalAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
+        $isFilter = $this->params()->fromQuery('isFilter', false);
         
         $langTable = $this->getServiceManager()->get('MelisEcomLangTable');
         $langData = $langTable->langOrderByName();
@@ -411,6 +412,7 @@ class MelisComProductController extends MelisAbstractActionController
         $view->langData = $recLangData;
         $view->currentLangName = $currentLangName;
         $view->currentLangLocale = $locale;
+        $view->isFilter = $isFilter;
         return $view;
     }
 
