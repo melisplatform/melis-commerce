@@ -241,17 +241,59 @@ class MelisComProductSearchService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_productsearch_full_pricerange_start', $arrayParameters);
 
 		// Service implementation start
+
+
 		$selectedVariants = array();
-		$prodTable = $this->getServiceManager()->get('MelisEcomProductTable');
+
+		// Variant attribute filter
+		$prodTbl = $this->getServiceManager()->get('MelisEcomProductTable');
 		if(!empty($arrayParameters['attributeValuesIds']) && is_array($arrayParameters['attributeValuesIds'])) {
-			$selectedVariants = $prodTable->getProductVariantByAttributesId($arrayParameters['attributeValuesIds']);
+			$selectedVariants = $prodTbl->getProductVariantByAttributesId($arrayParameters['attributeValuesIds']);
 			if(empty($selectedVariants)){
 				$selectedVariants = array('');
 			}
 		}
 
+		// Variant price filter
+		$prdSrv = $this->getServiceManager()->get('MelisComProductService');
+		$varSrv = $this->getServiceManager()->get('MelisComVariantService');
+		if(!empty($arrayParameters['priceMin']) || is_array($arrayParameters['priceMax'])) {
+
+			foreach($prdSrv->getProductList($arrayParameters['langId'], $arrayParameters['categoryId'], $arrayParameters['countryId'], true) As $product) {
+
+				$productId = $product->getId();
+
+				foreach ($prdSrv->getProductVariants($productId, true) As $variant ) {
+
+					// Getting the Final Price of the variant
+					$varPrice = $varSrv->getVariantFinalPrice($variant->var_id, $arrayParameters['countryId'], $arrayParameters['groupId']);
+
+					if (empty($varPrice)) {
+						// If the variant price not set on variant page this will try to get from the Product Price
+						$varPrice = $prdSrv->getProductFinalPrice($productId, $arrayParameters['countryId'], $arrayParameters['groupId']);
+					}
+
+					if (!is_null($varPrice) && !in_array($variant->var_id, $selectedVariants)) {
+
+						$columnPrice = $arrayParameters['priceColumn'];
+						if (!empty($arrayParameters['priceMin']))
+							if ($varPrice->$columnPrice < $arrayParameters['priceMin'])
+								break;
+						
+						if (!empty($arrayParameters['priceMax']))
+							if ($varPrice->$columnPrice > $arrayParameters['priceMax'])
+								break;
+
+						$selectedVariants[] = $variant->var_id;
+					}
+				}
+			}
+		}
+
+		// dd($selectedVariants);
+
 		$productData = array();
-		$data = $prodTable->getProductByNameTextTypeAttrIdsAndPrice($arrayParameters['search'], $arrayParameters['fieldsTypeCodes'],
+		$data = $prodTbl->getProductByNameTextTypeAttrIdsAndPrice($arrayParameters['search'], $arrayParameters['fieldsTypeCodes'],
 			$selectedVariants, $arrayParameters['categoryId'], (float) $arrayParameters['priceMin'], (float) $arrayParameters['priceMax'],  $arrayParameters['langId'],
 			$arrayParameters['countryId'], (int) $arrayParameters['onlyValid'], $arrayParameters['start'], $arrayParameters['limit'], $arrayParameters['sort'], $arrayParameters['priceColumn']
 		);
@@ -273,7 +315,7 @@ class MelisComProductSearchService extends MelisComGeneralService
 			
 			$productData = array_unique($productData, SORT_REGULAR);
 			
-			$prdSrv = $this->getServiceManager()->get('MelisComProductService');
+			
 			
 			foreach ($productData As $val)
 			{
