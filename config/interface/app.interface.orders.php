@@ -1464,6 +1464,58 @@ return [
                                                                 'controller' => 'MelisComOrderProductReturn',
                                                                 'action' => 'render-order-product-return-content',
                                                             ],
+                                                            'interface' => [
+                                                                'meliscommerce_orders_content_tabs_content_return_products_content_list' => [
+                                                                    'conf' => [
+                                                                        'id' => 'id_meliscommerce_orders_content_tabs_content_return_products_content_list',
+                                                                        'melisKey' => 'meliscommerce_orders_content_tabs_content_return_products_content_list',
+                                                                        'name' => 'tr_meliscommerce_orders_content_tabs_content_return_products_content_list',
+                                                                    ],
+                                                                    'forward' => [
+                                                                        'module' => 'MelisCommerce',
+                                                                        'controller' => 'MelisComOrderProductReturn',
+                                                                        'action' => 'render-order-product-return-content-list',
+                                                                    ],
+                                                                ],
+                                                                'meliscommerce_orders_content_tabs_content_return_products_content_message' => [
+                                                                    'conf' => [
+                                                                        'id' => 'id_meliscommerce_orders_content_tabs_content_return_products_content_message',
+                                                                        'melisKey' => 'meliscommerce_orders_content_tabs_content_return_products_content_message',
+                                                                        'name' => 'tr_meliscommerce_orders_content_tabs_content_return_products_content_message',
+                                                                    ],
+                                                                    'forward' => [
+                                                                        'module' => 'MelisCommerce',
+                                                                        'controller' => 'MelisComOrderProductReturn',
+                                                                        'action' => 'render-order-product-return-content-message',
+                                                                    ],
+                                                                    'interface' => [
+                                                                        'meliscommerce_orders_content_tabs_content_return_products_content_message_header' => [
+                                                                            'conf' => [
+                                                                                'id' => 'id_meliscommerce_orders_content_tabs_content_return_products_content_message_header',
+                                                                                'melisKey' => 'meliscommerce_orders_content_tabs_content_return_products_content_message_header',
+                                                                                'name' => 'tr_meliscommerce_orders_content_tabs_content_return_products_content_message_header',
+                                                                            ],
+                                                                            'forward' => [
+                                                                                'module' => 'MelisCommerce',
+                                                                                'controller' => 'MelisComOrderProductReturn',
+                                                                                'action' => 'render-order-product-return-content-message-header',
+                                                                            ],
+                                                                        ],
+                                                                        'meliscommerce_orders_content_tabs_content_return_products_content_message_timeline' => [
+                                                                            'conf' => [
+                                                                                'id' => 'id_meliscommerce_orders_content_tabs_content_return_products_content_message_timeline',
+                                                                                'melisKey' => 'meliscommerce_orders_content_tabs_content_return_products_content_message_timeline',
+                                                                                'name' => 'tr_meliscommerce_orders_content_tabs_content_return_products_content_message_timeline',
+                                                                            ],
+                                                                            'forward' => [
+                                                                                'module' => 'MelisCommerce',
+                                                                                'controller' => 'MelisComOrderProductReturn',
+                                                                                'action' => 'render-order-product-return-content-message-timeline',
+                                                                            ],
+                                                                        ],
+                                                                    ]
+                                                                ],
+                                                            ]
                                                         ],
                                                     ],
                                                 ],

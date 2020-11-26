@@ -138,7 +138,7 @@ class MelisComOrderService extends MelisComGeneralService
 	            $melisOrder->setShipping($orderShipping);
 	            
 	            //Get Order Messages
-	            $orderMessages = $this->getOrderMessageByOrderId($orderId);
+	            $orderMessages = $this->getOrderMessageByOrderId($orderId, 'MSG');
 	            $melisOrder->setMessages($orderMessages);
 
 	            // Get Order ducoments
@@ -593,10 +593,11 @@ class MelisComOrderService extends MelisComGeneralService
 	 * Results are ordered by creation date
 	 *
 	 * @param int $orderId The order id
+	 * @param string $msgType The order message type (MSG,RETURN)
 	 *
 	 * @return MelisEcomOrderMessage[] Array of Order message objects
 	 */
-	public function getOrderMessageByOrderId($orderId)
+	public function getOrderMessageByOrderId($orderId, $msgType = null)
 	{
 	    // Event parameters prepare
 	    $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -607,7 +608,7 @@ class MelisComOrderService extends MelisComGeneralService
 	    
 	    // Service implementation start
 	    $melisEcomOrderMessageTable = $this->getServiceManager()->get('MelisEcomOrderMessageTable');
-	    foreach($melisEcomOrderMessageTable->getOrderMessageByOrderId($arrayParameters['orderId']) as $message){
+	    foreach($melisEcomOrderMessageTable->getOrderMessageByOrderId($arrayParameters['orderId'], $arrayParameters['msgType']) as $message){
 	        $results[] = $message;
 	    }
 	    // Service implementation end
