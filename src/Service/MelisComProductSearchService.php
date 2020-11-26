@@ -277,19 +277,10 @@ class MelisComProductSearchService extends MelisComGeneralService
 
 						$columnPrice = $arrayParameters['priceColumn'];
 
-						
-// dump($variant->var_id);
-// dump($varPrice->$columnPrice);
-// dump(!is_numeric((float)$varPrice->$columnPrice));
-// dump(is_null($varPrice->$columnPrice));
-// dump(!is_numeric(((float)$varPrice->$columnPrice) || is_null(($varPrice->$columnPrice))));
-// echo '========================';
 						$flag = true;
 						if (!is_null(($varPrice->$columnPrice)))
 							if (!is_numeric(((float)$varPrice->$columnPrice)))
 								$flag = false; 
-
-						// dump($flag);
 
 						if (!empty($arrayParameters['priceMin']) && $flag)
 							if ($varPrice->$columnPrice < $arrayParameters['priceMin'])
@@ -299,12 +290,14 @@ class MelisComProductSearchService extends MelisComGeneralService
 							if ($varPrice->$columnPrice > $arrayParameters['priceMax'])
 								$flag = false;
 
-						
-						if ($flag){
-							// dump($productId);
+						if ($flag && !in_array($variant->var_id, $selectedVariants)){
 							$selectedVariants[] = $variant->var_id;
+						}else{
+							$variantId = $variant->var_id;
+							$selectedVariants = array_filter($selectedVariants, function( $val) use ($variantId)  {
+								return $val != $variantId;
+							});
 						}
-							
 					}
 				}
 			}
