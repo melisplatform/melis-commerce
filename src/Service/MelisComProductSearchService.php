@@ -276,19 +276,41 @@ class MelisComProductSearchService extends MelisComGeneralService
 					if (!is_null($varPrice) && !in_array($variant->var_id, $selectedVariants)) {
 
 						$columnPrice = $arrayParameters['priceColumn'];
-						if (!empty($arrayParameters['priceMin']))
-							if ($varPrice->$columnPrice < $arrayParameters['priceMin'])
-								break;
-						
-						if (!empty($arrayParameters['priceMax']))
-							if ($varPrice->$columnPrice > $arrayParameters['priceMax'])
-								break;
 
-						$selectedVariants[] = $variant->var_id;
+						
+// dump($variant->var_id);
+// dump($varPrice->$columnPrice);
+// dump(!is_numeric((float)$varPrice->$columnPrice));
+// dump(is_null($varPrice->$columnPrice));
+// dump(!is_numeric(((float)$varPrice->$columnPrice) || is_null(($varPrice->$columnPrice))));
+// echo '========================';
+						$flag = true;
+						if (!is_null(($varPrice->$columnPrice)))
+							if (!is_numeric(((float)$varPrice->$columnPrice)))
+								$flag = false; 
+
+						// dump($flag);
+
+						if (!empty($arrayParameters['priceMin']) && $flag)
+							if ($varPrice->$columnPrice < $arrayParameters['priceMin'])
+								$flag = false;
+						
+						if (!empty($arrayParameters['priceMax']) && $flag)
+							if ($varPrice->$columnPrice > $arrayParameters['priceMax'])
+								$flag = false;
+
+						
+						if ($flag){
+							// dump($productId);
+							$selectedVariants[] = $variant->var_id;
+						}
+							
 					}
 				}
 			}
 		}
+
+		// dump($selectedVariants);
 
 		// dd($selectedVariants);
 
