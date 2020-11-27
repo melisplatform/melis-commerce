@@ -310,7 +310,7 @@ return [
                             ],
                         ],
                         'columns' => [
-                            'pret_id' => [
+                            'pretd_variant_id' => [
                                 'text' => 'tr_meliscommerce_general_common_id',
                                 'css' => ['width' => '1%', 'padding-right' => '0'],
                                 'sortable' => true,
