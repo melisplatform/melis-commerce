@@ -293,6 +293,7 @@ class MelisComProductSearchService extends MelisComGeneralService
 						if ($flag && !in_array($variant->var_id, $selectedVariants)){
 							$selectedVariants[] = $variant->var_id;
 						}else{
+							// Removing variants not qualified from filter
 							$variantId = $variant->var_id;
 							$selectedVariants = array_filter($selectedVariants, function( $val) use ($variantId)  {
 								return $val != $variantId;
