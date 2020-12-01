@@ -47,6 +47,11 @@ $(function() {
 
                 $this.closest('.container-level-a').find('.add-message').slideToggle();
         });
+        //return product  message form toggle
+        $body.on("click", ".addReturnMessage", function() {
+            var $this = $(this);
+            $this.closest('.container-level-a').find('.add-return-message').slideToggle();
+        });
 
         // order list - refreshes the order list table
         $body.on("click", ".orderListRefresh", function(){
@@ -183,12 +188,14 @@ $(function() {
         // order page - saves the new created message
         $body.on("click", ".add-order-message", function() {
             var $this       = $(this),
+                type        = $this.data("type"),
                 id          = $this.closest('.container-level-a').attr('id'),
                 orderId     = isNaN(parseInt(id, 10)) ? '' : parseInt(id, 10),
                 dataString  = $this.closest('div').find('form').serializeArray(),
                 url         = 'melis/MelisCommerce/MelisComOrder/saveOrderMessage';
 
                 dataString.push({name : 'orderId', value : orderId});
+                dataString.push({name : 'omsg_type', value : type});
 
                 melisCoreTool.pending(this);
 
@@ -208,6 +215,35 @@ $(function() {
                 
                 melisCoreTool.done(this);
         });
+
+    // order page - saves the new created return message
+    $body.on("click", ".add-order-return-message", function() {
+        var $this       = $(this),
+            id          = $this.closest('.container-level-a').attr('id'),
+            orderId     = isNaN(parseInt(id, 10)) ? '' : parseInt(id, 10),
+            dataString  = $this.closest('div').find('form').serializeArray(),
+            url         = 'melis/MelisCommerce/MelisComOrder/saveOrderMessage';
+
+        dataString.push({name : 'orderId', value : orderId});
+        dataString.push({name : 'omsg_type', value : "RETURN"});
+
+        melisCoreTool.pending(this);
+
+        melisCommerce.postSave(url, dataString, function(data){
+            if(data.success){
+                melisHelper.melisOkNotification( data.textTitle, data.textMessage );
+                melisHelper.zoneReload( orderId+"_id_meliscommerce_orders_content_tabs_content_return_products_content_message_timeline", "meliscommerce_orders_content_tabs_content_return_products_content_message_timeline", { "orderId" : orderId});
+
+            }else{
+                melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
+                melisCoreTool.highlightErrors(data.success, data.errors, orderId+"_id_meliscommerce_orders_page");
+            }
+        }, function(data){
+            console.log(data);
+        });
+
+        melisCoreTool.done(this);
+    });
 
         // order list - toggles the status form modal
         $body.on("click", ".updateListStatus", function() {

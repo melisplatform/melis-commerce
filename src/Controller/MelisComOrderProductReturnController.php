@@ -64,6 +64,20 @@ class MelisComOrderProductReturnController extends MelisAbstractActionController
         $productReturn = $this->getServiceManager()->get('MelisComOrderProductReturnService');
         $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
         $prodSvc = $this->getServiceManager()->get('MelisComProductService');
+
+        /**
+         * Get message form
+         */
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
+        $appConfigMessageForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_orders/meliscommerce_order_message_form','meliscommerce_order_message_form');
+        $messageform = $factory->createForm($appConfigMessageForm);
+        /**
+         * END
+         */
+
         $messages = [];
         $returnProduct = [];
         $returnProductData =  $productReturn->getOrderProductReturnList($orderId);
@@ -93,6 +107,7 @@ class MelisComOrderProductReturnController extends MelisAbstractActionController
 
         $image = '';
         foreach($returnProduct as $rProduct) {
+
             foreach($rProduct['details'] as $key => $det){
                 $productInfo = $variantSvc->getProductByVariantId($det['pretd_variant_id']);
                 $prodId = $productInfo->prd_id;
@@ -150,6 +165,7 @@ class MelisComOrderProductReturnController extends MelisAbstractActionController
         $view->messages = $messages;
         $view->melisKey = $melisKey;
         $view->orderId = $orderId;
+        $view->messageForm = $messageform;
         return $view;
     }
 

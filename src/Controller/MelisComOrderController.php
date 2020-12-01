@@ -1247,14 +1247,20 @@ class MelisComOrderController extends MelisAbstractActionController
             }
             
             if(empty($errors)){
-                $orderMesasge = array(
-                    'omsg_order_id' => $postValues['orderId'],
-                    'omsg_client_id' => $order->ord_client_id,
-                    'omsg_client_person_id' => $order->ord_client_person_id,
-                    'omsg_user_id' => $userId,
-                    'omsg_message' => $postValues['omsg_message'],
-                    'omsg_date_creation' => date('Y-m-d H:i:s'),
-                );
+                $orderMesasge = [];
+                //prepare order msg data
+                foreach($postValues as $key => $val){
+                    if (strpos($key, 'omsg_') !== false) {
+                        $orderMesasge[$key] = $val;
+                    }
+                }
+
+                $orderMesasge['omsg_order_id'] = $postValues['orderId'];
+                $orderMesasge['omsg_client_id'] = $order->ord_client_id;
+                $orderMesasge['omsg_client_person_id'] = $order->ord_client_person_id;
+                $orderMesasge['omsg_user_id'] = $userId;
+                $orderMesasge['omsg_date_creation'] = date('Y-m-d H:i:s');
+
                 $orderMsgId = $melisComOrderService->saveOrderMessage($orderMesasge);
                 if($orderMsgId){
                     $success = 1;

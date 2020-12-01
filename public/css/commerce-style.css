@@ -1535,6 +1535,12 @@ textarea {
     width: 50%;
     margin: 0 auto;
 }
+
+.add-return-message {
+    width: 50%;
+    margin: 0 auto 50px auto;
+}
+
 .message-post {
     padding: 10px 0;
     border-bottom: 1px solid #eee;
