@@ -246,6 +246,7 @@ return [
             'MelisCommerceOrderAddressPlugin'                   => \MelisCommerce\Controller\Plugin\MelisCommerceOrderAddressPlugin::class,
             'MelisCommerceOrderShippingDetailsPlugin'           => \MelisCommerce\Controller\Plugin\MelisCommerceOrderShippingDetailsPlugin::class,
             'MelisCommerceOrderMessagesPlugin'                  => \MelisCommerce\Controller\Plugin\MelisCommerceOrderMessagesPlugin::class,
+            'MelisCommerceOrderReturnProductPlugin'             => \MelisCommerce\Controller\Plugin\MelisCommerceOrderReturnProductPlugin::class,
 
             // Dashboard plugins
             'MelisCommerceDashboardPluginOrdersNumber'          => \MelisCommerce\Controller\DashboardPlugins\MelisCommerceDashboardPluginOrdersNumber::class,
@@ -352,6 +353,7 @@ return [
             'MelisCommerceOrder/order-addresses'                    => __DIR__ . '/../view/plugins/order/order-addresses.phtml',
             'MelisCommerceOrder/order-shipping-details'             => __DIR__ . '/../view/plugins/order/order-shipping-details.phtml',
             'MelisCommerceOrder/order-messages'                     => __DIR__ . '/../view/plugins/order/order-messages.phtml',
+            'MelisCommerceOrder/order-return-product'               => __DIR__ . '/../view/plugins/order/order-return-product.phtml',
 
             // Plugin common form config layout
             'MelisCommerce/plugin-common-form-config'               => __DIR__ . '/../view/plugins/common/plugin-common-form-config.phtml',

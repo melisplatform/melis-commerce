@@ -242,7 +242,8 @@ class Module
     	    include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderAddressPlugin.php',
     	    include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderShippingDetailsPlugin.php',
     	    include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderMessagesPlugin.php',
-    	    
+    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderReturnProductPlugin.php',
+
     	    // products plugin configs
             include __DIR__ . '/../config/plugins/products/MelisCommerceProductSearchPlugin.php',
     	    include __DIR__ . '/../config/plugins/products/MelisCommerceProductShowPlugin.php',
