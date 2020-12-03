@@ -90,7 +90,10 @@ class MelisCommerceOrderPlugin extends MelisTemplatingPlugin
 
         $messagesParamenters    = !empty($formData['order_messages_parameters'])         ? $formData['order_messages_parameters'] : array();
         $messagesParamenters    = ArrayUtils::merge($messagesParamenters, array('id' => 'orderMessages_'.$formData['id'], 'pageId' => $formData['pageId']));
-        
+
+        $rpParameters    = !empty($formData['order_return_product_parameters']) ? $formData['order_return_product_parameters'] : array();
+        $rpParameters    = ArrayUtils::merge($rpParameters, array('id' => 'orderProductReturn_'.$formData['id'], 'pageId' => $formData['pageId']));
+
         $orderStatus = $orderSvc->getOrderStatusList($langId);
 
         if ($ecomAuthSrv->hasIdentity())
@@ -244,12 +247,18 @@ class MelisCommerceOrderPlugin extends MelisTemplatingPlugin
         $orderMessagesPlugin = $this->getServiceManager()->get('ControllerPluginManager')->get('MelisCommerceOrderMessagesPlugin');
         $messagesParamenters = ArrayUtils::merge($messagesParamenters, array('m_om_order_id' => $orderId));
         $orderMessagesView = $orderMessagesPlugin->render($messagesParamenters);
-        
+
+        // Use order return product plugin
+        $orderReturnProductPlugin = $this->getServiceManager()->get('ControllerPluginManager')->get('MelisCommerceOrderReturnProductPlugin');
+        $rpParameters = ArrayUtils::merge($rpParameters, array('m_rp_order_id' => $orderId));
+        $orderReturnProductView = $orderReturnProductPlugin->render($rpParameters);
+
         $viewVariables = array(
             'order' => $order,
             'orderAddress' => $orderAddressPluginView,
             'orderShippingDetails' => $orderShippingDetailsView,
             'orderMessages' => $orderMessagesView,
+            'returnProduct' => $orderReturnProductView
         );
         
         // return the variable array and let the view be created
@@ -406,8 +415,6 @@ class MelisCommerceOrderPlugin extends MelisTemplatingPlugin
         {
             $xmlValueFormatted = "\t".'<'.$this->pluginXmlDbKey.' id="'.$parameters['melisPluginId'].'">'.$xmlValueFormatted."\t".'</'.$this->pluginXmlDbKey.'>'."\n";
         }
-        
-        var_dump($xmlValueFormatted);
         
         return $xmlValueFormatted;
     }

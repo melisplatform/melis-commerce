@@ -14,20 +14,50 @@ return [
                 'MelisCommerceOrderReturnProductPlugin' => [
                     'front' => [
                         'template_path' => ['MelisCommerceOrder/order-return-product'],
-                        'id' => 'orderDetails',
-                        
+                        'id' => 'orderProductReturn',
                         // Order id
-                        'm_order_id' => null,
-                        
-                        'order_address_parameters' => [],
-                        'order_shipping_details_parameters' => [],
-                        'order_messages_parameters' => [],
-                        
-                        // Sub plugins
-                        'sub_plugins_params' => [
-                            'order_address_parameters',
-                            'order_shipping_details_parameters',
-                            'order_messages_parameters',
+                        'm_rp_order_id' => null,
+
+                        'forms' => [
+                            'meliscommerce_order_return_product_form' => [
+                                'attributes' => [
+                                    'name' => 'returnProductForm',
+                                    'id' => 'returnProductForm',
+                                    'method' => 'POST',
+                                    'action' => '',
+                                    'class' => '',
+                                ],
+                                'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                                'elements' => [
+                                    [
+                                        'spec' => [
+                                            'name' => 'm_rp_order_id',
+                                            'type' => 'hidden',
+                                        ]
+                                    ],
+                                    [
+                                        'spec' => [
+                                            'name' => 'rp_quantity',
+                                            'type' => 'Select',
+                                            'attributes' => [
+                                                'id' => 'rp_quantity',
+                                            ],
+                                        ]
+                                    ],
+                                    [
+                                        'spec' => [
+                                            'name' => 'rp_message',
+                                            'type' => 'Textarea',
+                                            'attributes' => [
+                                                'id' => 'rp_message',
+                                            ],
+                                        ]
+                                    ],
+                                ],
+                                'input_filter' => [
+
+                                ],
+                            ]
                         ]
                     ],
                     'melis' => [
@@ -61,7 +91,7 @@ return [
                         ],
                         'js_initialization' => [],
                         'modal_form' => [
-                            'melis_commerce_plugin_order_details_config' => [
+                            'melis_commerce_plugin_order_return_product_config' => [
                                 'tab_title' => 'tr_meliscommerce_general_plugin_properties_title',
                                 'tab_icon'  => 'fa fa-cogs',
                                 'tab_form_layout' => 'MelisCommerce/plugin-common-form-config',

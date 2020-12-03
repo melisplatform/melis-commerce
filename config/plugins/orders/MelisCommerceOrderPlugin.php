@@ -22,12 +22,14 @@ return [
                         'order_address_parameters' => [],
                         'order_shipping_details_parameters' => [],
                         'order_messages_parameters' => [],
-                        
+                        'order_return_product_parameters' => [],
+
                         // Sub plugins
                         'sub_plugins_params' => [
                             'order_address_parameters',
                             'order_shipping_details_parameters',
                             'order_messages_parameters',
+                            'order_return_product_parameters',
                         ]
                     ],
                     'melis' => [

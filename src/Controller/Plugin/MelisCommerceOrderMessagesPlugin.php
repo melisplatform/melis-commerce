@@ -126,7 +126,7 @@ class MelisCommerceOrderMessagesPlugin extends MelisTemplatingPlugin
         
         if(!empty($orderId))
         {
-            foreach($orderSvc->getOrderMessageByOrderId($orderId) as $message)
+            foreach($orderSvc->getOrderMessageByOrderId($orderId, 'MSG') as $message)
             {
                 $tmp = array();
                 $tmp = $message->getArrayCopy();
@@ -331,8 +331,6 @@ class MelisCommerceOrderMessagesPlugin extends MelisTemplatingPlugin
         {
             $xmlValueFormatted = "\t".'<'.$this->pluginXmlDbKey.' id="'.$parameters['melisPluginId'].'">'.$xmlValueFormatted."\t".'</'.$this->pluginXmlDbKey.'>'."\n";
         }
-        
-        var_dump($xmlValueFormatted);
         
         return $xmlValueFormatted;
     }
