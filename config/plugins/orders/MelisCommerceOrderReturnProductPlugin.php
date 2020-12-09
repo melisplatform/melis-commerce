@@ -17,7 +17,27 @@ return [
                         'id' => 'orderProductReturn',
                         // Order id
                         'm_rp_order_id' => null,
+                        'm_rp_data' => [],//array if variant id and it's quantity
+                        /**
+                         * ex foramt:
+                         * [
+                         *      1 => 10, // 1 is the variant id while 10 is the quantity to return
+                         *      2 => 20
+                         * ]
+                         */
 
+
+                        'omsg_message' => null,
+                        'm_rp_is_submit' => 0,
+
+                        'files' => [
+                            'css' => [
+                                '/MelisCommerce/plugins/css/def-return-product.css'
+                            ],
+                            'js' => [
+                                '/MelisCommerce/plugins/js/def-return-product.js'
+                            ],
+                        ],
                         'forms' => [
                             'meliscommerce_order_return_product_form' => [
                                 'attributes' => [
@@ -31,25 +51,22 @@ return [
                                 'elements' => [
                                     [
                                         'spec' => [
-                                            'name' => 'm_rp_order_id',
+                                            'name' => 'm_rp_is_submit',
                                             'type' => 'hidden',
                                         ]
                                     ],
                                     [
                                         'spec' => [
-                                            'name' => 'rp_quantity',
-                                            'type' => 'Select',
-                                            'attributes' => [
-                                                'id' => 'rp_quantity',
-                                            ],
-                                        ]
-                                    ],
-                                    [
-                                        'spec' => [
-                                            'name' => 'rp_message',
+                                            'name' => 'omsg_message',
                                             'type' => 'Textarea',
+                                            'options' => [
+                                                'label' => 'Explanation',
+                                                'label_attributes' => [
+                                                    'class' => 'col-form-label col-md-4'
+                                                ],
+                                            ],
                                             'attributes' => [
-                                                'id' => 'rp_message',
+                                                'id' => 'omsg_message',
                                             ],
                                         ]
                                     ],
@@ -77,9 +94,9 @@ return [
                             'id' => 'ORDERS',
                             'title' => 'tr_meliscommerce_orders_Orders'
                         ],
-                        'name' => '\tr_meliscommerce_plugin_order_details_name',
+                        'name' => '\tr_meliscommerce_plugin_order_return_product_name',
                         'thumbnail' => '/MelisCommerce/plugins/images/MelisCommerceOrderPlugin.jpg',
-                        'description' => '\tr_meliscommerce_plugin_order_details_description',
+                        'description' => '\tr_meliscommerce_plugin_order_return_product_description',
                         // List the files to be automatically included for the correct display of the plugin
                         // To overide a key, just add it again in your site module
                         // To delete an entry, use the keyword "disable" instead of the file path for the same key
@@ -87,6 +104,7 @@ return [
                             'css' => [
                             ],
                             'js' => [
+
                             ],
                         ],
                         'js_initialization' => [],

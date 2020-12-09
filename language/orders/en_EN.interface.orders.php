@@ -203,6 +203,10 @@
 	    'tr_meliscommerce_plugin_order_messages_description' => 'This plugin displays order messages',
 	    'tr_meliscommerce_plugin_order_messages_area' => 'Message Area',
 
+	    //MelisCommerceOrderReturnProductPlugin()
+        'tr_meliscommerce_plugin_order_return_product_name' => 'Order return products',
+        'tr_meliscommerce_plugin_order_return_product_description' => 'Order return products',
+
 	    // Dashborad plugin
 
         //number of orders plugin

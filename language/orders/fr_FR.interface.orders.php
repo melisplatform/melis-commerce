@@ -202,7 +202,11 @@
         'tr_meliscommerce_plugin_order_messages_name' => 'Messages de la commande',
         'tr_meliscommerce_plugin_order_messages_description' => 'Ce plugin affiche les messages de la commande',
         'tr_meliscommerce_plugin_order_messages_area' => 'Zone de messages',
-        
+
+        //MelisCommerceOrderReturnProductPlugin()
+        'tr_meliscommerce_plugin_order_return_product_name' => 'Order return products',
+        'tr_meliscommerce_plugin_order_return_product_description' => 'Order return products',
+
         //Dashboard Plugin
         //number of orders plugin
         'tr_PluginSection_meliscommerce' => 'Melis Commerce',

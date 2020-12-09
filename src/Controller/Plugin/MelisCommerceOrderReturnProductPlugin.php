@@ -65,8 +65,9 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
      */
     public function front()
     {
-        $clientId = null;
         $returnProducts = [];
+        $success = 0;
+        $message = 'Problem occurred while returning product';
         
         $ecomAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
         $orderSvc = $this->getServiceManager()->get('MelisComOrderService');
@@ -82,6 +83,16 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
         $formData = $this->getFormData();
 
         $orderId  = !empty($formData['m_rp_order_id']) ? $formData['m_rp_order_id'] : null;
+        $isSubmit  = !empty($formData['m_rp_is_submit']) ? $formData['m_rp_is_submit'] : 0;
+        //consist of variant id ang quantity to return
+        /**
+         * Format:
+         * [
+         *      1 => 10, //1 is the variant id while 10 is the quantity to return
+         *      2 => 20
+         * ]
+         */
+        $returnVariantData  = !empty($formData['m_rp_data']) ? $formData['m_rp_data'] : [];
 
         /**
          * Prepare form for message
@@ -94,126 +105,179 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
 
         $orderStatus = $orderSvc->getOrderStatusList($langId);
 
-        if ($ecomAuthSrv->hasIdentity())
-        {
-            //set order id value
-            $addMessageForm->setData(['m_rp_order_id' => $orderId]);
-
-            //get already returned product list
-            $returnProduct =  $productReturn->getOrderProductReturnList($orderId);
-
+        if ($ecomAuthSrv->hasIdentity()) {
             $clientId = $ecomAuthSrv->getClientId();
+            $personid = $ecomAuthSrv->getPersonId();
+
             $data = $orderSvc->getOrderById($orderId, $langId);
 
-            $orderCoupons = $couponSvc->getCouponList($orderId);
-            $tmp = array();
-            foreach($orderCoupons as $coupon)
-            {
-                if($coupon->getCoupon()->coup_product_assign)
-                {
-                    $coupon->getCoupon()->discountedBasket = $couponSvc->getCouponDiscountedBasketItems($coupon->getCoupon()->coup_id, $orderId);
-                }
+            //check if order is already delivered to the customer
+            if ($data->getOrder()->ord_status == 4) {//order delivered
 
-                $tmp[] = $coupon;
-            }
+                //check if form is submitted
+                if($isSubmit){
+                    $postValues = $formData;
 
-            $orderCoupons = $tmp;
-
-            if(!empty($data->getClient()))
-            {
-                if($data->getClient()->cli_id == $clientId)
-                {
-                    $currencies = $currencySvc->getCurrencies();
-
-                    $status = '';
-
-                    foreach($orderStatus as $stat)
-                    {
-                        if($stat->ostt_status_id == $data->getOrder()->ord_status)
-                        {
-                            $status = $stat->ostt_status_name;
+                    $orderMesasge = [];
+                    $returnProductData = [];
+                    $returnProductDetailsData = [];
+                    //prepare return product data
+                    foreach($postValues as $key => $val){
+                        if (strpos($key, 'pret_') !== false) {
+                            $returnProductData[$key] = $val;
+                        }
+                    }
+                    //prepare return product details data
+                    foreach($postValues as $key => $val){
+                        if (strpos($key, 'pretd_') !== false) {
+                            $returnProductDetailsData[$key] = $val;
+                        }
+                    }
+                    //prepare order msg data
+                    foreach($postValues as $key => $val){
+                        if (strpos($key, 'omsg_') !== false) {
+                            $orderMesasge[$key] = $val;
                         }
                     }
 
-                    $count = 0;
-                    $orderDetails = array();
-                    $subTotal = 0;
-                    $total = 0;
-                    $shipping = 0;
+                    //start saving
+                    //set order id
+                    $returnProductData['pret_order_id'] = $orderId;
+                    //include client id
+                    $returnProductData['pret_client_id'] = $clientId;
+                    $pretId = $productReturn->saveOrderProductReturn($returnProductData);
+                    if(!empty($pretId)) {
+                        //start save the details
+                        foreach($returnVariantData as $variantId => $quantity) {
+                            //get variant info
+                            $variant = $variantSvc->getVariantById($variantId, $langId)->getVariant();
+                            //add other return details
+                            $returnProductDetailsData['pretd_sku'] = $variant->var_sku;
+                            $returnProductDetailsData['pretd_pret_id'] = $pretId;
+                            $returnProductDetailsData['pretd_quantity'] = $quantity;
+                            $returnProductDetailsData['pretd_variant_id'] = $variantId;
 
-                    foreach($data->getBasket() as $basket)
-                    {
-                        $returnProductValue = 0;
-                        $basket->discount = 0;
-                        if(!empty($orderCoupons))
-                        {
-                            foreach($orderCoupons as $coupon)
-                            {
-                                if($coupon->getCoupon()->coup_product_assign)
-                                {
-                                    foreach($coupon->getCoupon()->discountedBasket as $item)
-                                    {
-                                        if ($item->cord_basket_id == $basket->obas_id)
-                                        {
-                                            if(!empty($coupon->getCoupon()->coup_percentage))
-                                            {
-                                                $basket->discount = ($coupon->getCoupon()->coup_percentage / 100) * $basket->obas_price_net;
-                                            }
-                                            elseif (!empty($coupon->getCoupon()->coup_discount_value))
-                                            {
-                                                $basket->discount = $coupon->getCoupon()->coup_discount_value * $item->cord_quantity_used;
+                            //save product return details
+                            $productReturn->saveOrderProductReturnDetails($returnProductDetailsData);
+                        }
+
+                        //save message
+                        $orderMesasge['omsg_order_id'] = $orderId;
+                        $orderMesasge['omsg_client_id'] = $clientId;
+                        $orderMesasge['omsg_client_person_id'] = $personid;
+                        $orderMesasge['omsg_date_creation'] = date('Y-m-d H:i:s');
+                        $orderMesasge['omsg_type'] = 'RETURN';
+                        $orderSvc->saveOrderMessage($orderMesasge);
+
+                        $message = 'Product return success';
+                        $success = 1;
+                    }
+                }
+
+                //get already returned product list
+                $returnProduct = $productReturn->getOrderProductReturnList($orderId);
+                $orderCoupons = $couponSvc->getCouponList($orderId);
+                $tmp = array();
+                foreach ($orderCoupons as $coupon) {
+                    if ($coupon->getCoupon()->coup_product_assign) {
+                        $coupon->getCoupon()->discountedBasket = $couponSvc->getCouponDiscountedBasketItems($coupon->getCoupon()->coup_id, $orderId);
+                    }
+
+                    $tmp[] = $coupon;
+                }
+
+                $orderCoupons = $tmp;
+
+                if (!empty($data->getClient())) {
+                    if ($data->getClient()->cli_id == $clientId) {
+                        $currencies = $currencySvc->getCurrencies();
+
+                        $status = '';
+
+                        foreach ($orderStatus as $stat) {
+                            if ($stat->ostt_status_id == $data->getOrder()->ord_status) {
+                                $status = $stat->ostt_status_name;
+                            }
+                        }
+
+                        $count = 0;
+                        $orderDetails = array();
+                        $subTotal = 0;
+                        $total = 0;
+                        $shipping = 0;
+
+                        foreach ($data->getBasket() as $basket) {
+                            $returnProductValue = 0;
+                            $basket->discount = 0;
+                            if (!empty($orderCoupons)) {
+                                foreach ($orderCoupons as $coupon) {
+                                    if ($coupon->getCoupon()->coup_product_assign) {
+                                        foreach ($coupon->getCoupon()->discountedBasket as $item) {
+                                            if ($item->cord_basket_id == $basket->obas_id) {
+                                                if (!empty($coupon->getCoupon()->coup_percentage)) {
+                                                    $basket->discount = ($coupon->getCoupon()->coup_percentage / 100) * $basket->obas_price_net;
+                                                } elseif (!empty($coupon->getCoupon()->coup_discount_value)) {
+                                                    $basket->discount = $coupon->getCoupon()->coup_discount_value * $item->cord_quantity_used;
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
-                        }
 
-                        $count = $count + $basket->obas_quantity;
-                        $details = array();
-                        $currency = '';
+                            $count = $count + $basket->obas_quantity;
+                            $details = array();
+                            $currency = '';
 
-                        foreach($currencies as $cur)
-                        {
-                            if($cur->cur_id == $basket->obas_currency)
-                            {
-                                $currency = $cur->cur_symbol;
+                            foreach ($currencies as $cur) {
+                                if ($cur->cur_id == $basket->obas_currency) {
+                                    $currency = $cur->cur_symbol;
+                                }
                             }
-                        }
 
-                        $details['variant_id'] = $basket->obas_variant_id;
-                        $details['productName'] = $basket->obas_product_name;
-                        $details['sku'] = $basket->obas_sku;
-                        $details['currency'] = $currency;
-                        $details['price'] = $basket->obas_price_net;
-                        $details['total'] = ($basket->obas_price_net * $basket->obas_quantity) - $basket->discount;
-                        $details['discount'] = $basket->discount;
-                        $details['quantity'] = $basket->obas_quantity;
+                            $details['variant_id'] = $basket->obas_variant_id;
+                            $details['productName'] = $basket->obas_product_name;
+                            $details['sku'] = $basket->obas_sku;
+                            $details['currency'] = $currency;
+                            $details['price'] = $basket->obas_price_net;
+                            $details['total'] = ($basket->obas_price_net * $basket->obas_quantity) - $basket->discount;
+                            $details['discount'] = $basket->discount;
+                            $details['quantity'] = $basket->obas_quantity;
 
-                        //count already returned product
-                        foreach($returnProduct as $key => $rProduct){
-                            if($rProduct['pretd_variant_id'] == $basket->obas_variant_id){
-                                $returnProductValue = $rProduct['pretd_quantity'];
+                            //count already returned product
+                            foreach ($returnProduct as $key => $rProduct) {
+                                if ($rProduct['pretd_variant_id'] == $basket->obas_variant_id) {
+                                    $returnProductValue += $rProduct['pretd_quantity'];
+                                }
                             }
+                            $details['returnedProduct'] = $returnProductValue;
+                            $details['remainingQtyToReturn'] = (int) $basket->obas_quantity - $returnProductValue;
+                            $items[] = $details;
                         }
-                        $details['returnedProduct'] = $returnProductValue;
-                        $items[] = $details;
+
+                        $returnProducts['id'] = $data->getId();
+                        $returnProducts['reference'] = $data->getOrder()->ord_reference;
+                        $returnProducts['date'] = $data->getOrder()->ord_date_creation;
+                        $returnProducts['status'] = $status;
+                        $returnProducts['itemCount'] = $count;
+                        $returnProducts['currency'] = $currency;
+                        $returnProducts['items'] = $items;
                     }
-
-                    $returnProducts['id'] = $data->getId();
-                    $returnProducts['reference'] = $data->getOrder()->ord_reference;
-                    $returnProducts['date'] = $data->getOrder()->ord_date_creation;
-                    $returnProducts['status'] = $status;
-                    $returnProducts['itemCount'] = $count;
-                    $returnProducts['currency'] = $currency;
-                    $returnProducts['items'] = $items;
                 }
             }
         }
 
+        /**
+         * This input field set value in order to validate
+         * after submission of the form proivided of this plugin
+         */
+        $addMessageForm->get('m_rp_is_submit')->setValue(true);
+
         $viewVariables = array(
             'returnProducts' => $returnProducts,
-            'addMessageForm' => $addMessageForm
+            'addMessageForm' => $addMessageForm,
+            'success' => $success,
+            'message' => $message
         );
         
         // return the variable array and let the view be created

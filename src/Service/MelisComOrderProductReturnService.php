@@ -34,7 +34,7 @@ class MelisComOrderProductReturnService extends MelisComGeneralService
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
 
         // Sending service start event
-        $arrayParameters = $this->sendEvent('meliscommerce_service_get_clients_group_list_start', $arrayParameters);
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_order_product_return_list_start', $arrayParameters);
 
         // Service implementation start
         $productReturn = $this->getServiceManager()->get('MelisEcomOrderProductReturnTable');
@@ -54,7 +54,61 @@ class MelisComOrderProductReturnService extends MelisComGeneralService
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $results;
         // Sending service end event
-        $arrayParameters = $this->sendEvent('meliscommerce_service_get_clients_group_list_end', $arrayParameters);
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_order_product_return_list_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
+
+    /**
+     * This function will save data in "melis_ecom_order_product_return" table
+     *
+     * @param $data
+     * @param null $id
+     */
+    public function saveOrderProductReturn($data, $id = null)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_save_order_product_return_start', $arrayParameters);
+
+        // Service implementation start
+        $productReturn = $this->getServiceManager()->get('MelisEcomOrderProductReturnTable');
+
+        $results = $productReturn->save($arrayParameters['data'], $arrayParameters['id']);
+
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_save_order_product_return_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
+
+    /**
+     * This function will save data in "melis_ecom_order_product_return_details" table
+     *
+     * @param $data
+     * @param null $id
+     */
+    public function saveOrderProductReturnDetails($data, $id = null)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_save_order_product_return_details_start', $arrayParameters);
+
+        // Service implementation start
+        $productReturnDet = $this->getServiceManager()->get('MelisEcomOrderProductReturnDetailsTable');
+
+        $results = $productReturnDet->save($arrayParameters['data'], $arrayParameters['id']);
+
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_save_order_product_return_details_end', $arrayParameters);
 
         return $arrayParameters['results'];
     }
