@@ -9,6 +9,10 @@ $(function() {
 		var selectName = "m_rp_data["+variantId+"]";
 		var qtySelect = $("<select/>").attr("name", selectName);
 
+		//hide all alert
+		$(".alert").addClass("hidden");
+		$(".alert").addClass("hidden");
+
 		//check if variant select quantity is already added
 		if($("select[name='"+selectName+"']").length <= 0) {
 			//make option depending on remaining product to return

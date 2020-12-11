@@ -119,60 +119,80 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
                 //check if form is submitted
                 if($isSubmit){
                     if(!empty($returnVariantData)) {
-                        $postValues = $formData;
-
-                        $orderMesasge = [];
-                        $returnProductData = [];
-                        $returnProductDetailsData = [];
-                        //prepare return product data
-                        foreach ($postValues as $key => $val) {
-                            if (strpos($key, 'pret_') !== false) {
-                                $returnProductData[$key] = $val;
+                        $isQtyOk = true;
+                        //re check returned quantity
+                        foreach($returnVariantData as $variantId => $returnQty){
+                            foreach($data->getBasket() as $bas){
+                                if($variantId == $bas->obas_variant_id){
+                                    if($returnQty > $bas->obas_quantity){
+                                        $isQtyOk = false;
+                                        break;
+                                    }
+                                }
                             }
+                            //if quantity is not okay, break the loop
+                            if(!$isQtyOk)
+                                break;
                         }
-                        //prepare return product details data
-                        foreach ($postValues as $key => $val) {
-                            if (strpos($key, 'pretd_') !== false) {
-                                $returnProductDetailsData[$key] = $val;
-                            }
-                        }
-                        //prepare order msg data
-                        foreach ($postValues as $key => $val) {
-                            if (strpos($key, 'omsg_') !== false) {
-                                $orderMesasge[$key] = $val;
-                            }
-                        }
+                        /**
+                         * Check if return quantity is not greater that the ordered quantity
+                         */
+                        if($isQtyOk) {
+                            $postValues = $formData;
 
-                        //start saving
-                        //set order id
-                        $returnProductData['pret_order_id'] = $orderId;
-                        //include client id
-                        $returnProductData['pret_client_id'] = $clientId;
-                        $pretId = $productReturn->saveOrderProductReturn($returnProductData);
-                        if (!empty($pretId)) {
-                            //start save the details
-                            foreach ($returnVariantData as $variantId => $quantity) {
-                                //get variant info
-                                $variant = $variantSvc->getVariantById($variantId, $langId)->getVariant();
-                                //add other return details
-                                $returnProductDetailsData['pretd_sku'] = $variant->var_sku;
-                                $returnProductDetailsData['pretd_pret_id'] = $pretId;
-                                $returnProductDetailsData['pretd_quantity'] = $quantity;
-                                $returnProductDetailsData['pretd_variant_id'] = $variantId;
-
-                                //save product return details
-                                $productReturn->saveOrderProductReturnDetails($returnProductDetailsData);
+                            $orderMesasge = [];
+                            $returnProductData = [];
+                            $returnProductDetailsData = [];
+                            //prepare return product data
+                            foreach ($postValues as $key => $val) {
+                                if (strpos($key, 'pret_') !== false) {
+                                    $returnProductData[$key] = $val;
+                                }
+                            }
+                            //prepare return product details data
+                            foreach ($postValues as $key => $val) {
+                                if (strpos($key, 'pretd_') !== false) {
+                                    $returnProductDetailsData[$key] = $val;
+                                }
+                            }
+                            //prepare order msg data
+                            foreach ($postValues as $key => $val) {
+                                if (strpos($key, 'omsg_') !== false) {
+                                    $orderMesasge[$key] = $val;
+                                }
                             }
 
-                            //save message
-                            $orderMesasge['omsg_order_id'] = $orderId;
-                            $orderMesasge['omsg_client_id'] = $clientId;
-                            $orderMesasge['omsg_client_person_id'] = $personid;
-                            $orderMesasge['omsg_date_creation'] = date('Y-m-d H:i:s');
-                            $orderMesasge['omsg_type'] = 'RETURN';
-                            $orderSvc->saveOrderMessage($orderMesasge);
+                            //start saving
+                            //set order id
+                            $returnProductData['pret_order_id'] = $orderId;
+                            //include client id
+                            $returnProductData['pret_client_id'] = $clientId;
+                            $pretId = $productReturn->saveOrderProductReturn($returnProductData);
+                            if (!empty($pretId)) {
+                                //start save the details
+                                foreach ($returnVariantData as $variantId => $quantity) {
+                                    //get variant info
+                                    $variant = $variantSvc->getVariantById($variantId, $langId)->getVariant();
+                                    //add other return details
+                                    $returnProductDetailsData['pretd_sku'] = $variant->var_sku;
+                                    $returnProductDetailsData['pretd_pret_id'] = $pretId;
+                                    $returnProductDetailsData['pretd_quantity'] = $quantity;
+                                    $returnProductDetailsData['pretd_variant_id'] = $variantId;
 
-                            $success = 1;
+                                    //save product return details
+                                    $productReturn->saveOrderProductReturnDetails($returnProductDetailsData);
+                                }
+
+                                //save message
+                                $orderMesasge['omsg_order_id'] = $orderId;
+                                $orderMesasge['omsg_client_id'] = $clientId;
+                                $orderMesasge['omsg_client_person_id'] = $personid;
+                                $orderMesasge['omsg_date_creation'] = date('Y-m-d H:i:s');
+                                $orderMesasge['omsg_type'] = 'RETURN';
+                                $orderSvc->saveOrderMessage($orderMesasge);
+
+                                $success = 1;
+                            }
                         }
                     }
                 }
