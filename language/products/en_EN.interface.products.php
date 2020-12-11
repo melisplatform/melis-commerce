@@ -150,4 +150,8 @@ return array(
     'tr_meliscommerce_plugin_related_product_description' => 'The plugin display the products related to the selected product',
     'tr_meliscommerce_plugin_related_product_default_product' => 'Default product',
     'tr_meliscommerce_plugin_related_product_default_product_tooltip' => 'Select a product to display its related products',
+
+    'tr_meliscommerce_products_page_page_association_1' => 'Associated page 1',
+    'tr_meliscommerce_products_page_page_association_2' => 'Associated page 2',
+    'tr_meliscommerce_products_page_page_association_3' => 'Associated page 3',
 );

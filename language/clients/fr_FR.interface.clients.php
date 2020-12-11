@@ -154,6 +154,16 @@
 	    'tr_meliscommerce_client_Contact_address_phone_landline tooltip' => 'Téléphone fixe',
 	    'tr_meliscommerce_client_Contact_address_additional_information' => 'Complément',
 	    'tr_meliscommerce_client_Contact_address_additional_information tooltip' => 'Complément',
+        'tr_meliscommerce_client_Contact_address_company_creation_date' => 'Date de création',
+        'tr_meliscommerce_client_Contact_address_company_number_employees' => 'Nombre d\'employés',
+        'tr_meliscommerce_client_Contact_address_company_street_number' => 'Numéro de rue',
+        'tr_meliscommerce_client_Contact_address_company_street_name' => 'Rue',
+        'tr_meliscommerce_client_Contact_address_company_building' => 'Bâtiment',
+        'tr_meliscommerce_client_Contact_address_company_zipcode' => 'Code Postal',
+        'tr_meliscommerce_client_Contact_address_company_city' => 'Ville',
+        'tr_meliscommerce_client_Contact_address_company_state' => 'Etat',
+        'tr_meliscommerce_client_Contact_address_company_country' => 'Pays',
+        'tr_meliscommerce_client_Contact_address_company_logo' => 'Logo',
 	    // Validation and Messages
 	    'tr_meliscommerce_client_Contact_unable_to_add' => 'Impossible d\'ajouter un contact, veuillez réessayer',
 	    'tr_meliscommerce_client_Contact_input_empty' => 'Le champ ne peut être vide',
@@ -277,4 +287,7 @@
         'tr_meliscommerce_plugin_account_billing_address' => 'Adresse de facturation',
         'tr_meliscommerce_plugin_account_my_cart' => 'Mon panier',
         'tr_meliscommerce_plugin_account_order_history' => 'Historique des commandes',
+
+        // Files tab
+        'tr_meliscommerce_clients_Contact_tab_files' => 'Fichiers'
     );

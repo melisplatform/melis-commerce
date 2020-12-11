@@ -1350,7 +1350,7 @@ return [
                                     'name' => 'ccomp_comp_creation_date',
                                     'type' => 'DateField',
                                     'options' => [
-                                        'label' => 'Company creation date'
+                                        'label' => 'tr_meliscommerce_client_Contact_address_company_creation_date'
                                     ],
                                     'attributes' => [
                                         'dateId' => 'client_company_creation_date',
@@ -1362,7 +1362,7 @@ return [
                                     'name' => 'ccomp_employee_nb',
                                     'type' => 'MelisText',
                                     'options' => [
-                                        'label' => 'Number of employees'
+                                        'label' => 'tr_meliscommerce_client_Contact_address_company_number_employees'
                                     ],
                                     'attributes' => [
                                         'id' => 'ccomp_employee_nb',
@@ -1374,7 +1374,7 @@ return [
                                     'name' => 'ccomp_add_number',
                                     'type' => 'MelisText',
                                     'options' => [
-                                        'label' => 'Street number'
+                                        'label' => 'tr_meliscommerce_client_Contact_address_company_street_number'
                                     ],
                                     'attributes' => [
                                         'id' => 'ccomp_add_number',
@@ -1386,7 +1386,7 @@ return [
                                     'name' => 'ccomp_add_street',
                                     'type' => 'MelisText',
                                     'options' => [
-                                        'label' => 'Street name'
+                                        'label' => 'tr_meliscommerce_client_Contact_address_company_street_name'
                                     ],
                                     'attributes' => [
                                         'id' => 'ccomp_add_street',
@@ -1398,7 +1398,7 @@ return [
                                     'name' => 'ccomp_add_building',
                                     'type' => 'MelisText',
                                     'options' => [
-                                        'label' => 'Building'
+                                        'label' => 'tr_meliscommerce_client_Contact_address_company_building'
                                     ],
                                     'attributes' => [
                                         'id' => 'ccomp_add_building',
@@ -1410,7 +1410,7 @@ return [
                                     'name' => 'ccomp_add_zipcode',
                                     'type' => 'MelisText',
                                     'options' => [
-                                        'label' => 'Zip code'
+                                        'label' => 'tr_meliscommerce_client_Contact_address_company_zipcode'
                                     ],
                                     'attributes' => [
                                         'id' => 'ccomp_add_zipcode',
@@ -1422,7 +1422,7 @@ return [
                                     'name' => 'ccomp_add_city',
                                     'type' => 'MelisText',
                                     'options' => [
-                                        'label' => 'City'
+                                        'label' => 'tr_meliscommerce_client_Contact_address_company_city'
                                     ],
                                     'attributes' => [
                                         'id' => 'ccomp_add_city',
@@ -1434,7 +1434,7 @@ return [
                                     'name' => 'ccomp_add_state',
                                     'type' => 'MelisText',
                                     'options' => [
-                                        'label' => 'State'
+                                        'label' => 'tr_meliscommerce_client_Contact_address_company_state'
                                     ],
                                     'attributes' => [
                                         'id' => 'ccomp_add_state',
@@ -1446,7 +1446,7 @@ return [
                                     'name' => 'ccomp_add_country',
                                     'type' => 'MelisText',
                                     'options' => [
-                                        'label' => 'Country'
+                                        'label' => 'tr_meliscommerce_client_Contact_address_company_country'
                                     ],
                                     'attributes' => [
                                         'id' => 'ccomp_add_country',
@@ -1464,7 +1464,7 @@ return [
                                         'label' => 'Upload',
                                     ],
                                     'options' => [
-                                        'label' => 'Company logo',
+                                        'label' => 'tr_meliscommerce_client_Contact_address_company_logo',
                                     ],
                                 ]
                             ]

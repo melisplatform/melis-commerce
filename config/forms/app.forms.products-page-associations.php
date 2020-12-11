@@ -33,8 +33,8 @@ return [
                                         'name' => 'plink_link_1',
                                         'type' => 'MelisText',
                                         'options' => [
-                                            'label' => 'Associated page 1',
-                                            'tooltip' => 'tr_melis_cms_sites_site_main_page_id tooltip',
+                                            'label' => 'tr_meliscommerce_products_page_page_association_1',
+                                            'tooltip' => 'tr_meliscommerce_products_page_page_association_1',
                                             'button' => 'fa fa-sitemap',
                                             'button-id' => 'prod_page_assoc1_btn',
                                         ],
@@ -50,8 +50,8 @@ return [
                                         'name' => 'plink_link_2',
                                         'type' => 'MelisText',
                                         'options' => [
-                                            'label' => 'Associated page 2',
-                                            'tooltip' => 'tr_melis_cms_sites_site_main_page_id tooltip',
+                                            'label' => 'tr_meliscommerce_products_page_page_association_2',
+                                            'tooltip' => 'tr_meliscommerce_products_page_page_association_2',
                                             'button' => 'fa fa-sitemap',
                                             'button-id' => 'prod_page_assoc2_btn',
                                         ],
@@ -67,8 +67,8 @@ return [
                                         'name' => 'plink_link_3',
                                         'type' => 'MelisText',
                                         'options' => [
-                                            'label' => 'Associated page 3',
-                                            'tooltip' => 'tr_melis_cms_sites_site_main_page_id tooltip',
+                                            'label' => 'tr_meliscommerce_products_page_page_association_3',
+                                            'tooltip' => 'tr_meliscommerce_products_page_page_association_3',
                                             'button' => 'fa fa-sitemap',
                                             'button-id' => 'prod_page_assoc3_btn',
                                         ],

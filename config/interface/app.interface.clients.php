@@ -468,7 +468,7 @@ return [
                                             'conf' => [
                                                 'id' => 'id_meliscommerce_client_page_tab_files',
                                                 'melisKey' => 'meliscommerce_client_page_tab_files',
-                                                'name' => 'Files',
+                                                'name' => 'tr_meliscommerce_clients_Contact_tab_files',
                                                 'icon' => 'glyphicons paperclip'
                                             ],
                                             'forward' => [

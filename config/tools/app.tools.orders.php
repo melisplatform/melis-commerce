@@ -115,7 +115,7 @@ return [
                                 'sortable' => true,
                             ],
                             'ccomp_name' => [
-                                'text' => 'Company',
+                                'text' => 'tr_meliscommerce_order_list_col_company',
                                 'css' => ['width' => '15%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],
