@@ -1345,6 +1345,129 @@ return [
                                     ]
                                 ]
                             ],
+                            [
+                                'spec' => [
+                                    'name' => 'ccomp_comp_creation_date',
+                                    'type' => 'DateField',
+                                    'options' => [
+                                        'label' => 'Company creation date'
+                                    ],
+                                    'attributes' => [
+                                        'dateId' => 'client_company_creation_date',
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'ccomp_employee_nb',
+                                    'type' => 'MelisText',
+                                    'options' => [
+                                        'label' => 'Number of employees'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'ccomp_employee_nb',
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'ccomp_add_number',
+                                    'type' => 'MelisText',
+                                    'options' => [
+                                        'label' => 'Street number'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'ccomp_add_number',
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'ccomp_add_street',
+                                    'type' => 'MelisText',
+                                    'options' => [
+                                        'label' => 'Street name'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'ccomp_add_street',
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'ccomp_add_building',
+                                    'type' => 'MelisText',
+                                    'options' => [
+                                        'label' => 'Building'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'ccomp_add_building',
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'ccomp_add_zipcode',
+                                    'type' => 'MelisText',
+                                    'options' => [
+                                        'label' => 'Zip code'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'ccomp_add_zipcode',
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'ccomp_add_city',
+                                    'type' => 'MelisText',
+                                    'options' => [
+                                        'label' => 'City'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'ccomp_add_city',
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'ccomp_add_state',
+                                    'type' => 'MelisText',
+                                    'options' => [
+                                        'label' => 'State'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'ccomp_add_state',
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'ccomp_add_country',
+                                    'type' => 'MelisText',
+                                    'options' => [
+                                        'label' => 'Country'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'ccomp_add_country',
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'ccomp_logo',
+                                    'type' => 'file',
+                                    'attributes' => [
+                                        'id' => 'ccomp_logo',
+                                        'value' => '',
+                                        'class' => 'filestyle',
+                                        'label' => 'Upload',
+                                    ],
+                                    'options' => [
+                                        'label' => 'Company logo',
+                                    ],
+                                ]
+                            ]
                         ],
                         'input_filter' => [
                             'ccomp_name' => [
@@ -1421,6 +1544,204 @@ return [
                                             ],
                                         ],
                                     ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'ccomp_comp_creation_date' => [
+                                'name'     => 'ccomp_comp_creation_date',
+                                'required' => false,
+                                'validators' => [],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'ccomp_employee_nb' => [
+                                'name'     => 'ccomp_employee_nb',
+                                'required' => false,
+                                'validators' => [
+                                    [
+                                        'name' => 'IsInt',
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'tr_melis_cms_sites_field_digits',
+                                                \Laminas\I18n\Validator\IsInt::INVALID => 'tr_melis_cms_sites_field_digits',
+                                            ]
+                                        ]
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'ccomp_add_number' => [
+                                'name'     => 'ccomp_add_number',
+                                'required' => false,
+                                'validators' => [
+                                    [
+                                        'name' => 'StringLength',
+                                        'options' => [
+                                            'encoding' => 'UTF-8',
+                                            'max' => 10,
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_10',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'ccomp_add_street' => [
+                                'name'     => 'ccomp_add_street',
+                                'required' => false,
+                                'validators' => [
+                                    [
+                                        'name' => 'StringLength',
+                                        'options' => [
+                                            'encoding' => 'UTF-8',
+                                            'max' => 255,
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_255',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'ccomp_add_building' => [
+                                'name'     => 'ccomp_add_building',
+                                'required' => false,
+                                'validators' => [
+                                    [
+                                        'name' => 'StringLength',
+                                        'options' => [
+                                            'encoding' => 'UTF-8',
+                                            'max' => 45,
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_45',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'ccomp_add_floor' => [
+                                'name'     => 'ccomp_add_floor',
+                                'required' => false,
+                                'validators' => [
+                                    [
+                                        'name' => 'StringLength',
+                                        'options' => [
+                                            'encoding' => 'UTF-8',
+                                            'max' => 10,
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_10',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'ccomp_add_zipcode' => [
+                                'name'     => 'ccomp_add_zipcode',
+                                'required' => false,
+                                'validators' => [
+                                    [
+                                        'name' => 'StringLength',
+                                        'options' => [
+                                            'encoding' => 'UTF-8',
+                                            'max' => 15,
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_15',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'ccomp_add_city' => [
+                                'name'     => 'ccomp_add_city',
+                                'required' => false,
+                                'validators' => [
+                                    [
+                                        'name' => 'StringLength',
+                                        'options' => [
+                                            'encoding' => 'UTF-8',
+                                            'max' => 100,
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_100',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'ccomp_add_state' => [
+                                'name'     => 'ccomp_add_state',
+                                'required' => false,
+                                'validators' => [
+                                    [
+                                        'name' => 'StringLength',
+                                        'options' => [
+                                            'encoding' => 'UTF-8',
+                                            'max' => 50,
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_50',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'ccomp_add_country' => [
+                                'name'     => 'ccomp_add_country',
+                                'required' => false,
+                                'validators' => [
+                                    [
+                                        'name' => 'StringLength',
+                                        'options' => [
+                                            'encoding' => 'UTF-8',
+                                            'max' => 50,
+                                            'messages' => [
+                                                \Laminas\Validator\StringLength::TOO_LONG => 'tr_meliscommerce_client_Contact_input_too_long_50',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'ccomp_logo' => [
+                                'name'     => 'ccomp_logo',
+                                'required' => false,
+                                'validators' => [
                                 ],
                                 'filters'  => [
                                     ['name' => 'StripTags'],

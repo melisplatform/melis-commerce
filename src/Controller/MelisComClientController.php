@@ -373,11 +373,15 @@ class MelisComClientController extends MelisAbstractActionController
                 $propertyForm->bind($clientCompany[0]);
             }
         }
-        
+
+        // initialize date picker
+        $datePickerInit = $this->getTool()->datePickerInit('client_company_creation_date');
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->clientId = $clientId;
         $view->setVariable('meliscommerce_clients_company_form', $propertyForm);
+        $view->datePickerInit = $datePickerInit;
         return $view;
     }
     
@@ -1925,6 +1929,21 @@ class MelisComClientController extends MelisAbstractActionController
         $clientId = $this->params()->fromQuery('clientId', '');
 
         $view->clientId = $clientId;
+        return $view;
+    }
+
+    public function renderClientPageTabFilesAction()
+    {
+        $clientId = $this->params()->fromQuery('clientId', '');
+        $activeTab = $this->params()->fromQuery('activateTab');
+
+        $container = new Container('meliscommerce');
+        $container['documents'] = array('docRelationType' => 'client', 'docRelationId' => $clientId);
+
+        $view = new ViewModel();
+        $view->activeTab = ($activeTab) ? 'active' : '';
+        $view->clientId = $clientId;
+
         return $view;
     }
 }

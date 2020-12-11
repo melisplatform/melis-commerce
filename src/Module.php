@@ -177,6 +177,7 @@ class Module
             include __DIR__ . '/../config/interface/app.interface.assoc-var.php',
             include __DIR__ . '/../config/interface/app.interface.duplications.php',
             include __DIR__ . '/../config/interface/app.interface.settings.php',
+            include __DIR__ . '/../config/interface/app.interface.product-page-associations.php',
 	    
 			include __DIR__ . '/../config/forms/app.forms.general.php',
 	        include __DIR__ . '/../config/forms/app.forms.documents.php',
@@ -193,6 +194,7 @@ class Module
 	        include __DIR__ . '/../config/forms/app.forms.attributes.php',
 	        include __DIR__ . '/../config/forms/app.forms.duplications.php',
 	        include __DIR__ . '/../config/forms/app.forms.settings.php',
+	        include __DIR__ . '/../config/forms/app.forms.products-page-associations.php',
 	    
 			include __DIR__ . '/../config/tools/app.tools.general.php',
 	        include __DIR__ . '/../config/tools/app.tools.documents.php',

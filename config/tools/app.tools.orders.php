@@ -114,6 +114,11 @@ return [
                                 'css' => ['width' => '15%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],
+                            'ccomp_name' => [
+                                'text' => 'Company',
+                                'css' => ['width' => '15%', 'padding-right' => '0'],
+                                'sortable' => true,
+                            ],
                             'ord_date_creation' => [
                                 'text' => 'tr_meliscommerce_order_list_col_date',
                                 'css' => ['width' => '10%', 'padding-right' => '0'],

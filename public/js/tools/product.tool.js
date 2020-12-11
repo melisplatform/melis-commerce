@@ -875,6 +875,27 @@ $(function() {
 
                 return strInt;
         }
+
+    $body.on("click", "#prod_page_assoc1_btn span", function() {
+        var $this   = $(this),
+            formId  = $this.closest('form').attr('id');
+
+        melisLinkTree.createInputTreeModal('#' + formId + ' ' + '#prod_page_assoc_1');
+    });
+
+    $body.on("click", "#prod_page_assoc2_btn span", function() {
+        var $this   = $(this),
+            formId  = $this.closest('form').attr('id');
+
+        melisLinkTree.createInputTreeModal('#' + formId + ' ' + '#prod_page_assoc_2');
+    });
+
+    $body.on("click", "#prod_page_assoc3_btn span", function() {
+        var $this   = $(this),
+            formId  = $this.closest('form').attr('id');
+
+        melisLinkTree.createInputTreeModal('#' + formId + ' ' + '#prod_page_assoc_3');
+    });
 });
 
 window.initProductsTableData = function (tableData) {

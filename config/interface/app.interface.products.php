@@ -617,6 +617,11 @@ return [
                                                                                     'type' => 'meliscommerce/interface/meliscommerce_settings/interface/meliscommerce_settings_tabs_content_details_general',
                                                                                 ]
                                                                             ],
+                                                                            'meliscommerce_product_main_tab_page_association' => [
+                                                                                'conf' => [
+                                                                                    'type' => 'meliscommerce/interface/meliscommerce_page_association/interface/meliscommerce_page_association',
+                                                                                ]
+                                                                            ],
                                                                         ],
                                                                     ],
                                                                     'meliscommerce_products_main_tab_right_container' => [

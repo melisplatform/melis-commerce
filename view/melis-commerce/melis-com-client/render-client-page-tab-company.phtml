@@ -4,6 +4,7 @@
         $id = 'id="'.$this->clientId.'_'.$this->zoneconfig['conf']['id'] .'"';
     }
     $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+    $hash = md5(time());
 ?>
 <div class="tab-pane" <?php echo $id. ' '.$data_melisKey?>>				
 	<div class="melis-product-heading border-bottom" style="margin-bottom: 20px">
@@ -12,8 +13,45 @@
 	<?php 
 		$form = $this->meliscommerce_clients_company_form;
 		$form->prepare();
+
+        foreach($form->getElements() as $element => $attributes)  {
+            $el =  $form->get((string) $element);
+
+            if ($el->getName() == "ccomp_logo")
+                $el->setAttribute('id', $el->getName() . $hash);
+        }
+
 		echo $this->form()->openTag($form);
 		echo $this->melisFieldCollection($form);
+    ?>
+        <div>
+            <span class="thumbnail">
+                <img
+                    class="client-company-thumbnail"
+                    width="300"
+                    src="<?= (! empty($this->imgSource)) ? $this->imgSource . '?rand=' . $hash : '/MelisFront/plugins/images/default.jpg' ?>"
+                    alt="<?= $this->translate('tr_meliscore_tool_user_usr_profile_image'); ?>"
+                    style="margin-right: auto; margin-left: auto; display:block;"
+                >
+            </span>
+        </div>
+        <div>
+            <?php if ($this->clientId != 0) : ?>
+                <a href="#" class="small remove-mini-template-thumbnail-preview"  id="">
+                    <i class="fa fa-times"></i>
+                    <?= $this->translate('tr_meliscms_mini_template_manager_tool_form_remove_thumbnail') ?>
+                </a>
+            <?php endif ?>
+        </div>
+    <?php
 		echo $this->form()->closeTag();
+        echo $this->datePickerInit;
 	?>
 </div>
+<script type="text/javascript">
+    $('#ccomp_logo<?= $hash ?>').filestyle({
+        buttonBefore: true,
+        input: true,
+        buttonText: 'Image'
+    });
+</script>

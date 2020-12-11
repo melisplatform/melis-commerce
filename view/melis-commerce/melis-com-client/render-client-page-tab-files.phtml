@@ -1,0 +1,17 @@
+<div
+    id="<?= $this->clientId . '_' . $this->zoneconfig['conf']['id'] ?>"
+    class="tab-pane <?= $this->activeTab ?>"
+    data-melisKey="<?= $this->zoneconfig['conf']['melisKey'] ?>"
+>
+    <div class="melis-product-heading border-bottom" style="margin-bottom: 20px">
+        <h3><?= $this->translate('Files') ?></h3>
+    </div>
+
+    <?php
+        if (! empty($this->zoneconfig['interface'])) {
+            foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+                echo $this->$keyConfig;
+            }
+        }
+    ?>
+</div>

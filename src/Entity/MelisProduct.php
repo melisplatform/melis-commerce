@@ -18,6 +18,7 @@ class MelisProduct
 	protected $texts;
 	protected $price;
 	protected $documents;
+	protected $pageAssociations;
 
 	public function getId()
 	{
@@ -88,7 +89,16 @@ class MelisProduct
 	{
 	    $this->documents = $documents;
 	}
-	
+
+	public function getPageAssociations()
+    {
+        return $this->pageAssociations;
+    }
+
+    public function setPageAssociations($pageAssociations)
+    {
+        $this->pageAssociations = $pageAssociations;
+    }
 	
     public function getArrayCopy()
     {

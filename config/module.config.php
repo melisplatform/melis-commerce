@@ -163,6 +163,7 @@ return [
             'MelisEcomProductVariantAttributeValueTable'    => \MelisCommerce\Model\Tables\MelisEcomVariantAttributeValueTable::class,
             'MelisEcomVariantStockTable'                    => \MelisCommerce\Model\Tables\MelisEcomVariantStockTable::class,
             'MelisEcomVariantTable'                         => \MelisCommerce\Model\Tables\MelisEcomVariantTable::class,
+            'MelisEcomProductLinksTable'                    => \MelisCommerce\Model\Tables\MelisEcomProductLinksTable::class,
         ],
         'abstract_factories' => [
             'Laminas\Cache\Service\StorageCacheAbstractServiceFactory',

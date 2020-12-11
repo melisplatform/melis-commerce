@@ -685,13 +685,22 @@ class MelisComProductService extends MelisComGeneralService
 	 *
 	 * @return int|null The product id created or updated, null if an error occured
 	 */
-	public function saveProduct($product, $productTexts = array(), $attributes = array(), 
-								$categories = array(), $prices = array(), $seo = array(), $productId = null)
-	{
+	public function saveProduct
+    (
+        $product,
+        $productTexts = [],
+        $attributes = [],
+        $categories = [],
+        $prices = [],
+        $seo = [],
+        $productId = null,
+        $productPageAssociations = []
+    )   {
 		// Event parameters prepare
 		$saveProductId = null;
 		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
 		$results = array();
+
 		// Sending service start event
 		$arrayParameters = $this->sendEvent('meliscommerce_service_product_save_start', $arrayParameters);
 		
@@ -706,7 +715,7 @@ class MelisComProductService extends MelisComGeneralService
 		$arrayParameters['productId'] = (int) $productTable->save($arrayParameters['product'], $arrayParameters['productId']);
 		$saveProductId = (int) $arrayParameters['productId'];
 		$results['saveProduct'] = $arrayParameters['productId'];
-	
+
 		try {
 			// Deactivate variants that is under to this product
 			if(!$prodStatus && !is_null($prodId)) {
@@ -762,6 +771,13 @@ class MelisComProductService extends MelisComGeneralService
 				$melisComSeoService = $this->getServiceManager()->get('MelisComSeoService');
 				$result = $melisComSeoService->saveSeoDataAction('product', $arrayParameters['productId'], $productSeo);
 			}
+
+			if (! empty($arrayParameters['productPageAssociations'])) {
+                $this->saveProductPageAssociations(
+                    $arrayParameters['productPageAssociations'],
+                    $saveProductId
+                );
+            }
 			
 			$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 			$melisEngineCacheSystem->deleteCacheByPrefix('product-' . $saveProductId, 'commerce_big_services');
@@ -1234,6 +1250,50 @@ class MelisComProductService extends MelisComGeneralService
 
 		return $arrayParameters['results'];
 	}
+
+	public function saveProductPageAssociations($pageAssociations, $productId)
+    {
+        $results = false;
+        $productPageAssociationTable = $this->getServiceManager()->get('MelisEcomProductLinksTable');
+
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $arrayParameters = $this->sendEvent('meliscommerce_service_product_save_associations_start', $arrayParameters);
+
+        try {
+            $id = $arrayParameters['pageAssociations']['plink_id'];
+            unset($arrayParameters['pageAssociations']['plink_id']);
+            $arrayParameters['pageAssociations']['plink_product_id'] = $productId;
+
+            $results = (bool) $productPageAssociationTable->save(
+                $arrayParameters['pageAssociations'],
+                $id
+            );
+        } catch(\Exception $e) {
+            $results = false;
+        }
+
+        $arrayParameters['results'] = $results;
+        $arrayParameters = $this->sendEvent('meliscommerce_service_product_save_associations_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
+
+    public function getProductPageAssociationsByProductId($productId)
+    {
+        $productPageAssociationTable = $this->getServiceManager()->get('MelisEcomProductLinksTable');
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $arrayParameters = $this->sendEvent('meliscommerce_service_product_get_associations_start', $arrayParameters);
+
+        $pageAssociations = $productPageAssociationTable->getProductPageAssociationsByProductId($arrayParameters['productId']);
+
+        if (! empty($pageAssociations))
+            $pageAssociations = (array) $pageAssociations->current();
+
+        $arrayParameters['results'] = $pageAssociations;
+        $arrayParameters = $this->sendEvent('meliscommerce_service_product_get_associations_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
 	
 	/**
 	 * Returns true if the OS is Windows
