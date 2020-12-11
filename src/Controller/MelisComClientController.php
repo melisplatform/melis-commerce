@@ -370,6 +370,10 @@ class MelisComClientController extends MelisAbstractActionController
             
             if (!empty($clientCompany))
             {
+                // format the company creation date
+                $companyCreationDate = \DateTime::createFromFormat('Y-m-d', $clientCompany[0]->ccomp_comp_creation_date);
+                $clientCompany[0]->ccomp_comp_creation_date = $companyCreationDate->format('m/d/Y');
+
                 $propertyForm->bind($clientCompany[0]);
             }
         }
@@ -1710,6 +1714,10 @@ class MelisComClientController extends MelisAbstractActionController
             {
                 // Getting Validated datas from From
                 $clientCompanyData = $propertyForm->getData();
+
+                // Format company creation date
+                $companyCreationDate = \DateTime::createFromFormat('m/d/Y', $clientCompanyData['ccomp_comp_creation_date']);
+                $clientCompanyData['ccomp_comp_creation_date'] = $companyCreationDate->format('Y-m-d');
                 
                 // Flag that indicates if Company Name Field is mandatory
                 $companyNameRequired = false;
