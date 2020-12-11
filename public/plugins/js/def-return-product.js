@@ -1,7 +1,7 @@
 $(function() {
 	var $body = $("body");
 
-	$body.on("click", ".def-return-product-show", function(){
+	$body.on("click", ".return-product-show-form", function(){
 		var remProd = $(this).data("rm-pr");
 		var variantId = $(this).data("variantid");
 		var sku = $(this).data("sku");
@@ -30,7 +30,7 @@ $(function() {
 			form.prepend(formGroup);
 		}
 		//show return message form
-		$(".def-rp-msg-form-cont").removeClass("hidden");
+		$(".rp-msg-form-cont").removeClass("hidden");
 	});
 
 	$body.on("click", ".removeQty", function(){
@@ -41,7 +41,7 @@ $(function() {
 		//if all select quantity is removed, hide the form
 		if(allSelect.length <= 0){
 			//hidden the form
-			$(".def-rp-msg-form-cont").addClass("hidden");
+			$(".rp-msg-form-cont").addClass("hidden");
 		}
 	});
 });

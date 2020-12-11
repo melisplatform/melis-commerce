@@ -1,4 +1,4 @@
-.def-return-product-show, .removeQty{
+.return-product-show-form, .removeQty{
     cursor: pointer;
     text-decoration: underline;
 }

@@ -51,6 +51,12 @@ return [
                                 'elements' => [
                                     [
                                         'spec' => [
+                                            'name' => 'm_rp_order_id',
+                                            'type' => 'hidden',
+                                        ]
+                                    ],
+                                    [
+                                        'spec' => [
                                             'name' => 'm_rp_is_submit',
                                             'type' => 'hidden',
                                         ]

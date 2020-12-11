@@ -252,4 +252,8 @@
         'tr_meliscommerce_dashboardplugin_oct' => '%day Oct',
         'tr_meliscommerce_dashboardplugin_nov' => '%day Nov',
         'tr_meliscommerce_dashboardplugin_dec' => '%day Déc',
+
+        //return products
+        'tr_melis_commerce_orders_return_product_form_header' => 'You wish to return this product, please fill the form :',
+        'tr_melis_commerce_orders_return_product_placed_on' => 'Placed On :',
 	);
