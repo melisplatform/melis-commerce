@@ -73,14 +73,6 @@ class MelisComProductService extends MelisComGeneralService
 		// Retrieve cache version if front mode to avoid multiple calls
 		$cacheKey = 'product-' . $productId . '-getAssocProducts_' . $productId . '_' . $langId;
 		$cacheConfig = 'commerce_big_services';
-		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-//        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-//        if (!empty($results)) return $results;
-
-		$cache = $this->getServiceManager()->get($cacheConfig);
-		if ($cache->hasItem($cacheKey)){
-			return $cache->getItem($cacheKey);
-		}
 		
 		// Event parameters prepare
 		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -90,14 +82,21 @@ class MelisComProductService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_product_assoc_start', $arrayParameters);
 	
 		// Service implementation start
-		$entProd = new MelisProduct();
-		$tmpData = array();
-		$variantTable = $this->getServiceManager()->get('MelisEcomVariantTable');
-		
-		foreach($variantTable->getProductAssoc($arrayParameters['productId']) as $product){	        
-			$results[] = $this->getProductById($product->assoc_prd_id, $arrayParameters['langId']);
+		$cache = $this->getServiceManager()->get($cacheConfig);
+		if ($cache->hasItem($cacheKey)){
+			$prdAssoc =  $cache->getItem($cacheKey);
+		} else {
+			$variantTable = $this->getServiceManager()->get('MelisEcomVariantTable');
+			$prdAssoc = $variantTable->getProductAssoc($arrayParameters['productId'])->toArray();
+			
+			// Save cache key
+			$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
+			$melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $prdAssoc);
 		}
-		
+
+		foreach($prdAssoc as $product){	        
+			$results[] = $this->getProductById($product['assoc_prd_id'], $arrayParameters['langId']);
+		}
 		// Service implementation end
 		
 		// Adding results to parameters for events treatment if needed
@@ -105,9 +104,6 @@ class MelisComProductService extends MelisComGeneralService
 		// Sending service end event
 		$arrayParameters = $this->sendEvent('meliscommerce_service_product_assoc_end', $arrayParameters);
 
-		// Save cache key
-		$melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
-		
 		return $arrayParameters['results'];
 	}
 	
@@ -136,8 +132,8 @@ class MelisComProductService extends MelisComGeneralService
 		$cacheKey = 'product-' . $productId . '-getProductById_' . $productId . '_' . $countryId . '_' . $docType . '_' . $tmp;
 		$cacheConfig = 'commerce_big_services';
 		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-//        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-//        if (!empty($results)) return $results;
+    //    $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+    //    if (!empty($results)) return $results;
 
 		$cache = $this->getServiceManager()->get($cacheConfig);
 		if ($cache->hasItem($cacheKey)){
