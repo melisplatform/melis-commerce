@@ -699,6 +699,7 @@ window.initClientContactAddressForm = function(){
 
 window.companyLogoPreview = function(id, fileInput) {
     if ( fileInput.files && fileInput.files[0] ) {
+        $('#' + activeTabId + ' .client-company-preview').css('display', '');
         var reader = new FileReader();
 
         reader.onload = function (e) {
@@ -707,6 +708,10 @@ window.companyLogoPreview = function(id, fileInput) {
 
         reader.readAsDataURL(fileInput.files[0]);
     } else {
-        $('#' + activeTabId + ' ' + id).attr('src', '/MelisFront/plugins/images/default.jpg');
+        if ($('#' + activeTabId + ' ' + id).data('img') !== '') {
+            $('#' + activeTabId + ' ' + id).attr('src', $('#' + activeTabId + ' ' + id).data('img'));
+        } else {
+            $('#' + activeTabId + ' .client-company-preview').css('display', 'none');
+        }
     }
 }
