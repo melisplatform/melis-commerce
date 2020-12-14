@@ -1460,8 +1460,9 @@ return [
                                     'attributes' => [
                                         'id' => 'ccomp_logo',
                                         'value' => '',
-                                        'class' => 'filestyle',
+                                        'class' => 'filestyle ccomp_logo',
                                         'label' => 'Upload',
+                                        'onchange' => 'companyLogoPreview(".client-company-thumbnail", this);',
                                     ],
                                     'options' => [
                                         'label' => 'tr_meliscommerce_client_Contact_address_company_logo',
@@ -1742,6 +1743,22 @@ return [
                                 'name'     => 'ccomp_logo',
                                 'required' => false,
                                 'validators' => [
+                                    [
+                                        'name' => 'FileIsImage',
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\Validator\File\IsImage::FALSE_TYPE => 'tr_meliscommerce_client_Contact_company_logo_file_type'
+                                            ],
+                                        ]
+                                    ], [
+                                        'name' => 'FileSize',
+                                        'options' => [
+                                            'max' => '500kB',
+                                            'messages' => [
+                                                \Laminas\Validator\File\Size::TOO_BIG => 'tr_meliscommerce_client_Contact_company_logo_too_big'
+                                            ]
+                                        ]
+                                    ]
                                 ],
                                 'filters'  => [
                                     ['name' => 'StripTags'],

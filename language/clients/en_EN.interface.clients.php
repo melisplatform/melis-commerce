@@ -181,6 +181,8 @@
 	    'tr_meliscommerce_client_Contact_password_regex_not_match' => 'The password must contain at least a lowercase letter and a number',
 	    'tr_meliscommerce_client_Contact_unable_to_add_address' => 'Unable to add contact address, please try again',
 	    'tr_meliscommerce_client_Contact_email_address_exist' => 'Email address is not available',
+	    'tr_meliscommerce_client_Contact_company_logo_too_big' => 'Uploaded file too big, maximum size is 500kB',
+	    'tr_meliscommerce_client_Contact_company_logo_file_type' => 'File is not an image',
 	    // Contact Addreses Form
 	    'tr_meliscommerce_client_Contact_addresses' => 'Addresses',
 	    'tr_meliscommerce_client_Contact_address_name' => 'Address name',

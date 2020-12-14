@@ -359,6 +359,7 @@ class MelisComClientController extends MelisAbstractActionController
         $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $propertyForm = $factory->createForm($appConfigForm);
+        $ccomp_logo = '';
         
         if (!empty($clientId))
         {
@@ -367,12 +368,17 @@ class MelisComClientController extends MelisAbstractActionController
             $client = $melisComClientService->getClientByIdAndClientPerson($clientId);
             // Getting Company from Client Object
             $clientCompany = $client->getCompany();
+
+            if (! empty($clientCompany[0]->ccomp_logo))
+                $ccomp_logo = 'data:image/png;base64,'.base64_encode($clientCompany[0]->ccomp_logo);
             
             if (!empty($clientCompany))
             {
-                // format the company creation date
-                $companyCreationDate = \DateTime::createFromFormat('Y-m-d', $clientCompany[0]->ccomp_comp_creation_date);
-                $clientCompany[0]->ccomp_comp_creation_date = $companyCreationDate->format('m/d/Y');
+                if (! empty($clientCompany[0]->ccomp_comp_creation_date)) {
+                    // format the company creation date
+                    $companyCreationDate = \DateTime::createFromFormat('Y-m-d', $clientCompany[0]->ccomp_comp_creation_date);
+                    $clientCompany[0]->ccomp_comp_creation_date = $companyCreationDate->format('m/d/Y');
+                }
 
                 $propertyForm->bind($clientCompany[0]);
             }
@@ -386,6 +392,7 @@ class MelisComClientController extends MelisAbstractActionController
         $view->clientId = $clientId;
         $view->setVariable('meliscommerce_clients_company_form', $propertyForm);
         $view->datePickerInit = $datePickerInit;
+        $view->ccomp_logo = $ccomp_logo;
         return $view;
     }
     
@@ -1274,6 +1281,9 @@ class MelisComClientController extends MelisAbstractActionController
             $clientData = $this->getTool()->sanitizeRecursive($datas['client']);
             $contactsData = $this->getTool()->sanitizeRecursive($datas['clientContacts']);
             $companyData = $this->getTool()->sanitizeRecursive($datas['clientCompany']);
+            // reapply company logo data because we can't use the sanitized one
+            if (! empty($datas['clientCompany']['ccomp_logo']))
+                $companyData['ccomp_logo'] = $datas['clientCompany']['ccomp_logo'];
             $addressesData = $this->getTool()->sanitizeRecursive($datas['clientAddresses']);
             
             // Getting Data from Post in array form
@@ -1695,8 +1705,13 @@ class MelisComClientController extends MelisAbstractActionController
         if($request->isPost())
         {
             $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = array_merge($postValues, $this->params()->fromFiles());
+            if (! empty($postValues['ccomp_logo']['tmp_name']))
+                $companyLogoTmpPath = $postValues['ccomp_logo']['tmp_name'];
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
-
+            // reapply company logo data because we can't use the sanitized one
+            if (! empty($companyLogoTmpPath))
+                $postValues['ccomp_logo']['tmp_name'] = $companyLogoTmpPath;
             
             // Getting Client Company Form from Config
             $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
@@ -1710,37 +1725,45 @@ class MelisComClientController extends MelisAbstractActionController
             // Getting Form Elements/fields
             $appConfigFormElements = $appConfigForm['elements'];
             
-            if ($propertyForm->isvalid())
-            {
+            if ($propertyForm->isvalid()) {
                 // Getting Validated datas from From
                 $clientCompanyData = $propertyForm->getData();
 
-                // Format company creation date
-                $companyCreationDate = \DateTime::createFromFormat('m/d/Y', $clientCompanyData['ccomp_comp_creation_date']);
-                $clientCompanyData['ccomp_comp_creation_date'] = $companyCreationDate->format('Y-m-d');
+                if (! empty($clientCompanyData['ccomp_comp_creation_date'])) {
+                    // Format company creation date
+                    $companyCreationDate = \DateTime::createFromFormat('m/d/Y', $clientCompanyData['ccomp_comp_creation_date']);
+                    $clientCompanyData['ccomp_comp_creation_date'] = $companyCreationDate->format('Y-m-d');
+                }
+
+                // convert company logo to blob
+                if (! empty($companyLogoTmpPath))
+                    $clientCompanyData['ccomp_logo'] = file_get_contents($companyLogoTmpPath);
                 
                 // Flag that indicates if Company Name Field is mandatory
                 $companyNameRequired = false;
+
+                // clean data. except ccomp_id
+                foreach ($clientCompanyData as $key => $value) {
+                    if ($key != 'ccomp_id') {
+                        if (empty($value))
+                            unset($clientCompanyData[$key]);
+                    }
+                }
                 
                 // Fields names that excluded on checkin value
                 $excludeFields = array('ccomp_id', 'ccomp_client_id', 'ccomp_name', 'ccomp_date_creation', 'ccomp_date_edit');
-                foreach ($appConfigFormElements as $keyForm => $valueForm)
-                {
+                foreach ($appConfigFormElements as $keyForm => $valueForm) {
                     // checking if the element name is exist on exclueded fields
-                    if (!in_array($valueForm['spec']['name'], $excludeFields))
-                    {
-                        if (!empty($clientCompanyData[$valueForm['spec']['name']]))
-                        {
+                    if (!in_array($valueForm['spec']['name'], $excludeFields)) {
+                        if (!empty($clientCompanyData[$valueForm['spec']['name']])) {
                             // if other fields has value, then Company Name will flag as Mandatory/Required Field
                             $companyNameRequired = true;
                         }
                     }
                 }
                 
-                if (empty($clientCompanyData['ccomp_name']))
-                {
-                    if ($companyNameRequired)
-                    {
+                if (empty($clientCompanyData['ccomp_name'])) {
+                    if ($companyNameRequired) {
                         // Return Error if Company Name is Flag as Mandatory and no value
                         $errors['ccomp_name'] = array(
                             'label' => $translator->translate('tr_meliscommerce_client_Company_name'),

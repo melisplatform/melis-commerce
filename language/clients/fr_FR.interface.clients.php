@@ -180,6 +180,8 @@
 	    'tr_meliscommerce_client_Contact_password_error_low' => 'Le mot de passe doit être d\'au moins 8 caractères',
 	    'tr_meliscommerce_client_Contact_password_regex_not_match' => 'Le mot de passe doit contenir au moins une lettre minuscule et un chiffre',
 	    'tr_meliscommerce_client_Contact_email_address_exist' => 'Cet email est déjà utilisé, merci de vous connecter pour vous servir de ce compte',
+        'tr_meliscommerce_client_Contact_company_logo_too_big' => 'Le fichier uploadé est trop volumineux, la taille maximum est de 500kB',
+        'tr_meliscommerce_client_Contact_company_logo_file_type' => 'File is not an image',
 	    // Contact Addreses Form
 	    'tr_meliscommerce_client_Contact_addresses' => 'Adresses',
 	    'tr_meliscommerce_client_Contact_address_name' => 'Titre de l\'adresse',
