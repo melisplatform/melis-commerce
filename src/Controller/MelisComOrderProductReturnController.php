@@ -80,90 +80,43 @@ class MelisComOrderProductReturnController extends MelisAbstractActionController
          */
 
         $messages = [];
-        $returnProduct = [];
-        $returnProductData =  $productReturn->getOrderProductReturnList($orderId);
-        //modify return product data
-        foreach($returnProductData as $retProduct){
-            if(array_key_exists($retProduct['pret_id'], $returnProduct)){
-                $returnProduct[$retProduct['pret_id']]['details'][] = [
-                    'pretd_variant_id' => $retProduct['pretd_variant_id'],
-                    'pretd_sku' => $retProduct['pretd_sku'],
-                    'pretd_quantity' => $retProduct['pretd_quantity']
-                ];
-            }else{
-                $returnProduct[$retProduct['pret_id']] = [];
-                $returnProduct[$retProduct['pret_id']] = [
-                    'pret_id' => $retProduct['pret_id'],
-                    'pret_order_id' => $retProduct['pret_order_id'],
-                    'pret_client_id' => $retProduct['pret_client_id'],
-                    'pret_date_creation' => $retProduct['pret_date_creation'],
-                    'details' => [[
-                        'pretd_variant_id' => $retProduct['pretd_variant_id'],
-                        'pretd_sku' => $retProduct['pretd_sku'],
-                        'pretd_quantity' => $retProduct['pretd_quantity']
-                    ]]
-                ];
-            }
-        }
-
         $image = '';
-        //message alreay exist checker, so that there is no duplicate message
-        $msgChecker = [];
-        foreach($returnProduct as $rProduct) {
-            //get return messages
-            $returnMessages = $orderService->getOrderMessageByOrderId($rProduct['pret_order_id'], 'RETURN');
+        //get return messages
+        $returnMessages = $orderService->getOrderMessageByOrderId($orderId, 'RETURN');
 
-            foreach ($returnMessages as $orderMessage) {
-                //check if message already get
-                if(!in_array($orderMessage->omsg_id, $msgChecker)) {
-                    foreach($rProduct['details'] as $key => $det){
-                        $productInfo = $variantSvc->getProductByVariantId($det['pretd_variant_id']);
-                        $prodId = $productInfo->prd_id;
-                        //get product name
-                        $productName = $prodSvc->getProductName($prodId, $this->getTool()->getCurrentLocaleID()) ?? $productInfo->prd_reference;
-                        $rProduct['details'][$key]['product_name'] = $productName;
-                        $rProduct['details'][$key]['product_id'] = $prodId;
-                    }
+        foreach ($returnMessages as $orderMessage) {
+            foreach ($clientSvc->getClientByIdAndClientPerson($orderMessage->omsg_client_id, $orderMessage->omsg_client_person_id)->getPersons() as $clientPerson) {
+                $person = $clientPerson;
+            }
+            $role = 'Client';
+            $name = $person->cper_name . ' ' . $person->cper_middle_name . ' ' . $person->cper_firstname;
+            $email = $person->cper_email;
+            $image = 'data:image/jpeg;base64,/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAAA8AAD/4QMOaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjUtYzAyMSA3OS4xNTU3NzIsIDIwMTQvMDEvMTMtMTk6NDQ6MDAgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjdGMTg1NkM4Q0EyQjExRTVBMDVGRTA3NDczNUZDNEZCIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjdGMTg1NkM3Q0EyQjExRTVBMDVGRTA3NDczNUZDNEZCIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIEltYWdlUmVhZHkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0iNkE1QjI0NzYyRjREN0Y0NzdGNUIyRDJBNzlCMDVGMDciIHN0UmVmOmRvY3VtZW50SUQ9IjZBNUIyNDc2MkY0RDdGNDc3RjVCMkQyQTc5QjA1RjA3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+/+4ADkFkb2JlAGTAAAAAAf/bAIQABgQEBAUEBgUFBgkGBQYJCwgGBggLDAoKCwoKDBAMDAwMDAwQDA4PEA8ODBMTFBQTExwbGxscHx8fHx8fHx8fHwEHBwcNDA0YEBAYGhURFRofHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8f/8AAEQgAMgAyAwERAAIRAQMRAf/EAGwAAQACAwEBAAAAAAAAAAAAAAAFBgIDBAEIAQEAAAAAAAAAAAAAAAAAAAAAEAABAwIEAwcDBQAAAAAAAAABAAIDEQQhMRIFoTITQWFxkUIjBlGB0VJTFBUWEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwD6pQEEVcb/AAseWwRmWmGutG/bOqDCP5CK+7AQ3tLDXgQEErDNHNG2SN2pjhUEIM0BAQcm6ue3bpy00Omle4mh4IKygIJv465/SnaeQPBb4kYoJZAQEHJu3U/r5tAqaYgCp01x4IKygIJr491OnPUe3qGk0zNMcfJBLoCAgIKvuNoba7cz0Pq+M9xOX2KDRHG+WRsTOd50trlUoLXbwtggjhbiGNDa/WiDYgICDXPcwQM1zPDB35nwCCt7hefy7kyAFrGjSwHOmdT4oNEUjopWSt5mODhXLBBZrTcba6aNDqSeqN2Dh+UHSgIK/d73cyktg9mPsdm8/hBHuLnOLnEucc3ONT5lB4gIFOGSDstt1vYCBr6sY9D8fJ2aCR/0Ft+0/lr2c36c+KCCQEBAQEBAQf/Z';
+            if (!is_null($orderMessage->omsg_user_id)) {
+                $user = $userTable->getEntryById($orderMessage->omsg_user_id)->current();
 
+                $role = 'Admin';
+                $name = 'ID (' . $orderMessage->omsg_user_id . ')';
+                $email = '';
 
-                    //include the msg id
-                    $msgChecker[] = $orderMessage->omsg_id;
-
-                    foreach ($clientSvc->getClientByIdAndClientPerson($orderMessage->omsg_client_id, $orderMessage->omsg_client_person_id)->getPersons() as $clientPerson) {
-                        $person = $clientPerson;
-                    }
-                    $role = 'Client';
-                    $name = $person->cper_name . ' ' . $person->cper_middle_name . ' ' . $person->cper_firstname;
-                    $email = $person->cper_email;
-                    $image = 'data:image/jpeg;base64,/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAAA8AAD/4QMOaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjUtYzAyMSA3OS4xNTU3NzIsIDIwMTQvMDEvMTMtMTk6NDQ6MDAgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjdGMTg1NkM4Q0EyQjExRTVBMDVGRTA3NDczNUZDNEZCIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjdGMTg1NkM3Q0EyQjExRTVBMDVGRTA3NDczNUZDNEZCIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIEltYWdlUmVhZHkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0iNkE1QjI0NzYyRjREN0Y0NzdGNUIyRDJBNzlCMDVGMDciIHN0UmVmOmRvY3VtZW50SUQ9IjZBNUIyNDc2MkY0RDdGNDc3RjVCMkQyQTc5QjA1RjA3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+/+4ADkFkb2JlAGTAAAAAAf/bAIQABgQEBAUEBgUFBgkGBQYJCwgGBggLDAoKCwoKDBAMDAwMDAwQDA4PEA8ODBMTFBQTExwbGxscHx8fHx8fHx8fHwEHBwcNDA0YEBAYGhURFRofHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8f/8AAEQgAMgAyAwERAAIRAQMRAf/EAGwAAQACAwEBAAAAAAAAAAAAAAAFBgIDBAEIAQEAAAAAAAAAAAAAAAAAAAAAEAABAwIEAwcDBQAAAAAAAAABAAIDEQQhMRIFoTITQWFxkUIjBlGB0VJTFBUWEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwD6pQEEVcb/AAseWwRmWmGutG/bOqDCP5CK+7AQ3tLDXgQEErDNHNG2SN2pjhUEIM0BAQcm6ue3bpy00Omle4mh4IKygIJv465/SnaeQPBb4kYoJZAQEHJu3U/r5tAqaYgCp01x4IKygIJr491OnPUe3qGk0zNMcfJBLoCAgIKvuNoba7cz0Pq+M9xOX2KDRHG+WRsTOd50trlUoLXbwtggjhbiGNDa/WiDYgICDXPcwQM1zPDB35nwCCt7hefy7kyAFrGjSwHOmdT4oNEUjopWSt5mODhXLBBZrTcba6aNDqSeqN2Dh+UHSgIK/d73cyktg9mPsdm8/hBHuLnOLnEucc3ONT5lB4gIFOGSDstt1vYCBr6sY9D8fJ2aCR/0Ft+0/lr2c36c+KCCQEBAQEBAQf/Z';
-                    if (!is_null($orderMessage->omsg_user_id)) {
-                        $user = $userTable->getEntryById($orderMessage->omsg_user_id)->current();
-
-                        $role = 'Admin';
-                        $name = 'ID (' . $orderMessage->omsg_user_id . ')';
-                        $email = '';
-
-                        if (!empty($user)) {
-                            $name = $user->usr_lastname . ' ' . $user->usr_firstname;
-                            $email = $user->usr_email;
-                            $image = ($user->usr_image) ? 'data:image/jpeg;base64,' . base64_encode($user->usr_image) : $image;
-                        }
-                    }
-                    $message = array(
-                        'day' => date("d", strtotime($orderMessage->omsg_date_creation)),
-                        'month' => date("M", strtotime($orderMessage->omsg_date_creation)),
-                        'date' => strtotime($orderMessage->omsg_date_creation),// used for sorting by date
-                        'urole_name' => $role,
-                        'usr_image' => $image,
-                        'name' => $name,
-                        'email' => $email,
-                        'time' => date("H:i", strtotime($orderMessage->omsg_date_creation)),
-                        'omsg_message' => $orderMessage->omsg_message,
-                        'details' => $rProduct['details']
-                    );
-                    $messages[] = $message;
+                if (!empty($user)) {
+                    $name = $user->usr_lastname . ' ' . $user->usr_firstname;
+                    $email = $user->usr_email;
+                    $image = ($user->usr_image) ? 'data:image/jpeg;base64,' . base64_encode($user->usr_image) : $image;
                 }
             }
+            $message = array(
+                'day' => date("d", strtotime($orderMessage->omsg_date_creation)),
+                'month' => date("M", strtotime($orderMessage->omsg_date_creation)),
+                'date' => strtotime($orderMessage->omsg_date_creation),// used for sorting by date
+                'urole_name' => $role,
+                'usr_image' => $image,
+                'name' => $name,
+                'email' => $email,
+                'time' => date("H:i", strtotime($orderMessage->omsg_date_creation)),
+                'omsg_message' => $orderMessage->omsg_message,
+            );
+            $messages[] = $message;
         }
 
         //sort by date descending

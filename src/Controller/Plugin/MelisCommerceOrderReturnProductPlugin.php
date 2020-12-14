@@ -169,10 +169,16 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
                             $returnProductData['pret_client_id'] = $clientId;
                             $pretId = $productReturn->saveOrderProductReturn($returnProductData);
                             if (!empty($pretId)) {
+                                //pepare product details to include on message
+                                $msgProdDetails = '<p>';
                                 //start save the details
                                 foreach ($returnVariantData as $variantId => $quantity) {
                                     //get variant info
                                     $variant = $variantSvc->getVariantById($variantId, $langId)->getVariant();
+                                    //get product name
+                                    $productId = $variant->var_prd_id;
+                                    $productName = $prodSvc->getProductName($productId, $langId);
+
                                     //add other return details
                                     $returnProductDetailsData['pretd_sku'] = $variant->var_sku;
                                     $returnProductDetailsData['pretd_pret_id'] = $pretId;
@@ -181,9 +187,14 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
 
                                     //save product return details
                                     $productReturn->saveOrderProductReturnDetails($returnProductDetailsData);
+
+                                    //set msg product details
+                                    $msgProdDetails .= "<span>".$productName." / ".$productId." / ".$variant->var_sku.": ".$quantity."</span><br>";
                                 }
+                                $msgProdDetails .= "</p>";
 
                                 //save message
+                                $orderMesasge['omsg_message'] .= htmlentities($msgProdDetails);
                                 $orderMesasge['omsg_order_id'] = $orderId;
                                 $orderMesasge['omsg_client_id'] = $clientId;
                                 $orderMesasge['omsg_client_person_id'] = $personid;

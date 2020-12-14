@@ -49,13 +49,7 @@ $tmp = '';
                                         </div>
                                         <div class="alert alert-gray">
                                             <div class="message">
-                                                <p><?= $message['omsg_message'] ?></p>
-                                            </div>
-                                            <div class="msg_details">
-                                                <h6>Details:</h6>
-                                                <?php foreach($message['details'] as $detail) { ?>
-                                                <span><?= $detail['product_name'] .' / '.$detail['product_id'].' / '.$detail['pretd_sku'].': '.$detail['pretd_quantity']; ?></span><br>
-                                                <?php } ?>
+                                                <p><?= html_entity_decode($message['omsg_message']); ?></p>
                                             </div>
                                         </div>
                                     </div>
