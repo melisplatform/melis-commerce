@@ -74,7 +74,7 @@ return array(
     'tr_meliscommerce_products_add_product_text' => 'Ajouter un type de texte',
     'tr_meliscommerce_products_add_product_text_description' => 'Ajoutez un type de texte sur la page du produit',
     'tr_meliscommerce_products_text_tab_ptxt_short_field' => 'Titre du produit ici',
-    'tr_meliscommerce_products_text_close' => 'Close',
+    'tr_meliscommerce_products_text_close' => 'Fermer',
 
     // Product Attribute
     'tr_meliscommerce_products_main_tab_attributes_container' => 'Attributs',
@@ -155,5 +155,7 @@ return array(
     'tr_meliscommerce_products_page_page_association_1' => 'Page associée 1',
     'tr_meliscommerce_products_page_page_association_2' => 'Page associée 2',
     'tr_meliscommerce_products_page_page_association_3' => 'Page associée 3',
-    'tr_meliscommerce_products_page_page_association_tooltip' => 'Saisissez l\'identifiant de la page à associer ou sélectionnez la page depuis l\'arborescence. Pour une page externe saisissez l\'URL de la page.'
+    'tr_meliscommerce_products_page_page_association_tooltip' => 'Saisissez l\'identifiant de la page à associer ou sélectionnez la page depuis l\'arborescence. Pour une page externe saisissez l\'URL de la page.',
+    'tr_meliscommerce_products_table_select' => 'Choisissez',
+    'tr_meliscommerce_products_text_filter' => 'Filtrer'
 );
