@@ -279,6 +279,10 @@ $(function() {
             $('#tableProductList').DataTable().ajax.reload();
         });
 
+        $body.on('click', '.product-list-table-filter-refresh a.melis-refreshTable', function () {
+            productTableFilterSelectedCategories = [];
+        });
+
         $body.on("click", ".product-category-tree-view-lang li a", function() {
             var $this       = $(this),
                 langText    = $this.text(),
