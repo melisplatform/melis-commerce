@@ -152,7 +152,8 @@ return array(
     'tr_meliscommerce_plugin_related_product_default_product_tooltip' => 'Choisissez un produit pour afficher ses produits associés',
 
     'tr_meliscommerce_products_page_page_association' => 'Association de pages',
-    'tr_meliscommerce_products_page_page_association_1' => 'Associated page 1',
-    'tr_meliscommerce_products_page_page_association_2' => 'Associated page 2',
-    'tr_meliscommerce_products_page_page_association_3' => 'Associated page 3',
+    'tr_meliscommerce_products_page_page_association_1' => 'Page associée 1',
+    'tr_meliscommerce_products_page_page_association_2' => 'Page associée 2',
+    'tr_meliscommerce_products_page_page_association_3' => 'Page associée 3',
+    'tr_meliscommerce_products_page_page_association_tooltip' => 'Saisissez l\'identifiant de la page à associer ou sélectionnez la page depuis l\'arborescence'
 );

@@ -155,4 +155,5 @@ return array(
     'tr_meliscommerce_products_page_page_association_1' => 'Associated page 1',
     'tr_meliscommerce_products_page_page_association_2' => 'Associated page 2',
     'tr_meliscommerce_products_page_page_association_3' => 'Associated page 3',
+    'tr_meliscommerce_products_page_page_association_tooltip' => 'Either type in the ID of the page to associate or select the page in the treeview'
 );
