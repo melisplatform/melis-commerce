@@ -115,16 +115,25 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
 
             //check if order is already delivered to the customer
             if ($data->getOrder()->ord_status == 4) {//order delivered
-
                 //check if form is submitted
                 if($isSubmit){
                     if(!empty($returnVariantData)) {
+                        //get all return product to get the quantity
+                        $returnProduct = $productReturn->getOrderProductReturnList($orderId);
                         $isQtyOk = true;
                         //re check returned quantity
                         foreach($returnVariantData as $variantId => $returnQty){
+                            $returnProd = 0;
+                            //count already returned product
+                            foreach ($returnProduct as $key => $rProduct) {
+                                if ($rProduct['pretd_variant_id'] == $variantId) {
+                                    $returnProd += $rProduct['pretd_quantity'];
+                                }
+                            }
                             foreach($data->getBasket() as $bas){
                                 if($variantId == $bas->obas_variant_id){
-                                    if($returnQty > $bas->obas_quantity){
+                                    $remainingQty = $bas->obas_quantity - $returnProd;
+                                    if($returnQty > $remainingQty){
                                         $isQtyOk = false;
                                         break;
                                     }
@@ -207,10 +216,10 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
                         }
                     }
                 }
-
                 //get already returned product list
                 $returnProduct = $productReturn->getOrderProductReturnList($orderId);
                 $orderCoupons = $couponSvc->getCouponList($orderId);
+
                 $tmp = array();
                 foreach ($orderCoupons as $coupon) {
                     if ($coupon->getCoupon()->coup_product_assign) {
