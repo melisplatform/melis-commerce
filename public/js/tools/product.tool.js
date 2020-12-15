@@ -52,6 +52,7 @@ window.initProductCategoryList = function(productId, langLocale) {
             .on('loaded.jstree', function (e, data) {
                 melisCommerce.pendingZoneDone("productCategorySearchZone");
                 setProductCategoryFilter($(this).attr('id'));
+                openCheckedCategoryFilter($(this).attr('id'));
             })
             .jstree({
                 "types" : {
@@ -910,6 +911,14 @@ window.setProductCategoryFilter = function (id) {
     if (id == '0_productCategoryList') {
         $.each(productTableFilterSelectedCategories, function(key, value) {
             $('#0_productCategoryList').jstree().check_node(value + '_categoryId');
+        });
+    }
+}
+
+window.openCheckedCategoryFilter = function (id) {
+    if (id == '0_productCategoryList') {
+        $.each(productTableFilterSelectedCategories, function(key, value) {
+            $('#0_productCategoryList').jstree()._open_to(value + '_categoryId');
         });
     }
 }
