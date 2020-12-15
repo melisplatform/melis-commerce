@@ -284,6 +284,10 @@ $(function() {
             productTableFilterSelectedCategories = [];
         });
 
+        $body.on('click', '.close.close-tab[data-id="id_meliscommerce_product_list_container"]', function () {
+            productTableFilterSelectedCategories = [];
+        });
+
         $body.on("click", ".product-category-tree-view-lang li a", function() {
             var $this       = $(this),
                 langText    = $this.text(),
