@@ -2734,3 +2734,11 @@ i.fa.fa-download {
     background: #eee;
     cursor: pointer;
 }
+
+.progress .progress-bar.progress-bar-danger {
+	background: #e61c23;
+}
+
+.progressContent .progress .text-danger {
+	color: #e61c23;
+}
