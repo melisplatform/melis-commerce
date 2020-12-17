@@ -75,7 +75,8 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
         $productReturn = $this->getServiceManager()->get('MelisComOrderProductReturnService');
         $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
         $prodSvc = $this->getServiceManager()->get('MelisComProductService');
-        
+        $trans = $this->getServiceManager()->get('translator');
+
         $container = new Container('melisplugins');
         $langId = $container['melis-plugins-lang-id'];
 
@@ -179,7 +180,7 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
                             $pretId = $productReturn->saveOrderProductReturn($returnProductData);
                             if (!empty($pretId)) {
                                 //pepare product details to include on message
-                                $msgProdDetails = '<p>';
+                                $msgProdDetails = '<p>'.$trans->translate('tr_melis_commerce_orders_return_details').'<br>';
                                 //start save the details
                                 foreach ($returnVariantData as $variantId => $quantity) {
                                     //get variant info
