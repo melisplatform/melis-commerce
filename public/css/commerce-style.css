@@ -2734,3 +2734,7 @@ i.fa.fa-download {
     background: #eee;
     cursor: pointer;
 }
+
+#expandPrdCatTreeViewBtn {
+    padding: .375rem .5rem;
+}
