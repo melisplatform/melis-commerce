@@ -2738,3 +2738,13 @@ i.fa.fa-download {
 #expandPrdCatTreeViewBtn {
     padding: .375rem .5rem;
 }
+
+/* category filters tooltip */
+#product-category-filter-tooltip {
+    margin-left: 0.5rem;
+    font-size: 15px;
+}
+
+.bs-tooltip-auto[x-placement^=right] .arrow::before, .bs-tooltip-right .arrow::before {
+    border-right-color: #c52127;
+}
