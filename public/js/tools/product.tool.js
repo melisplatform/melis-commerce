@@ -188,7 +188,7 @@ window.reInitProductTextTypeSelect = function(productId) {
             });
 }
 
-var productTableFilterSelectedCategories = [];
+var productTableFilterSelectedCategoryIds = [];
 
 $(function() {
     var $body = $("body");
@@ -271,21 +271,37 @@ $(function() {
         });
 
         $body.on('click', '.filterProductCategory', function () {
-            productTableFilterSelectedCategories = [];
-            $.each($('#0_productCategoryList').jstree().get_checked(true), function(){
-                productTableFilterSelectedCategories.push(parseInt(this.id));
+            productTableFilterSelectedCategoryIds = [];
+            var productTableFilterSelectedCategories = [];
+            var filterTooltipText = translations.tr_meliscommerce_products_text_filter + ': ';
+
+            $.each($('#0_productCategoryList').jstree().get_checked(true), function() {
+                var categoryName = this.text.split('-')[1].trim();
+
+                productTableFilterSelectedCategoryIds.push(parseInt(this.id));
+                productTableFilterSelectedCategories.push(categoryName);
             });
+
+            filterTooltipText += productTableFilterSelectedCategories.join(', ');
 
             $('#id_meliscommerce_products_main_tab_categories_modal_container').modal('hide');
             $('#tableProductList').DataTable().ajax.reload();
+
+            if (productTableFilterSelectedCategoryIds.length > 0) {
+                $('#product-category-filter-tooltip').removeClass('hidden');
+                $('#product-category-filter-tooltip').attr('data-original-title', filterTooltipText);
+            } else {
+                if (! $('#product-category-filter-tooltip').hasClass('hidden'))
+                    $('#product-category-filter-tooltip').addClass('hidden');
+            }
         });
 
         $body.on('click', '.product-list-table-filter-refresh a.melis-refreshTable', function () {
-            productTableFilterSelectedCategories = [];
+            productTableFilterSelectedCategoryIds = [];
         });
 
         $body.on('click', '.close.close-tab[data-id="id_meliscommerce_product_list_container"]', function () {
-            productTableFilterSelectedCategories = [];
+            productTableFilterSelectedCategoryIds = [];
         });
 
         $body.on("click", ".product-category-tree-view-lang li a", function() {
@@ -908,12 +924,12 @@ $(function() {
 });
 
 window.initProductsTableData = function (tableData) {
-    tableData.selectedCategories = productTableFilterSelectedCategories;
+    tableData.selectedCategories = productTableFilterSelectedCategoryIds;
 }
 
 window.setProductCategoryFilter = function (id) {
     if (id == '0_productCategoryList') {
-        $.each(productTableFilterSelectedCategories, function(key, value) {
+        $.each(productTableFilterSelectedCategoryIds, function(key, value) {
             $('#0_productCategoryList').jstree().check_node(value + '_categoryId');
         });
     }
@@ -921,7 +937,7 @@ window.setProductCategoryFilter = function (id) {
 
 window.openCheckedCategoryFilter = function (id) {
     if (id == '0_productCategoryList') {
-        $.each(productTableFilterSelectedCategories, function(key, value) {
+        $.each(productTableFilterSelectedCategoryIds, function(key, value) {
             $('#0_productCategoryList').jstree()._open_to(value + '_categoryId');
         });
     }
