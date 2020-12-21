@@ -604,9 +604,16 @@ span.productCategoryItems *{
 }
 
 .productCategoryView {
+    background: #fff;
     overflow: auto;
     height: 300px;
 }
+
+#productCategoryLanguageDropdown {
+    position: relative;
+    z-index: 100;
+}
+
 #productCategorySearch{
     margin-bottom: 5px;
 }
