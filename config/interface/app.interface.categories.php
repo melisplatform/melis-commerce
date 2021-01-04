@@ -369,7 +369,12 @@ return [
                                                                 'controller' => 'MelisComCategory',
                                                                 'action' => 'render-category-tab-products',
                                                             ],
-                                                        ]
+                                                        ],
+                                                        'meliscommerce_categories_category_tab_price_discount' => [
+                                                            'conf' => [
+                                                                'type' => 'meliscommerce/interface/meliscommerce_categories_category_tab_price_discount',
+                                                            ],
+                                                        ],
                                                     ]
                                                 ]
                                             ]
