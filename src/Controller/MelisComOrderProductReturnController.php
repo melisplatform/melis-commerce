@@ -114,7 +114,7 @@ class MelisComOrderProductReturnController extends MelisAbstractActionController
                 'name' => $name,
                 'email' => $email,
                 'time' => date("H:i", strtotime($orderMessage->omsg_date_creation)),
-                'omsg_message' => $orderMessage->omsg_message,
+                'omsg_message' => nl2br($orderMessage->omsg_message),
             );
             $messages[] = $message;
         }
