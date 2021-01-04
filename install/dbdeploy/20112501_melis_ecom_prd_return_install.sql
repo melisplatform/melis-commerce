@@ -23,9 +23,9 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `melis_ecom_order_product_return` (
   `pret_id` int(11) NOT NULL,
-  `pret_order_id` int(11) NOT NULL COMMENT ''Order id concerned by the return'',
-  `pret_client_id` int(11) NOT NULL COMMENT ''Cliend id of the account'',
-  `pret_date_creation` datetime NOT NULL DEFAULT current_timestamp() COMMENT ''Date when the return was created''
+  `pret_order_id` int(11) NOT NULL COMMENT 'Order id concerned by the return',
+  `pret_client_id` int(11) NOT NULL COMMENT 'Cliend id of the account',
+  `pret_date_creation` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'Date when the return was created'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
