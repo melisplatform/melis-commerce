@@ -2,7 +2,7 @@ $(function() {
 	var $body = $("body");
 
 	$body.on("click", ".return-product-show-form", function(){
-		var remProd = $(this).data("rm-pr");
+		var remProd = $(this).attr("data-rm-pr");
 		var variantId = $(this).data("variantid");
 		var sku = $(this).data("sku");
 		var form = $("#returnProductForm");
