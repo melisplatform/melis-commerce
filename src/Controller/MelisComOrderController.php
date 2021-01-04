@@ -1256,6 +1256,7 @@ class MelisComOrderController extends MelisAbstractActionController
                 }
 
                 $orderMesasge['omsg_order_id'] = $postValues['orderId'];
+                $orderMesasge['omsg_type'] = !empty($postValues['omsg_type']) ? $postValues['omsg_type'] : 'MSG';
                 $orderMesasge['omsg_client_id'] = $order->ord_client_id;
                 $orderMesasge['omsg_client_person_id'] = $order->ord_client_person_id;
                 $orderMesasge['omsg_user_id'] = $userId;
