@@ -516,9 +516,6 @@ class MelisComCategoryService extends MelisComGeneralService
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
 //        if (!empty($results)) return $results;
         $cache = $this->getServiceManager()->get($cacheConfig);
-        if ($cache->hasItem($cacheKey)){
-            return $cache->getItem($cacheKey);
-        }
         
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -528,23 +525,37 @@ class MelisComCategoryService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_get_category_translations_start', $arrayParameters);
         
         // Service implementation start
-        $melisEcomCategoryTable = $this->getServiceManager()->get('MelisEcomCategoryTable');
-        $melisCategoryTranslation = $melisEcomCategoryTable->getCategoryTranslationBylangId($arrayParameters['categoryId'], $arrayParameters['langId'], $arrayParameters['onlyValid']);
-        
-        foreach ($melisCategoryTranslation As $val)
-        {
-            array_push($results, $val);
-        }
-        
-        if (empty($results))
-        {
-            $catText = $melisEcomCategoryTable->getCategoryTranslationBylangId($arrayParameters['categoryId'], null, $arrayParameters['onlyValid'])->current();
-            
-            if (!empty($catText))
+        if ($cache->hasItem($cacheKey)){
+            // return cache category translations
+            $results = $cache->getItem($cacheKey);
+        } else {
+            // category translation table
+            $melisEcomCategoryTable = $this->getServiceManager()->get('MelisEcomCategoryTable');
+            // get category translation data
+            $melisCategoryTranslation = $melisEcomCategoryTable->getCategoryTranslationBylangId($arrayParameters['categoryId'], $arrayParameters['langId'], $arrayParameters['onlyValid'])->toArray();
+
+            foreach ($melisCategoryTranslation As $val)
             {
-                array_push($results, $catText);
+                array_push($results, (object) $val);
             }
+
+            if (empty($results))
+            {
+                $catText = $melisEcomCategoryTable->getCategoryTranslationBylangId($arrayParameters['categoryId'], null, $arrayParameters['onlyValid'])->toArray();
+                // get the first data
+                $catText = current($catText);
+
+                if (!empty($catText))
+                {
+                    array_push($results, (object) $catText);
+                }
+            }
+
+            // Save cache key
+            $melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $results);
         }
+
+        
         // Service implementation end
         
         // Adding results to parameters for events treatment if needed
@@ -553,8 +564,6 @@ class MelisComCategoryService extends MelisComGeneralService
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_get_category_translations_end', $arrayParameters);
         
-        // Save cache key
-        $melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
         
         return $arrayParameters['results'];
     }
