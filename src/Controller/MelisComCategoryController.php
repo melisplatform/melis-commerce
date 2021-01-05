@@ -279,7 +279,8 @@ class MelisComCategoryController extends MelisAbstractActionController
             $category->cat_date_valid_start = (!is_null($validFrom)) ? $validFrom : null;
             $category->cat_date_valid_end = (!is_null($validTo)) ? $validTo : null;
 
-            $propertyForm->bind($category);
+            // set data
+            $propertyForm->setData((array) $category);
         }
 
         $view = new ViewModel();
