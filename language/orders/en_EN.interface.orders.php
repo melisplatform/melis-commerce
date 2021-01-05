@@ -204,8 +204,8 @@
 	    'tr_meliscommerce_plugin_order_messages_area' => 'Message Area',
 
 	    //MelisCommerceOrderReturnProductPlugin()
-        'tr_meliscommerce_plugin_order_return_product_name' => 'Order return products',
-        'tr_meliscommerce_plugin_order_return_product_description' => 'Order return products',
+        'tr_meliscommerce_plugin_order_return_product_name' => 'Order: Return Products',
+        'tr_meliscommerce_plugin_order_return_product_description' => 'This plugin displays the list of products from the order and a form to request for sending back products.',
 
 	    // Dashborad plugin
 
