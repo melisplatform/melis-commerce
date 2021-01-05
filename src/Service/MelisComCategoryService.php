@@ -122,9 +122,6 @@ class MelisComCategoryService extends MelisComGeneralService
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
 //        if (!empty($results)) return $results;
         $cache = $this->getServiceManager()->get($cacheConfig);
-        if ($cache->hasItem($cacheKey)){
-            return $cache->getItem($cacheKey);
-        }
         
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -136,11 +133,18 @@ class MelisComCategoryService extends MelisComGeneralService
         // Service implementation start
         $melisCategory = new \MelisCommerce\Entity\MelisCategory();
         
-        $melisEcomCategoryTable = $this->getServiceManager()->get('MelisEcomCategoryTable');
-        
-        // Getting Categories under Category ID
-        $melisCategoryDataRes = $melisEcomCategoryTable->getEntryById($arrayParameters['categoryId']);
-        $category = $melisCategoryDataRes->current();
+        $category = [];
+        if ($cache->hasItem($cacheKey)){
+            $category = $cache->getItem($cacheKey);
+        } else {
+            $melisEcomCategoryTable = $this->getServiceManager()->get('MelisEcomCategoryTable');
+
+            // Getting Categories under Category ID
+            $category = (object) current($melisEcomCategoryTable->getEntryById($arrayParameters['categoryId'])->toArray());
+
+            // Save cache key
+            $melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $category);
+        }
 
         if (!empty($category))
         {
@@ -175,8 +179,6 @@ class MelisComCategoryService extends MelisComGeneralService
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_byid_end', $arrayParameters);
         
-        // Save cache key
-        $melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
         
         return $arrayParameters['results'];
     }
