@@ -133,14 +133,14 @@ $(function() {
 		// Product discount
 		$("form.categoriesPriceDiscountForm").each(function () {
 			var $this = $(this);
-			var langId = $this.data('langid');
+			var countryId = $this.data('countryid');
 			var groupId = $this.data('groupid');
 			var priceDiscountDataString = $this.serializeArray();
 
 			$.each(priceDiscountDataString, function() {
 				if (this.value !== '') {
 					dataString.push({
-						name: "price_discount[" + langId + "][" + groupId + "][" + this.name + "]",
+						name: "price_discount[" + countryId + "][" + groupId + "][" + this.name + "]",
 						value: this.value,
 					});
 				}
