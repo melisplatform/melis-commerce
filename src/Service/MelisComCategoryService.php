@@ -931,6 +931,21 @@ class MelisComCategoryService extends MelisComGeneralService
      */
     public function getCategorySeoById($categoryId = null, $langId = null)
     {
+        // Retrieve cache version if front mode to avoid multiple calls
+        $cacheKey = 'category-' . $categoryId . '-getCategorySeoById_' . $categoryId;
+        // commerce cache config
+        $cacheConfig = 'commerce_big_services';
+        // engine cache class
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
+        // get cache config
+        $cache = $this->getServiceManager()->get($cacheConfig);
+
+        // check if cache was already set
+        if ($cache->hasItem($cacheKey)){
+            // return cache
+            return $cache->getItem($cacheKey);
+        }
+
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $results = array();
@@ -938,13 +953,12 @@ class MelisComCategoryService extends MelisComGeneralService
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_get_seo_start', $arrayParameters);
         
-        
         if (!is_null($arrayParameters['categoryId']))
         {
             $ecomSeotable = $this->getServiceManager()->get('MelisEcomSeoTable');
-            $data = $ecomSeotable->getCategorySeoById($arrayParameters['categoryId'], $arrayParameters['langId']);
+            $data = $ecomSeotable->getCategorySeoById($arrayParameters['categoryId'], $arrayParameters['langId'])->toArray();
             foreach($data as $seo){
-                array_push($results, $seo);
+                array_push($results, (object) $seo);
             }
         }
         // Service implementation end
@@ -953,6 +967,8 @@ class MelisComCategoryService extends MelisComGeneralService
         $arrayParameters['results'] = $results;
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_get_seo_end', $arrayParameters);
+        // Save cache key
+        $melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
         
         return $arrayParameters['results'];
     }
