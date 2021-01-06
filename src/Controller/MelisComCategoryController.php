@@ -477,8 +477,6 @@ class MelisComCategoryController extends MelisAbstractActionController
             $catCountriesData = $datas['cat_countries'];
             // Category SEO Datas
             $categorySEO = $datas['seo_data'];
-            // Category group discount
-            $categoryGroupDiscount = $datas['cat_discount'];
 
             $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
@@ -500,7 +498,7 @@ class MelisComCategoryController extends MelisAbstractActionController
             
             if (empty($errors)){
                 $melisComCategoryService = $this->getServiceManager()->get('MelisComCategoryService');
-                $catId = $melisComCategoryService->saveCategory($catData, $catTransData, $catCountriesData, $categorySEO, $catId, $categoryGroupDiscount);
+                $catId = $melisComCategoryService->saveCategory($catData, $catTransData, $catCountriesData, $categorySEO, $catId);
                 
                 if (!is_null($catId))
                 {

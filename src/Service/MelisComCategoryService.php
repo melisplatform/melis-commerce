@@ -718,7 +718,7 @@ class MelisComCategoryService extends MelisComGeneralService
      * @return int|null The category id created or updated, null if an error occured
      */
     public function saveCategory($category, $categoryTranslations = array(),
-        $categoryCountries = array(), $categorySeo = array(), $categoryId = null, $categoryGroupDiscount = [])
+        $categoryCountries = array(), $categorySeo = array(), $categoryId = null)
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -768,9 +768,6 @@ class MelisComCategoryService extends MelisComGeneralService
             $categorySeo = $arrayParameters['categorySeo'];
             $melisComSeoService = $this->getServiceManager()->get('MelisComSeoService');
             $result = $melisComSeoService->saveSeoDataAction('category', $catId, $categorySeo);
-
-            $discountService = $this->getServiceManager()->get('MelisCommerceGroupDiscountPerCategoryService');
-            $discountService->saveCategoryGroupDiscount($catId, $arrayParameters['categoryGroupDiscount']);
             
             if ($result!=true)
             {
