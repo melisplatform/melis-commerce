@@ -460,27 +460,28 @@ class MelisComCategoryService extends MelisComGeneralService
                 {
                     $status = ($arrayParameters['onlyValid']) ? 1 : 0;
                     
+                    $melisCategoryCountry = [];
                     if ($arrayParameters['onlyValid'])
                     {
-                        $melisCategoryCountry = $melisEcomCountryTable->getEntryByField('ctry_status', 1);
+                        $melisCategoryCountry = $melisEcomCountryTable->getEntryByField('ctry_status', 1)->toArray();
                     }
                     else 
                     {
-                        $melisCategoryCountry = $melisEcomCountryTable->fetchAll();
+                        $melisCategoryCountry = $melisEcomCountryTable->fetchAll()->toArray();
                     }
                     
                     foreach ($melisCategoryCountry As $val)
                     {
-                        array_push($results, $val);
+                        array_push($results, (object) $val);
                     }
                 }
                 else
                 {
                     // Getting Category Countries under category ID
-                    $melisCategoryCountry = $melisEcomCountryTable->getCategoryCountriesByCategoryId($arrayParameters['categoryId'], $arrayParameters['onlyValid']);
+                    $melisCategoryCountry = $melisEcomCountryTable->getCategoryCountriesByCategoryId($arrayParameters['categoryId'], $arrayParameters['onlyValid'])->toarray();
                     foreach ($melisCategoryCountry As $val)
                     {
-                        array_push($results, $val);
+                        array_push($results, (object) $val);
                     }
                 }
             }
