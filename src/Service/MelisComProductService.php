@@ -131,27 +131,28 @@ class MelisComProductService extends MelisComGeneralService
 			$tmp .= '_' . $type;
 		$cacheKey = 'product-' . $productId . '-getProductById_' . $productId . '_' . $countryId . '_' . $docType . '_' . $tmp;
 		$cacheConfig = 'commerce_big_services';
-		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-    //    $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-    //    if (!empty($results)) return $results;
 
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_product_byid_start', $arrayParameters);
+
+        // Service implementation start
+        $prodTable = $this->getServiceManager()->get('MelisEcomProductTable');
 		$cache = $this->getServiceManager()->get($cacheConfig);
 		if ($cache->hasItem($cacheKey)){
-			return $cache->getItem($cacheKey);
-		}
-		
-		// Event parameters prepare
-		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
-		$results = array();
+            $productData = $cache->getItem($cacheKey);
+		} else {
+            $productData = $prodTable->getProduct($arrayParameters['productId'])->toArray();
 
-		// Sending service start event
-		$arrayParameters = $this->sendEvent('meliscommerce_service_product_byid_start', $arrayParameters);
-
-		// Service implementation start
-		$prodTable = $this->getServiceManager()->get('MelisEcomProductTable');
-		$productData = $prodTable->getProduct($arrayParameters['productId']);
+            // Save cache key
+            $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
+            $melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $productData);
+        }
 		$prodCatTable = $this->getServiceManager()->get('MelisEcomProductCategoryTable');
-		
+
 		$category = array();
 		$prodDoc = array();
 
@@ -160,8 +161,8 @@ class MelisComProductService extends MelisComGeneralService
 		$entProd = new MelisProduct();
 		if($productData) {
 			foreach($productData as $prod) {
-				$entProd->setId($prod->prd_id);
-				$entProd->setProduct($prod);
+				$entProd->setId($prod['prd_id']);
+				$entProd->setProduct((object) $prod);
 
 				// Get all category
 				$prodCats = $prodTable->getProductCategoryByProductId($arrayParameters['productId']);
@@ -200,9 +201,6 @@ class MelisComProductService extends MelisComGeneralService
 		$arrayParameters['results'] = $results;	    
 		// Sending service end event
 		$arrayParameters = $this->sendEvent('meliscommerce_service_product_byid_end', $arrayParameters);
-
-		// Save cache key
-		$melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
 		
 		return $arrayParameters['results'];
 	}
@@ -254,7 +252,7 @@ class MelisComProductService extends MelisComGeneralService
 		$arrayParameters['results'] = $results;	    
 		// Sending service end event
 		$arrayParameters = $this->sendEvent('meliscommerce_service_product_attributes_byid_end', $arrayParameters);
-		
+
 		// Save cache key
 		$melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
 		
@@ -379,7 +377,7 @@ class MelisComProductService extends MelisComGeneralService
 		
 		// Event parameters prepare
 		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
-		$results = array();
+		$results = [];
 		
 		// Sending service start event
 		$arrayParameters = $this->sendEvent('meliscommerce_service_get_product_categories_start', $arrayParameters);
