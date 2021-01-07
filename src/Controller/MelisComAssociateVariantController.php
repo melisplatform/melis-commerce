@@ -475,15 +475,16 @@ class MelisComAssociateVariantController extends MelisAbstractActionController
         $textMessage = 'tr_meliscommerce_assoc_var_assoc_ko';
         $errors = array();
 
-        if($this->getRequest()->isPost()) {
+        if ($this->getRequest()->isPost()) {
             $this->getEventManager()->trigger('meliscommerce_assoc_var_assoc_start', $this, $this->getRequest()->getPost());
             $assignedVar = (int) $this->getRequest()->getPost('assignVariantid');
             $assignTo  = (int) $this->getRequest()->getPost('assignToVariantId');
+            $assignToVariantProductId = (int) $this->getRequest()->getPost('assignToVariantProductId');
 
             $table = $this->getServiceManager()->get('MelisEcomAssocVariantTable');
             $assocVarTable = $this->getServiceManager()->get('MelisEcomAssocVariantTable');
             $isAssociated = $assocVarTable->getVariantAssociationData($assignTo, $assignedVar)->current();
-            if(empty($isAssociated)) {
+            if (empty($isAssociated)) {
                 $variantAssId = $assocVarTable->save(array(
                     'avar_one' =>  $assignTo, 
                     'avar_two' => $assignedVar, 
@@ -496,9 +497,12 @@ class MelisComAssociateVariantController extends MelisAbstractActionController
                 $textMessage = 'tr_meliscommerce_assoc_var_assoc_duplicate';
             }
             
-            if($success) {
+            if ($success) {
                 $success = 1;
                 $textMessage = 'tr_meliscommerce_assoc_var_assoc_ok';
+
+                $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
+                $melisEngineCacheSystem->deleteCacheByPrefix('product-' . $assignToVariantProductId . '-getAssocProducts_' . $assignToVariantProductId, 'commerce_big_services');
             }
         }
 
@@ -529,6 +533,7 @@ class MelisComAssociateVariantController extends MelisAbstractActionController
 
             $assignedVar = (int) $this->getRequest()->getPost('assignedVariantId');
             $variantId   = (int) $this->getRequest()->getPost('variantId');
+            $currentVariantProductId   = (int) $this->getRequest()->getPost('currentVariantProductId');
             $assocVarTable = $this->getServiceManager()->get('MelisEcomAssocVariantTable');
 
             $data = $assocVarTable->getVariantAssociationData($variantId, $assignedVar)->current();
@@ -537,6 +542,9 @@ class MelisComAssociateVariantController extends MelisAbstractActionController
                 if($variantAssId) {
                     $success = 1;
                     $textMessage = 'tr_meliscommerce_assoc_var_remove_ok';
+
+                    $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
+                    $melisEngineCacheSystem->deleteCacheByPrefix('product-' . $currentVariantProductId . '-getAssocProducts_' . $currentVariantProductId, 'commerce_big_services');
                 }
             }
         }
