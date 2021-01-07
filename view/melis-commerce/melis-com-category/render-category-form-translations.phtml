@@ -61,7 +61,7 @@
                             	    {
                             	        if ($cVal->elang_id == $val['elang_id'])
                             	        {
-                            	            $form->bind($cVal);
+                            	            $form->setData((array) $cVal);
                             	        }
                             	    }
                             	}

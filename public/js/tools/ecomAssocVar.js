@@ -15,14 +15,15 @@ $(function() {
                 parentTable         = $this.parents('.tableAssocVariantList2'),
                 tableId             = parentTable.attr("id"),
                 currentVariantId    = parentTable.data("variantid"),
-                parentContainer     = $this.parents(".variant-assoc-product-variant-list");
+                parentContainer     = $this.parents(".variant-assoc-product-variant-list"),
+                currentVariantProductId = $this.closest('#' + currentVariantId + '_id_meliscommerce_variants_page').data('prodid');
             
                 melisCommerce.disableAllTabs();
                 
                 $.ajax({
                     type        : 'POST',
                     url         : '/melis/MelisCommerce/MelisComAssociateVariant/assignVariant',
-                    data		: {assignVariantid : variantId, assignToVariantId: currentVariantId},
+                    data		: {assignVariantid : variantId, assignToVariantId: currentVariantId, assignToVariantProductId: currentVariantProductId},
                     dataType    : 'json',
                     encode		: true
                 }).done(function(data) {
@@ -56,7 +57,8 @@ $(function() {
                 varId               = $this.closest('tr').attr('id'),
                 parentTable         = $this.parents('.tableAssocVariantList1'),
                 currentVariantId    = parentTable.data("variantid"),
-                productId           = $this.closest('tr').attr("data-productid");
+                productId           = $this.closest('tr').attr("data-productid"),
+                currentVariantProductId = $this.closest('#' + currentVariantId + '_id_meliscommerce_variants_page').data('prodid');
             
                 melisCoreTool.pending(".removeAssociation");
                 melisCommerce.disableAllTabs();
@@ -64,7 +66,7 @@ $(function() {
                 $.ajax({
                     type        : 'POST',
                     url         : '/melis/MelisCommerce/MelisComAssociateVariant/removeAssociation',
-                    data		: {assignedVariantId : varId, variantId: currentVariantId},
+                    data		: {assignedVariantId : varId, variantId: currentVariantId, currentVariantProductId: currentVariantProductId},
                     dataType    : 'json',
                     encode		: true
                 }).done(function(data) {
