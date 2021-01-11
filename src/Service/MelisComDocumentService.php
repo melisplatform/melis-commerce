@@ -493,8 +493,6 @@ class MelisComDocumentService extends MelisComGeneralService
 			
 			$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 			$melisEngineCacheSystem->deleteCacheByPrefix($docRelation . '-' . $relationId, 'commerce_big_services');
-			
-			
 
 		}catch(\Exception $e) {
 			$savedDocId = null;
@@ -515,9 +513,10 @@ class MelisComDocumentService extends MelisComGeneralService
 	/**
 		* This method removes the document entry and document relationship entry
 		* @param int $documentId
-		* @return boolean true/false 
+		* @param int $uniqueId can be Product Id/VariantId
+		* @return boolean true/false
 		*/
-	public function deleteDocument($documentId)
+	public function deleteDocument($documentId, $uniqueId)
 	{
 		// Event parameters prepare
 		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -535,6 +534,10 @@ class MelisComDocumentService extends MelisComGeneralService
 				$docRelTable = $this->getServiceManager()->get('MelisEcomDocRelationsTable');
 				if($docTable->deleteById($id)) {
 					$results = (bool) $docRelTable->deleteByField('rdoc_doc_id', $id);
+
+					//clear product cache to get the latest product document data
+                    $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
+                    $commerceCacheService->deleteCache('product', $uniqueId);
 				}
 				
 			}
