@@ -33,36 +33,73 @@ class MelisComCacheService extends MelisComGeneralService
     }
 
     private function deleteProductCache($id) {
+        // delete main cache for product
         $this->deleteCacheByPrefix(self::COMMERCE_PRODUCT_CACHE_KEY . $id);
+        // delete product cache for products that are associated with this one
+        $this->deleteProductAssociationCache($id);
     }
 
     private function deleteCategoryCache($id) {
+        // delete main cache for category
         $this->deleteCacheByPrefix(self::COMMERCE_CATEGORY_CACHE_KEY . $id);
+        $this->deleteCacheByPrefix('categories');
+        // delete product cache for the products of this category
         $this->deleteCategoryProductsCache($id);
     }
 
     private function deleteVariantCache($id) {
+        // delete main cache for variant
         $this->deleteCacheByPrefix(self::COMMERCE_VARIANT_CACHE_KEY . $id);
+        // delete variant's product cache
         $this->deleteVariantProductAssociationCache($id);
     }
 
     private function deleteVariantAssociationCache($id) {
+        // delete variant association
         $this->deleteVariantProductAssociationCache($id);
     }
 
-    private function getProductAssociations($prodId) {
-        $service = $this->getServiceManager()->get('MelisEcomAssocVariantTable');
-        return $service->getEntryByField('', '');
+    private function deleteProductAssociationCache($prodId) {
+        $productVariants = $this->getProductVariants($prodId);
+        $variantsAssociatedToProduct = $this->getVariantIdsAssociatedToProduct($productVariants);
+        $productIdsAssociatedToProduct = $this->getProductIdsAssociatedToProduct($variantsAssociatedToProduct);
+
+        if (! empty($productIdsAssociatedToProduct))
+            $this->deleteProductServiceProductAssociationCache($productIdsAssociatedToProduct);
     }
 
-    private function deleteProductAssociationCache($prodId) {
-        $associatedProducts = $this->getProductAssociations($prodId);
-        $associatedProductsIds = [];
-        foreach ($associatedProducts as $product) {
-            $associatedProductsIds[] = $product->getId();
+    private function getProductVariants($prodId) {
+        $service = $this->getServiceManager()->get('MelisComVariantService');
+        return $service->getVariantListByProductId($prodId, null, null, true);
+    }
+
+    private function getVariantIdsAssociatedToProduct($variants) {
+        $variantsAssociatedToProduct = [];
+        $table = $this->getServiceManager()->get('MelisEcomAssocVariantTable');
+
+        foreach ($variants as $variant) {
+            $variantAssociatedToProduct = $table->getEntryByField('avar_two', $variant->getId())->current();
+
+            if (! empty($variantAssociatedToProduct))
+                $variantsAssociatedToProduct[] = $variantAssociatedToProduct->avar_one;
         }
 
-        $this->deleteProductServiceProductAssociationCache($associatedProductsIds);
+        return $variantsAssociatedToProduct;
+    }
+
+    private function getProductIdsAssociatedToProduct($variantIds) {
+        $productIdsAssociatedToProduct = [];
+        $service = $this->getServiceManager()->get('MelisComVariantService');
+
+        foreach ($variantIds as $variantId) {
+            $product = $service->getProductByVariantId($variantId);
+
+            if (! in_array($product->prd_id, $productIdsAssociatedToProduct)) {
+                $productIdsAssociatedToProduct[] = $product->prd_id;
+            }
+        }
+
+        return $productIdsAssociatedToProduct;
     }
 
     private function deleteCategoryProductsCache($id) {
