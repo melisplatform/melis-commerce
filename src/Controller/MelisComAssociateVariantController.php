@@ -499,6 +499,9 @@ class MelisComAssociateVariantController extends MelisAbstractActionController
             if($success) {
                 $success = 1;
                 $textMessage = 'tr_meliscommerce_assoc_var_assoc_ok';
+
+                $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
+                $commerceCacheService->deleteCache('variant_association', $assignTo);
             }
         }
 
@@ -537,6 +540,9 @@ class MelisComAssociateVariantController extends MelisAbstractActionController
                 if($variantAssId) {
                     $success = 1;
                     $textMessage = 'tr_meliscommerce_assoc_var_remove_ok';
+
+                    $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
+                    $commerceCacheService->deleteCache('variant_association', $variantId);
                 }
             }
         }

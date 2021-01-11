@@ -111,6 +111,7 @@ return [
             'MelisComDuplicationService'                    => \MelisCommerce\Service\MelisComDuplicationService::class,
             'MelisComCurrencyService'                       => \MelisCommerce\Service\MelisComCurrencyService::class,
             'MelisComLinksService'                          => \MelisCommerce\Service\MelisComLinksService::class,
+            'MelisComCacheService'                          => \MelisCommerce\Service\MelisComCacheService::class,
 
             // Tables
             'MelisEcomAttributeTable'                       => \MelisCommerce\Model\Tables\MelisEcomAttributeTable::class,

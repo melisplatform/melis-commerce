@@ -110,6 +110,31 @@ class MelisComProductService extends MelisComGeneralService
 		
 		return $arrayParameters['results'];
 	}
+
+	public function getProductAssociation($productId)
+    {
+        // Retrieve cache version if front mode to avoid multiple calls
+        $cacheKey = 'product-' . $productId . '-getProductAssociation_' . $productId . '_' . $langId;
+        $cacheConfig = 'commerce_big_services';
+        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
+
+        $cache = $this->getServiceManager()->get($cacheConfig);
+        if ($cache->hasItem($cacheKey)){
+            return $cache->getItem($cacheKey);
+        }
+
+        // Event parameters prepare
+		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+		$results = array();
+
+		// Sending service start event
+		$arrayParameters = $this->sendEvent('meliscommerce_service_product_assoc_start', $arrayParameters);
+
+		// Service implementation start
+		$entProd = new MelisProduct();
+		$tmpData = array();
+		$variantTable = $this->getServiceManager()->get('MelisEcomVariantTable');
+    }
 	
 	
 	/**
@@ -763,8 +788,8 @@ class MelisComProductService extends MelisComGeneralService
 				$result = $melisComSeoService->saveSeoDataAction('product', $arrayParameters['productId'], $productSeo);
 			}
 			
-			$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-			$melisEngineCacheSystem->deleteCacheByPrefix('product-' . $saveProductId, 'commerce_big_services');
+			$commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
+            $commerceCacheService->deleteCache('product', $saveProductId);
 			
 		}catch(\Exception $e) {
 			$saveProductId = null;

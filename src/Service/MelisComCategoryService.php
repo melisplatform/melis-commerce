@@ -777,10 +777,13 @@ class MelisComCategoryService extends MelisComGeneralService
             {
                 return null;
             }
-            
-            $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-            $melisEngineCacheSystem->deleteCacheByPrefix('category-' . $catId, 'commerce_big_services');
-            $melisEngineCacheSystem->deleteCacheByPrefix('categories', 'commerce_big_services');
+
+            $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
+            $commerceCacheService->deleteCache('category', $catId);
+
+//            $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
+//            $melisEngineCacheSystem->deleteCacheByPrefix('category-' . $catId, 'commerce_big_services');
+//            $melisEngineCacheSystem->deleteCacheByPrefix('categories', 'commerce_big_services');
             
             // Assign catId to Result As return value
             $results = $catId;
