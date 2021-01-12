@@ -100,7 +100,7 @@ class MelisComDocumentService extends MelisComGeneralService
 	public function getDocumentsByRelation($docRelation, $relationId)
 	{
 		// Retrieve cache version if front mode to avoid multiple calls
-		$cacheKey = $docRelation . '-' . $relationId . '-getDocumentsByRelation_' . $docRelation . '_' . $relationId;
+		$cacheKey = 'document-'.$docRelation . '-' . $relationId . '-getDocumentsByRelation_' . $docRelation . '_' . $relationId;
 		$cacheConfig = 'commerce_big_services';
 		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
@@ -166,7 +166,7 @@ class MelisComDocumentService extends MelisComGeneralService
 		$tmp = '';
 		foreach ($typeCode2 as $tCode)
 			$tmp .= '_' . $tCode;
-		$cacheKey = $docRelation . '-' . $relationId . '-getDocumentsByRelationAndTypes_' . $typeCode1 . '_' . $tmp;
+		$cacheKey = 'document-'.$docRelation . '-' . $relationId . '-getDocumentsByRelationAndTypes_' . $typeCode1 . '_' . $tmp;
 		$cacheConfig = 'commerce_big_services';
 		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
@@ -290,7 +290,7 @@ class MelisComDocumentService extends MelisComGeneralService
 		$tmp = '';
 		foreach ($docType as $tCode)
 			$tmp .= '_' . $tCode;
-		$cacheKey = $docRelation . '-' . $relationId . '-getFinalImageFilePath_' . $relationId . '_' . $tmp;
+		$cacheKey = 'document-'.$docRelation . '-' . $relationId . '-getFinalImageFilePath_' . $relationId . '_' . $tmp;
 		$cacheConfig = 'commerce_big_services';
 		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
@@ -490,9 +490,9 @@ class MelisComDocumentService extends MelisComGeneralService
 				$savedDocId = $docTable->save($docData);
 				$docRelTable->save(array_merge($data, array('rdoc_doc_id' => $savedDocId)));
 			}
-			
-			$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-			$melisEngineCacheSystem->deleteCacheByPrefix($docRelation . '-' . $relationId, 'commerce_big_services');
+
+            $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
+            $commerceCacheService->deleteCache('document', $relationId, $docRelation);
 
 		}catch(\Exception $e) {
 			$savedDocId = null;
@@ -537,7 +537,7 @@ class MelisComDocumentService extends MelisComGeneralService
 
 					//clear product cache to get the latest product document data
                     $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
-                    $commerceCacheService->deleteCache('product', $uniqueId);
+                    $commerceCacheService->deleteCache('document', $uniqueId, ['product', 'variant']);
 				}
 				
 			}

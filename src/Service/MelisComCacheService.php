@@ -17,8 +17,9 @@ class MelisComCacheService extends MelisComGeneralService
     CONST COMMERCE_PRODUCT_CACHE_KEY = 'product-';
     CONST COMMERCE_CATEGORY_CACHE_KEY = 'category-';
     CONST COMMERCE_VARIANT_CACHE_KEY = 'variant-';
+    CONST COMMERCE_DOCUMENT_CACHE_KEY = 'document-';
 
-    public function deleteCache($type, $id) {
+    public function deleteCache($type, $id, $additionalParam = null) {
         if ($type == 'product')
             $this->deleteProductCache($id);
 
@@ -30,6 +31,32 @@ class MelisComCacheService extends MelisComGeneralService
 
         if ($type == 'variant_association')
             $this->deleteVariantAssociationCache($id);
+
+        if($type == 'document')
+            $this->deleteDocumentCache($id, $additionalParam);
+    }
+
+    /**
+     * Function to clear document cache by prefix
+     *
+     * @param $id
+     * @param $docRelation
+     */
+    private function deleteDocumentCache($id, $docRelation)
+    {
+        if(is_array($docRelation)){
+            foreach($docRelation as $relation){
+                //remove all document cache starts with document-
+                $this->deleteCacheByPrefix(self::COMMERCE_DOCUMENT_CACHE_KEY .$relation.'-'. $id);
+                //this to remove the cache depending on relation (variant/product)
+                $this->deleteCacheByPrefix($relation.'-'. $id);
+            }
+        }else {
+            //remove all document cache starts with document-
+            $this->deleteCacheByPrefix(self::COMMERCE_DOCUMENT_CACHE_KEY . $docRelation . '-' . $id);
+            //this to remove the cache depending on relation (variant/product)
+            $this->deleteCacheByPrefix($docRelation . '-' . $id);
+        }
     }
 
     private function deleteProductCache($id) {
