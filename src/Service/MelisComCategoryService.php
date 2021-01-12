@@ -780,10 +780,6 @@ class MelisComCategoryService extends MelisComGeneralService
 
             $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
             $commerceCacheService->deleteCache('category', $catId);
-
-//            $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-//            $melisEngineCacheSystem->deleteCacheByPrefix('category-' . $catId, 'commerce_big_services');
-//            $melisEngineCacheSystem->deleteCacheByPrefix('categories', 'commerce_big_services');
             
             // Assign catId to Result As return value
             $results = $catId;
@@ -851,9 +847,8 @@ class MelisComCategoryService extends MelisComGeneralService
         
         if (!empty($categoryTranslations['catt_category_id']))
         {
-            $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-            $melisEngineCacheSystem->deleteCacheByPrefix('category-' . $categoryTranslations['catt_category_id'], 'commerce_big_services');
-            $melisEngineCacheSystem->deleteCacheByPrefix('categories', 'commerce_big_services');
+            $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
+            $commerceCacheService->deleteCache('category', $categoryTranslations['catt_category_id']);
         }
         
         // Service implementation end
@@ -907,9 +902,8 @@ class MelisComCategoryService extends MelisComGeneralService
             }
         }
         // Service implementation end
-        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-        $melisEngineCacheSystem->deleteCacheByPrefix('category-' . $categoryId, 'commerce_big_services');
-        $melisEngineCacheSystem->deleteCacheByPrefix('categories', 'commerce_big_services');
+        $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
+        $commerceCacheService->deleteCache('category', $categoryId);
         
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $successFlag;
