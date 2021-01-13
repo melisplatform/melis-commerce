@@ -210,7 +210,7 @@ class MelisComDocumentService extends MelisComGeneralService
 	public function getDocDefaultImageFilePath($docRelation, $relationId) 
 	{
 		// Retrieve cache version if front mode to avoid multiple calls
-		$cacheKey = $docRelation . '-' . $relationId . '-getDocDefaultImageFilePath_' . $relationId;
+		$cacheKey = 'document-'.$docRelation . '-' . $relationId . '-getDocDefaultImageFilePath_' . $relationId;
 		$cacheConfig = 'commerce_big_services';
 		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
