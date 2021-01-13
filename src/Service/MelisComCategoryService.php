@@ -778,9 +778,10 @@ class MelisComCategoryService extends MelisComGeneralService
                 return null;
             }
 
-            $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
-            $commerceCacheService->deleteCache('category', $catId);
-            
+            /**
+             * delete parent cache
+             */
+            $this->deleteParentCategoryCacheRec($arrayParameters['category']['cat_father_cat_id'], false, '-1');
             // Assign catId to Result As return value
             $results = $catId;
         }
@@ -1318,5 +1319,21 @@ class MelisComCategoryService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_get_valid_children_by_lang_id_end', $arrayParameters);
 
         return $arrayParameters['results'];
+    }
+
+    /**
+     * delete  parent cache
+     */
+    public function deleteParentCategoryCacheRec($parentId)
+    {
+        // get parent 
+        $parentData = $this->getParentCategory($parentId, [], true);
+        
+        if (! empty($parentData)) {
+            foreach ($parentData as $key => $val) {
+                // delete cache
+                $this->getServiceManager()->get('MelisComCacheService')->deleteCache('category', $val['cat_id']);
+            }
+        }
     }
 }
