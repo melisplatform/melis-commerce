@@ -768,8 +768,8 @@ class MelisComVariantService extends MelisComGeneralService
 				$melisComSeoService->saveSeoDataAction('variant', $variantId, $variantSeo);
 			}
 
-			$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-			$melisEngineCacheSystem->deleteCacheByPrefix('variant-' . $variantId, 'commerce_big_services');
+            $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
+            $commerceCacheService->deleteCache('variant', $variantId, $arrayParameters['variant']['var_prd_id'] ?? null);
 			
 			$results = $variantId;
 		}
@@ -811,8 +811,8 @@ class MelisComVariantService extends MelisComGeneralService
 			
 			if (!empty($arrayParameters['attributesValues']['vatv_variant_id']))
 			{
-				$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-				$melisEngineCacheSystem->deleteCacheByPrefix('variant-' . $arrayParameters['attributesValues']['vatv_variant_id'], 'commerce_big_services');
+                $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
+                $commerceCacheService->deleteCache('variant', $arrayParameters['attributesValues']['vatv_variant_id']);
 			}
 			
 		}catch(\Exception $e){
@@ -857,8 +857,8 @@ class MelisComVariantService extends MelisComGeneralService
 
 			if (!empty($arrayParameters['prices']['price_var_id']))
 			{
-					$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-					$melisEngineCacheSystem->deleteCacheByPrefix('variant-' . $arrayParameters['prices']['price_var_id'], 'commerce_big_services');
+                $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
+                $commerceCacheService->deleteCache('variant', $arrayParameters['prices']['price_var_id']);
 			}
 			
 			//$priceTable->save($arrayParameters['prices'],$arrayParameters['priceId']);
@@ -960,9 +960,8 @@ class MelisComVariantService extends MelisComGeneralService
 				}
 			}
 
-			$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-			$melisEngineCacheSystem->deleteCacheByPrefix('variant-' . $arrayParameters['variantId'], 'commerce_big_services');
-		
+            $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
+            $commerceCacheService->deleteCache('variant', $arrayParameters['variantId']);
 		}catch(\Exception $e){
 			$results = false;
 		}
