@@ -912,7 +912,7 @@ class MelisComCategoryController extends MelisAbstractActionController
         $logTypeCode = '';
 
         if($request->isPost()) {
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
             $catId = (int) $postValues['cat_id'];
@@ -1003,7 +1003,7 @@ class MelisComCategoryController extends MelisAbstractActionController
         $textMessage = '';
 
         if($request->isPost()) {
-            $postValues = get_object_vars($request->getPost());
+            $postValues = $request->getPost()->toArray();
 
             $catPrdOrderData = explode(',', $postValues['catPrdOrderData']);
 
@@ -1048,7 +1048,7 @@ class MelisComCategoryController extends MelisAbstractActionController
 
         if($request->isPost())
         {
-            $postValues = get_object_vars($request->getPost());
+            $postValues = $request->getPost()->toArray();
 
             $melisComCategoryService = $this->getServiceManager()->get('MelisComCategoryService');
 
