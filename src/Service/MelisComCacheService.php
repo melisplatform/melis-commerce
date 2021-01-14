@@ -90,33 +90,29 @@ class MelisComCacheService extends MelisComGeneralService
         $this->deleteVariantProductAssociationCache($id);
     }
 
-    private function deleteAttributeCache($id, $additionalParam) {
+    private function deleteAttributeCache($id, $additionalParam = []) {
         // delete attribute cache
         $this->deleteCacheByPrefix(self::COMMERCE_ATTRIBUTE_CACHE_KEY . $id);
         // delete product cache that are using this attribute
-        if (is_array($additionalParam)) {
-            if (! empty($additionalParam['productId'])) {
-                $this->deleteCache('product', $additionalParam['productId']);
-            } else {
-                // if productId is not specified we need to manually get the products that are using this attribute
-                $productIds = $this->getProductIdsUsingAttributeByAttributeId($id);
+        if (! empty($additionalParam['productId'])) {
+            $this->deleteCache('product', $additionalParam['productId']);
+        } else {
+            // if productId is not specified we need to manually get the products that are using this attribute
+            $productIds = $this->getProductIdsUsingAttributeByAttributeId($id);
 
-                foreach ($productIds as $productId) {
-                    $this->deleteCache('product', $productId);
-                }
+            foreach ($productIds as $productId) {
+                $this->deleteCache('product', $productId);
             }
         }
         // delete variant cache that are using this attribute
-        if (is_array($additionalParam)) {
-            if (! empty($additionalParam['variantId'])) {
-                $this->deleteCache('variant', $additionalParam['variantId']);
-            } else {
-                // if variantId is not specified we need to manually get the variants that are using this attribute
-                $variantIds = $this->getVariantIdsUsingAttributeByAttributeId($id);
+        if (! empty($additionalParam['variantId'])) {
+            $this->deleteCache('variant', $additionalParam['variantId']);
+        } else {
+            // if variantId is not specified we need to manually get the variants that are using this attribute
+            $variantIds = $this->getVariantIdsUsingAttributeByAttributeId($id);
 
-                foreach ($variantIds as $variantId) {
-                    $this->deleteCache('variant', $variantId);
-                }
+            foreach ($variantIds as $variantId) {
+                $this->deleteCache('variant', $variantId);
             }
         }
     }
@@ -199,7 +195,7 @@ class MelisComCacheService extends MelisComGeneralService
 
     private function getProductIdsUsingAttributeByAttributeId($attributeId) {
         $table = $this->getServiceManager()->get('MelisEcomAttributeTable');
-        $results = $this->getProductsUsingAttributeByAttributeId($attributeId);
+        $results = $table->getProductsUsingAttributeByAttributeId($attributeId)->toArray();
         $productIds = [];
 
         foreach ($results as $result) {
@@ -211,7 +207,7 @@ class MelisComCacheService extends MelisComGeneralService
 
     private function getVariantIdsUsingAttributeByAttributeId($attributeId) {
         $table = $this->getServiceManager()->get('MelisEcomAttributeTable');
-        $results = $this->getVariantsUsingAttributeByAttributeId($attributeId);
+        $results = $table->getVariantsUsingAttributeByAttributeId($attributeId)->toArray();
         $variantIds = [];
 
         foreach ($results as $result) {

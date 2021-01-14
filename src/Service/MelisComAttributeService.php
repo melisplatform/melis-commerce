@@ -553,7 +553,7 @@ class MelisComAttributeService extends MelisComGeneralService
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
 
         // Retrieve cache version if front mode to avoid multiple calls
-        $cacheKey = 'attribure-getAttributeValueTransById_' . $attributeValueTransId . '_' . $langId;
+        $cacheKey = 'attribute-value-trans-' . $attributeValueTransId . '-getAttributeValueTransById_' . $attributeValueTransId . '_' . $langId;
         $cacheConfig = 'commerce_big_services';
         $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
@@ -693,7 +693,7 @@ class MelisComAttributeService extends MelisComGeneralService
             $results = $attributeTransTable->save($arrayParameters['attributeTrans'], $arrayParameters['attributeTransId']);            
 
             $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
-            $commerceCacheService->deleteCache('attribute', $arrayParameters['attributeTrans']['atrans_attribute_id']);
+            $commerceCacheService->deleteCache('attribute-', $arrayParameters['attributeTrans']['atrans_attribute_id']);
             
         }catch (\Exception $e){
             
@@ -771,7 +771,7 @@ class MelisComAttributeService extends MelisComGeneralService
             $attValueDatas = $attrValTable->getEntryById($arrayParameters['attributeValueTrans']['av_attribute_value_id'])->current();
 
             $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
-            $commerceCacheService->deleteCache('attribute', $attValueDatas->atval_attribute_id);
+            $commerceCacheService->deleteCache('attribute-value-trans',$results);
         }catch(\Exception $e){
             
         }
@@ -949,7 +949,7 @@ class MelisComAttributeService extends MelisComGeneralService
             
             //delete attribute value translations
             foreach($attributeValueTransTable->getEntryByField('av_attribute_value_id', $arrayParameters['attributeValueId']) as $trans){
-                $results = $this->deleteAttributeValueTransById($trans->avt_id, $arrayParameters['attributeId']);
+                $results = $this->deleteAttributeValueTransById($trans->avt_id);
                 if(!$results)
                     throw new \Exception('Unable to delete attribute value trans');
             }
@@ -986,7 +986,7 @@ class MelisComAttributeService extends MelisComGeneralService
      * 
      * @return boolean true on success, otherwise false
      */
-    public function deleteAttributeValueTransById($attributeValueTransId, $attributeId)
+    public function deleteAttributeValueTransById($attributeValueTransId)
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -1002,7 +1002,7 @@ class MelisComAttributeService extends MelisComGeneralService
             $results = $attributeValueTransTable->deleteById($arrayParameters['attributeValueTransId']);
 
             $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
-            $commerceCacheService->deleteCache('attribute', $arrayParameters['attributeId']);
+            $commerceCacheService->deleteCache('attribute-value-trans', $arrayParameters['attributeValueTransId']);
         }catch(\Exception $e){
             
         }
