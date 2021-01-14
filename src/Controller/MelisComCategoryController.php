@@ -478,7 +478,7 @@ class MelisComCategoryController extends MelisAbstractActionController
             // Category SEO Datas
             $categorySEO = $datas['seo_data'];
 
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
             if ($postValues['cat_father_cat_id'] == '-1'){
@@ -547,7 +547,7 @@ class MelisComCategoryController extends MelisAbstractActionController
 
         if($request->isPost()) {
 
-            $postValues = get_object_vars($request->getPost());
+            $postValues = $request->getPost()->toArray();
 
             $catId = $postValues['cat_id'];
 
@@ -733,7 +733,7 @@ class MelisComCategoryController extends MelisAbstractActionController
         $catCountriesData = array();
 
         if($request->isPost()) {
-            $postValues = get_object_vars($request->getPost());
+            $postValues = $request->getPost()->toArray();
 
             // Category Countries Data Preparation
             if (!empty($postValues['cat_country'])){
@@ -780,7 +780,7 @@ class MelisComCategoryController extends MelisAbstractActionController
 
         if($request->isPost()) {
 
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             
             if ($postValues['cat_father_cat_id'] == '-1'){
                 $type = 'catalog';
@@ -884,7 +884,7 @@ class MelisComCategoryController extends MelisAbstractActionController
     public function validateCategorySeoAction(){
 
         $request = $this->getRequest();
-        $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getRequest()->getPost()->toArray();
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
         $melisComSeoService = $this->getServiceManager()->get('MelisComSeoService');
