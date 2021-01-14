@@ -193,11 +193,13 @@ class MelisComCacheService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_cache_service_delete_product_association_cache_start', $arrayParameters);
 
         $productVariants = $this->getProductVariants($arrayParameters['prodId']);
-        $variantsAssociatedToProduct = $this->getVariantIdsAssociatedToProduct($productVariants);
-        $productIdsAssociatedToProduct = $this->getProductIdsAssociatedToProduct($variantsAssociatedToProduct);
+        if (! empty($variantsAssociatedToProduct)) {
+            $variantsAssociatedToProduct = $this->getVariantIdsAssociatedToProduct($productVariants);
+            $productIdsAssociatedToProduct = $this->getProductIdsAssociatedToProduct($variantsAssociatedToProduct);
 
-        if (! empty($productIdsAssociatedToProduct))
-            $this->deleteProductServiceProductAssociationCache($productIdsAssociatedToProduct);
+            if (!empty($productIdsAssociatedToProduct))
+                $this->deleteProductServiceProductAssociationCache($productIdsAssociatedToProduct);
+        }
 
         $arrayParameters = $this->sendEvent('meliscommerce_cache_service_delete_product_association_cache_end', $arrayParameters);
     }
