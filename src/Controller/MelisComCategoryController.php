@@ -963,6 +963,9 @@ class MelisComCategoryController extends MelisAbstractActionController
 
                 $textMessage = 'tr_meliscommerce_categories_'.$type.'_delete_success';
                 $status = 1;
+
+                $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
+                $commerceCacheService->deleteCache('category', $catId, $catFatherId);
             }else{
                 $textMessage = 'tr_meliscommerce_categories_err_'.$type.'_unable_delete';
                 $errors['category'] = array(
