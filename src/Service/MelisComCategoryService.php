@@ -912,6 +912,83 @@ class MelisComCategoryService extends MelisComGeneralService
         
         return $arrayParameters['results'];
     }
+
+    /**
+     * Function to delete category
+     *
+     * @param $categoryId
+     * @param string $catFatherId
+     * @return mixed
+     */
+    public function deleteCategoryById($categoryId, $catFatherId = '-1')
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $successFlag = false;
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_category_delete_category_start', $arrayParameters);
+
+        /**
+         * Start deletion of category
+         */
+        $db = $this->getServiceManager()->get('Laminas\Db\Adapter\Adapter');//get db adapter
+        $con = $db->getDriver()->getConnection();//get db driver connection
+        $con->beginTransaction();//begin transaction
+        try {
+            $melisEcomCategoryTable = $this->getServiceManager()->get('MelisEcomCategoryTable');
+            $melisEcomCategoryTable->deleteById($arrayParameters['categoryId']);
+            // Reorder Categories
+            $catData = $melisEcomCategoryTable->getChildrenCategoriesOrderedByOrder($arrayParameters['catFatherId']);
+            $catDatas = $catData->toArray();
+
+            $ecomSeotable = $this->getServiceManager()->get('MelisEcomSeoTable');
+            $ecomSeotable->deleteByField('eseo_category_id', $arrayParameters['categoryId']);
+            // Re-ordering the Children of the Parent Category
+            $ctr = 1;
+            foreach ($catDatas As $key => $val){
+                $catDatas[$key]['cat_order'] = $ctr++;
+            }
+
+            // Updating  Children of the Parent Category one by one
+            foreach ($catDatas As $key => $val){
+                $melisEcomCategoryTable->save($catDatas[$key],$catDatas[$key]['cat_id']);
+            }
+            $melisEcomCategoryTransTable = $this->getServiceManager()->get('MelisEcomCategoryTransTable');
+            $melisEcomCategoryTransTable->deleteByField('catt_category_id', $arrayParameters['categoryId']);
+            $melisEcomCountryCategoryTable = $this->getServiceManager()->get('MelisEcomCountryCategoryTable');
+            $melisEcomCountryCategoryTable->deleteByField('ccat_category_id', $arrayParameters['categoryId']);
+            //delete category on product category table
+            $melisEcomProductCategoryTable = $this->getServiceManager()->get('MelisEcomProductCategoryTable');
+            $melisEcomProductCategoryTable->deleteByField('pcat_cat_id', $arrayParameters['categoryId']);
+
+            //commit the deletion
+            $con->commit();
+            $successFlag = true;
+        }catch(\Exception $ex){
+            /**
+             * Somethin wrong with the deletion of category
+             * Rollback data
+             */
+            $con->rollback();
+        }
+        /**
+         * end Deletion
+         */
+
+        //delete the cache
+        $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
+        $commerceCacheService->deleteCache('category', $arrayParameters['categoryId'], $arrayParameters['catFatherId']);
+
+        // Service implementation end
+
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $successFlag;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_category_delete_category_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
     
     /**
      * Get Category SEO
