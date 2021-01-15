@@ -932,6 +932,11 @@ class MelisComCategoryService extends MelisComGeneralService
         /**
          * Start deletion of category
          */
+
+        // preemtively delete the cache
+        $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
+        $commerceCacheService->deleteCache('category', $arrayParameters['categoryId']);
+
         $db = $this->getServiceManager()->get('Laminas\Db\Adapter\Adapter');//get db adapter
         $con = $db->getDriver()->getConnection();//get db driver connection
         $con->beginTransaction();//begin transaction
@@ -946,7 +951,7 @@ class MelisComCategoryService extends MelisComGeneralService
             $ecomSeotable->deleteByField('eseo_category_id', $arrayParameters['categoryId']);
             // Re-ordering the Children of the Parent Category
             $ctr = 1;
-            foreach ($catDatas As $key => $val){
+            foreach ($catDatas As $key => $val) {
                 $catDatas[$key]['cat_order'] = $ctr++;
             }
 
@@ -975,10 +980,6 @@ class MelisComCategoryService extends MelisComGeneralService
         /**
          * end Deletion
          */
-
-        //delete the cache
-        $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
-        $commerceCacheService->deleteCache('category', $arrayParameters['categoryId'], $arrayParameters['catFatherId']);
 
         // Service implementation end
 

@@ -34,7 +34,7 @@ class MelisComCacheService extends MelisComGeneralService
             $this->deleteProductCache($arrayParameters['id']);
 
         if ($arrayParameters['type'] == 'category')
-            $this->deleteCategoryCache($arrayParameters['id'], $arrayParameters['additionalParam']);
+            $this->deleteCategoryCache($arrayParameters['id']);
 
         if ($arrayParameters['type'] == 'variant')
             $this->deleteVariantCache($arrayParameters['id'], $arrayParameters['additionalParam']);
@@ -99,7 +99,7 @@ class MelisComCacheService extends MelisComGeneralService
      * Deletes category cache
      * @param $id
      */
-    private function deleteCategoryCache($id, $categoryFatherId) {
+    private function deleteCategoryCache($id) {
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $arrayParameters = $this->sendEvent('meliscommerce_cache_service_delete_category_cache_start', $arrayParameters);
 
@@ -107,9 +107,7 @@ class MelisComCacheService extends MelisComGeneralService
         $this->deleteCacheByPrefix(self::COMMERCE_CATEGORY_CACHE_KEY . $arrayParameters['id']);
         $this->deleteCacheByPrefix('categories');
         // delete parent category cache
-        // we will use the categoryfatherid if we are deleting a category if not then the categoryid will also work to
-        // find the category parents data
-        $this->deleteParentCategoryCacheRec($arrayParameters['id'], $arrayParameters['categoryFatherId']);
+        $this->deleteParentCategoryCache($arrayParameters['id']);
         // delete product cache for the products of this category
         $this->deleteCategoryProductsCache($arrayParameters['id']);
 
@@ -404,37 +402,27 @@ class MelisComCacheService extends MelisComGeneralService
      * Deletes the parent category cache
      * @param $parentId
      */
-    private function deleteParentCategoryCacheRec($categoryId, $categoryFatherId)
+    private function deleteParentCategoryCache($categoryId)
     {
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $arrayParameters = $this->sendEvent('meliscommerce_cache_service_delete_parent_category_cache_rec_start', $arrayParameters);
 
-        $isCategoryFatherIdNull = true;
-
-        if (! empty($arrayParameters['categoryFatherId']))
-            $isCategoryFatherIdNull = false;
-
         // get parent
         $service = $this->getServiceManager()->get('MelisComCategoryService');
+        $parentData = [];
 
-        if (! $isCategoryFatherIdNull)
-            $parentData = $service->getParentCategory($arrayParameters['categoryFatherId'], [], true);
-        else
-            $parentData = $service->getParentCategory($arrayParameters['categoryId'], [], true);
+        $parentDataListUntilRoot = $service->getParentCategory($arrayParameters['categoryId'], [], true);
+        if (! empty($parentDataListUntilRoot[1])) {
+            // we only need it's preceding parent
+            $parentData = $parentDataListUntilRoot[1];
+        }
+
+        print_r($parentData);
+        exit;
 
         if (! empty($parentData)) {
-            foreach ($parentData as $key => $val) {
-                // with the data we got it's also listing out the current category that's why we still have to check the ids
-                if ($isCategoryFatherIdNull) {
-                    if ($arrayParameters['categoryId'] != $val['cat_id']) {
-                        // delete cache
-                        $this->deleteCache('category', $val['cat_id']);
-                    }
-                } else {
-                    // delete cache
-                    $this->deleteCache('category', $val['cat_id']);
-                }
-            }
+            // delete cache
+            $this->deleteCache('category', $parentData['cat_id'], $parentData['cat_father_cat_id']);
         }
 
         $arrayParameters = $this->sendEvent('meliscommerce_cache_service_delete_parent_category_cache_rec_end', $arrayParameters);
