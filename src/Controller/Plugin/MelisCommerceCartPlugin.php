@@ -83,7 +83,7 @@ class MelisCommerceCartPlugin extends MelisTemplatingPlugin
         $ecomAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
         $basketSrv = $this->getServiceManager()->get('MelisComBasketService');
         $prodSvc = $this->getServiceManager()->get('MelisComProductService');
-//         $currencySvc = $this->$this->getServiceManager()->get('MelisComCurrencyService');
+        $melisComPriceService = $this->getServiceManager()->get('MelisComPriceService');
 
         $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
         
@@ -137,13 +137,12 @@ class MelisCommerceCartPlugin extends MelisTemplatingPlugin
                  * Getting the final price of the Variant
                  * or this will try to get the Price from the Product
                  */
-                $variantPrice = $variantSvc->getVariantFinalPrice($var->getId(), $countryId, $clientGroupId);
-                if (empty($variantPrice))
-                    $variantPrice = $prodSvc->getProductFinalPrice($var->getVariant()->var_prd_id, $countryId, $clientGroupId);
-                
-                if (!empty($variantPrice)) {
-                    $variant['price'] = $variantPrice->price_net;
-                    $variant['cur_symbol'] = $variantPrice->cur_symbol;
+                // Product variant price
+                $prdVarPrice = $melisComPriceService->getItemPrice($var->getId(), $countryId, $clientGroupId);
+
+                if (!empty($prdVarPrice)) {
+                    $variant['price'] = $prdVarPrice['price'];
+                    $variant['cur_symbol'] = $prdVarPrice['price_currency']['symbol'];
                     
                     $itemTotal = $variant['price'] * $variant['quantity'];
                     $totalCurrency = $variant['cur_symbol'];

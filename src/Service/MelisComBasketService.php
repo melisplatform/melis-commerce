@@ -26,6 +26,31 @@ namespace MelisCommerce\Service;
 class MelisComBasketService extends MelisComGeneralService
 {
     /**
+     * This service get the Item from basket
+     */
+    public function getBasketItemById($basketId, $type) 
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+    
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_basket_item_start', $arrayParameters);
+    
+        if ($type == 'persistent') 
+            $melisEcomBasketTable = $this->getServiceManager()->get('MelisEcomBasketPersistentTable');
+        else
+            $melisEcomBasketTable = $this->getServiceManager()->get('MelisEcomBasketPersistentTable');
+
+        $basketItem = $melisEcomBasketTable->getEntryById($basketId)->current();
+
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $basketItem;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_basket_item_start', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
+    /**
      * This service gets the basket of a user
      *
      * @param int|null $langId
@@ -77,16 +102,14 @@ class MelisComBasketService extends MelisComGeneralService
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_basket_persistent_get_start', $arrayParameters);
         
-        
         // Get persistent basket
         $melisEcomBasketPersistentTable = $this->getServiceManager()->get('MelisEcomBasketPersistentTable');
         $basketPersistent = $melisEcomBasketPersistentTable->getEntryByField('bper_client_id', $arrayParameters['clientId']);
         
         $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
         
-        foreach ($basketPersistent As $val)
-        {
-            // Geneting Melis Basket Object
+        foreach ($basketPersistent As $val) {
+            // Melis Basket Object
             $melisBasket = new \MelisCommerce\Entity\MelisBasket();
             $melisBasket->setId($val->bper_id);
             $melisBasket->setType('persistent');
@@ -132,7 +155,7 @@ class MelisComBasketService extends MelisComGeneralService
         
         foreach ($basketAnonymous As $val)
         {
-            // Geneting Melis Basket Object
+            // Getting Melis Basket Object
             $melisBasket = new \MelisCommerce\Entity\MelisBasket();
             $melisBasket->setId($val->bano_id);
             $melisBasket->setType('anonymous');
@@ -545,7 +568,7 @@ class MelisComBasketService extends MelisComGeneralService
     }
     
     /**
-     * This service tranfers an anonymous basket into a persistent one.
+     * This service transfers an anonymous basket into a persistent one.
      * This will happen if both $clientKey and $clientId are provided
      * 
      * @param string $clientKey The client anonymous hash key

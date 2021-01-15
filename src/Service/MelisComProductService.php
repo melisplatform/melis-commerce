@@ -368,7 +368,7 @@ class MelisComProductService extends MelisComGeneralService
 	 * @param int $productId
 	 * @return MelisEcomProductCategoryTable
 	 */
-	public function getProductCategories($productId)
+	public function getProductCategories($productId, $status = null)
 	{
 		// Retrieve cache version if front mode to avoid multiple calls
 		$cacheKey = 'product-' . $productId . '-getProductCategories_' . $productId;
@@ -390,7 +390,7 @@ class MelisComProductService extends MelisComGeneralService
 		
 		// Service implementation start
 		$prodCatTable = $this->getServiceManager()->get('MelisEcomProductCategoryTable');
-		$productCat = $prodCatTable->getProductCategories($arrayParameters['productId']);
+		$productCat = $prodCatTable->getProductCategories($arrayParameters['productId'], $arrayParameters['status']);
 		
 		foreach ($productCat As $key => $val)
 		{
@@ -409,60 +409,6 @@ class MelisComProductService extends MelisComGeneralService
 		return $arrayParameters['results'];
 	}
 	
-	/**
-	 * This method will return the Product final Price
-	 *
-	 * @param int $productId
-	 * @param tin $countryId
-	 * @return MelisEcomPrice|null
-	 */
-	public function getProductFinalPrice($productId, $countryId, $groupId = 1)
-	{
-		// Retrieve cache version if front mode to avoid multiple calls
-		$cacheKey = 'product-' . $productId . '-getProductFinalPrice-' . implode('-', [$productId, $countryId, $groupId]);
-		$cacheConfig = 'commerce_big_services';
-		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-        if (!empty($results)) return $results;
-		
-		// Event parameters prepare
-		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
-		$results = array();
-		// Sending service start event
-		$arrayParameters = $this->sendEvent('meliscommerce_service_product_final_price_start', $arrayParameters);
-
-		// Service implementation start
-		$priceTable = $this->getServiceManager()->get('MelisEcomPriceTable');
-		$results = $this->validatePrice($priceTable->getProductFinalPrice($arrayParameters['productId'], $arrayParameters['countryId'], $arrayParameters['groupId'])->current());
-
-        /**
-         * Look for prices in the generals
-         */
-        //look for group general price in the country
-        if(empty($results)) 
-			$results = $this->validatePrice($priceTable->getProductFinalPrice($arrayParameters['productId'], $arrayParameters['countryId'])->current());
-	
-        //look for price inside general and in given group
-        if(empty($results))
-            $results = $this->validatePrice($priceTable->getProductFinalPrice($arrayParameters['productId'], -1, $arrayParameters['groupId'])->current());
-		
-			//look price inside general and group general
-        if(empty($results))
-			$results = $this->validatePrice($priceTable->getProductFinalPrice($arrayParameters['productId'], -1)->current());
-
-		// Service implementation end
-
-		// Adding results to parameters for events treatment if needed
-		$arrayParameters['results'] = $results;
-		// Sending service end event
-		$arrayParameters = $this->sendEvent('meliscommerce_service_product_final_price_end', $arrayParameters);
-
-		// Save cache key
-		$melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
-	
-		return  $arrayParameters['results'];
-	}
-
 	/**
 	 * Validating Product final price
 	 */
@@ -1170,12 +1116,14 @@ class MelisComProductService extends MelisComGeneralService
 		/**
 		 * Product prices
 		 */
-		$prdPrice = $this->getProductFinalPrice($arrayParameters['productId'], $arrayParameters['countryId'], $arrayParameters['groupId']);
-		$prdPriceDetails = array(
-			'prd_currency_symbol' => (!empty($prdPrice->cur_symbol)) ? $prdPrice->cur_symbol : '',
-			'prd_currency_code' => (!empty($prdPrice->cur_code)) ? $prdPrice->cur_code : '',
-			'prd_price_net' => (!empty($prdPrice->price_net)) ? $prdPrice->price_net : '',
-		);
+		$melisComPriceService = $this->getServiceManager()->get('MelisComPriceService');
+		$prdVarPrice = $melisComPriceService->getItemPrice($arrayParameters['productId'], $arrayParameters['countryId'], $arrayParameters['groupId'], 'product');
+
+		$prdPriceDetails = [
+			'prd_currency_symbol' => (!empty($prdVarPrice['price_currency']['symbol'])) ?? null,
+			'prd_currency_code' => (!empty($prdVarPrice['price_currency']['code'])) ?? null,
+			'prd_price_net' => (!empty($prdVarPrice['price'])) ?? null,
+		];
 
 		$productTbl = $this->getServiceManager()->get('MelisEcomProductTable');
 		$product = $productTbl->getEntryById($arrayParameters['productId'])->current();
@@ -1192,9 +1140,7 @@ class MelisComProductService extends MelisComGeneralService
 		$prdText = '';
 		$prdTexts = $this->getProductTextsById($arrayParameters['productId'], 'TITLE', $arrayParameters['langId']);
 		if (!empty($prdTexts))
-		{
 			$prdText = ($prdTexts[0]->ptxt_type == 1) ? $prdTexts[0]->ptxt_field_short : $prdTexts[0]->ptxt_field_long;
-		}
 
 		/**
 		 * Product categories
@@ -1202,13 +1148,13 @@ class MelisComProductService extends MelisComGeneralService
 		$catTable = $this->getServiceManager()->get('MelisEcomCategoryTable');
 		$prdCats = $catTable->getProductCategoriesWithFinalTransalations($arrayParameters['productId'], $arrayParameters['langId'])->toArray();
 
-		$product = array(
+		$product = [
 			'prd_id' => $arrayParameters['productId'],
 			'prd_text' => (!empty($prdText)) ? $prdText : $product->prd_reference,
 			'prd_price_details' => $prdPriceDetails,
 			'prd_categories' => $prdCats,
 			'prd_docs_image' => $prdDocsImages
-		);
+		];
 		
 		// Service implementation end
 		

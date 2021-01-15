@@ -57,7 +57,7 @@ class MelisEcomProductCategoryTable extends MelisEcomGenericTable
         return $resultData;
     }
     
-    public function getProductCategories($productId)
+    public function getProductCategories($productId, $status = null)
     {
         $select = $this->getTableGateway()->getSql()->select();
         
@@ -65,6 +65,10 @@ class MelisEcomProductCategoryTable extends MelisEcomGenericTable
             array('*'), $select::JOIN_LEFT);
         
         $select->where('pcat_prd_id = '.$productId);
+
+        if (!is_null($status))
+            $select->where('cat_status = '.$status);
+
         $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }

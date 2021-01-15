@@ -262,8 +262,8 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
         $client = $melisComClientSrv->getClientById($clientId);
         $clientGroupId = !empty($client) ? $client->cli_group_id : null;
 
-        $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
         $melisComProductService = $this->getServiceManager()->get('MelisComProductService');
+        $melisComPriceService = $this->getServiceManager()->get('MelisComPriceService');
 
         $basket = array();
         $total = 0;
@@ -278,23 +278,26 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                 $varSku = $variant->getVariant()->var_sku;
 
                 // Getting the Final Price of the variant
-                $varPrice = $melisComVariantService->getVariantFinalPrice($variantId, $countryId, $clientGroupId);
+                // $varPrice = $melisComVariantService->getVariantFinalPrice($variantId, $countryId, $clientGroupId);
 
-                if (empty($varPrice))
-                {
-                    // If the variant price not set on variant page this will try to get from the Product Price
-                    $varPrice = $melisComProductService->getProductFinalPrice($productId, $countryId, $clientGroupId);
-                }
+                // if (empty($varPrice))
+                // {
+                //     // If the variant price not set on variant page this will try to get from the Product Price
+                //     $varPrice = $melisComProductService->getProductFinalPrice($productId, $countryId, $clientGroupId);
+                // }
+
+                // Product variant price
+                $prdVarPrice = $melisComPriceService->getItemPrice($variantId, $countryId, $clientGroupId);
 
                 // Compute variant total amount
-                $variantTotal = $quantity * $varPrice->price_net;
+                $variantTotal = $quantity * $prdVarPrice['price'];
                 $data = array(
                     'var_id' => $variantId,
                     'var_sku' => $varSku,
                     'var_quantity' => $quantity,
-                    'var_price' => $varPrice->cur_symbol.' '.number_format($varPrice->price_net, 2),
+                    'var_price' => $prdVarPrice['price_currency']['symbol'].' '.number_format($prdVarPrice['price'], 2),
                     'product_name' => $melisComProductService->getProductName($productId, $langId),
-                    'var_total' => $varPrice->cur_symbol.' '.number_format($variantTotal, 2)
+                    'var_total' => $prdVarPrice['price_currency']['symbol'].' '.number_format($variantTotal, 2)
                 );
 
                 $total += $variantTotal;
@@ -417,6 +420,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
 
             $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
             $melisComProductService = $this->getServiceManager()->get('MelisComProductService');
+            $melisComPriceService = $this->getServiceManager()->get('MelisComPriceService');
             // Getting the list of Activated Variant from Variant Service using the ProductId
             $variantData = $melisComVariantService->getVariantListByProductId($productId, $langId, $countryId, -1, true);
 
@@ -434,13 +438,16 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                 $variant = $val->getVariant();
 
                 // Getting the Final Price of the variant
-                $varPrice = $melisComVariantService->getVariantFinalPrice($variantId, $countryId, $clientGroupId);
+                // $varPrice = $melisComVariantService->getVariantFinalPrice($variantId, $countryId, $clientGroupId);
 
-                if (empty($varPrice))
-                {
-                    // If the variant price not set on variant page this will try to get from the Product Price
-                    $varPrice = $melisComProductService->getProductFinalPrice($variant->var_prd_id, $countryId, $clientGroupId);
-                }
+                // if (empty($varPrice))
+                // {
+                //     // If the variant price not set on variant page this will try to get from the Product Price
+                //     $varPrice = $melisComProductService->getProductFinalPrice($variant->var_prd_id, $countryId, $clientGroupId);
+                // }
+
+                // Product variant price
+                $prdVarPrice = $melisComPriceService->getItemPrice($variantId, $countryId, $clientGroupId);
 
                 // Getting the Final Stocks of the Variant
                 $varStock = $melisComVariantService->getVariantFinalStocks($variantId, $countryId);
@@ -449,7 +456,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                 $variantPrice = '';
                 $available = true;
                 // Check if Variant has stocks, else remove add button
-                if (empty($varStock) || empty($varPrice))
+                if (empty($varStock) || empty($prdVarPrice))
                 {
                     $available = false;
                 }
@@ -460,8 +467,8 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                         $available = false;
                     }
 
-                    $variantCurrency = $varPrice->cur_symbol;
-                    $variantPrice = number_format($varPrice->price_net, 2);
+                    $variantCurrency = $prdVarPrice['price_currency']['symbol'];
+                    $variantPrice = number_format($prdVarPrice['price'], 2);
                 }
 
                 $variantRow = array(

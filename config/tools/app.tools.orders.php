@@ -137,7 +137,7 @@ return [
                         'target' => '#tableOrderBasketList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComOrder/getBasketData',
                         'dataFunction' => 'initOrderBasket',
-                        'ajaxCallback' => 'hideBasketButton();',
+                        'ajaxCallback' => 'hideBasketButton(); melisCommerce.orderBasketPriceLogTooltip()',
                         'filters' => [
                             'left' => [
                                 'order-basket-list-table-filter-limit' => [

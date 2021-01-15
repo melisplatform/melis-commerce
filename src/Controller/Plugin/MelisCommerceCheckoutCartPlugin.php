@@ -253,18 +253,11 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                     $variantErr = $translator->translate('tr_'.$validatedBasket['basket']['ko'][$variantId]['error']);
                     $hasErr = true;
                 }
-                
-                // Getting the Final Price of the variant
-                $varPrice = $melisComVariantService->getVariantFinalPrice($variantId, $countryId, $clientGroupId);
-
-                if (empty($varPrice))
-                {
-                    // If the variant price not set on variant page this will try to get from the Product Price
-                    $varPrice = $melisComProductService->getProductFinalPrice($productId, $countryId, $clientGroupId);
-                }
+                // Product variant price
+                $prdVarPrice = $melisComPriceService->getItemPrice('variant', $variantId, $countryId, $clientGroupId);
 
                 // Compute variant total amount
-                $variantTotal = $quantity * $varPrice->price_net;
+                $variantTotal = $quantity * $prdVarPrice['price'];
                 
                 $discount = 0;
                 $discountDetails = '';
@@ -290,7 +283,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                         {
                             if(!empty($productCoupon->coup_percentage))
                             {
-                                $discount += ($productCoupon->coup_percentage / 100) * ($varPrice->price_net * $usableCouponQty);
+                                $discount += ($productCoupon->coup_percentage / 100) * ($prdVarPrice['price'] * $usableCouponQty);
                                 $discountDetails = $productCoupon->coup_percentage.'%';
                                 $discountPercentage = $productCoupon->coup_percentage;
                             } 
@@ -316,8 +309,8 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                     'var_product_name' => $melisComProductService->getProductName($productId, $langId),
                     'var_sku' => $varSku,
                     'var_quantity' => $quantity,
-                    'var_currency_symbol' => $varPrice->cur_symbol,
-                    'var_price' => $varPrice->price_net,
+                    'var_currency_symbol' => $prdVarPrice['price_currency']['symbol'],
+                    'var_price' => $prdVarPrice['price'],
                     'var_total' => $variantTotal - $discount,
                     'var_err' => $variantErr,
                     'var_discount' => $discount,
@@ -329,7 +322,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                 );
                 
                 // Setting the currency use of the cart
-                $currency = $varPrice->cur_symbol;
+                $currency = $prdVarPrice['price_currency']['symbol'];
                 $subTotal += $variantTotal;
                 $subTotalWithProdDiscount += $variantTotal - $discount;
                 array_push($checkOutCart, $data);

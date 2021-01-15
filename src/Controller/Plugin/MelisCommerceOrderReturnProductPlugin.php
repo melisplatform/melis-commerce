@@ -95,6 +95,22 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
         $returnVariantData  = !empty($formData['m_rp_data']) ? $formData['m_rp_data'] : [];
 
         /**
+         * If order is empty, we get any order
+         * as our default data(for BO only)
+         */
+        if(empty($orderId)){
+            if($this->renderMode == 'melis'){
+                $ordList = $orderSvc->getOrderList();
+                foreach($ordList as $ord){
+                    if(!empty($ord->getId())){
+                        $orderId = $ord->getId();
+                        break;
+                    }
+                }
+            }
+        }
+
+        /**
          * Prepare form for message
          */
         $appConfigForm  = (!empty($this->pluginFrontConfig['forms']['meliscommerce_order_return_product_form'])) ? $this->pluginFrontConfig['forms']['meliscommerce_order_return_product_form'] : [];
@@ -108,204 +124,207 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
 
         $orderStatus = $orderSvc->getOrderStatusList($langId);
 
-        if ($ecomAuthSrv->hasIdentity()) {
-            $clientId = $ecomAuthSrv->getClientId();
-            $personid = $ecomAuthSrv->getPersonId();
+        //make sure we have an order
+        if(!empty($orderId)) {
+            if ($ecomAuthSrv->hasIdentity() || $this->renderMode == 'melis') {
+                $clientId = $ecomAuthSrv->getClientId();
+                $personid = $ecomAuthSrv->getPersonId();
 
-            $data = $orderSvc->getOrderById($orderId, $langId);
+                $data = $orderSvc->getOrderById($orderId, $langId);
 
-            //check if order is already delivered to the customer
-            if ($data->getOrder()->ord_status == 4) {//order delivered
-                //check if form is submitted
-                if($isSubmit){
-                    if(!empty($returnVariantData)) {
-                        //get all return product to get the quantity
-                        $returnProduct = $productReturn->getOrderProductReturnList($orderId);
-                        $isQtyOk = true;
-                        //re check returned quantity
-                        foreach($returnVariantData as $variantId => $returnQty){
-                            $returnProd = 0;
-                            //count already returned product
-                            foreach ($returnProduct as $key => $rProduct) {
-                                if ($rProduct['pretd_variant_id'] == $variantId) {
-                                    $returnProd += $rProduct['pretd_quantity'];
-                                }
-                            }
-                            foreach($data->getBasket() as $bas){
-                                if($variantId == $bas->obas_variant_id){
-                                    $remainingQty = $bas->obas_quantity - $returnProd;
-                                    if($returnQty > $remainingQty){
-                                        $isQtyOk = false;
-                                        break;
+                //check if order is already delivered to the customer
+                if ($data->getOrder()->ord_status == 4 || $this->renderMode == 'melis') {//order delivered
+                    //check if form is submitted
+                    if ($isSubmit) {
+                        if (!empty($returnVariantData)) {
+                            //get all return product to get the quantity
+                            $returnProduct = $productReturn->getOrderProductReturnList($orderId);
+                            $isQtyOk = true;
+                            //re check returned quantity
+                            foreach ($returnVariantData as $variantId => $returnQty) {
+                                $returnProd = 0;
+                                //count already returned product
+                                foreach ($returnProduct as $key => $rProduct) {
+                                    if ($rProduct['pretd_variant_id'] == $variantId) {
+                                        $returnProd += $rProduct['pretd_quantity'];
                                     }
                                 }
-                            }
-                            //if quantity is not okay, break the loop
-                            if(!$isQtyOk)
-                                break;
-                        }
-                        /**
-                         * Check if return quantity is not greater that the ordered quantity
-                         */
-                        if($isQtyOk) {
-                            $postValues = $formData;
-
-                            $orderMesasge = [];
-                            $returnProductData = [];
-                            $returnProductDetailsData = [];
-                            //prepare return product data
-                            foreach ($postValues as $key => $val) {
-                                if (strpos($key, 'pret_') !== false) {
-                                    $returnProductData[$key] = $val;
+                                foreach ($data->getBasket() as $bas) {
+                                    if ($variantId == $bas->obas_variant_id) {
+                                        $remainingQty = $bas->obas_quantity - $returnProd;
+                                        if ($returnQty > $remainingQty) {
+                                            $isQtyOk = false;
+                                            break;
+                                        }
+                                    }
                                 }
+                                //if quantity is not okay, break the loop
+                                if (!$isQtyOk)
+                                    break;
                             }
-                            //prepare return product details data
-                            foreach ($postValues as $key => $val) {
-                                if (strpos($key, 'pretd_') !== false) {
-                                    $returnProductDetailsData[$key] = $val;
+                            /**
+                             * Check if return quantity is not greater that the ordered quantity
+                             */
+                            if ($isQtyOk) {
+                                $postValues = $formData;
+
+                                $orderMesasge = [];
+                                $returnProductData = [];
+                                $returnProductDetailsData = [];
+                                //prepare return product data
+                                foreach ($postValues as $key => $val) {
+                                    if (strpos($key, 'pret_') !== false) {
+                                        $returnProductData[$key] = $val;
+                                    }
                                 }
-                            }
-                            //prepare order msg data
-                            foreach ($postValues as $key => $val) {
-                                if (strpos($key, 'omsg_') !== false) {
-                                    $orderMesasge[$key] = $val;
+                                //prepare return product details data
+                                foreach ($postValues as $key => $val) {
+                                    if (strpos($key, 'pretd_') !== false) {
+                                        $returnProductDetailsData[$key] = $val;
+                                    }
                                 }
-                            }
-
-                            //start saving
-                            //set order id
-                            $returnProductData['pret_order_id'] = $orderId;
-                            //include client id
-                            $returnProductData['pret_client_id'] = $clientId;
-                            $pretId = $productReturn->saveOrderProductReturn($returnProductData);
-                            if (!empty($pretId)) {
-                                //pepare product details to include on message
-                                $msgProdDetails = '<p>'.$trans->translate('tr_melis_commerce_orders_return_details').'<br>';
-                                //start save the details
-                                foreach ($returnVariantData as $variantId => $quantity) {
-                                    //get variant info
-                                    $variant = $variantSvc->getVariantById($variantId, $langId)->getVariant();
-                                    //get product name
-                                    $productId = $variant->var_prd_id;
-                                    $productName = $prodSvc->getProductName($productId, $langId);
-
-                                    //add other return details
-                                    $returnProductDetailsData['pretd_sku'] = $variant->var_sku;
-                                    $returnProductDetailsData['pretd_pret_id'] = $pretId;
-                                    $returnProductDetailsData['pretd_quantity'] = $quantity;
-                                    $returnProductDetailsData['pretd_variant_id'] = $variantId;
-
-                                    //save product return details
-                                    $productReturn->saveOrderProductReturnDetails($returnProductDetailsData);
-
-                                    //set msg product details
-                                    $msgProdDetails .= "<span>".$productName." / ".$productId." / ".$variant->var_sku.": ".$quantity."</span><br>";
+                                //prepare order msg data
+                                foreach ($postValues as $key => $val) {
+                                    if (strpos($key, 'omsg_') !== false) {
+                                        $orderMesasge[$key] = $val;
+                                    }
                                 }
-                                $msgProdDetails .= "</p>";
 
-                                //save message
-                                $orderMesasge['omsg_message'] .= htmlentities($msgProdDetails);
-                                $orderMesasge['omsg_order_id'] = $orderId;
-                                $orderMesasge['omsg_client_id'] = $clientId;
-                                $orderMesasge['omsg_client_person_id'] = $personid;
-                                $orderMesasge['omsg_date_creation'] = date('Y-m-d H:i:s');
-                                $orderMesasge['omsg_type'] = 'RETURN';
-                                $orderSvc->saveOrderMessage($orderMesasge);
+                                //start saving
+                                //set order id
+                                $returnProductData['pret_order_id'] = $orderId;
+                                //include client id
+                                $returnProductData['pret_client_id'] = $clientId;
+                                $pretId = $productReturn->saveOrderProductReturn($returnProductData);
+                                if (!empty($pretId)) {
+                                    //pepare product details to include on message
+                                    $msgProdDetails = '<p>' . $trans->translate('tr_melis_commerce_orders_return_details') . '<br>';
+                                    //start save the details
+                                    foreach ($returnVariantData as $variantId => $quantity) {
+                                        //get variant info
+                                        $variant = $variantSvc->getVariantById($variantId, $langId)->getVariant();
+                                        //get product name
+                                        $productId = $variant->var_prd_id;
+                                        $productName = $prodSvc->getProductName($productId, $langId);
 
-                                $success = 1;
+                                        //add other return details
+                                        $returnProductDetailsData['pretd_sku'] = $variant->var_sku;
+                                        $returnProductDetailsData['pretd_pret_id'] = $pretId;
+                                        $returnProductDetailsData['pretd_quantity'] = $quantity;
+                                        $returnProductDetailsData['pretd_variant_id'] = $variantId;
+
+                                        //save product return details
+                                        $productReturn->saveOrderProductReturnDetails($returnProductDetailsData);
+
+                                        //set msg product details
+                                        $msgProdDetails .= "<span>" . $productName . " / " . $productId . " / " . $variant->var_sku . ": " . $quantity . "</span><br>";
+                                    }
+                                    $msgProdDetails .= "</p>";
+
+                                    //save message
+                                    $orderMesasge['omsg_message'] .= htmlentities($msgProdDetails);
+                                    $orderMesasge['omsg_order_id'] = $orderId;
+                                    $orderMesasge['omsg_client_id'] = $clientId;
+                                    $orderMesasge['omsg_client_person_id'] = $personid;
+                                    $orderMesasge['omsg_date_creation'] = date('Y-m-d H:i:s');
+                                    $orderMesasge['omsg_type'] = 'RETURN';
+                                    $orderSvc->saveOrderMessage($orderMesasge);
+
+                                    $success = 1;
+                                }
                             }
                         }
                     }
-                }
-                //get already returned product list
-                $returnProduct = $productReturn->getOrderProductReturnList($orderId);
-                $orderCoupons = $couponSvc->getCouponList($orderId);
+                    //get already returned product list
+                    $returnProduct = $productReturn->getOrderProductReturnList($orderId);
+                    $orderCoupons = $couponSvc->getCouponList($orderId);
 
-                $tmp = array();
-                foreach ($orderCoupons as $coupon) {
-                    if ($coupon->getCoupon()->coup_product_assign) {
-                        $coupon->getCoupon()->discountedBasket = $couponSvc->getCouponDiscountedBasketItems($coupon->getCoupon()->coup_id, $orderId);
-                    }
-
-                    $tmp[] = $coupon;
-                }
-
-                $orderCoupons = $tmp;
-
-                if (!empty($data->getClient())) {
-                    if ($data->getClient()->cli_id == $clientId) {
-                        $currencies = $currencySvc->getCurrencies();
-
-                        $status = '';
-
-                        foreach ($orderStatus as $stat) {
-                            if ($stat->ostt_status_id == $data->getOrder()->ord_status) {
-                                $status = $stat->ostt_status_name;
-                            }
+                    $tmp = array();
+                    foreach ($orderCoupons as $coupon) {
+                        if ($coupon->getCoupon()->coup_product_assign) {
+                            $coupon->getCoupon()->discountedBasket = $couponSvc->getCouponDiscountedBasketItems($coupon->getCoupon()->coup_id, $orderId);
                         }
 
-                        $count = 0;
-                        $orderDetails = array();
-                        $subTotal = 0;
-                        $total = 0;
-                        $shipping = 0;
+                        $tmp[] = $coupon;
+                    }
 
-                        foreach ($data->getBasket() as $basket) {
-                            $returnProductValue = 0;
-                            $basket->discount = 0;
-                            if (!empty($orderCoupons)) {
-                                foreach ($orderCoupons as $coupon) {
-                                    if ($coupon->getCoupon()->coup_product_assign) {
-                                        foreach ($coupon->getCoupon()->discountedBasket as $item) {
-                                            if ($item->cord_basket_id == $basket->obas_id) {
-                                                if (!empty($coupon->getCoupon()->coup_percentage)) {
-                                                    $basket->discount = ($coupon->getCoupon()->coup_percentage / 100) * $basket->obas_price_net;
-                                                } elseif (!empty($coupon->getCoupon()->coup_discount_value)) {
-                                                    $basket->discount = $coupon->getCoupon()->coup_discount_value * $item->cord_quantity_used;
+                    $orderCoupons = $tmp;
+
+                    if (!empty($data->getClient()) || $this->renderMode = 'melis') {
+                        if (($data->getClient()->cli_id == $clientId) || $this->renderMode = 'melis') {
+                            $currencies = $currencySvc->getCurrencies();
+
+                            $status = '';
+
+                            foreach ($orderStatus as $stat) {
+                                if ($stat->ostt_status_id == $data->getOrder()->ord_status) {
+                                    $status = $stat->ostt_status_name;
+                                }
+                            }
+
+                            $count = 0;
+                            $orderDetails = array();
+                            $subTotal = 0;
+                            $total = 0;
+                            $shipping = 0;
+
+                            foreach ($data->getBasket() as $basket) {
+                                $returnProductValue = 0;
+                                $basket->discount = 0;
+                                if (!empty($orderCoupons)) {
+                                    foreach ($orderCoupons as $coupon) {
+                                        if ($coupon->getCoupon()->coup_product_assign) {
+                                            foreach ($coupon->getCoupon()->discountedBasket as $item) {
+                                                if ($item->cord_basket_id == $basket->obas_id) {
+                                                    if (!empty($coupon->getCoupon()->coup_percentage)) {
+                                                        $basket->discount = ($coupon->getCoupon()->coup_percentage / 100) * $basket->obas_price_net;
+                                                    } elseif (!empty($coupon->getCoupon()->coup_discount_value)) {
+                                                        $basket->discount = $coupon->getCoupon()->coup_discount_value * $item->cord_quantity_used;
+                                                    }
                                                 }
                                             }
                                         }
                                     }
                                 }
-                            }
 
-                            $count = $count + $basket->obas_quantity;
-                            $details = array();
-                            $currency = '';
+                                $count = $count + $basket->obas_quantity;
+                                $details = array();
+                                $currency = '';
 
-                            foreach ($currencies as $cur) {
-                                if ($cur->cur_id == $basket->obas_currency) {
-                                    $currency = $cur->cur_symbol;
+                                foreach ($currencies as $cur) {
+                                    if ($cur->cur_id == $basket->obas_currency) {
+                                        $currency = $cur->cur_symbol;
+                                    }
                                 }
-                            }
 
-                            $details['variant_id'] = $basket->obas_variant_id;
-                            $details['productName'] = $basket->obas_product_name;
-                            $details['sku'] = $basket->obas_sku;
-                            $details['currency'] = $currency;
-                            $details['price'] = $basket->obas_price_net;
-                            $details['total'] = ($basket->obas_price_net * $basket->obas_quantity) - $basket->discount;
-                            $details['discount'] = $basket->discount;
-                            $details['quantity'] = $basket->obas_quantity;
+                                $details['variant_id'] = $basket->obas_variant_id;
+                                $details['productName'] = $basket->obas_product_name;
+                                $details['sku'] = $basket->obas_sku;
+                                $details['currency'] = $currency;
+                                $details['price'] = $basket->obas_price_net;
+                                $details['total'] = ($basket->obas_price_net * $basket->obas_quantity) - $basket->discount;
+                                $details['discount'] = $basket->discount;
+                                $details['quantity'] = $basket->obas_quantity;
 
-                            //count already returned product
-                            foreach ($returnProduct as $key => $rProduct) {
-                                if ($rProduct['pretd_variant_id'] == $basket->obas_variant_id) {
-                                    $returnProductValue += $rProduct['pretd_quantity'];
+                                //count already returned product
+                                foreach ($returnProduct as $key => $rProduct) {
+                                    if ($rProduct['pretd_variant_id'] == $basket->obas_variant_id) {
+                                        $returnProductValue += $rProduct['pretd_quantity'];
+                                    }
                                 }
+                                $details['returnedProduct'] = $returnProductValue;
+                                $details['remainingQtyToReturn'] = (int)$basket->obas_quantity - $returnProductValue;
+                                $items[] = $details;
                             }
-                            $details['returnedProduct'] = $returnProductValue;
-                            $details['remainingQtyToReturn'] = (int) $basket->obas_quantity - $returnProductValue;
-                            $items[] = $details;
+
+                            $returnProducts['id'] = $data->getId();
+                            $returnProducts['reference'] = $data->getOrder()->ord_reference;
+                            $returnProducts['date'] = $data->getOrder()->ord_date_creation;
+                            $returnProducts['status'] = $status;
+                            $returnProducts['itemCount'] = $count;
+                            $returnProducts['currency'] = $currency;
+                            $returnProducts['items'] = $items;
                         }
-
-                        $returnProducts['id'] = $data->getId();
-                        $returnProducts['reference'] = $data->getOrder()->ord_reference;
-                        $returnProducts['date'] = $data->getOrder()->ord_date_creation;
-                        $returnProducts['status'] = $status;
-                        $returnProducts['itemCount'] = $count;
-                        $returnProducts['currency'] = $currency;
-                        $returnProducts['items'] = $items;
                     }
                 }
             }

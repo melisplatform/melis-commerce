@@ -22,31 +22,31 @@ class MelisCommerceCheckoutCouponListener extends MelisGeneralListener implement
             $events,
             '*',
             'meliscommerce_service_checkout_order_computation_end',
-        	function($e){
-        		$sm = $e->getTarget()->getServiceManager();
-        		$couponTable = $sm->get('MelisEcomCouponTable');
-        		$variantTable = $sm->get('MelisEcomVariantTable');
-        		$translator = $sm->get('translator');
-        		$couponSrv = $sm->get('MelisComCouponService');
-        		$checkoutService = $sm->get('MelisComOrderCheckoutService');
-        		$params = $e->getParams();
+            function($e){
+                $sm = $e->getTarget()->getServiceManager();
+                $couponTable = $sm->get('MelisEcomCouponTable');
+                $variantTable = $sm->get('MelisEcomVariantTable');
+                $translator = $sm->get('translator');
+                $couponSrv = $sm->get('MelisComCouponService');
+                $checkoutService = $sm->get('MelisComOrderCheckoutService');
+                $params = $e->getParams();
 
-        		// Getting $_GET[] parameters for CouponCode
-        		$getValues = $sm->get('request')->getQuery()->toArray();
+                // Getting $_GET[] parameters for CouponCode
+                $getValues = $sm->get('request')->getQuery()->toArray();
 
-        		if ($params['results']['success'])
-        		{
-        		    $clientId = $params['results']['clientId'];
-        		    $container = new Container('meliscommerce');
-        		    // If there is no data from $_GET[], this will try to use coupon data from Session
-        		    $melisComOrderCheckoutService = $sm->get('MelisComOrderCheckoutService');
-        		    $siteId = $melisComOrderCheckoutService->getSiteId();
-        		    
-        		    $orders = !empty($params['results']['costs']['order']['details'])? $params['results']['costs']['order']['details'] : array();
-        		    $discountedOrders = $orders;
-        		    $items = array();
+                if ($params['results']['success'])
+                {
+                    $clientId = $params['results']['clientId'];
+                    $container = new Container('meliscommerce');
+                    // If there is no data from $_GET[], this will try to use coupon data from Session
+                    $melisComOrderCheckoutService = $sm->get('MelisComOrderCheckoutService');
+                    $siteId = $melisComOrderCheckoutService->getSiteId();
+                    
+                    $orders = !empty($params['results']['costs']['order']['details'])? $params['results']['costs']['order']['details'] : array();
+                    $discountedOrders = $orders;
+                    $items = array();
 
-        		    if(isset($container['checkout'])) {
+                    if(isset($container['checkout'])) {
                         $container['checkout'][$siteId]['coupons']['couponErr'] = array();
                         $coupons = $container['checkout'][$siteId]['coupons'];
                         $productCoupons = !empty($coupons['productCoupons']) ? $coupons['productCoupons'] : array();
@@ -55,7 +55,7 @@ class MelisCommerceCheckoutCouponListener extends MelisGeneralListener implement
                         if (!empty($orders)) {
                             foreach ($orders as $key => $val) {
 
-                                $variant = $variantTable->getEntryById($key)->current();
+                                $variant = $variantTable->getEntryById($val['variant_id'])->current();
                                 $items[] = $variant->var_prd_id;
                             }
                             $items = array_unique($items);
@@ -120,7 +120,7 @@ class MelisCommerceCheckoutCouponListener extends MelisGeneralListener implement
 
                             foreach ($orders as $key => $val) {
 
-                                $variant = $variantTable->getEntryById($key)->current();
+                                $variant = $variantTable->getEntryById($val['variant_id'])->current();
                                 $totalDiscount = 0;
                                 $discountQty = 0;
                                 $discount = 0;
@@ -148,10 +148,10 @@ class MelisCommerceCheckoutCouponListener extends MelisGeneralListener implement
                                 $val['discount_details'] = !empty($val['discount_details']) ? $val['discount_details'] : array();
 
                                 if (!empty($totalDiscount)) {
-                                    $discounts = array(
+                                    $discounts = [
                                         'discount' => $discount,
                                         'qty' => $discountQty,
-                                    );
+                                    ];
                                     $val['discount_details'][] = $discounts;
                                 }
 
@@ -208,8 +208,8 @@ class MelisCommerceCheckoutCouponListener extends MelisGeneralListener implement
                         $container['checkout'][$siteId]['coupons']['productCoupons'] = $productCoupons;
                         $container['checkout'][$siteId]['coupons']['generalCoupons'] = $generalCoupons;
                     }
-        		}
-        	},
+                }
+            },
         100
         );
     }

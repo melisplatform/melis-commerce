@@ -256,7 +256,8 @@ class MelisComProductSearchService extends MelisComGeneralService
 
 		// Variant price filter
 		$prdSrv = $this->getServiceManager()->get('MelisComProductService');
-		$varSrv = $this->getServiceManager()->get('MelisComVariantService');
+		$melisComPriceService = $this->getServiceManager()->get('MelisComPriceService');
+
 		if(!empty($arrayParameters['priceMin']) || !empty($arrayParameters['priceMax'])) {
 
 			foreach($prdSrv->getProductList($arrayParameters['langId'], $arrayParameters['categoryId'], $arrayParameters['countryId'], true) As $product) {
@@ -265,29 +266,24 @@ class MelisComProductSearchService extends MelisComGeneralService
 
 				foreach ($prdSrv->getProductVariants($productId, true) As $variant ) {
 
-					// Getting the Final Price of the variant
-					$varPrice = $varSrv->getVariantFinalPrice($variant->var_id, $arrayParameters['countryId'], $arrayParameters['groupId']);
+					// Product variant price
+					$prdVarPrice = $melisComPriceService->getItemPrice($variant->var_id, $arrayParameters['countryId'], $arrayParameters['groupId']);
 
-					if (empty($varPrice)) {
-						// If the variant price not set on variant page this will try to get from the Product Price
-						$varPrice = $prdSrv->getProductFinalPrice($productId, $arrayParameters['countryId'], $arrayParameters['groupId']);
-					}
-
-					if (!is_null($varPrice)) {
+					if (!is_null($prdVarPrice)) {
 
 						$columnPrice = $arrayParameters['priceColumn'];
 
 						$flag = true;
-						if (!is_null(($varPrice->$columnPrice)))
-							if (!is_numeric(((float)$varPrice->$columnPrice)))
+						if (!is_null(($prdVarPrice['price_details'][$columnPrice])))
+							if (!is_numeric(((float)$prdVarPrice['price_details'][$columnPrice])))
 								$flag = false; 
 
 						if (!empty($arrayParameters['priceMin']) && $flag)
-							if ($varPrice->$columnPrice < $arrayParameters['priceMin'])
+							if ($prdVarPrice['price_details'][$columnPrice] < $arrayParameters['priceMin'])
 								$flag = false;
 						
 						if (!empty($arrayParameters['priceMax']) && $flag)
-							if ($varPrice->$columnPrice > $arrayParameters['priceMax'])
+							if ($prdVarPrice['price_details'][$columnPrice] > $arrayParameters['priceMax'])
 								$flag = false;
 
 						if ($flag && !in_array($variant->var_id, $selectedVariants)){
@@ -332,7 +328,7 @@ class MelisComProductSearchService extends MelisComGeneralService
 			foreach ($productData As $val)
 			{
 				/**
-				 * Retieving basic details of a single product
+				 * Retrieving basic details of a single product
 				 * from Product service
 				 */
 				$results[] = $prdSrv->getProductBasicDetails($val->prd_id, $arrayParameters['countryId'], $arrayParameters['groupId'], $arrayParameters['langId']);

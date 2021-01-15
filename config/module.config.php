@@ -112,6 +112,7 @@ return [
             'MelisComCurrencyService'                       => \MelisCommerce\Service\MelisComCurrencyService::class,
             'MelisComLinksService'                          => \MelisCommerce\Service\MelisComLinksService::class,
             'MelisComClientGroupsService'                   => \MelisCommerce\Service\MelisComClientGroupsService::class,
+            'MelisComPriceService'                          => \MelisCommerce\Service\MelisComPriceService::class,
             'MelisComOrderProductReturnService'             => \MelisCommerce\Service\MelisComOrderProductReturnService::class,
 
             // Tables

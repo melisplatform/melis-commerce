@@ -73,4 +73,15 @@ class MelisEcomClientGroupsTable extends MelisEcomGenericTable
         return $resultSet;
 
     }
+
+    public function getActiveClientGroups()
+    {
+        $select = $this->getTableGateway()->getSql()->select();
+
+        $select->where('cgroup_status', 1);
+
+        $resultSet = $this->getTableGateway()->selectWith($select);
+
+        return $resultSet;
+    }
 }

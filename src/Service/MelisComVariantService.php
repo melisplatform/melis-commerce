@@ -480,62 +480,6 @@ class MelisComVariantService extends MelisComGeneralService
 	}
 	
 	/**
-		* This method will return the Variant final Price
-		* 
-		* @param int $variantId
-		* @param int $countryId
-		* @return MelisEcomPrice|null
-		*/
-	public function getVariantFinalPrice($variantId, $countryId, $groupId = 1)
-	{
-		// Retrieve cache version if front mode to avoid multiple calls
-		$cacheKey = 'variant-' . $variantId . '-getVariantFinalPrice-' . implode('-', [$variantId, $countryId, $groupId]);
-		$cacheConfig = 'commerce_big_services';
-		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-		$cache = $this->getServiceManager()->get($cacheConfig);
-		if ($cache->hasItem($cacheKey)){
-			return $cache->getItem($cacheKey);
-		}
-		
-		// Event parameters prepare
-		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
-		$results = array();
-		// Sending service start event
-		$arrayParameters = $this->sendEvent('meliscommerce_service_variant_final_prices_start', $arrayParameters);
-
-		// Service implementation start
-		$priceTable = $this->getServiceManager()->get('MelisEcomPriceTable');
-		$results = $this->validatePrice($priceTable->getVariantFinalPrice($arrayParameters['variantId'], $arrayParameters['countryId'], $arrayParameters['groupId'])->current());
-
-        /**
-         * Look for prices in the generals
-         */
-        //look for group general price in the country
-		if(empty($results))
-            $results = $this->validatePrice($priceTable->getVariantFinalPrice($arrayParameters['variantId'], $arrayParameters['countryId'])->current());
-		
-		//look for price inside general and in given group
-		if(empty($results))
-            $results = $this->validatePrice($priceTable->getVariantFinalPrice($arrayParameters['variantId'], -1, $arrayParameters['groupId'])->current());
-		
-		//look price inside general and group general
-		if(empty($results))
-            $results = $this->validatePrice($priceTable->getVariantFinalPrice($arrayParameters['variantId'], -1)->current());
-
-		// Service implementation end
-		
-		// Adding results to parameters for events treatment if needed
-		$arrayParameters['results'] = $results;
-		// Sending service end event
-		$arrayParameters = $this->sendEvent('meliscommerce_service_variant_final_prices_end', $arrayParameters);
-
-		// Save cache key
-		$melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $arrayParameters['results']);
-		
-		return  $arrayParameters['results'];
-	}
-
-	/**
 	 * Validating Product final price
 	 */
 	private function validatePrice($variantPrice)

@@ -363,8 +363,8 @@ class MelisComOrderController extends MelisAbstractActionController
         $disabled = '';
         $class = 'mainOrderStatus';
         $button = '<a href="#" class="%s" data-statusid="%s" style="text-decoration:none">
-				        <span %s class="btn order-status-%s">%s</span>
-				   </a>';
+                        <span %s class="btn order-status-%s">%s</span>
+                </a>';
         
         if(isset($this->layout()->order)){
             $currStatus = $this->layout()->order->ord_status;
@@ -401,7 +401,7 @@ class MelisComOrderController extends MelisAbstractActionController
         }
         
         $infoForm = 'meliscommerce_order_information_form';
-       
+    
         $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_orders/'.$infoForm,$infoForm);
         
         $factory = new \Laminas\Form\Factory();
@@ -491,9 +491,9 @@ class MelisComOrderController extends MelisAbstractActionController
     }
     
     /**
-     * renders the orders content tab address right container
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * renders the orders content tab address right container
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrdersContentTabsContentAddressDetailsRightAction()
     {
         $view = new ViewModel();
@@ -505,9 +505,9 @@ class MelisComOrderController extends MelisAbstractActionController
     }
     
     /**
-     * renders the orders content tab address form
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * renders the orders content tab address form
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrdersContentTabsContentAddressDetailsAddressFormAction()
     {
         $forms = array();
@@ -546,9 +546,9 @@ class MelisComOrderController extends MelisAbstractActionController
     }
     
     /**
-     * renders the orders content tab content details div col-xs-12 col-md-12
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * renders the orders content tab content details div col-xs-12 col-md-12
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrdersContentTabsContentDetailsLargeAction()
     {
         $view = new ViewModel();
@@ -560,9 +560,9 @@ class MelisComOrderController extends MelisAbstractActionController
     }
     
     /**
-     * renders the orders content tab content payment list
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * renders the orders content tab content payment list
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrdersContentTabsContentPaymentDetailsContentListAction()
     {        
         $payments = $this->layout()->payment;
@@ -611,9 +611,9 @@ class MelisComOrderController extends MelisAbstractActionController
     }
     
     /**
-     * renders the content tab messages right head add shipping button
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * renders the content tab messages right head add shipping button
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrdersContentTabsContentShippingRightHeaderAddAction()
     {
         $view = new ViewModel();
@@ -625,9 +625,9 @@ class MelisComOrderController extends MelisAbstractActionController
     }
     
     /**
-     * renders the orders content tab content shipping list
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * renders the orders content tab content shipping list
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrdersContentTabsContentShippingDetailsContentListAction()
     {
         $orderId = (int) $this->params()->fromQuery('orderId', '');
@@ -666,9 +666,9 @@ class MelisComOrderController extends MelisAbstractActionController
     }
     
     /**
-     * renders the content tab messages right head add message button
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * renders the content tab messages right head add message button
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrdersContentTabsContentMessagesRightHeaderAddAction()
     {
         $view = new ViewModel();
@@ -680,9 +680,9 @@ class MelisComOrderController extends MelisAbstractActionController
     }
     
     /**
-     * renders the orders content tab messages details container
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * renders the orders content tab messages details container
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrdersContentTabsContentMessagesDetailsAction()
     {
         $view = new ViewModel();
@@ -694,9 +694,9 @@ class MelisComOrderController extends MelisAbstractActionController
     }
     
     /**
-     * renders the orders content tab messages message form
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * renders the orders content tab messages message form
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrdersContentTabsContentMessagesMessageFormAction()
     {
         $factory = new \Laminas\Form\Factory();
@@ -715,9 +715,9 @@ class MelisComOrderController extends MelisAbstractActionController
     }
     
     /**
-     * renders the orders content tab messages timeline container
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * renders the orders content tab messages timeline container
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrdersContentTabsContentMessagesTimelineContainerAction()
     {
         $view = new ViewModel();
@@ -729,45 +729,45 @@ class MelisComOrderController extends MelisAbstractActionController
     }
     
     /**
-     * renders the order content basket table filter limit
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * renders the order content basket table filter limit
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderContentFilterLimitAction()
     {
         return new ViewModel();
     }
     
     /**
-     * renders the order content basket table filter search
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * renders the order content basket table filter search
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderContentFilterSearchAction()
     {
         return new ViewModel();
     }
     
     /**
-     * renders the order content table filter refresh
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * renders the order content table filter refresh
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderContentFilterRefreshAction()
     {
         return new ViewModel();
     }
     
     /**
-     * renders the order content action info
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * renders the order content action info
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderContentActionInfoAction()
     {
         return new ViewModel();
     }
     
     /**
-     * renders the orders content tab messages timeline 
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * renders the orders content tab messages timeline 
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrdersContentTabsContentMessagesTimelineAction()
     {
         $messages = array();
@@ -813,7 +813,7 @@ class MelisComOrderController extends MelisAbstractActionController
         }
         //sort by date descending
         usort($messages, function ($a,$b){  
-           return $b['date'] - $a['date']; 
+        return $b['date'] - $a['date']; 
         });
         $view = new ViewModel();
         $melisKey = $this->params()->fromRoute('melisKey', '');       
@@ -824,9 +824,9 @@ class MelisComOrderController extends MelisAbstractActionController
     }
     
     /**
-     * renders the order modal container
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * renders the order modal container
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderModalAction()
     {
         $id = $this->params()->fromQuery('id');
@@ -839,9 +839,9 @@ class MelisComOrderController extends MelisAbstractActionController
     }
     
     /**
-     * renders the order modal content for adding new shipping
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * renders the order modal content for adding new shipping
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderModalContentShippingFormAction()
     {
         $orderId = (int) $this->params()->fromQuery('orderId');
@@ -864,9 +864,9 @@ class MelisComOrderController extends MelisAbstractActionController
     }
     
     /**
-     * returns the basket data list
-     * @return \Laminas\View\Model\JsonModel
-     */
+        * returns the basket data list
+        * @return \Laminas\View\Model\JsonModel
+        */
     public function getBasketDataAction()
     {   
         $getValues = $this->getRequest()->getQuery()->toArray();
@@ -903,11 +903,15 @@ class MelisComOrderController extends MelisAbstractActionController
         
             $search = $this->getRequest()->getPost('search');
             $search = $search['value'];
+
+
+            $toolTipTextTag = '<a id="row-%s" class="order-basket-price-log" data-order-basket-id="%s" data-hasqtip="1" aria-describedby="qtip-%s"><span class="hidden basket-price-log">%s</span>%s</a>';
+
             
             $basketList = $orderSvc->getOrderBasketByOrderId($orderId, $start, $length, $search, $order);
-             
+            
             $dataCount = count($basketList);
-            foreach($basketList as $basket){
+            foreach($basketList as $key => $basket){
                 $default = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAgAAZABkAAD/7AARRHVja3kAAQAEAAAAPAAA/+EDLWh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8APD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS41LWMwMTQgNzkuMTUxNDgxLCAyMDEzLzAzLzEzLTEyOjA5OjE1ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozRkNFMzU3RDg2QUYxMUU1OEM4OENCQkI2QTc0MTkwRSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozRkNFMzU3Qzg2QUYxMUU1OEM4OENCQkI2QTc0MTkwRSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M2IChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MDEwNzlDODNCQThDMTFFMjg5NTlFMDAzODgzMjZDMkIiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MDEwNzlDODRCQThDMTFFMjg5NTlFMDAzODgzMjZDMkIiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7/7gAOQWRvYmUAZMAAAAAB/9sAhAAGBAQEBQQGBQUGCQYFBgkLCAYGCAsMCgoL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mhNky5fTkBYwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/9k=';
                 $imageSrc = '';    
                 $category = '';
@@ -930,10 +934,10 @@ class MelisComOrderController extends MelisAbstractActionController
                 }
                 
                 if(!empty($basket->obas_category_name)){
-                   $category = sprintf($categoryDom, $this->getTool()->escapeHtml($basket->obas_category_name));
+                    $category = sprintf($categoryDom, $this->getTool()->escapeHtml($basket->obas_category_name));
                 }
-                
-                $tableData[]= array(                    
+
+                $tableData[$key]= array(                    
                     'obas_id' => $basket->obas_id,                    
                     'obas_sku' => $this->getTool()->escapeHtml($basket->obas_sku),
                     'image' => sprintf($image, $imageSrc),
@@ -944,8 +948,13 @@ class MelisComOrderController extends MelisAbstractActionController
                     'DT_RowId' => $basket->obas_id,
                     'DT_RowAttr' => array('data-variantid' => $basket->obas_variant_id, 'data-productid' => $prodId, 'data-sku' => $basket->obas_sku),                    
                 );
+
+                $itemPrice = $basket->obas_price_net . "€";
+                // Detect if Mobile remove qTipTable
+                $useragent = $_SERVER['HTTP_USER_AGENT'];
+                if(!preg_match('/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i',$useragent)||preg_match('/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i',substr($useragent,0,4)))
+                    $tableData[$key]['obas_price_net'] = sprintf($toolTipTextTag, ($key+1), $basket->obas_id, ($key+1), $basket->obas_price_log, $itemPrice);
             }
-        
         }
         
         return new JsonModel(array(
@@ -1083,7 +1092,7 @@ class MelisComOrderController extends MelisAbstractActionController
         return new JsonModel($results);
     }
     
-   /**
+/**
     * validates the order form
     * @param unknown $orderValues
     * @return [] result
@@ -1111,7 +1120,7 @@ class MelisComOrderController extends MelisAbstractActionController
                     $success = 0;
                     $errors[] = $this->getFormErrors($orderForm, $appConfigOrderForm);
                 }
-               
+            
                 $data['order'] = $order;
             }        
         }
@@ -1124,10 +1133,10 @@ class MelisComOrderController extends MelisAbstractActionController
     }
     
     /**
-     * validates the address form
-     * @param [] $addressValues array of address values
-     * @return [] result
-     */
+        * validates the address form
+        * @param [] $addressValues array of address values
+        * @return [] result
+        */
     public function validateAddressFormAction()
     {
         $errors = array();
@@ -1178,10 +1187,10 @@ class MelisComOrderController extends MelisAbstractActionController
     }
     
     /**
-     * validates the shippign form
-     * @param [] $shippingForms array of shipping values
-     * @return \MelisCommerce\Controller\errors[][]
-     */
+        * validates the shippign form
+        * @param [] $shippingForms array of shipping values
+        * @return \MelisCommerce\Controller\errors[][]
+        */
     public function validateShippingFormAction()
     {
         $data['shipping'] = array();
@@ -1286,11 +1295,11 @@ class MelisComOrderController extends MelisAbstractActionController
     }
     
     /**
-     * Retrieves  form errors
-     * @param object $form the form object
-     * @param object $formConfig the app config of the form
-     * @return errors[] | null
-     */
+        * Retrieves  form errors
+        * @param object $form the form object
+        * @param object $formConfig the app config of the form
+        * @return errors[] | null
+        */
     private function getFormErrors($form, $formConfig)
     {
         $appConfigFormElements = $formConfig['elements'];
@@ -1311,9 +1320,9 @@ class MelisComOrderController extends MelisAbstractActionController
     }
     
     /**
-     * set the order variables
-     * @param unknown $orderId
-     */
+        * set the order variables
+        * @param unknown $orderId
+        */
     private function setOrderVariables($orderId)
     {
         $layoutVar = array();
@@ -1347,9 +1356,9 @@ class MelisComOrderController extends MelisAbstractActionController
     }
     
     /**
-     * Returns the Tool Service Class
-     * @return MelisCoreTool
-     */
+        * Returns the Tool Service Class
+        * @return MelisCoreTool
+        */
     private function getTool()
     {
         $melisTool = $this->getServiceManager()->get('MelisCoreTool');

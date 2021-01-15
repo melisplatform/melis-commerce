@@ -1,0 +1,1 @@
+ALTER TABLE `melis_ecom_order_basket` ADD `obas_price_log ` INT NULL AFTER `obas_price_other_tax`; 
