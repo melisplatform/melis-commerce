@@ -970,10 +970,13 @@ class MelisComProductService extends MelisComGeneralService
 		$prodTextTable = $this->getServiceManager()->get('MelisEcomProductTextTable');
 		$prodAttrTable = $this->getServiceManager()->get('MelisEcomProductAttributeTable');
 		$melisComCategoryService = $this->getServiceManager()->get('MelisComCategoryService');
+
+		// preemptively delete cache
+        $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
+        $commerceCacheService->deleteCache('product', $arrayParameters['prodId']);
 		
 		$productId = (int) $arrayParameters['prodId'];
 		if($productId) {
-			
 			try {
 				$prodAttrTable->deleteByField('patt_product_id', $productId);
 				//$prodCatTable->deleteByField('pcat_prd_id', $productId);
@@ -991,15 +994,11 @@ class MelisComProductService extends MelisComGeneralService
 				$data = $prodTable->getEntryById($productId)->current();
 				if(!$data) {
 					$results = true;
-                    $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
-                    $commerceCacheService->deleteCache('product', $productId);
 				}
 			}catch(\Exception $e) {
 				$results = false;
 			}
 		}
-		
-		
 		// Service implementation end
 		
 		// Adding results to parameters for events treatment if needed

@@ -931,6 +931,10 @@ class MelisComVariantService extends MelisComGeneralService
 		$arrayParameters = $this->sendEvent('meliscommerce_service_variant_delete_start', $arrayParameters);
 	
 		// Service implementation start
+        // preemptively delete cache before deleting the item
+        $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
+        $commerceCacheService->deleteCache('variant', $arrayParameters['variantId']);
+
 		$varTable = $this->getServiceManager()->get('MelisEcomVariantTable');
 		$docSvc = $this->getServiceManager()->get('MelisComDocumentService');
 		$docs = $docSvc->getDocumentsByRelation('variant', $arrayParameters['variantId']);
@@ -959,9 +963,6 @@ class MelisComVariantService extends MelisComGeneralService
 					}
 				}
 			}
-
-            $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
-            $commerceCacheService->deleteCache('variant', $arrayParameters['variantId']);
 		}catch(\Exception $e){
 			$results = false;
 		}
