@@ -105,7 +105,7 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
                 if (isset($clientOrder['details']))
                 {
                     $clientOrderVariant =  $clientOrder['details'];
-                    
+
                     if (!empty($clientOrderVariant))
                     {
                         $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
@@ -113,19 +113,19 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
                         
                         foreach ($clientOrderVariant As $key => $val)
                         {
+                            $variantId = $val['variant_id'];
                             $variantErr = '';
-                            if (!empty($validatedBasket['basket']['ko'][$key]['error']))
+                            if (!empty($validatedBasket['basket']['ko'][$variantId]['error']))
                             {
-                                $variantErr = $translator->translate('tr_'.$validatedBasket['basket']['ko'][$key]['error']);
+                                $variantErr = $translator->translate('tr_'.$validatedBasket['basket']['ko'][$variantId]['error']);
                                 $hasErr = true;
                             }
                             
-                            $variantId = $key;
                             $variant = $melisComVariantService->getVariantById($variantId);
                             $productId = $variant->getVariant()->var_prd_id;
                             $varSku = $variant->getVariant()->var_sku;
                             
-                            $currency = $val['price_details']['currency_symbol'];
+                            $currency = $val['price_details']['price_currency']['symbol'];
                             
                             $data = array(
                                 'var_id' => $variantId,

@@ -222,6 +222,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
 
             $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
             $melisComProductService = $this->getServiceManager()->get('MelisComProductService');
+            $melisComPriceService = $this->getServiceManager()->get('MelisComPriceService');
             
             $tmp = array();
             foreach($productCoupons as $productCoupon)
@@ -254,7 +255,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                     $hasErr = true;
                 }
                 // Product variant price
-                $prdVarPrice = $melisComPriceService->getItemPrice('variant', $variantId, $countryId, $clientGroupId);
+                $prdVarPrice = $melisComPriceService->getItemPrice($variantId, $countryId, $clientGroupId);
 
                 // Compute variant total amount
                 $variantTotal = $quantity * $prdVarPrice['price'];

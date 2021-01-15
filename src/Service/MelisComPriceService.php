@@ -16,7 +16,7 @@ namespace MelisCommerce\Service;
 class MelisComPriceService extends MelisComGeneralService
 {
 
-    public function getItemPrice($itemId, $countryId, $groupId, $type = 'variant', $data = null)
+    public function getItemPrice($itemId, $countryId, $groupId, $type = 'variant', Array $data = [])
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());

@@ -406,7 +406,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                 if (!empty($variant))
                 {
                     // Product variant price
-                    $prdVarPrice = $melisComPriceService->getItemPrice($variantId, $clientCountryId, $clientGroupId, 'variant', $val);
+                    $prdVarPrice = $melisComPriceService->getItemPrice($variantId, $clientCountryId, $clientGroupId, 'variant', ['basket' => $val]);
 
                     // Check if Variant final price has result
                     if (!is_null($prdVarPrice))
@@ -749,8 +749,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                 
                 $productCategories = $productData->getCategories();
                 $productCategoryName = '';
-                foreach ($productCategories As $cVal)
-                {
+                foreach ($productCategories As $cVal) {
                     $productCategoryName = $melisComCategoryService->getCategoryNameById($cVal->pcat_cat_id, $langId);
                     break;
                 }
@@ -761,7 +760,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                 $clientGroupId = $client->cli_group_id;
 
                 // Product variant price
-                $prdVarPrice = $melisComPriceService->getItemPrice($variant->var_id, $clientCountryId, $clientGroupId, 'variant', $val);
+                $prdVarPrice = $melisComPriceService->getItemPrice($variant->var_id, $clientCountryId, $clientGroupId, 'variant', ['basket' => $val]);
                 
                 $data = [
                     'obas_id' => null,
