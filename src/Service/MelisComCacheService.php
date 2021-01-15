@@ -417,9 +417,6 @@ class MelisComCacheService extends MelisComGeneralService
             $parentData = $parentDataListUntilRoot[1];
         }
 
-        print_r($parentData);
-        exit;
-
         if (! empty($parentData)) {
             // delete cache
             $this->deleteCache('category', $parentData['cat_id'], $parentData['cat_father_cat_id']);
