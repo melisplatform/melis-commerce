@@ -89,7 +89,7 @@ class MelisComPriceService extends MelisComGeneralService
                 ]
             ];
             
-            if (!empty($arrayParameters['data']['type']) && 
+            if (!is_object($arrayParameters['data']) && !empty($arrayParameters['data']['type']) && 
             $arrayParameters['data']['type'] == 'variant') {
                 $results['logs'] = [
                     'MelisCommerce: Variant price not set',

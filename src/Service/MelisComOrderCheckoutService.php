@@ -128,7 +128,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                                 else{
                                     // KO : Variant is Inactive status
                                     $koVariant[$val->getId()] = array(
-                                        'error' => 'MELIS_COMMERCE_CHECKOUT_ERROR_BASKET_QUANTITYs',
+                                        'error' => 'MELIS_COMMERCE_CHECKOUT_ERROR_BASKET_QUANTITY',
                                         $val->getId() => $val,
                                     );
                                 }
