@@ -306,18 +306,17 @@ var melisCommerce = (function(window) {
 		$navTabLi.addClass("active");
 	}
 
-	function orderBasketPriceLogTooltip() {
-		$(".order-basket-price-log").each(function() {
+	function priceLogTooltip() {
+		$(".price-log-data-tooltip").each(function() {
 			var $this = $(this);
 
 			let priceLog = $(this)
-				.find(".basket-price-log")
+				.find(".price-log-data")
 				.text();
 
 			let qtipContent = "";
 			if (priceLog != "") {
 				logs = JSON.parse(priceLog);
-				console.log(logs);
 
 				for (i = 0; i < logs.length; i++) {
 					qtipContent += "<li>" + logs[i] + "</li>";
@@ -329,7 +328,7 @@ var melisCommerce = (function(window) {
 			$this.qtip({
 				content: {
 					text:
-						"<div class='price-log-container'>" +
+						"<div class='price-log-data-container'>" +
 						"<p>Price Log</p>" +
 						"<ul>" +
 						qtipContent +
@@ -380,7 +379,7 @@ var melisCommerce = (function(window) {
 		enableAllTabs: enableAllTabs,
 		accordionToggle: accordionToggle,
 		switchOrderTab: switchOrderTab,
-		orderBasketPriceLogTooltip: orderBasketPriceLogTooltip,
+		priceLogTooltip: priceLogTooltip,
 	};
 })(window);
 

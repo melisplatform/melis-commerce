@@ -333,12 +333,12 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
      *      'clientId' => xx,
      *      'costs' => array(
      *          'order' => array(
-     *              'totalWithoutCoupon' => xx,
+     *              'subTotal' => xx,
      *              'total' => xx,
      *              'details' => array(
-     *                  'variantId1' => array('unit_price' => xx, 'quantity' => xx, 'discount' => xx, 'total_price' => xx),
-     *                  'variantId2' => array('unit_price' => xx, 'quantity' => xx, 'discount' => xx, 'total_price' => xx),
-     *                  'variantId3' => array('unit_price' => xx, 'quantity' => xx, 'discount' => xx, 'total_price' => xx),
+     *                  array('unit_price' => xx, 'quantity' => xx, 'discount' => xx, 'total_price' => xx),
+     *                  array('unit_price' => xx, 'quantity' => xx, 'discount' => xx, 'total_price' => xx),
+     *                  array('unit_price' => xx, 'quantity' => xx, 'discount' => xx, 'total_price' => xx),
      *              ),
      *              'errors' => array(
      *                  'variantId4' => 'ERROR_CODE', // Example: MELIS_COMMERCE_CHECKOUT_ERROR_CANT_COMPUTE_PRODUCT
@@ -365,7 +365,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             'clientId' => $arrayParameters['clientId'],
             'costs' => array(
                 'order' => array(
-                    'totalWithoutCoupon' => 0,
+                    'subTotal' => 0,
                     'total' => 0,
                 ),
             ),
@@ -383,6 +383,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         $errors = array();
         
         // Total Amount of the Basket
+        $subTotalCost = 0;
         $totalCost = 0;
         
         if (!is_null($clientBasket))
@@ -402,27 +403,31 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                 $variantQty = $val->getQuantity();
                 $productId = $variant->getVariant()->var_prd_id;
                 
-                $varianTotalAmount = 0;
                 if (!empty($variant))
                 {
                     // Product variant price
-                    $prdVarPrice = $melisComPriceService->getItemPrice($variantId, $clientCountryId, $clientGroupId, 'variant', ['basket' => $val]);
+                    $prdVarPrice = $melisComPriceService->getItemPrice($variantId, $clientCountryId, $clientGroupId, 
+                                'variant', ['method' => 'computeOrderCost', 'basket' => $val]);
 
                     // Check if Variant final price has result
                     if (!is_null($prdVarPrice))
                     {
-                        $varianTotalAmount = $prdVarPrice['price'] * $variantQty;
                         // if ($varianTotalAmount > 0)
                         // {
                             $variantDetails[] = [
+                                'item_id' => uniqid(), 
                                 'variant_id' => $variantId, 
                                 'unit_price' => $prdVarPrice['price'], 
                                 'quantity' => $variantQty,
-                                'discount' => 0,
-                                'total_price' => $varianTotalAmount,
+                                'discount' => $prdVarPrice['total_discount'],
+                                // 'sub_total_amount' => $prdVarPrice['sub_total_amount'],
+                                'total_price' => $prdVarPrice['total_amount'],
                                 'price_details' => $prdVarPrice
                             ];
-                            $totalCost += $varianTotalAmount;
+                            // $subTotalCost += $prdVarPrice['sub_total_amount'];
+                            $totalCost += $prdVarPrice['total_amount'];
+
+                            // dump($prdVarPrice['total_amount']);
                         // }
                         // else
                         // {
@@ -435,15 +440,6 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                         // KO : Variant price is not set
                         $errors[$variantId] = 'MELIS_COMMERCE_CHECKOUT_ERROR_PRODUCT_PRICE_NOT_SET';
                     }
-                    
-                    // if (empty($errors) && !empty($prdVarPrice))
-                    // {
-                    //     $variantDetails[$variantId]['price_details'] = array(
-                    //         'currency_id' => $prdVarPrice['price_currency']['id'],
-                    //         'currency_symbol' => $prdVarPrice['price_currency']['symbol'],
-                    //         'currency_name' => $prdVarPrice['price_currency']['name']
-                    //     );
-                    // }
                 }
                 else 
                 {
@@ -453,8 +449,8 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             }
         }
         
-        // as default value totalWithoutCoupon is equal to the total of order cost
-        $results['costs']['order']['totalWithoutCoupon'] = $totalCost;
+        // as default value subTotal is equal to the total of order cost
+        $results['costs']['order']['subTotal'] = $totalCost;
         $results['costs']['order']['total'] = $totalCost;
         
         if (!empty($variantDetails))
@@ -623,16 +619,11 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         else
             $costsValidity = false;
         
+        // Generate Code reference
         $orderReferenceCode = $this->generateOrderReferenceCode();
         
-        $melisComOrderService = $this->getServiceManager()->get('MelisComOrderService');
-        $melisComCouponService = $this->getServiceManager()->get('MelisComCouponService');
-        $melisEcomCouponProductTable = $this->getServiceManager()->get('MelisEcomCouponProductTable');
-        $melisEcomProductTable = $this->getServiceManager()->get('MelisEcomProductTable');
-        
         $success = false;
-        if ($basketValidity && $addressesValidity && $costsValidity && $orderReferenceCode['success'])
-        {
+        if ($basketValidity && $addressesValidity && $costsValidity && $orderReferenceCode['success']) {
             // Proceed to order creation with temporary status ongoing
             
             /**
@@ -651,17 +642,14 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             unset($billingAdd['cadd_client_person']);
             unset($billingAdd['cadd_address_name']);
             
-            foreach ($billingAdd As $bKey => $bVal)
-            {
+            foreach ($billingAdd As $bKey => $bVal) {
                 $newIndex = substr($bKey, 1);
                 $billingAdd['o'.substr($bKey, 1)] = $bVal;
                 unset($billingAdd[$bKey]);
             }
             
             if (!empty($billingAdd['oadd_id']))
-            {
                 unset($billingAdd['oadd_id']);
-            }
             
             $billingAdd['oadd_creation_date'] = date('Y-m-d H:i:s');
             $billingAddress[] = $billingAdd;
@@ -673,17 +661,14 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             unset($deliveryAdd['cadd_client_person']);
             unset($deliveryAdd['cadd_address_name']);
             
-            foreach ($deliveryAdd As $bKey => $bVal)
-            {
+            foreach ($deliveryAdd As $bKey => $bVal) {
                 $newIndex = substr($bKey, 1);
                 $deliveryAdd['o'.substr($bKey, 1)] = $bVal;
                 unset($deliveryAdd[$bKey]);
             }
             
             if (!empty($deliveryAdd['oadd_id']))
-            {
                 unset($deliveryAdd['oadd_id']);
-            }
             
             $deliveryAdd['oadd_creation_date'] = date('Y-m-d H:i:s');
             $deliveryAddress[] = $deliveryAdd;
@@ -694,7 +679,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             $contactId = $container['checkout'][$this->siteId]['contactId'];
             $ordDeliveryMethod = (!empty($container['checkout'][$this->siteId]['deliveryMethod']) ? $container['checkout'][$this->siteId]['deliveryMethod'] : 'delivery');
             
-            $order = array(
+            $order = [
                 'ord_client_id' => $container['checkout'][$this->siteId]['clientId'],
                 'ord_client_person_id' => $contactId,
                 'ord_status' => '-1',
@@ -704,7 +689,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                 'ord_delivery_address' => -1,
                 'ord_delivery_method' => $ordDeliveryMethod,
                 'ord_date_creation' => date('Y-m-d H:i:s')
-            );
+            ];
             
             // Getting Current Language ID from Melis Plugin langId
             $containerPlugin = new Container('melisplugins');
@@ -714,35 +699,29 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             $melisComPriceService = $this->getServiceManager()->get('MelisComPriceService');
             $melisComCategoryService = $this->getServiceManager()->get('MelisComCategoryService');
             $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
+            $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
             
             $clientBasket = $melisComBasketService->getBasket($container['checkout'][$this->siteId]['clientId']);
-            
-            $basket = array();
-            foreach ($clientBasket As $key => $val)
-            {
+
+            $basket = [];
+            foreach ($clientBasket As $key => $val) {
                 
                 $variantQty = $val->getQuantity();
                 $varianData = $val->getVariant();
                 $variant = $varianData->getVariant();
                 
-                $variantAttributes = array();
+                $variantAttributes = [];
                 $variantAttributesStr = '';
                 
                 foreach ($varianData->getAttributeValues() As $aVal)
-                {
                     foreach ($aVal->atval_trans As $tVal)
-                    {
-                        if ($tVal->avt_lang_id == $langId)
-                        {
+                        if ($tVal->avt_lang_id == $langId) {
                             $varAttrArray = (Array) $tVal;
                             array_push($variantAttributes, $varAttrArray['avt_v_'.$aVal->atype_column_value]);
                         }
-                    }
-                }
+
                 if (!empty($variantAttributes))
-                {
                     $variantAttributesStr = implode(', ', $variantAttributes);
-                }
                 
                 $productId = $variant->var_prd_id;
                 $productData = $melisComProductService->getProductById($productId);
@@ -760,8 +739,9 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                 $clientGroupId = $client->cli_group_id;
 
                 // Product variant price
-                $prdVarPrice = $melisComPriceService->getItemPrice($variant->var_id, $clientCountryId, $clientGroupId, 'variant', ['basket' => $val]);
-                
+                $prdVarPrice = $melisComPriceService->getItemPrice($variant->var_id, $clientCountryId, $clientGroupId, 
+                            'variant', ['method' => 'computeOrderCost', 'basket' => $val]);
+
                 $data = [
                     'obas_id' => null,
                     'obas_variant_id' => $variant->var_id,
@@ -777,6 +757,8 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                     'obas_price_vat' => $prdVarPrice['price_details']['price_vat_price'],
                     // 'obas_price_vat_percent' => $prdVarPrice['price_details']['price_vat_percent'],
                     'obas_price_other_tax' => $prdVarPrice['price_details']['price_other_tax_price'],
+                    'obas_total_discount' => $prdVarPrice['total_discount'],
+                    'obas_total_price' => $prdVarPrice['total_amount'],
                     'obas_price_log' => !empty($prdVarPrice['logs']) ? json_encode($prdVarPrice['logs']) : '',
                 ];
 
@@ -788,103 +770,45 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             }
 
             // Save new Order
+            $melisComOrderService = $this->getServiceManager()->get('MelisComOrderService');
             $orderId = $melisComOrderService->saveOrder($order, $basket, $billingAddress, $deliveryAddress);
-            $orderBasket = $melisComOrderService->getOrderBasketByOrderId($orderId);
-            
-            // set order coupons
-            if(!empty($container['checkout'][$this->getSiteId()]['coupons']['productCoupons'])){
-                
-                $productCoupons = $container['checkout'][$this->getSiteId()]['coupons']['productCoupons'];
-            
-                foreach($productCoupons as $key => $val){
-                    
-                    $data = $melisEcomCouponProductTable->getEntryByField('cprod_coupon_id', $key)->toArray();
-                    $coupon = $melisComCouponService->getCouponById($key)->getCoupon()->getArrayCopy();
-                    $usableLimit = $coupon['coup_max_use_number'] - $coupon['coup_current_use_number'];
-                    foreach($orderBasket as $basket){
-                        
-                        $product = $melisEcomProductTable->getProductByVariantId($basket->obas_variant_id)->current()->getArrayCopy();
+            // $orderBasket = $melisComOrderService->getOrderBasketByOrderId($orderId);
 
-                        $pos = array_search($product['prd_id'], array_column($data, 'cprod_product_id'));
-                        
-                        if(is_int($pos)){
-                            
-                            
-                            $quantityUsed = (($usableLimit - $basket->obas_quantity) >= 0 )? $basket->obas_quantity : $usableLimit;
-                            
-                            if($quantityUsed > 0){
-                                $couponOrderData = array(
-                                    'cord_coupon_id' => $key,
-                                    'cord_order_id' => $orderId,
-                                    'cord_basket_id' => $basket->obas_id,
-                                    'cord_quantity_used' =>  $quantityUsed,
-                                );
-                                
-                                $melisComCouponService->saveCouponOrder($couponOrderData);
-                                $usableLimit -= $quantityUsed;
-                            }
-                            
-                        }
-                    }
-                }
-            }
+            // Adding Order Id to result
+            $results['orderId'] = $orderId;
             
-            if(!empty($container['checkout'][$this->getSiteId()]['coupons']['generalCoupons'])){
-                $generalCoupons = $container['checkout'][$this->getSiteId()]['coupons']['generalCoupons'];
-                foreach($generalCoupons as $key => $val){
-                    $couponOrderData = array(
-                        'cord_coupon_id' => $key,
-                        'cord_order_id' => $orderId,
-                        'cord_quantity_used' =>  1,
-                    );
-                    $melisComCouponService->saveCouponOrder($couponOrderData);
-                }
-            }
+            $results['success'] = true;
+
+            // Sending service end event
+            $this->sendEvent('meliscommerce_service_checkout_step1_prepayment_save_success', ['orderId' => $orderId]);
+
             // Set Order Id to Session
             $container['checkout'][$this->siteId]['orderId'] = $orderId;
             
             // Unset Checkout Addresses on Container
             unset($container['checkout'][$this->siteId]['addresses']);
             
-            // Adding Order Id to result
-            $results['orderId'] = $orderId;
             
-            $results['success'] = true;
-        }
-        else
-        {
+        } else {
             // create response with errors from basket or costs
             if ($basketValidity != true)
-            {
                 foreach ($basketResults['basket']['ko'] As $key => $val)
-                {
                     $results['errors']['basket'][$key] = $val;
-                }
-            }
             
             if ($costsValidity != true)
-            {
-                foreach ($costsResults['costs'] As $key => $val)
-                {
+                foreach ($costsResults['costs'] As $key => $val) {
                     // exclude Total index
                     if ($key != 'total')
-                    {
                         $results['errors']['costs'][$key] = $val;
-                    }
                 }
-            }
             
             if ($orderReferenceCode['success'] != true)
-            {
                 $results['errors']['order'] = $orderReferenceCode['error'];
-            }
             
             if ($addressesValidity != true)
-            {
-                $results['errors']['addresses'] = array(
+                $results['errors']['addresses'] = [
                     'invalidAddress' => 'Something is wrong with the Checkout Addresses, Please check Addresses for Checkout before proceed to payment'
-                );
-            }
+                ];
             
             $results['success'] = false;
         }
@@ -892,6 +816,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $results;
+
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_checkout_step1_prepayment_end', $arrayParameters);
         
@@ -1021,7 +946,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                     $payment = array(
                         'opay_order_id' => $orderId,
                         'opay_price_total' => $totalCost,
-                        'opay_price_order' => $order['costs']['order']['totalWithoutCoupon'],
+                        'opay_price_order' => $order['costs']['order']['subTotal'],
                         'opay_price_shipping' => $order['costs']['shipment']['total'],
                         'opay_currency_id' => $currencyId,
                         'opay_payment_type_id' => $paymentTypeId,
@@ -1225,12 +1150,12 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         *      'orderId' => xx,
         *      'costs' => array(
         *          'order' => array(
-        *              'totalWithoutCoupon' => xx,
+        *              'subTotal' => xx,
         *              'total' => xx,
         *              'details' => array(
-        *                  'variantId1' => array('unit_price' => xx, 'quantity' => xx, 'discount' => xx, 'total_price' => xx),
-        *                  'variantId2' => array('unit_price' => xx, 'quantity' => xx, 'discount' => xx, 'total_price' => xx),
-        *                  'variantId3' => array('unit_price' => xx, 'quantity' => xx, 'discount' => xx, 'total_price' => xx),
+        *                  orderBasketId => array('unit_price' => xx, 'quantity' => xx, 'discount' => xx, 'total_price' => xx),
+        *                  orderBasketId => array('unit_price' => xx, 'quantity' => xx, 'discount' => xx, 'total_price' => xx),
+        *                  orderBasketId => array('unit_price' => xx, 'quantity' => xx, 'discount' => xx, 'total_price' => xx),
         *              ),
         *              'errors' => array(
         *                  'variantId4' => 'ERROR_CODE', // Example: MELIS_COMMERCE_CHECKOUT_ERROR_CANT_COMPUTE_PRODUCT
@@ -1257,7 +1182,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             'orderId' => $arrayParameters['orderId'],
             'costs' => array(
                 'order' => array(
-                    'totalWithoutCoupon' => 0,
+                    'subTotal' => 0,
                     'total' => 0,
                 ),
             ),
@@ -1269,42 +1194,36 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
 
         // computation of variants based on price_net and quantity
         
-        $variantDetails = array();
-        $errors = array();
+        $variantDetails = [];
+        $errors = [];
         
         // Total Amount of the Basket
         $totalCost = 0;
         
         if (!is_null($basket))
-        {
-            foreach($basket as $item){
-                $variantDetails[$item->obas_variant_id] = array(
+            foreach ($basket as $item) {
+                
+                $variantDetails[$item->obas_id] = [
                     'unit_price' => $item->obas_price_net,
                     'quantity' => $item->obas_quantity,
-                    'discount' => 0,
-                    'total_price' => $item->obas_quantity * $item->obas_price_net,
-                );
-                $totalCost += $item->obas_quantity * $item->obas_price_net;
+                    'discount' => $item->obas_total_discount,
+                    'total_price' => $item->obas_total_price,
+                ];
+
+                $totalCost += $item->obas_total_price;
             }
-        }
         
-        // as default value totalWithoutCoupon is equal to the total of order cost
-        $results['costs']['order']['totalWithoutCoupon'] = $totalCost;
+        // as default value subTotal is equal to the total of order cost
+        $results['costs']['order']['subTotal'] = $totalCost;
         $results['costs']['order']['total'] = $totalCost;
         
         if (!empty($variantDetails))
-        {
             $results['costs']['order']['details'] = $variantDetails;
-        }
         
         if (!empty($errors))
-        {
             $results['costs']['order']['errors'] = $errors;
-        }
         else
-        {
             $results['success'] = true;
-        }
         
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $results;
@@ -1312,9 +1231,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_checkout_post_order_computation_end', $arrayParameters);
 
         if ($arrayParameters['results']['costs']['order']['total'] < 0)
-        {
             $arrayParameters['results']['costs']['order']['total'] = 0;
-        }
         
         return $arrayParameters['results'];
     }

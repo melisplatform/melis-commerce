@@ -905,7 +905,7 @@ class MelisComOrderController extends MelisAbstractActionController
             $search = $search['value'];
 
 
-            $toolTipTextTag = '<a id="row-%s" class="order-basket-price-log" data-order-basket-id="%s" data-hasqtip="1" aria-describedby="qtip-%s"><span class="hidden basket-price-log">%s</span>%s</a>';
+            $toolTipTextTag = '<a id="row-%s" class="price-log-data-tooltip" data-order-basket-id="%s" data-hasqtip="1" aria-describedby="qtip-%s"><span class="hidden price-log-data">%s</span>%s</a>';
 
             
             $basketList = $orderSvc->getOrderBasketByOrderId($orderId, $start, $length, $search, $order);

@@ -175,7 +175,7 @@ return [
                                                         'module' => 'MelisCommerce',
                                                         'controller' => 'MelisComOrderCheckout',
                                                         'action' => 'render-order-checkout-product-basket',
-                                                        'jscallback' => 'productNextButtonState();'
+                                                        'jscallback' => 'productNextButtonState(); melisCommerce.priceLogTooltip();'
                                                     ],
                                                 ]
                                             ]
@@ -294,6 +294,7 @@ return [
                                                         'module' => 'MelisCommerce',
                                                         'controller' => 'MelisComOrderCheckout',
                                                         'action' => 'render-order-checkout-summary-basket',
+                                                        'jscallback' => 'melisCommerce.priceLogTooltip();',
                                                     ],
                                                 ],
                                                 'meliscommerce_order_checkout_summary_delivery_address' => [

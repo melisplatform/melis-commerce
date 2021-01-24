@@ -145,9 +145,9 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
                     }
                 }
 
-                if (isset($clientOrder['totalWithProductCoupon']))
+                if (isset($clientOrder['totalProductDiscount']))
                 {
-                    $subTotal = $clientOrder['totalWithProductCoupon'];
+                    $subTotal = $clientOrder['totalProductDiscount'];
                 }
                 
                 if (isset($clientOrderCost['costs']['total']))

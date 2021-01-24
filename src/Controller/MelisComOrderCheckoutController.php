@@ -277,17 +277,8 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                 $productId = $variant->getVariant()->var_prd_id;
                 $varSku = $variant->getVariant()->var_sku;
 
-                // Getting the Final Price of the variant
-                // $varPrice = $melisComVariantService->getVariantFinalPrice($variantId, $countryId, $clientGroupId);
-
-                // if (empty($varPrice))
-                // {
-                //     // If the variant price not set on variant page this will try to get from the Product Price
-                //     $varPrice = $melisComProductService->getProductFinalPrice($productId, $countryId, $clientGroupId);
-                // }
-
                 // Product variant price
-                $prdVarPrice = $melisComPriceService->getItemPrice($variantId, $countryId, $clientGroupId);
+                $prdVarPrice = $melisComPriceService->getItemPrice($variantId, $countryId, $clientGroupId, 'variant', ['basket' => $val]);
 
                 // Compute variant total amount
                 $variantTotal = $quantity * $prdVarPrice['price'];
@@ -297,7 +288,8 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                     'var_quantity' => $quantity,
                     'var_price' => $prdVarPrice['price_currency']['symbol'].' '.number_format($prdVarPrice['price'], 2),
                     'product_name' => $melisComProductService->getProductName($productId, $langId),
-                    'var_total' => $prdVarPrice['price_currency']['symbol'].' '.number_format($variantTotal, 2)
+                    'var_total' => $prdVarPrice['price_currency']['symbol'].' '.number_format($prdVarPrice['total_amount'], 2),
+                    'price_details' => $prdVarPrice,
                 );
 
                 $total += $variantTotal;
@@ -1536,13 +1528,13 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                 {
                     foreach ($clientOrderVariant As $key => $val)
                     {
-                        $variantId = $key;
+                        $variantId =  $val['variant_id'];
                         $variant = $melisComVariantService->getVariantById($variantId);
                         $productId = $variant->getVariant()->var_prd_id;
                         $varSku = $variant->getVariant()->var_sku;
 
                         // Product variant price details
-                        $currencySymbol = $val['price_details']['currency_symbol'];
+                        $currencySymbol = $val['price_details']['price_currency']['symbol'];
 
                         $data = array(
                             'var_id' => $variantId,
@@ -1550,9 +1542,9 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                             'var_quantity' => $val['quantity'],
                             'var_price' => $currencySymbol.number_format($val['unit_price'], 2),
                             'product_name' => $melisComProductService->getProductName($productId, $langId),
-                            'discount_price' => $currencySymbol.number_format($val['unit_price'] - $val['discount'], 2),
                             'discount' => $currencySymbol.number_format($val['discount'], 2),
-                            'var_total' => $currencySymbol.number_format($val['total_price'], 2),
+                            'var_total' => $currencySymbol.number_format($val['price_details']['total_amount'], 2),
+                            'price_details' => $val['price_details'],
                             'discount_details' => !empty($val['discount_details'])? $val['discount_details'] : array(),
                         );
 
@@ -1561,23 +1553,13 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                 }
             }
 
-            $productDiscount = 0;
+            $productDiscount = $clientOrder['totalProductDiscount'] ?? 0;
+            
+            $totalDiscount = $clientOrder['totalGeneralDiscount'] ?? 0;;
 
-            if (isset($clientOrder['totalWithoutCoupon']))
-            {
-                $subTotal = $clientOrder['totalWithoutCoupon'];
-            }
+            $subTotal = $clientOrder['subTotal'];
 
-            if (isset($clientOrder['total']))
-            {
-                $totalDiscount = $clientOrder['totalWithoutCoupon'] - $clientOrder['total'];
-                $total = $clientOrder['total'];
-            }
-
-            if (isset($clientOrder['totalWithProductCoupon'])){
-                $productDiscount = $clientOrder['totalWithoutCoupon'] - $clientOrder['totalWithProductCoupon'];
-                $totalDiscount = $totalDiscount - $productDiscount;
-            }
+            $total = $clientOrder['total'];
         }
 
         $couponCode = $this->params()->fromQuery('couponCode');
