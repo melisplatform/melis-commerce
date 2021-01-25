@@ -647,7 +647,7 @@ class MelisComDocumentController extends MelisAbstractActionController
                 }
 
                 // if not, just delete the db table record
-                $this->getDocSvc()->deleteDocument($id);
+                $this->getDocSvc()->deleteDocument($id, $uniqueId);
                 $data = $docTable->getEntryById($id)->current();
                 if(!$data) {
                     $success = 1;

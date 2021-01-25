@@ -1113,7 +1113,6 @@ class MelisComProductController extends MelisAbstractActionController
             $form = $factory->createForm($appTextForm);
 
             $postValues = $this->getRequest()->getPost()->toArray();
-            
             $productId = $postValues['ptxt_prd_id'];
             
             $form->setData($postValues);

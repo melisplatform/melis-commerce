@@ -548,8 +548,6 @@ class MelisComCategoryController extends MelisAbstractActionController
         if($request->isPost()) {
 
             $postValues = $request->getPost()->toArray();
-
-
             $catId = $postValues['cat_id'];
 
             // Category Countries Data Preparation
@@ -936,34 +934,14 @@ class MelisComCategoryController extends MelisAbstractActionController
 
             // Checking if Category has a Sub Categories
             if (empty($categoryChildren)){
-                $melisEcomCategoryTable = $this->getServiceManager()->get('MelisEcomCategoryTable');
-                $melisEcomCategoryTable->deleteById($catId);
-                // Reorder Categories
+                //delete category
+                $res = $melisComCategoryService->deleteCategoryById($catId, $catFatherId);
+                if($res){
+                    $textMessage = 'tr_meliscommerce_categories_'.$type.'_delete_success';
+                    $status = 1;
+                }else
+                    $textMessage = 'tr_meliscommerce_categories_err_'.$type.'_unable_delete';
 
-                $catData = $melisEcomCategoryTable->getChildrenCategoriesOrderedByOrder($catFatherId);
-                $catDatas = $catData->toArray();
-
-                $ecomSeotable = $this->getServiceManager()->get('MelisEcomSeoTable');
-                $ecomSeotable->deleteByField('eseo_category_id', $catId);
-
-                // Re-ordering the Children of the Parent Category
-                $ctr = 1;
-                foreach ($catDatas As $key => $val){
-                    $catDatas[$key]['cat_order'] = $ctr++;
-                }
-
-                // Updating  Children of the Parent Category one by one
-                foreach ($catDatas As $key => $val){
-                    $melisEcomCategoryTable->save($catDatas[$key],$catDatas[$key]['cat_id']);
-                }
-
-                $melisEcomCategoryTransTable = $this->getServiceManager()->get('MelisEcomCategoryTransTable');
-                $melisEcomCategoryTransTable->deleteByField('catt_category_id', $catId);
-                $melisEcomCountryCategoryTable = $this->getServiceManager()->get('MelisEcomCountryCategoryTable');
-                $melisEcomCountryCategoryTable->deleteByField('ccat_category_id', $catId);
-
-                $textMessage = 'tr_meliscommerce_categories_'.$type.'_delete_success';
-                $status = 1;
             }else{
                 $textMessage = 'tr_meliscommerce_categories_err_'.$type.'_unable_delete';
                 $errors['category'] = array(
