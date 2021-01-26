@@ -706,13 +706,16 @@ class MelisComClientController extends MelisAbstractActionController
             $postValues = get_object_vars($request->getPost());
             $propertyForm->setData($postValues);
             
-            if(!empty($postValues['cper_email'])){
-                $client = $clientSvc->getClientPersonByEmail($postValues['cper_email']);
-                
-                if(!empty($client)){
-                    $errors['cper_email'] = array(
-                        'isDuplicate' => $translator->translate('tr_meliscommerce_client_email_not_available'),      
-                    );
+            if (! empty($postValues['cper_email'])) {
+                $personWithSameEmail = $clientSvc->getPersonsByEmail($postValues['cper_email']);
+
+                foreach ($personWithSameEmail as $mail) {
+                    if ($mail['cpmail_cper_id'] != $postValues['cper_id']) {
+                        $errors['cper_email'] = array(
+                            'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
+                            'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
+                        );
+                    }
                 }
             }
             
@@ -1522,11 +1525,12 @@ class MelisComClientController extends MelisAbstractActionController
                             $personWithSameEmail = $melisComClientService->getPersonsByEmail($val['cper_email']);
 
                             foreach ($personWithSameEmail as $mail) {
-                                if ($mail['cpmail_cper_id'] != $val['cper_id'])
-                                $errors_1_temp['cper_email'] = array(
-                                    'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
-                                    'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
-                                );
+                                if ($mail['cpmail_cper_id'] != $val['cper_id']) {
+                                    $errors_1_temp['cper_email'] = array(
+                                        'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
+                                        'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
+                                    );
+                                }
                             }
                         }
                     }
