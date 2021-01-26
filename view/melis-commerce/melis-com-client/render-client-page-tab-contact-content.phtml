@@ -79,6 +79,7 @@
 
                             ?>
                             <?php if (! empty($val->emails)) : ?>
+                                <?php if (count($val->emails) > 1) : ?>
                                 <div class="client-email-list dropdown label-text" style="display: none;font-weight: normal;">
                                     &nbsp; (<a style="text-decoration: underline;">Choose in list</a>)
                                     <ul class="dropdown-menu client-email-dropdown-content" style="margin-top: -4px;">
@@ -93,6 +94,7 @@
                                         <?php endforeach; ?>
                                     </ul>
                                 </div>
+                                <?php endif; ?>
                             <?php endif; ?>
                             <?php
                         		echo $this->form()->closeTag();

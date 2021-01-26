@@ -603,7 +603,7 @@ $(function() {
                     if (data.success == 1) {
                         $li.remove();
 
-                        if ($ul.find('li').length == 0) {
+                        if ($ul.find('li').length == 1) {
                             $emailContainer.remove();
                         }
 
