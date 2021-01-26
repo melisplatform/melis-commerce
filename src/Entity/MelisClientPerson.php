@@ -14,6 +14,7 @@ class MelisClientPerson
 	protected $id;
 	protected $person;
 	protected $addresses;
+	protected $emails;
 
 	public function getId()
 	{
@@ -44,6 +45,14 @@ class MelisClientPerson
 	{
 	    $this->addresses = $addresses;
 	}
+
+	public function setEmails($emails) {
+	    $this->emails = $emails;
+    }
+
+    public function getEmails() {
+	    return $this->emails;
+    }
 	
     public function getArrayCopy()
     {

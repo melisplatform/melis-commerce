@@ -131,6 +131,7 @@ return [
             'MelisEcomClientAddressTypeTransTable'          => \MelisCommerce\Model\Tables\MelisEcomClientAddressTypeTransTable::class,
             'MelisEcomClientCompanyTable'                   => \MelisCommerce\Model\Tables\MelisEcomClientCompanyTable::class,
             'MelisEcomClientPersonTable'                    => \MelisCommerce\Model\Tables\MelisEcomClientPersonTable::class,
+            'MelisEcomClientPersonEmailsTable'                    => \MelisCommerce\Model\Tables\MelisEcomClientPersonEmailsTable::class,
             'MelisEcomClientTable'                          => \MelisCommerce\Model\Tables\MelisEcomClientTable::class,
             'MelisEcomCountryCategoryTable'                 => \MelisCommerce\Model\Tables\MelisEcomCountryCategoryTable::class,
             'MelisEcomCountryTable'                         => \MelisCommerce\Model\Tables\MelisEcomCountryTable::class,

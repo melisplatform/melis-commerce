@@ -316,6 +316,7 @@ class MelisComClientController extends MelisAbstractActionController
             $clientPerson = $melisComClientService->getClientByIdAndClientPerson($clientId);
             // Getting Client Person form Client Object
             $clientPerson = $clientPerson->getPersons();
+            $this->placeMainEmailFirstInList($clientPerson);
             
             // Preparing Form for Contact and Addresses Forms
             $factory = new \Laminas\Form\Factory();
@@ -1453,6 +1454,8 @@ class MelisComClientController extends MelisAbstractActionController
             $appConfigForm_2 = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_addresses_form','meliscommerce_clients_addresses_form');
             $factory_2 = new \Laminas\Form\Factory();
             $factory_2->setFormElementManager($formElements);
+
+            $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
             
             if (!empty($postValues['clientContacts']))
             {
@@ -1461,6 +1464,7 @@ class MelisComClientController extends MelisAbstractActionController
                 // Flags for Main Contact
                 $hasMainContact = false;
                 $findMainContact = false;
+
                 foreach ($clientContacts As $key => $val)
                 {
                     // To ensure Client contact has only one main contact
@@ -1515,9 +1519,10 @@ class MelisComClientController extends MelisAbstractActionController
                         
                         if (!empty($val['cper_email']))
                         {
-                            $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
-                            if ($melisComClientService->checkEmailExist($val['cper_email'], $val['cper_id']))
-                            {
+                            $personWithSameEmail = $melisComClientService->getPersonsByEmail($val['cper_email']);
+
+                            foreach ($personWithSameEmail as $mail) {
+                                if ($mail['cpmail_cper_id'] != $val['cper_id'])
                                 $errors_1_temp['cper_email'] = array(
                                     'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
                                     'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
@@ -1578,7 +1583,7 @@ class MelisComClientController extends MelisAbstractActionController
                                     }
                                 }
                             }
-                            
+
                             // Client Contact Details validated datas added to final Array Container
                             array_push($clientContactsData, $clientContactsDataTemp);
                         }
@@ -1926,5 +1931,69 @@ class MelisComClientController extends MelisAbstractActionController
 
         $view->clientId = $clientId;
         return $view;
+    }
+
+    public function deleteClientPersonEmailAction()
+    {
+        $translator = $this->getServiceManager()->get('translator');
+        $success = 0;
+        $errors = [];
+        $request = $this->getRequest();
+        $textMessage = 'tr_meliscommerce_clients_contact_person_email_message_fail';
+
+        if ($request->isPost()) {
+            $this->getEventManager()->trigger(
+                'meliscommerce_clients_delete_client_person_email_start',
+                $this,
+                $request
+            );
+
+            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getTool()->sanitizeRecursive($postValues);
+
+            $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
+            $result = $melisComClientService->deleteClientPersonEmail($postValues['cpmail_id']);
+
+            if (! empty($result)) {
+                $success = 1;
+                $textMessage = 'tr_meliscommerce_clients_contact_person_email_message_success';
+            } else {
+                $errors[] = $translator->translate('tr_meliscommerce_clients_contact_person_email_message_success');
+            }
+        }
+
+        $result = [
+            'success' => $success,
+            'errors' => $errors,
+            'datas' => [],
+            'textTitle' => 'tr_meliscommerce_clients_contact_person_email',
+            'textMessage' => $textMessage,
+        ];
+
+        $this->getEventManager()->trigger(
+            'meliscommerce_clients_delete_client_person_email_end',
+            $this,
+            array_merge($result, ['typeCode' => 'ECOM_CLIENT_PERSON_EMAIL_DELETE', 'itemId' => $postValues['cpmail_id']])
+        );
+
+        return new JsonModel($result);
+    }
+
+    private function placeMainEmailFirstInList (&$clientPersons)
+    {
+        $mainEmail = [];
+
+        foreach ($clientPersons as $pkey => $person) {
+            if (count($person->emails) > 1) {
+                foreach ($person->emails as $ekey => $email) {
+                    if ($person->cper_email === $email['cpmail_email']) {
+                        $mainEmail = $email;
+                        unset($person->emails[$ekey]);
+                    }
+                }
+
+                array_unshift($person->emails, $mainEmail);
+            }
+        }
     }
 }

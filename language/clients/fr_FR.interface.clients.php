@@ -277,4 +277,10 @@
         'tr_meliscommerce_plugin_account_billing_address' => 'Adresse de facturation',
         'tr_meliscommerce_plugin_account_my_cart' => 'Mon panier',
         'tr_meliscommerce_plugin_account_order_history' => 'Historique des commandes',
+
+        'tr_meliscommerce_clients_delete_email' => 'Supprimer l\'email',
+        'tr_meliscommerce_clients_delete_email_message' => 'Etes-vous sûr de vouloir supprimer cet email?',
+        'tr_meliscommerce_clients_contact_person_email' => 'Email contact',
+        'tr_meliscommerce_clients_contact_person_email_message_success' => 'Email contact supprimé avec succès',
+        'tr_meliscommerce_clients_contact_person_email_message_fail' => 'Impossible de supprimer l\'email du contact'
     );

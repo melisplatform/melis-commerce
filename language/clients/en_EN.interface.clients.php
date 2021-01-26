@@ -278,4 +278,10 @@
         'tr_meliscommerce_plugin_account_billing_address' => 'Billing Address',
         'tr_meliscommerce_plugin_account_my_cart' => 'My Cart',
         'tr_meliscommerce_plugin_account_order_history' => 'Order History',
+
+        'tr_meliscommerce_clients_delete_email' => 'Delete email',
+        'tr_meliscommerce_clients_delete_email_message' => 'Are you sure you want to delete this email?',
+        'tr_meliscommerce_clients_contact_person_email' => 'Contact email',
+        'tr_meliscommerce_clients_contact_person_email_message_success' => 'Contact email deleted successfully',
+        'tr_meliscommerce_clients_contact_person_email_message_fail' => 'Unable to delete contact email'
 	);
