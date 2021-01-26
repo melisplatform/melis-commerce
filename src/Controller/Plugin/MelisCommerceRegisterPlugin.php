@@ -95,18 +95,19 @@ class MelisCommerceRegisterPlugin extends MelisTemplatingPlugin
         {
 
             $isExist = false;
-            if(!empty($data['cper_email'])) {
-                // Checking if the Email entered is existing on the database
-                $clientPerson = $melisComClientService->getClientPersonByEmail($data['cper_email']);
+            if (! empty($data['cper_email'])) {
+                $personWithSameEmail = $melisComClientService->getPersonsByEmail($data['cper_email']);
 
-                if ($clientPerson)
-                {
-                    $isExist = true;
-                    $translator = $this->getServiceManager()->get('translator');
-                    $errors['cper_email'] = array(
-                        'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
-                        'emailExist' => $translator->translate('tr_meliscommerce_client_Contact_email_address_exist'),
-                    );
+                foreach ($personWithSameEmail as $mail) {
+                    if ($mail['cpmail_cper_id'] != $data['cper_id']) {
+                        $isExist = true;
+                        $translator = $this->getServiceManager()->get('translator');
+                        $errors['cper_email'] = array(
+                            'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
+                            'emailExist' => $translator->translate('tr_meliscommerce_client_Contact_email_address_exist'),
+                        );
+                        break;
+                    }
                 }
             }
 
