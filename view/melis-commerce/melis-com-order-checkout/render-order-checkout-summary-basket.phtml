@@ -86,13 +86,13 @@
                             <h4><strong><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_discount')?></strong></h4>
                         </div>
                         <div class="form-group">
-                            <strong><?php echo $this->translate('Product')?>: <?php echo $this->countryCurrencySympbol.number_format($this->productDiscount, 2)?></strong>
+                            <strong><?php echo $this->translate('tr_meliscommerce_products_Products')?>: <?php echo $this->countryCurrencySympbol.number_format($this->productDiscount, 2)?></strong>
                             <?php if (!empty($this->discountInfo)):?>
                                 <p><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_coupon_value')?>: <?php echo $this->discountInfo?></p>
                             <?php endif;?>
                         </div>
                         <div class="form-group">
-                            <strong><?php echo $this->translate('Order')?>: <?php echo $this->countryCurrencySympbol.number_format($this->totalDiscount, 2)?></strong>
+                            <strong><?php echo $this->translate('tr_meliscommerce_orders_Order')?>: <?php echo $this->countryCurrencySympbol.number_format($this->totalDiscount, 2)?></strong>
                             <?php if (!empty($this->discountInfo)):?>
                                 <p><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_coupon_value')?>: <?php echo $this->discountInfo?></p>
                             <?php endif;?>
