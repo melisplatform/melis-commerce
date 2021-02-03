@@ -78,7 +78,7 @@ $(function() {
 			catId = $this.data("catid"),
 			dataString = new Array();
 
-		$this.button("loading");
+		$this.attr("disabled", "disabled");
 
 		// Serialize Forms of Category Panel
 		dataString = $("#id_meliscommerce_categories_category form")
@@ -131,16 +131,23 @@ $(function() {
 		});
 
 		// Product discount
-		$("form.categoriesPriceDiscountForm").each(function () {
+		$("form.categoriesPriceDiscountForm").each(function() {
 			var $this = $(this);
-			var countryId = $this.data('countryid');
-			var groupId = $this.data('groupid');
+			var countryId = $this.data("countryid");
+			var groupId = $this.data("groupid");
 			var priceDiscountDataString = $this.serializeArray();
 
 			$.each(priceDiscountDataString, function() {
-				if (this.value !== '') {
+				if (this.value !== "") {
 					dataString.push({
-						name: "price_discount[" + countryId + "][" + groupId + "][" + this.name + "]",
+						name:
+							"price_discount[" +
+							countryId +
+							"][" +
+							groupId +
+							"][" +
+							this.name +
+							"]",
 						value: this.value,
 					});
 				}
@@ -160,7 +167,7 @@ $(function() {
 		})
 			.done(function(data) {
 				var $body = $("body");
-				$("#saveCategory").button("reset");
+				$("#saveCategory").removeAttr("disabled");
 
 				if (data.success) {
 					$("#categoryTreeViewPanel").collapse("show");
@@ -261,7 +268,7 @@ $(function() {
 				melisCore.flashMessenger();
 			})
 			.fail(function() {
-				$("#saveCategory").button("reset");
+				$("#saveCategory").removeAttr("disabled");
 				alert(translations.tr_meliscore_error_message);
 			});
 	});
@@ -860,6 +867,21 @@ window.initCategoryTreeView = function() {
 					} else {
 						alert(translations.tr_meliscore_error_message);
 					}
+
+					// console.log($(categoryId);
+					// console.log($("body #saveCategory[data-catid='" + categoryId + "']"));
+					// console.log(
+					// 	$("body #saveCategory[data-catid='" + categoryId + "']").data()
+					// );
+
+					// $("body #saveCategory[data-catid='" + categoryId + "']").data(
+					// 	"catfatherid",
+					// 	newParentId
+					// );
+
+					// console.log(
+					// 	$("body #saveCategory[data-catid='" + categoryId + "']").data()
+					// );
 				})
 				.fail(function() {
 					alert(translations.tr_meliscore_error_message);

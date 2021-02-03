@@ -208,7 +208,7 @@ $(function() {
 		var $this = $(this),
 			tabId = $this.data("tabid");
 
-		$this.button("loading");
+		$this.attr("disabled", "disabled");
 
 		$.ajax({
 			type: "POST",
@@ -227,10 +227,10 @@ $(function() {
 						data.errors
 					);
 				}
-				$this.button("reset");
+				$this.removeAttr("disabled");
 			})
 			.fail(function() {
-				$this.button("reset");
+				$this.removeAttr("disabled");
 				alert(translations.tr_meliscore_error_message);
 			});
 	});
