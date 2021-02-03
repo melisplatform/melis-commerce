@@ -638,7 +638,7 @@ $(function() {
 			.fail(function() {
 				alert(translations.tr_meliscore_error_message);
 			})
-			.complete(() => {
+			.always(() => {
 				$this.removeAttr("disabled");
 			});
 	});
