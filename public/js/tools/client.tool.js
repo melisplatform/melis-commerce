@@ -47,7 +47,7 @@ $(function() {
 			cache: false,
 		})
 			.done(function(data) {
-				$("#saveClientContact").button("reset");
+				$("#saveClientContact").removeAttr("disabled");
 
 				if (data.success) {
 					var navTabsGroup = "id_meliscommerce_clients_list_page";
@@ -69,7 +69,7 @@ $(function() {
 				}
 			})
 			.fail(function() {
-				$("#saveClientContact").button("reset");
+				$("#saveClientContact").removeAttr("disabled");
 				alert(translations.tr_meliscore_error_message);
 			});
 	});
@@ -78,7 +78,7 @@ $(function() {
 		var $this = $(this),
 			clientId = $this.data("clientid");
 
-		$(".addNewContact").button("loading");
+		$(".addNewContact").attr("disabled", "disabled");
 
 		// initialation of local variable
 		zoneId = "id_meliscommerce_client_modal_contact_form";
@@ -93,7 +93,7 @@ $(function() {
 			{ clientId: clientId },
 			modalUrl,
 			function() {
-				$(".addNewContact").button("reset");
+				$(".addNewContact").removeAttr("disabled");
 			}
 		);
 	});
@@ -112,7 +112,7 @@ $(function() {
 
 		dataString = $.param(dataString);
 
-		$("#saveClientContact").button("loading");
+		$("#saveClientContact").attr("disabled", "disabled");
 
 		$.ajax({
 			type: "POST",
@@ -123,7 +123,7 @@ $(function() {
 			cache: false,
 		})
 			.done(function(data) {
-				$("#saveClientContact").button("reset");
+				$("#saveClientContact").removeAttr("disabled");
 
 				if (data.success) {
 					$("#" + clientId + "_client_contact_tab_nav").append(
@@ -150,7 +150,7 @@ $(function() {
 				}
 			})
 			.fail(function() {
-				$("#saveClientContact").button("reset");
+				$("#saveClientContact").removeAttr("disabled");
 				alert(translations.tr_meliscore_error_message);
 			});
 	});
@@ -160,7 +160,7 @@ $(function() {
 			clientId = $this.data("clientid"),
 			tabId = $this.data("tabid");
 
-		$(".addNewContactAddress").button("loading");
+		$(".addNewContactAddress").attr("disabled", "disabled");
 
 		// initialation of local variable
 		zoneId = "id_meliscommerce_client_modal_contact_address_form";
@@ -175,7 +175,7 @@ $(function() {
 			{ clientId: clientId, tabId: tabId },
 			modalUrl,
 			function() {
-				$(".addNewContactAddress").button("reset");
+				$(".addNewContactAddress").removeAttr("disabled");
 			}
 		);
 	});
@@ -202,7 +202,7 @@ $(function() {
 
 		dataString = $.param(dataString);
 
-		$("#saveClientContactAddress").button("loading");
+		$("#saveClientContactAddress").attr("disabled", "disabled");
 
 		$.ajax({
 			type: "POST",
@@ -213,7 +213,7 @@ $(function() {
 			cache: false,
 		})
 			.done(function(data) {
-				$("#saveClientContactAddress").button("reset");
+				$("#saveClientContactAddress").removeAttr("disabled");
 
 				if (data.success) {
 					$("#" + tabId + "_contact_address").append(
@@ -237,7 +237,7 @@ $(function() {
 				}
 			})
 			.fail(function() {
-				$("#saveClientContactAddress").button("reset");
+				$("#saveClientContactAddress").removeAttr("disabled");
 				alert(translations.tr_meliscore_error_message);
 			});
 	});
@@ -246,7 +246,7 @@ $(function() {
 		var $this = $(this),
 			clientId = $this.data("clientid");
 
-		$(".addNewAddress").button("loading");
+		$(".addNewAddress").attr("disabled", "disabled");
 
 		// initialation of local variable
 		zoneId = "id_meliscommerce_client_modal_address_form";
@@ -261,7 +261,7 @@ $(function() {
 			{ clientId: clientId },
 			modalUrl,
 			function() {
-				$(".addNewAddress").button("reset");
+				$(".addNewAddress").removeAttr("disabled");
 			}
 		);
 	});
@@ -280,7 +280,7 @@ $(function() {
 
 		dataString = $.param(dataString);
 
-		$("#saveClientAddress").button("loading");
+		$("#saveClientAddress").attr("disabled", "disabled");
 
 		$.ajax({
 			type: "POST",
@@ -290,7 +290,7 @@ $(function() {
 			encode: true,
 		})
 			.done(function(data) {
-				$("#saveClientAddress").button("reset");
+				$("#saveClientAddress").removeAttr("disabled");
 
 				if (data.success) {
 					$("#" + clientId + "_client_address_tab_nav").append(
@@ -317,7 +317,7 @@ $(function() {
 				}
 			})
 			.fail(function() {
-				$("#saveClientAddress").button("reset");
+				$("#saveClientAddress").removeAttr("disabled");
 				alert(translations.tr_meliscore_error_message);
 			});
 	});
