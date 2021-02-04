@@ -859,29 +859,17 @@ window.initCategoryTreeView = function() {
 			})
 				.done(function(data) {
 					if (data.success) {
-						$currentCategoryId = $("#saveCategory").data("catid");
+						$currentCategoryId = $("body #saveCategory").data("catid");
 
-						if ($currentCategoryId == categoryId) {
-							$("#saveCategory").data("catfatherid", newParentId);
+						if ($currentCategoryId == parseInt(categoryId, 10)) {
+							$("body #saveCategory").data(
+								"catfatherid",
+								parseInt(newParentId, 10)
+							);
 						}
 					} else {
 						alert(translations.tr_meliscore_error_message);
 					}
-
-					// console.log($(categoryId);
-					// console.log($("body #saveCategory[data-catid='" + categoryId + "']"));
-					// console.log(
-					// 	$("body #saveCategory[data-catid='" + categoryId + "']").data()
-					// );
-
-					// $("body #saveCategory[data-catid='" + categoryId + "']").data(
-					// 	"catfatherid",
-					// 	newParentId
-					// );
-
-					// console.log(
-					// 	$("body #saveCategory[data-catid='" + categoryId + "']").data()
-					// );
 				})
 				.fail(function() {
 					alert(translations.tr_meliscore_error_message);
