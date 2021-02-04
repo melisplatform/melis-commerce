@@ -70,7 +70,6 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
         $subTotalWithProdDiscount = 0;
         $orderDiscount = 0;
         $discountInfo = array();
-        $discountDetails = [];
         $shippingTotal = 0;
         $total = 0;
         $errors = array();
@@ -243,6 +242,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                 $usableCouponQty = 0;
                 $discountPercentage = 0;
                 $discountValue = 0;
+                $discountDetails = [];
 
                 foreach ($item['price_details']['surcharge_module'] As $dis) {
                     if (!empty($dis['label'])) 
