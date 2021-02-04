@@ -71,7 +71,8 @@ $(function() {
 
         $body.on("click", "#saveClientContact", function(){
             var $this       = $(this),
-                clientId    = $this.data('clientid');
+                clientId    = $this.data('clientid'),
+                emailList   = [];
 
                 // serialize the new array and send it to server
                 dataString = $("#melisCommerceClientContactFormModal").serializeArray();
@@ -81,7 +82,14 @@ $(function() {
                     value : clientId,
                 });
 
-                dataString = $.param(dataString);
+                $('#' + activeTabId).find('.client-contact-tab-content form').each(function(index, element) {
+                    emailList.push($(this).find('#cper_email').val());
+                });
+
+                dataString.push({
+                    name: 'emailList',
+                    value: emailList
+                });
 
                 $("#saveClientContact").button("loading");
 
@@ -105,7 +113,6 @@ $(function() {
                         melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
                         melisCoreTool.highlightErrors(data.success, data.errors, "melisCommerceClientContactFormModal");
                     }
-
                 }).fail(function(){
                     $("#saveClientContact").button("reset");
                     alert( translations.tr_meliscore_error_message);
