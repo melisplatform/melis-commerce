@@ -28,4 +28,10 @@
         'tr_meliscommerce_plugin_product_price_column_price_gross' => 'Gross price',
         'tr_meliscommerce_plugin_product_price_column_price_vat_price' => 'VAT',
         'tr_meliscommerce_plugin_product_price_column_price_other_tax_price' => 'Other tax',
+
+        //Price logs
+        'tr_meliscommerce_price_product_price:' => 'Product price:',
+        'tr_meliscommerce_price_variant_price:' => 'Variant price:',
+        'tr_meliscommerce_price_common_discount_computation:' => 'Discount computation:',
+        'tr_meliscommerce_price_common_price_change' => 'Price change to',
     );

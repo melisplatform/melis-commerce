@@ -90,43 +90,43 @@ class MelisCommerceCheckoutCouponPlugin extends MelisTemplatingPlugin
         
         $container = new Container('meliscommerce');
         $coupons = !empty($container['checkout'][$siteId]['coupons'])? $container['checkout'][$siteId]['coupons'] : array();
-	    $productCoupons = !empty($coupons['productCoupons'])? $coupons['productCoupons'] : array();
-	    $generalCoupons = !empty($coupons['generalCoupons'])? $coupons['generalCoupons'] : array();
+        $productCoupons = !empty($coupons['productCoupons'])? $coupons['productCoupons'] : array();
+        $generalCoupons = !empty($coupons['generalCoupons'])? $coupons['generalCoupons'] : array();
 
-	    /**
-	     * Removing Coupon
-	     */
-	    if(!empty($couponRemove))
-	    {
-	        // Remove prouduct coupon assign to a product
-	        if(!empty($productCoupons))
-	        {
-	            foreach($productCoupons as $key => $val)
-	            {
-	                if($val->coup_code == $couponRemove)
-	                {
-	                    unset($container['checkout'][$siteId]['coupons']['productCoupons'][$key]);
-	                }
-	            }
-	            
-	            $productCoupons = $container['checkout'][$siteId]['coupons']['productCoupons'];
-	        }
-	        
-	        // Removing a general coupon
-	        if(!empty($generalCoupons))
-	        {
-	            foreach($generalCoupons as $key => $val)
-	            {
-	                if($val->coup_code == $couponRemove)
-	                {
-	                    unset($container['checkout'][$siteId]['coupons']['generalCoupons'][$key]);
-	                }
-	            }
-	            
-	            $generalCoupons = $container['checkout'][$siteId]['coupons']['generalCoupons'];
-	        }
-	    }
-	    
+        /**
+         * Removing Coupon
+         */
+        if(!empty($couponRemove))
+        {
+            // Remove product coupon assign to a product
+            if(!empty($productCoupons))
+            {
+                foreach($productCoupons as $key => $val)
+                {
+                    if($val->coup_code == $couponRemove)
+                    {
+                        unset($container['checkout'][$siteId]['coupons']['productCoupons'][$key]);
+                    }
+                }
+                
+                $productCoupons = $container['checkout'][$siteId]['coupons']['productCoupons'];
+            }
+            
+            // Removing a general coupon
+            if(!empty($generalCoupons))
+            {
+                foreach($generalCoupons as $key => $val)
+                {
+                    if($val->coup_code == $couponRemove)
+                    {
+                        unset($container['checkout'][$siteId]['coupons']['generalCoupons'][$key]);
+                    }
+                }
+                
+                $generalCoupons = $container['checkout'][$siteId]['coupons']['generalCoupons'];
+            }
+        }
+        
         $clientKey = $ecomAuthSrv->getId();
         $clientId = null;
         if ($ecomAuthSrv->hasIdentity())
@@ -135,7 +135,7 @@ class MelisCommerceCheckoutCouponPlugin extends MelisTemplatingPlugin
             $clientKey = $ecomAuthSrv->getClientKey();
         }
         
-        if ($isSubmit)
+        if ($isSubmit && !empty($couponCode))
         {
             $sessionCoupons = array();
             
@@ -225,7 +225,7 @@ class MelisCommerceCheckoutCouponPlugin extends MelisTemplatingPlugin
             }
             else
             {
-               $message = $translator->translate('tr_MELIS_COMMERCE_COUPON_DATE_VALIDITY_INVALID');
+            $message = $translator->translate('tr_MELIS_COMMERCE_COUPON_DATE_VALIDITY_INVALID');
             }
 
             $container['checkout'][$siteId]['coupons'] = $sessionCoupons;
@@ -393,7 +393,7 @@ class MelisCommerceCheckoutCouponPlugin extends MelisTemplatingPlugin
             {
                 $configValues['m_coupon_multiple'] = (string)$xml->m_coupon_multiple;
             }
-             
+            
             if (!empty($xml->m_coupon_site_id))
             {
                 $configValues['m_coupon_site_id'] = (string)$xml->m_coupon_site_id;
@@ -416,7 +416,7 @@ class MelisCommerceCheckoutCouponPlugin extends MelisTemplatingPlugin
         {
             $xmlValueFormatted .= "\t\t" . '<template_path><![CDATA[' . $parameters['template_path'] . ']]></template_path>';
         }
-         
+        
         if (!empty($parameters['m_coupon_site_id']))
         {
             $xmlValueFormatted .= "\t\t" . '<m_coupon_site_id><![CDATA[' . $parameters['m_coupon_site_id'] . ']]></m_coupon_site_id>';
@@ -426,7 +426,7 @@ class MelisCommerceCheckoutCouponPlugin extends MelisTemplatingPlugin
         {
             $xmlValueFormatted .= "\t\t" . '<m_coupon_multiple><![CDATA[' . $parameters['m_coupon_multiple'] . ']]></m_coupon_multiple>';
         }
-         
+        
         // Something has been saved, let's generate an XML for DB
         if (!empty($xmlValueFormatted))
         {

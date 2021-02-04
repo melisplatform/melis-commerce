@@ -145,47 +145,28 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
                     }
                 }
 
-                if (isset($clientOrder['totalProductDiscount']))
-                {
-                    $subTotal = $clientOrder['totalProductDiscount'];
-                }
-                
-                if (isset($clientOrderCost['costs']['total']))
-                {
-                    $total = $clientOrderCost['costs']['total'];
-                }
-                
-                if (isset($clientOrderCost['costs']['shipment']['total']))
-                {
-                    $shippingTotal = $clientOrderCost['costs']['shipment']['total'];
-                }
-                
-                if (isset($clientOrderCost['costs']['order']['orderDiscount']))
-                {
-                    $totalDiscount = $clientOrderCost['costs']['order']['orderDiscount'];
-                }
+                $subTotal = $clientOrder['subTotal'];
+                $total = $clientOrder['total'];
+                $totalDiscount = $clientOrderCost['costs']['order']['orderDiscount'];
 
-                foreach($clientOrder['generalCoupons'] as $generalCoupon)
-                {
-                    if(!empty($generalCoupon->coup_percentage))
-                    {
-                        $totalDiscount = ($generalCoupon->coup_percentage / 100) * $subTotal;
-                        $discountInfo[] = array(
+                foreach($clientOrder['generalCoupons'] as $generalCoupon) {
+                    if(!empty($generalCoupon->coup_percentage)) {
+                        $discountInfo[] = [
                             'details' => $generalCoupon->coup_percentage.'%',
                             'amount' => $currency.number_format($totalDiscount, 2),
                             'code' => $generalCoupon->coup_code,
-                        );
-                    }
-                    elseif (!empty($generalCoupon->coup_discount_value))
-                    {
-                        $totalDiscount = $generalCoupon->coup_discount_value;
-                        $discountInfo[] =  array(
+                        ];
+                    } elseif (!empty($generalCoupon->coup_discount_value)) {
+                        $discountInfo[] =  [
                             'details' => $totalDiscount,
                             'amount' => $currency.number_format($totalDiscount,2),
                             'code' => $generalCoupon->coup_code,
-                        );
+                        ];
                     }
                 }
+
+                if (isset($clientOrderCost['costs']['shipment']['total'])) 
+                    $shippingTotal = $clientOrderCost['costs']['shipment']['total'];
             }
             
             // Getting the client basket list using Client key

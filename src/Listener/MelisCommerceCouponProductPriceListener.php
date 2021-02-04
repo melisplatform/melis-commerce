@@ -44,11 +44,14 @@ class MelisCommerceCouponProductPriceListener extends MelisGeneralListener imple
                 if(!isset($container['checkout'])) 
                     return;
 
-                $checkoutOrder = $container['checkout'];
-
-                // If there is no data from $_GET[], this will try to use coupon data from Session
                 $checkoutService = $sm->get('MelisComOrderCheckoutService');
                 $siteId = $checkoutService->getSiteId();
+
+                // No coupons assign to site checkout
+                if(!isset($container['checkout'][$siteId]['coupons'])) 
+                    return;
+
+                // Checkout coupons
                 $coupons = $container['checkout'][$siteId]['coupons'];
 
                 // Product coupon session stored
@@ -125,9 +128,15 @@ class MelisCommerceCouponProductPriceListener extends MelisGeneralListener imple
                         $couponAssign = 'PRODUCT';
 
                     $module = 'MelisCommerce';
+                    if (($productCoupon->coup_percentage))
+                        $label = $productCoupon->coup_code . ' - '. $productCoupon->coup_percentage .'%';
+                    else
+                        $label = $productCoupon->coup_code . ' - '. $productCoupon->coup_discount_value;
+                        
                     // Surcharge modules
                     $price['surcharge_module'][] = [
                         'module' => $module,
+                        'label' => $label,
                         'coupon_id' => $productCoupon->coup_id,
                         'coupon_code' => $productCoupon->coup_code,
                         'coupon_percentage' => $productCoupon->coup_percentage,
@@ -142,13 +151,13 @@ class MelisCommerceCouponProductPriceListener extends MelisGeneralListener imple
                     // Adding logs to results
                     if (!empty($productCoupon->coup_percentage)) {
                         $price['logs'][] = $module.': Coupon of '.$productCoupon->coup_percentage.'%';
-                        $price['logs'][] = $module.': Discount computation: '.$price['price'].' * '.$productCoupon->coup_percentage . '% = '.$disAmount;
+                        $price['logs'][] = $module.': tr_meliscommerce_price_common_discount_computation: '.$price['price'].' * '.$productCoupon->coup_percentage . '% = '.$disAmount;
                     } else {
                         $price['logs'][] = $module.': Coupon value '.$productCoupon->coup_discount_value;
-                        $price['logs'][] = $module.': Discount computation: '.$price['price'].' - '.$productCoupon->coup_discount_value . ' = '.$disAmount;
+                        $price['logs'][] = $module.': tr_meliscommerce_price_common_discount_computation: '.$price['price'].' - '.$productCoupon->coup_discount_value . ' = '.$disAmount;
                     }
                     
-                    $price['logs'][] = $module.': Price changed to '.   $price['price'] .' - '. $disAmount .' = '. $newPrice;
+                    $price['logs'][] = $module.': tr_meliscommerce_price_common_price_change '.   $price['price'] .' - '. $disAmount .' = '. $newPrice;
                     
                     // Total amount computation of the item on the basket
                     $totalAmount = $newPrice * $basket->getQuantity();

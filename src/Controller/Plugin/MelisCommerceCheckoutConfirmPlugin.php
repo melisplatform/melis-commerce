@@ -90,20 +90,6 @@ class MelisCommerceCheckoutConfirmPlugin extends MelisTemplatingPlugin
         {
             $clientOrderDetails = $orderSvc->getClientOrderDetailsById($orderId, $ecomAuthSrv->getClientId(), $ecomAuthSrv->getPersonId(), $langId);
             
-            $orderCoupons = $couponSvc->getCouponList($orderId);
-            
-            $tmp = array();
-            foreach($orderCoupons as $coupon)
-            {
-                if($coupon->getCoupon()->coup_product_assign)
-                {
-                    $coupon->getCoupon()->discountedBasket = $couponSvc->getCouponDiscountedBasketItems($coupon->getCoupon()->coup_id, $orderId);
-                }
-                $tmp[] = $coupon;
-            }
-            
-            $orderCoupons = $tmp;
-            
             if (!empty($clientOrderDetails))
             {
                 switch ($clientOrderDetails->ord_status)
@@ -131,36 +117,12 @@ class MelisCommerceCheckoutConfirmPlugin extends MelisTemplatingPlugin
                 $totalBasket = 0;
                 $currency = null;
                 $totalProductDiscount  = 0;
-                foreach ($orderBasket As $key => $val)
-                {
-                    $val->discount = 0;
-                    if(!empty($orderCoupons))
-                    {
-                        foreach($orderCoupons as $coupon)
-                        {
-                            if($coupon->getCoupon()->coup_product_assign)
-                            {
-                                foreach($coupon->getCoupon()->discountedBasket as $item)
-                                {
-                                    if ($item->cord_basket_id == $val->obas_id)
-                                    {
-                                        if(!empty($coupon->getCoupon()->coup_percentage))
-                                        {
-                                            $val->discount = ($coupon->getCoupon()->coup_percentage / 100) * ($val->obas_price_net * $item->cord_quantity_used);
-                                            
-                                        } 
-                                        elseif (!empty($coupon->getCoupon()->coup_discount_value))
-                                        {
-                                            
-                                            $val->discount = $coupon->getCoupon()->coup_discount_value * $item->cord_quantity_used;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                foreach ($orderBasket As $key => $val) {
                     
-                    $totalBasket += ($val->obas_price_net * $val->obas_quantity);
+                    // Total discount computed from item
+                    $val->discount = $val->obas_total_discount;
+                    
+                    $totalBasket += $val->obas_total_price;
                     
                     if (is_null($currency))
                     {
@@ -179,36 +141,45 @@ class MelisCommerceCheckoutConfirmPlugin extends MelisTemplatingPlugin
                     $totalProductDiscount += $val->discount;
                     $orderBasket[$key] = $val;
                 }
+
+                // Coupon
+                $orderCoupons = $couponSvc->getCouponList($orderId);
+            
+                $tmp = array();
+                foreach($orderCoupons as $coupon) {
+                    if($coupon->getCoupon()->coup_product_assign) {
+                        $coupon->getCoupon()->discountedBasket = $couponSvc->getCouponDiscountedBasketItems($coupon->getCoupon()->coup_id, $orderId);
+                    }
+                    $tmp[] = $coupon;
+                }
                 
-                $couponDetails = array();
+                $orderCoupons = $tmp;
+                $couponDetails = [];
                 
-                if(!empty($orderCoupons))
-                {
-                    foreach($orderCoupons as $coupon)
-                    {
-                        if(!$coupon->getCoupon()->coup_product_assign)
-                        {
-                            $couponDetails[] = array(
+                if(!empty($orderCoupons)) {
+                    foreach($orderCoupons as $coupon) {
+                        if(!$coupon->getCoupon()->coup_product_assign) {
+                            $couponDetails[] = [
                                 'couponCode' => $coupon->getCoupon()->coup_code,
                                 'couponIsInPercentage' => ($coupon->getCoupon()->coup_percentage) ? true : false,
                                 'couponValue' => ($coupon->getCoupon()->coup_percentage) ? $coupon->getCoupon()->coup_percentage.'%' : $coupon->getCoupon()->coup_discount_value,
                                 'couponDiscount' => ($coupon->getCoupon()->coup_percentage) ? ($coupon->getCoupon()->coup_percentage / 100) * $totalBasket : $coupon->getCoupon()->coup_discount_value,
-                            );
+                            ];
                         }
                     }
                 }
                 
-                $clientOrder = array(
+                $clientOrder = [
                     'orderId' => $clientOrderId,
                     'orderStatus' => $clientOrderDetails->ostt_status_name,
                     'orderReference' => $clientOrderDetails->ord_reference,
                     'orderDate' => $clientOrderDetails->ord_date_creation,
-                    'orderSubtotal' => $clientOrderDetails->opay_price_order - $totalProductDiscount,
+                    'orderSubtotal' => $totalBasket,
                     'orderCouponDetails' => $couponDetails,
                     'orderSippingTotal' => $clientOrderDetails->opay_price_shipping,
                     'orderTotal' => $clientOrderDetails->opay_price_total,
                     'orderCurrency' => $currency,
-                );
+                ];
                 
                 // Use Address plugin
                 $orderAddressPlugin = $pluginManager->get('MelisCommerceOrderAddressPlugin');

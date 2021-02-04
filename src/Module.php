@@ -48,6 +48,8 @@ use MelisCommerce\Listener\MelisCommerceVariantRestockListener;
 use MelisCommerce\Listener\MelisCommerceSaveProductStockEmailAlertListener;
 use MelisCommerce\Listener\MelisCommerceCouponProductPriceListener;
 use MelisCommerce\Listener\MelisCommerceOrderBasketProductAmountListener;
+use MelisCommerce\Listener\MelisCommerceComputeOrderCostListener;
+use MelisCommerce\Listener\MelisCommerceProductPriceLogsTranslationListener;
 /**
  * Class Module
  * @package MelisCmsNews
@@ -123,6 +125,8 @@ class Module
         (new MelisCommerceVariantRestockListener())->attach($eventManager);
         (new MelisCommerceCouponProductPriceListener())->attach($eventManager);
         (new MelisCommerceOrderBasketProductAmountListener())->attach($eventManager);
+        (new MelisCommerceComputeOrderCostListener())->attach($eventManager);
+        (new MelisCommerceProductPriceLogsTranslationListener())->attach($eventManager);
         
     }
     

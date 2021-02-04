@@ -1493,7 +1493,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
 
         $basketData = $melisComBasketService->getBasket($clientId, $clientKey);
 
-        // Getting Current Langauge ID
+        // Getting Current Language ID
         $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $langId = $melisTool->getCurrentLocaleID();
 
@@ -2144,6 +2144,10 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
 
     public function testAction()
     {
+        $ecomAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
+        $clientKey = $ecomAuthSrv->getId();
+        dump($clientKey);
+        
         $container = new Container('meliscommerce');
         // unset($container['checkout']);
         dd($container['checkout']);

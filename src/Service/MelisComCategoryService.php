@@ -35,7 +35,7 @@ class MelisComCategoryService extends MelisComGeneralService
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $results = array();
-        
+
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_category_list_start', $arrayParameters);
         

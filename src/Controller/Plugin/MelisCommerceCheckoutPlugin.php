@@ -320,7 +320,8 @@ class MelisCommerceCheckoutPlugin extends MelisTemplatingPlugin
                     $melisComOrderCheckoutService = $this->getServiceManager()->get('MelisComOrderCheckoutService');
                     $melisComOrderCheckoutService->setSiteId($siteId);
                     $order = $melisComOrderCheckoutService->computeAllCosts($clientId);
-                    $totalCost = $order['costs']['total'];
+
+                    $totalCost = $order['costs']['order']['total'];
                     
                     if (!empty($container['checkout'][$siteId]['orderId']))
                     {

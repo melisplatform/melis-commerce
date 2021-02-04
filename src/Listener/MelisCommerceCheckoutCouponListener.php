@@ -127,7 +127,7 @@ class MelisCommerceCheckoutCouponListener extends MelisGeneralListener implement
 
                 if ($params['results']['success'])
                 {
-                    $clientId = $params['results']['clientId'];
+                    // $clientId = $params['results']['clientId'];
                     $container = new Container('meliscommerce');
                     // If there is no data from $_GET[], this will try to use coupon data from Session
                     $melisComOrderCheckoutService = $sm->get('MelisComOrderCheckoutService');

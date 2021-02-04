@@ -74,7 +74,7 @@ class MelisCommerceCheckoutConfirmSummaryPlugin extends MelisTemplatingPlugin
         $siteId = (!empty($this->pluginFrontConfig['m_conf_summary_site_id'])) ? $this->pluginFrontConfig['m_conf_summary_site_id'] : 1;
 
         /**
-         * Login using the Commerce Athentication Service
+         * Login using the Commerce Authentication Service
          */
         $melisComAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
         $clientId = $melisComAuthSrv->getClientId();

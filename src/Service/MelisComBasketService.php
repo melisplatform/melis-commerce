@@ -611,18 +611,27 @@ class MelisComBasketService extends MelisComGeneralService
                 // checking if the variantId already exists in the basket
                 $persistent = $melisEcomBasketPersistentTable->getbasketPersistentByClientIdAndVariantId($val['bano_variant_id'], $arrayParameters['clientId']);
                 $persistentData = $persistent->current();
+
+                $basketId = null;
                 if (!empty($persistentData))
                 {
                     // Add Quantity both baskets and Update Persistent
                     $data['bper_quantity'] = $val['bano_quantity'] + $persistentData->bper_quantity;
-                    $melisEcomBasketPersistentTable->save($data, $persistentData->bper_id);
+                    // $melisEcomBasketPersistentTable->save($data, $persistentData->bper_id);
+
+                    $basketId = $persistentData->bper_id;
                 }
                 else 
                 {
                     // Create new entry for Persistent
                     $data['bper_quantity'] = $val['bano_quantity'];
-                    $melisEcomBasketPersistentTable->save($data);
+                    // $melisEcomBasketPersistentTable->save($data);
                 }
+
+                $data = $this->sendEvent('meliscommerce_service_basket_transfer_anonymous_to_persistent', 
+                    ['persistent' => $data, 'anonymous' => $val])['persistent'];
+
+                $melisEcomBasketPersistentTable->save($data, $basketId);
                 
                 // Deleting Anonymous entry after saving to Persistent table
                 $melisEcomBasketAnonymousTable->deleteById($val['bano_id']);

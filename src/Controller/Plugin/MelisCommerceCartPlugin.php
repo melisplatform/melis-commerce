@@ -113,15 +113,15 @@ class MelisCommerceCartPlugin extends MelisTemplatingPlugin
             }
         }
         
-        $baskeEntity = $basketSrv->getBasket($clientId, $clientKey);
+        $basketItems = $basketSrv->getBasket($clientId, $clientKey);
         
-        if($baskeEntity){
-            foreach($baskeEntity as $item){
+        if($basketItems){
+            foreach($basketItems as $item){
                 
                 $itemTotal = 0;
                 $var = $item->getVariant();
                 
-                // get vriant id
+                // get variant id
                 $variant['var_id'] = $var->getId();
                 
                 // get product id
@@ -138,7 +138,7 @@ class MelisCommerceCartPlugin extends MelisTemplatingPlugin
                  * or this will try to get the Price from the Product
                  */
                 // Product variant price
-                $prdVarPrice = $melisComPriceService->getItemPrice($var->getId(), $countryId, $clientGroupId);
+                $prdVarPrice = $melisComPriceService->getItemPrice($var->getId(), $countryId, $clientGroupId, 'variant', ['basket' => $item]);
 
                 if (!empty($prdVarPrice)) {
                     $variant['price'] = $prdVarPrice['price'];

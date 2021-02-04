@@ -17,6 +17,20 @@ class MelisCommerceShipmentCostListener extends MelisGeneralListener implements 
 {
     public function attach(EventManagerInterface $events, $priority = 1)
     {
+
+        $this->attachEventListener(
+            $events,
+            '*',
+            'meliscommerce_service_checkout_order_computation_end',
+            function($e){
+                $sm = $e->getTarget()->getServiceManager();
+                $params = $e->getParams();
+
+                $melisComOrderCheckoutService = $sm->get('MelisComOrderCheckoutService');
+                $params['results'] = $melisComOrderCheckoutService->computeShipmentCost($params['results']);
+            }
+        ); 
+
         $this->attachEventListener(
             $events,
             '*',

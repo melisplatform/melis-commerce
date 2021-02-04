@@ -84,19 +84,12 @@ class MelisComPriceService extends MelisComGeneralService
                     'symbol' => $price->cur_symbol
                 ],
                 'surcharge_module' => [],
-                'logs' => [
-                    'MelisCommerce: Product price: '. $priceNet .' '. $price->cur_code .' - '. $price->cgroup_name
-                ]
             ];
-            
-            if (!is_object($arrayParameters['data']) && !empty($arrayParameters['data']['type']) && 
-            $arrayParameters['data']['type'] == 'variant') {
-                $results['logs'] = [
-                    'MelisCommerce: Variant price not set',
-                    'MelisCommerce: Product price set to Variant price: '. $priceNet .' '. $price->cur_code .' - '. $price->cgroup_name,
-                    'MelisCommerce: Product price: '. $priceNet .' '. $price->cur_code .' - '. $price->cgroup_name
-                ];
-            }
+
+            if ($arrayParameters['type'] == 'variant')
+                $results['logs'] = ['MelisCommerce: tr_meliscommerce_price_variant_price: '. $priceNet .' '. $price->cur_code .' - '. $price->cgroup_name];
+            else
+                $results['logs'] = ['MelisCommerce: tr_meliscommerce_price_product_price: '. $priceNet .' '. $price->cur_code .' - '. $price->cgroup_name];
         }
         
         // If the type if variant then no price
@@ -105,8 +98,8 @@ class MelisComPriceService extends MelisComGeneralService
 
             $prdTbl = $this->getServiceManager()->get('MelisEcomVariantTable');
             $variant = $prdTbl->getEntryById($arrayParameters['itemId'])->current();
-            $results = $this->getItemPrice($variant->var_prd_id, $arrayParameters['countryId'], $arrayParameters['groupId'], 
-                    'product', array_merge($arrayParameters['data'], ['type' => $arrayParameters['type'] ]));
+            $results = $this->getItemPrice($variant->var_prd_id, $arrayParameters['countryId'], 
+                    $arrayParameters['groupId'], 'product', $arrayParameters['data']);
         }
 		// Service implementation end
 
