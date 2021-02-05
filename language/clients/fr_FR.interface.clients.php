@@ -282,5 +282,6 @@
         'tr_meliscommerce_clients_delete_email_message' => 'Etes-vous sûr de vouloir supprimer cet email?',
         'tr_meliscommerce_clients_contact_person_email' => 'Email contact',
         'tr_meliscommerce_clients_contact_person_email_message_success' => 'Email contact supprimé avec succès',
-        'tr_meliscommerce_clients_contact_person_email_message_fail' => 'Impossible de supprimer l\'email du contact'
+        'tr_meliscommerce_clients_contact_person_email_message_fail' => 'Impossible de supprimer l\'email du contact',
+        'tr_meliscommerce_clients_contact_person_email_list_choose_in_list' => 'Choisissez dans la liste',
     );

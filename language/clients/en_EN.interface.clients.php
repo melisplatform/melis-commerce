@@ -283,5 +283,6 @@
         'tr_meliscommerce_clients_delete_email_message' => 'Are you sure you want to delete this email?',
         'tr_meliscommerce_clients_contact_person_email' => 'Contact email',
         'tr_meliscommerce_clients_contact_person_email_message_success' => 'Contact email deleted successfully',
-        'tr_meliscommerce_clients_contact_person_email_message_fail' => 'Unable to delete contact email'
+        'tr_meliscommerce_clients_contact_person_email_message_fail' => 'Unable to delete contact email',
+        'tr_meliscommerce_clients_contact_person_email_list_choose_in_list' => 'Choose in list',
 	);

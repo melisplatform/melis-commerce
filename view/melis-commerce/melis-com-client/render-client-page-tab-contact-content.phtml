@@ -81,7 +81,7 @@
                             <?php if (! empty($val->emails)) : ?>
                                 <?php if (count($val->emails) > 1) : ?>
                                 <div class="client-email-list dropdown label-text" style="display: none;font-weight: normal;">
-                                    &nbsp; (<a style="text-decoration: underline;">Choose in list</a>)
+                                    &nbsp; (<a style="text-decoration: underline;"><?= $this->translate('tr_meliscommerce_clients_contact_person_email_list_choose_in_list') ?></a>)
                                     <ul class="dropdown-menu client-email-dropdown-content" style="margin-top: -4px;">
                                         <?php foreach ($val->emails as $email) : ?>
                                             <li>
