@@ -992,8 +992,13 @@ class MelisComClientService extends MelisComGeneralService
             {
                 $arrayParameters['person']['cper_date_edit'] = date('Y-m-d H:i:s');
             }
-            
-            $arrayParameters['person']['cper_is_main_person'] = (!empty($arrayParameters['person']['cper_is_main_person'])) ? $arrayParameters['person']['cper_is_main_person'] : 0;
+
+            if (! empty($arrayParameters['personId'])) {
+                if (! empty($arrayParameters['person']['cper_is_main_person'])) {
+                    $arrayParameters['person']['cper_is_main_person'] = $arrayParameters['person']['cper_is_main_person'];
+                }
+            }
+
             $arrayParameters['person']['cper_civility'] = (!empty($arrayParameters['person']['cper_civility'])) ? $arrayParameters['person']['cper_civility'] : 0;
             
             if (!empty($arrayParameters['person']['cper_password']))
