@@ -193,6 +193,7 @@ class MelisComProductService extends MelisComGeneralService
 				$entProd->setTexts($this->getProductTextsById($arrayParameters['productId'], null, $arrayParameters['langId']));
 				$entProd->setPrice($this->getProductPricesById($arrayParameters['productId'], $arrayParameters['countryId']));                
 				$entProd->setDocuments($prodDoc);
+				$entProd->setPageAssociations($this->getProductPageAssociationsByProductId($arrayParameters['productId']));
 			}
 		}
 		
