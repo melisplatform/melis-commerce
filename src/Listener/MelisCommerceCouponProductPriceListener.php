@@ -150,10 +150,10 @@ class MelisCommerceCouponProductPriceListener extends MelisGeneralListener imple
 
                     // Adding logs to results
                     if (!empty($productCoupon->coup_percentage)) {
-                        $price['logs'][] = $module.': Coupon of '.$productCoupon->coup_percentage.'%';
+                        $price['logs'][] = ['tr_meliscommerce_price_coupon_percent_of' => ['%m' => $module, '%v' => $productCoupon->coup_percentage]];
                         $price['logs'][] = $module.': tr_meliscommerce_price_common_discount_computation: '.$price['price'].' * '.$productCoupon->coup_percentage . '% = '.$disAmount;
                     } else {
-                        $price['logs'][] = $module.': Coupon value '.$productCoupon->coup_discount_value;
+                        $price['logs'][] = ['tr_meliscommerce_price_coupon_value_of' => ['%m' =>$module, '%v' => $productCoupon->coup_percentage]];
                         $price['logs'][] = $module.': tr_meliscommerce_price_common_discount_computation: '.$price['price'].' - '.$productCoupon->coup_discount_value . ' = '.$disAmount;
                     }
                     
@@ -169,8 +169,22 @@ class MelisCommerceCouponProductPriceListener extends MelisGeneralListener imple
                         $withoutTotalAmount = $price['price'] * $qtyNoCoupon;
                         $totalAmount = $withCouponTotalAmount + $withoutTotalAmount;
 
-                        $price['logs'][] = $module.': Coupon applied only '. $appliedCoupon .' Product(s) with the price of '. $newPrice .', total of '. $withCouponTotalAmount;
-                        $price['logs'][] = $module.': Remaining '. $qtyNoCoupon .' Product(s) used regular price of '. $price['price'] .', total of '. $withoutTotalAmount;
+                        $couponApplied = [
+                            '%m' => $module, 
+                            '%q' => $appliedCoupon, 
+                            '%p' => $newPrice, 
+                            '%t' => $withCouponTotalAmount
+                        ];
+
+                        $price['logs'][] = ['tr_meliscommerce_price_coupon_applied' => $couponApplied];
+
+                        $remainingCounpon = [
+                            '%m' => $module, 
+                            '%q' => $qtyNoCoupon, 
+                            '%p' => $price['price'], 
+                            '%t' => $withoutTotalAmount
+                        ];
+                        $price['logs'][] = ['tr_meliscommerce_price_coupon_applied_remaining' => $remainingCounpon];
                     }
 
                     // Deducting Product coupon limit

@@ -36,13 +36,40 @@ class MelisCommerceProductPriceLogsTranslationListener extends MelisGeneralListe
                 $logs = $price['logs'];
 
                 foreach($logs As $key => $log) {
-                    $logWords = explode(' ', $log);
-                    foreach($logWords As $lKey => $word) {
-                        if (strpos($word, 'tr_') !== false)
-                            $logWords[$lKey] = $translator->translate($word);
+
+                    if (is_array($log)) {
+
+                        // If log data is array that contain values to be display/place on the translated text
+                        // the log value should ONLY contain element with index of target translation and the value is array
+                        foreach($log As $targetTrans => $values) {
+                            if (strpos($targetTrans, 'tr_') !== false) {
+
+                                $text = $translator->translate($targetTrans);
+                                if (is_array($values)) {
+                                    foreach($values As $vKey => $value) {
+                                        $text = str_replace($vKey, $value, $text);
+                                    }
+                                } else {
+                                    $text = sprintf($text, $value);
+                                }
+
+                                $logs[$key] = $text;
+
+                                break;
+                            }
+                        }
+
+                    } else {
+                        $logWords = explode(' ', $log);
+                        foreach($logWords As $lKey => $word) {
+                            if (strpos($word, 'tr_') !== false)
+                                $logWords[$lKey] = $translator->translate($word);
+                        }
+
+                        $logs[$key] = implode(' ', $logWords);
                     }
 
-                    $logs[$key] = implode(' ', $logWords);
+                    
                 }
 
                 $price['logs'] = $logs;
