@@ -371,15 +371,15 @@ class MelisComOrderListController extends MelisAbstractActionController
         
         $langId = $this->getTool()->getCurrentLocaleID();
         $checkBox = '<div class="checkbox checkbox-single margin-none" data-order-id="%s">
-						<label class="checkbox-custom">
-							<i class="fa fa-fw fa-square-o"></i>
-							<input type="checkbox" class="check-product">
-						</label>
-					</div>';
+                        <label class="checkbox-custom">
+                            <i class="fa fa-fw fa-square-o"></i>
+                            <input type="checkbox" class="check-product">
+                        </label>
+                    </div>';
         
         $status = '<a data-toggle="modal" href="#id_meliscommerce_order_list_modal_container" %s data-orderid="%s">
-				        <span %s class="btn order-status-%s">%s</span>
-				   </a>';
+                        <span %s class="btn order-status-%s">%s</span>
+                </a>';
         
         
         if($this->getRequest()->isPost()) {
@@ -482,7 +482,7 @@ class MelisComOrderListController extends MelisAbstractActionController
                     $disabled = 'disabled';
                     $class = '';
                 }
-               
+            
                 $tableData[$c]['DT_RowId'] = $order->getId();
                 $tableData[$c]['order_table_checkbox'] = sprintf($checkBox, $order->getId());                
                 $tableData[$c]['ord_id'] = $order->getId();
@@ -730,21 +730,21 @@ class MelisComOrderListController extends MelisAbstractActionController
         $csvData = file_get_contents($dir.$csvFileName);
         
         $response = new Response();
-	    $headers  = $response->getHeaders();
-	    $headers->addHeaderLine('Content-Type', 'text/csv; charset=utf-8');
-	    $headers->addHeaderLine('Content-Disposition', "attachment; filename=\"".$csvFileName."\"");
-	    $headers->addHeaderLine('Accept-Ranges', 'bytes');
-	    $headers->addHeaderLine('Content-Length', strlen($csvData));
-	    $response->setContent($csvData);
-	    
-	    return $response;
+        $headers  = $response->getHeaders();
+        $headers->addHeaderLine('Content-Type', 'text/csv; charset=utf-8');
+        $headers->addHeaderLine('Content-Disposition', "attachment; filename=\"".$csvFileName."\"");
+        $headers->addHeaderLine('Accept-Ranges', 'bytes');
+        $headers->addHeaderLine('Content-Length', strlen($csvData));
+        $response->setContent($csvData);
+        
+        return $response;
                 
     }
     
     /**
-     * Returns the Tool Service Class
-     * @return MelisCoreTool
-     */
+        * Returns the Tool Service Class
+        * @return MelisCoreTool
+        */
     private function getTool()
     {
         $melisTool = $this->getServiceManager()->get('MelisCoreTool');
@@ -752,6 +752,4 @@ class MelisComOrderListController extends MelisAbstractActionController
     
         return $melisTool;
     }
-
-
 }

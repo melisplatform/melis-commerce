@@ -126,4 +126,70 @@ class MelisComPriceService extends MelisComGeneralService
 
 		return null;
 	}
+
+    public function translateLogs($priceLogs)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_translate_logs_start', $arrayParameters);
+
+        $translator = $this->getServiceManager()->get('translator');
+
+        if (empty($priceLogs))
+            return;
+
+        $skipEncoding = false;
+        if (!is_array($priceLogs))
+            $skipEncoding = true;
+
+        if ($skipEncoding)
+            $priceLogs = json_decode($priceLogs, true);
+
+        foreach($priceLogs As $key => $log) {
+
+            if (is_array($log)) {
+
+                // If log data is array that contain values to be display/place on the translated text
+                // the log value should ONLY contain element with index of target translation and the value is array
+                foreach($log As $targetTrans => $values) {
+                    if (strpos($targetTrans, 'tr_') !== false) {
+
+                        $text = $translator->translate($targetTrans);
+                        if (is_array($values)) {
+                            foreach($values As $vKey => $value) {
+                                $text = str_replace($vKey, $value, $text);
+                            }
+                        } else {
+                            $text = sprintf($text, $value);
+                        }
+
+                        $priceLogs[$key] = $text;
+
+                        break;
+                    }
+                }
+
+            } else {
+                $logWords = explode(' ', $log);
+                foreach($logWords As $lKey => $word) {
+                    if (strpos($word, 'tr_') !== false)
+                        $logWords[$lKey] = $translator->translate($word);
+                }
+
+                $priceLogs[$key] = implode(' ', $logWords);
+            }
+        }
+
+        if ($skipEncoding)
+            $priceLogs = json_encode($priceLogs);
+
+        $arrayParameters['results'] = $priceLogs;
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_translate_logs_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
 }

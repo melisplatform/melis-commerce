@@ -1997,7 +1997,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
             $melisComOrderCheckoutService = $this->getServiceManager()->get('MelisComOrderCheckoutService');
             $melisComOrderCheckoutService->setSiteId(self::SITE_ID);
             $order = $melisComOrderCheckoutService->computeAllCosts($container['checkout'][self::SITE_ID]['clientId']);
-            $totalCost = $order['costs']['total'];
+            $totalCost = $order['costs']['order']['total'];
         }
 
         $couponId = null;

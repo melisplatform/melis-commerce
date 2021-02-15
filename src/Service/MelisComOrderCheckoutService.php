@@ -662,7 +662,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
 
                 // Product variant price
                 $prdVarPrice = $melisComPriceService->getItemPrice($variant->var_id, $clientCountryId, $clientGroupId, 
-                            'variant', ['method' => 'computeOrderCost', 'basket' => $val]);
+                            'variant', ['method' => 'computeOrderCost', 'basket' => $val, 'skipLogsTranslation' => true]);
 
                 $data = [
                     'obas_id' => null,
