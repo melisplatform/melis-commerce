@@ -8,7 +8,7 @@
  */
 
 namespace MelisCommerce\Entity;
- 
+
 class MelisProduct
 {
 	protected $id;
@@ -21,77 +21,77 @@ class MelisProduct
 
 	public function getId()
 	{
-	    return $this->id;
+		return $this->id;
 	}
 	
 	public function setId($id)
 	{
-	    $this->id = $id;
+		$this->id = $id;
 	}
 	
 	public function getProduct()
 	{
-	    return $this->product;
+		return $this->product;
 	}
 	
 	public function setProduct($product)
 	{
-	    $this->product = $product;
+		$this->product = $product;
 	}
 	
 	public function getCategories()
 	{
-	    return $this->categories;
+		return $this->categories;
 	}
 	
 	public function setCategories($categories)
 	{
-	    $this->categories = $categories;
+		$this->categories = $categories;
 	}
 	
 	public function getAttributes()
 	{
-	    return $this->attributes;
+		return $this->attributes;
 	}
 	
 	public function setAttributes($attributes)
 	{
-	    $this->attributes = $attributes;
+		$this->attributes = $attributes;
 	}
 	
 	public function getTexts()
 	{
-	    return $this->texts;
+		return $this->texts;
 	}
 	
 	public function setTexts($texts)
 	{
-	    $this->texts = $texts;
+		$this->texts = $texts;
 	}
 	
 	public function getPrice()
 	{
-	    return $this->price;
+		return $this->price;
 	}
 	
 	public function setPrice($price)
 	{
-	    $this->price = $price;
+		$this->price = $price;
 	}
 	
 	public function getDocuments()
 	{
-	    return $this->documents;
+		return $this->documents;
 	}
 	
 	public function setDocuments($documents)
 	{
-	    $this->documents = $documents;
+		$this->documents = $documents;
 	}
 	
 	
-    public function getArrayCopy()
-    {
-        return get_object_vars($this);
-    }
+	public function getArrayCopy()
+	{
+		return get_object_vars($this);
+	}
 }

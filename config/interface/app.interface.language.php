@@ -80,7 +80,7 @@ return [
 			                             ],
 			                        ],
 			                    ],
-			                    
+
 			                    'meliscommerce_language_list_page_content' => [
 			                        'conf' => [
 			                            'id' => 'id_meliscommerce_language_list_page_content',
@@ -95,7 +95,7 @@ return [
                                          'jsdatas' => []
 			                        ],
 			                    ],
-			                    
+
 			                    'meliscommerce_language_list_page_content_modal_container' => [
 			                        'conf' => [
 			                            'id' => 'id_meliscommerce_language_list_page_content_modal_container',
@@ -106,7 +106,7 @@ return [
 			                            'module' => 'MelisCommerce',
 			                            'controller' => 'MelisComLanguage',
 			                            'action' => 'render-language-list-page-modal-container',
-			                    
+
 			                        ],
 			                        'interface' => [
 			                            'meliscommerce_language_list_page_content_modal_form' => [

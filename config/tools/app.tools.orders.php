@@ -137,7 +137,7 @@ return [
                         'target' => '#tableOrderBasketList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComOrder/getBasketData',
                         'dataFunction' => 'initOrderBasket',
-                        'ajaxCallback' => 'hideBasketButton();',
+                        'ajaxCallback' => 'hideBasketButton(); melisCommerce.priceLogTooltip()',
                         'filters' => [
                             'left' => [
                                 'order-basket-list-table-filter-limit' => [
@@ -290,6 +290,63 @@ return [
                             ],
                         ],
                 
+                    ],
+                ],
+                'meliscommerce_order_product_return_list' => [
+                    'table' => [
+                        'target' => '#tableOrderProductReturnList',
+                        'ajaxUrl' => '/melis/MelisCommerce/MelisComOrderProductReturn/getOrderProductReturnList',
+                        'dataFunction' => 'initOrderBasket',
+                        'ajaxCallback' => '',
+                        'filters' => [
+                            'left' => [
+
+                            ],
+                            'center' => [
+
+                            ],
+                            'right' => [
+
+                            ],
+                        ],
+                        'columns' => [
+                            'pretd_variant_id' => [
+                                'text' => 'tr_meliscommerce_general_common_id',
+                                'css' => ['width' => '1%', 'padding-right' => '0'],
+                                'sortable' => true,
+                            ],
+                            'image' => [
+                                'text' => 'tr_meliscommerce_order_list_col_image',
+                                'css' => ['width' => '5%', 'padding-right' => '0'],
+                                'sortable' => false,
+                            ],
+                            'product_name' => [
+                                'text' => 'tr_meliscommerce_order_basket_list_name',
+                                'css' => ['width' => '17%', 'padding-right' => '0'],
+                                'sortable' => false,
+                            ],
+                            'pretd_sku' => [
+                                'text' => 'tr_meliscommerce_order_basket_list_sku',
+                                'css' => ['width' => '17%', 'padding-right' => '0'],
+                                'sortable' => true,
+                            ],
+                            'pretd_quantity' => [
+                                'text' => 'tr_meliscommerce_order_basket_list_qty',
+                                'css' => ['width' => '5%', 'padding-right' => '0'],
+                                'sortable' => false,
+                            ],
+                            'price' => [
+                                'text' => 'tr_meliscommerce_order_list_col_price',
+                                'css' => ['width' => '5%', 'padding-right' => '0'],
+                                'sortable' => false,
+                            ],
+                        ],
+                        'searchables' => [
+
+                        ],
+                        'actionButtons' => [
+
+                        ],
                     ],
                 ],
             ],

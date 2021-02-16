@@ -731,7 +731,7 @@ class MelisComAttributeController extends MelisAbstractActionController
         $langTable = $this->getServiceManager()->get('MelisEcomLangTable');
         
         if($this->getRequest()->isPost()){
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
             $attributeId = $postValues['attributeId'];
@@ -872,7 +872,7 @@ class MelisComAttributeController extends MelisAbstractActionController
         $attributeSvc = $this->getServiceManager()->get('MelisComAttributeService');
         
         if($this->getRequest()->isPost()){
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $attributeValueId = $postValues['attributeValueId'];
             $success = $attributeSvc->deleteAttributeValueById($attributeValueId);
             if($success){
@@ -912,7 +912,7 @@ class MelisComAttributeController extends MelisAbstractActionController
         if($this->getRequest()->isPost()){
             $this->getEventManager()->trigger('meliscommerce_attribute_save_start', $this, array());
             
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues, [], true);
             
             
@@ -992,7 +992,7 @@ class MelisComAttributeController extends MelisAbstractActionController
         $factory->setFormElementManager($formElements);
 
 
-        $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getRequest()->getPost()->toArray();
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
 
@@ -1031,7 +1031,7 @@ class MelisComAttributeController extends MelisAbstractActionController
         $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
 
-        $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getRequest()->getPost()->toArray();
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
        
@@ -1064,7 +1064,7 @@ class MelisComAttributeController extends MelisAbstractActionController
         $success = 0;
         $errors = array();
         $data = array();
-        $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getRequest()->getPost()->toArray();
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
         

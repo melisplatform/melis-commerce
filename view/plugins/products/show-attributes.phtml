@@ -5,7 +5,7 @@
         {
             echo '<div class="form-group">';
             echo '<label>';
-            echo $attribute->getAttribute()->attr_trans[0]->atrans_name;
+            echo $attribute->getAttribute()->attr_trans[0]['atrans_name'];
             echo '</label>';
             echo '<select class="form-control" name="prd_attr_'.$attribute->getId().'">';
             foreach($attribute->getAttributeValues() as $value)

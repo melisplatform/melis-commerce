@@ -46,6 +46,10 @@ use MelisCommerce\Listener\MelisCommercePrdVarDuplicationListener;
 use MelisCommerce\Listener\MelisCommerceVariantCheckLowStockListener;
 use MelisCommerce\Listener\MelisCommerceVariantRestockListener;
 use MelisCommerce\Listener\MelisCommerceSaveProductStockEmailAlertListener;
+use MelisCommerce\Listener\MelisCommerceCouponProductPriceListener;
+use MelisCommerce\Listener\MelisCommerceOrderBasketProductAmountListener;
+use MelisCommerce\Listener\MelisCommerceComputeOrderCostListener;
+use MelisCommerce\Listener\MelisCommerceProductPriceLogsTranslationListener;
 /**
  * Class Module
  * @package MelisCmsNews
@@ -72,7 +76,7 @@ class Module
             $module = explode('/', $routeName);
             
             $this->createTranslations($e, $routeMatch);
-             
+            
             if (!empty($module[0])) {
                 if ($module[0] == 'melis-backoffice')
                     $melisRoute = true;
@@ -119,6 +123,10 @@ class Module
         (new MelisCommercePostPaymentListener())->attach($eventManager);
         (new MelisCommerceVariantCheckLowStockListener())->attach($eventManager);
         (new MelisCommerceVariantRestockListener())->attach($eventManager);
+        (new MelisCommerceCouponProductPriceListener())->attach($eventManager);
+        (new MelisCommerceOrderBasketProductAmountListener())->attach($eventManager);
+        (new MelisCommerceComputeOrderCostListener())->attach($eventManager);
+        (new MelisCommerceProductPriceLogsTranslationListener())->attach($eventManager);
         
     }
     
@@ -153,99 +161,102 @@ class Module
 
     public function getConfig()
     {
-    	$config = [];
-    	$configFiles = [
-			include __DIR__ . '/../config/module.config.php',
-			include __DIR__ . '/../config/app.emails.php',
+        $config = [];
+        $configFiles = [
+            include __DIR__ . '/../config/module.config.php',
+            include __DIR__ . '/../config/app.emails.php',
             include __DIR__ . '/../config/diagnostic.config.php',
 
-			include __DIR__ . '/../config/interface/app.interface.general.php',
-	        include __DIR__ . '/../config/interface/app.interface.documents.php',
-			include __DIR__ . '/../config/interface/app.interface.categories.php',
-			include __DIR__ . '/../config/interface/app.interface.products.php',
-			include __DIR__ . '/../config/interface/app.interface.variants.php',
-			include __DIR__ . '/../config/interface/app.interface.clients.php',
-	        include __DIR__ . '/../config/interface/app.interface.orders.php',
-	        include __DIR__ . '/../config/interface/app.interface.prices.php',
-	        include __DIR__ . '/../config/interface/app.interface.seo.php',
+            include __DIR__ . '/../config/interface/app.interface.general.php',
+            include __DIR__ . '/../config/interface/app.interface.documents.php',
+            include __DIR__ . '/../config/interface/app.interface.categories.php',
+            include __DIR__ . '/../config/interface/app.interface.products.php',
+            include __DIR__ . '/../config/interface/app.interface.variants.php',
+            include __DIR__ . '/../config/interface/app.interface.clients.php',
+            include __DIR__ . '/../config/interface/app.interface.orders.php',
+            include __DIR__ . '/../config/interface/app.interface.prices.php',
+            include __DIR__ . '/../config/interface/app.interface.seo.php',
             include __DIR__ . '/../config/interface/app.interface.coupons.php',
             include __DIR__ . '/../config/interface/app.interface.checkout.php',
-	        include __DIR__ . '/../config/interface/app.interface.currency.php',
-	        include __DIR__ . '/../config/interface/app.interface.attributes.php',
-	        include __DIR__ . '/../config/interface/app.interface.language.php',
-	        include __DIR__ . '/../config/interface/app.interface.country.php',
+            include __DIR__ . '/../config/interface/app.interface.currency.php',
+            include __DIR__ . '/../config/interface/app.interface.attributes.php',
+            include __DIR__ . '/../config/interface/app.interface.language.php',
+            include __DIR__ . '/../config/interface/app.interface.country.php',
             include __DIR__ . '/../config/interface/app.interface.assoc-var.php',
             include __DIR__ . '/../config/interface/app.interface.duplications.php',
+            include __DIR__ . '/../config/interface/app.interface.groups.php',
             include __DIR__ . '/../config/interface/app.interface.settings.php',
-	    
-			include __DIR__ . '/../config/forms/app.forms.general.php',
-	        include __DIR__ . '/../config/forms/app.forms.documents.php',
-			include __DIR__ . '/../config/forms/app.forms.categories.php',
-			include __DIR__ . '/../config/forms/app.forms.products.php',
-			include __DIR__ . '/../config/forms/app.forms.variants.php',
-			include __DIR__ . '/../config/forms/app.forms.clients.php',
-	        include __DIR__ . '/../config/forms/app.forms.orders.php',
-	        include __DIR__ . '/../config/forms/app.forms.prices.php',
-	        include __DIR__ . '/../config/forms/app.forms.seo.php',
-	        include __DIR__ . '/../config/forms/app.forms.coupons.php',
-	        include __DIR__ . '/../config/forms/app.forms.checkout.php',
-	        include __DIR__ . '/../config/forms/app.forms.currency.php',
-	        include __DIR__ . '/../config/forms/app.forms.attributes.php',
-	        include __DIR__ . '/../config/forms/app.forms.duplications.php',
-	        include __DIR__ . '/../config/forms/app.forms.settings.php',
-	    
-			include __DIR__ . '/../config/tools/app.tools.general.php',
-	        include __DIR__ . '/../config/tools/app.tools.documents.php',
-			include __DIR__ . '/../config/tools/app.tools.categories.php',
-			include __DIR__ . '/../config/tools/app.tools.products.php',
-			include __DIR__ . '/../config/tools/app.tools.variants.php',
-			include __DIR__ . '/../config/tools/app.tools.clients.php',
-	        include __DIR__ . '/../config/tools/app.tools.orders.php',
-	        include __DIR__ . '/../config/tools/app.tools.prices.php',
-	        include __DIR__ . '/../config/tools/app.tools.coupons.php',
-	        include __DIR__ . '/../config/tools/app.tools.checkout.php',
+        
+            include __DIR__ . '/../config/forms/app.forms.general.php',
+            include __DIR__ . '/../config/forms/app.forms.documents.php',
+            include __DIR__ . '/../config/forms/app.forms.categories.php',
+            include __DIR__ . '/../config/forms/app.forms.products.php',
+            include __DIR__ . '/../config/forms/app.forms.variants.php',
+            include __DIR__ . '/../config/forms/app.forms.clients.php',
+            include __DIR__ . '/../config/forms/app.forms.orders.php',
+            include __DIR__ . '/../config/forms/app.forms.prices.php',
+            include __DIR__ . '/../config/forms/app.forms.seo.php',
+            include __DIR__ . '/../config/forms/app.forms.coupons.php',
+            include __DIR__ . '/../config/forms/app.forms.checkout.php',
+            include __DIR__ . '/../config/forms/app.forms.currency.php',
+            include __DIR__ . '/../config/forms/app.forms.attributes.php',
+            include __DIR__ . '/../config/forms/app.forms.duplications.php',
+            include __DIR__ . '/../config/forms/app.forms.settings.php',
+        
+            include __DIR__ . '/../config/tools/app.tools.general.php',
+            include __DIR__ . '/../config/tools/app.tools.documents.php',
+            include __DIR__ . '/../config/tools/app.tools.categories.php',
+            include __DIR__ . '/../config/tools/app.tools.products.php',
+            include __DIR__ . '/../config/tools/app.tools.variants.php',
+            include __DIR__ . '/../config/tools/app.tools.clients.php',
+            include __DIR__ . '/../config/tools/app.tools.orders.php',
+            include __DIR__ . '/../config/tools/app.tools.prices.php',
+            include __DIR__ . '/../config/tools/app.tools.coupons.php',
+            include __DIR__ . '/../config/tools/app.tools.checkout.php',
 
-	        include __DIR__ . '/../config/tools/app.tools.currency.php',
-	        include __DIR__ . '/../config/tools/app.tools.attributes.php',
-	        include __DIR__ . '/../config/tools/app.tools.language.php',
-	        include __DIR__ . '/../config/tools/app.tools.country.php',
+            include __DIR__ . '/../config/tools/app.tools.currency.php',
+            include __DIR__ . '/../config/tools/app.tools.attributes.php',
+            include __DIR__ . '/../config/tools/app.tools.language.php',
+            include __DIR__ . '/../config/tools/app.tools.country.php',
             include __DIR__ . '/../config/tools/app.tools.assoc_var.php',
-	    
-    	    // categories plugin configs
-    	    include __DIR__ . '/../config/plugins/categories/MelisCommerceCategoryProductListPlugin.php',
+            include __DIR__ . '/../config/tools/app.tools.clients_group.php',
+
+            // categories plugin configs
+            include __DIR__ . '/../config/plugins/categories/MelisCommerceCategoryProductListPlugin.php',
             include __DIR__ . '/../config/plugins/categories/MelisCommerceCategoryTreePlugin.php',
 
-    	    // clients plugin configs
-    	    include __DIR__ . '/../config/plugins/clients/MelisCommerceLoginPlugin.php',
-    	    include __DIR__ . '/../config/plugins/clients/MelisCommerceLostPasswordGetEmailPlugin.php',
-    	    include __DIR__ . '/../config/plugins/clients/MelisCommerceLostPasswordResetPlugin.php',
-    	    include __DIR__ . '/../config/plugins/clients/MelisCommerceRegisterPlugin.php',
-    	    include __DIR__ . '/../config/plugins/clients/MelisCommerceAccountPlugin.php',
-    	    include __DIR__ . '/../config/plugins/clients/MelisCommerceProfilePlugin.php',
-    	    include __DIR__ . '/../config/plugins/clients/MelisCommerceDeliveryAddressPlugin.php',
-    	    include __DIR__ . '/../config/plugins/clients/MelisCommerceBillingAddressPlugin.php',
-    	    
-    	    // order plugin configs
-    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceAddToCartPlugin.php',
-    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutPlugin.php',
-    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutCartPlugin.php',
-    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutCouponPlugin.php',
-    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutAddressesPlugin.php',
-    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutSummaryPlugin.php',
-    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutConfirmSummaryPlugin.php',
-    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutConfirmPlugin.php',
-    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceCartPlugin.php',
-    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderHistoryPlugin.php',
-    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderPlugin.php',
-    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderAddressPlugin.php',
-    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderShippingDetailsPlugin.php',
-    	    include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderMessagesPlugin.php',
-    	    
-    	    // products plugin configs
+            // clients plugin configs
+            include __DIR__ . '/../config/plugins/clients/MelisCommerceLoginPlugin.php',
+            include __DIR__ . '/../config/plugins/clients/MelisCommerceLostPasswordGetEmailPlugin.php',
+            include __DIR__ . '/../config/plugins/clients/MelisCommerceLostPasswordResetPlugin.php',
+            include __DIR__ . '/../config/plugins/clients/MelisCommerceRegisterPlugin.php',
+            include __DIR__ . '/../config/plugins/clients/MelisCommerceAccountPlugin.php',
+            include __DIR__ . '/../config/plugins/clients/MelisCommerceProfilePlugin.php',
+            include __DIR__ . '/../config/plugins/clients/MelisCommerceDeliveryAddressPlugin.php',
+            include __DIR__ . '/../config/plugins/clients/MelisCommerceBillingAddressPlugin.php',
+            
+            // order plugin configs
+            include __DIR__ . '/../config/plugins/orders/MelisCommerceAddToCartPlugin.php',
+            include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutPlugin.php',
+            include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutCartPlugin.php',
+            include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutCouponPlugin.php',
+            include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutAddressesPlugin.php',
+            include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutSummaryPlugin.php',
+            include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutConfirmSummaryPlugin.php',
+            include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutConfirmPlugin.php',
+            include __DIR__ . '/../config/plugins/orders/MelisCommerceCartPlugin.php',
+            include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderHistoryPlugin.php',
+            include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderPlugin.php',
+            include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderAddressPlugin.php',
+            include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderShippingDetailsPlugin.php',
+            include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderMessagesPlugin.php',
+            include __DIR__ . '/../config/plugins/orders/MelisCommerceOrderReturnProductPlugin.php',
+
+            // products plugin configs
             include __DIR__ . '/../config/plugins/products/MelisCommerceProductSearchPlugin.php',
-    	    include __DIR__ . '/../config/plugins/products/MelisCommerceProductShowPlugin.php',
-    	    include __DIR__ . '/../config/plugins/products/MelisCommerceAttributesShowPlugin.php',
-    	    include __DIR__ . '/../config/plugins/products/MelisCommerceRelatedProductsPlugin.php',
+            include __DIR__ . '/../config/plugins/products/MelisCommerceProductShowPlugin.php',
+            include __DIR__ . '/../config/plugins/products/MelisCommerceAttributesShowPlugin.php',
+            include __DIR__ . '/../config/plugins/products/MelisCommerceRelatedProductsPlugin.php',
             include __DIR__ . '/../config/plugins/products/MelisCommerceProductListPlugin.php',
             include __DIR__ . '/../config/plugins/products/MelisCommerceProductPriceRangePlugin.php',
             include __DIR__ . '/../config/plugins/products/MelisCommerceProductAttributePlugin.php',
@@ -254,13 +265,13 @@ class Module
             include __DIR__ . '/../config/dashboard-plugins/MelisCommerceDashboardPluginOrdersNumber.config.php',
             include __DIR__ . '/../config/dashboard-plugins/MelisCommerceDashboardPluginSalesRevenue.config.php',
             include __DIR__ . '/../config/dashboard-plugins/MelisCommerceDashboardPluginOrderMessages.config.php',
-    	];
-    	
-    	foreach ($configFiles as $file) {
-    		$config = ArrayUtils::merge($config, $file);
-    	} 
-    	
-    	return $config;
+        ];
+        
+        foreach ($configFiles as $file) {
+            $config = ArrayUtils::merge($config, $file);
+        } 
+        
+        return $config;
     }
 
     public function getAutoloaderConfig()
@@ -322,6 +333,7 @@ class Module
                 'country',
                 'assoc-var',
                 'duplication',
+                'clients-group',
                 'settings',
             ];
             

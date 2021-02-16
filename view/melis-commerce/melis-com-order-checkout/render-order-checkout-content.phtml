@@ -1,9 +1,9 @@
 <?php 
-    $id = '';
-    if (!empty($this->zoneconfig['conf']['id'])){
-        $id = 'id="'.$this->zoneconfig['conf']['id'] .'"';
-    }
-    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+	$id = '';
+	if (!empty($this->zoneconfig['conf']['id'])){
+		$id = 'id="'.$this->zoneconfig['conf']['id'] .'"';
+	}
+	$data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
 ?>
 <style>
 .order-checkout-steps >li a{
@@ -13,43 +13,43 @@
 <div <?php echo $id.' '.$data_melisKey; ?> style="position: relative">
 	<div class="spacing-x2 innerAll">
 		<div class="relativeWrap">
-            <div class="box-generic">
-            	<div class="tabsbar">
-            		<ul class="order-checkout-steps">
-            			<?php 
-                        	if(!empty($this->zoneconfig['interface'])) {
-                        	    $active = 'active';
-                        	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
-                        	        
-                        	        $tabId = $menuConfig['conf']['id'];
-                        	        $tabIcon = $menuConfig['conf']['icon'];
-                        	        $tabName = $menuConfig['conf']['name'];
-                        	        
-                        	        echo '<li class="'.$tabIcon.' '.$active.'">
-                        	                <a href="#">
-                            	               <i></i> '.$this->translate($tabName).' 
-                    	                    </a>
-                        	                <a href="#'.$tabId.'" id="'.$tabId.'_nav" data-toggle="tab" class="hidden"></a>
-                        	            </li>';
-                        	        
-                        	        if (!empty($active)){
-                        	            $active = '';
-                        	        }
-                        	    }
-                        	}
-                        ?>
-            		</ul>
-            	</div>
-            	<div class="tab-content">
-                	<?php 
-                    	if(!empty($this->zoneconfig['interface'])) {
-                    	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
-                    	        echo $this->$keyConfig.' ';
-                    	    }
-                    	}
-                    ?>
-                </div>
-            </div>
-        </div>
+			<div class="box-generic">
+				<div class="tabsbar">
+					<ul class="order-checkout-steps">
+						<?php 
+							if(!empty($this->zoneconfig['interface'])) {
+								$active = 'active';
+								foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+									
+									$tabId = $menuConfig['conf']['id'];
+									$tabIcon = $menuConfig['conf']['icon'];
+									$tabName = $menuConfig['conf']['name'];
+									
+									echo '<li class="'.$tabIcon.' '.$active.'">
+											<a href="#">
+											<i></i> '.$this->translate($tabName).' 
+											</a>
+											<a href="#'.$tabId.'" id="'.$tabId.'_nav" data-toggle="tab" class="hidden"></a>
+										</li>';
+									
+									if (!empty($active)){
+										$active = '';
+									}
+								}
+							}
+						?>
+					</ul>
+				</div>
+				<div class="tab-content">
+					<?php 
+						if(!empty($this->zoneconfig['interface'])) {
+							foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+								echo $this->$keyConfig.' ';
+							}
+						}
+					?>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>

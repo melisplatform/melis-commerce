@@ -71,11 +71,15 @@ class MelisCommerceProductShowPlugin extends MelisTemplatingPlugin
         // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
         $productId = ($this->pluginFrontConfig['m_product_id'])? $this->pluginFrontConfig['m_product_id'] : null;
         $countryId = ($this->pluginFrontConfig['m_product_country'])? $this->pluginFrontConfig['m_product_country'] : null;
-        
-        $productSvc = $this->getServiceManager()->get('MelisComProductService');
+
+        $clientGroupId = 1;
+        $ecomAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
+        if ($ecomAuthSrv->hasIdentity())
+            $clientGroupId = $ecomAuthSrv->getClientGroup();
         
         // get variant, main variant is fetch by default
-        $product = $productSvc->getProductById($productId, $langId, $countryId);
+        $productSvc = $this->getServiceManager()->get('MelisComProductService');
+        $product = $productSvc->getProductById($productId, $langId, $countryId, $clientGroupId);
         
         // Create an array with the variables that will be available in the view
         $viewVariables = array(
@@ -129,7 +133,7 @@ class MelisCommerceProductShowPlugin extends MelisTemplatingPlugin
                     $success = false;
                     $errors = array();
                     
-                    $post = get_object_vars($request->getPost());
+                    $post = $request->getPost()->toArray();
                     
                     $form->setData($post);
                     

@@ -931,7 +931,7 @@ class MelisComCouponController extends MelisAbstractActionController
         $couponTable = $this->getServiceManager()->get('MelisEcomCouponClientTable');
         
         if($this->getRequest()->isPost()){
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
             if($postValues['method'] == 'add'){
@@ -984,7 +984,7 @@ class MelisComCouponController extends MelisAbstractActionController
         $couponTable = $this->getServiceManager()->get('MelisEcomCouponProductTable');
         
         if($this->getRequest()->isPost()){
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
             if($postValues['method'] == 'add'){
@@ -1055,7 +1055,7 @@ class MelisComCouponController extends MelisAbstractActionController
         $valuesForm = $factory->createForm($valuesFormConfig);
         
         if($this->getRequest()->isPost()){
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues, array('coup_code'));
             
             if (!empty($postValues['couponId'])){
@@ -1202,7 +1202,7 @@ class MelisComCouponController extends MelisAbstractActionController
         $couponClientTable = $this->getServiceManager()->get('MelisEcomCouponClientTable');
         
         if($this->getRequest()->isPost()){
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $couponId = $postValues['couponId'];
             if($couponClientTable->removeCouponFromClient($couponId, $postValues['clientId'])){
                 $success = 1;

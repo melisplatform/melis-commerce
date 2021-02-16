@@ -230,7 +230,7 @@ class MelisComProductSearchService extends MelisComGeneralService
 	 */
 	public function searchProductFull($search, $fieldsTypeCodes = array(),
 									$attributeValuesIds = array(), $priceMin = null, $priceMax = null,
-									$langId = null, $categoryId = array(), $countryId = null, 
+									$langId = null, $categoryId = array(), $countryId = null, $groupId = null,
 									$onlyValid = true, $start = 0, $limit = null, $sort = null, $priceColumn = null)
 	{
 		// Event parameters prepare
@@ -239,19 +239,69 @@ class MelisComProductSearchService extends MelisComGeneralService
 	
 		// Sending service start event
 		$arrayParameters = $this->sendEvent('meliscommerce_service_productsearch_full_pricerange_start', $arrayParameters);
-		
+
 		// Service implementation start
+
+
 		$selectedVariants = array();
-		$prodTable = $this->getServiceManager()->get('MelisEcomProductTable');
+
+		// Variant attribute filter
+		$prodTbl = $this->getServiceManager()->get('MelisEcomProductTable');
 		if(!empty($arrayParameters['attributeValuesIds']) && is_array($arrayParameters['attributeValuesIds'])) {
-			$selectedVariants = $prodTable->getProductVariantByAttributesId($arrayParameters['attributeValuesIds']);
+			$selectedVariants = $prodTbl->getProductVariantByAttributesId($arrayParameters['attributeValuesIds']);
 			if(empty($selectedVariants)){
 				$selectedVariants = array('');
 			}
 		}
 
+		// Variant price filter
+		$prdSrv = $this->getServiceManager()->get('MelisComProductService');
+		$melisComPriceService = $this->getServiceManager()->get('MelisComPriceService');
+
+		if(!empty($arrayParameters['priceMin']) || !empty($arrayParameters['priceMax'])) {
+
+			foreach($prdSrv->getProductList($arrayParameters['langId'], $arrayParameters['categoryId'], $arrayParameters['countryId'], true) As $product) {
+
+				$productId = $product->getId();
+
+				foreach ($prdSrv->getProductVariants($productId, true) As $variant ) {
+
+					// Product variant price
+					$prdVarPrice = $melisComPriceService->getItemPrice($variant->var_id, $arrayParameters['countryId'], $arrayParameters['groupId']);
+
+					if (!is_null($prdVarPrice)) {
+
+						$columnPrice = $arrayParameters['priceColumn'];
+
+						$flag = true;
+						if (!is_null(($prdVarPrice['price_details'][$columnPrice])))
+							if (!is_numeric(((float)$prdVarPrice['price_details'][$columnPrice])))
+								$flag = false; 
+
+						if (!empty($arrayParameters['priceMin']) && $flag)
+							if ($prdVarPrice['price_details'][$columnPrice] < $arrayParameters['priceMin'])
+								$flag = false;
+						
+						if (!empty($arrayParameters['priceMax']) && $flag)
+							if ($prdVarPrice['price_details'][$columnPrice] > $arrayParameters['priceMax'])
+								$flag = false;
+
+						if ($flag && !in_array($variant->var_id, $selectedVariants)){
+							$selectedVariants[] = $variant->var_id;
+						}else{
+							// Removing variants not qualified from filter
+							$variantId = $variant->var_id;
+							$selectedVariants = array_filter($selectedVariants, function( $val) use ($variantId)  {
+								return $val != $variantId;
+							});
+						}
+					}
+				}
+			}
+		}
+
 		$productData = array();
-		$data = $prodTable->getProductByNameTextTypeAttrIdsAndPrice($arrayParameters['search'], $arrayParameters['fieldsTypeCodes'],
+		$data = $prodTbl->getProductByNameTextTypeAttrIdsAndPrice($arrayParameters['search'], $arrayParameters['fieldsTypeCodes'],
 			$selectedVariants, $arrayParameters['categoryId'], (float) $arrayParameters['priceMin'], (float) $arrayParameters['priceMax'],  $arrayParameters['langId'],
 			$arrayParameters['countryId'], (int) $arrayParameters['onlyValid'], $arrayParameters['start'], $arrayParameters['limit'], $arrayParameters['sort'], $arrayParameters['priceColumn']
 		);
@@ -263,6 +313,7 @@ class MelisComProductSearchService extends MelisComGeneralService
 					$productData[] = $product;
 				}else{
 					if(!empty($product->price)){
+						// dump($product);
 						$productData[] = $product;
 					}
 				}
@@ -272,15 +323,15 @@ class MelisComProductSearchService extends MelisComGeneralService
 			
 			$productData = array_unique($productData, SORT_REGULAR);
 			
-			$prdSrv = $this->getServiceManager()->get('MelisComProductService');
+			
 			
 			foreach ($productData As $val)
 			{
 				/**
-				 * Retieving basic details of a single product
+				 * Retrieving basic details of a single product
 				 * from Product service
 				 */
-				$results[] = $prdSrv->getProductBasicDetails($val->prd_id, $countryId, $langId);
+				$results[] = $prdSrv->getProductBasicDetails($val->prd_id, $arrayParameters['countryId'], $arrayParameters['groupId'], $arrayParameters['langId']);
 			}
 			
 		}

@@ -258,10 +258,10 @@ class MelisComCategoryController extends MelisAbstractActionController
             $categoryData = $melisComCategoryService->getCategoryById($catId);
             $category = $categoryData->getCategory();
 
-            $validFrom = empty($category->cat_date_valid_start) ? null : ((string) $category->cat_date_valid_start != '0000-00-00 00:00:00') ?
-                strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($category->cat_date_valid_start)) : null;
-            $validTo = empty($category->cat_date_valid_end) ? null : ((string) $category->cat_date_valid_end  != '0000-00-00 00:00:00') ?
-                strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($category->cat_date_valid_end)) : null;
+            $validFrom = empty($category->cat_date_valid_start) ? null : (((string) $category->cat_date_valid_start != '0000-00-00 00:00:00') ?
+                strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($category->cat_date_valid_start)) : null);
+            $validTo = empty($category->cat_date_valid_end) ? null : (((string) $category->cat_date_valid_end  != '0000-00-00 00:00:00') ?
+                strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($category->cat_date_valid_end)) : null);
 
             if (!is_null($validFrom))
             {
@@ -345,7 +345,7 @@ class MelisComCategoryController extends MelisAbstractActionController
             $categoryData = $melisComCategoryService->getCategoryById($catId);
             $category = $categoryData->getCategory();
 
-            $view->categorystatus = empty($category->cat_status) ? '' : ($category->cat_status) ? 'checked' : '';
+            $view->categorystatus = empty($category->cat_status) ? '' : (($category->cat_status) ? 'checked' : '');
         }
 
         $view->melisKey = $melisKey;
@@ -478,7 +478,7 @@ class MelisComCategoryController extends MelisAbstractActionController
             // Category SEO Datas
             $categorySEO = $datas['seo_data'];
 
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
             if ($postValues['cat_father_cat_id'] == '-1'){
@@ -547,8 +547,7 @@ class MelisComCategoryController extends MelisAbstractActionController
 
         if($request->isPost()) {
 
-            $postValues = get_object_vars($request->getPost());
-
+            $postValues = $request->getPost()->toArray();
             $catId = $postValues['cat_id'];
 
             // Category Countries Data Preparation
@@ -733,7 +732,7 @@ class MelisComCategoryController extends MelisAbstractActionController
         $catCountriesData = array();
 
         if($request->isPost()) {
-            $postValues = get_object_vars($request->getPost());
+            $postValues = $request->getPost()->toArray();
 
             // Category Countries Data Preparation
             if (!empty($postValues['cat_country'])){
@@ -780,7 +779,7 @@ class MelisComCategoryController extends MelisAbstractActionController
 
         if($request->isPost()) {
 
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             
             if ($postValues['cat_father_cat_id'] == '-1'){
                 $type = 'catalog';
@@ -884,7 +883,7 @@ class MelisComCategoryController extends MelisAbstractActionController
     public function validateCategorySeoAction(){
 
         $request = $this->getRequest();
-        $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getRequest()->getPost()->toArray();
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
         $melisComSeoService = $this->getServiceManager()->get('MelisComSeoService');
@@ -912,7 +911,7 @@ class MelisComCategoryController extends MelisAbstractActionController
         $logTypeCode = '';
 
         if($request->isPost()) {
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
             $catId = (int) $postValues['cat_id'];
@@ -935,34 +934,14 @@ class MelisComCategoryController extends MelisAbstractActionController
 
             // Checking if Category has a Sub Categories
             if (empty($categoryChildren)){
-                $melisEcomCategoryTable = $this->getServiceManager()->get('MelisEcomCategoryTable');
-                $melisEcomCategoryTable->deleteById($catId);
-                // Reorder Categories
+                //delete category
+                $res = $melisComCategoryService->deleteCategoryById($catId, $catFatherId);
+                if($res){
+                    $textMessage = 'tr_meliscommerce_categories_'.$type.'_delete_success';
+                    $status = 1;
+                }else
+                    $textMessage = 'tr_meliscommerce_categories_err_'.$type.'_unable_delete';
 
-                $catData = $melisEcomCategoryTable->getChildrenCategoriesOrderedByOrder($catFatherId);
-                $catDatas = $catData->toArray();
-
-                $ecomSeotable = $this->getServiceManager()->get('MelisEcomSeoTable');
-                $ecomSeotable->deleteByField('eseo_category_id', $catId);
-
-                // Re-ordering the Children of the Parent Category
-                $ctr = 1;
-                foreach ($catDatas As $key => $val){
-                    $catDatas[$key]['cat_order'] = $ctr++;
-                }
-
-                // Updating  Children of the Parent Category one by one
-                foreach ($catDatas As $key => $val){
-                    $melisEcomCategoryTable->save($catDatas[$key],$catDatas[$key]['cat_id']);
-                }
-
-                $melisEcomCategoryTransTable = $this->getServiceManager()->get('MelisEcomCategoryTransTable');
-                $melisEcomCategoryTransTable->deleteByField('catt_category_id', $catId);
-                $melisEcomCountryCategoryTable = $this->getServiceManager()->get('MelisEcomCountryCategoryTable');
-                $melisEcomCountryCategoryTable->deleteByField('ccat_category_id', $catId);
-
-                $textMessage = 'tr_meliscommerce_categories_'.$type.'_delete_success';
-                $status = 1;
             }else{
                 $textMessage = 'tr_meliscommerce_categories_err_'.$type.'_unable_delete';
                 $errors['category'] = array(
@@ -1003,7 +982,7 @@ class MelisComCategoryController extends MelisAbstractActionController
         $textMessage = '';
 
         if($request->isPost()) {
-            $postValues = get_object_vars($request->getPost());
+            $postValues = $request->getPost()->toArray();
 
             $catPrdOrderData = explode(',', $postValues['catPrdOrderData']);
 
@@ -1048,7 +1027,7 @@ class MelisComCategoryController extends MelisAbstractActionController
 
         if($request->isPost())
         {
-            $postValues = get_object_vars($request->getPost());
+            $postValues = $request->getPost()->toArray();
 
             $melisComCategoryService = $this->getServiceManager()->get('MelisComCategoryService');
 

@@ -344,7 +344,7 @@ class MelisComCategoryListController extends MelisAbstractActionController
          
         if($request->isPost()) {
              
-            $datas = get_object_vars($request->getPost());
+            $datas = $request->getPost()->toArray();
              
             if (!empty($datas)){
                 
@@ -411,6 +411,9 @@ class MelisComCategoryListController extends MelisAbstractActionController
             
             // Updating  Children of the Parent Category one by one
             foreach ($catDatas As $key => $val){
+                // delete  parent cache
+                $this->getServiceManager()->get('MelisComCacheService')->deleteCache('category', $val['cat_father_cat_id']);
+                // save
                 $melisEcomCategoryTable->save($catDatas[$key],$catDatas[$key]['cat_id']);
             }
         }

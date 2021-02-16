@@ -275,7 +275,7 @@ class MelisComCountryController extends MelisAbstractActionController
             $hasErrorFlag = false;
             $countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
 
-            $postData = get_object_vars($this->getRequest()->getPost());
+            $postData = $this->getRequest()->getPost()->toArray();
             $postData = $this->getTool()->sanitizePost($postData);
             $this->getEventManager()->trigger('meliscommerce_country_save_start', $this, $postData);
             if($postData['ctry_id']) {

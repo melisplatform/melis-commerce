@@ -177,6 +177,7 @@ return [
                                         'module' => 'MelisCommerce',
                                         'controller' => 'MelisComPrice',
                                         'action' => 'render-prices-tab-content-right-container',
+                                        'jscallback' => 'widgetCollapsibleInit()',
                                     ],
                                     'interface' => [
                                         'meliscommerce_prices_tab_country_form_heading' => [

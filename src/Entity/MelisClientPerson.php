@@ -14,39 +14,48 @@ class MelisClientPerson
 	protected $id;
 	protected $person;
 	protected $addresses;
+	protected $emails;
 
 	public function getId()
 	{
-	    return $this->id;
+		return $this->id;
 	}
 	
 	public function setId($id)
 	{
-	    $this->id = $id;
+		$this->id = $id;
 	}
 	
 	public function getPerson()
 	{
-	    return $this->person;
+		return $this->person;
 	}
 	
 	public function setPerson($person)
 	{
-	    $this->person = $person;
+		$this->person = $person;
 	}
 	
 	public function getAddresses()
 	{
-	    return $this->addresses;
+		return $this->addresses;
 	}
 	
 	public function setAddresses($addresses)
 	{
-	    $this->addresses = $addresses;
+		$this->addresses = $addresses;
 	}
-	
-    public function getArrayCopy()
-    {
-        return get_object_vars($this);
+
+	public function setEmails($emails) {
+	    $this->emails = $emails;
     }
+
+    public function getEmails() {
+	    return $this->emails;
+    }
+	
+	public function getArrayCopy()
+	{
+		return get_object_vars($this);
+	}
 }

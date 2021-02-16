@@ -233,7 +233,7 @@ class MelisComCurrencyController extends MelisAbstractActionController
             $hasErrorFlag = false;
             $currencyTable = $this->getServiceManager()->get('MelisEcomCurrencyTable');
     
-            $postData = get_object_vars($this->getRequest()->getPost());
+            $postData = $this->getRequest()->getPost()->toArray();
             $postData = $this->getTool()->sanitizePost($postData);
             $this->getEventManager()->trigger('meliscommerce_currency_save_start', $this, $postData);
             if($postData['cur_id']) {

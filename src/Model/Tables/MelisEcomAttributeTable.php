@@ -151,5 +151,42 @@ class MelisEcomAttributeTable extends MelisEcomGenericTable
         
         return $resultData;
     }
-    
+
+    public function getProductsUsingAttributeByAttributeId($attributeId) {
+        $select = $this->getTableGateway()->getSql()->select();
+        $select
+            ->join(
+            'melis_ecom_product_attribute',
+            'melis_ecom_attribute.attr_id = melis_ecom_product_attribute.patt_attribute_id',
+            ['*'],
+            $select::JOIN_INNER
+            );
+
+        $select->where->equalTo('melis_ecom_attribute.attr_id', $attributeId);
+        $resultData = $this->getTableGateway()->selectWith($select);
+
+        return $resultData;
+    }
+
+    public function getVariantsUsingAttributeByAttributeId($attributeId) {
+        $select = $this->getTableGateway()->getSql()->select();
+        $select
+            ->join(
+                'melis_ecom_attribute_value',
+                'melis_ecom_attribute.attr_id = melis_ecom_attribute_value.atval_attribute_id',
+                ['*'],
+                $select::JOIN_INNER
+            )
+            ->join(
+                'melis_ecom_variant_attribute_value',
+                'melis_ecom_variant_attribute_value.vatv_attribute_value_id = melis_ecom_attribute_value.atval_id',
+                ['*'],
+                $select::JOIN_INNER
+            );
+
+        $select->where->equalTo('melis_ecom_attribute.attr_id', $attributeId);
+        $resultData = $this->getTableGateway()->selectWith($select);
+
+        return $resultData;
+    }
 }

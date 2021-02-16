@@ -390,7 +390,7 @@ class MelisComOrderStatusController extends MelisAbstractActionController
         $appConfigFormTrans = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_order_status/meliscommerce_order_status_trans_form','meliscommerce_order_status_trans_form');
         
         if($this->getRequest()->isPost()){
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
             
             $orderStatusData = $postValues['order_status'][0];
@@ -552,7 +552,7 @@ class MelisComOrderStatusController extends MelisAbstractActionController
         $orderSvc = $this->getServiceManager()->get('MelisComOrderService');
         if($this->getRequest()->isPost()){
             $this->getEventManager()->trigger('meliscommerce_order_status_delete_start', $this, array());
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $orderStatusId = $postValues['ostaId'];
             if($orderSvc->deleteOrderStatusById($orderStatusId)){
                 $success = 1;

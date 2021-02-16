@@ -105,7 +105,7 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
                 if (isset($clientOrder['details']))
                 {
                     $clientOrderVariant =  $clientOrder['details'];
-                    
+
                     if (!empty($clientOrderVariant))
                     {
                         $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
@@ -113,19 +113,19 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
                         
                         foreach ($clientOrderVariant As $key => $val)
                         {
+                            $variantId = $val['variant_id'];
                             $variantErr = '';
-                            if (!empty($validatedBasket['basket']['ko'][$key]['error']))
+                            if (!empty($validatedBasket['basket']['ko'][$variantId]['error']))
                             {
-                                $variantErr = $translator->translate('tr_'.$validatedBasket['basket']['ko'][$key]['error']);
+                                $variantErr = $translator->translate('tr_'.$validatedBasket['basket']['ko'][$variantId]['error']);
                                 $hasErr = true;
                             }
                             
-                            $variantId = $key;
                             $variant = $melisComVariantService->getVariantById($variantId);
                             $productId = $variant->getVariant()->var_prd_id;
                             $varSku = $variant->getVariant()->var_sku;
                             
-                            $currency = $val['price_details']['currency_symbol'];
+                            $currency = $val['price_details']['price_currency']['symbol'];
                             
                             $data = array(
                                 'var_id' => $variantId,
@@ -145,47 +145,28 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
                     }
                 }
 
-                if (isset($clientOrder['totalWithProductCoupon']))
-                {
-                    $subTotal = $clientOrder['totalWithProductCoupon'];
-                }
-                
-                if (isset($clientOrderCost['costs']['total']))
-                {
-                    $total = $clientOrderCost['costs']['total'];
-                }
-                
-                if (isset($clientOrderCost['costs']['shipment']['total']))
-                {
-                    $shippingTotal = $clientOrderCost['costs']['shipment']['total'];
-                }
-                
-                if (isset($clientOrderCost['costs']['order']['orderDiscount']))
-                {
-                    $totalDiscount = $clientOrderCost['costs']['order']['orderDiscount'];
-                }
+                $subTotal = $clientOrder['subTotal'];
+                $total = $clientOrder['total'];
+                $totalDiscount = $clientOrderCost['costs']['order']['orderDiscount'];
 
-                foreach($clientOrder['generalCoupons'] as $generalCoupon)
-                {
-                    if(!empty($generalCoupon->coup_percentage))
-                    {
-                        $totalDiscount = ($generalCoupon->coup_percentage / 100) * $subTotal;
-                        $discountInfo[] = array(
+                foreach($clientOrder['generalCoupons'] as $generalCoupon) {
+                    if(!empty($generalCoupon->coup_percentage)) {
+                        $discountInfo[] = [
                             'details' => $generalCoupon->coup_percentage.'%',
                             'amount' => $currency.number_format($totalDiscount, 2),
                             'code' => $generalCoupon->coup_code,
-                        );
-                    }
-                    elseif (!empty($generalCoupon->coup_discount_value))
-                    {
-                        $totalDiscount = $generalCoupon->coup_discount_value;
-                        $discountInfo[] =  array(
+                        ];
+                    } elseif (!empty($generalCoupon->coup_discount_value)) {
+                        $discountInfo[] =  [
                             'details' => $totalDiscount,
                             'amount' => $currency.number_format($totalDiscount,2),
                             'code' => $generalCoupon->coup_code,
-                        );
+                        ];
                     }
                 }
+
+                if (isset($clientOrderCost['costs']['shipment']['total'])) 
+                    $shippingTotal = $clientOrderCost['costs']['shipment']['total'];
             }
             
             // Getting the client basket list using Client key
@@ -262,7 +243,7 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
                     $success = false;
                     $errors = array();
                     
-                    $post = get_object_vars($request->getPost());
+                    $post = $request->getPost()->toArray();
                     
                     $form->setData($post);
                     

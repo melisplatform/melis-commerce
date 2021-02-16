@@ -47,9 +47,8 @@ class MelisComShipmentCostService extends MelisComGeneralService
         //  Results initialization
         $shipment['costs']['shipment']['total'] = $total;
         if (!empty($errors))
-        {
             $shipment['costs']['shipment']['errors'] = $errors;
-        }
+        
         // Service implementation end
         
         $arrayParameters['results'] = $shipment;

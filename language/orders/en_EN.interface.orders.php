@@ -12,6 +12,7 @@
 	    'tr_meliscommerce_orders_content_tab_paymnet' => 'Payment',
 	    'tr_meliscommerce_orders_content_tab_shipping' => 'Shipping',
 	    'tr_meliscommerce_orders_content_tab_messages' => 'Messages',
+	    'tr_meliscommerce_orders_content_tab_return_products' => 'Returns',
 	    'tr_meliscommerce_orders_content_tabs_content_main_left_header_title' => 'Properties',
 	    'tr_meliscommerce_orders_content_tabs_content_baskets_left_header_title' => 'Basket',
 	    'tr_meliscommerce_orders_content_tabs_content_address_left_header_title' => 'Address',
@@ -20,6 +21,7 @@
 	    'tr_meliscommerce_orders_content_tabs_content_messages_left_header_title' => 'Messages',
 	    'tr_meliscommerce_orders_content_tabs_content_messages_right_header_add' => 'Add message',
 	    'tr_meliscommerce_orders_content_tabs_content_shipping_right_header_add' => 'Add a shipping',
+	    'tr_meliscommerce_orders_content_tabs_content_return_products_left_header_title' => 'Return of products',
 	    
 	    // order list table
 	    'tr_meliscommerce_order_list_header_title' => 'Order list',
@@ -201,6 +203,10 @@
 	    'tr_meliscommerce_plugin_order_messages_description' => 'This plugin displays order messages',
 	    'tr_meliscommerce_plugin_order_messages_area' => 'Message Area',
 
+	    //MelisCommerceOrderReturnProductPlugin()
+        'tr_meliscommerce_plugin_order_return_product_name' => 'Order: Return Products',
+        'tr_meliscommerce_plugin_order_return_product_description' => 'This plugin displays the list of products from the order and a form to request for sending back products.',
+
 	    // Dashborad plugin
 
         //number of orders plugin
@@ -251,4 +257,9 @@
         'tr_meliscommerce_dashboardplugin_oct' => 'Oct %day',
         'tr_meliscommerce_dashboardplugin_nov' => 'Nov %day',
         'tr_meliscommerce_dashboardplugin_dec' => 'Dec %day',
+
+        //return products
+        'tr_melis_commerce_orders_return_product_form_header' => 'You wish to return this product, please fill the form:',
+        'tr_melis_commerce_orders_return_product_placed_on' => 'Placed On:',
+        'tr_melis_commerce_orders_return_details' => 'Details: ',
 	);

@@ -9,11 +9,27 @@
     <div id="basket-order-checkout" class="red-box-panel basket-panel">
         <h3><i class="icon-shopping-basket"></i> <?php echo $this->translate('tr_meliscommerce_order_checkout_variant_basket')?></h3>
         <div class="red-box-panel-list basket-panel-list">         
-        	<?php foreach ($this->basket As $val):?>    
-            	<div class="order-basket-list">
+            <?php foreach ($this->basket As $val):?>    
+                <div class="order-basket-list">
                     <div class="form-group">                                                
                         <h4><?php echo $val['product_name'] ?></h4>
-                        <span><?php echo $val['var_sku'] ?></span>
+                        <span><?php echo $val['var_sku'] ?> - </span>
+                        <?php $qtipId = uniqId() ?>
+                        <a id="row-<?= $qtipId ?>" 
+                            class="price-log-data-tooltip" 
+                            data-hasqtip="1" 
+                            aria-describedby="qtip-<?= $qtipId ?>">
+                                <span class="hidden price-log-data">
+                                    <?php 
+                                        $logs = [];
+                                        if (!empty($val['price_details']['logs'])) 
+                                            $logs = $val['price_details']['logs'];
+
+                                        echo json_encode($logs);
+                                    ?>
+                                </span>
+                                <?= $val['var_price'] ?>
+                        </a>
                     </div>
                     <div class="form-group">
                         <i class="fa fa-minus order-basket-variant-qty-btn summary-qty-minus text-primary" data-variantid="<?php echo $val['var_id']?>"></i>
@@ -27,71 +43,71 @@
                     ?>
                     <div class="form-group">                                                
                         <span><?= $title ?></span>
-  						<strong class="float-right">(<?= $this->countryCurrencySympbol.number_format($discount['discount'], 2)?>) x <?= $discount['qty']?></strong>
+                        <strong class="float-right">(<?= $this->countryCurrencySympbol.number_format($discount['discount'], 2)?>) x <?= $discount['qty']?></strong>
                     </div>
                     <?php 
                             $title = '&nbsp;';
                         }
                     ?>
                 </div>
-        	<?php endforeach;?>   
-        	
-        	<?php if (!empty($this->basket)):
-        	$couponCode = empty($this->couponErr)? '' : $this->couponCode;
-        	?>
-        		<div class="row">
-        			<div class="col-xs-7">
+            <?php endforeach;?>   
+            
+            <?php if (!empty($this->basket)):
+            $couponCode = empty($this->couponErr)? '' : $this->couponCode;
+            ?>
+                <div class="row">
+                    <div class="col-xs-7">
                         <div class="input-group">
-                          	<input type="text" class="form-control" placeholder="<?php echo $this->translate('tr_meliscommerce_order_checkout_variant_coupon_code')?>" id="orderCheckoutCouponCode" value="<?php echo $couponCode ?>">
-                          	<span class="input-group-btn">
-                            	<button class="btn btn-default" id="orderCheckoutValidateCoupon"><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_validate_coupon')?></button>
-                          	</span>
+                            <input type="text" class="form-control" placeholder="<?php echo $this->translate('tr_meliscommerce_order_checkout_variant_coupon_code')?>" id="orderCheckoutCouponCode" value="<?php echo $couponCode ?>">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" id="orderCheckoutValidateCoupon"><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_validate_coupon')?></button>
+                            </span>
                         </div>
                         <?php if (!empty($this->couponErr)):?>
-                        	<div class="alert alert-danger" style="margin-top: 5px; padding: 7px; border-radius: 0px"><?php echo $this->couponErr?><br></div>
+                            <div class="alert alert-danger" style="margin-top: 5px; padding: 7px; border-radius: 0px"><?php echo $this->couponErr?><br></div>
                         <?php endif;?>
                         <div class="me-action-button-cont">
-                        	<?php 
-                        	
-                        	foreach ($this->coupons as $key => $value){
-                        	?>
-                        	<span class="orderValidCoupons" id="<?= $key; ?>_orderCoupon" data-couponid="<?= $key; ?>"  data-couponcode="<?= $value->coup_code; ?>">
-                            	<span class="ab-attr"><?= $value->coup_code?> <i class="prdDelCat fa fa-times"></i>
-                            	</span>
-                    		</span>
-                    		<?php }?>
-    					</div>
-        			</div>
-        			<div class="col-xs-5" align="right">
-        				<div class="form-group">
-                        	<h4><strong><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_sub_total')?>: <?php echo $this->countryCurrencySympbol.number_format($this->subTotal, 2)?></strong></h4>
+                            <?php 
+                            
+                            foreach ($this->coupons as $key => $value){
+                            ?>
+                            <span class="orderValidCoupons" id="<?= $key; ?>_orderCoupon" data-couponid="<?= $key; ?>"  data-couponcode="<?= $value->coup_code; ?>">
+                                <span class="ab-attr"><?= $value->coup_code?> <i class="prdDelCat fa fa-times"></i>
+                                </span>
+                            </span>
+                            <?php }?>
+                        </div>
+                    </div>
+                    <div class="col-xs-5" align="right">
+                        <div class="form-group">
+                            <h4><strong><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_sub_total')?>: <?php echo $this->countryCurrencySympbol.number_format($this->subTotal, 2)?></strong></h4>
                         </div>
                         <div class="form-group">
-                        	<h4><strong><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_discount')?></strong></h4>
-                        </div>
-                         <div class="form-group">
-                        	<strong><?php echo $this->translate('Product')?>: <?php echo $this->countryCurrencySympbol.number_format($this->productDiscount, 2)?></strong>
-                        	<?php if (!empty($this->discountInfo)):?>
-                        		<p><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_coupon_value')?>: <?php echo $this->discountInfo?></p>
-                        	<?php endif;?>
+                            <h4><strong><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_discount')?></strong></h4>
                         </div>
                         <div class="form-group">
-                        	<strong><?php echo $this->translate('Order')?>: <?php echo $this->countryCurrencySympbol.number_format($this->totalDiscount, 2)?></strong>
-                        	<?php if (!empty($this->discountInfo)):?>
-                        		<p><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_coupon_value')?>: <?php echo $this->discountInfo?></p>
-                        	<?php endif;?>
+                            <strong><?php echo $this->translate('tr_meliscommerce_products_Products')?>: <?php echo $this->countryCurrencySympbol.number_format($this->productDiscount, 2)?></strong>
+                            <?php if (!empty($this->discountInfo)):?>
+                                <p><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_coupon_value')?>: <?php echo $this->discountInfo?></p>
+                            <?php endif;?>
                         </div>
                         <div class="form-group">
-                        	<h4>
-                        		<strong><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_total')?>: <?php echo $this->countryCurrencySympbol.number_format($this->total, 2)?></strong>
-                        	</h4>
+                            <strong><?php echo $this->translate('tr_meliscommerce_orders_Order')?>: <?php echo $this->countryCurrencySympbol.number_format($this->totalDiscount, 2)?></strong>
+                            <?php if (!empty($this->discountInfo)):?>
+                                <p><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_coupon_value')?>: <?php echo $this->discountInfo?></p>
+                            <?php endif;?>
                         </div>
-        			</div>
-        		</div>
+                        <div class="form-group">
+                            <h4>
+                                <strong><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_total')?>: <?php echo $this->countryCurrencySympbol.number_format($this->total, 2)?></strong>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
             <?php else:?>
                 <div class="me-file-cont">
-        			<p><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_empty_basket')?></p>
-        		</div>
+                    <p><?php echo $this->translate('tr_meliscommerce_order_checkout_variant_empty_basket')?></p>
+                </div>
             <?php endif;?>
         </div>
     </div>

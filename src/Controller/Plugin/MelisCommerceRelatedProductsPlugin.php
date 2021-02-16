@@ -151,7 +151,7 @@ class MelisCommerceRelatedProductsPlugin extends MelisTemplatingPlugin
                     $success = false;
                     $errors = array();
 
-                    $post = get_object_vars($request->getPost());
+                    $post = $request->getPost()->toArray();
 
                     $form->setData($post);
 

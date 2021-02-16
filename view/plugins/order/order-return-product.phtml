@@ -1,0 +1,81 @@
+<?php
+$order = $this->returnProducts;
+if (!empty($order)){?>
+    <h3><?= $this->translate('tr_meliscommerce_plugin_order_return_product_name');?></h3>
+    
+    <p><?= $this->translate('tr_meliscommerce_order_list_col_reference');?>: <?php echo $order['reference']?></p>
+    
+    <p><?= $this->translate('tr_melis_commerce_orders_return_product_placed_on');?> <?php echo date("F, d Y" ,strtotime($order['date'])) . ' at ' .date("H:iA" ,strtotime($order['date'])) ?></p>
+    
+    <p><?= $this->translate('tr_meliscommerce_order_list_col_status');?>: <?php echo $order['status'] ?></p>
+    
+    <table class="table table-bordered">
+    	<thead>
+    		<tr>
+    			<th><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_product');?></th>
+    			<th><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_qty')?></th>
+    			<th><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_unit_price'); ?></th>
+    			<th><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_discount'); ?></th>
+    			<th><?= $this->translate('Return'); ?></th>
+    			<th><?= $this->translate('tr_meliscommerce_plugin_checkout_cart_sub_total'); ?></th>
+    		</tr>
+    	</thead>
+    	<tbody>	
+    		<?php foreach ($order['items'] As $val){ ?>
+        		<tr>
+        			<td><?php echo $val['productName'].' ('.$val['sku'].')' ?></td>
+        			<td align="right"><?php echo $val['quantity']?></td>
+        			<td align="right"><?php echo $val['currency'].number_format($val['price'], 2) ?></td>
+        			<td align="right"><?php echo $val['currency'].$val['discount'] ?></td>
+                    <td class="ctg-type text-center"><p>Returned: <?= $val['returnedProduct']; ?><br><?= ($val['returnedProduct'] >= $val['quantity']) ? '' : '<span data-variantid="'.$val['variant_id'].'" data-rm-pr="'.$val['remainingQtyToReturn'].'" data-sku="'.$val['sku'].'" class="return-product-show-form">Return product</span>';?></p></td>
+        			<td align="right"><?php echo $val['currency'].$val['total'] ?></td>
+        		</tr>
+    		<?php } ?>
+    	</tbody>
+    </table>
+    <div class="def-order-return-product-msg-form">
+        <div class="rp-msg-form-cont hidden">
+            <div class="row">
+                <div class="col-md-6 col-sm-12">
+                    <br>
+                    <h4><?= $this->translate('tr_melis_commerce_orders_return_product_form_header');?></h4>
+                    <?php
+                    $form = $this->addMessageForm;
+                    $form->prepare();
+                    echo $this->form()->openTag($form);
+
+                    foreach ($form->getElements() As $key => $val)
+                    {
+                        echo '<div class="form-group row" style="margin-bottom:7px;">';
+
+                        if ($val->getLabel())
+                        {
+                            $required = '';
+                            if(!empty($val->getAttribute('required'))){
+                                $required = ' <sup>*</sup>';
+                            }
+                            echo $this->formLabel()->openTag($val);
+                            echo $val->getLabel();
+                            echo $required;
+                            echo $this->formLabel()->closeTag();
+                        }
+
+                        echo '<div class="col-md-8">';
+                        echo $this->formElement($val, array('class' => 'form-control'));
+                        echo $this->formElementErrors($val, array('class' => 'default-form-err-msg-plugin text-danger'));
+                        echo '</div>';
+                        echo '</div>';
+                    }
+                    echo '<button type="submit" class="btn btn-default">'.$this->translate('Submit request for return').'</button>';
+                    echo $this->form()->closeTag();
+                    ?>
+                </div>
+                <br>
+            </div>
+        </div>
+    </div>
+<?php }else{ ?>
+	<div class="alert alert-warning">
+		<?= $this->translate('tr_meliscommerce_general_common_no_result_found'); ?>
+	</div>
+<?php }?>

@@ -6,19 +6,20 @@
     $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
 ?>
 <div <?php echo $id.' '.$data_melisKey; ?>>
-	<div class="row">
+    <div class="row">
         <?php 
-        	if(!empty($this->zoneconfig['interface'])) {
-        	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
-        	        echo $this->$keyConfig.' ';
-        	    }
-        	}
+            if(!empty($this->zoneconfig['interface'])) {
+                foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+                    echo $this->$keyConfig.' ';
+                }
+            }
         ?>
     </div>
     <br>
     <div class="row bottom-bottons">
         <div class="me-hl col-xs-12 col-md-12">
-            <button data-tabid="#id_meliscommerce_order_checkout_choose_contact_step_nav" class="float-right btn btn-success orderCheckoutFirstStepBtn orderCheckoutNextStep" disabled title="<?php echo $this->translate('tr_meliscommerce_order_checkout_product_basket_empty')?>"><?php echo $this->translate('tr_meliscommerce_order_checkout_common_next')?> <i class="fa fa-arrow-right"></i> </button>
+            <button class="btn btn-success orderCheckoutPrevStep" data-tabid="#id_meliscommerce_order_checkout_choose_contact_step_nav"><i class="fa fa-arrow-left"></i> <?php echo $this->translate('tr_meliscommerce_order_checkout_common_prev')?> </button>
+            <button data-tabid="#id_meliscommerce_order_checkout_select_addresses_step_nav" class="float-right btn btn-success orderCheckoutFirstStepBtn orderCheckoutNextStep" disabled title="<?php echo $this->translate('tr_meliscommerce_order_checkout_product_basket_empty')?>"><?php echo $this->translate('tr_meliscommerce_order_checkout_common_next')?> <i class="fa fa-arrow-right"></i> </button>
         </div>
     </div>
 </div>

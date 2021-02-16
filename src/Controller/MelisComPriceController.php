@@ -264,7 +264,11 @@ class MelisComPriceController extends MelisAbstractActionController
         $productSvc = $this->getServiceManager()->get('MelisComProductService');
         $countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
         $translator = $this->getServiceManager()->get('translator');
-        
+
+        //get clients group list
+        $groupService = $this->getServiceManager()->get('MelisComClientGroupsService');
+        $groups = $groupService->getClientsGroupList(null,null,null, null,null,null, $status = 1);
+
         $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_prices/meliscommerce_prices_form','meliscommerce_prices_form');
         $factory = new \Laminas\Form\Factory();
@@ -277,14 +281,14 @@ class MelisComPriceController extends MelisAbstractActionController
             $formId = $productId.'_meliscommerce_product_prices_form_';
             $tabIdGen = $productId.'_product_price_General';
             $tabId = $productId.'_product_price_';
-            $priceList = $productSvc->getProductPricesById($productId);
+            $priceList = $productSvc->getProductPricesById($productId, null, -1);
         }
         if(!empty($variantId) || $page == 'newvar'){
             $prefixId = $variantId.'_variant';
             $formId = $variantId.'_meliscommerce_variant_prices_form_';
             $tabIdGen = $variantId.'_variant_price_General';
             $tabId = $variantId.'_variant_price_';
-            $priceList = $variantSvc->getVariantPricesById($variantId);
+            $priceList = $variantSvc->getVariantPricesById($variantId, null, -1);
             
             $pricesForm->get('price_net')->setOption('tooltip', $translator->translate('tr_meliscommerce_variant_prices_variant_price_label_var tooltip'));
             $pricesForm->get('price_gross')->setOption('tooltip', $translator->translate('tr_meliscommerce_variant_prices_variant_price_gross_label_var tooltip'));
@@ -292,63 +296,77 @@ class MelisComPriceController extends MelisAbstractActionController
             $pricesForm->get('price_vat_price')->setOption('tooltip', $translator->translate('tr_meliscommerce_variant_prices_variant_price_vat_price_label_var tooltip'));
             $pricesForm->get('price_other_tax_price')->setOption('tooltip', $translator->translate('tr_meliscommerce_variant_prices_variant_price_other_tax_price_label_var tooltip'));
         }
-        
+
         $countries = $countryTable->getCountries();
         $formatOnly = array('price_net', 'price_gross', 'price_vat_percent', 'price_vat_price', 'price_other_tax_price');
         $data = array();
         $c = 1;
         //set general price
-        foreach($priceList as $price){
-            if($price->price_country_id == -1){
-                $data[0] = (array)$price;
-            }
-        }
-        $data[0]['name'] = 'General';
-        $data[0]['price_country_id'] = '-1';
-        $data[0]['price_currency'] = '-1';
-        $data[0]['tab_id'] = $tabIdGen;
-    
-        foreach($countries as $country){
-            foreach((array)$priceList as $price){
-                if($price->price_country_id == $country->ctry_id){
-                    $data[$c] = (array)$price;
+        foreach($groups as $genGroup) {
+            foreach ($priceList as $price) {
+                if ($price->price_country_id == -1) {
+                    if($genGroup['cgroup_id'] == $price->price_group_id)
+                        $data[0]['data'][$genGroup['cgroup_id']] = (array)$price;
+                    else
+                        $data[0]['data'][$genGroup['cgroup_id']]['price_group_id'] = $genGroup['cgroup_id'];
                 }
             }
-            $data[$c]['name'] = $country->ctry_name;
-            $data[$c]['price_country_id'] = $country->ctry_id;
-            $data[$c]['price_currency'] = $country->ctry_currency_id;
-            $data[$c]['tab_id'] = $tabId.str_replace(' ', '', $country->ctry_name);
-            
+            $data[0]['data'][$genGroup['cgroup_id']]['name'] = 'General';
+            $data[0]['data'][$genGroup['cgroup_id']]['price_country_id'] = '-1';
+            $data[0]['data'][$genGroup['cgroup_id']]['price_currency'] = '-1';
+            $data[0]['tab_id'] = $tabIdGen;
+            $data[0]['data'][$genGroup['cgroup_id']]['group_name'] = $genGroup['cgroup_name'];
+            if(empty($data[0]['data'][$genGroup['cgroup_id']]['price_group_id']))
+                $data[0]['data'][$genGroup['cgroup_id']]['price_group_id'] = $genGroup['cgroup_id'];
+        }
+
+        foreach($countries as $country){
+            foreach($groups as $genGroup) {
+                foreach((array)$priceList as $price){
+                    if($price->price_country_id == $country->ctry_id){
+                        if($genGroup['cgroup_id'] == $price->price_group_id)
+                            $data[$c]['data'][$genGroup['cgroup_id']] = (array)$price;
+                        else
+                            $data[$c]['data'][$genGroup['cgroup_id']]['price_group_id'] = $genGroup['cgroup_id'];
+                    }
+                }
+                $data[$c]['data'][$genGroup['cgroup_id']]['name'] = $country->ctry_name;
+                $data[$c]['data'][$genGroup['cgroup_id']]['price_country_id'] = $country->ctry_id;
+                $data[$c]['data'][$genGroup['cgroup_id']]['price_currency'] = $country->ctry_currency_id;
+                $data[$c]['tab_id'] = $tabId.str_replace(' ', '', $country->ctry_name);
+                $data[$c]['data'][$genGroup['cgroup_id']]['group_name'] = $genGroup['cgroup_name'];
+                if(empty($data[$c]['data'][$genGroup['cgroup_id']]['price_group_id']))
+                    $data[$c]['data'][$genGroup['cgroup_id']]['price_group_id'] = $genGroup['cgroup_id'];
+            }
             $c++;
         }
         $c = 0;
 
         foreach ($data as $formValue){
-            if(isset($formValue['price_net']))
-                $formValue['price_net'] = $productSvc->formatPrice((float) $formValue['price_net']);
-            
-            if(isset($formValue['price_gross'])) 
-                $formValue['price_gross'] = $productSvc->formatPrice((float) $formValue['price_gross']);
-            
-            if(isset($formValue['price_vat_percent']))
-                $formValue['price_vat_percent'] = $productSvc->formatPrice((float) $formValue['price_vat_percent']);
-            
-            if(isset($formValue['price_vat_price']))
-                $formValue['price_vat_price'] = $productSvc->formatPrice((float) $formValue['price_vat_price']);
-            
-            if(isset($formValue['price_other_tax_price']))
-            $formValue['price_other_tax_price'] = $productSvc->formatPrice((float) $formValue['price_other_tax_price']);
-            
-            $form = clone($pricesForm);
-            $form->setAttribute('id',$formId.$formValue['name']);
-            $form->setData($formValue);
-            $forms[] = $form;
+            foreach($formValue['data'] as $groupId => $group) {
+                if(isset($group['price_net']))
+                    $group['price_net'] = $productSvc->formatPrice((float) $group['price_net']);
+
+                if(isset($group['price_gross']))
+                    $group['price_gross'] = $productSvc->formatPrice((float) $group['price_gross']);
+
+                if(isset($group['price_vat_percent']))
+                    $group['price_vat_percent'] = $productSvc->formatPrice((float) $group['price_vat_percent']);
+
+                if(isset($group['price_vat_price']))
+                    $group['price_vat_price'] = $productSvc->formatPrice((float) $group['price_vat_price']);
+
+                if(isset($group['price_other_tax_price']))
+                    $group['price_other_tax_price'] = $productSvc->formatPrice((float) $group['price_other_tax_price']);
+
+                $form = clone($pricesForm);
+                $form->setAttribute('id', $formId . $group['name'].'_'.$group['group_name']);
+                $form->setData($group);
+                $forms[$c]['data'][$groupId] = $form;
+            }
             $c++;
         }
-        
-        
 
-        // echo '<pre>'; print_r($data); echo '</pre>'; die();
         $view = new ViewModel();
         $view->data = $data;
         $view->melisKey = $melisKey;
@@ -374,7 +392,7 @@ class MelisComPriceController extends MelisAbstractActionController
         $appConfigPriceForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_prices/meliscommerce_prices_form','meliscommerce_prices_form');
         $priceForm = $factory->createForm($appConfigPriceForm);
 
-        $postValues = get_object_vars($this->getRequest()->getPost());
+        $postValues = $this->getRequest()->getPost()->toArray();
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
         if(!empty($postValues['priceForm'])){
             foreach($postValues['priceForm'] as $price){

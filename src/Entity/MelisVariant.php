@@ -20,67 +20,67 @@ class MelisVariant
 
 	public function getId()
 	{
-	    return $this->id;
+		return $this->id;
 	}
 	
 	public function setId($id)
 	{
-	    $this->id = $id;
+		$this->id = $id;
 	}
 	
 	public function getVariant()
 	{
-	    return $this->variant;
+		return $this->variant;
 	}
 	
 	public function setVariant($variant)
 	{
-	    $this->variant = $variant;
+		$this->variant = $variant;
 	}
 	
 	public function getAttributeValues()
 	{
-	    return $this->attributesValues;
+		return $this->attributesValues;
 	}
 	
 	public function setAttributeValues($attributesValues)
 	{
-	    $this->attributesValues = $attributesValues;
+		$this->attributesValues = $attributesValues;
 	}
 	
 	public function getStocks()
 	{
-	    return $this->stock;
+		return $this->stock;
 	}
 	
 	public function setStocks($stock)
 	{
-	    $this->stock = $stock;
+		$this->stock = $stock;
 	}
 	
 	public function getPrices()
 	{
-	    return $this->price;
+		return $this->price;
 	}
 	
 	public function setPrices($price)
 	{
-	    $this->price = $price;
+		$this->price = $price;
 	}
 	
 	public function getDocuments()
 	{
-	    return $this->documents;
+		return $this->documents;
 	}
 	
 	public function setDocuments($documents)
 	{
-	    $this->documents = $documents;
+		$this->documents = $documents;
 	}
 	
 	
-    public function getArrayCopy()
-    {
-        return get_object_vars($this);
-    }
+	public function getArrayCopy()
+	{
+		return get_object_vars($this);
+	}
 }

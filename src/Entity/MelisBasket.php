@@ -20,66 +20,66 @@ class MelisBasket
 
 	public function getId()
 	{
-	    return $this->id;
+		return $this->id;
 	}
 	
 	public function setId($id)
 	{
-	    $this->id = $id;
+		$this->id = $id;
 	}
 	
 	public function getType()
 	{
-	    return $this->type;
+		return $this->type;
 	}
 	
 	public function setType($type)
 	{
-	    $this->type = $type;
+		$this->type = $type;
 	}
 	
 	public function getVariantId()
 	{
-	    return $this->variantId;
+		return $this->variantId;
 	}
 	
 	public function setVariantId($variantId)
 	{
-	    $this->variantId = $variantId;
+		$this->variantId = $variantId;
 	}
 	
 	public function getVariant()
 	{
-	    return $this->variant;
+		return $this->variant;
 	}
 	
 	public function setVariant($variant)
 	{
-	    $this->variant = $variant;
+		$this->variant = $variant;
 	}
 	
 	public function getQuantity()
 	{
-	    return $this->quantity;
+		return $this->quantity;
 	}
 	
 	public function setQuantity($quantity)
 	{
-	    $this->quantity = $quantity;
+		$this->quantity = $quantity;
 	}
 	
 	public function getDateAdded()
 	{
-	    return $this->dateAdded;
+		return $this->dateAdded;
 	}
 	
 	public function setDateAdded($dateAdded)
 	{
-	    $this->dateAdded = $dateAdded;
+		$this->dateAdded = $dateAdded;
 	}
 	
-    public function getArrayCopy()
-    {
-        return get_object_vars($this);
-    }
+	public function getArrayCopy()
+	{
+		return get_object_vars($this);
+	}
 }

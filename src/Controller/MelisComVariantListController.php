@@ -128,7 +128,7 @@ class MelisComVariantListController extends MelisAbstractActionController
      */
     public function renderProductsVariantDataAction()
     {
-        $getValues = get_object_vars($this->getRequest()->getQuery());//echo '<pre>'; print_r($this->getRequest()->getPost()); echo '</pre>'; die();
+        $getValues = $this->getRequest()->getQuery()->toArray();//echo '<pre>'; print_r($this->getRequest()->getPost()); echo '</pre>'; die();
         $productId = $this->getRequest()->getPost('prodId');
         $variantService = $this->getServiceManager()->get('MelisComVariantService');
         $attrSrv = $this->getServiceManager()->get('MelisComAttributeService');
@@ -174,8 +174,8 @@ class MelisComVariantListController extends MelisAbstractActionController
             $order = 'var_main_variant '. $sortOrder;
         }
         $langId = $this->getTool()->getCurrentLocaleID();
-        $total = $variantService->getVariantListByProductId($productId, null, null, null, null, null, null, $search, $order);
-        foreach($variantService->getVariantListByProductId($productId, null, null, null, null, $start, $length, $search, $order) as $variantObj){
+        $total = $variantService->getVariantListByProductId($productId, null, null, -1, null, null, null, null, $search, $order);
+        foreach($variantService->getVariantListByProductId($productId, null, null, -1, null, null, $start, $length, $search, $order) as $variantObj){
             
             $variant = $variantObj->getVariant();
             $attributes = '';

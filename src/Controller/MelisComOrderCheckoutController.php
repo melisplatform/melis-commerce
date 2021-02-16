@@ -159,15 +159,16 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
 
         if($request->isPost()) {
 
-            $data = get_object_vars($request->getPost());
+            $data = $request->getPost()->toArray();
             $countryId = $data['countryId'];
             $container = new Container('meliscommerce');
             // check if the clientKey is set no checkout session
-            if (!empty($container['checkout'][self::SITE_ID]['clientKey']))
+            if (!empty($container['checkout'][self::SITE_ID]['clientId']))
             {
                 // cleaning the Client basket after selecting country
                 $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
-                $melisComBasketService->emptyAnonymousBasket($container['checkout'][self::SITE_ID]['clientKey']);
+                $melisComBasketService->emptyPersistentBasket($container['checkout'][self::SITE_ID]['clientId']);
+                // $melisComBasketService->emptyAnonymousBasket($container['checkout'][self::SITE_ID]['clientKey']);
             }
             // Set Country id to checkout countryId
             // CountryId will be the base data for collecting details from the Products and variants
@@ -220,6 +221,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     {
 
         $container = new Container('meliscommerce');
+        $clientId = (!empty($container['checkout'][self::SITE_ID]['clientId'])) ? $container['checkout'][self::SITE_ID]['clientId'] : null;
         $clientKey = (!empty($container['checkout'][self::SITE_ID]['clientKey'])) ? $container['checkout'][self::SITE_ID]['clientKey'] : null;
 
         $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
@@ -228,28 +230,25 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
         $variantId = $this->params()->fromQuery('variantId');
         $variantQty = (int) $this->params()->fromQuery('variantQty');
 
-        if (!empty($variantId))
-        {
-            if ($action == 'add')
-            {
+        if (!empty($variantId)) {
+            if ($action == 'add') {
                 /**
                  * This method will add the variant to basket if the variant is not yet exist to the client basket
                  * If the Variant exist to the basket this will Add the quantity of the variant
                  */
-                $melisComBasketService->addVariantToBasket($variantId, $variantQty, null, $clientKey);
+                $melisComBasketService->addVariantToBasket($variantId, $variantQty, $clientId, $clientKey);
             }
-            elseif ($action == 'deduct')
-            {
+            elseif ($action == 'deduct') {
                 /**
                  * This method will deduct the quantity of the variant,
                  * and if the variant quantity is Zero this will remove the variant from clients basket
                  */
-                $melisComBasketService->removeVariantFromBasket($variantId, $variantQty, null, $clientKey);
+                $melisComBasketService->removeVariantFromBasket($variantId, $variantQty, $clientId, $clientKey);
             }
         }
 
-        // Getting the client basket list using Client key
-        $basketData = $melisComBasketService->getBasket(null, $clientKey);
+        // Getting the client basket list using Client ID and Client key
+        $basketData = $melisComBasketService->getBasket($clientId, $clientKey);
 
         // Getting Current Langauge ID
         $melisTool = $this->getServiceManager()->get('MelisCoreTool');
@@ -258,11 +257,17 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
         $container = new Container('meliscommerce');
         $countryId = $container['checkout'][self::SITE_ID]['countryId'];
 
-        $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
+        // Check Client Group
+        $melisComClientSrv = $this->getServiceManager()->get('MelisComClientService');
+        $client = $melisComClientSrv->getClientById($clientId);
+        $clientGroupId = !empty($client) ? $client->cli_group_id : null;
+
         $melisComProductService = $this->getServiceManager()->get('MelisComProductService');
+        $melisComPriceService = $this->getServiceManager()->get('MelisComPriceService');
 
         $basket = array();
         $total = 0;
+
         if (!is_null($basketData)){
             foreach ($basketData As $val)
             {
@@ -272,24 +277,19 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                 $productId = $variant->getVariant()->var_prd_id;
                 $varSku = $variant->getVariant()->var_sku;
 
-                // Getting the Final Price of the variant
-                $varPrice = $melisComVariantService->getVariantFinalPrice($variantId, $countryId);
-
-                if (empty($varPrice))
-                {
-                    // If the variant price not set on variant page this will try to get from the Product Price
-                    $varPrice = $melisComProductService->getProductFinalPrice($productId, $countryId);
-                }
+                // Product variant price
+                $prdVarPrice = $melisComPriceService->getItemPrice($variantId, $countryId, $clientGroupId, 'variant', ['basket' => $val]);
 
                 // Compute variant total amount
-                $variantTotal = $quantity * $varPrice->price_net;
+                $variantTotal = $quantity * $prdVarPrice['price'];
                 $data = array(
                     'var_id' => $variantId,
                     'var_sku' => $varSku,
                     'var_quantity' => $quantity,
-                    'var_price' => $varPrice->cur_symbol.' '.number_format($varPrice->price_net, 2),
+                    'var_price' => $prdVarPrice['price_currency']['symbol'].' '.number_format($prdVarPrice['price'], 2),
                     'product_name' => $melisComProductService->getProductName($productId, $langId),
-                    'var_total' => $varPrice->cur_symbol.' '.number_format($variantTotal, 2)
+                    'var_total' => $prdVarPrice['price_currency']['symbol'].' '.number_format($prdVarPrice['total_amount'], 2),
+                    'price_details' => $prdVarPrice,
                 );
 
                 $total += $variantTotal;
@@ -412,8 +412,15 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
 
             $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
             $melisComProductService = $this->getServiceManager()->get('MelisComProductService');
+            $melisComPriceService = $this->getServiceManager()->get('MelisComPriceService');
             // Getting the list of Activated Variant from Variant Service using the ProductId
-            $variantData = $melisComVariantService->getVariantListByProductId($productId, $langId, $countryId, true);
+            $variantData = $melisComVariantService->getVariantListByProductId($productId, $langId, $countryId, -1, true);
+
+            // Check Client Group
+            $clientId = $container['checkout'][self::SITE_ID]['clientId'];
+            $melisComClientSrv = $this->getServiceManager()->get('MelisComClientService');
+            $client = $melisComClientSrv->getClientById($clientId);
+            $clientGroupId = !empty($client) ? $client->cli_group_id : null;
 
             foreach ($variantData As $val)
             {
@@ -423,13 +430,16 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                 $variant = $val->getVariant();
 
                 // Getting the Final Price of the variant
-                $varPrice = $melisComVariantService->getVariantFinalPrice($variantId, $countryId);
+                // $varPrice = $melisComVariantService->getVariantFinalPrice($variantId, $countryId, $clientGroupId);
 
-                if (empty($varPrice))
-                {
-                    // If the variant price not set on variant page this will try to get from the Product Price
-                    $varPrice = $melisComProductService->getProductFinalPrice($variant->var_prd_id, $countryId);
-                }
+                // if (empty($varPrice))
+                // {
+                //     // If the variant price not set on variant page this will try to get from the Product Price
+                //     $varPrice = $melisComProductService->getProductFinalPrice($variant->var_prd_id, $countryId, $clientGroupId);
+                // }
+
+                // Product variant price
+                $prdVarPrice = $melisComPriceService->getItemPrice($variantId, $countryId, $clientGroupId);
 
                 // Getting the Final Stocks of the Variant
                 $varStock = $melisComVariantService->getVariantFinalStocks($variantId, $countryId);
@@ -438,7 +448,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                 $variantPrice = '';
                 $available = true;
                 // Check if Variant has stocks, else remove add button
-                if (empty($varStock) || empty($varPrice))
+                if (empty($varStock) || empty($prdVarPrice))
                 {
                     $available = false;
                 }
@@ -449,8 +459,8 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                         $available = false;
                     }
 
-                    $variantCurrency = $varPrice->cur_symbol;
-                    $variantPrice = number_format($varPrice->price_net, 2);
+                    $variantCurrency = $prdVarPrice['price_currency']['symbol'];
+                    $variantPrice = number_format($prdVarPrice['price'], 2);
                 }
 
                 $variantRow = array(
@@ -493,7 +503,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
         $catParents = '';
 
         if($request->isPost()) {
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
             $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
@@ -515,9 +525,11 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                 $clientKey = md5(uniqid(date('YmdHis')));
                 $container['checkout'][self::SITE_ID]['clientKey'] = $clientKey;
             }
+            
+            $clientId = (!empty($container['checkout'][self::SITE_ID]['clientId'])) ? $container['checkout'][self::SITE_ID]['clientId'] : null;
 
             // Add Variant to Client Basket
-            $basketId = $melisComBasketService->addVariantToBasket($variantId, $quantity, null, $clientKey);
+            $basketId = $melisComBasketService->addVariantToBasket($variantId, $quantity, $clientId, $clientKey);
 
             if (!is_null($basketId))
             {
@@ -559,12 +571,13 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
         {
             $container = new Container('meliscommerce');
 
+            $clientId = (!empty($container['checkout'][self::SITE_ID]['clientId'])) ? $container['checkout'][self::SITE_ID]['clientId'] : null;
             $clientKey = (!empty($container['checkout'][self::SITE_ID]['clientKey'])) ? $container['checkout'][self::SITE_ID]['clientKey'] : null;
 
             $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
 
             // Getting the Client Basket
-            $basketData = $melisComBasketService->getBasket(null, $clientKey);
+            $basketData = $melisComBasketService->getBasket($clientId, $clientKey);
 
             // Checking if the Client basket is not empty, else this will return error message
             if (!is_null($basketData))
@@ -801,6 +814,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
             $contactData = $getData->toArray();
 
             $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
+            $melisComClientSrv = $this->getServiceManager()->get('MelisComClientService');
 
             foreach ($contactData As $val)
             {
@@ -827,6 +841,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                     'cper_id' => $val['cper_id'],
                     'cper_status' => $contactStatus,
                     'cper_contact' => $contactName,
+                    'cgroup_name' => $val['cgroup_name'],
                     'cper_email' => $this->getTool()->sanitize($val['cper_email']),
                     'cper_num_orders' => $contactNumOrders,
                     'cper_last_order' => $lastOrder,
@@ -908,7 +923,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
 
         if($request->isPost())
         {
-            $postValues = get_object_vars($request->getPost());
+            $postValues = $request->getPost()->toArray();
 
             // Getting the contact details from database
             $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
@@ -1213,10 +1228,10 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * This method will validate Checkout addresses and store to checkout session
-     *
-     * @return \Laminas\View\Model\JsonModel
-     */
+        * This method will validate Checkout addresses and store to checkout session
+        *
+        * @return \Laminas\View\Model\JsonModel
+        */
     public function selectAddressesAction()
     {
         $container = new Container('meliscommerce');
@@ -1233,7 +1248,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
 
         if($request->isPost())
         {
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
 
@@ -1295,32 +1310,41 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                     }
                     else
                     {
-                        $propertyForm = $factory->createForm($appConfigForm);
-                        $propertyForm->setData($val);
 
-                        if ($propertyForm->isValid())
+                        $validateForm = true;
+                        //skipping validation on billing if sameAddress is set
+                        if ($key == 'billing' && $val['sameAddress'] == 1)
+                            $validateForm = false;
+
+                        if ($validateForm)
                         {
-                            $clientAddress = $propertyForm->getData();
-                            $clientAddresses[$key] = $clientAddress;
-                        }
-                        else
-                        {
-                            $error = $propertyForm->getMessages();
-                            foreach ($error as $keyError => $valueError)
+                            $propertyForm = $factory->createForm($appConfigForm);
+                            $propertyForm->setData($val);
+
+                            if ($propertyForm->isValid())
                             {
-                                // Preparing form Id en-order to locate the error occured
-                                // This process is for multiple form
-                                $error[$keyError]['form'][] = $key.'AddressOrderCheckoutForm';
+                                $clientAddress = $propertyForm->getData();
+                                $clientAddresses[$key] = $clientAddress;
                             }
-                            $errors = array_merge_recursive($errors, $error);
-
-                            foreach ($errors as $keyError => $valueError)
+                            else
                             {
-                                foreach ($appConfigFormElements as $keyForm => $valueForm)
+                                $error = $propertyForm->getMessages();
+                                foreach ($error as $keyError => $valueError)
                                 {
-                                    if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
+                                    // Preparing form Id en-order to locate the error occured
+                                    // This process is for multiple form
+                                    $error[$keyError]['form'][] = $key.'AddressOrderCheckoutForm';
+                                }
+                                $errors = array_merge_recursive($errors, $error);
+
+                                foreach ($errors as $keyError => $valueError)
+                                {
+                                    foreach ($appConfigFormElements as $keyForm => $valueForm)
                                     {
-                                        $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                                        if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
+                                        {
+                                            $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                                        }
                                     }
                                 }
                             }
@@ -1403,10 +1427,10 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order Checkout Summary step
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout Summary step
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutSummaryAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
@@ -1415,10 +1439,10 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order Checkout Summary Basket
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout Summary Basket
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutSummaryBasketAction()
     {
         $translator = $this->getServiceManager()->get('translator');
@@ -1469,7 +1493,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
 
         $basketData = $melisComBasketService->getBasket($clientId, $clientKey);
 
-        // Getting Current Langauge ID
+        // Getting Current Language ID
         $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $langId = $melisTool->getCurrentLocaleID();
 
@@ -1504,13 +1528,13 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                 {
                     foreach ($clientOrderVariant As $key => $val)
                     {
-                        $variantId = $key;
+                        $variantId =  $val['variant_id'];
                         $variant = $melisComVariantService->getVariantById($variantId);
                         $productId = $variant->getVariant()->var_prd_id;
                         $varSku = $variant->getVariant()->var_sku;
 
                         // Product variant price details
-                        $currencySymbol = $val['price_details']['currency_symbol'];
+                        $currencySymbol = $val['price_details']['price_currency']['symbol'];
 
                         $data = array(
                             'var_id' => $variantId,
@@ -1518,9 +1542,9 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                             'var_quantity' => $val['quantity'],
                             'var_price' => $currencySymbol.number_format($val['unit_price'], 2),
                             'product_name' => $melisComProductService->getProductName($productId, $langId),
-                            'discount_price' => $currencySymbol.number_format($val['unit_price'] - $val['discount'], 2),
                             'discount' => $currencySymbol.number_format($val['discount'], 2),
-                            'var_total' => $currencySymbol.number_format($val['total_price'], 2),
+                            'var_total' => $currencySymbol.number_format($val['price_details']['total_amount'], 2),
+                            'price_details' => $val['price_details'],
                             'discount_details' => !empty($val['discount_details'])? $val['discount_details'] : array(),
                         );
 
@@ -1529,23 +1553,13 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                 }
             }
 
-            $productDiscount = 0;
+            $productDiscount = $clientOrder['totalProductDiscount'] ?? 0;
+            
+            $totalDiscount = $clientOrder['totalGeneralDiscount'] ?? 0;;
 
-            if (isset($clientOrder['totalWithoutCoupon']))
-            {
-                $subTotal = $clientOrder['totalWithoutCoupon'];
-            }
+            $subTotal = $clientOrder['subTotal'];
 
-            if (isset($clientOrder['total']))
-            {
-                $totalDiscount = $clientOrder['totalWithoutCoupon'] - $clientOrder['total'];
-                $total = $clientOrder['total'];
-            }
-
-            if (isset($clientOrder['totalWithProductCoupon'])){
-                $productDiscount = $clientOrder['totalWithoutCoupon'] - $clientOrder['totalWithProductCoupon'];
-                $totalDiscount = $totalDiscount - $productDiscount;
-            }
+            $total = $clientOrder['total'];
         }
 
         $couponCode = $this->params()->fromQuery('couponCode');
@@ -1579,10 +1593,10 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order Checkout Summary Billing Address
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout Summary Billing Address
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutSummaryBillingAddressAction()
     {
         // Getting Current Langauge ID
@@ -1639,10 +1653,10 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Reder Order Checkout Summary Delivery Address
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Reder Order Checkout Summary Delivery Address
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutSummaryDeliveryAddressAction()
     {
         // Getting Current Langauge ID
@@ -1699,10 +1713,10 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * This method will validate Client Basket and Addresses
-     *
-     * @return \Laminas\View\Model\JsonModel
-     */
+        * This method will validate Client Basket and Addresses
+        *
+        * @return \Laminas\View\Model\JsonModel
+        */
     public function confirmOrderCheckoutSummaryAction()
     {
         $translator = $this->getServiceManager()->get('translator');
@@ -1877,10 +1891,10 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order Checkout Summary Header
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout Summary Header
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutSummaryHeaderAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
@@ -1889,10 +1903,10 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order Checkout Summary Content
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout Summary Content
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutSummaryContentAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
@@ -1901,9 +1915,9 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order Checkout Payment Step
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout Payment Step
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutPaymentAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
@@ -1912,10 +1926,10 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order Checkout Payment header
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout Payment header
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutPaymentHeaderAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
@@ -1939,7 +1953,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
 
         if($request->isPost())
         {
-            $postValues = get_object_vars($request->getPost());
+            $postValues = $request->getPost()->toArray();
 
             // Getting the contact details from database
             $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
@@ -1963,10 +1977,10 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
         return new JsonModel($response);
     }
     /**
-     * Render Order Checkout Payment Content
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout Payment Content
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutPaymentContentAction()
     {
         $orderId = null;
@@ -1983,7 +1997,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
             $melisComOrderCheckoutService = $this->getServiceManager()->get('MelisComOrderCheckoutService');
             $melisComOrderCheckoutService->setSiteId(self::SITE_ID);
             $order = $melisComOrderCheckoutService->computeAllCosts($container['checkout'][self::SITE_ID]['clientId']);
-            $totalCost = $order['costs']['total'];
+            $totalCost = $order['costs']['order']['total'];
         }
 
         $couponId = null;
@@ -2014,11 +2028,11 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order Checkout payment Iframe
-     * This will represent as payment Gateway/ Payment API
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout payment Iframe
+        * This will represent as payment Gateway/ Payment API
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutPaymentIframeAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -2041,11 +2055,11 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order Cehckout Payment Done
-     * This will represent the payment is done using Payment Gateway/API
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Cehckout Payment Done
+        * This will represent the payment is done using Payment Gateway/API
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutPaymentDoneAction()
     {
         $melisComOrderCheckoutService = $this->getServiceManager()->get('MelisComOrderCheckoutService');
@@ -2059,11 +2073,11 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order Checkout Confirmation
-     * This method will return the result of the checkout process
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout Confirmation
+        * This method will return the result of the checkout process
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutConfirmationAction()
     {
         $activateTab = $this->params()->fromQuery('activateTab');
@@ -2122,19 +2136,20 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
         return $view;
     }
 
-    public function testAction(){
-        $container = new Container('meliscommerce');
-//         var_dump($container['checkout'][self::SITE_ID]['sameAddress']);
-        echo '<pre>';
-        print_r($container['checkout']);
-        echo '</pre>';
-        die();
-    }
-
     private function getTool()
     {
         $tool = $this->getServiceManager()->get('MelisCoreTool');
         return $tool;
     }
 
+    public function testAction()
+    {
+        $ecomAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
+        $clientKey = $ecomAuthSrv->getId();
+        dump($clientKey);
+        
+        $container = new Container('meliscommerce');
+        // unset($container['checkout']);
+        dd($container['checkout']);
+    }
 }
