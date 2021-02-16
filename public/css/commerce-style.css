@@ -3352,3 +3352,9 @@ i.fa.fa-download {
 	padding-bottom: 5px;
 	border-bottom: 1px solid #fff;
 }
+
+.delete-client-email {
+	font-size: 10px;
+	padding-right: 7px;
+	padding-left: 7px;
+}

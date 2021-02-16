@@ -164,11 +164,13 @@ class MelisComClientService extends MelisComGeneralService
 		$melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
 		$clientPerson = $melisEcomClientPersonTable->getClientPersonByClientIdPersonIdAndPersonEmail($arrayParameters['clientId'], 
 																	$arrayParameters['personId'], $arrayParameters['personEmail']);
+
 		$clientPersonData = array();
 		foreach ($clientPerson As  $pval)
 		{
 			$pval->civility_trans = $this->getCivilityTransByCivilityIdAndLangId($pval->civ_id);
 			$pval->addresses = $this->getClientAddressesByClientPersonId($pval->cper_id);
+			$pval->emails = $this->getPersonEmailsByPersonId($pval->cper_id);
 			array_push($clientPersonData, $pval);
 		}
 		$melisClient->setPersons($clientPersonData);
@@ -433,6 +435,7 @@ class MelisComClientService extends MelisComGeneralService
 			array_push($clientAddress, $aVal);
 		}
 		$melisClientPerson->setAddresses($clientAddress);
+		$melisClientPerson->setEmails($this->getPersonEmailsByPersonId($personId));
 		
 		$results = $melisClientPerson;
 		// Service implementation end
@@ -933,6 +936,7 @@ class MelisComClientService extends MelisComGeneralService
 				unset($val['contact_address']);
 				unset($val['reset_pass_flag']);
 				$successflag = $this->saveClientPerson($val, $personAddress, $cperId);
+				$successflag = $this->saveClientPersonEmail($cperId ?? $successflag, $val['cper_email']);
 				
 				if (!$successflag)
 				{
@@ -1019,8 +1023,13 @@ class MelisComClientService extends MelisComGeneralService
 			{
 				$arrayParameters['person']['cper_date_edit'] = date('Y-m-d H:i:s');
 			}
-			
-			$arrayParameters['person']['cper_is_main_person'] = (!empty($arrayParameters['person']['cper_is_main_person'])) ? $arrayParameters['person']['cper_is_main_person'] : 0;
+
+			if (! empty($arrayParameters['personId'])) {
+				if (! empty($arrayParameters['person']['cper_is_main_person'])) {
+					$arrayParameters['person']['cper_is_main_person'] = $arrayParameters['person']['cper_is_main_person'];
+				}
+			}
+
 			$arrayParameters['person']['cper_civility'] = (!empty($arrayParameters['person']['cper_civility'])) ? $arrayParameters['person']['cper_civility'] : 0;
 			
 			if (!empty($arrayParameters['person']['cper_password']))
@@ -1628,6 +1637,104 @@ class MelisComClientService extends MelisComGeneralService
 		// Sending service end event
 		$arrayParameters = $this->sendEvent('meliscommerce_service_get_client_group_end', $arrayParameters);
 		
+		return $arrayParameters['results'];
+	}
+
+	public function getPersonEmailsByPersonId($personId)
+	{
+		// Event parameters prepare
+		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+
+		// Sending service start event
+		$arrayParameters = $this->sendEvent('meliscommerce_service_client_get_person_emails_by_person_id_start', $arrayParameters);
+
+		// Service implementation start
+		$table = $this->getServiceManager()->get('MelisEcomClientPersonEmailsTable');
+		$arrayParameters['results'] = $table->getEntryByField('cpmail_cper_id', $arrayParameters['personId'])->toArray();
+
+		// Sending service end event
+		$arrayParameters = $this->sendEvent('meliscommerce_service_client_get_person_emails_by_person_id_end', $arrayParameters);
+
+		return $arrayParameters['results'];
+	}
+
+	public function getPersonsByEmail($email)
+	{
+		// Event parameters prepare
+		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+
+		// Sending service start event
+		$arrayParameters = $this->sendEvent('meliscommerce_service_client_get_persons_by_email_start', $arrayParameters);
+
+		// Service implementation start
+		$table = $this->getServiceManager()->get('MelisEcomClientPersonEmailsTable');
+		$arrayParameters['results'] = $table->getEntryByField('cpmail_email', $arrayParameters['email'])->toArray();
+
+		// Sending service end event
+		$arrayParameters = $this->sendEvent('meliscommerce_service_client_get_persons_by_email_end', $arrayParameters);
+
+		return $arrayParameters['results'];
+	}
+
+	public function saveClientPersonEmail($clientPersonId, $email)
+	{
+		// Event parameters prepare
+		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+
+		// Sending service start event
+		$arrayParameters = $this->sendEvent('meliscommerce_service_client_save_client_person_email_start', $arrayParameters);
+
+		// Service implementation start
+		$table = $this->getServiceManager()->get('MelisEcomClientPersonEmailsTable');
+		$result = null;
+		$id = null;
+
+		try {
+			$clientPersonEmailData = $table->getDataByClientPersonIdAndEmail($arrayParameters['clientPersonId'], $arrayParameters['email'])->current();
+
+			if (!empty($clientPersonEmailData)) {
+				$id = $clientPersonEmailData->cpmail_id;
+			}
+
+			$result = $table->save([
+				'cpmail_cper_id' => $arrayParameters['clientPersonId'],
+				'cpmail_email' => $arrayParameters['email']
+			], $id);
+		} catch (\Exception $ex) {
+
+		}
+
+		$arrayParameters['results'] = $result;
+
+		// Sending service end event
+		$arrayParameters = $this->sendEvent('meliscommerce_service_client_save_client_person_email_end', $arrayParameters);
+
+		return $arrayParameters['results'];
+	}
+
+	public function deleteClientPersonEmail($cpmail_id)
+	{
+		// Event parameters prepare
+		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+
+		// Sending service start event
+		$arrayParameters = $this->sendEvent('meliscommerce_service_client_save_client_person_email_start', $arrayParameters);
+
+		// Service implementation start
+		$table = $this->getServiceManager()->get('MelisEcomClientPersonEmailsTable');
+		$result = null;
+
+		try {
+			$result = $table->deleteById($arrayParameters['cpmail_id']);
+		} catch (\Exception $ex) {
+
+		}
+
+		$arrayParameters['results'] = $result;
+
+		// Sending service end event
+		$arrayParameters = $this->sendEvent('meliscommerce_service_client_save_client_person_email_end', $arrayParameters);
+
 		return $arrayParameters['results'];
 	}
 }

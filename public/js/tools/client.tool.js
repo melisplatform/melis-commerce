@@ -101,6 +101,7 @@ $(function() {
 	$body.on("click", "#saveClientContact", function() {
 		var $this = $(this),
 			clientId = $this.data("clientid");
+		emailList = [];
 
 		// serialize the new array and send it to server
 		dataString = $("#melisCommerceClientContactFormModal").serializeArray();
@@ -108,6 +109,21 @@ $(function() {
 		dataString.push({
 			name: "clientId",
 			value: clientId,
+		});
+
+		$("#" + activeTabId)
+			.find(".client-contact-tab-content form")
+			.each(function(index, element) {
+				emailList.push(
+					$(this)
+						.find("#cper_email")
+						.val()
+				);
+			});
+
+		dataString.push({
+			name: "emailList",
+			value: emailList,
 		});
 
 		dataString = $.param(dataString);
@@ -783,6 +799,70 @@ $(function() {
 		$("#clientListTbl")
 			.DataTable()
 			.ajax.reload();
+	});
+
+	$body.on("click", ".delete-client-email", function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		var $emailContainer = $(this).closest(".client-email-dropdown");
+		var $ul = $(this).closest("ul");
+		var $li = $(this).closest("li");
+		var id = $(this).data("id");
+
+		melisCoreTool.confirm(
+			translations.tr_meliscommerce_clients_common_label_yes,
+			translations.tr_meliscommerce_clients_common_label_no,
+			translations.tr_meliscommerce_clients_delete_email,
+			translations.tr_meliscommerce_clients_delete_email_message,
+			function() {
+				$.ajax({
+					type: "POST",
+					url: "/melis/MelisCommerce/MelisComClient/deleteClientPersonEmail",
+					data: {
+						cpmail_id: id,
+					},
+					dataType: "json",
+					encode: true,
+				}).done(function(data) {
+					if (data.success == 1) {
+						$li.remove();
+
+						if ($ul.find("li").length == 1) {
+							$emailContainer.remove();
+						}
+
+						melisCore.flashMessenger();
+						melisHelper.melisOkNotification(data.textTitle, data.textMessage);
+					}
+				});
+			}
+		);
+	});
+
+	$body.on("click", ".client-email-dropdown-item", function(e) {
+		e.preventDefault();
+		$(this)
+			.closest(".form-group")
+			.find("input")
+			.val(
+				$(this)
+					.text()
+					.trim()
+			);
+	});
+
+	$body.on("mouseenter", ".client-email-dropdown", function() {
+		$(this).addClass("show");
+		$(this)
+			.find(".client-email-dropdown-content")
+			.addClass("show");
+	});
+
+	$body.on("mouseleave", ".client-email-dropdown", function() {
+		$(this).removeClass("show");
+		$(this)
+			.find(".client-email-dropdown-content")
+			.removeClass("show");
 	});
 });
 

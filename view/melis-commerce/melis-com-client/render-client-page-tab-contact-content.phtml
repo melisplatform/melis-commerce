@@ -76,6 +76,27 @@
 								$form->prepare();
 								echo $this->form()->openTag($form);
 								echo $this->melisFieldCollection($form);
+
+							?>
+							<?php if (! empty($val->emails)) : ?>
+								<?php if (count($val->emails) > 1) : ?>
+								<div class="client-email-list dropdown label-text" style="display: none;font-weight: normal;">
+									&nbsp; (<a style="text-decoration: underline;"><?= $this->translate('tr_meliscommerce_clients_contact_person_email_list_choose_in_list') ?></a>)
+									<ul class="dropdown-menu client-email-dropdown-content" style="margin-top: -4px;">
+										<?php foreach ($val->emails as $email) : ?>
+											<li>
+												<?php if ($val->cper_email == $email['cpmail_email']) : ?>
+												<a class="dropdown-item client-email-dropdown-item d-flex flex-row justify-content-between"><?= $email['cpmail_email'] ?></a>
+												<?php else : ?>
+												<a class="dropdown-item client-email-dropdown-item d-flex flex-row justify-content-between"><?= $email['cpmail_email'] ?>&nbsp; <button class="btn btn-danger delete-client-email btn-xs py-0" data-id="<?= $email['cpmail_id'] ?>"><i class="fa fa-times"></i></button></a>
+												<?php endif; ?>
+											</li>
+										<?php endforeach; ?>
+									</ul>
+								</div>
+								<?php endif; ?>
+							<?php endif; ?>
+							<?php
 								echo $this->form()->closeTag();
 							?>
 						</div>
@@ -112,7 +133,7 @@
 										<div class="card-body">
 											<div class="innerAll spacing-x2">
 												<?php 
-													$addForm = clone $this->meliscommerce_clients_addresses_form;
+													$addForm = clone($this->meliscommerce_clients_addresses_form);
 													$addForm->setAttribute('id', $contactAddressId.'_contact_address_form');
 													$addForm->setAttribute('data-contactaddressid', $contactAddressId);
 													$addForm->setAttribute('class', 'clientContactAddressForm');
@@ -146,4 +167,19 @@
 </div>
 <script>
 	$('.<?php echo $this->clientId.'-client-contact-main-switch'?>, .<?php echo $this->clientId.'-client-contact-status'?>').bootstrapSwitch();
+
+	$('#' + activeTabId + ' .clientContactForm').each(function () {
+		var $cper_name_input = $(this).find('input[name="cper_email"]');
+
+		$cper_name_input
+			.siblings('label')
+			.addClass('d-flex flex-row')
+			.append($(this).find('.client-email-list'));
+
+		$cper_name_input
+			.siblings('label')
+			.find('.client-email-list')
+			.addClass('client-email-dropdown')
+			.css('display', '');
+	});
 </script>
