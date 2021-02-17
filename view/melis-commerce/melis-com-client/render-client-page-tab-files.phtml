@@ -1,0 +1,21 @@
+<div
+    id="<?= $this->clientId . '_' . $this->zoneconfig['conf']['id'] ?>"
+    class="tab-pane <?= $this->activeTab ?>"
+    data-melisKey="<?= $this->zoneconfig['conf']['melisKey'] ?>"
+>
+    <div class="melis-product-heading border-bottom" style="margin-bottom: 20px">
+        <h3><?= $this->translate('tr_meliscommerce_clients_Contact_tab_files') ?></h3>
+    </div>
+
+    <div class="row melis-pdc">
+        <div class="col-xs-12 col-lg-6">
+            <?php
+                if (! empty($this->zoneconfig['interface'])) {
+                    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+                        echo $this->$keyConfig;
+                    }
+                }
+            ?>
+        </div>
+    </div>
+</div>

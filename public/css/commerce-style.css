@@ -1060,9 +1060,16 @@ span.productCategoryItems * {
 }
 
 .productCategoryView {
+	background: #fff;
 	overflow: auto;
 	height: 300px;
 }
+
+#productCategoryLanguageDropdown {
+	position: relative;
+	z-index: 100;
+}
+
 #productCategorySearch {
 	margin-bottom: 5px;
 }
@@ -3357,4 +3364,19 @@ i.fa.fa-download {
 	font-size: 10px;
 	padding-right: 7px;
 	padding-left: 7px;
+}
+
+#expandPrdCatTreeViewBtn {
+	padding: 0.375rem 0.5rem;
+}
+
+/* category filters tooltip */
+#product-category-filter-tooltip {
+	margin-left: 0.5rem;
+	font-size: 15px;
+}
+
+.bs-tooltip-auto[x-placement^="right"] .arrow::before,
+.bs-tooltip-right .arrow::before {
+	border-right-color: #c52127;
 }
