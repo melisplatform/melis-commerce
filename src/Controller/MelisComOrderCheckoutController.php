@@ -1610,7 +1610,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
         $appConfigFormElements = $appConfigForm['elements'];
 
         $container = new Container('meliscommerce');
-        $deliveryAddress = array();
+        $billingAddress = array();
 
         if (!empty($container['checkout'][self::SITE_ID]['addresses']))
         {
@@ -1626,7 +1626,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
 
                         if (!empty($civilityData))
                         {
-                            $data = array(
+                            $billingAddress[] = array(
                                 'label' => $val['spec']['options']['label'],
                                 'value' => $civilityData->civt_max_name
                             );
@@ -1634,13 +1634,11 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                     }
                     else
                     {
-                        $data = array(
+                        $billingAddress[] = array(
                             'label' => $val['spec']['options']['label'],
                             'value' => $container['checkout'][self::SITE_ID]['addresses']['addresses']['billing']['address'][$val['spec']['name']]
                         );
                     }
-
-                    array_push($deliveryAddress, $data);
                 }
             }
         }
@@ -1648,7 +1646,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
         $view->melisKey = $melisKey;
-        $view->deliveryAddress = $deliveryAddress;
+        $view->billingAddress = $billingAddress;
         return $view;
     }
 
@@ -1686,7 +1684,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
 
                         if (!empty($civilityData))
                         {
-                            $data = array(
+                            $deliveryAddress[] = array(
                                 'label' => $val['spec']['options']['label'],
                                 'value' => $civilityData->civt_max_name
                             );
@@ -1694,13 +1692,11 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                     }
                     else
                     {
-                        $data = array(
+                        $deliveryAddress[] = array(
                             'label' => $val['spec']['options']['label'],
                             'value' => $container['checkout'][self::SITE_ID]['addresses']['addresses']['delivery']['address'][$val['spec']['name']]
                         );
                     }
-
-                    array_push($deliveryAddress, $data);
                 }
             }
         }
