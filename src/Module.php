@@ -186,6 +186,7 @@ class Module
             include __DIR__ . '/../config/interface/app.interface.duplications.php',
             include __DIR__ . '/../config/interface/app.interface.groups.php',
             include __DIR__ . '/../config/interface/app.interface.settings.php',
+            include __DIR__ . '/../config/interface/app.interface.product-page-associations.php',
         
             include __DIR__ . '/../config/forms/app.forms.general.php',
             include __DIR__ . '/../config/forms/app.forms.documents.php',
