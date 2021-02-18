@@ -83,7 +83,7 @@ class MelisCommerceCartPlugin extends MelisTemplatingPlugin
         $ecomAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
         $basketSrv = $this->getServiceManager()->get('MelisComBasketService');
         $prodSvc = $this->getServiceManager()->get('MelisComProductService');
-//         $currencySvc = $this->$this->getServiceManager()->get('MelisComCurrencyService');
+        $melisComPriceService = $this->getServiceManager()->get('MelisComPriceService');
 
         $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
         
@@ -92,10 +92,12 @@ class MelisCommerceCartPlugin extends MelisTemplatingPlugin
         
         $clientKey = $ecomAuthSrv->getId();
         $clientId = null;
+        $clientGroupId = null;
         if ($ecomAuthSrv->hasIdentity())
         {
             $clientId = $ecomAuthSrv->getClientId();
             $clientKey = $ecomAuthSrv->getClientKey();
+            $clientGroupId = $ecomAuthSrv->getClientGroup();
         }
         
         //remove item from cart/basket
@@ -111,15 +113,15 @@ class MelisCommerceCartPlugin extends MelisTemplatingPlugin
             }
         }
         
-        $baskeEntity = $basketSrv->getBasket($clientId, $clientKey);
+        $basketItems = $basketSrv->getBasket($clientId, $clientKey);
         
-        if($baskeEntity){
-            foreach($baskeEntity as $item){
+        if($basketItems){
+            foreach($basketItems as $item){
                 
                 $itemTotal = 0;
                 $var = $item->getVariant();
                 
-                // get vriant id
+                // get variant id
                 $variant['var_id'] = $var->getId();
                 
                 // get product id
@@ -135,24 +137,19 @@ class MelisCommerceCartPlugin extends MelisTemplatingPlugin
                  * Getting the final price of the Variant
                  * or this will try to get the Price from the Product
                  */
-                $variantPrice = $variantSvc->getVariantFinalPrice($var->getId(), $countryId);
-                if (empty($variantPrice))
-                {
-                    $variantPrice = $prodSvc->getProductFinalPrice($var->getVariant()->var_prd_id, $countryId);
-                }
-                
-                if (!empty($variantPrice))
-                {
-                    $variant['price'] = $variantPrice->price_net;
-                    $variant['cur_symbol'] = $variantPrice->cur_symbol;
+                // Product variant price
+                $prdVarPrice = $melisComPriceService->getItemPrice($var->getId(), $countryId, $clientGroupId, 'variant', ['basket' => $item]);
+
+                if (!empty($prdVarPrice)) {
+                    $variant['price'] = $prdVarPrice['price'];
+                    $variant['cur_symbol'] = $prdVarPrice['price_currency']['symbol'];
                     
                     $itemTotal = $variant['price'] * $variant['quantity'];
                     $totalCurrency = $variant['cur_symbol'];
                     $total = $total + $itemTotal;
                     array_push($basket, $variant);
                 }
-                else 
-                {
+                else {
                     // Removing the Variant from the Cart if the doesn't have price
                     $basketSrv->removeVariantFromBasket($var->getId(), 0, $clientId, $clientKey);
                 }
@@ -222,7 +219,7 @@ class MelisCommerceCartPlugin extends MelisTemplatingPlugin
                     $success = false;
                     $errors = array();
 
-                    $post = get_object_vars($request->getPost());
+                    $post = $request->getPost()->toArray();
 
                     $form->setData($post);
 

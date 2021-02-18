@@ -12,6 +12,7 @@
         'tr_meliscommerce_orders_content_tab_paymnet' => 'Paiement',
         'tr_meliscommerce_orders_content_tab_shipping' => 'Livraison',
         'tr_meliscommerce_orders_content_tab_messages' => 'Messages',
+        'tr_meliscommerce_orders_content_tab_return_products' => 'Retours',
         'tr_meliscommerce_orders_content_tabs_content_main_left_header_title' => 'Propriétés',
         'tr_meliscommerce_orders_content_tabs_content_baskets_left_header_title' => 'Panier',
         'tr_meliscommerce_orders_content_tabs_content_address_left_header_title' => 'Adresses',
@@ -20,6 +21,7 @@
         'tr_meliscommerce_orders_content_tabs_content_messages_left_header_title' => 'Messages',
         'tr_meliscommerce_orders_content_tabs_content_messages_right_header_add' => 'Ajouter un message',
 	    'tr_meliscommerce_orders_content_tabs_content_shipping_right_header_add' => 'Ajouter une livraison',
+        'tr_meliscommerce_orders_content_tabs_content_return_products_left_header_title' => 'Retours de produits',
 	    
 	    // order list table
         'tr_meliscommerce_order_list_header_title' => 'Liste des commandes',
@@ -200,7 +202,11 @@
         'tr_meliscommerce_plugin_order_messages_name' => 'Messages de la commande',
         'tr_meliscommerce_plugin_order_messages_description' => 'Ce plugin affiche les messages de la commande',
         'tr_meliscommerce_plugin_order_messages_area' => 'Zone de messages',
-        
+
+        //MelisCommerceOrderReturnProductPlugin()
+        'tr_meliscommerce_plugin_order_return_product_name' => 'Commande : Retour de produits',
+        'tr_meliscommerce_plugin_order_return_product_description' => 'Ce plugin affiche la liste des produits de la commande ainsi qu\'un formulaire pour demander le retour de produits.',
+
         //Dashboard Plugin
         //number of orders plugin
         'tr_PluginSection_meliscommerce' => 'Melis Commerce',
@@ -246,4 +252,9 @@
         'tr_meliscommerce_dashboardplugin_oct' => '%day Oct',
         'tr_meliscommerce_dashboardplugin_nov' => '%day Nov',
         'tr_meliscommerce_dashboardplugin_dec' => '%day Déc',
+
+        //return products
+        'tr_melis_commerce_orders_return_product_form_header' => 'You wish to return this product, please fill the form :',
+        'tr_melis_commerce_orders_return_product_placed_on' => 'Placed On :',
+        'tr_melis_commerce_orders_return_details' => 'Details :',
 	);

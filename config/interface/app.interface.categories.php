@@ -369,7 +369,7 @@ return [
                                                                 'controller' => 'MelisComCategory',
                                                                 'action' => 'render-category-tab-products',
                                                             ],
-                                                        ]
+                                                        ],
                                                     ]
                                                 ]
                                             ]

@@ -377,6 +377,12 @@ class MelisComProductListController extends MelisAbstractActionController
                 if(empty($productName)){
                     $productName = $productNameDiffLang;
                 }
+            }else{
+                //use the product refrence as product name
+                $data = $productSvc->getProductById($productId, $langId)->getProduct();
+                if(isset($data->prd_reference) && $data->prd_reference) {
+                    $productName = $data->prd_reference;
+                }
             }
             // end added
 

@@ -1018,7 +1018,7 @@ class MelisComProductController extends MelisAbstractActionController
             $factory->setFormElementManager($formElements);
             $form = $factory->createForm($appTextTypeForm);
 
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $form->setData($postValues);
 
             if($form->isValid()) {
@@ -1114,8 +1114,7 @@ class MelisComProductController extends MelisAbstractActionController
             $factory->setFormElementManager($formElements);
             $form = $factory->createForm($appTextForm);
 
-            $postValues = get_object_vars($this->getRequest()->getPost());
-            
+            $postValues = $this->getRequest()->getPost()->toArray();
             $productId = $postValues['ptxt_prd_id'];
             
             $form->setData($postValues);
@@ -1175,7 +1174,7 @@ class MelisComProductController extends MelisAbstractActionController
      */
     public function saveProductAction()
     {
-        $data = get_object_vars($this->getRequest()->getPost());
+        $data = $this->getRequest()->getPost()->toArray();
 
         $success = 0;
         $errors = array();
@@ -1189,7 +1188,7 @@ class MelisComProductController extends MelisAbstractActionController
         
         if($this->getRequest()->isPost()) {
 
-            $data = get_object_vars($this->getRequest()->getPost());
+            $data = $this->getRequest()->getPost()->toArray();
             $data = $this->getTool()->sanitizeRecursive($data, array('ptxt_field_short','ptxt_field_long'));
 
             $productId = $data['product'][0]['prd_id'] ? (int) $data['product'][0]['prd_id'] : null;
@@ -1787,7 +1786,7 @@ class MelisComProductController extends MelisAbstractActionController
         $errors = 0;
         $prodSvc = $this->getServiceManager()->get('MelisComProductService');
         if($this->getRequest()->isPost()) {
-            $requestData = get_object_vars($this->getRequest()->getPost());
+            $requestData = $this->getRequest()->getPost()->toArray();
             $data = $prodSvc->getProductTextsById($requestData['prodId']);
             $success = 1;
         }

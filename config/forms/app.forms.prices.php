@@ -43,6 +43,16 @@ return [
                             ],
                             [
                                 'spec' => [
+                                    'name' => 'price_group_id',
+                                    'type' => 'Hidden',
+                                    'options' => [
+                                    ],
+                                    'attributes' => [
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'price_currency',
                                     'type' => 'Hidden',
                                     'options' => [
@@ -134,6 +144,15 @@ return [
                             ],
                             'price_country_id' => [
                                 'name'     => 'price_country_id',
+                                'required' => false,
+                                'validators' => [],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'price_group_id' => [
+                                'name'     => 'price_group_id',
                                 'required' => false,
                                 'validators' => [],
                                 'filters'  => [

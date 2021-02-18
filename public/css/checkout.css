@@ -1,4 +1,4 @@
-.checkout-product-variant-list{
+.checkout-product-variant-list {
 	min-height: 35px;
 	position: relative;
 }
@@ -8,34 +8,34 @@
 }
 
 .order-variant {
-    overflow: hidden;
+	overflow: hidden;
 }
-.order-basket-variant-qty-btn{
+.order-basket-variant-qty-btn {
 	cursor: pointer;
 }
 
-.order-table-country-list select{
+.order-table-country-list select {
 	width: 100% !important;
 }
 .info-table td:first-child {
-    width: 30%;
+	width: 30%;
 }
-.order-checkout-payment-iframe{
+.order-checkout-payment-iframe {
 	width: 100%;
-    height: 400px;
-    border: 0px;
+	height: 400px;
+	border: 0px;
 }
-.checkout-summary-add-info-value{
-    max-width: 300px;
-    overflow-x: auto;
+.checkout-summary-add-info-value {
+	max-width: 300px;
+	overflow-x: auto;
 }
 
 .variant-not-available p {
-    margin: 0 0px 0px 0;
-    padding: 1px 13px;
-    background: #ECEBEB;
-    border-radius: 4px;
-    color: #7D7B7B;
+	margin: 0 0px 0px 0;
+	padding: 1px 13px;
+	background: #ecebeb;
+	border-radius: 4px;
+	color: #7d7b7b;
 }
 .order-checkout-steps li:first-child {
 	border-left: 1px solid #e5e5e5;
@@ -44,24 +44,24 @@
 /* Default Styles */
 /*---- Order Steps Styles ----*/
 /* Red Box */
-.red-box-panel-list .order-basket-list:last-child  {
+.red-box-panel-list .order-basket-list:last-child {
 	border-bottom: none medium;
 }
 .red-box-panel-list .order-basket-list {
-    border-bottom: 1px solid rgba(147,46,42,0.2);
-    margin: 0 0 10px;
+	border-bottom: 1px solid rgba(147, 46, 42, 0.2);
+	margin: 0 0 10px;
 }
 .red-box-panel-list {
 	padding: 5px 10px;
 	border: 1px solid #e0e0e0;
 }
 .red-box-panel h3 {
-    border-bottom: 1px solid #932E2A;
-    background: #932E2A;
-    color: #fff;
-    font-size: 16px;
-    padding: 7px 10px;
-    padding: 10px;
+	border-bottom: 1px solid #932e2a;
+	background: #932e2a;
+	color: #fff;
+	font-size: 16px;
+	padding: 7px 10px;
+	padding: 10px;
 }
 /*.red-box-panel {
 	background: #fff;
@@ -69,20 +69,20 @@
 	box-shadow: 3px 5px 10px #cdcdcd;
 }*/
 .shadow-effect {
-    margin: 40px 0 0;
+	margin: 40px 0 0;
 }
 .order-price {
 	margin: 5px 0 0;
 }
 .me-heading a.btn.order-checkout {
 	display: block;
-    text-align: center;
+	text-align: center;
 	margin: 0 10px;
 }
 
 .alert-checkout {
-    padding: 6px;
-    border-radius: 0px;
+	padding: 6px;
+	border-radius: 0px;
 }
 
 /* Tab */
@@ -91,20 +91,30 @@
 }
 
 /* DataTable child rows */
-#new-order-product-listing-table.table-primary tbody tr td.details-control:before {
+#new-order-product-listing-table.table-primary
+	tbody
+	tr
+	td.details-control:before {
 	font: normal normal normal 22px/1 FontAwesome;
 	display: inline-block;
 	content: "\f103";
-    cursor: pointer;
+	cursor: pointer;
 }
-#new-order-product-listing-table.table-primary tbody tr.shown td.details-control:before {
+#new-order-product-listing-table.table-primary
+	tbody
+	tr.shown
+	td.details-control:before {
 	font: normal normal normal 22px/1 FontAwesome;
 	display: inline-block;
 	content: "\f100";
 	cursor: pointer;
 }
-.tab-pane #new-order-product-listing-table.table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child:before {
-	display: none!important;
+.tab-pane
+	#new-order-product-listing-table.table.dataTable.dtr-inline.collapsed
+	> tbody
+	> tr
+	> td:first-child:before {
+	display: none !important;
 }
 tr.last-tr td {
 	border: none;
@@ -124,16 +134,26 @@ tr.last-tr td {
 	float: left;
 }
 .order-variant {
-    display: block;
-    float: none;
-    width: 100%;
-    padding: 10px;
-    clear: both;
+	display: block;
+	float: none;
+	width: 100%;
+	padding: 10px;
+	clear: both;
 }
-#new-order-product-listing-table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child,
-#new-order-product-listing-table.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child {
+#new-order-product-listing-table.dataTable.dtr-inline.collapsed
+	> tbody
+	> tr
+	> td:first-child,
+#new-order-product-listing-table.dataTable.dtr-inline.collapsed
+	> tbody
+	> tr
+	> th:first-child {
 	padding-left: 10px;
 	pointer-events: none;
+}
+
+.checkout-product-variant-list .cell-val-table {
+	cursor: default;
 }
 
 /* Responsive */
@@ -152,12 +172,11 @@ tr.last-tr td {
 		text-align: center;
 		margin: 10px 0 0;
 	}
-.order-table-country-list select{
-	 width: 75px;
-     display: inline-block
-}
+	.order-table-country-list select {
+		width: 75px;
+		display: inline-block;
+	}
 	.order-variant .cell-val-table {
 		display: none;
-	}	
+	}
 }
-

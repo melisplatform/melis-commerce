@@ -142,8 +142,8 @@ return array(
     'tr_meliscommerce_plugin_product_search_name' => 'Champ de recherche',
     'tr_meliscommerce_plugin_product_search_description' => 'Le plugin affiche la recherche saisie pour la recherche de produit',
 
-    'tr_meliscommerce_plugin_product_attribute_name' => 'Attributs du produit',
-    'tr_meliscommerce_plugin_product_attribute_description' => 'Le plugin affiche l\'attribut et ses valeurs',
+    'tr_meliscommerce_plugin_product_attribute_name' => 'Attributs des produits',
+    'tr_meliscommerce_plugin_product_attribute_description' => 'Filtre par attributs',
 
     //related product plugin
     'tr_meliscommerce_plugin_related_product_name' => 'Produits associés',
@@ -151,6 +151,10 @@ return array(
     'tr_meliscommerce_plugin_related_product_default_product' => 'Produit par défaut',
     'tr_meliscommerce_plugin_related_product_default_product_tooltip' => 'Choisissez un produit pour afficher ses produits associés',
 
+    // Price
+    'tr_meliscommerce_plugin_product_price_range_name' => 'Fourchette de prix',
+    'tr_meliscommerce_plugin_product_price_range_description' => 'Filtre par fourchette de prix des produits',
+    
     'tr_meliscommerce_products_page_page_association' => 'Association de pages',
     'tr_meliscommerce_products_page_page_association_1' => 'Page associée 1',
     'tr_meliscommerce_products_page_page_association_2' => 'Page associée 2',

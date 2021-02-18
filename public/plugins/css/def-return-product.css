@@ -1,0 +1,4 @@
+.return-product-show-form, .removeQty{
+    cursor: pointer;
+    text-decoration: underline;
+}

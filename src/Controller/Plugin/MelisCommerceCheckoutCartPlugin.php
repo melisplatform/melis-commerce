@@ -70,6 +70,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
         $subTotalWithProdDiscount = 0;
         $orderDiscount = 0;
         $discountInfo = array();
+        $shippingTotal = 0;
         $total = 0;
         $errors = array();
         $couponView = null;
@@ -95,10 +96,12 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
 
         $clientKey = $ecomAuthSrv->getId();
         $clientId = null;
+        $clientGroupId = 1;
         if ($ecomAuthSrv->hasIdentity())
         {
             $clientId = $ecomAuthSrv->getClientId();
             $clientKey = $ecomAuthSrv->getClientKey();
+            $clientGroupId = $ecomAuthSrv->getClientGroup();
         }
         
         /**
@@ -132,7 +135,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                     else  
                     {
                         /**
-                         * Checking varain stock
+                         * Checking variant stock
                          * else this will try to look Product Stock
                          */
                         $varStock = $variantSrv->getVariantFinalStocks($varId, $countryId);
@@ -182,163 +185,111 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
             }
         }
 
-        //if basketData is empty or null, get the client basket
-        if(empty($basketData) || is_null($basketData)) {
-            $basketData = $basketSrv->getBasket($clientId, $clientKey);
-        }
-        
         /**
-         * Validiting the Client basket
-         * this will process if the user has already identify/Loggedin
+         * Checkout Coupon Plugin
+         * This plugin will validate the coupon if coupon code if submitted
+         */
+        $pluginManager = $this->getServiceManager()->get('ControllerPluginManager');
+        $checkoutCouponPlugin = $pluginManager->get('MelisCommerceCheckoutCouponPlugin');
+        $checkoutCartCouponParameters = ArrayUtils::merge($checkoutCartCouponParameters, array(
+            'm_coupon_site_id' => $siteId
+        ));
+        $couponView = $checkoutCouponPlugin->render($checkoutCartCouponParameters);
+        $coupon = $couponView->getVariables();
+
+        $sessionCoupons = !empty($coupon['coupon'])? $coupon['coupon'] : array();
+        $generalCoupons = !empty($sessionCoupons['generalCoupons'])? $sessionCoupons['generalCoupons'] : array();
+
+        $melisComOrderCheckoutService = $this->getServiceManager()->get('MelisComOrderCheckoutService');
+        $melisComOrderCheckoutService->setSiteId($siteId);
+        $clientOrderCost = $melisComOrderCheckoutService->computeAllCosts($clientId, $clientKey);
+
+        // Basket items
+        $orderBasket = $clientOrderCost['costs']['order']['details'];
+
+        /**
+         * Validating the Client basket
+         * this will process if the user has already identify/Logged-in
          */
         $validatedBasket = array();
-        if ($ecomAuthSrv->hasIdentity())
-        {
+        if ($ecomAuthSrv->hasIdentity()) {
             $clientId = $ecomAuthSrv->getClientId();
-            $melisComOrderCheckoutService = $this->getServiceManager()->get('MelisComOrderCheckoutService');
-            $melisComOrderCheckoutService->setSiteId($siteId);
             $validatedBasket = $melisComOrderCheckoutService->validateBasket($clientId);
         }
         
-        if (!is_null($basketData))
-        {
-            /**
-             * Checkouk Coupon Plugin
-             * This plugin will validate the coupon if coupon code if submitted
-             */
-            $pluginManager = $this->getServiceManager()->get('ControllerPluginManager');
-            $checkoutCouponPlugin = $pluginManager->get('MelisCommerceCheckoutCouponPlugin');
-            $checkoutCartCouponParameters = ArrayUtils::merge($checkoutCartCouponParameters, array(
-                'm_coupon_site_id' => $siteId
-            ));
-            $couponView = $checkoutCouponPlugin->render($checkoutCartCouponParameters);
-            $coupon = $couponView->getVariables();
-
-            $sessionCoupons = !empty($coupon['coupon'])? $coupon['coupon'] : array();
-            $generalCoupons = !empty($sessionCoupons['generalCoupons'])? $sessionCoupons['generalCoupons'] : array();
-            $productCoupons = !empty($sessionCoupons['productCoupons'])? $sessionCoupons['productCoupons'] : array();
-
+        if (!empty($orderBasket)) {
             $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
             $melisComProductService = $this->getServiceManager()->get('MelisComProductService');
-            
-            $tmp = array();
-            foreach($productCoupons as $productCoupon)
-            {
-                
-                $discountedProducts = $couponSrv->getCouponProductList($productCoupon->coup_id, true);
-                $ids = array();
-                foreach($discountedProducts as $discountProduct)
-                {
-                    $ids[] = $discountProduct->getId();
-                }
-                $productCoupon->products = $ids;
-                $tmp[$productCoupon->coup_id] = clone $productCoupon;
-            }
-            
-            $productCoupons = $tmp;
-            
-            foreach ($basketData As $val)
-            {
-                $variantId = $val->getVariantId();
-                $variant = $val->getVariant();
-                $quantity = $val->getQuantity();
-                $productId = $variant->getVariant()->var_prd_id;
-                $varSku = $variant->getVariant()->var_sku;
-                
+
+            $basketErr = [];
+            if (!empty($orderBasket['cost']['order']['errors'])) 
+                $basketErr = $orderBasket['cost']['order']['errors'];
+
+            foreach ($orderBasket As $item) {
+                $variantId = $item['variant_id'];
+                $variant = $melisComVariantService->getVariantById($variantId)->getVariant();
+                $productId = $variant->var_prd_id;
+
                 $variantErr = '';
-                if (!empty($validatedBasket['basket']['ko'][$variantId]['error']))
-                {
+                if (!empty($validatedBasket['basket']['ko'][$variantId]['error'])) {
                     $variantErr = $translator->translate('tr_'.$validatedBasket['basket']['ko'][$variantId]['error']);
                     $hasErr = true;
-                }
-                
-                // Getting the Final Price of the variant
-                $varPrice = $melisComVariantService->getVariantFinalPrice($variantId, $countryId);
-
-                if (empty($varPrice))
-                {
-                    // If the variant price not set on variant page this will try to get from the Product Price
-                    $varPrice = $melisComProductService->getProductFinalPrice($productId, $countryId);
+                } else if (!empty($basketErr[$variantId])) {
+                    $variantErr = $translator->translate('tr_'.$basketErr[$variantId]);
+                    $hasErr = true;
                 }
 
-                // Compute variant total amount
-                $variantTotal = $quantity * $varPrice->price_net;
-                
-                $discount = 0;
-                $discountDetails = '';
-                $discountCouponCode = '';
-                $usableCouponQty = '';
-                $discountPercentage = '';
-                $discountValue = '';
-                $tmp = array();
-                // calculate final variant price with coupons applied
-                foreach($productCoupons as $productCoupon)
-                {
-                    $hasDiscount = true;
-                    // get coupon quantity
-                    $couponQty = $productCoupon->coup_max_use_number - $productCoupon->coup_current_use_number;
-                    
-                    // check if variant is discounted by a coupon
-                    if(in_array($variant->getVariant()->var_prd_id, $productCoupon->products))
-                    {
-                        // get actual usable quantity
-                        $usableCouponQty = (($couponQty - $quantity) >= 0)? $quantity : $couponQty;
-                        
-                        if($usableCouponQty > 0)
-                        {
-                            if(!empty($productCoupon->coup_percentage))
-                            {
-                                $discount += ($productCoupon->coup_percentage / 100) * ($varPrice->price_net * $usableCouponQty);
-                                $discountDetails = $productCoupon->coup_percentage.'%';
-                                $discountPercentage = $productCoupon->coup_percentage;
-                            } 
-                            elseif (!empty($productCoupon->coup_discount_value))
-                            {
-                                $discount += $productCoupon->coup_discount_value * $usableCouponQty;
-                                $discountDetails = $discount;
-                                $discountValue = $productCoupon->coup_discount_value;
-                            }
-                            $discountCouponCode = $productCoupon->coup_code;
-                            $productCoupon->coup_current_use_number = $productCoupon->coup_current_use_number + $usableCouponQty;
-                        }
+                $usableCouponQty = 0;
+                $discountPercentage = 0;
+                $discountValue = 0;
+                $discountDetails = [];
+
+                foreach ($item['price_details']['surcharge_module'] As $dis) {
+                    if (!empty($dis['label'])) 
+                        $discountDetails[$dis['module']][] = $dis['label'];
+                    else
+                        $discountDetails[$dis['module']][] = $dis['module'] . ' - ' . ($dis['initial_price'] - $dis['new_price']);
+
+                    // Coupon discount
+                    if ($dis['module'] == 'MelisCommerce') {
+                        $usableCouponQty += $dis['coupon_applied'];
+                        $discountPercentage += $dis['coupon_percentage'];
+                        $discountValue += $dis['coupon_discount_value'];
                     }
-                    
-                    $tmp[$productCoupon->coup_id] = clone $productCoupon;
                 }
-                
-                $productCoupons = $tmp;
-                
-                $data = array(
+
+                // Setting the currency use of the cart
+                $currency = $item['price_details']['price_currency']['symbol'];
+
+                $data = [
                     'var_id' => $variantId,
                     'var_product_id' => $productId,
                     'var_product_name' => $melisComProductService->getProductName($productId, $langId),
-                    'var_sku' => $varSku,
-                    'var_quantity' => $quantity,
-                    'var_currency_symbol' => $varPrice->cur_symbol,
-                    'var_price' => $varPrice->price_net,
-                    'var_total' => $variantTotal - $discount,
+                    'var_sku' => $variant->var_sku,
+                    'var_quantity' => $item['quantity'],
+                    'var_currency_symbol' => $currency,
+                    'var_price' => $item['unit_price'],
+                    'var_total' => $item['total_price'],
                     'var_err' => $variantErr,
-                    'var_discount' => $discount,
+                    'var_discount' => $item['discount'],
                     'var_discount_details' => $discountDetails,
-                    'var_discount_coupon_code' => $discountCouponCode,
                     'var_discount_usable_qty' => $usableCouponQty,
                     'var_discount_percentage' => $discountPercentage,
                     'var_discount_value' => $discountValue,
-                );
-                
-                // Setting the currency use of the cart
-                $currency = $varPrice->cur_symbol;
-                $subTotal += $variantTotal;
-                $subTotalWithProdDiscount += $variantTotal - $discount;
-                array_push($checkOutCart, $data);
+                    'price_details' => $item['price_details'],
+                ];
+
+                $checkOutCart[] = $data;
             }
+
+            $subTotal = $clientOrderCost['costs']['order']['subTotal'];
             
             foreach($generalCoupons as $generalCoupon)
             {
                 $hasDiscount = true;
                 if(!empty($generalCoupon->coup_percentage))
                 {
-                    $totalDiscount = ($generalCoupon->coup_percentage / 100) * $subTotalWithProdDiscount;
+                    $totalDiscount = ($generalCoupon->coup_percentage / 100) * $subTotal;
                     $discountInfo[] = array(
                         'details' => $generalCoupon->coup_percentage.'%',
                         'amount' => number_format($totalDiscount, 2),
@@ -354,30 +305,32 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                         'code' => $generalCoupon->coup_code,
                     );
                 }
-                
-                $orderDiscount += $totalDiscount;
             }
+
+            $shippingTotal = $clientOrderCost['costs']['shipment']['total'];
             
-            $total = $subTotalWithProdDiscount - $orderDiscount;
+            $orderDiscount = $clientOrderCost['costs']['order']['totalGeneralDiscount'] ?? 0;
+            
+            $total = $clientOrderCost['costs']['order']['total'];
         }
 
         //check if there is no error
-        if(!empty($errors)){
+        if(!empty($errors))
             $hasErr = true;
-        }
         
-        $viewVariables = array(
+        $viewVariables = [
             'checkOutCart' => $checkOutCart,
-            'checkOutCartSubTotal' => number_format($subTotalWithProdDiscount, 2),
+            'checkOutCartSubTotal' => number_format($subTotal, 2),
             'checkOutCartDiscount' => number_format($orderDiscount, 2),
             'checkOutCartDiscountInfo' => $discountInfo,
+            'checkoutShipping' => number_format($shippingTotal, 2),
             'checkOutCartTotal' => number_format($total, 2),
             'checkOutCurrency' => $currency,
             'checkoutErrors' => $errors,
             'checkoutCoupon' => $couponView,
             'checkoutHasCoupon' => $hasDiscount,
             'checkoutHasErr' => $hasErr,
-        );
+        ];
         // return the variable array and let the view be created
         return $viewVariables;
     }
@@ -428,7 +381,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                     $success = false;
                     $errors = array();
                     
-                    $post = get_object_vars($request->getPost());
+                    $post = $request->getPost()->toArray();
                     
                     $form->setData($post);
                     

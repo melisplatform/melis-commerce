@@ -181,7 +181,7 @@ class MelisComDuplicationService extends MelisComGeneralService
         $prdSrv = $this->getServiceManager()->get('MelisComProductService');
         // Retrieving Product details from Product service
         $productEntity = $prdSrv->getProductById($arrayParameters['productId']);
-        
+
         // Creating new Product Data entry
         $product = $productEntity->getProduct();
         $productData = array(
@@ -232,6 +232,7 @@ class MelisComDuplicationService extends MelisComGeneralService
         {
             array_push($productPriceData, array(
                 'price_country_id' => $pVal->price_country_id,
+                'price_group_id' => $pVal->price_group_id,
                 'price_currency' => $pVal->price_currency,
                 'price_net' => $pVal->price_net,
                 'price_gross' => $pVal->price_gross,
@@ -240,6 +241,7 @@ class MelisComDuplicationService extends MelisComGeneralService
                 'price_other_tax_price' => $pVal->price_other_tax_price,
             ));
         }
+
         // Saving new Product entry using Product Service
         // Saving Product data as new entry, if saving is success this will return the Prouct Id
         $result = $prdSrv->saveProduct($productData, $productTextsData, $productAttributesData, $productCategoriesData, $productPriceData);
@@ -308,6 +310,7 @@ class MelisComDuplicationService extends MelisComGeneralService
             {
                 array_push($variantPricesData, array(
                     'price_country_id' => $pVal->price_country_id,
+                    'price_group_id' => $pVal->price_group_id,
                     'price_currency' => $pVal->price_currency,
                     'price_net' => $pVal->price_net,
                     'price_gross' => $pVal->price_gross,
@@ -338,7 +341,7 @@ class MelisComDuplicationService extends MelisComGeneralService
                     'vatv_attribute_value_id' => $aVal->atval_id
                 ));
             }
-            
+
             // Saving new Varaint entry using Variant Service
             // Saving Variant data as new entry, if saving is success this will return the Variant Id
             $result = $varSrv->saveVariant($variantData, $variantPricesData, $variantStockData, $variantArrtibuteData);

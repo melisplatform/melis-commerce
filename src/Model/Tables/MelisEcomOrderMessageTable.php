@@ -28,10 +28,13 @@ class MelisEcomOrderMessageTable extends MelisEcomGenericTable
         $this->idField = self::PRIMARY_KEY;
     }
 
-    public function getOrderMessageByOrderId($orderId)
+    public function getOrderMessageByOrderId($orderId, $msgType = null)
     {
         $select = $this->getTableGateway()->getSql()->select();
-        
+
+        if(!empty($msgType))
+            $select->where->equalTo('omsg_type', $msgType);
+
         $select->where('omsg_order_id ='.$orderId);
         $select->order('omsg_date_creation');
         

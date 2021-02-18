@@ -111,6 +111,10 @@ return [
             'MelisComDuplicationService'                    => \MelisCommerce\Service\MelisComDuplicationService::class,
             'MelisComCurrencyService'                       => \MelisCommerce\Service\MelisComCurrencyService::class,
             'MelisComLinksService'                          => \MelisCommerce\Service\MelisComLinksService::class,
+            'MelisComClientGroupsService'                   => \MelisCommerce\Service\MelisComClientGroupsService::class,
+            'MelisComPriceService'                          => \MelisCommerce\Service\MelisComPriceService::class,
+            'MelisComOrderProductReturnService'             => \MelisCommerce\Service\MelisComOrderProductReturnService::class,
+            'MelisComCacheService'                          => \MelisCommerce\Service\MelisComCacheService::class,
 
             // Tables
             'MelisEcomAttributeTable'                       => \MelisCommerce\Model\Tables\MelisEcomAttributeTable::class,
@@ -131,6 +135,7 @@ return [
             'MelisEcomClientAddressTypeTransTable'          => \MelisCommerce\Model\Tables\MelisEcomClientAddressTypeTransTable::class,
             'MelisEcomClientCompanyTable'                   => \MelisCommerce\Model\Tables\MelisEcomClientCompanyTable::class,
             'MelisEcomClientPersonTable'                    => \MelisCommerce\Model\Tables\MelisEcomClientPersonTable::class,
+            'MelisEcomClientPersonEmailsTable'                    => \MelisCommerce\Model\Tables\MelisEcomClientPersonEmailsTable::class,
             'MelisEcomClientTable'                          => \MelisCommerce\Model\Tables\MelisEcomClientTable::class,
             'MelisEcomCountryCategoryTable'                 => \MelisCommerce\Model\Tables\MelisEcomCountryCategoryTable::class,
             'MelisEcomCountryTable'                         => \MelisCommerce\Model\Tables\MelisEcomCountryTable::class,
@@ -163,6 +168,9 @@ return [
             'MelisEcomProductVariantAttributeValueTable'    => \MelisCommerce\Model\Tables\MelisEcomVariantAttributeValueTable::class,
             'MelisEcomVariantStockTable'                    => \MelisCommerce\Model\Tables\MelisEcomVariantStockTable::class,
             'MelisEcomVariantTable'                         => \MelisCommerce\Model\Tables\MelisEcomVariantTable::class,
+            'MelisEcomClientGroupsTable'                    => \MelisCommerce\Model\Tables\MelisEcomClientGroupsTable::class,
+            'MelisEcomOrderProductReturnTable'              => \MelisCommerce\Model\Tables\MelisEcomOrderProductReturnTable::class,
+            'MelisEcomOrderProductReturnDetailsTable'       => \MelisCommerce\Model\Tables\MelisEcomOrderProductReturnDetailsTable::class,
             'MelisEcomProductLinksTable'                    => \MelisCommerce\Model\Tables\MelisEcomProductLinksTable::class,
         ],
         'abstract_factories' => [
@@ -198,6 +206,8 @@ return [
             'MelisCommerce\Controller\MelisComPrdVarDuplication'    => \MelisCommerce\Controller\MelisComPrdVarDuplicationController::class,
             'MelisCommerce\Controller\MelisComOrderStatus'          => \MelisCommerce\Controller\MelisComOrderStatusController::class,
             'MelisCommerce\Controller\MelisComSettings'             => \MelisCommerce\Controller\MelisComSettingsController::class,
+            'MelisCommerce\Controller\MelisComClientsGroup'         => \MelisCommerce\Controller\MelisComClientsGroupController::class,
+            'MelisCommerce\Controller\MelisComOrderProductReturn'   => \MelisCommerce\Controller\MelisComOrderProductReturnController::class,
         ],
     ],
     'controller_plugins' => [
@@ -240,6 +250,7 @@ return [
             'MelisCommerceOrderAddressPlugin'                   => \MelisCommerce\Controller\Plugin\MelisCommerceOrderAddressPlugin::class,
             'MelisCommerceOrderShippingDetailsPlugin'           => \MelisCommerce\Controller\Plugin\MelisCommerceOrderShippingDetailsPlugin::class,
             'MelisCommerceOrderMessagesPlugin'                  => \MelisCommerce\Controller\Plugin\MelisCommerceOrderMessagesPlugin::class,
+            'MelisCommerceOrderReturnProductPlugin'             => \MelisCommerce\Controller\Plugin\MelisCommerceOrderReturnProductPlugin::class,
 
             // Dashboard plugins
             'MelisCommerceDashboardPluginOrdersNumber'          => \MelisCommerce\Controller\DashboardPlugins\MelisCommerceDashboardPluginOrdersNumber::class,
@@ -259,6 +270,7 @@ return [
             'EcomAddressTypeSelect'                 => \MelisCommerce\Form\Factory\EcomAddressTypeSelectFactory::class,
             'EcomOrderStatusSelect'                 => \MelisCommerce\Form\Factory\EcomOrderStatusSelectFactory::class,
             'EcomOrderStatusAllSelect'              => \MelisCommerce\Form\Factory\EcomOrderStatusAllSelectFactory::class,
+            'EcomOrderClientsGroupSelect'           => \MelisCommerce\Form\Factory\EcomClientsGroupSelectFactory::class,
 
             'EcomAttributeTypeSelect'               => \MelisCommerce\Form\Factory\EcomAttributeTypeSelectFactory::class,
             'EcomCurrencySelect'                    => \MelisCommerce\Form\Factory\EcomCurrencySelectFactory::class,
@@ -345,6 +357,7 @@ return [
             'MelisCommerceOrder/order-addresses'                    => __DIR__ . '/../view/plugins/order/order-addresses.phtml',
             'MelisCommerceOrder/order-shipping-details'             => __DIR__ . '/../view/plugins/order/order-shipping-details.phtml',
             'MelisCommerceOrder/order-messages'                     => __DIR__ . '/../view/plugins/order/order-messages.phtml',
+            'MelisCommerceOrder/order-return-product'               => __DIR__ . '/../view/plugins/order/order-return-product.phtml',
 
             // Plugin common form config layout
             'MelisCommerce/plugin-common-form-config'               => __DIR__ . '/../view/plugins/common/plugin-common-form-config.phtml',

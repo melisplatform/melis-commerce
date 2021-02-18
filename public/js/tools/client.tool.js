@@ -47,7 +47,7 @@ $(function() {
 			cache: false,
 		})
 			.done(function(data) {
-				$("#saveClientContact").button("reset");
+				$("#saveClientContact").removeAttr("disabled");
 
 				if (data.success) {
 					var navTabsGroup = "id_meliscommerce_clients_list_page";
@@ -69,7 +69,7 @@ $(function() {
 				}
 			})
 			.fail(function() {
-				$("#saveClientContact").button("reset");
+				$("#saveClientContact").removeAttr("disabled");
 				alert(translations.tr_meliscore_error_message);
 			});
 	});
@@ -78,7 +78,7 @@ $(function() {
 		var $this = $(this),
 			clientId = $this.data("clientid");
 
-		$(".addNewContact").button("loading");
+		$(".addNewContact").attr("disabled", "disabled");
 
 		// initialation of local variable
 		zoneId = "id_meliscommerce_client_modal_contact_form";
@@ -93,7 +93,7 @@ $(function() {
 			{ clientId: clientId },
 			modalUrl,
 			function() {
-				$(".addNewContact").button("reset");
+				$(".addNewContact").removeAttr("disabled");
 			}
 		);
 	});
@@ -101,6 +101,7 @@ $(function() {
 	$body.on("click", "#saveClientContact", function() {
 		var $this = $(this),
 			clientId = $this.data("clientid");
+		emailList = [];
 
 		// serialize the new array and send it to server
 		dataString = $("#melisCommerceClientContactFormModal").serializeArray();
@@ -110,9 +111,24 @@ $(function() {
 			value: clientId,
 		});
 
+		$("#" + activeTabId)
+			.find(".client-contact-tab-content form")
+			.each(function(index, element) {
+				emailList.push(
+					$(this)
+						.find("#cper_email")
+						.val()
+				);
+			});
+
+		dataString.push({
+			name: "emailList",
+			value: emailList,
+		});
+
 		dataString = $.param(dataString);
 
-		$("#saveClientContact").button("loading");
+		$("#saveClientContact").attr("disabled", "disabled");
 
 		$.ajax({
 			type: "POST",
@@ -123,7 +139,7 @@ $(function() {
 			cache: false,
 		})
 			.done(function(data) {
-				$("#saveClientContact").button("reset");
+				$("#saveClientContact").removeAttr("disabled");
 
 				if (data.success) {
 					$("#" + clientId + "_client_contact_tab_nav").append(
@@ -150,7 +166,7 @@ $(function() {
 				}
 			})
 			.fail(function() {
-				$("#saveClientContact").button("reset");
+				$("#saveClientContact").removeAttr("disabled");
 				alert(translations.tr_meliscore_error_message);
 			});
 	});
@@ -160,7 +176,7 @@ $(function() {
 			clientId = $this.data("clientid"),
 			tabId = $this.data("tabid");
 
-		$(".addNewContactAddress").button("loading");
+		$(".addNewContactAddress").attr("disabled", "disabled");
 
 		// initialation of local variable
 		zoneId = "id_meliscommerce_client_modal_contact_address_form";
@@ -175,7 +191,7 @@ $(function() {
 			{ clientId: clientId, tabId: tabId },
 			modalUrl,
 			function() {
-				$(".addNewContactAddress").button("reset");
+				$(".addNewContactAddress").removeAttr("disabled");
 			}
 		);
 	});
@@ -202,7 +218,7 @@ $(function() {
 
 		dataString = $.param(dataString);
 
-		$("#saveClientContactAddress").button("loading");
+		$("#saveClientContactAddress").attr("disabled", "disabled");
 
 		$.ajax({
 			type: "POST",
@@ -213,7 +229,7 @@ $(function() {
 			cache: false,
 		})
 			.done(function(data) {
-				$("#saveClientContactAddress").button("reset");
+				$("#saveClientContactAddress").removeAttr("disabled");
 
 				if (data.success) {
 					$("#" + tabId + "_contact_address").append(
@@ -237,7 +253,7 @@ $(function() {
 				}
 			})
 			.fail(function() {
-				$("#saveClientContactAddress").button("reset");
+				$("#saveClientContactAddress").removeAttr("disabled");
 				alert(translations.tr_meliscore_error_message);
 			});
 	});
@@ -246,7 +262,7 @@ $(function() {
 		var $this = $(this),
 			clientId = $this.data("clientid");
 
-		$(".addNewAddress").button("loading");
+		$(".addNewAddress").attr("disabled", "disabled");
 
 		// initialation of local variable
 		zoneId = "id_meliscommerce_client_modal_address_form";
@@ -261,7 +277,7 @@ $(function() {
 			{ clientId: clientId },
 			modalUrl,
 			function() {
-				$(".addNewAddress").button("reset");
+				$(".addNewAddress").removeAttr("disabled");
 			}
 		);
 	});
@@ -280,7 +296,7 @@ $(function() {
 
 		dataString = $.param(dataString);
 
-		$("#saveClientAddress").button("loading");
+		$("#saveClientAddress").attr("disabled", "disabled");
 
 		$.ajax({
 			type: "POST",
@@ -290,7 +306,7 @@ $(function() {
 			encode: true,
 		})
 			.done(function(data) {
-				$("#saveClientAddress").button("reset");
+				$("#saveClientAddress").removeAttr("disabled");
 
 				if (data.success) {
 					$("#" + clientId + "_client_address_tab_nav").append(
@@ -317,7 +333,7 @@ $(function() {
 				}
 			})
 			.fail(function() {
-				$("#saveClientAddress").button("reset");
+				$("#saveClientAddress").removeAttr("disabled");
 				alert(translations.tr_meliscore_error_message);
 			});
 	});
@@ -607,7 +623,7 @@ $(function() {
 			form_data.append(input.name, input.value);
 		});
 
-		$this.button("loading");
+		$this.attr("disabled", "disabled");
 
 		$.ajax({
 			type: "POST",
@@ -618,8 +634,6 @@ $(function() {
 			processData: false,
 		})
 			.done(function(data) {
-				$(".saveClientInfo").button("reset");
-
 				if (data.success) {
 					var navTabsGroup = "id_meliscommerce_clients_list_page";
 
@@ -653,8 +667,10 @@ $(function() {
 				melisCore.flashMessenger();
 			})
 			.fail(function() {
-				$(".saveClientInfo").button("reset");
 				alert(translations.tr_meliscore_error_message);
+			})
+			.always(() => {
+				$this.removeAttr("disabled");
 			});
 	});
 
@@ -791,6 +807,77 @@ $(function() {
 		if (melisCore.screenSize < 768) {
 			$tabContent.find(".clientOrderListRefresh").trigger("click");
 		}
+	});
+
+	// client group filter
+	$body.on("change", "#clientsGroupSelect", function() {
+		$("#clientListTbl")
+			.DataTable()
+			.ajax.reload();
+	});
+
+	$body.on("click", ".delete-client-email", function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		var $emailContainer = $(this).closest(".client-email-dropdown");
+		var $ul = $(this).closest("ul");
+		var $li = $(this).closest("li");
+		var id = $(this).data("id");
+
+		melisCoreTool.confirm(
+			translations.tr_meliscommerce_clients_common_label_yes,
+			translations.tr_meliscommerce_clients_common_label_no,
+			translations.tr_meliscommerce_clients_delete_email,
+			translations.tr_meliscommerce_clients_delete_email_message,
+			function() {
+				$.ajax({
+					type: "POST",
+					url: "/melis/MelisCommerce/MelisComClient/deleteClientPersonEmail",
+					data: {
+						cpmail_id: id,
+					},
+					dataType: "json",
+					encode: true,
+				}).done(function(data) {
+					if (data.success == 1) {
+						$li.remove();
+
+						if ($ul.find("li").length == 1) {
+							$emailContainer.remove();
+						}
+
+						melisCore.flashMessenger();
+						melisHelper.melisOkNotification(data.textTitle, data.textMessage);
+					}
+				});
+			}
+		);
+	});
+
+	$body.on("click", ".client-email-dropdown-item", function(e) {
+		e.preventDefault();
+		$(this)
+			.closest(".form-group")
+			.find("input")
+			.val(
+				$(this)
+					.text()
+					.trim()
+			);
+	});
+
+	$body.on("mouseenter", ".client-email-dropdown", function() {
+		$(this).addClass("show");
+		$(this)
+			.find(".client-email-dropdown-content")
+			.addClass("show");
+	});
+
+	$body.on("mouseleave", ".client-email-dropdown", function() {
+		$(this).removeClass("show");
+		$(this)
+			.find(".client-email-dropdown-content")
+			.removeClass("show");
 	});
 });
 
@@ -976,5 +1063,12 @@ window.companyLogoPreview = function(id, fileInput) {
 		} else {
 			$("#" + activeTabId + " .client-company-preview").css("display", "none");
 		}
+	}
+};
+
+window.initClientsFilters = function(d) {
+	//clients group filter
+	if ($("#clientsGroupSelect").length) {
+		d.cgroup_id = $("#clientsGroupSelect").val();
 	}
 };

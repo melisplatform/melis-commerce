@@ -148,7 +148,7 @@ class MelisComPrdVarDuplicationController extends MelisAbstractActionController
         
         if ($request->isPost())
         {
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
             
             // Getting the variant Id from postvalue array
@@ -250,7 +250,7 @@ class MelisComPrdVarDuplicationController extends MelisAbstractActionController
         
         if ($request->isPost())
         {
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
             
             $prdId = $postValues['product_id'];
@@ -342,7 +342,7 @@ class MelisComPrdVarDuplicationController extends MelisAbstractActionController
     public function validateVariantDataAction()
     {
         $request = $this->getRequest();
-        $data = get_object_vars($this->getRequest()->getPost());
+        $data = $this->getRequest()->getPost()->toArray();
         $data = $this->getTool()->sanitizeRecursive($data);
         // Variant validated using Duliplication Service
         $dupSrv = $this->getServiceManager()->get('MelisComDuplicationService');
@@ -360,7 +360,7 @@ class MelisComPrdVarDuplicationController extends MelisAbstractActionController
     public function searchVariantDataAction()
     {
         $request = $this->getRequest();
-        $data = get_object_vars($this->getRequest()->getPost());
+        $data = $this->getRequest()->getPost()->toArray();
         $data = $this->getTool()->sanitizeRecursive($data);
         // Variant validated using Duliplication Service
         $dupSrv = $this->getServiceManager()->get('MelisComDuplicationService');

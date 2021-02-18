@@ -1,0 +1,48 @@
+<div class="modal-content" id="<?php echo $this->zoneconfig['conf']['id'] ?>">
+    <div class="modal-body padding-none">
+        <div class="wizard">
+            <div class="widget widget-tabs widget-tabs-double widget-tabs-responsive margin-none border-none">
+                <div class="widget-head">
+                    <ul class="nav nav-tabs">
+                        <?php
+                        $ctr = 0;
+                        foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+
+                            $active = ($ctr++) ? '' : 'active';
+
+                            $tabId = $menuConfig['conf']['id'];
+                            $tabIcon = empty($this->icon) ? !empty($menuConfig['conf']['icon']) ? $menuConfig['conf']['icon'] : 'pencil' : $this->icon;
+                            $tabName = $menuConfig['conf']['name'];
+                            echo '<li class="'.$active.'"><a href="#'.$tabId.'" class="glyphicons '.$tabIcon.'" data-toggle="tab" aria-expanded="true"><i></i> '.(empty($this->title) ? $this->translate($tabName) : $this->title).'</a></li>';
+                        }
+                        ?>
+                    </ul>
+                </div>
+                <div class="widget-body innerAll inner-2x">
+                    <div class="tab-content">
+                        <?php
+                        $ctr = 0;
+                        foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+
+                            $tabId = $menuConfig['conf']['id'];
+
+                            $active = ($ctr++) ? '' : 'active';
+                            echo '<div class="tab-pane '.$active.'" id="'.$tabId.'">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                '. $this->$keyConfig .'
+                                            </div>
+                                        </div>
+                                    </div>';
+                        }
+                        ?>
+                        <div class="footer-modal d-flex flex-row justify-content-between">
+                            <a data-dismiss="modal" class="btn btn-danger"><i class="fa fa-times"></i> <span class="btn-text"><?php echo $this->translate('tr_meliscommerce_general_common_close')?></span></a>
+                            <button class="btn btn-success btnSaveClientsGroup" data-group-id="<?= $this->groupId; ?>"><i class="fa fa-save"></i> <span class="btn-text"><?php echo $this->translate('tr_meliscommerce_general_common_save'); ?></span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

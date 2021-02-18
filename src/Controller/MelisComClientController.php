@@ -54,7 +54,7 @@ class MelisComClientController extends MelisAbstractActionController
         
         if($request->isPost())
         {
-            $postValues = get_object_vars($request->getPost());
+            $postValues = $request->getPost()->toArray();
             
             if (!empty($postValues['clientId']))
             {
@@ -316,6 +316,7 @@ class MelisComClientController extends MelisAbstractActionController
             $clientPerson = $melisComClientService->getClientByIdAndClientPerson($clientId);
             // Getting Client Person form Client Object
             $clientPerson = $clientPerson->getPersons();
+            $this->placeMainEmailFirstInList($clientPerson);
             
             // Preparing Form for Contact and Addresses Forms
             $factory = new \Laminas\Form\Factory();
@@ -717,16 +718,44 @@ class MelisComClientController extends MelisAbstractActionController
             $appConfigFormElements = $appConfigForm['elements'];
             
             // Gtting Data from Post and Set as values to the Client Contact Form
-            $postValues = get_object_vars($request->getPost());
+            $postValues = $request->getPost()->toArray();
             $propertyForm->setData($postValues);
-            
-            if(!empty($postValues['cper_email'])){
-                $client = $clientSvc->getClientPersonByEmail($postValues['cper_email']);
-                
-                if(!empty($client)){
-                    $errors['cper_email'] = array(
-                        'isDuplicate' => $translator->translate('tr_meliscommerce_client_email_not_available'),      
-                    );
+            $emailList = explode(',', $postValues['emailList']);
+
+            if (! empty($postValues['cper_id'])) {
+                // email checking
+                if (! empty($postValues['cper_email'])) {
+                    // check if email is not used twice
+                    $personWithSameEmail = $clientSvc->getPersonsByEmail($postValues['cper_email']);
+
+                    foreach ($personWithSameEmail as $mail) {
+                        if ($mail['cpmail_cper_id'] != $postValues['cper_id']) {
+                            $errors['cper_email'] = [
+                                'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
+                                'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
+                            ];
+                        }
+                    }
+                }
+            } else {
+                if (! empty($postValues['cper_email'])) {
+                    // check if email is not used twice
+                    if (! in_array($postValues['cper_email'], $emailList)) {
+                        $emailList[] = $postValues['cper_email'];
+                        $personWithSameEmail = $clientSvc->getPersonsByEmail($postValues['cper_email']);
+
+                        if (! empty($personWithSameEmail)) {
+                            $errors['cper_email'] = [
+                                'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
+                                'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
+                            ];
+                        }
+                    } else {
+                        $errors['cper_email'] = [
+                            'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
+                            'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
+                        ];
+                    }
                 }
             }
             
@@ -741,14 +770,14 @@ class MelisComClientController extends MelisAbstractActionController
                 
                 // Generating tabulation navigation for to new Added Client Contact
                 $tabNav = '<li class="'.$tabId.'_client_contact">
-                    			<a class="clearfix" data-toggle="tab" id="nav_'.$tabId.'" href="#'.$tabId.'" aria-expanded="false">
-                    				<span>
-                    			        '.$data['cper_firstname'].' '.$data['cper_name'].'
-                				        <label class="label label-success">'.$translator->translate('tr_meliscommerce_clients_common_label_new').'</label>
-                				    </span>
-            			            <i class="fa fa-times deleteClientContactAddress" data-tabclass="'.$tabId.'" ></i>
-                    			</a>
-                    		</li>';
+                                <a class="clearfix" data-toggle="tab" id="nav_'.$tabId.'" href="#'.$tabId.'" aria-expanded="false">
+                                    <span>
+                                        '.$data['cper_firstname'].' '.$data['cper_name'].'
+                                        <label class="label label-success">'.$translator->translate('tr_meliscommerce_clients_common_label_new').'</label>
+                                    </span>
+                                    <i class="fa fa-times deleteClientContactAddress" data-tabclass="'.$tabId.'" ></i>
+                                </a>
+                            </li>';
                 
                 // Getting Client Contact Tabulation Content from dispatcher,
                 // Return would be in HTML code and return as ajax request
@@ -831,7 +860,7 @@ class MelisComClientController extends MelisAbstractActionController
         
         if ($request->getPost())
         {
-            $postValues = get_object_vars($request->getPost());
+            $postValues = $request->getPost()->toArray();
             $propertyForm->setData($postValues);
             // Client Id
             $clientId = $postValues['clientId'];
@@ -874,7 +903,7 @@ class MelisComClientController extends MelisAbstractActionController
             $propertyForm = $factory->createForm($appConfigForm);
 
             // Getting Data from Post and set data to Client Address Form
-            $postValues = get_object_vars($request->getPost());
+            $postValues = $request->getPost()->toArray();
             $propertyForm->setData($postValues);
             // Getting Client Address form elements/fields
             $appConfigFormElements = $appConfigForm['elements'];
@@ -941,10 +970,10 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * Render Client Contact Address in Accordion Contect
-     * 
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Client Contact Address in Accordion Contect
+        * 
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderClientContactAddressAccordionContentAction()
     {
         // Encrypting dattime as unique Id
@@ -952,7 +981,7 @@ class MelisComClientController extends MelisAbstractActionController
         
         // Getting values
         $request = $this->getRequest();
-        $postValues = get_object_vars($request->getPost());
+        $postValues = $request->getPost()->toArray();
             
         $translator = $this->getServiceManager()->get('translator');
         
@@ -989,11 +1018,11 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * This method validate Datas for Client Address and return as Validated Datas
-     * This method also return tabulation for Client Addresses
-     *  
-     * @return \Laminas\View\Model\JsonModel
-     */
+        * This method validate Datas for Client Address and return as Validated Datas
+        * This method also return tabulation for Client Addresses
+        *  
+        * @return \Laminas\View\Model\JsonModel
+        */
     public function addClientAddressAction()
     {
         $translator = $this->getServiceManager()->get('translator');
@@ -1019,7 +1048,7 @@ class MelisComClientController extends MelisAbstractActionController
             $propertyForm = $factory->createForm($appConfigForm);
             
             // Getting Posted data in a form of array and set Data to the Client Address form
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
             $propertyForm->setData($postValues);
@@ -1041,14 +1070,14 @@ class MelisComClientController extends MelisAbstractActionController
                 
                 // Generating tabulation navigation for to new Added Client Contact
                 $tabNav = '<li class="'.$addressId.'_address">
-                    			<a class="clearfix" data-toggle="tab" id="nav_add_'.$addressId.'" href="#'.$addressId.'_address" aria-expanded="false">
-                    				<span>
-                    			        '.$addressName.'
-                				        <label class="label label-success">'.$translator->translate('tr_meliscommerce_clients_common_label_new').'</label>
-                				    </span>
-                    				<i class="fa fa-times deleteClientAddress" data-addressid="0" data-tabclass="'.$addressId.'_address"  data-isnewadded="1"></i>
-                    			</a>
-                    		</li>';
+                                <a class="clearfix" data-toggle="tab" id="nav_add_'.$addressId.'" href="#'.$addressId.'_address" aria-expanded="false">
+                                    <span>
+                                        '.$addressName.'
+                                        <label class="label label-success">'.$translator->translate('tr_meliscommerce_clients_common_label_new').'</label>
+                                    </span>
+                                    <i class="fa fa-times deleteClientAddress" data-addressid="0" data-tabclass="'.$addressId.'_address"  data-isnewadded="1"></i>
+                                </a>
+                            </li>';
                 
                 // Assigning New Address data to one array container
                 $dispatchHandler = array(
@@ -1098,18 +1127,18 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * Render Client Address tab Content
-     * This method return Client Address form with binded data form Post 
-     * this method is requested through dispatch
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Client Address tab Content
+        * This method return Client Address form with binded data form Post 
+        * this method is requested through dispatch
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderClientAddressTabContentAction()
     {
         $addressId = md5(date('YmdHis'));
         
         // Getting Data from post in a form of array
         $request = $this->getRequest();
-        $postValues = get_object_vars($request->getPost());
+        $postValues = $request->getPost()->toArray();
         
         $translator = $this->getServiceManager()->get('translator');
         
@@ -1129,10 +1158,10 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * Client Page modal container
-     * 
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Client Page modal container
+        * 
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderClientModalAction()
     {
         $id = $this->params()->fromQuery('id');
@@ -1146,11 +1175,11 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * Render Client Contact Form modal contect
-     * This method return Client Contact Form
-     * 
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Client Contact Form modal contect
+        * This method return Client Contact Form
+        * 
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderClientModalContactFormAction()
     {
         $translator = $this->getServiceManager()->get('translator');
@@ -1181,11 +1210,11 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * Render Client Contact Address Form modal
-     * This method return Client Contact Address Form
-     * 
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Client Contact Address Form modal
+        * This method return Client Contact Address Form
+        * 
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderClientModalContactAddressFormAction()
     {
         $translator = $this->getServiceManager()->get('translator');
@@ -1211,11 +1240,11 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * Render Client Address Form modal
-     * This method return Contact Address Form
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Client Address Form modal
+        * This method return Contact Address Form
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderClientModalAddressFormAction()
     {
         $translator = $this->getServiceManager()->get('translator');
@@ -1239,10 +1268,10 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * Saving Client Data
-     * 
-     * @return \Laminas\View\Model\JsonModel
-     */
+        * Saving Client Data
+        * 
+        * @return \Laminas\View\Model\JsonModel
+        */
     public function saveClientAction()
     {
         $success = 0;
@@ -1287,7 +1316,7 @@ class MelisComClientController extends MelisAbstractActionController
             $addressesData = $this->getTool()->sanitizeRecursive($datas['clientAddresses']);
             
             // Getting Data from Post in array form
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
 
@@ -1305,7 +1334,7 @@ class MelisComClientController extends MelisAbstractActionController
             {
                 $logTypeCode = 'ECOM_CLIENT_ADD';
             }
-             
+            
             // Cehcking if error occured during validation of submitted datas
             if (empty($errors)){
                 // Saving Client data using Client Servive
@@ -1357,10 +1386,10 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * Validating Client data from Posted Datas and return as validated Data
-     * 
-     * @return \Laminas\View\Model\JsonModel
-     */
+        * Validating Client data from Posted Datas and return as validated Data
+        * 
+        * @return \Laminas\View\Model\JsonModel
+        */
     public function validateClientAction()
     {
         $success = 0;
@@ -1372,7 +1401,7 @@ class MelisComClientController extends MelisAbstractActionController
         
         if($request->isPost())
         {
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
             // Getting Client Form from Config
@@ -1433,10 +1462,10 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * Validating Client Contact Posted Data and return as validated Datas
-     * 
-     * @return \Laminas\View\Model\JsonModel
-     */
+        * Validating Client Contact Posted Data and return as validated Datas
+        * 
+        * @return \Laminas\View\Model\JsonModel
+        */
     public function validateClientContactsAction()
     {
         $translator = $this->getServiceManager()->get('translator');
@@ -1456,7 +1485,7 @@ class MelisComClientController extends MelisAbstractActionController
         
         if($request->isPost())
         {
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
             
@@ -1471,6 +1500,8 @@ class MelisComClientController extends MelisAbstractActionController
             $appConfigForm_2 = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_addresses_form','meliscommerce_clients_addresses_form');
             $factory_2 = new \Laminas\Form\Factory();
             $factory_2->setFormElementManager($formElements);
+
+            $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
             
             if (!empty($postValues['clientContacts']))
             {
@@ -1479,6 +1510,7 @@ class MelisComClientController extends MelisAbstractActionController
                 // Flags for Main Contact
                 $hasMainContact = false;
                 $findMainContact = false;
+
                 foreach ($clientContacts As $key => $val)
                 {
                     // To ensure Client contact has only one main contact
@@ -1520,62 +1552,53 @@ class MelisComClientController extends MelisAbstractActionController
                     $propertyForm_1->setData($val);
                     
                     // Checking if Cleint Contact is existing by checking the Primary Id of the Contact
-                    if (!empty($val['cper_id']))
-                    {
+                    if (! empty($val['cper_id'])) {
                         // Checking if the Contact Form has data of the password
-                        if (empty($val['cper_password']))
-                        {
+                        if (empty($val['cper_password'])) {
                             // If the existing Contact password empty, this means contact not updating the current password
                             // removing Input from Contact form will also remove from the validation
                             $propertyForm_1->getInputFilter()->remove('cper_password');
                             $propertyForm_1->getInputFilter()->remove('cper_confirm_password');
                         }
                         
-                        if (!empty($val['cper_email']))
-                        {
-                            $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
-                            if ($melisComClientService->checkEmailExist($val['cper_email'], $val['cper_id']))
-                            {
-                                $errors_1_temp['cper_email'] = array(
-                                    'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
-                                    'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
-                                );
+                        if (! empty($val['cper_email'])) {
+                            $personWithSameEmail = $melisComClientService->getPersonsByEmail($val['cper_email']);
+
+                            foreach ($personWithSameEmail as $mail) {
+                                if ($mail['cpmail_cper_id'] != $val['cper_id']) {
+                                    $errors_1_temp['cper_email'] = array(
+                                        'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
+                                        'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
+                                    );
+                                }
                             }
                         }
                     }
                     
                     // Checking if Contact Form is valid
-                    if ($propertyForm_1->isValid())
-                    {
-                        if (empty($errors_1_temp))
-                        {
+                    if ($propertyForm_1->isValid()) {
+                        if (empty($errors_1_temp)) {
                             $clientContactsDataTemp = $propertyForm_1->getData();
                             // After validation confirm password would remove from final and validated data for contact datas
                             unset($clientContactsDataTemp['cper_confirm_password']);
                             
                             // Client Contact Addresses validations
-                            if (!empty($val['contact_address']))
-                            {
+                            if (!empty($val['contact_address'])) {
                                 $clientContactAddresses = $val['contact_address'];
                             
-                                foreach ($clientContactAddresses As $akey => $aVal)
-                                {
+                                foreach ($clientContactAddresses As $akey => $aVal) {
                                     // PropertyFrom 2 assign as Client Contact Address Form
                                     $propertyForm_2 = $factory_2->createForm($appConfigForm_2);
                                     $propertyForm_2->setData($aVal);
                             
                                     // Checking if datas are valid
-                                    if ($propertyForm_2->isValid())
-                                    {
+                                    if ($propertyForm_2->isValid()) {
                                         // Client Contact Validated data added to static index "contact_address" array
                                         $clientContactsDataTemp['contact_address'][] = $propertyForm_2->getData();
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         // Getting Client Contact Address Form errors if errors is occured
                                         $errors_2_temp = $propertyForm_2->getMessages();
-                                        foreach ($errors_2_temp as $keyError => $valueError)
-                                        {
+                                        foreach ($errors_2_temp as $keyError => $valueError) {
                                             $errors_2_temp[$keyError]['form'][] = $akey.'_contact_address_form';
                                         }
                                         $errors_2 = array_merge_recursive($errors_2, $errors_2_temp);
@@ -1584,74 +1607,59 @@ class MelisComClientController extends MelisAbstractActionController
                                     // Getting From Elements/fields
                                     $appConfigFormElements_2 = $appConfigForm_2['elements'];
                                     // Preparing Error messages for Client Contact Address
-                                    foreach ($errors_2 as $keyError => $valueError)
-                                    {
-                                        foreach ($appConfigFormElements_2 as $keyForm => $valueForm)
-                                        {
-                                            if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
-                                            {
+                                    foreach ($errors_2 as $keyError => $valueError) {
+                                        foreach ($appConfigFormElements_2 as $keyForm => $valueForm) {
+                                            if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label'])) {
                                                 $errors_2[$keyError]['label'] = $valueForm['spec']['options']['label'];
                                             }
                                         }
                                     }
                                 }
                             }
-                            
+
                             // Client Contact Details validated datas added to final Array Container
                             array_push($clientContactsData, $clientContactsDataTemp);
                         }
-                    }
-                    else
-                    {
+                    } else {
                         // Getting Client Contact Form errors if errors is occured
                         $errors_1_temp = ArrayUtils::merge($errors_1_temp, $propertyForm_1->getMessages());
-                        foreach ($errors_1_temp as $keyError => $valueError)
-                        {
+                        foreach ($errors_1_temp as $keyError => $valueError) {
                             $errors_1_temp[$keyError]['form'][] = $key.'_contact_form';
                         }
                         $errors_1 = array_merge_recursive($errors_1, $errors_1_temp);
                         
                     }
                     
-                    if (!empty($errors_1_temp) && empty($errors_1))
-                    {
+                    if (!empty($errors_1_temp) && empty($errors_1)) {
                         $errors_1 = $errors_1_temp;
                     }
                     
                     // Getting From Elements/fields
                     $appConfigFormElements_1 = $appConfigForm_1['elements'];
                     // Preparing Error messages for Client Contact
-                    foreach ($errors_1 as $keyError => $valueError)
-                    {
-                        foreach ($appConfigFormElements_1 as $keyForm => $valueForm)
-                        {
-                            if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
-                            {
+                    foreach ($errors_1 as $keyError => $valueError) {
+                        foreach ($appConfigFormElements_1 as $keyForm => $valueForm) {
+                            if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label'])) {
                                 $errors_1[$keyError]['label'] = $valueForm['spec']['options']['label'];
                             }
                         }
                     }
                 }
                 
-                if (!$hasMainContact)
-                {
-                    if (!empty($clientContactsData))
-                    {
+                if (! $hasMainContact) {
+                    if (!empty($clientContactsData)) {
                         // Client with no main contact will set the first contact to main contact
                         $hasNewRandomMainContact = false;
-                        foreach ($clientContactsData As $key => $val)
-                        {
+                        foreach ($clientContactsData As $key => $val) {
                             // Checking if Contact is Active status
-                            if ($val['cper_status'])
-                            {
+                            if ($val['cper_status']) {
                                 // Set main contact
                                 $clientContactsData[$key]['cper_is_main_person'] = 1;
                                 $hasNewRandomMainContact = true;
                             }
                         }
                         
-                        if (!$hasNewRandomMainContact)
-                        {
+                        if (! $hasNewRandomMainContact) {
                             // This error will occured if no entry of Contact
                             $errors['clientNoMaincontact'] = array(
                                 'label' => $translator->translate('tr_meliscommerce_clients_common_label_contact'),
@@ -1660,9 +1668,7 @@ class MelisComClientController extends MelisAbstractActionController
                         }
                     }
                 }
-            }
-            else 
-            {
+            } else {
                 // This error will occured if no entry of Contact
                 $errors['clientContactEmpty'] = array(
                     'label' => $translator->translate('tr_meliscommerce_clients_common_label_contact'),
@@ -1673,7 +1679,7 @@ class MelisComClientController extends MelisAbstractActionController
         // Merging all error messages
         $errors = array_merge_recursive($errors, $errors_1, $errors_2);
         
-        if (empty($errors)){
+        if (empty($errors)) {
             $success = 1;
         }
         
@@ -1687,10 +1693,10 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * Validating Client Company Data from post and return as Validated Datas
-     * 
-     * @return \Laminas\View\Model\JsonModel
-     */
+        * Validating Client Company Data from post and return as Validated Datas
+        * 
+        * @return \Laminas\View\Model\JsonModel
+        */
     public function validateClientCompanyAction()
     {
         $translator = $this->getServiceManager()->get('translator');
@@ -1704,7 +1710,7 @@ class MelisComClientController extends MelisAbstractActionController
         
         if($request->isPost())
         {
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = array_merge($postValues, $this->params()->fromFiles());
             if (! empty($postValues['ccomp_logo']['tmp_name']))
                 $companyLogoTmpPath = $postValues['ccomp_logo']['tmp_name'];
@@ -1807,10 +1813,10 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * Validating Client Addresses and return Validated Datas
-     * 
-     * @return \Laminas\View\Model\JsonModel
-     */
+        * Validating Client Addresses and return Validated Datas
+        * 
+        * @return \Laminas\View\Model\JsonModel
+        */
     public function validateClientAddressesAction()
     {
         $translator = $this->getServiceManager()->get('translator');
@@ -1832,7 +1838,7 @@ class MelisComClientController extends MelisAbstractActionController
             $factory->setFormElementManager($formElements);
             
             // Getting Datas from Post
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
             
@@ -1893,11 +1899,11 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * Deleteing Existing Client Address
-     * A hidden form from render and submitted using Post
-     * 
-     * @return \Laminas\View\Model\JsonModel
-     */
+        * Deleteing Existing Client Address
+        * A hidden form from render and submitted using Post
+        * 
+        * @return \Laminas\View\Model\JsonModel
+        */
     public function deleteClientAddressesAction()
     {
         $translator = $this->getServiceManager()->get('translator');
@@ -1909,7 +1915,7 @@ class MelisComClientController extends MelisAbstractActionController
         
         if($request->isPost())
         {
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
             
@@ -1961,6 +1967,70 @@ class MelisComClientController extends MelisAbstractActionController
 
         $view->clientId = $clientId;
         return $view;
+    }
+
+    public function deleteClientPersonEmailAction()
+    {
+        $translator = $this->getServiceManager()->get('translator');
+        $success = 0;
+        $errors = [];
+        $request = $this->getRequest();
+        $textMessage = 'tr_meliscommerce_clients_contact_person_email_message_fail';
+
+        if ($request->isPost()) {
+            $this->getEventManager()->trigger(
+                'meliscommerce_clients_delete_client_person_email_start',
+                $this,
+                $request
+            );
+
+            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getTool()->sanitizeRecursive($postValues);
+
+            $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
+            $result = $melisComClientService->deleteClientPersonEmail($postValues['cpmail_id']);
+
+            if (! empty($result)) {
+                $success = 1;
+                $textMessage = 'tr_meliscommerce_clients_contact_person_email_message_success';
+            } else {
+                $errors[] = $translator->translate('tr_meliscommerce_clients_contact_person_email_message_success');
+            }
+        }
+
+        $result = [
+            'success' => $success,
+            'errors' => $errors,
+            'datas' => [],
+            'textTitle' => 'tr_meliscommerce_clients_contact_person_email',
+            'textMessage' => $textMessage,
+        ];
+
+        $this->getEventManager()->trigger(
+            'meliscommerce_clients_delete_client_person_email_end',
+            $this,
+            array_merge($result, ['typeCode' => 'ECOM_CLIENT_PERSON_EMAIL_DELETE', 'itemId' => $postValues['cpmail_id']])
+        );
+
+        return new JsonModel($result);
+    }
+
+    private function placeMainEmailFirstInList (&$clientPersons)
+    {
+        $mainEmail = [];
+
+        foreach ($clientPersons as $pkey => $person) {
+            if (count($person->emails) > 1) {
+                foreach ($person->emails as $ekey => $email) {
+                    if ($person->cper_email === $email['cpmail_email']) {
+                        $mainEmail = $email;
+                        unset($person->emails[$ekey]);
+                    }
+                }
+
+                array_unshift($person->emails, $mainEmail);
+            }
+        }
     }
 
     public function renderClientPageTabFilesAction()

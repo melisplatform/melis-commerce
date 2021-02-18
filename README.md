@@ -4,7 +4,7 @@ Melis Platform Commerce module
 
 ## Requirements
 
-* PHP 5.5+
+- PHP 7.0+
 
 ## Installing
 
@@ -15,13 +15,7 @@ composer.json:
     {
         "require": {
             "melisplatform/melis-commerce": "dev-master"
-        },
-        "repositories": [
-            {
-                "type": "git",
-                "url": "https://github.com/melisplatform/melis-commerce"
-            }
-        ]
+        }
     }
 ```
 

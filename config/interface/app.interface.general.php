@@ -65,6 +65,12 @@ return [
                                         'type' => 'meliscommerce/interface/meliscommerce_order_status_tool/interface/meliscommerce_order_status_tool_leftmenu'
                                     ],
                                 ],
+                                'meliscommerce_clients_group_list' => [
+                                    'conf' => [
+                                        'type' => 'meliscommerce/interface/meliscommerce_clients_group_tool/interface/meliscommerce_clients_group_tool_leftmenu'
+                                    ],
+                                ],
+
                                 'meliscommerce_settings' => [
                                     'conf' => [
                                         'type' => 'meliscommerce/interface/meliscommerce_settings/interface/meliscommerce_settings_leftmenu'
@@ -90,7 +96,8 @@ return [
                     // '/MelisCommerce/assets/common/bootstrap-datetimepicker.min.js',
                     '/MelisCommerce/assets/common/bootstrap3-typeahead.min.js',
                     '/MelisCommerce/assets/common/awesomplete.min.js',
-                    '/MelisCommerce/plugins/js/common/category-jstree.js'
+                    '/MelisCommerce/plugins/js/common/category-jstree.js',
+                    '/MelisCommerce/js/widget-collapsible.init.js',
                 ],
                 'css' => [
                     '/MelisCommerce/assets/jstree/dist/themes/proton/style.min.css',

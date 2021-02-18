@@ -117,6 +117,9 @@ class MelisComAuthenticationService extends Session
 
                         $personIdentity->clientKey = $this->getId();
 
+                        // Client group
+                        $personIdentity->client_group = $clientSrv->getClientById($clientInfo->cper_client_id)->cli_group_id;
+
                         $storage->write($personIdentity);
 
                         $config = $this->getServiceManager()->get('config');
@@ -148,14 +151,21 @@ class MelisComAuthenticationService extends Session
             'message' => $message
         );
     }
-    
+
     public function getClientId()
     {
         $sessionData = $this->authenticationService->getIdentity();
         if ($this->hasIdentity() && !empty($sessionData))
-        {
             return $sessionData->cper_client_id;
-        }
+        
+        return null;
+    }
+
+    public function getClientGroup()
+    {
+        $sessionData = $this->authenticationService->getIdentity();
+        if ($this->hasIdentity() && !empty($sessionData))
+            return $sessionData->client_group;
         
         return null;
     }
@@ -164,9 +174,7 @@ class MelisComAuthenticationService extends Session
     {
         $sessionData = $this->authenticationService->getIdentity();
         if ($this->hasIdentity() && !empty($sessionData))
-        {
             return $sessionData->cper_id;
-        }
         
         return null;
     }
@@ -175,9 +183,7 @@ class MelisComAuthenticationService extends Session
     {
         $sessionData = $this->authenticationService->getIdentity();
         if ($this->hasIdentity() && !empty($sessionData))
-        {
             return $sessionData->clientKey;
-        }
         
         return null;
     }
@@ -186,9 +192,7 @@ class MelisComAuthenticationService extends Session
     {
         $sessionData = $this->authenticationService->getIdentity();
         if ($this->hasIdentity() && !empty($sessionData) && !is_null($field))
-        {
             return $sessionData->$field;
-        }
         
         return null;
     }
@@ -197,9 +201,7 @@ class MelisComAuthenticationService extends Session
     {
         $sessionData = $this->authenticationService->getIdentity();
         if ($this->hasIdentity() && !empty($sessionData))
-        {
             return $sessionData->cper_firstname.' '.$sessionData->cper_name;
-        }
         
         return null;
     }

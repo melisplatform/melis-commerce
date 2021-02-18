@@ -265,7 +265,7 @@ class MelisComCouponListController extends MelisAbstractActionController
         $couponSvc = $this->getServiceManager()->get('MelisComCouponService');
         if($this->getRequest()->isPost()){
             $this->getEventManager()->trigger('meliscommerce_coupon_delete_start', $this, array());
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $couponId = $postValues['couponId'];
             if($couponSvc->deleteCouponById($couponId)){
                 $success = 1;
