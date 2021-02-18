@@ -53,10 +53,9 @@
                                 		</div>
                                 	</div>
                             	</div>
-                            	<div class="col-md-12">
+                            	<div class="col-md-12" id="productCategoryLanguageDropdown">
                             		<div class="row">
                         				<div class="col-md-6">
-                        					<br>
                                     		<div class="prodCatLangDropDownContainer">
                                             	<div class="filter-dropdown clearfix productCategoryLangDropdown" data-productid="<?= $this->productId; ?>">
                                             		<a href="#" class="dropdown-toggle category-list-lang-dropdown" data-toggle="dropdown">
@@ -92,7 +91,11 @@
                             	<div class="col-md-12">
 									<div class="footer-modal d-flex flex-row justify-content-between">
                                  		<button data-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_products_text_close')?></button>
-                                 		<button class="btn btn-success addProductCategory" data-productid="<?= $this->productId; ?>"><i class="fa fa-plus"></i> <?php echo $this->translate('tr_meliscommerce_general_common_add'); ?></button>
+                                        <?php if (!$isFilter) : ?>
+                                 		    <button class="btn btn-success addProductCategory" data-productid="<?= $this->productId; ?>"><i class="fa fa-plus"></i> <?php echo $this->translate('tr_meliscommerce_general_common_add'); ?></button>
+                                        <?php else : ?>
+                                            <button class="btn btn-success filterProductCategory" data-productid="<?= $this->productId; ?>"><i class="fa fa-plus"></i> <?php echo $this->translate('tr_meliscommerce_products_text_filter'); ?></button>
+                                        <?php endif; ?>
                                  	</div>
                             	</div>
                             </div>

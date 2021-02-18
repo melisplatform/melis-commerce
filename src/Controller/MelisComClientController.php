@@ -360,6 +360,7 @@ class MelisComClientController extends MelisAbstractActionController
         $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $propertyForm = $factory->createForm($appConfigForm);
+        $ccomp_logo = '';
         
         if (!empty($clientId))
         {
@@ -368,17 +369,31 @@ class MelisComClientController extends MelisAbstractActionController
             $client = $melisComClientService->getClientByIdAndClientPerson($clientId);
             // Getting Company from Client Object
             $clientCompany = $client->getCompany();
+
+            if (! empty($clientCompany[0]->ccomp_logo))
+                $ccomp_logo = 'data:image/png;base64,'.base64_encode($clientCompany[0]->ccomp_logo);
             
             if (!empty($clientCompany))
             {
+                if (! empty($clientCompany[0]->ccomp_comp_creation_date)) {
+                    // format the company creation date
+                    $companyCreationDate = \DateTime::createFromFormat('Y-m-d', $clientCompany[0]->ccomp_comp_creation_date);
+                    $clientCompany[0]->ccomp_comp_creation_date = $companyCreationDate->format('m/d/Y');
+                }
+
                 $propertyForm->bind($clientCompany[0]);
             }
         }
-        
+
+        // initialize date picker
+        $datePickerInit = $this->getTool()->datePickerInit('client_company_creation_date');
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->clientId = $clientId;
         $view->setVariable('meliscommerce_clients_company_form', $propertyForm);
+        $view->datePickerInit = $datePickerInit;
+        $view->ccomp_logo = $ccomp_logo;
         return $view;
     }
     
@@ -755,14 +770,14 @@ class MelisComClientController extends MelisAbstractActionController
                 
                 // Generating tabulation navigation for to new Added Client Contact
                 $tabNav = '<li class="'.$tabId.'_client_contact">
-                    			<a class="clearfix" data-toggle="tab" id="nav_'.$tabId.'" href="#'.$tabId.'" aria-expanded="false">
-                    				<span>
-                    			        '.$data['cper_firstname'].' '.$data['cper_name'].'
-                				        <label class="label label-success">'.$translator->translate('tr_meliscommerce_clients_common_label_new').'</label>
-                				    </span>
-            			            <i class="fa fa-times deleteClientContactAddress" data-tabclass="'.$tabId.'" ></i>
-                    			</a>
-                    		</li>';
+                                <a class="clearfix" data-toggle="tab" id="nav_'.$tabId.'" href="#'.$tabId.'" aria-expanded="false">
+                                    <span>
+                                        '.$data['cper_firstname'].' '.$data['cper_name'].'
+                                        <label class="label label-success">'.$translator->translate('tr_meliscommerce_clients_common_label_new').'</label>
+                                    </span>
+                                    <i class="fa fa-times deleteClientContactAddress" data-tabclass="'.$tabId.'" ></i>
+                                </a>
+                            </li>';
                 
                 // Getting Client Contact Tabulation Content from dispatcher,
                 // Return would be in HTML code and return as ajax request
@@ -955,10 +970,10 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * Render Client Contact Address in Accordion Contect
-     * 
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Client Contact Address in Accordion Contect
+        * 
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderClientContactAddressAccordionContentAction()
     {
         // Encrypting dattime as unique Id
@@ -1003,11 +1018,11 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * This method validate Datas for Client Address and return as Validated Datas
-     * This method also return tabulation for Client Addresses
-     *  
-     * @return \Laminas\View\Model\JsonModel
-     */
+        * This method validate Datas for Client Address and return as Validated Datas
+        * This method also return tabulation for Client Addresses
+        *  
+        * @return \Laminas\View\Model\JsonModel
+        */
     public function addClientAddressAction()
     {
         $translator = $this->getServiceManager()->get('translator');
@@ -1055,14 +1070,14 @@ class MelisComClientController extends MelisAbstractActionController
                 
                 // Generating tabulation navigation for to new Added Client Contact
                 $tabNav = '<li class="'.$addressId.'_address">
-                    			<a class="clearfix" data-toggle="tab" id="nav_add_'.$addressId.'" href="#'.$addressId.'_address" aria-expanded="false">
-                    				<span>
-                    			        '.$addressName.'
-                				        <label class="label label-success">'.$translator->translate('tr_meliscommerce_clients_common_label_new').'</label>
-                				    </span>
-                    				<i class="fa fa-times deleteClientAddress" data-addressid="0" data-tabclass="'.$addressId.'_address"  data-isnewadded="1"></i>
-                    			</a>
-                    		</li>';
+                                <a class="clearfix" data-toggle="tab" id="nav_add_'.$addressId.'" href="#'.$addressId.'_address" aria-expanded="false">
+                                    <span>
+                                        '.$addressName.'
+                                        <label class="label label-success">'.$translator->translate('tr_meliscommerce_clients_common_label_new').'</label>
+                                    </span>
+                                    <i class="fa fa-times deleteClientAddress" data-addressid="0" data-tabclass="'.$addressId.'_address"  data-isnewadded="1"></i>
+                                </a>
+                            </li>';
                 
                 // Assigning New Address data to one array container
                 $dispatchHandler = array(
@@ -1112,11 +1127,11 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * Render Client Address tab Content
-     * This method return Client Address form with binded data form Post 
-     * this method is requested through dispatch
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Client Address tab Content
+        * This method return Client Address form with binded data form Post 
+        * this method is requested through dispatch
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderClientAddressTabContentAction()
     {
         $addressId = md5(date('YmdHis'));
@@ -1143,10 +1158,10 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * Client Page modal container
-     * 
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Client Page modal container
+        * 
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderClientModalAction()
     {
         $id = $this->params()->fromQuery('id');
@@ -1160,11 +1175,11 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * Render Client Contact Form modal contect
-     * This method return Client Contact Form
-     * 
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Client Contact Form modal contect
+        * This method return Client Contact Form
+        * 
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderClientModalContactFormAction()
     {
         $translator = $this->getServiceManager()->get('translator');
@@ -1195,11 +1210,11 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * Render Client Contact Address Form modal
-     * This method return Client Contact Address Form
-     * 
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Client Contact Address Form modal
+        * This method return Client Contact Address Form
+        * 
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderClientModalContactAddressFormAction()
     {
         $translator = $this->getServiceManager()->get('translator');
@@ -1225,11 +1240,11 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * Render Client Address Form modal
-     * This method return Contact Address Form
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Client Address Form modal
+        * This method return Contact Address Form
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderClientModalAddressFormAction()
     {
         $translator = $this->getServiceManager()->get('translator');
@@ -1253,10 +1268,10 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * Saving Client Data
-     * 
-     * @return \Laminas\View\Model\JsonModel
-     */
+        * Saving Client Data
+        * 
+        * @return \Laminas\View\Model\JsonModel
+        */
     public function saveClientAction()
     {
         $success = 0;
@@ -1295,6 +1310,9 @@ class MelisComClientController extends MelisAbstractActionController
             $clientData = $this->getTool()->sanitizeRecursive($datas['client']);
             $contactsData = $this->getTool()->sanitizeRecursive($datas['clientContacts']);
             $companyData = $this->getTool()->sanitizeRecursive($datas['clientCompany']);
+            // reapply company logo data because we can't use the sanitized one
+            if (! empty($datas['clientCompany']['ccomp_logo']))
+                $companyData['ccomp_logo'] = $datas['clientCompany']['ccomp_logo'];
             $addressesData = $this->getTool()->sanitizeRecursive($datas['clientAddresses']);
             
             // Getting Data from Post in array form
@@ -1316,7 +1334,7 @@ class MelisComClientController extends MelisAbstractActionController
             {
                 $logTypeCode = 'ECOM_CLIENT_ADD';
             }
-             
+            
             // Cehcking if error occured during validation of submitted datas
             if (empty($errors)){
                 // Saving Client data using Client Servive
@@ -1368,10 +1386,10 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * Validating Client data from Posted Datas and return as validated Data
-     * 
-     * @return \Laminas\View\Model\JsonModel
-     */
+        * Validating Client data from Posted Datas and return as validated Data
+        * 
+        * @return \Laminas\View\Model\JsonModel
+        */
     public function validateClientAction()
     {
         $success = 0;
@@ -1444,10 +1462,10 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * Validating Client Contact Posted Data and return as validated Datas
-     * 
-     * @return \Laminas\View\Model\JsonModel
-     */
+        * Validating Client Contact Posted Data and return as validated Datas
+        * 
+        * @return \Laminas\View\Model\JsonModel
+        */
     public function validateClientContactsAction()
     {
         $translator = $this->getServiceManager()->get('translator');
@@ -1675,10 +1693,10 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * Validating Client Company Data from post and return as Validated Datas
-     * 
-     * @return \Laminas\View\Model\JsonModel
-     */
+        * Validating Client Company Data from post and return as Validated Datas
+        * 
+        * @return \Laminas\View\Model\JsonModel
+        */
     public function validateClientCompanyAction()
     {
         $translator = $this->getServiceManager()->get('translator');
@@ -1693,8 +1711,13 @@ class MelisComClientController extends MelisAbstractActionController
         if($request->isPost())
         {
             $postValues = $this->getRequest()->getPost()->toArray();
+            $postValues = array_merge($postValues, $this->params()->fromFiles());
+            if (! empty($postValues['ccomp_logo']['tmp_name']))
+                $companyLogoTmpPath = $postValues['ccomp_logo']['tmp_name'];
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
-
+            // reapply company logo data because we can't use the sanitized one
+            if (! empty($companyLogoTmpPath))
+                $postValues['ccomp_logo']['tmp_name'] = $companyLogoTmpPath;
             
             // Getting Client Company Form from Config
             $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
@@ -1708,33 +1731,45 @@ class MelisComClientController extends MelisAbstractActionController
             // Getting Form Elements/fields
             $appConfigFormElements = $appConfigForm['elements'];
             
-            if ($propertyForm->isvalid())
-            {
+            if ($propertyForm->isvalid()) {
                 // Getting Validated datas from From
                 $clientCompanyData = $propertyForm->getData();
+
+                if (! empty($clientCompanyData['ccomp_comp_creation_date'])) {
+                    // Format company creation date
+                    $companyCreationDate = \DateTime::createFromFormat('m/d/Y', $clientCompanyData['ccomp_comp_creation_date']);
+                    $clientCompanyData['ccomp_comp_creation_date'] = $companyCreationDate->format('Y-m-d');
+                }
+
+                // convert company logo to blob
+                if (! empty($companyLogoTmpPath))
+                    $clientCompanyData['ccomp_logo'] = file_get_contents($companyLogoTmpPath);
                 
                 // Flag that indicates if Company Name Field is mandatory
                 $companyNameRequired = false;
+
+                // clean data. except ccomp_id
+                foreach ($clientCompanyData as $key => $value) {
+                    if ($key != 'ccomp_id') {
+                        if (empty($value))
+                            unset($clientCompanyData[$key]);
+                    }
+                }
                 
                 // Fields names that excluded on checkin value
                 $excludeFields = array('ccomp_id', 'ccomp_client_id', 'ccomp_name', 'ccomp_date_creation', 'ccomp_date_edit');
-                foreach ($appConfigFormElements as $keyForm => $valueForm)
-                {
+                foreach ($appConfigFormElements as $keyForm => $valueForm) {
                     // checking if the element name is exist on exclueded fields
-                    if (!in_array($valueForm['spec']['name'], $excludeFields))
-                    {
-                        if (!empty($clientCompanyData[$valueForm['spec']['name']]))
-                        {
+                    if (!in_array($valueForm['spec']['name'], $excludeFields)) {
+                        if (!empty($clientCompanyData[$valueForm['spec']['name']])) {
                             // if other fields has value, then Company Name will flag as Mandatory/Required Field
                             $companyNameRequired = true;
                         }
                     }
                 }
                 
-                if (empty($clientCompanyData['ccomp_name']))
-                {
-                    if ($companyNameRequired)
-                    {
+                if (empty($clientCompanyData['ccomp_name'])) {
+                    if ($companyNameRequired) {
                         // Return Error if Company Name is Flag as Mandatory and no value
                         $errors['ccomp_name'] = array(
                             'label' => $translator->translate('tr_meliscommerce_client_Company_name'),
@@ -1778,10 +1813,10 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * Validating Client Addresses and return Validated Datas
-     * 
-     * @return \Laminas\View\Model\JsonModel
-     */
+        * Validating Client Addresses and return Validated Datas
+        * 
+        * @return \Laminas\View\Model\JsonModel
+        */
     public function validateClientAddressesAction()
     {
         $translator = $this->getServiceManager()->get('translator');
@@ -1864,11 +1899,11 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * Deleteing Existing Client Address
-     * A hidden form from render and submitted using Post
-     * 
-     * @return \Laminas\View\Model\JsonModel
-     */
+        * Deleteing Existing Client Address
+        * A hidden form from render and submitted using Post
+        * 
+        * @return \Laminas\View\Model\JsonModel
+        */
     public function deleteClientAddressesAction()
     {
         $translator = $this->getServiceManager()->get('translator');
@@ -1996,5 +2031,20 @@ class MelisComClientController extends MelisAbstractActionController
                 array_unshift($person->emails, $mainEmail);
             }
         }
+    }
+
+    public function renderClientPageTabFilesAction()
+    {
+        $clientId = $this->params()->fromQuery('clientId', '');
+        $activeTab = $this->params()->fromQuery('activateTab');
+
+        $container = new Container('meliscommerce');
+        $container['documents'] = array('docRelationType' => 'client', 'docRelationId' => $clientId);
+
+        $view = new ViewModel();
+        $view->activeTab = ($activeTab) ? 'active' : '';
+        $view->clientId = $clientId;
+
+        return $view;
     }
 }

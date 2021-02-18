@@ -51,6 +51,8 @@ window.initProductCategoryList = function(productId, langLocale) {
             })
             .on('loaded.jstree', function (e, data) {
                 melisCommerce.pendingZoneDone("productCategorySearchZone");
+                setProductCategoryFilter($(this).attr('id'));
+                openCheckedCategoryFilter($(this).attr('id'));
             })
             .jstree({
                 "types" : {
@@ -186,6 +188,8 @@ window.reInitProductTextTypeSelect = function(productId) {
             });
 }
 
+var productTableFilterSelectedCategoryIds = [];
+
 $(function() {
     var $body = $("body");
 
@@ -204,6 +208,7 @@ $(function() {
                     btn.attr("disabled", false);
                 });
         });
+
 
         $body.on("click", ".addProductCategory", function() {
             var btn                 = $(this),
@@ -255,6 +260,48 @@ $(function() {
                 }
 
                 $("#id_meliscommerce_products_main_tab_categories_modal_container").modal("hide");
+        });
+
+        $body.on("click", ".productCategoryFilter", function(){
+            zoneId      = 'id_meliscommerce_products_main_tab_categories_modal';
+            melisKey    = 'meliscommerce_products_main_tab_categories_modal';
+            modalUrl    = '/melis/MelisCommerce/MelisComProduct/renderProductModal';
+
+            melisHelper.createModal(zoneId, melisKey, false, {productId: 0, isFilter: true}, modalUrl);
+        });
+
+        $body.on('click', '.filterProductCategory', function () {
+            productTableFilterSelectedCategoryIds = [];
+            var productTableFilterSelectedCategories = [];
+            var filterTooltipText = translations.tr_meliscommerce_products_text_filter + ': ';
+
+            $.each($('#0_productCategoryList').jstree().get_checked(true), function() {
+                var categoryName = this.text.split('-')[1].trim();
+
+                productTableFilterSelectedCategoryIds.push(parseInt(this.id));
+                productTableFilterSelectedCategories.push(categoryName);
+            });
+
+            filterTooltipText += productTableFilterSelectedCategories.join(', ');
+
+            $('#id_meliscommerce_products_main_tab_categories_modal_container').modal('hide');
+            $('#tableProductList').DataTable().ajax.reload();
+
+            if (productTableFilterSelectedCategoryIds.length > 0) {
+                $('#product-category-filter-tooltip').removeClass('hidden');
+                $('#product-category-filter-tooltip').attr('data-original-title', filterTooltipText);
+            } else {
+                if (! $('#product-category-filter-tooltip').hasClass('hidden'))
+                    $('#product-category-filter-tooltip').addClass('hidden');
+            }
+        });
+
+        $body.on('click', '.product-list-table-filter-refresh a.melis-refreshTable', function () {
+            productTableFilterSelectedCategoryIds = [];
+        });
+
+        $body.on('click', '.close.close-tab[data-id="id_meliscommerce_product_list_container"]', function () {
+            productTableFilterSelectedCategoryIds = [];
         });
 
         $body.on("click", ".product-category-tree-view-lang li a", function() {
@@ -853,4 +900,45 @@ $(function() {
 
                 return strInt;
         }
+
+    $body.on("click", "#prod_page_assoc1_btn span", function() {
+        var $this   = $(this),
+            formId  = $this.closest('form').attr('id');
+
+        melisLinkTree.createInputTreeModal('#' + formId + ' ' + '#prod_page_assoc_1');
+    });
+
+    $body.on("click", "#prod_page_assoc2_btn span", function() {
+        var $this   = $(this),
+            formId  = $this.closest('form').attr('id');
+
+        melisLinkTree.createInputTreeModal('#' + formId + ' ' + '#prod_page_assoc_2');
+    });
+
+    $body.on("click", "#prod_page_assoc3_btn span", function() {
+        var $this   = $(this),
+            formId  = $this.closest('form').attr('id');
+
+        melisLinkTree.createInputTreeModal('#' + formId + ' ' + '#prod_page_assoc_3');
+    });
 });
+
+window.initProductsTableData = function (tableData) {
+    tableData.selectedCategories = productTableFilterSelectedCategoryIds;
+}
+
+window.setProductCategoryFilter = function (id) {
+    if (id == '0_productCategoryList') {
+        $.each(productTableFilterSelectedCategoryIds, function(key, value) {
+            $('#0_productCategoryList').jstree().check_node(value + '_categoryId');
+        });
+    }
+}
+
+window.openCheckedCategoryFilter = function (id) {
+    if (id == '0_productCategoryList') {
+        $.each(productTableFilterSelectedCategoryIds, function(key, value) {
+            $('#0_productCategoryList').jstree()._open_to(value + '_categoryId');
+        });
+    }
+}

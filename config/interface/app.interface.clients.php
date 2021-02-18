@@ -464,6 +464,27 @@ return [
                                                 'action' => 'render-client-page-tab-orders',
                                             ],
                                         ],
+                                        'meliscommerce_client_page_tab_files' => [
+                                            'conf' => [
+                                                'id' => 'id_meliscommerce_client_page_tab_files',
+                                                'melisKey' => 'meliscommerce_client_page_tab_files',
+                                                'name' => 'tr_meliscommerce_clients_Contact_tab_files',
+                                                'icon' => 'glyphicons paperclip'
+                                            ],
+                                            'forward' => [
+                                                'module' => 'MelisCommerce',
+                                                'controller' => 'MelisComClient',
+                                                'action' => 'render-client-page-tab-files',
+                                            ],
+                                            'interface' => [
+                                                'meliscommerce_client_page_tab_files_attachments' => [
+                                                    'conf' => [
+                                                        'type' => 'meliscommerce/interface/meliscommerce_documents_file_attachments_conf',
+                                                        'docRelationType' => 'client'
+                                                    ]
+                                                ]
+                                            ],
+                                        ],
                                     ]
                                 ]
                             ]

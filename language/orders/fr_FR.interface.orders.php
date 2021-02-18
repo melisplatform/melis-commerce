@@ -42,7 +42,7 @@
 	    'tr_meliscommerce_order_list_col_products_title' => 'Nombre de produits',
         'tr_meliscommerce_order_list_col_price' => 'Prix',
 	    'tr_meliscommerce_order_list_col_price_title' => 'Montant',
-        'tr_meliscommerce_order_list_col_company' => 'Entreprise',
+        'tr_meliscommerce_order_list_col_company' => 'Société',
         'tr_meliscommerce_order_list_col_civility' => 'Civilité',
         'tr_meliscommerce_order_list_col_firstname' => 'Prénom',
         'tr_meliscommerce_order_list_col_name' => 'Nom',

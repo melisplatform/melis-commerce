@@ -380,6 +380,7 @@ class MelisComProductController extends MelisAbstractActionController
     public function renderProductsMainTabCategoriesModalAction(){
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $productId = (int) $this->params()->fromQuery('productId', '');
+        $isFilter = $this->params()->fromQuery('isFilter', false);
         
         $langTable = $this->getServiceManager()->get('MelisEcomLangTable');
         $langData = $langTable->langOrderByName();
@@ -411,6 +412,7 @@ class MelisComProductController extends MelisAbstractActionController
         $view->langData = $recLangData;
         $view->currentLangName = $currentLangName;
         $view->currentLangLocale = $locale;
+        $view->isFilter = $isFilter;
         return $view;
     }
 
@@ -1275,6 +1277,7 @@ class MelisComProductController extends MelisAbstractActionController
         $attributes = array();
         $categories = array();
         $priceId_arr = array();
+        $productPageAssociations = [];
 
         $seo = array();
 
@@ -1456,7 +1459,12 @@ class MelisComProductController extends MelisAbstractActionController
                     $product['prd_stock_low'] = $stocksAlertForm->get('sea_stock_level_alert')->getValue();
                     $product['prd_stock_low'] = !empty($product['prd_stock_low'])? $product['prd_stock_low'] : null;
                 }
-                
+
+                $this->checkProductPageAssociations(
+                    $requestData['meliscommerce_products_page_associations_form'],
+                    $productPageAssociations,
+                    $errors
+                );
             }
         }
 
@@ -1480,7 +1488,7 @@ class MelisComProductController extends MelisAbstractActionController
             
             // stopped here, validation and insertion
             
-            $success = $prodSvc->saveProduct($product, $textClean, $attributes, $categories, $priceClean, $seo, (int) $product['prd_id']);
+            $success = $prodSvc->saveProduct($product, $textClean, $attributes, $categories, $priceClean, $seo, (int) $product['prd_id'], $productPageAssociations);
 
             $data['productId'] = (int) $success;
         }
@@ -1632,13 +1640,12 @@ class MelisComProductController extends MelisAbstractActionController
      * Returns the Tool Service Class
      * @return MelisCoreTool
      */
-    private function getTool()
+    private function getTool($module = 'meliscommerce', $toolKey = 'meliscommerce_products_list')
     {
         $melisTool = $this->getServiceManager()->get('MelisCoreTool');
-        $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_products_list');
+        $melisTool->setMelisToolKey($module, $toolKey);
 
         return $melisTool;
-
     }
 
 
@@ -1951,4 +1958,59 @@ class MelisComProductController extends MelisAbstractActionController
         ));
     }
 
+    /**
+     * Renders the page associations
+     * @return ViewModel
+     */
+    public function renderPageAssociationsAction()
+    {
+        $productId = (int) $this->params()->fromQuery('productId', '');
+        $melisTool = $this->getTool('meliscommerce', 'meliscommerce_products');
+        $pageAssociationsForm = $melisTool->getForm('meliscommerce_products_page_associations_form');
+
+        if ($productId != 0) {
+            $productPageAssociations = $this->getProductPageAssociations($productId);
+            $pageAssociationsForm->setData($productPageAssociations);
+        }
+
+        $view = new ViewModel();
+        $view->pageAssociationsForm = $pageAssociationsForm;
+        return $view;
+    }
+
+    private function getProductPageAssociations($productId)
+    {
+        $productService = $this->getProductSvc();
+        return $productService->getProductPageAssociationsByProductId($productId);
+    }
+
+    private function checkProductPageAssociations($productPageAssociations, &$data, &$errors) {
+        $melisTool = $this->getTool('meliscommerce', 'meliscommerce_products');
+        $pageAssociationsForm = $melisTool->getForm('meliscommerce_products_page_associations_form');
+
+        foreach ($productPageAssociations as $productPageAssociation) {
+            $pageAssociationsForm->setData($productPageAssociation);
+
+            if (!$pageAssociationsForm->isValid()) {
+                $formErrors = $this->getFormErrors($pageAssociationsForm);
+                array_push($errors, $formErrors);
+            } else {
+                $data = $productPageAssociation;
+            }
+        }
+    }
+
+    private function getFormErrors($form)
+    {
+        $formErrors = [];
+        foreach ($form->getMessages() as $element => $errors) {
+            foreach ($errors as $errorKey => $error) {
+                $label = $form->get($element)->getOption('label') ?? '';
+                $formErrors[$element][$errorKey] = $error;
+                $formErrors[$element]['label'] = $label;
+            }
+        }
+
+        return $formErrors;
+    }
 }

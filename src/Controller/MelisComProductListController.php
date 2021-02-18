@@ -145,6 +145,12 @@ class MelisComProductListController extends MelisAbstractActionController
     {
         return new ViewModel();
     }
+
+
+    /**
+     * Renders the category filter
+     */
+    public function renderProductListTableCategoryAndCatalogFilterAction() {}
     
     /**
      * This method return the list of Products
@@ -184,8 +190,11 @@ class MelisComProductListController extends MelisAbstractActionController
         
             $search = $this->getRequest()->getPost('search');
             $search = $search['value'];
-            
-            $prodData = $prodSvc->getProductList($langId, null, null, null, $start, $length, $selColOrder, $order[0]['dir'], $search);
+
+            $selectedCategories = $this->getRequest()->getPost('selectedCategories', []);
+            $categoryIds = $this->getSelectedCategoriesAndChildrenIds($selectedCategories);
+
+            $prodData = $prodSvc->getProductList($langId, $categoryIds, null, null, $start, $length, $selColOrder, $order[0]['dir'], $search);
             $checkBox = '<div class="checkbox checkbox-single margin-none" data-product-id="%s">
                             <label class="checkbox-custom">
                                 <i class="fa fa-fw fa-square-o"></i>
@@ -200,7 +209,7 @@ class MelisComProductListController extends MelisAbstractActionController
             // PRODUCT DETAILS
             $ctr = 0;
             $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
-            $dataCount = $prodSvc->getProductList($langId, null, null, null, null, null, $selColOrder, $order[0]['dir'], $search);
+            $dataCount = $prodSvc->getProductList($langId, $categoryIds, null, null, null, null, $selColOrder, $order[0]['dir'], $search);
             foreach($prodData as $prod) 
             {
                 $prodText = $prodSvc->getProductName($prod->getProduct()->prd_id, $langId);
@@ -670,5 +679,42 @@ class MelisComProductListController extends MelisAbstractActionController
 
         
         return $newArray;
+    }
+
+    /**
+     * This will get the selected categories id and it's children
+     * @param $selectedCategories
+     * @return array
+     */
+    private function getSelectedCategoriesAndChildrenIds($selectedCategories)
+    {
+        $categoryIds = [];
+        $categoryService = $this->getServiceManager()->get('MelisComCategoryService');
+
+        foreach ($selectedCategories as $selectedCategoryId) {
+            $categoryTreeIds =  $categoryService->getAllSubCategoryIdById($selectedCategoryId, true);
+            $categoryIds = $this->getCategoryIds($categoryTreeIds, $categoryIds);
+        }
+
+        return $categoryIds;
+    }
+
+    /**
+     * Returns the id of a category and it's children
+     * @param $categoryTreeIds
+     * @param $categoryIds
+     * @return mixed
+     */
+    private function getCategoryIds($categoryTreeIds, $categoryIds)
+    {
+        foreach ($categoryTreeIds As $key => $val) {
+            array_push($categoryIds, $val['cat_id']);
+
+            if (!empty($val['cat_children'])) {
+                $categoryIds = $this->getCategoryIds($val['cat_children'], $categoryIds);
+            }
+        }
+
+        return $categoryIds;
     }
 }

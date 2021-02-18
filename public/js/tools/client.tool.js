@@ -609,14 +609,29 @@ $(function() {
 			value: clientStatus,
 		});
 
+		var file = $this
+			.closest(".tab-pane")
+			.find('#id_meliscommerce_clients_company_form input[type="file"]')
+			.prop("files")[0];
+		var form_data = new FormData();
+
+		if (file !== undefined) {
+			form_data.append("ccomp_logo", file);
+		}
+
+		$.each(dataString, function(key, input) {
+			form_data.append(input.name, input.value);
+		});
+
 		$this.attr("disabled", "disabled");
 
 		$.ajax({
 			type: "POST",
 			url: "/melis/MelisCommerce/MelisComClient/saveClient",
-			data: dataString,
-			dataType: "json",
-			encode: true,
+			data: form_data,
+			cache: false,
+			contentType: false,
+			processData: false,
 		})
 			.done(function(data) {
 				if (data.success) {
@@ -794,7 +809,7 @@ $(function() {
 		}
 	});
 
-	//clienst group filter
+	// client group filter
 	$body.on("change", "#clientsGroupSelect", function() {
 		$("#clientListTbl")
 			.DataTable()
@@ -1027,6 +1042,28 @@ window.initClientContactAddressForm = function() {
 			.find("#cper_middle_name")
 			.val()
 	);
+};
+
+window.companyLogoPreview = function(id, fileInput) {
+	if (fileInput.files && fileInput.files[0]) {
+		$("#" + activeTabId + " .client-company-preview").css("display", "");
+		var reader = new FileReader();
+
+		reader.onload = function(e) {
+			$("#" + activeTabId + " " + id).attr("src", e.target.result);
+		};
+
+		reader.readAsDataURL(fileInput.files[0]);
+	} else {
+		if ($("#" + activeTabId + " " + id).data("img") !== "") {
+			$("#" + activeTabId + " " + id).attr(
+				"src",
+				$("#" + activeTabId + " " + id).data("img")
+			);
+		} else {
+			$("#" + activeTabId + " .client-company-preview").css("display", "none");
+		}
+	}
 };
 
 window.initClientsFilters = function(d) {
