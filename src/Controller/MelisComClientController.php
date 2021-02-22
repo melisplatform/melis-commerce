@@ -1748,12 +1748,10 @@ class MelisComClientController extends MelisAbstractActionController
                 // Flag that indicates if Company Name Field is mandatory
                 $companyNameRequired = false;
 
-                // clean data. except ccomp_id
+                // clean data
                 foreach ($clientCompanyData as $key => $value) {
-                    if ($key != 'ccomp_id') {
-                        if (empty($value))
-                            unset($clientCompanyData[$key]);
-                    }
+                    if (empty($value))
+                        unset($clientCompanyData[$key]);
                 }
                 
                 // Fields names that excluded on checkin value
