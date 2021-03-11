@@ -267,6 +267,10 @@ class Module
             include __DIR__ . '/../config/dashboard-plugins/MelisCommerceDashboardPluginOrdersNumber.config.php',
             include __DIR__ . '/../config/dashboard-plugins/MelisCommerceDashboardPluginSalesRevenue.config.php',
             include __DIR__ . '/../config/dashboard-plugins/MelisCommerceDashboardPluginOrderMessages.config.php',
+
+            // Micro services
+            include __DIR__ . '/../config/micro-services/category.microservice.php',
+            include __DIR__ . '/../config/micro-services/client.microservice.php',
         ];
         
         foreach ($configFiles as $file) {
