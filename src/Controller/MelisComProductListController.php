@@ -172,6 +172,7 @@ class MelisComProductListController extends MelisAbstractActionController
         $filterCount = 0;
         $draw = 0;
         $tableData = array();
+        $prodData = [];
         
         if($this->getRequest()->isPost()) 
         {
@@ -255,7 +256,7 @@ class MelisComProductListController extends MelisAbstractActionController
         return new JsonModel(array(
             'draw' => (int) $draw,
             'recordsTotal' => count($prodData),
-            'recordsFiltered' => count($dataCount),
+            'recordsFiltered' => is_array($dataCount) ? count($dataCount) : $dataCount,
             'data' => $tableData,
         ));
     }
