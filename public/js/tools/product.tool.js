@@ -122,8 +122,8 @@ window.initProductTextTinyMce = function(productId) {
                         height : "400px",
                         relative_urls : false,
                         language : 'en',
-                        templates : 'miniTemplates',
                         menubar : false,
+                        templates : '/melis/MelisCore/MelisTinyMce/getTinyTemplates',
                         forced_root_block : '',
                         paste_word_valid_elements : "p,b,strong,i,em,h1,h2,h3,h4",
                         cleanup : false,
@@ -132,10 +132,13 @@ window.initProductTextTinyMce = function(productId) {
                             //[contextmenu, textcolor, colorpicker] this plugin is already built in the core editor as of TinyMCE v. 5
                             'advlist autolink lists link paste image charmap preview anchor emoticons help hr nonbreaking',
                             'searchreplace visualblocks code fullscreen',
-                            'insertdatetime media table template'
+                            'insertdatetime media table minitemplate'
                         ],
+                        external_plugins: {
+                            minitemplate: '/MelisCore/js/minitemplate/plugin.min.js'
+                        },
                         image_advtab: true,
-                        toolbar : 'insertfile undo redo paste | formatselect | forecolor | bold italic strikethrough underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media template | code',
+                        toolbar : 'insertfile undo redo paste | formatselect | forecolor | bold italic strikethrough underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media minitemplate | code',
                         init_instance_callback  : productTextTinyMCECallback(form, productId)
                     }
 

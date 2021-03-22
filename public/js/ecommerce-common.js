@@ -310,11 +310,11 @@ var melisCommerce = (function(window) {
 		$(".price-log-data-tooltip").each(function() {
 			var $this = $(this);
 
-			let priceLog = $(this)
+			var priceLog = $(this)
 				.find(".price-log-data")
 				.text();
 
-			let qtipContent = "";
+			var qtipContent = "";
 			if (priceLog != "") {
 				logs = JSON.parse(priceLog);
 
