@@ -960,20 +960,22 @@ class MelisComClientService extends MelisComGeneralService
 				}
 			}
 			
-			// Saving Client Company Detials
+			// Saving Client Company details
 			if (!empty($arrayParameters['company']))
 			{
 				$companyData = $arrayParameters['company'];
-				$compId = $companyData['ccomp_id'] ? $companyData['ccomp_id'] : null;
-				unset($companyData['ccomp_id']);
+				$compId = null;
+				if (!empty($companyData['ccomp_id'])) {
+					$compId = $companyData['ccomp_id'];
+					unset($companyData['ccomp_id']);
+				}
+
 				$companyData['ccomp_client_id'] = $clntId;
 				
 				$successflag = $this->saveClientCompany($companyData, $compId);
 				
 				if (!$successflag)
-				{
 					return null;
-				}
 			}
 			
 			$results = $clntId;
