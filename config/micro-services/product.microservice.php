@@ -5,9 +5,9 @@ return [
         'microservice' => [
             // Module Name
             'MelisCommerce' => [
-                // MelisComCategoryService.php
-                'MelisComCategoryService' => [
-                    'getCategoryListById' => [
+                // MelisComProductService.php
+                'MelisComProductService' => [
+                    'getProductList' => [
                         'attributes' => [
                             'name' => 'microservice_form',
                             'id' => 'microservice_form',
@@ -16,21 +16,6 @@ return [
                         ],
                         'hydrator' => 'Laminas\Hydrator\ArraySerializable',
                         'elements' => [
-                            [
-                                'spec' => [
-                                    'name' => 'categoryId',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Category ID'
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'categoryId',
-                                        'value' => '',
-                                        'class' => '',
-                                        'placeholder' => '1'
-                                    ],
-                                ],
-                            ],
                             [
                                 'spec' => [
                                     'name' => 'langId',
@@ -49,169 +34,29 @@ return [
                             ],
                             [
                                 'spec' => [
-                                    'name' => 'onlyValid',
+                                    'name' => 'categoryIds[]',
                                     'type' => 'Text',
                                     'options' => [
-                                        'label' => 'Only Valid'
+                                        'label' => 'Category Ids',
                                     ],
                                     'attributes' => [
-                                        'id' => 'onlyValid',
+                                        'id' => 'categoryIds',
                                         'value' => '',
                                         'class' => '',
-                                        'placeholder' => '1',
-                                        'data-type' => 'bool'
+                                        'placeholder' => 'separate by comma',
+                                        'data-type' => 'array',
                                     ],
                                 ],
                             ],
                             [
                                 'spec' => [
-                                    'name' => 'start',
+                                    'name' => 'countryId',
                                     'type' => 'Text',
                                     'options' => [
-                                        'label' => 'Start'
+                                        'label' => 'Country ID'
                                     ],
                                     'attributes' => [
-                                        'id' => 'start',
-                                        'value' => '',
-                                        'class' => '',
-                                        'placeholder' => '1',
-                                        'data-type' => 'int'
-                                    ],
-                                ],
-                            ],
-                            [
-                                'spec' => [
-                                    'name' => 'limit',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Limit'
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'limit',
-                                        'value' => '',
-                                        'class' => '',
-                                        'placeholder' => '1',
-                                        'data-type' => 'int'
-                                    ],
-                                ],
-                            ]
-                        ],
-                        'input_filter' => [
-                            'categoryId' => [
-                                'name' => 'categoryId',
-                                'required' => true,
-                                'validators' => [
-                                    [
-                                        'name' => 'IsInt',
-                                        'options' => [
-                                            'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Category ID must be an integer'
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                                'filters' => [
-                                    ['name' => 'StripTags'],
-                                    ['name' => 'StringTrim']
-                                ],
-                            ],
-                            'langId' => [
-                                'name' => 'langId',
-                                'required' => false,
-                                'validators' => [
-                                    [
-                                        'name' => 'IsInt',
-                                        'options' => [
-                                            'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Language ID must be an integer'
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                                'filters' => [
-                                    ['name' => 'StripTags'],
-                                    ['name' => 'StringTrim']
-                                ],
-                            ],
-                            'onlyValid' => [
-                                'name' => 'onlyValid',
-                                'required' => false,
-                                'validators' => [
-
-                                ],
-                            ],
-                            'start' => [
-                                'name' => 'start',
-                                'required' => false,
-                                'validators' => [
-                                    [
-                                        'name' => 'IsInt',
-                                        'options' => [
-                                            'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Start must be an integer'
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                                'filters' => [
-                                    ['name' => 'StripTags'],
-                                    ['name' => 'StringTrim']
-                                ],
-                            ],
-                            'limit' => [
-                                'name' => 'limit',
-                                'required' => false,
-                                'validators' => [
-                                    [
-                                        'name' => 'IsInt',
-                                        'options' => [
-                                            'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Limit must be an integer'
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                                'filters' => [
-                                    ['name' => 'StripTags'],
-                                    ['name' => 'StringTrim']
-                                ],
-                            ],
-                        ],
-                    ],
-                    'getCategoryListByIdRecursive' => [
-                        'attributes' => [
-                            'name' => 'microservice_form',
-                            'id' => 'microservice_form',
-                            'method' => 'POST',
-                            'action' => $_SERVER['REQUEST_URI'],
-                        ],
-                        'hydrator' => 'Laminas\Hydrator\ArraySerializable',
-                        'elements' => [
-                            [
-                                'spec' => [
-                                    'name' => 'categoryId',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Category ID'
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'categoryId',
-                                        'value' => '',
-                                        'class' => '',
-                                        'placeholder' => '1',
-                                        'data-type' => 'int'
-                                    ],
-                                ],
-                            ],
-                            [
-                                'spec' => [
-                                    'name' => 'langId',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Language ID'
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'langId',
+                                        'id' => 'countryId',
                                         'value' => '',
                                         'class' => '',
                                         'placeholder' => '1',
@@ -269,40 +114,54 @@ return [
                             ],
                             [
                                 'spec' => [
-                                    'name' => 'fatherId',
+                                    'name' => 'orderColumn',
                                     'type' => 'Text',
                                     'options' => [
-                                        'label' => 'Father ID'
+                                        'label' => 'Order column',
                                     ],
                                     'attributes' => [
-                                        'id' => 'fatherId',
+                                        'id' => 'orderColumn',
                                         'value' => '',
-                                        'class' => '',
-                                        'placeholder' => '1',
-                                        'data-type' => 'int'
+                                        'css' => '',
+                                        'placeholder' => 'prd_id',
+                                        'data-type' => 'string'
                                     ],
-                                ],
-                            ]
-                        ],
-                        'input_filter' => [
-                            'categoryId' => [
-                                'name' => 'categoryId',
-                                'required' => true,
-                                'validators' => [
-                                    [
-                                        'name' => 'IsInt',
-                                        'options' => [
-                                            'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Category ID must be an integer'
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                                'filters' => [
-                                    ['name' => 'StripTags'],
-                                    ['name' => 'StringTrim']
                                 ],
                             ],
+                            [
+                                'spec' => [
+                                    'name' => 'order',
+                                    'type' => 'Text',
+                                    'options' => [
+                                        'label' => 'Order',
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'order',
+                                        'value' => '',
+                                        'css' => '',
+                                        'placeholder' => 'ASC',
+                                        'data-type' => 'string'
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'search',
+                                    'type' => 'Text',
+                                    'options' => [
+                                        'label' => 'Search',
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'search',
+                                        'value' => '',
+                                        'css' => '',
+                                        'placeholder' => '',
+                                        'data-type' => 'string'
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'input_filter' => [
                             'langId' => [
                                 'name' => 'langId',
                                 'required' => false,
@@ -312,6 +171,31 @@ return [
                                         'options' => [
                                             'messages' => [
                                                 \Laminas\I18n\Validator\IsInt::NOT_INT => 'Language ID must be an integer'
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters' => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim']
+                                ],
+                            ],
+                            'categoryIds' => [
+                                'name' => 'categoryIds',
+                                'required' => false,
+                                'validators' => [
+
+                                ],
+                            ],
+                            'countryId' => [
+                                'name' => 'countryId',
+                                'required' => false,
+                                'validators' => [
+                                    [
+                                        'name' => 'IsInt',
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Country ID must be an integer'
                                             ],
                                         ],
                                     ],
@@ -364,27 +248,30 @@ return [
                                     ['name' => 'StringTrim']
                                 ],
                             ],
-                            'fatherId' => [
-                                'name' => 'fatherId',
+                            'orderColumn' => [
+                                'name' => 'orderColumn',
                                 'required' => false,
                                 'validators' => [
-                                    [
-                                        'name' => 'IsInt',
-                                        'options' => [
-                                            'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Father ID must be an integer'
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                                'filters' => [
-                                    ['name' => 'StripTags'],
-                                    ['name' => 'StringTrim']
+
                                 ],
                             ],
-                        ],
+                            'order' => [
+                                'name' => 'order',
+                                'required' => false,
+                                'validators' => [
+
+                                ],
+                            ],
+                            'search' => [
+                                'name' => 'search',
+                                'required' => false,
+                                'validators' => [
+
+                                ],
+                            ],
+                        ]
                     ],
-                    'getCategoryById' => [
+                    'getAssocProducts' => [
                         'attributes' => [
                             'name' => 'microservice_form',
                             'id' => 'microservice_form',
@@ -395,13 +282,13 @@ return [
                         'elements' => [
                             [
                                 'spec' => [
-                                    'name' => 'categoryId',
+                                    'name' => 'productId',
                                     'type' => 'Text',
                                     'options' => [
-                                        'label' => 'Category ID'
+                                        'label' => 'Product ID'
                                     ],
                                     'attributes' => [
-                                        'id' => 'categoryId',
+                                        'id' => 'productId',
                                         'value' => '',
                                         'class' => '',
                                         'placeholder' => '1',
@@ -425,33 +312,17 @@ return [
                                     ],
                                 ],
                             ],
-                            [
-                                'spec' => [
-                                    'name' => 'onlyValid',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Only Valid'
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'onlyValid',
-                                        'value' => '',
-                                        'class' => '',
-                                        'placeholder' => '1',
-                                        'data-type' => 'bool'
-                                    ],
-                                ],
-                            ],
                         ],
                         'input_filter' => [
-                            'categoryId' => [
-                                'name' => 'categoryId',
+                            'productId' => [
+                                'name' => 'productId',
                                 'required' => true,
                                 'validators' => [
                                     [
                                         'name' => 'IsInt',
                                         'options' => [
                                             'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Category ID must be an integer'
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Product ID must be an integer'
                                             ],
                                         ],
                                     ],
@@ -479,48 +350,26 @@ return [
                                     ['name' => 'StringTrim']
                                 ],
                             ],
-                            'onlyValid' => [
-                                'name' => 'onlyValid',
-                                'required' => false,
-                                'validators' => [
-
-                                ],
-                            ],
-                        ],
+                        ]
                     ],
-                    'getCategoryNameById' => [
+                    'getProductAssociation' => [
                         'attributes' => [
                             'name' => 'microservice_form',
                             'id' => 'microservice_form',
                             'method' => 'POST',
                             'action' => $_SERVER['REQUEST_URI'],
                         ],
+                        'hydrator' => 'Laminas\Hydrator\ArraySerializable',
                         'elements' => [
                             [
                                 'spec' => [
-                                    'name' => 'categoryId',
+                                    'name' => 'productId',
                                     'type' => 'Text',
                                     'options' => [
-                                        'label' => 'Category ID'
+                                        'label' => 'Product ID'
                                     ],
                                     'attributes' => [
-                                        'id' => 'categoryId',
-                                        'value' => '',
-                                        'class' => '',
-                                        'placeholder' => '1',
-                                        'data-type' => 'int'
-                                    ],
-                                ],
-                            ],
-                            [
-                                'spec' => [
-                                    'name' => 'langId',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Language ID'
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'langId',
+                                        'id' => 'productId',
                                         'value' => '',
                                         'class' => '',
                                         'placeholder' => '1',
@@ -530,15 +379,15 @@ return [
                             ],
                         ],
                         'input_filter' => [
-                            'categoryId' => [
-                                'name' => 'categoryId',
+                            'productId' => [
+                                'name' => 'productId',
                                 'required' => true,
                                 'validators' => [
                                     [
                                         'name' => 'IsInt',
                                         'options' => [
                                             'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Category ID must be an integer'
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Product ID must be an integer'
                                             ],
                                         ],
                                     ],
@@ -548,43 +397,26 @@ return [
                                     ['name' => 'StringTrim']
                                 ],
                             ],
-                            'langId' => [
-                                'name' => 'langId',
-                                'required' => false,
-                                'validators' => [
-                                    [
-                                        'name' => 'IsInt',
-                                        'options' => [
-                                            'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Language ID must be an integer'
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                                'filters' => [
-                                    ['name' => 'StripTags'],
-                                    ['name' => 'StringTrim']
-                                ],
-                            ],
-                        ],
+                        ]
                     ],
-                    'getCategoryProductsById' => [
+                    'getProductById' => [
                         'attributes' => [
                             'name' => 'microservice_form',
                             'id' => 'microservice_form',
                             'method' => 'POST',
                             'action' => $_SERVER['REQUEST_URI'],
                         ],
+                        'hydrator' => 'Laminas\Hydrator\ArraySerializable',
                         'elements' => [
                             [
                                 'spec' => [
-                                    'name' => 'categoryId',
+                                    'name' => 'productId',
                                     'type' => 'Text',
                                     'options' => [
-                                        'label' => 'Category ID'
+                                        'label' => 'Product ID'
                                     ],
                                     'attributes' => [
-                                        'id' => 'categoryId',
+                                        'id' => 'productId',
                                         'value' => '',
                                         'class' => '',
                                         'placeholder' => '1',
@@ -610,84 +442,13 @@ return [
                             ],
                             [
                                 'spec' => [
-                                    'name' => 'onlyValid',
+                                    'name' => 'countryId',
                                     'type' => 'Text',
                                     'options' => [
-                                        'label' => 'Only Valid'
+                                        'label' => 'Country ID'
                                     ],
                                     'attributes' => [
-                                        'id' => 'onlyValid',
-                                        'value' => '',
-                                        'class' => '',
-                                        'placeholder' => '1',
-                                        'data-type' => 'bool'
-                                    ],
-                                ],
-                            ],
-                        ],
-                        'input_filter' => [
-                            'categoryId' => [
-                                'name' => 'categoryId',
-                                'required' => true,
-                                'validators' => [
-                                    [
-                                        'name' => 'IsInt',
-                                        'options' => [
-                                            'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Category ID must be an integer'
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                                'filters' => [
-                                    ['name' => 'StripTags'],
-                                    ['name' => 'StringTrim']
-                                ],
-                            ],
-                            'langId' => [
-                                'name' => 'langId',
-                                'required' => false,
-                                'validators' => [
-                                    [
-                                        'name' => 'IsInt',
-                                        'options' => [
-                                            'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Language ID must be an integer'
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                                'filters' => [
-                                    ['name' => 'StripTags'],
-                                    ['name' => 'StringTrim']
-                                ],
-                            ],
-                            'onlyValid' => [
-                                'name' => 'onlyValid',
-                                'required' => false,
-                                'validators' => [
-
-                                ],
-                            ],
-                        ],
-                    ],
-                    'getCategoriesProductsByIds' => [
-                        'attributes' => [
-                            'name' => 'microservice_form',
-                            'id' => 'microservice_form',
-                            'method' => 'POST',
-                            'action' => $_SERVER['REQUEST_URI'],
-                        ],
-                        'elements' => [
-                            [
-                                'spec' => [
-                                    'name' => 'categoryId',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Category ID'
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'categoryId',
+                                        'id' => 'countryId',
                                         'value' => '',
                                         'class' => '',
                                         'placeholder' => '1',
@@ -697,95 +458,63 @@ return [
                             ],
                             [
                                 'spec' => [
-                                    'name' => 'onlyValid',
-                                    'type' => 'Text',
+                                    'name' => 'groupId',
+                                    'type' => 'text',
                                     'options' => [
-                                        'label' => 'Only Valid'
+                                        'label' => 'Group ID'
                                     ],
                                     'attributes' => [
-                                        'id' => 'onlyValid',
+                                        'id' => 'groupId',
                                         'value' => '',
                                         'class' => '',
-                                        'placeholder' => '1',
-                                        'data-type' => 'bool'
-                                    ],
-                                ],
-                            ],
-                            [
-                                'spec' => [
-                                    'name' => 'langId',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Language ID'
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'langId',
-                                        'value' => '',
-                                        'class' => '',
-                                        'placeholder' => '1',
+                                        'placeholder' => '-1',
                                         'data-type' => 'int'
                                     ],
                                 ],
                             ],
                             [
                                 'spec' => [
-                                    'name' => 'column',
-                                    'type' => 'Text',
+                                    'name' => 'docType',
+                                    'type' => 'text',
                                     'options' => [
-                                        'label' => 'Column',
+                                        'label' => 'Document Type'
                                     ],
                                     'attributes' => [
-                                        'id' => 'column',
+                                        'id' => 'docType',
                                         'value' => '',
-                                        'css' => '',
-                                        'placeholder' => 'cat_id',
+                                        'class' => '',
+                                        'placeholder' => 'IMG, FILE',
                                         'data-type' => 'string'
                                     ],
                                 ],
                             ],
                             [
                                 'spec' => [
-                                    'name' => 'order',
-                                    'type' => 'Text',
+                                    'name' => 'docSubType[]',
+                                    'type' => 'text',
                                     'options' => [
-                                        'label' => 'Order',
+                                        'label' => 'Document Sub Type'
                                     ],
                                     'attributes' => [
-                                        'id' => 'order',
+                                        'id' => 'docSubType',
                                         'value' => '',
-                                        'css' => '',
-                                        'placeholder' => 'ASC',
-                                        'data-type' => 'string'
+                                        'class' => '',
+                                        'placeholder' => 'DEFAULT, SMALL, LARGE, MEDIUM',
+                                        'data-type' => 'array'
                                     ],
                                 ],
                             ],
-                            [
-                                'spec' => [
-                                    'name' => 'includeSubCategories',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Include Sub-categories',
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'includeSubCategories',
-                                        'value' => '',
-                                        'css' => '',
-                                        'placeholder' => '1',
-                                        'data-type' => 'bool'
-                                    ],
-                                ],
-                            ]
                         ],
                         'input_filter' => [
-                            'categoryId' => [
-                                'name' => 'categoryId',
+                            'productId' => [
+                                'name' => 'productId',
                                 'required' => true,
                                 'validators' => [
                                     [
                                         'name' => 'IsInt',
                                         'options' => [
                                             'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Category ID must be an integer'
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Product ID must be an integer'
                                             ],
                                         ],
                                     ],
@@ -813,29 +542,51 @@ return [
                                     ['name' => 'StringTrim']
                                 ],
                             ],
-                            'onlyValid' => [
-                                'name' => 'onlyValid',
+                            'countryId' => [
+                                'name' => 'countryId',
+                                'required' => false,
+                                'validators' => [
+                                    [
+                                        'name' => 'IsInt',
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Country ID must be an integer'
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters' => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim']
+                                ],
+                            ],
+                            'groupId' => [
+                                'name' => 'groupId',
+                                'required' => false,
+                                'validators' => [
+                                    [
+                                        'name' => 'IsInt',
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Group ID must be an integer'
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters' => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim']
+                                ],
+                            ],
+                            'docType' => [
+                                'name' => 'docType',
                                 'required' => false,
                                 'validators' => [
 
                                 ],
                             ],
-                            'column' => [
-                                'name' => 'column',
-                                'required' => false,
-                                'validators' => [
-
-                                ],
-                            ],
-                            'order' => [
-                                'name' => 'order',
-                                'required' => false,
-                                'validators' => [
-
-                                ],
-                            ],
-                            'includeSubCategories' => [
-                                'name' => 'includeSubCategories',
+                            'docSubType' => [
+                                'name' => 'docSubType',
                                 'required' => false,
                                 'validators' => [
 
@@ -843,43 +594,28 @@ return [
                             ],
                         ],
                     ],
-                    'getCategoriesByIds' => [
+                    'getProductAttributesById' => [
                         'attributes' => [
                             'name' => 'microservice_form',
                             'id' => 'microservice_form',
                             'method' => 'POST',
                             'action' => $_SERVER['REQUEST_URI'],
                         ],
+                        'hydrator' => 'Laminas\Hydrator\ArraySerializable',
                         'elements' => [
                             [
                                 'spec' => [
-                                    'name' => 'categoryId',
+                                    'name' => 'productId',
                                     'type' => 'Text',
                                     'options' => [
-                                        'label' => 'Category ID'
+                                        'label' => 'Product ID'
                                     ],
                                     'attributes' => [
-                                        'id' => 'categoryId',
+                                        'id' => 'productId',
                                         'value' => '',
                                         'class' => '',
                                         'placeholder' => '1',
                                         'data-type' => 'int'
-                                    ],
-                                ],
-                            ],
-                            [
-                                'spec' => [
-                                    'name' => 'onlyValid',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Only Valid'
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'onlyValid',
-                                        'value' => '',
-                                        'class' => '',
-                                        'placeholder' => '1',
-                                        'data-type' => 'bool'
                                     ],
                                 ],
                             ],
@@ -899,49 +635,17 @@ return [
                                     ],
                                 ],
                             ],
-                            [
-                                'spec' => [
-                                    'name' => 'column',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Column',
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'column',
-                                        'value' => '',
-                                        'css' => '',
-                                        'placeholder' => 'cat_id',
-                                        'data-type' => 'string'
-                                    ],
-                                ],
-                            ],
-                            [
-                                'spec' => [
-                                    'name' => 'order',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Order',
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'order',
-                                        'value' => '',
-                                        'css' => '',
-                                        'placeholder' => 'ASC',
-                                        'data-type' => 'string'
-                                    ],
-                                ],
-                            ],
                         ],
                         'input_filter' => [
-                            'categoryId' => [
-                                'name' => 'categoryId',
+                            'productId' => [
+                                'name' => 'productId',
                                 'required' => true,
                                 'validators' => [
                                     [
                                         'name' => 'IsInt',
                                         'options' => [
                                             'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Category ID must be an integer'
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Product ID must be an integer'
                                             ],
                                         ],
                                     ],
@@ -969,46 +673,26 @@ return [
                                     ['name' => 'StringTrim']
                                 ],
                             ],
-                            'onlyValid' => [
-                                'name' => 'onlyValid',
-                                'required' => false,
-                                'validators' => [
-
-                                ],
-                            ],
-                            'column' => [
-                                'name' => 'column',
-                                'required' => false,
-                                'validators' => [
-
-                                ],
-                            ],
-                            'order' => [
-                                'name' => 'order',
-                                'required' => false,
-                                'validators' => [
-
-                                ],
-                            ],
                         ],
                     ],
-                    'getCategoryCountriesById' => [
+                    'getProductTextsById' => [
                         'attributes' => [
                             'name' => 'microservice_form',
                             'id' => 'microservice_form',
                             'method' => 'POST',
                             'action' => $_SERVER['REQUEST_URI'],
                         ],
+                        'hydrator' => 'Laminas\Hydrator\ArraySerializable',
                         'elements' => [
                             [
                                 'spec' => [
-                                    'name' => 'categoryId',
+                                    'name' => 'productId',
                                     'type' => 'Text',
                                     'options' => [
-                                        'label' => 'Category ID'
+                                        'label' => 'Product ID'
                                     ],
                                     'attributes' => [
-                                        'id' => 'categoryId',
+                                        'id' => 'productId',
                                         'value' => '',
                                         'class' => '',
                                         'placeholder' => '1',
@@ -1018,31 +702,250 @@ return [
                             ],
                             [
                                 'spec' => [
-                                    'name' => 'onlyValid',
+                                    'name' => 'productTextCode',
                                     'type' => 'Text',
                                     'options' => [
-                                        'label' => 'Only Valid'
+                                        'label' => 'Product Text Code'
                                     ],
                                     'attributes' => [
-                                        'id' => 'onlyValid',
+                                        'id' => 'productTextCode',
+                                        'value' => '',
+                                        'class' => '',
+                                        'placeholder' => '',
+                                        'data-type' => 'string'
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'langId',
+                                    'type' => 'Text',
+                                    'options' => [
+                                        'label' => 'Language ID'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'langId',
+                                        'value' => '',
+                                        'class' => '',
+                                        'placeholder' => '1',
+                                        'data-type' => 'int'
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'input_filter' => [
+                            'productId' => [
+                                'name' => 'productId',
+                                'required' => true,
+                                'validators' => [
+                                    [
+                                        'name' => 'IsInt',
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Product ID must be an integer'
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters' => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim']
+                                ],
+                            ],
+                            'productTextCode' => [
+                                'name' => 'productTextCode',
+                                'required' => false,
+                                'validators' => [
+
+                                ]
+                            ],
+                            'langId' => [
+                                'name' => 'langId',
+                                'required' => false,
+                                'validators' => [
+                                    [
+                                        'name' => 'IsInt',
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Language ID must be an integer'
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters' => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim']
+                                ],
+                            ],
+                        ],
+                    ],
+                    'getProductPricesById' => [
+                        'attributes' => [
+                            'name' => 'microservice_form',
+                            'id' => 'microservice_form',
+                            'method' => 'POST',
+                            'action' => $_SERVER['REQUEST_URI'],
+                        ],
+                        'hydrator' => 'Laminas\Hydrator\ArraySerializable',
+                        'elements' => [
+                            [
+                                'spec' => [
+                                    'name' => 'productId',
+                                    'type' => 'Text',
+                                    'options' => [
+                                        'label' => 'Product ID'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'productId',
+                                        'value' => '',
+                                        'class' => '',
+                                        'placeholder' => '1',
+                                        'data-type' => 'int'
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'countryId',
+                                    'type' => 'Text',
+                                    'options' => [
+                                        'label' => 'Country ID'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'countryId',
+                                        'value' => '',
+                                        'class' => '',
+                                        'placeholder' => '1',
+                                        'data-type' => 'int'
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'groupId',
+                                    'type' => 'text',
+                                    'options' => [
+                                        'label' => 'Group ID'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'groupId',
+                                        'value' => '',
+                                        'class' => '',
+                                        'placeholder' => '-1',
+                                        'data-type' => 'int'
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'input_filter' => [
+                            'productId' => [
+                                'name' => 'productId',
+                                'required' => true,
+                                'validators' => [
+                                    [
+                                        'name' => 'IsInt',
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Product ID must be an integer'
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters' => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim']
+                                ],
+                            ],
+                            'countryId' => [
+                                'name' => 'countryId',
+                                'required' => false,
+                                'validators' => [
+                                    [
+                                        'name' => 'IsInt',
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Country ID must be an integer'
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters' => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim']
+                                ],
+                            ],
+                            'groupId' => [
+                                'name' => 'groupId',
+                                'required' => false,
+                                'validators' => [
+                                    [
+                                        'name' => 'IsInt',
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Group ID must be an integer'
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters' => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim']
+                                ],
+                            ],
+                        ],
+                    ],
+                    'getProductCategories' => [
+                        'attributes' => [
+                            'name' => 'microservice_form',
+                            'id' => 'microservice_form',
+                            'method' => 'POST',
+                            'action' => $_SERVER['REQUEST_URI'],
+                        ],
+                        'hydrator' => 'Laminas\Hydrator\ArraySerializable',
+                        'elements' => [
+                            [
+                                'spec' => [
+                                    'name' => 'productId',
+                                    'type' => 'Text',
+                                    'options' => [
+                                        'label' => 'Product ID'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'productId',
+                                        'value' => '',
+                                        'class' => '',
+                                        'placeholder' => '1',
+                                        'data-type' => 'int'
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'status',
+                                    'type' => 'Text',
+                                    'options' => [
+                                        'label' => 'Status'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'status',
                                         'value' => '',
                                         'class' => '',
                                         'placeholder' => '0',
-                                        'data-type' => 'bool'
+                                        'data-type' => 'int'
                                     ],
                                 ],
                             ],
                         ],
                         'input_filter' => [
-                            'categoryId' => [
-                                'name' => 'categoryId',
+                            'productId' => [
+                                'name' => 'productId',
                                 'required' => true,
                                 'validators' => [
                                     [
                                         'name' => 'IsInt',
                                         'options' => [
                                             'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Category ID must be an integer'
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Product ID must be an integer'
                                             ],
                                         ],
                                     ],
@@ -1052,100 +955,15 @@ return [
                                     ['name' => 'StringTrim']
                                 ],
                             ],
-                            'onlyValid' => [
-                                'name' => 'onlyValid',
-                                'required' => false,
-                                'validators' => [
-
-                                ],
-                            ],
-                        ],
-                    ],
-                    'getCategoryTranslationById' => [
-                        'attributes' => [
-                            'name' => 'microservice_form',
-                            'id' => 'microservice_form',
-                            'method' => 'POST',
-                            'action' => $_SERVER['REQUEST_URI'],
-                        ],
-                        'elements' => [
-                            [
-                                'spec' => [
-                                    'name' => 'categoryId',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Category ID'
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'categoryId',
-                                        'value' => '',
-                                        'class' => '',
-                                        'placeholder' => '1',
-                                        'data-type' => 'int'
-                                    ],
-                                ],
-                            ],
-                            [
-                                'spec' => [
-                                    'name' => 'langId',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Language ID'
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'langId',
-                                        'value' => '',
-                                        'class' => '',
-                                        'placeholder' => '1',
-                                        'data-type' => 'int'
-                                    ],
-                                ],
-                            ],
-                            [
-                                'spec' => [
-                                    'name' => 'onlyValid',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Only Valid'
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'onlyValid',
-                                        'value' => '',
-                                        'class' => '',
-                                        'placeholder' => '1',
-                                        'data-type' => 'bool'
-                                    ],
-                                ],
-                            ],
-                        ],
-                        'input_filter' => [
-                            'categoryId' => [
-                                'name' => 'categoryId',
-                                'required' => true,
-                                'validators' => [
-                                    [
-                                        'name' => 'IsInt',
-                                        'options' => [
-                                            'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Category ID must be an integer'
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                                'filters' => [
-                                    ['name' => 'StripTags'],
-                                    ['name' => 'StringTrim']
-                                ],
-                            ],
-                            'langId' => [
-                                'name' => 'langId',
+                            'status' => [
+                                'name' => 'status',
                                 'required' => false,
                                 'validators' => [
                                     [
                                         'name' => 'IsInt',
                                         'options' => [
                                             'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Language ID must be an integer'
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Status must be an integer'
                                             ],
                                         ],
                                     ],
@@ -1155,133 +973,26 @@ return [
                                     ['name' => 'StringTrim']
                                 ],
                             ],
-                            'onlyValid' => [
-                                'name' => 'onlyValid',
-                                'required' => false,
-                                'validators' => [
-
-                                ],
-                            ],
                         ],
                     ],
-                    'getAllSubCategoryIdById' => [
+                    'getProductName' => [
                         'attributes' => [
                             'name' => 'microservice_form',
                             'id' => 'microservice_form',
                             'method' => 'POST',
                             'action' => $_SERVER['REQUEST_URI'],
                         ],
+                        'hydrator' => 'Laminas\Hydrator\ArraySerializable',
                         'elements' => [
                             [
                                 'spec' => [
-                                    'name' => 'categoryId',
+                                    'name' => 'productId',
                                     'type' => 'Text',
                                     'options' => [
-                                        'label' => 'Category ID'
+                                        'label' => 'Product ID'
                                     ],
                                     'attributes' => [
-                                        'id' => 'categoryId',
-                                        'value' => '',
-                                        'class' => '',
-                                        'placeholder' => '1',
-                                        'data-type' => 'int'
-                                    ],
-                                ],
-                            ],
-                            [
-                                'spec' => [
-                                    'name' => 'onlyValid',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Only Valid'
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'onlyValid',
-                                        'value' => '',
-                                        'class' => '',
-                                        'placeholder' => '1',
-                                        'data-type' => 'bool'
-                                    ],
-                                ],
-                            ],
-                        ],
-                        'input_filter' => [
-                            'categoryId' => [
-                                'name' => 'categoryId',
-                                'required' => true,
-                                'validators' => [
-                                    [
-                                        'name' => 'IsInt',
-                                        'options' => [
-                                            'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Category ID must be an integer'
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                                'filters' => [
-                                    ['name' => 'StripTags'],
-                                    ['name' => 'StringTrim']
-                                ],
-                            ],
-                            'onlyValid' => [
-                                'name' => 'onlyValid',
-                                'required' => false,
-                                'validators' => [
-
-                                ],
-                            ],
-                        ],
-                    ],
-                    'getSubCategoryIdByIdRecursive' => [
-                        'attributes' => [
-                            'name' => 'microservice_form',
-                            'id' => 'microservice_form',
-                            'method' => 'POST',
-                            'action' => $_SERVER['REQUEST_URI'],
-                        ],
-                        'elements' => [
-                            [
-                                'spec' => [
-                                    'name' => 'categoryId',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Category ID'
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'categoryId',
-                                        'value' => '',
-                                        'class' => '',
-                                        'placeholder' => '1',
-                                        'data-type' => 'int'
-                                    ],
-                                ],
-                            ],
-                            [
-                                'spec' => [
-                                    'name' => 'onlyValid',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Only Valid'
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'onlyValid',
-                                        'value' => '',
-                                        'class' => '',
-                                        'placeholder' => '1',
-                                        'data-type' => 'bool'
-                                    ],
-                                ],
-                            ],
-                            [
-                                'spec' => [
-                                    'name' => 'fatherId',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Father ID'
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'fatherId',
+                                        'id' => 'productId',
                                         'value' => '',
                                         'class' => '',
                                         'placeholder' => '1',
@@ -1307,40 +1018,15 @@ return [
                             ],
                         ],
                         'input_filter' => [
-                            'categoryId' => [
-                                'name' => 'categoryId',
+                            'productId' => [
+                                'name' => 'productId',
                                 'required' => true,
                                 'validators' => [
                                     [
                                         'name' => 'IsInt',
                                         'options' => [
                                             'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Category ID must be an integer'
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                                'filters' => [
-                                    ['name' => 'StripTags'],
-                                    ['name' => 'StringTrim']
-                                ],
-                            ],
-                            'onlyValid' => [
-                                'name' => 'onlyValid',
-                                'required' => false,
-                                'validators' => [
-
-                                ],
-                            ],
-                            'fatherId' => [
-                                'name' => 'fatherId',
-                                'required' => false,
-                                'validators' => [
-                                    [
-                                        'name' => 'IsInt',
-                                        'options' => [
-                                            'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Father ID must be an integer'
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Product ID must be an integer'
                                             ],
                                         ],
                                     ],
@@ -1370,27 +1056,44 @@ return [
                             ],
                         ],
                     ],
-                    'getCategorySeoById' => [
+                    'getProductTextByCode' => [
                         'attributes' => [
                             'name' => 'microservice_form',
                             'id' => 'microservice_form',
                             'method' => 'POST',
                             'action' => $_SERVER['REQUEST_URI'],
                         ],
+                        'hydrator' => 'Laminas\Hydrator\ArraySerializable',
                         'elements' => [
                             [
                                 'spec' => [
-                                    'name' => 'categoryId',
+                                    'name' => 'productId',
                                     'type' => 'Text',
                                     'options' => [
-                                        'label' => 'Category ID'
+                                        'label' => 'Product ID'
                                     ],
                                     'attributes' => [
-                                        'id' => 'categoryId',
+                                        'id' => 'productId',
                                         'value' => '',
                                         'class' => '',
                                         'placeholder' => '1',
                                         'data-type' => 'int'
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'typeCode',
+                                    'type' => 'Text',
+                                    'options' => [
+                                        'label' => 'Type Code'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'typeCode',
+                                        'value' => '',
+                                        'class' => '',
+                                        'placeholder' => '',
+                                        'data-type' => 'string'
                                     ],
                                 ],
                             ],
@@ -1412,15 +1115,15 @@ return [
                             ],
                         ],
                         'input_filter' => [
-                            'categoryId' => [
-                                'name' => 'categoryId',
+                            'productId' => [
+                                'name' => 'productId',
                                 'required' => true,
                                 'validators' => [
                                     [
                                         'name' => 'IsInt',
                                         'options' => [
                                             'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Category ID must be an integer'
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Product ID must be an integer'
                                             ],
                                         ],
                                     ],
@@ -1430,235 +1133,13 @@ return [
                                     ['name' => 'StringTrim']
                                 ],
                             ],
-                            'langId' => [
-                                'name' => 'langId',
-                                'required' => false,
-                                'validators' => [
-                                    [
-                                        'name' => 'IsInt',
-                                        'options' => [
-                                            'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Language ID must be an integer'
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                                'filters' => [
-                                    ['name' => 'StripTags'],
-                                    ['name' => 'StringTrim']
-                                ],
-                            ],
-                        ],
-                    ],
-                    'getCategoryTreeview' => [
-                        'attributes' => [
-                            'name' => 'microservice_form',
-                            'id' => 'microservice_form',
-                            'method' => 'POST',
-                            'action' => $_SERVER['REQUEST_URI'],
-                        ],
-                        'elements' => [
-                            [
-                                'spec' => [
-                                    'name' => 'fatherId',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Father ID'
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'fatherId',
-                                        'value' => '',
-                                        'class' => '',
-                                        'placeholder' => '1',
-                                        'data-type' => 'int'
-                                    ],
-                                ],
-                            ],
-                            [
-                                'spec' => [
-                                    'name' => 'langId',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Language ID'
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'langId',
-                                        'value' => '',
-                                        'class' => '',
-                                        'placeholder' => '1',
-                                        'data-type' => 'int'
-                                    ],
-                                ],
-                            ],
-                            [
-                                'spec' => [
-                                    'name' => 'onlyValid',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Only Valid'
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'onlyValid',
-                                        'value' => '',
-                                        'class' => '',
-                                        'placeholder' => '1',
-                                        'data-type' => 'bool'
-                                    ],
-                                ],
-                            ],
-                        ],
-                        'input_filter' => [
-                            'fatherId' => [
-                                'name' => 'fatherId',
-                                'required' => false,
-                                'validators' => [
-                                    [
-                                        'name' => 'IsInt',
-                                        'options' => [
-                                            'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Father ID must be an integer'
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                                'filters' => [
-                                    ['name' => 'StripTags'],
-                                    ['name' => 'StringTrim']
-                                ],
-                            ],
-                            'langId' => [
-                                'name' => 'langId',
-                                'required' => false,
-                                'validators' => [
-                                    [
-                                        'name' => 'IsInt',
-                                        'options' => [
-                                            'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Language ID must be an integer'
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                                'filters' => [
-                                    ['name' => 'StripTags'],
-                                    ['name' => 'StringTrim']
-                                ],
-                            ],
-                            'onlyValid' => [
-                                'name' => 'onlyValid',
+                            'typeCode' => [
+                                'name' => 'typeCode',
                                 'required' => false,
                                 'validators' => [
 
                                 ],
                             ],
-                        ]
-                    ],
-                    'reorderProductCategory' => [
-                        'attributes' => [
-                            'name' => 'microservice_form',
-                            'id' => 'microservice_form',
-                            'method' => 'POST',
-                            'action' => $_SERVER['REQUEST_URI'],
-                        ],
-                        'elements' => [
-                            [
-                                'spec' => [
-                                    'name' => 'categoryId',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Category ID'
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'categoryId',
-                                        'value' => '',
-                                        'class' => '',
-                                        'placeholder' => '1',
-                                        'data-type' => 'int'
-                                    ],
-                                ],
-                            ],
-                        ],
-                        'input_filters' => [
-                            'categoryId' => [
-                                'name' => 'categoryId',
-                                'required' => true,
-                                'validators' => [
-                                    [
-                                        'name' => 'IsInt',
-                                        'options' => [
-                                            'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Category ID must be an integer'
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                                'filters' => [
-                                    ['name' => 'StripTags'],
-                                    ['name' => 'StringTrim']
-                                ],
-                            ],
-                        ]
-                    ],
-                    'getCategoryBreadCrumb' => [
-                        'attributes' => [
-                            'name' => 'microservice_form',
-                            'id' => 'microservice_form',
-                            'method' => 'POST',
-                            'action' => $_SERVER['REQUEST_URI'],
-                        ],
-                        'elements' => [
-                            [
-                                'spec' => [
-                                    'name' => 'categoryId',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Category ID'
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'categoryId',
-                                        'value' => '',
-                                        'class' => '',
-                                        'placeholder' => '1',
-                                        'data-type' => 'int'
-                                    ],
-                                ],
-                            ],
-                            [
-                                'spec' => [
-                                    'name' => 'langId',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Language ID'
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'langId',
-                                        'value' => '',
-                                        'class' => '',
-                                        'placeholder' => '1',
-                                        'data-type' => 'int'
-                                    ],
-                                ],
-                            ],
-                        ],
-                        'filter_input' => [
-                            'categoryId' => [
-                                'name' => 'categoryId',
-                                'required' => true,
-                                'validators' => [
-                                    [
-                                        'name' => 'IsInt',
-                                        'options' => [
-                                            'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Category ID must be an integer'
-                                            ],
-                                        ],
-                                    ],
-                                ],
-                                'filters' => [
-                                    ['name' => 'StripTags'],
-                                    ['name' => 'StringTrim']
-                                ],
-                            ],
                             'langId' => [
                                 'name' => 'langId',
                                 'required' => false,
@@ -1679,39 +1160,24 @@ return [
                             ],
                         ],
                     ],
-                    'getChildrenByLangId' => [
+                    'getProductsByCategoryId' => [
                         'attributes' => [
                             'name' => 'microservice_form',
                             'id' => 'microservice_form',
                             'method' => 'POST',
                             'action' => $_SERVER['REQUEST_URI'],
                         ],
+                        'hydrator' => 'Laminas\Hydrator\ArraySerializable',
                         'elements' => [
                             [
                                 'spec' => [
-                                    'name' => 'fatherId',
+                                    'name' => 'categoryId',
                                     'type' => 'Text',
                                     'options' => [
-                                        'label' => 'Father ID'
+                                        'label' => 'Category ID'
                                     ],
                                     'attributes' => [
-                                        'id' => 'fatherId',
-                                        'value' => '',
-                                        'class' => '',
-                                        'placeholder' => '1',
-                                        'data-type' => 'int'
-                                    ],
-                                ],
-                            ],
-                            [
-                                'spec' => [
-                                    'name' => 'langId',
-                                    'type' => 'Text',
-                                    'options' => [
-                                        'label' => 'Language ID'
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'langId',
+                                        'id' => 'categoryId',
                                         'value' => '',
                                         'class' => '',
                                         'placeholder' => '1',
@@ -1732,6 +1198,22 @@ return [
                                         'class' => '',
                                         'placeholder' => '1',
                                         'data-type' => 'bool'
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'langId',
+                                    'type' => 'Text',
+                                    'options' => [
+                                        'label' => 'Language ID'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'langId',
+                                        'value' => '',
+                                        'class' => '',
+                                        'placeholder' => '1',
+                                        'data-type' => 'int'
                                     ],
                                 ],
                             ],
@@ -1753,15 +1235,343 @@ return [
                             ],
                         ],
                         'input_filter' => [
-                            'fatherId' => [
-                                'name' => 'fatherId',
+                            'categoryId' => [
+                                'name' => 'categoryId',
+                                'required' => true,
+                                'validators' => [
+                                    [
+                                        'name' => 'IsInt',
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Category ID must be an integer'
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters' => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim']
+                                ],
+                            ],
+                            'onlyValid' => [
+                                'name' => 'onlyValid',
+                                'required' => false,
+                                'validators' => [
+
+                                ],
+                            ],
+                            'langId' => [
+                                'name' => 'langId',
                                 'required' => false,
                                 'validators' => [
                                     [
                                         'name' => 'IsInt',
                                         'options' => [
                                             'messages' => [
-                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Father ID must be an integer'
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Language ID must be an integer'
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters' => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim']
+                                ],
+                            ],
+                            'order' => [
+                                'name' => 'order',
+                                'required' => false,
+                                'validators' => [
+
+                                ],
+                            ],
+                        ],
+                    ],
+                    'getProductVariants' => [
+                        'attributes' => [
+                            'name' => 'microservice_form',
+                            'id' => 'microservice_form',
+                            'method' => 'POST',
+                            'action' => $_SERVER['REQUEST_URI'],
+                        ],
+                        'hydrator' => 'Laminas\Hydrator\ArraySerializable',
+                        'elements' => [
+                            [
+                                'spec' => [
+                                    'name' => 'productId',
+                                    'type' => 'Text',
+                                    'options' => [
+                                        'label' => 'Product ID'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'productId',
+                                        'value' => '',
+                                        'class' => '',
+                                        'placeholder' => '1',
+                                        'data-type' => 'int'
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'onlyValid',
+                                    'type' => 'Text',
+                                    'options' => [
+                                        'label' => 'Only Valid'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'onlyValid',
+                                        'value' => '',
+                                        'class' => '',
+                                        'placeholder' => '1',
+                                        'data-type' => 'bool'
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'input_filter' => [
+                            'productId' => [
+                                'name' => 'productId',
+                                'required' => true,
+                                'validators' => [
+                                    [
+                                        'name' => 'IsInt',
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Product ID must be an integer'
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters' => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim']
+                                ],
+                            ],
+                            'onlyValid' => [
+                                'name' => 'onlyValid',
+                                'required' => false,
+                                'validators' => [
+
+                                ],
+                            ],
+                        ],
+                    ],
+                    'formatPrice' => [
+                        'attributes' => [
+                            'name' => 'microservice_form',
+                            'id' => 'microservice_form',
+                            'method' => 'POST',
+                            'action' => $_SERVER['REQUEST_URI'],
+                        ],
+                        'hydrator' => 'Laminas\Hydrator\ArraySerializable',
+                        'elements' => [
+                            [
+                                'spec' => [
+                                    'name' => 'price',
+                                    'type' => 'Text',
+                                    'options' => [
+                                        'label' => 'Price'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'price',
+                                        'value' => '',
+                                        'class' => '',
+                                        'placeholder' => '123',
+                                        'data-type' => 'int'
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'overrideLocale',
+                                    'type' => 'Text',
+                                    'options' => [
+                                        'label' => 'Override Locale'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'overrideLocale',
+                                        'value' => '',
+                                        'class' => '',
+                                        'placeholder' => '',
+                                        'data-type' => 'string'
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'input_filter' => [
+                            'price' => [
+                                'name' => 'price',
+                                'required' => true,
+                                'validators' => [
+                                    [
+                                        'name' => 'IsInt',
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Price must be an integer'
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters' => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim']
+                                ],
+                            ],
+                            'overrideLocale' => [
+                                'name' => 'overrideLocale',
+                                'required' => false,
+                                'validators' => [
+
+                                ],
+                            ],
+                        ]
+                    ],
+                    'getProductVariantPriceById' => [
+                        'attributes' => [
+                            'name' => 'microservice_form',
+                            'id' => 'microservice_form',
+                            'method' => 'POST',
+                            'action' => $_SERVER['REQUEST_URI'],
+                        ],
+                        'hydrator' => 'Laminas\Hydrator\ArraySerializable',
+                        'elements' => [
+                            [
+                                'spec' => [
+                                    'name' => 'productId',
+                                    'type' => 'Text',
+                                    'options' => [
+                                        'label' => 'Product ID'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'productId',
+                                        'value' => '',
+                                        'class' => '',
+                                        'placeholder' => '1',
+                                        'data-type' => 'int'
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'order',
+                                    'type' => 'Text',
+                                    'options' => [
+                                        'label' => 'Order',
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'order',
+                                        'value' => '',
+                                        'css' => '',
+                                        'placeholder' => 'ASC',
+                                        'data-type' => 'string'
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'priceColumn',
+                                    'type' => 'Text',
+                                    'options' => [
+                                        'label' => 'Price Column',
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'priceColumn',
+                                        'value' => '',
+                                        'css' => '',
+                                        'placeholder' => 'price_net',
+                                        'data-type' => 'string'
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'input_filter' => [
+                            'productId' => [
+                                'name' => 'productId',
+                                'required' => true,
+                                'validators' => [
+                                    [
+                                        'name' => 'IsInt',
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Product ID must be an integer'
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters' => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim']
+                                ],
+                            ],
+                            'order' => [
+                                'name' => 'order',
+                                'required' => false,
+                                'validators' => [
+
+                                ],
+                            ],
+                            'priceColumn' => [
+                                'name' => 'priceColumn',
+                                'required' => false,
+                                'validators' => [
+
+                                ],
+                            ],
+                        ],
+                    ],
+                    'getProductTitleAndSeoById' => [
+                        'attributes' => [
+                            'name' => 'microservice_form',
+                            'id' => 'microservice_form',
+                            'method' => 'POST',
+                            'action' => $_SERVER['REQUEST_URI'],
+                        ],
+                        'hydrator' => 'Laminas\Hydrator\ArraySerializable',
+                        'elements' => [
+                            [
+                                'spec' => [
+                                    'name' => 'productId',
+                                    'type' => 'Text',
+                                    'options' => [
+                                        'label' => 'Product ID'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'productId',
+                                        'value' => '',
+                                        'class' => '',
+                                        'placeholder' => '1',
+                                        'data-type' => 'int'
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'langId',
+                                    'type' => 'Text',
+                                    'options' => [
+                                        'label' => 'Language ID'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'langId',
+                                        'value' => '',
+                                        'class' => '',
+                                        'placeholder' => '1',
+                                        'data-type' => 'int'
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'input_filter' => [
+                            'productId' => [
+                                'name' => 'productId',
+                                'required' => true,
+                                'validators' => [
+                                    [
+                                        'name' => 'IsInt',
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Product ID must be an integer'
                                             ],
                                         ],
                                     ],
@@ -1789,18 +1599,282 @@ return [
                                     ['name' => 'StringTrim']
                                 ],
                             ],
-                            'onlyValid' => [
-                                'name' => 'onlyValid',
+                        ],
+                    ],
+                    'getProductBasicDetails' => [
+                        'attributes' => [
+                            'name' => 'microservice_form',
+                            'id' => 'microservice_form',
+                            'method' => 'POST',
+                            'action' => $_SERVER['REQUEST_URI'],
+                        ],
+                        'hydrator' => 'Laminas\Hydrator\ArraySerializable',
+                        'elements' => [
+                            [
+                                'spec' => [
+                                    'name' => 'productId',
+                                    'type' => 'Text',
+                                    'options' => [
+                                        'label' => 'Product ID'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'productId',
+                                        'value' => '',
+                                        'class' => '',
+                                        'placeholder' => '1',
+                                        'data-type' => 'int'
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'countryId',
+                                    'type' => 'Text',
+                                    'options' => [
+                                        'label' => 'Country ID'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'countryId',
+                                        'value' => '',
+                                        'class' => '',
+                                        'placeholder' => '1',
+                                        'data-type' => 'int'
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'groupId',
+                                    'type' => 'text',
+                                    'options' => [
+                                        'label' => 'Group ID'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'groupId',
+                                        'value' => '',
+                                        'class' => '',
+                                        'placeholder' => '-1',
+                                        'data-type' => 'int'
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'langId',
+                                    'type' => 'Text',
+                                    'options' => [
+                                        'label' => 'Language ID'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'langId',
+                                        'value' => '',
+                                        'class' => '',
+                                        'placeholder' => '1',
+                                        'data-type' => 'int'
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'input_filter' => [
+                            'productId' => [
+                                'name' => 'productId',
+                                'required' => true,
+                                'validators' => [
+                                    [
+                                        'name' => 'IsInt',
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Product ID must be an integer'
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters' => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim']
+                                ],
+                            ],
+                            'countryId' => [
+                                'name' => 'countryId',
+                                'required' => false,
+                                'validators' => [
+                                    [
+                                        'name' => 'IsInt',
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Country ID must be an integer'
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters' => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim']
+                                ],
+                            ],
+                            'groupId' => [
+                                'name' => 'groupId',
+                                'required' => false,
+                                'validators' => [
+                                    [
+                                        'name' => 'IsInt',
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Group ID must be an integer'
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters' => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim']
+                                ],
+                            ],
+                            'langId' => [
+                                'name' => 'langId',
+                                'required' => false,
+                                'validators' => [
+                                    [
+                                        'name' => 'IsInt',
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Language ID must be an integer'
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters' => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim']
+                                ],
+                            ],
+                        ]
+                    ],
+                    'getMaximumMinimumPrice' => [
+                        'attributes' => [
+                            'name' => 'microservice_form',
+                            'id' => 'microservice_form',
+                            'method' => 'POST',
+                            'action' => $_SERVER['REQUEST_URI'],
+                        ],
+                        'hydrator' => 'Laminas\Hydrator\ArraySerializable',
+                        'elements' => [
+                            [
+                                'spec' => [
+                                    'name' => 'type',
+                                    'type' => 'Text',
+                                    'options' => [
+                                        'label' => 'Type',
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'type',
+                                        'value' => '',
+                                        'css' => '',
+                                        'placeholder' => '',
+                                        'data-type' => 'string'
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'priceColumn',
+                                    'type' => 'Text',
+                                    'options' => [
+                                        'label' => 'Price Column',
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'priceColumn',
+                                        'value' => '',
+                                        'css' => '',
+                                        'placeholder' => 'price_net',
+                                        'data-type' => 'string'
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'from',
+                                    'type' => 'Text',
+                                    'options' => [
+                                        'label' => 'From',
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'from',
+                                        'value' => '',
+                                        'css' => '',
+                                        'placeholder' => 'product',
+                                        'data-type' => 'string'
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'input_filter' => [
+                            'type' => [
+                                'name' => 'type',
                                 'required' => false,
                                 'validators' => [
 
                                 ],
                             ],
-                            'order' => [
-                                'name' => 'order',
+                            'priceColumn' => [
+                                'name' => 'priceColumn',
                                 'required' => false,
                                 'validators' => [
 
+                                ],
+                            ],
+                            'from' => [
+                                'name' => 'from',
+                                'required' => false,
+                                'validators' => [
+
+                                ],
+                            ],
+                        ],
+                    ],
+                    'getProductPageAssociationsByProductId' => [
+                        'attributes' => [
+                            'name' => 'microservice_form',
+                            'id' => 'microservice_form',
+                            'method' => 'POST',
+                            'action' => $_SERVER['REQUEST_URI'],
+                        ],
+                        'hydrator' => 'Laminas\Hydrator\ArraySerializable',
+                        'elements' => [
+                            [
+                                'spec' => [
+                                    'name' => 'productId',
+                                    'type' => 'Text',
+                                    'options' => [
+                                        'label' => 'Product ID'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'productId',
+                                        'value' => '',
+                                        'class' => '',
+                                        'placeholder' => '1',
+                                        'data-type' => 'int'
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'input_filter' => [
+                            'productId' => [
+                                'name' => 'productId',
+                                'required' => true,
+                                'validators' => [
+                                    [
+                                        'name' => 'IsInt',
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\I18n\Validator\IsInt::NOT_INT => 'Product ID must be an integer'
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters' => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim']
                                 ],
                             ],
                         ],

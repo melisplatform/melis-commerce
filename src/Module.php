@@ -271,6 +271,21 @@ class Module
             // Micro services
             include __DIR__ . '/../config/micro-services/category.microservice.php',
             include __DIR__ . '/../config/micro-services/client.microservice.php',
+            include __DIR__ . '/../config/micro-services/product.microservice.php',
+            include __DIR__ . '/../config/micro-services/variant.microservice.php',
+            include __DIR__ . '/../config/micro-services/order.microservice.php',
+            include __DIR__ . '/../config/micro-services/coupon.microservice.php',
+            include __DIR__ . '/../config/micro-services/attribute.microservice.php',
+            include __DIR__ . '/../config/micro-services/basket.microservice.php',
+            include __DIR__ . '/../config/micro-services/client-groups.microservice.php',
+            include __DIR__ . '/../config/micro-services/currency.microservice.php',
+            include __DIR__ . '/../config/micro-services/document.microservice.php',
+            include __DIR__ . '/../config/micro-services/duplication.microservice.php',
+            include __DIR__ . '/../config/micro-services/links.microservice.php',
+            include __DIR__ . '/../config/micro-services/order-product-return.microservice.php',
+            include __DIR__ . '/../config/micro-services/product-search.microservice.php',
+            include __DIR__ . '/../config/micro-services/seo.microservice.php',
+            include __DIR__ . '/../config/micro-services/stock-email-alert.microservice.php',
         ];
         
         foreach ($configFiles as $file) {
