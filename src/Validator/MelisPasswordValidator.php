@@ -10,11 +10,13 @@ class MelisPasswordValidator extends AbstractValidator
     const TOO_SHORT = 'length';
     const NO_LOWER  = 'lower';
     const NO_DIGIT  = 'digit';
+    const NO_PASSWORD  = 'noPassword';
     
     protected $messageTemplates = array(
         self::TOO_SHORT => "'%value%' must be at least %min% characters in length",
         self::NO_LOWER  => "'%value%' must contain at least one lowercase letter",
-        self::NO_DIGIT  => "'%value%' must contain at least one digit character"
+        self::NO_DIGIT  => "'%value%' must contain at least one digit character",
+        self::NO_PASSWORD  => 'tr_meliscommerce_common_input_required',
     );
     
     /**
@@ -27,6 +29,8 @@ class MelisPasswordValidator extends AbstractValidator
     protected $options = array(
         'min'      => 8,       // Default/Minimum length
     );
+
+    private $token;
     
 
     public function __construct($options = array())
@@ -36,6 +40,9 @@ class MelisPasswordValidator extends AbstractValidator
             $temp['min'] = array_shift($options);
             $options = $temp;
         }
+
+        if (empty($options['token']))
+            $this->token = $options['token'];
         
         parent::__construct($options);
     }
@@ -65,7 +72,7 @@ class MelisPasswordValidator extends AbstractValidator
     
 
     
-    public function isValid($value)
+    public function isValid($value, $context = null)
     {
         $this->setValue($value);
         
@@ -84,6 +91,14 @@ class MelisPasswordValidator extends AbstractValidator
         if (!preg_match('/\d/', $value)) {
             $this->error(self::NO_DIGIT);
             $isValid = false;
+        }
+        
+
+        if (!empty($this->token) && isset($context[$this->token])) {
+            if (!empty($context[$this->token]) && empty($value)) {
+                $this->error(self::NO_PASSWORD);
+                $isValid = false;
+            }
         }
             
         return $isValid;

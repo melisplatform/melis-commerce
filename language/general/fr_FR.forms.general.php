@@ -1,14 +1,20 @@
 <?php
-	return array(
+        return array(
         'tr_meliscommerce_general_form_' => 'Texte',
-	    
-	    //address form
-	    'tr_meliscommerce_address_civility' => 'Civilité',
-	    'tr_meliscommerce_address_lname' => 'Nom',
-	    'tr_meliscommerce_address_mname' => 'Deuxième nom',
-	    'tr_meliscommerce_address_fname' => 'Prénom',
-	    'tr_meliscommerce_address_address_num' => 'Numéro de rue',
-	    'tr_meliscommerce_address_floor' => 'Etage',
+
+        'tr_meliscommerce_common_input_required' => 'Le champ ne peut être vide',
+        'tr_meliscommerce_common_input_numeric' => 'Le champ doit être un nombre',
+        'tr_meliscommerce_common_input_db_exists_invalid' => 'The input value must be in the record',
+        'tr_meliscommerce_common_input_long_255' => 'Valeur trop longue, elle doit être de moins de 255 caractères',
+        'tr_meliscommerce_common_input_long_80' => 'Valeur trop longue, elle doit être de moins de 80 caractères',
+        
+        //address form
+        'tr_meliscommerce_address_civility' => 'Civilité',
+        'tr_meliscommerce_address_lname' => 'Nom',
+        'tr_meliscommerce_address_mname' => 'Deuxième nom',
+        'tr_meliscommerce_address_fname' => 'Prénom',
+        'tr_meliscommerce_address_address_num' => 'Numéro de rue',
+        'tr_meliscommerce_address_floor' => 'Etage',
         'tr_meliscommerce_address_building' => 'Bâtiment',
         'tr_meliscommerce_address_company' => 'Société',
         'tr_meliscommerce_address_street' => 'Rue',
@@ -28,4 +34,4 @@
         'tr_meliscommerce_address_error_empty' => 'Le champ ne peut être vide',
         'tr_meliscommerce_address_civility_select' => 'Choisir',
         'tr_meliscommerce_address_billing_form_empty' => 'L\'adresse de facturation ne peut être vide',
-	);
+        );

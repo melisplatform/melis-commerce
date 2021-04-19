@@ -24,7 +24,7 @@ return [
                             [
                                 'spec' => [
                                     'name' => 'cli_group_id',
-                                    'type' => 'EcomOrderClientsGroupSelect',
+                                    'type' => 'EcomClientsGroupSelect',
                                     'options' => [
                                         'label' => 'tr_meliscommerce_clients_group_common_group',
                                         'disable_inarray_validator' => true,

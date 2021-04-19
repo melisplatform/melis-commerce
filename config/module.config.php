@@ -270,7 +270,7 @@ return [
             'EcomAddressTypeSelect'                 => \MelisCommerce\Form\Factory\EcomAddressTypeSelectFactory::class,
             'EcomOrderStatusSelect'                 => \MelisCommerce\Form\Factory\EcomOrderStatusSelectFactory::class,
             'EcomOrderStatusAllSelect'              => \MelisCommerce\Form\Factory\EcomOrderStatusAllSelectFactory::class,
-            'EcomOrderClientsGroupSelect'           => \MelisCommerce\Form\Factory\EcomClientsGroupSelectFactory::class,
+            'EcomClientsGroupSelect'                => \MelisCommerce\Form\Factory\EcomClientsGroupSelectFactory::class,
 
             'EcomAttributeTypeSelect'               => \MelisCommerce\Form\Factory\EcomAttributeTypeSelectFactory::class,
             'EcomCurrencySelect'                    => \MelisCommerce\Form\Factory\EcomCurrencySelectFactory::class,
@@ -294,7 +294,11 @@ return [
             'EcomPluginAttributeSelect'             => \MelisCommerce\Form\Factory\Plugin\EcomPluginAttributeSelectFactory::class,
             'EcomPluginPriceCountriesSelect'        => \MelisCommerce\Form\Factory\Plugin\EcomPluginPriceCountriesSelectFactory::class,
             'EcomPluginProductListSelect'           => \MelisCommerce\Form\Factory\Plugin\EcomPluginProductListSelectFactory::class,
-        ]
+
+            // Fieldset
+            'EcomClientFieldset'                    => \MelisCommerce\Form\Factory\EcomClientFieldsetFactory::class,
+            'EcomPeronFieldset'                     => \MelisCommerce\Form\Factory\EcomPersonFieldsetFactory::class,
+        ],
     ],
     'view_helpers' => [
         'invokables' => [

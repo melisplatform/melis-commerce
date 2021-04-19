@@ -1,6 +1,12 @@
 <?php
     return array(
         'tr_meliscommerce_general_form_' => 'text',
+
+        'tr_meliscommerce_common_input_required' => 'The input is required and can\'t be empty',
+        'tr_meliscommerce_common_input_numeric' => 'The input value must be numeric',
+        'tr_meliscommerce_common_input_db_exists_invalid' => 'The input value must be in the record',
+        'tr_meliscommerce_common_input_long_255' => 'Value is too long, it should be less than 255 characters',
+        'tr_meliscommerce_common_input_long_80' => 'Value is too long, it should be less than 80 characters',
         
         //address form
         'tr_meliscommerce_address_civility' => 'Civility', 

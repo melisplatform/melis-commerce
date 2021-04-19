@@ -887,6 +887,8 @@ class MelisComClientService extends MelisComGeneralService
 	
 		// Sending service start event
 		$arrayParameters = $this->sendEvent('meliscommerce_service_client_save_start', $arrayParameters);
+
+		dd($arrayParameters);
 		
 		// Service implementation start
 		$melisEcomClientTable = $this->getServiceManager()->get('MelisEcomClientTable');
