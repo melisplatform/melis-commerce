@@ -22,52 +22,11 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     const SITE_ID = -1;
 
     /**
-     * Creates translations for table actions in tools
-     *
-     * @return \Laminas\View\Model\JsonModel
-     */
-    public function getDataTableTranslationsAction()
-    {
-        // Get the current language
-        $container = new Container('meliscore');
-        $locale = $container['melis-lang-locale'];
-
-        $translator = $this->getServiceManager()->get('translator');
-
-        $transData = array(
-            'sEmptyTable' => $translator->translate('tr_meliscommerce_select_country_empty'),
-            'sInfo' => $translator->translate('tr_meliscore_dt_sInfo'),
-            'sInfoEmpty' => $translator->translate('tr_meliscore_dt_sInfoEmpty'),
-            'sInfoFiltered' => $translator->translate('tr_meliscore_dt_sInfoFiltered'),
-            'sInfoPostFix' => $translator->translate('tr_meliscore_dt_sInfoPostFix'),
-            'sInfoThousands' => $translator->translate('tr_meliscore_dt_sInfoThousands'),
-            'sLengthMenu' => $translator->translate('tr_meliscore_dt_sLengthMenu'),
-            'sLoadingRecords' => $translator->translate('tr_meliscore_dt_sLoadingRecords'),
-            'sProcessing' => $translator->translate('tr_meliscore_dt_sProcessing'),
-            'sSearch' => $translator->translate('tr_meliscore_dt_sSearch'),
-            'sZeroRecords' => $translator->translate('tr_meliscommerce_search_empty_result'),
-            'oPaginate' => array(
-                'sFirst' => $translator->translate('tr_meliscore_dt_sFirst'),
-                'sLast' => $translator->translate('tr_meliscore_dt_sLast'),
-                'sNext' => $translator->translate('tr_meliscore_dt_sNext'),
-                'sPrevious' => $translator->translate('tr_meliscore_dt_sPrevious'),
-            ),
-            'oAria' => array(
-                'sSortAscending' => $translator->translate('tr_meliscore_dt_sSortAscending'),
-                'sSortDescending' => $translator->translate('tr_meliscore_dt_sSortDescending'),
-            ),
-
-
-        );
-
-        return new JsonModel($transData);
-    }
-
-    /**
      * Render Order Checkout page
      * @return \Laminas\View\Model\ViewModel
      */
-    public function renderOrderCheckoutPageAction(){
+    public function renderOrderCheckoutPageAction()
+    {
         $container = new Container('meliscommerce');
         if (!isset($container['checkout']))
         {
@@ -202,13 +161,13 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
         $columns['actions'] = array('text' => $translator->translate('tr_meliscommerce_order_checkout_product_variant'));
 
         $container = new Container('meliscommerce');
-        $type = ($container['checkout'][self::SITE_ID]['countryId'] === NULL) ? '' : 'country';
+        $tblLangTrans = ($container['checkout'][self::SITE_ID]['countryId'] === NULL) ? null : 'commerce_checkout';
 
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->tableColumns = $columns;
-        $view->getToolDataTableConfig = $melisTool->getDataTableConfiguration("#orderCheckoutProductListTbl", false,false, array(), $type);
+        $view->getToolDataTableConfig = $melisTool->getDataTableConfiguration("#orderCheckoutProductListTbl", false, false, [], $tblLangTrans);
         return $view;
     }
 
@@ -860,53 +819,53 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order Checkout Contact list limit
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout Contact list limit
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutContactListLimitAction()
     {
         return new ViewModel();
     }
 
     /**
-     * Render Order Cehckout Contact list search input
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Cehckout Contact list search input
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutContactListSearchAction()
     {
         return new ViewModel();
     }
 
     /**
-     * Render Order Checkout list Refresh button
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout list Refresh button
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutContactListRefreshAction()
     {
         return new ViewModel();
     }
 
     /**
-     * Render Order Checkout Contact list Select button
-     * This action is attach to contact row, this will select the contact
-     * as part of the checkout process
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout Contact list Select button
+        * This action is attach to contact row, this will select the contact
+        * as part of the checkout process
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutContactListSelectAction()
     {
         return new ViewModel();
     }
 
     /**
-     * This method will select a contact for checkout process
-     * and store to checkout session
-     *
-     * @return \Laminas\View\Model\JsonModel
-     */
+        * This method will select a contact for checkout process
+        * and store to checkout session
+        *
+        * @return \Laminas\View\Model\JsonModel
+        */
     public function selectContactAction()
     {
         $translator = $this->getServiceManager()->get('translator');
@@ -961,10 +920,10 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order Checkout Select address step
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout Select address step
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutSelectAddressesAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -974,10 +933,10 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order Checkout Select address header
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout Select address header
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutSelectAddressesHeaderAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -987,10 +946,10 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order Checkout Select address content
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order Checkout Select address content
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutSelectAddressesContentAction()
     {
 
@@ -1001,12 +960,12 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order checkout Billing Address
-     * This function will generate client billing addresses selection
-     * and empty form for creating new billing address
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order checkout Billing Address
+        * This function will generate client billing addresses selection
+        * and empty form for creating new billing address
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutBillingAddressAction()
     {
         $container = new Container('meliscommerce');
@@ -1123,12 +1082,12 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
-     * Render Order checkout Delivery Address
-     * This function will generate client delivery addresses selection
-     * and empty form for creating new delivery address
-     *
-     * @return \Laminas\View\Model\ViewModel
-     */
+        * Render Order checkout Delivery Address
+        * This function will generate client delivery addresses selection
+        * and empty form for creating new delivery address
+        *
+        * @return \Laminas\View\Model\ViewModel
+        */
     public function renderOrderCheckoutDeliveryAddressAction()
     {
         $melisComOrderCheckoutService = $this->getServiceManager()->get('MelisComOrderCheckoutService');
@@ -2136,16 +2095,5 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     {
         $tool = $this->getServiceManager()->get('MelisCoreTool');
         return $tool;
-    }
-
-    public function testAction()
-    {
-        $ecomAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
-        $clientKey = $ecomAuthSrv->getId();
-        dump($clientKey);
-        
-        $container = new Container('meliscommerce');
-        // unset($container['checkout']);
-        dd($container['checkout']);
     }
 }

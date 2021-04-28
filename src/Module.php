@@ -50,6 +50,7 @@ use MelisCommerce\Listener\MelisCommerceCouponProductPriceListener;
 use MelisCommerce\Listener\MelisCommerceOrderBasketProductAmountListener;
 use MelisCommerce\Listener\MelisCommerceComputeOrderCostListener;
 use MelisCommerce\Listener\MelisCommerceProductPriceLogsTranslationListener;
+use MelisCommerce\Listener\MelisCommerceDataTableTranslationsListener;
 /**
  * Class Module
  * @package MelisCmsNews
@@ -103,6 +104,7 @@ class Module
             (new MelisCommerceDocumentCountryDeletedListener())->attach($eventManager);
             (new MelisCommercePrdVarDuplicationListener())->attach($eventManager);
             (new MelisCommerceSaveProductStockEmailAlertListener())->attach($eventManager);
+            (new MelisCommerceDataTableTranslationsListener())->attach($eventManager);
             
         } else {
             // attach listeners for Front

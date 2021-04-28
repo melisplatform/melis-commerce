@@ -42,8 +42,8 @@ var melisCommerce = (function(window) {
 					//container : false,
 				},
 				/* adjust:{
-    		          screen: true,
-    			    }, */
+					screen: true,
+					}, */
 			});
 		});
 	}
@@ -146,7 +146,17 @@ var melisCommerce = (function(window) {
 		}, 1000);
 	}
 
-	function initCommerceTable(table, ajaxUrl, columns, filterBarDom, bulkDom) {
+	function initCommerceTable(
+		table,
+		ajaxUrl,
+		columns,
+		filterBarDom,
+		bulkDom,
+		tableLangTrans
+	) {
+		// Table language translations
+		if (!tableLangTrans) tableLangTrans = "default";
+
 		$(table).DataTable({
 			responsive: true,
 			paging: true,
@@ -169,9 +179,7 @@ var melisCommerce = (function(window) {
 				{ responsivePriority: 1, targets: 0 },
 				{ responsivePriority: 2, targets: -1 },
 			],
-			language: {
-				url: "/melis/MelisCore/Language/getDataTableTranslations",
-			},
+			language: melisDataTable.tableLanguage[tableLangTrans],
 			/* "responsive": true, */
 			dom: '<"bulk-action"><"filter-bar fl">rtip',
 			drawCallback: function(settings) {
