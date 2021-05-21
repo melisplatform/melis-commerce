@@ -210,7 +210,7 @@ class MelisComProductListController extends MelisAbstractActionController
             // PRODUCT DETAILS
             $ctr = 0;
             $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
-            $dataCount = $prodSvc->getProductList($langId, $categoryIds, null, null, null, null, $selColOrder, $order[0]['dir'], $search);
+            $dataCount = $prodSvc->getProductList($langId, $categoryIds, null, null, null, null, $selColOrder, $order[0]['dir'], $search, true);
             foreach($prodData as $prod) 
             {
                 $prodText = $prodSvc->getProductName($prod->getProduct()->prd_id, $langId);
@@ -256,7 +256,7 @@ class MelisComProductListController extends MelisAbstractActionController
         return new JsonModel(array(
             'draw' => (int) $draw,
             'recordsTotal' => count($prodData),
-            'recordsFiltered' => is_array($dataCount) ? count($dataCount) : $dataCount,
+            'recordsFiltered' => $dataCount,
             'data' => $tableData,
         ));
     }

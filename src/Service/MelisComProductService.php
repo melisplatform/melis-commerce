@@ -35,10 +35,10 @@ class MelisComProductService extends MelisComGeneralService
 	 * @param int $start If not specified, it will start at the begining of the list
 	 * @param int $limit If not specified, it will bring all products of the list
 	 *
-	 * @return MelisProduct[] Product object
+	 * @return MelisProduct[] Product object || Int - total rows count
 	 */
 	public function getProductList($langId = null, $categoryIds = array(), $countryId = null, 
-		$onlyValid = null, $start = 0, $limit = null,  $orderColumn = 'prd_id', $order = 'ASC', $search = '')
+		$onlyValid = null, $start = 0, $limit = null,  $orderColumn = 'prd_id', $order = 'ASC', $search = '', $count = false)
 	{ 
 		// Event parameters prepare
 		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -49,13 +49,16 @@ class MelisComProductService extends MelisComGeneralService
 		
 		$prodTable = $this->getServiceManager()->get('MelisEcomProductTable');
 		$products = $prodTable->getProductList($arrayParameters['categoryIds'], $arrayParameters['countryId'], $arrayParameters['onlyValid'], $arrayParameters['start'], 
-												$arrayParameters['limit'], $arrayParameters['orderColumn'], $arrayParameters['order'], $arrayParameters['search']);
+												$arrayParameters['limit'], $arrayParameters['orderColumn'], $arrayParameters['order'], $arrayParameters['search'], $arrayParameters['count']);
 		
-		foreach ($products As $val)
-		{
-			$product = $this->getProductById($val->prd_id, $arrayParameters['langId']);
-			
-			array_push($results, $product);
+		if (!$arrayParameters['count']) {
+			foreach ($products As $val) {
+				$product = $this->getProductById($val->prd_id, $arrayParameters['langId']);
+				
+				array_push($results, $product);
+			}
+		} else {
+			$results = $products->current()->count;
 		}
 		// Service implementation end
 		
