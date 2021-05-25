@@ -584,7 +584,7 @@ class MelisComProductListController extends MelisAbstractActionController
                     case 'avt_v_text':
                     case 'avt_v_varchar' : $value = $this->getTool()->limitedText($this->getTool()->escapeHtml($value),50); break;
                 }
-                if($value) {
+                if(!is_null($value) || $value != '') {
                     $attributes[] = $value;
                 }
             }
