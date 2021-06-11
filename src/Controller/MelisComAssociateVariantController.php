@@ -192,7 +192,7 @@ class MelisComAssociateVariantController extends MelisAbstractActionController
             $search = $search['value'];
     
             $productList = $prodSvc->getProductList(null, null, null, null, $start, $length, $selColOrder, $sortOrder, $search);
-            $dataCount = $prodSvc->getProductList(null, null, null, null, null, null, $selColOrder, $sortOrder, $search);
+            $dataCount = $prodSvc->getProductList(null, null, null, null, null, null, $selColOrder, $sortOrder, $search, true);
     
             $activeDom     = '<span class="text-success"><i class="fa fa-fw fa-circle"></i></span>';
             $inactiveDom   = '<span class="text-danger"><i class="fa fa-fw fa-circle"></i></span>';
@@ -216,7 +216,7 @@ class MelisComAssociateVariantController extends MelisAbstractActionController
         return new JsonModel(array(
             'draw' => (int) $draw,
             'recordsTotal' => count($productList),
-            'recordsFiltered' =>  count($dataCount),
+            'recordsFiltered' =>  $dataCount,
             'data' => $tableData,
         ));
     }
