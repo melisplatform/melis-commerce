@@ -1,13 +1,10 @@
-$(function() {
+$(function () {
 	var $body = $("body");
 
-	$body.on("click", ".editvariant", function() {
+	$body.on("click", ".editvariant", function () {
 		var $this = $(this),
 			variantId = $this.closest("tr").attr("id"),
-			variantName = $this
-				.closest("tr")
-				.find("td a")
-				.data("variantname"),
+			variantName = $this.closest("tr").find("td a").data("variantname"),
 			productId = $this
 				.closest(".container-level-a")
 				.attr("id")
@@ -16,7 +13,7 @@ $(function() {
 
 		melisCommerce.disableAllTabs();
 		melisHelper.tabOpen(
-			variantName,
+			variantName.toString(),
 			"icon-tag-2",
 			variantId + "_id_meliscommerce_variants_page",
 			"meliscommerce_variants_page",
@@ -27,7 +24,7 @@ $(function() {
 		melisCommerce.enableAllTabs();
 	});
 
-	$body.on("click", ".add-variant", function() {
+	$body.on("click", ".add-variant", function () {
 		var $this = $(this),
 			productId = $this
 				.closest(".container-level-a")
@@ -48,12 +45,12 @@ $(function() {
 		melisCoreTool.processDone();
 	});
 
-	$body.on("click", ".save-add-variant", function() {
+	$body.on("click", ".save-add-variant", function () {
 		var $this = $(this),
 			variantPageId = $this.closest(".container-level-a").attr("id");
 	});
 
-	$body.on("click", ".country-price-tab li a", function() {
+	$body.on("click", ".country-price-tab li a", function () {
 		var $this = $(this),
 			textCountry = $this.data("country"),
 			textSymbol = $this.data("symbol"),
@@ -68,10 +65,7 @@ $(function() {
 				.css("font-weight", "600");
 		} else {
 			if (!$curSymbol.hasClass("fa")) {
-				$curSymbol
-					.empty()
-					.addClass("fa fa-dollar")
-					.removeAttr("style");
+				$curSymbol.empty().addClass("fa fa-dollar").removeAttr("style");
 			}
 		}
 
@@ -82,7 +76,7 @@ $(function() {
 		);
 	});
 
-	$body.on("click", ".country-stock-tab li a", function() {
+	$body.on("click", ".country-stock-tab li a", function () {
 		var $this = $(this),
 			textCountry = $this.data("country");
 
@@ -101,7 +95,7 @@ $(function() {
 		}
 	});
 
-	$body.on("click", ".productvariant-refresh", function() {
+	$body.on("click", ".productvariant-refresh", function () {
 		var prodId = melisCommerce.getCurrentProductId();
 
 		melisHelper.zoneReload(
@@ -112,11 +106,9 @@ $(function() {
 		);
 	});
 
-	$body.on("click", ".deletevariant", function() {
+	$body.on("click", ".deletevariant", function () {
 		var del = this,
-			variantId = $(del)
-				.closest("tr")
-				.attr("id"),
+			variantId = $(del).closest("tr").attr("id"),
 			url = "melis/MelisCommerce/MelisComVariant/deleteVariant",
 			dataString = [];
 
@@ -132,11 +124,11 @@ $(function() {
 			translations.tr_meliscommerce_documents_common_label_no,
 			translations.tr_meliscommerce_variants_delete_title,
 			translations.tr_meliscommerce_variants_delete_confirm,
-			function() {
+			function () {
 				melisCommerce.postSave(
 					url,
 					dataString,
-					function(data) {
+					function (data) {
 						if (data.success) {
 							melisHelper.melisOkNotification(data.textTitle, data.textMessage);
 							melisHelper.zoneReload(
@@ -157,7 +149,7 @@ $(function() {
 						}
 						melisCore.flashMessenger();
 					},
-					function(data) {
+					function (data) {
 						console.log(data);
 					}
 				);
@@ -167,7 +159,7 @@ $(function() {
 		melisCoreTool.done(del);
 	});
 
-	$body.on("click", ".save-variant", function() {
+	$body.on("click", ".save-variant", function () {
 		melisCoreTool.pending(".save-variant");
 
 		var $this = $(this),
@@ -184,7 +176,7 @@ $(function() {
 
 		ctr = 0;
 
-		forms.each(function() {
+		forms.each(function () {
 			var $this = $(this),
 				pre = $this.attr("name"),
 				data = $this.serializeArray();
@@ -215,7 +207,7 @@ $(function() {
 
 		$("#" + id)
 			.find(".make-switch div")
-			.each(function() {
+			.each(function () {
 				var $this = $(this),
 					field = "variant[0][" + $this.find("input").attr("name") + "]",
 					status = $this.hasClass("switch-on"),
@@ -234,7 +226,7 @@ $(function() {
 		melisCommerce.postSave(
 			url,
 			dataString,
-			function(data) {
+			function (data) {
 				if (data.success) {
 					melisHelper.tabClose(fixVarId + "id_meliscommerce_variants_page");
 					melisHelper.tabOpen(
@@ -271,14 +263,14 @@ $(function() {
 				melisCoreTool.done(".save-variant");
 				melisCore.flashMessenger();
 			},
-			function(data) {
+			function (data) {
 				console.log(data);
 				alert(translations.tr_meliscore_error_message);
 			}
 		);
 	});
 
-	$body.on("mouseenter mouseleave", ".toolTipVarHoverEvent", function(e) {
+	$body.on("mouseenter mouseleave", ".toolTipVarHoverEvent", function (e) {
 		var $this = $(this),
 			variantId = $this.data("variantid"),
 			productId = $this
@@ -288,12 +280,12 @@ $(function() {
 			loaderText =
 				'<div class="qtipLoader"><hr/><span class="text-center col-lg-12">Loading...</span><br/></div>';
 
-		$.each($("table#variantTable" + variantId + " thead").nextAll(), function(
-			i,
-			v
-		) {
-			$(v).remove();
-		});
+		$.each(
+			$("table#variantTable" + variantId + " thead").nextAll(),
+			function (i, v) {
+				$(v).remove();
+			}
+		);
 
 		$(loaderText).insertAfter("table#variantTable" + variantId + " thead");
 
@@ -304,7 +296,7 @@ $(function() {
 			dataType: "json",
 			encode: true,
 		})
-			.done(function(data) {
+			.done(function (data) {
 				$("div.qtipLoader").remove();
 
 				if (data.content.length === 0) {
@@ -317,21 +309,21 @@ $(function() {
 					// make sure tbody is clear
 					$.each(
 						$("table#variantTable" + variantId + " thead").nextAll(),
-						function(i, v) {
+						function (i, v) {
 							$(v).remove();
 						}
 					);
-					$.each(data.content.reverse(), function(i, v) {
+					$.each(data.content.reverse(), function (i, v) {
 						$(v).insertAfter("table#variantTable" + variantId + " thead");
 					});
 				}
 			})
-			.fail(function() {
+			.fail(function () {
 				alert(translations.tr_meliscore_error_message);
 			});
 	});
 
-	$body.on("click", ".updateVariantStatus", function() {
+	$body.on("click", ".updateVariantStatus", function () {
 		var _this = $(this),
 			btnTitle = "",
 			obj = {},
@@ -364,32 +356,32 @@ $(function() {
 			type: "POST",
 			url: "/melis/MelisCommerce/MelisComVariantList/updateVariantStatus",
 			data: $.param(obj),
-			beforeSend: function() {
+			beforeSend: function () {
 				//disable the button
 				_this.addClass("disabled").attr("disabled", true);
 				//change icon to loader
 				_this
 					.find(".variant-update-icon-rotate")
-					.removeClass(function(index, className) {
+					.removeClass(function (index, className) {
 						return (className.match(/(^|\s)fa-\S+/g) || []).join(" ");
 					})
 					.addClass("fa-spinner fa-pulse fa-fw");
 			},
 		})
-			.done(function(data) {
+			.done(function (data) {
 				if (data.success) {
 					//update var_status on tr
 					_this.closest("tr").attr("var_status", val);
 					//change the original icon
 					_this
 						.find(".variant-update-icon-rotate")
-						.removeClass(function(index, className) {
+						.removeClass(function (index, className) {
 							return (className.match(/(^|\s)fa-\S+/g) || []).join(" ");
 						})
 						.addClass("fa-arrow-circle-up");
 					//update style of the button
 					_this
-						.removeClass(function(index, className) {
+						.removeClass(function (index, className) {
 							return (className.match(/(^|\s)btn-\S+/g) || []).join(" ");
 						})
 						.addClass(linkClass);
@@ -397,7 +389,7 @@ $(function() {
 					_this
 						.closest("tr")
 						.find(".var-status-indicator")
-						.removeClass(function(index, className) {
+						.removeClass(function (index, className) {
 							return (className.match(/(^|\s)text-\S+/g) || []).join(" ");
 						})
 						.addClass(varIndicator);
@@ -425,32 +417,30 @@ $(function() {
 				}
 				_this.removeClass("disabled").attr("disabled", false);
 			})
-			.fail(function() {
+			.fail(function () {
 				alert(translations.tr_meliscore_error_message);
 			});
 	});
 
-	$body.on("click", ".tabs-label li a", function() {
+	$body.on("click", ".tabs-label li a", function () {
 		var $this = $(this),
 			href = $this.attr("href"),
 			tabVariants = $this.closest("li").data("meliskey");
 
 		if (tabVariants === "meliscommerce_products_page_content_tab_variants") {
-			$(href)
-				.find(".refresh-attribute-lists")
-				.trigger("click");
+			$(href).find(".refresh-attribute-lists").trigger("click");
 		}
 	});
 });
 
 //variant list table in product page
-window.initProductVariant = function(data, tblSettings) {
+window.initProductVariant = function (data, tblSettings) {
 	var prodId = $("#" + tblSettings.sTableId).data("prodid");
 
 	data.prodId = prodId;
 };
 
-window.variantLoaded = function() {
+window.variantLoaded = function () {
 	var $this = $(this),
 		productId = $(".tab-pane#" + activeTabId).data("prodid"),
 		prodTabId = productId + "_id_meliscommerce_products_page";
@@ -458,14 +448,13 @@ window.variantLoaded = function() {
 	melisCommerce.enableTab(prodTabId);
 };
 
-window.checkVarStatus = function() {
+window.checkVarStatus = function () {
 	var productId = "",
 		btnTitle = "";
 
 	if (
-		$(".updateVariantStatus")
-			.closest(".container-level-a.active")
-			.attr("id") != undefined
+		$(".updateVariantStatus").closest(".container-level-a.active").attr("id") !=
+		undefined
 	) {
 		productId = $(".updateVariantStatus")
 			.closest(".container-level-a.active")
@@ -477,7 +466,7 @@ window.checkVarStatus = function() {
 			.data("prodid");
 	}
 
-	$("#" + productId + "_tableProductVariantList tbody tr").each(function() {
+	$("#" + productId + "_tableProductVariantList tbody tr").each(function () {
 		var $this = $(this),
 			status = $this.attr("var_status");
 
@@ -497,7 +486,7 @@ window.checkVarStatus = function() {
 
 			icon
 				.closest("a")
-				.removeClass(function(index, className) {
+				.removeClass(function (index, className) {
 					return (className.match(/(^|\s)btn-\S+/g) || []).join(" ");
 				})
 				.addClass(btnStyle)
