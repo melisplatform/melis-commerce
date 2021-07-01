@@ -19,6 +19,9 @@ class MelisComCacheService extends MelisComGeneralService
     CONST COMMERCE_VARIANT_CACHE_KEY = 'variant-';
     CONST COMMERCE_DOCUMENT_CACHE_KEY = 'document-';
     CONST COMMERCE_ATTRIBUTE_CACHE_KEY = 'attribute-';
+    CONST COMMERCE_ATTRIBUTE_VAL_CACHE_KEY = 'attribute-value-';
+    CONST COMMERCE_ATTRIBUTE_VAL_TRANS_CACHE_KEY = 'attribute-value-trans-';
+
 
     /**
      * Deletes cache
@@ -26,7 +29,7 @@ class MelisComCacheService extends MelisComGeneralService
      * @param $id
      * @param null $additionalParam
      */
-    public function deleteCache($type, $id, $additionalParam = null) {
+    public function deleteCache($type, $id, $additionalParam = []) {
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $arrayParameters = $this->sendEvent('meliscommerce_cache_service_delete_cache_start', $arrayParameters);
 
@@ -47,6 +50,12 @@ class MelisComCacheService extends MelisComGeneralService
 
         if ($arrayParameters['type'] == 'attribute')
             $this->deleteAttributeCache($arrayParameters['id'], $arrayParameters['additionalParam']);
+
+        if ($arrayParameters['type'] == 'attribute-value')
+            $this->deleteAttributeValueCache($arrayParameters['id'], $arrayParameters['additionalParam']);
+
+        if ($arrayParameters['type'] == 'attribute-value-trans')
+            $this->deleteAttributeValueTransCache($arrayParameters['id'], $arrayParameters['additionalParam']);
 
         $arrayParameters = $this->sendEvent('meliscommerce_cache_service_delete_cache_end', $arrayParameters);
     }
@@ -161,25 +170,84 @@ class MelisComCacheService extends MelisComGeneralService
             $this->deleteCache('product', $arrayParameters['additionalParam']['productId']);
         } else {
             // if productId is not specified we need to manually get the products that are using this attribute
-            $productIds = $this->getProductIdsUsingAttributeByAttributeId($arrayParameters['id']);
+            // $productIds = $this->getProductIdsUsingAttributeByAttributeId($arrayParameters['id']);
 
-            foreach ($productIds as $productId) {
-                $this->deleteCache('product', $productId);
-            }
+            // foreach ($productIds as $productId) {
+            //     $this->deleteCache('product', $productId);
+            // }
+
+            $this->deleteCacheByPrefix('product');
         }
         // delete variant cache that are using this attribute
         if (! empty($arrayParameters['additionalParam']['variantId'])) {
             $this->deleteCache('variant', $arrayParameters['additionalParam']['variantId']);
         } else {
             // if variantId is not specified we need to manually get the variants that are using this attribute
-            $variantIds = $this->getVariantIdsUsingAttributeByAttributeId($arrayParameters['id']);
+            // $variantIds = $this->getVariantIdsUsingAttributeByAttributeId($arrayParameters['id']);
 
-            foreach ($variantIds as $variantId) {
-                $this->deleteCache('variant', $variantId);
-            }
+            // foreach ($variantIds as $variantId) {
+            //     $this->deleteCache('variant', $variantId);
+            // }
+
+            $this->deleteCacheByPrefix('variant');
         }
 
         $arrayParameters = $this->sendEvent('meliscommerce_cache_service_delete_attribute_cache_end', $arrayParameters);
+    }
+
+    public function deleteAttributeValueCache($attrValueId, $additionalParam = [])
+    {
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $arrayParameters = $this->sendEvent('meliscommerce_cache_service_delete_attribute_value_cache_start', $arrayParameters);
+
+        // Attribute value translations
+        $this->deleteCacheByPrefix(self::COMMERCE_ATTRIBUTE_VAL_CACHE_KEY.$attrValueId);
+    
+        if(!isset($additionalParam['skipDeleteAttrValTrans'])) {
+            $attrValueTransTbl = $this->getServiceManager()->get('MelisEcomAttributeValueTransTable');
+            foreach($attrValueTransTbl->getEntryByFiled('av_attribute_value_id', $attrValueId) As $val){
+                // Removing associated translations
+                $this->deleteAttributeValueTransCache($val->avt_id, ['av_attribute_value_id' => $attrValueId]);
+            }
+        }
+
+        // Attribute
+        if (!empty($additionalParam['atval_attribute_id'])) {
+            // Attribute cache
+            $this->deleteAttributeCache($additionalParam['atval_attribute_id']);
+        }
+
+        $arrayParameters = $this->sendEvent('meliscommerce_cache_service_delete_attribute_value_cache_end', $arrayParameters);
+    }
+
+    public function deleteAttributeValueTransCache($attrValueTransId, $additionalParam = [])
+    {
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $arrayParameters = $this->sendEvent('meliscommerce_cache_service_delete_attribute_value_trans_cache_start', $arrayParameters);
+
+        $this->deleteCacheByPrefix(self::COMMERCE_ATTRIBUTE_VAL_TRANS_CACHE_KEY.$attrValueTransId);
+
+        // Attribute value trans
+        $attrValueTransTbl = $this->getServiceManager()->get('MelisEcomAttributeValueTransTable');
+        $attrValueTrans = $attrValueTransTbl->getEntryById($attrValueTransId)->current();
+
+        if(!empty($additionalParam))
+            $additionalParam = array_merge($additionalParam, ['skipDeleteAttrValTrans' => true]);
+        else 
+            $additionalParam['skipDeleteAttrValTrans'] = true;
+
+        if (!empty($attrValueTrans)){
+            $attrValueTbl = $this->getServiceManager()->get('MelisEcomAttributeValueTable');
+            $attrValue = $attrValueTbl->getEntryById($attrValueTrans->av_attribute_value_id)->current();
+            
+            if(!empty($attrValue))
+                $additionalParam['atval_attribute_id'] = $attrValue->atval_attribute_id;
+    
+            // Attribute value
+            $this->deleteAttributeValueCache($attrValueTrans->av_attribute_value_id, $additionalParam);
+        }
+
+        $arrayParameters = $this->sendEvent('meliscommerce_cache_service_delete_attribute_value_trans_cache_end', $arrayParameters);
     }
 
     /**

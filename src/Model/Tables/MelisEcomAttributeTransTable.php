@@ -35,16 +35,20 @@ class MelisEcomAttributeTransTable extends MelisEcomGenericTable
         $select->columns(array('*'));
         $clause = array();
 
-        $clause['melis_ecom_attribute_trans.atrans_id'] = (int) $attributeTransId;
-        
+        $where = new Where();
+
+        $where->equalTo('melis_ecom_attribute_trans.atrans_id', (int) $attributeTransId);
+
         if(!is_null($langId)) {
-            $clause['melis_ecom_attribute_trans.atrans_lang_id'] = (int) $langId;
+            $where->nest()
+            ->equalTo('melis_ecom_attribute_trans.atrans_lang_id', (int) $langId)
+            ->or
+            ->isNotNull('melis_ecom_attribute_trans.atrans_name')
+            ->unnest();
         }
-    
-        if($clause){
-            $select->where($clause);
-        }
-    
+
+        $select->where($where);
+
         $resultSet = $this->getTableGateway()->selectwith($select);
     
         return $resultSet;
