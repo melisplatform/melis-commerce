@@ -76,6 +76,7 @@ class MelisCommerceOrderMessagesPlugin extends MelisTemplatingPlugin
         
         $orderId        = !empty($this->pluginFrontConfig['m_om_order_id'])           ? $this->pluginFrontConfig['m_om_order_id'] : null;
         $message        = !empty($this->pluginFrontConfig['m_om_message'])            ? $this->pluginFrontConfig['m_om_message'] : '';
+        $msgType        = !empty($this->pluginFrontConfig['m_om_message_type'])       ? $this->pluginFrontConfig['m_om_message_type'] : 'MSG';
         $isSubmit       = !empty($this->pluginFrontConfig['m_om_message_is_submit'])  ? $this->pluginFrontConfig['m_om_message_is_submit'] : 0;
         $appConfigForm  = (!empty($this->pluginFrontConfig['forms']['meliscommerce_order_add_message_form'])) ? $this->pluginFrontConfig['forms']['meliscommerce_order_add_message_form'] : array();
         
@@ -126,7 +127,7 @@ class MelisCommerceOrderMessagesPlugin extends MelisTemplatingPlugin
         
         if(!empty($orderId))
         {
-            foreach($orderSvc->getOrderMessageByOrderId($orderId, 'MSG') as $message)
+            foreach($orderSvc->getOrderMessageByOrderId($orderId, $msgType) as $message)
             {
                 $tmp = array();
                 $tmp = $message->getArrayCopy();

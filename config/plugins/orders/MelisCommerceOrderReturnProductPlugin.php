@@ -29,6 +29,8 @@ return [
 
                         'omsg_message' => null,
                         'm_rp_is_submit' => 0,
+                        //Determine what status of the order that can be return
+                        'm_rp_status' => '4',
 
                         'files' => [
                             'css' => [
