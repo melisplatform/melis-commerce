@@ -225,6 +225,7 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
                                     //save message
                                     $orderMesasge['omsg_message'] .= htmlentities($msgProdDetails);
                                     $orderMesasge['omsg_order_id'] = $orderId;
+                                    $orderMesasge['omsg_pret_id'] = $pretId;
                                     $orderMesasge['omsg_client_id'] = $clientId;
                                     $orderMesasge['omsg_client_person_id'] = $personid;
                                     $orderMesasge['omsg_date_creation'] = date('Y-m-d H:i:s');

@@ -17,6 +17,8 @@ return [
                         'id' => 'orderMessages',
                         // Order Id
                         'm_om_order_id' => null,
+                        //Return ID
+                        'm_om_pret_id' => null,
                         // order message
                         'm_om_message' => '',
                         //order message type
