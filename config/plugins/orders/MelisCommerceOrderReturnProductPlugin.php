@@ -30,7 +30,11 @@ return [
                         'omsg_message' => null,
                         'm_rp_is_submit' => 0,
                         //Determine what status of the order that can be return
-                        'm_rp_status' => '4',
+                        'm_rp_status' => null,
+                        //Return Reason
+                        'pret_reason' => null,
+                        //If we include the Product Information on the Message
+                        'm_rp_include_info_on_msg' => null,
 
                         'files' => [
                             'css' => [
