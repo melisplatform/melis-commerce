@@ -35,6 +35,8 @@ return [
                         'pret_reason' => null,
                         //If we include the Product Information on the Message
                         'm_rp_include_info_on_msg' => null,
+                        //Return Product Images
+                        'm_rp_images' => [],
 
                         'files' => [
                             'css' => [

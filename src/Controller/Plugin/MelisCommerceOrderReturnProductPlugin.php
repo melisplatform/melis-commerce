@@ -87,6 +87,7 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
         $isSubmit  = !empty($formData['m_rp_is_submit']) ? $formData['m_rp_is_submit'] : 0;
         $orderReturnStatus  = !empty($formData['m_rp_status']) ? $formData['m_rp_status'] : 4;
         $includePrdDetailsOnMsg  = !is_null($formData['m_rp_include_info_on_msg']) ? $formData['m_rp_include_info_on_msg'] : true;
+        $returnProductImages  = !empty($formData['m_rp_images']) ? $formData['m_rp_images'] : [];
 
         //consist of variant id ang quantity to return
         /**
@@ -202,48 +203,60 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
                                     $returnProductData['pret_order_id'] = $orderId;
                                     //include client id
                                     $returnProductData['pret_client_id'] = $clientId;
-                                    $pretId = $productReturn->saveOrderProductReturn($returnProductData);
-                                    if (!empty($pretId)) {
-                                        //pepare product details to include on message
-                                        if ($includePrdDetailsOnMsg)
-                                            $msgProdDetails = '<p>' . $trans->translate('tr_melis_commerce_orders_return_details') . '<br>';
-                                        //start save the details
-                                        foreach ($returnVariantData as $variantId => $quantity) {
-                                            //get variant info
-                                            $variant = $variantSvc->getVariantById($variantId, $langId)->getVariant();
-                                            //get product name
-                                            $productId = $variant->var_prd_id;
-                                            $productName = $prodSvc->getProductName($productId, $langId);
-
-                                            //add other return details
-                                            $returnProductDetailsData['pretd_sku'] = $variant->var_sku;
-                                            $returnProductDetailsData['pretd_pret_id'] = $pretId;
-                                            $returnProductDetailsData['pretd_quantity'] = $quantity;
-                                            $returnProductDetailsData['pretd_variant_id'] = $variantId;
-
-                                            //save product return details
-                                            $productReturn->saveOrderProductReturnDetails($returnProductDetailsData);
-
-                                            //set msg product details
+                                    /**
+                                     * Check if there some images in the return
+                                     */
+                                    if(!empty($returnProductImages)){
+                                        $retImages = $this->processImages($returnProductImages, $orderId, $errors);
+                                        $returnProductData = array_merge($returnProductData, $retImages);
+                                    }
+                                    /**
+                                     * End Images
+                                     */
+                                    if(empty($errors)) {
+                                        $pretId = $productReturn->saveOrderProductReturn($returnProductData);
+                                        if (!empty($pretId)) {
+                                            //pepare product details to include on message
                                             if ($includePrdDetailsOnMsg)
-                                                $msgProdDetails .= "<span>" . $productName . " / " . $productId . " / " . $variant->var_sku . ": " . $quantity . "</span><br>";
+                                                $msgProdDetails = '<p>' . $trans->translate('tr_melis_commerce_orders_return_details') . '<br>';
+                                            //start save the details
+                                            foreach ($returnVariantData as $variantId => $quantity) {
+                                                //get variant info
+                                                $variant = $variantSvc->getVariantById($variantId, $langId)->getVariant();
+                                                //get product name
+                                                $productId = $variant->var_prd_id;
+                                                $productName = $prodSvc->getProductName($productId, $langId);
+
+                                                //add other return details
+                                                $returnProductDetailsData['pretd_sku'] = $variant->var_sku;
+                                                $returnProductDetailsData['pretd_pret_id'] = $pretId;
+                                                $returnProductDetailsData['pretd_quantity'] = $quantity;
+                                                $returnProductDetailsData['pretd_variant_id'] = $variantId;
+
+                                                //save product return details
+                                                $productReturn->saveOrderProductReturnDetails($returnProductDetailsData);
+
+                                                //set msg product details
+                                                if ($includePrdDetailsOnMsg)
+                                                    $msgProdDetails .= "<span>" . $productName . " / " . $productId . " / " . $variant->var_sku . ": " . $quantity . "</span><br>";
+                                            }
+                                            if ($includePrdDetailsOnMsg)
+                                                $msgProdDetails .= "</p>";
+
+                                            //save message
+                                            if ($includePrdDetailsOnMsg)
+                                                $orderMesasge['omsg_message'] .= htmlentities($msgProdDetails);
+
+                                            $orderMesasge['omsg_order_id'] = $orderId;
+                                            $orderMesasge['omsg_pret_id'] = $pretId;
+                                            $orderMesasge['omsg_client_id'] = $clientId;
+                                            $orderMesasge['omsg_client_person_id'] = $personid;
+                                            $orderMesasge['omsg_date_creation'] = date('Y-m-d H:i:s');
+                                            $orderMesasge['omsg_type'] = 'RETURN';
+                                            $orderSvc->saveOrderMessage($orderMesasge);
+
+                                            $success = 1;
                                         }
-                                        if ($includePrdDetailsOnMsg)
-                                            $msgProdDetails .= "</p>";
-
-                                        //save message
-                                        if ($includePrdDetailsOnMsg)
-                                            $orderMesasge['omsg_message'] .= htmlentities($msgProdDetails);
-                                        
-                                        $orderMesasge['omsg_order_id'] = $orderId;
-                                        $orderMesasge['omsg_pret_id'] = $pretId;
-                                        $orderMesasge['omsg_client_id'] = $clientId;
-                                        $orderMesasge['omsg_client_person_id'] = $personid;
-                                        $orderMesasge['omsg_date_creation'] = date('Y-m-d H:i:s');
-                                        $orderMesasge['omsg_type'] = 'RETURN';
-                                        $orderSvc->saveOrderMessage($orderMesasge);
-
-                                        $success = 1;
                                     }
                                 }
                             }
@@ -363,7 +376,60 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
         // return the variable array and let the view be created
         return $viewVariables;
     }
-    
+
+    /**
+     * @param $images
+     * @param $orderId
+     * @param $errors
+     * @return array
+     */
+    private function processImages($images, $orderId, &$errors)
+    {
+        $translator = $this->getServiceManager()->get('translator');
+        $imagesPath = [];
+        $filePath = '/media/commerce/return/'.$orderId.'/';
+        $dirName = $_SERVER['DOCUMENT_ROOT'].$filePath;
+        if(!file_exists($dirName))
+        {
+            mkdir($dirName, 0777, true);
+        }
+        if(file_exists($dirName))
+        {
+            chmod($dirName, 0777);
+            if(is_writable($dirName)) {
+                //process the saving of image
+                foreach($images as $key => $img) {
+                    if (!empty($img['name'])) {
+                        $fileName = basename($img["name"]);
+                        $targetFilePath = $dirName . $fileName;
+
+                        // Upload file to server
+                        if(move_uploaded_file($img["tmp_name"], $targetFilePath)){
+                            $imagesPath['pret_doc_'.($key+1)] = $filePath.$fileName;
+                        }else{
+                            $errors['image_error'] = [
+                                'label' => 'Error Upload Image',
+                                'uploadError' => $translator->translate('tr_melis_commerce_orders_return_image_error_invalid'),
+                            ];
+                            break;
+                        }
+                    }
+                }
+            }else{
+                $errors['image_error'] = [
+                    'label' => 'Not Writable',
+                    'notWritable' => sprintf($translator->translate('tr_melis_commerce_orders_retur_folder_not_writable'), $dirName),
+                ];
+            }
+        }else{
+            $errors['image_error'] = [
+                'label' => 'Directory dont exist',
+                'notFound' => sprintf($translator->translate('tr_melis_commerce_orders_retur_folder_dont_exist'), $dirName),
+            ];
+        }
+        return $imagesPath;
+    }
+
     /**
      * This function generates the form displayed when editing the parameters of the plugin
      */
