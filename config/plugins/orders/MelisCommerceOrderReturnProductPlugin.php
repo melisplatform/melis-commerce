@@ -29,7 +29,7 @@ return [
 
                         'omsg_message' => null,
                         'm_rp_is_submit' => 0,
-                        //Determine what status of the order that can be return
+                        //Determine what status of the order that can be return (not pret_status)
                         'm_rp_status' => null,
                         //Return Reason
                         'pret_reason' => null,
@@ -37,6 +37,8 @@ return [
                         'm_rp_include_info_on_msg' => null,
                         //Return Product Images
                         'm_rp_images' => [],
+                        //Return product status(the status of the return product if accepted or rejected)
+                        'pret_status' => null,
 
                         'files' => [
                             'css' => [
