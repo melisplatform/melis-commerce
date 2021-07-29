@@ -77,6 +77,7 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
         $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
         $prodSvc = $this->getServiceManager()->get('MelisComProductService');
         $trans = $this->getServiceManager()->get('translator');
+        $melisGeneralService = $this->getServiceManager()->get('MelisGeneralService');
 
         $container = new Container('melisplugins');
         $langId = $container['melis-plugins-lang-id'];
@@ -170,6 +171,11 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
                                     if (!$isQtyOk)
                                         break;
                                 }
+                                //set and event in case we need to process some logic like checking again the quantity before saving
+                                $returnedListenerData = $melisGeneralService->sendEvent('meliscommerce_return_product_plugin_save_start', ['isQtyOk' => $isQtyOk, 'returnVariantData' => $returnVariantData, 'orderId' => $orderId]);
+
+                                $isQtyOk = $returnedListenerData['isQtyOk'];
+                                $returnVariantData = $returnedListenerData['returnVariantData'];
                                 /**
                                  * Check if return quantity is not greater that the ordered quantity
                                  */
@@ -335,6 +341,7 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
                                 $details['total'] = ($basket->obas_price_net * $basket->obas_quantity) - $basket->discount;
                                 $details['discount'] = $basket->discount;
                                 $details['quantity'] = $basket->obas_quantity;
+                                $details['basketId'] = $basket->obas_id;
 
                                 //count already returned product
                                 foreach ($returnProduct as $key => $rProduct) {
@@ -344,6 +351,10 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
                                 }
                                 $details['returnedProduct'] = $returnProductValue;
                                 $details['remainingQtyToReturn'] = (int)$basket->obas_quantity - $returnProductValue;
+                                //set and event if we need to add some logic or update the details or reprocess the return product details
+                                $returnedListenerData = $melisGeneralService->sendEvent('meliscommerce_return_product_plugin_item_details', ['details' => $details, 'orderId' => $orderId, 'returnProduct' => $returnProduct, 'basket' => $basket]);
+                                $details = $returnedListenerData['details'];
+
                                 $items[] = $details;
                             }
 
