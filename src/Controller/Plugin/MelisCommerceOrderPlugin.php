@@ -186,6 +186,7 @@ class MelisCommerceOrderPlugin extends MelisTemplatingPlugin
                             $details['total'] = ($basket->obas_price_net * $basket->obas_quantity) - $basket->discount;
                             $details['discount'] = $basket->discount;
                             $details['quantity'] = $basket->obas_quantity;
+                            $details['basketId'] = $basket->obas_id;
 
                             $subTotal += $details['total'];
                             $items[] = $details;
