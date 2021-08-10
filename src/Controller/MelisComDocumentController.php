@@ -353,8 +353,11 @@ class MelisComDocumentController extends MelisAbstractActionController
                                 $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_upload_image_fileIsImageNotDetected');
                             }
                         }else{
-                            $isImg = false;
-                            $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_upload_image_fileIsImageNotDetected');
+                            //require image only if add operation
+                            if(empty($docId)){
+                                $isImg = false;
+                                $textMessage = $this->getTool()->getTranslation('tr_meliscommerce_documents_upload_image_fileIsImageNotDetected');
+                            }                            
                         }
                     }
 

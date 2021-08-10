@@ -6,8 +6,6 @@
 /.metadata
 /.cache
 /.zfproject.xml
-/vendor
-/build
 .DS_Store
 composer.phar
 composer.lock
