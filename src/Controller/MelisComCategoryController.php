@@ -313,15 +313,17 @@ class MelisComCategoryController extends MelisAbstractActionController
                     array_push($catCountries, $val['ccat_country_id']);
                 }
             }
+           
         }else{
             // Creating new entry, Country "all" is prechecked
             array_push($catCountries, '-1');
         }
 
-        // Getting all Commerce Coutnries
+        // Getting all Active Commerce Coutnries
         $melisEcomCountryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
-        $ecomCountries = $melisEcomCountryTable->fetchAll();
+        $ecomCountries = $melisEcomCountryTable->getEntryByField('ctry_status',1);
         $ecomCountriesData = $ecomCountries->toArray();
+
         $view = new ViewModel();
         $view->categoryCountries = $catCountries;
         $view->ecomCountries = $ecomCountriesData;
