@@ -86,7 +86,7 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
 
         $orderId  = !empty($formData['m_rp_order_id']) ? $formData['m_rp_order_id'] : null;
         $isSubmit  = !empty($formData['m_rp_is_submit']) ? $formData['m_rp_is_submit'] : 0;
-        $orderReturnStatus  = !empty($formData['m_rp_status']) ? $formData['m_rp_status'] : 4;
+        $orderReturnStatus  = !empty($formData['m_rp_status']) ? $formData['m_rp_status'] : [4];
         $includePrdDetailsOnMsg  = !is_null($formData['m_rp_include_info_on_msg']) ? $formData['m_rp_include_info_on_msg'] : true;
         $returnProductImages  = !empty($formData['m_rp_images']) ? $formData['m_rp_images'] : [];
 
@@ -138,8 +138,8 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
 
                 $data = $orderSvc->getOrderById($orderId, $langId);
 
-                //check if order is already delivered to the customer
-                if ($data->getOrder()->ord_status == $orderReturnStatus || $this->renderMode == 'melis') {//order delivered
+                //check order status
+                if (in_array($data->getOrder()->ord_status, $orderReturnStatus) || $this->renderMode == 'melis') {
                     //check if form is submitted
                     if ($isSubmit) {
                         $addMessageForm->setData($formData);

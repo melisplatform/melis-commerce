@@ -30,7 +30,7 @@ return [
                         'omsg_message' => null,
                         'm_rp_is_submit' => 0,
                         //Determine what status of the order that can be return (not pret_status)
-                        'm_rp_status' => null,
+                        'm_rp_status' => [],
                         //Return Reason
                         'pret_reason' => null,
                         //If we include the Product Information on the Message
