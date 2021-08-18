@@ -221,19 +221,26 @@ $(function() {
                 $.each($("#"+productId+"_productCategoryList").jstree().get_checked(true), function(){
                     checkedCategories.push(parseInt(this.id));
                 });
-
+  
             var uncheckedCategories = new Array,
-                addedCategories     = new Array;
+                addedCategories     = new Array,
+                delCategories = new Array;
 
                 $("#"+productId+"_product_category_area span[data-pcat-cat-id]").each(function() {
                     var $this       = $(this),
-                        prdCatId    = parseInt( $this.data("pcat-cat-id") );
+                        prdCatId    = parseInt( $this.data("pcat-cat-id")),
+                        catId       = parseInt( $this.data("pcat-id") );
 
-                        if ( checkedCategories.indexOf(prdCatId) !== -1 ) {
+                        if (checkedCategories.indexOf(prdCatId) !== -1 ) {
                             addedCategories.push(prdCatId);
                         }
                         else {
                             uncheckedCategories.push(prdCatId);
+
+                            if(catId){
+                                delCategories.push({'catId': catId, 'prdCatId':prdCatId});
+                            }
+                            
                             $("span.prod-cat-values[data-pcat-cat-id='"+prdCatId+"']").remove();
                         }
                 });
@@ -254,6 +261,7 @@ $(function() {
                             }
                         }
                 });
+             
 
                 if ( checkedCategories.length ) {
                     $("p#"+productId+"_no_categories").hide();
@@ -261,6 +269,16 @@ $(function() {
                 else {
                     $("p#"+productId+"_no_categories").show();
                 }
+
+
+                if(delCategories.length){
+                    var delProdCatCont  = $("#" + melisCommerce.getCurrentProductId()  + "_deleted_product_category_area");            
+
+                    $.each(delCategories , function(index, val) {   
+                        //add in the deleted_product_category                    
+                        delProdCatCont.append('<span data-pcat-id="' + val.catId + '" data-pcat-cat-id="'+val.prdCatId+'"></span>');
+                    });                    
+                }              
 
                 $("#id_meliscommerce_products_main_tab_categories_modal_container").modal("hide");
         });
