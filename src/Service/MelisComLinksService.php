@@ -73,7 +73,7 @@ class MelisComLinksService extends MelisComGeneralService
         $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
 //        if (!empty($results)) return $results;
-        $cache = $this->getServiceManager()->get($cacheConfig);
+        $cache = $this->getServiceManager()->get($cacheConfig);        
         if ($cache->hasItem($cacheKey)){
             return $cache->getItem($cacheKey);
         }
@@ -114,12 +114,15 @@ class MelisComLinksService extends MelisComGeneralService
     public function getPageLinkCategory($id, $langId, $absolute = false, $onlyPageId = false)
     {
         // Retrieve cache version if front mode to avoid multiple calls
-        $cacheKey = 'category-getPageLinkCategory_' . $id . '_' . $langId . '_' . $absolute;
-        $cacheConfig = 'commerce_memory_services';
+        // $cacheKey = 'category-getPageLinkCategory_' . $id . '_' . $langId . '_' . $absolute;
+        $cacheKey = 'category-' . $id . '_' . $langId . '_' . $absolute;
+        // $cacheConfig = 'commerce_memory_services';
+        $cacheConfig = 'commerce_big_services';
         $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-//        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-//        if (!empty($results)) return $results;
+        // $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+        // if (!empty($results)) return $results;
         $cache = $this->getServiceManager()->get($cacheConfig);
+
         if ($cache->hasItem($cacheKey)){
             return $cache->getItem($cacheKey);
         }
@@ -196,11 +199,13 @@ class MelisComLinksService extends MelisComGeneralService
     public function getPageLinkProduct($id, $langId, $absolute = false, $onlyPageId = false)
     {
         // Retrieve cache version if front mode to avoid multiple calls
-        $cacheKey = 'product-getPageLinkProduct_' . $id . '_' . $langId . '_' . $absolute;
-        $cacheConfig = 'commerce_memory_services';
+        // $cacheKey = 'product-getPageLinkProduct_' . $id . '_' . $langId . '_' . $absolute;
+        $cacheKey = 'product-' . $id . '_' . $langId . '_' . $absolute;
+        // $cacheConfig = 'commerce_memory_services';
+        $cacheConfig = 'commerce_big_services';
         $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-//        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-//        if (!empty($results)) return $results;
+        // $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+        // if (!empty($results)) return $results;
         $cache = $this->getServiceManager()->get($cacheConfig);
         if ($cache->hasItem($cacheKey)){
             return $cache->getItem($cacheKey);
@@ -274,11 +279,13 @@ class MelisComLinksService extends MelisComGeneralService
     public function getPageLinkVariant($id, $langId, $absolute = false, $onlyPageId = false)
     {
         // Retrieve cache version if front mode to avoid multiple calls
-        $cacheKey = 'variant-getPageLinkVariant_' . $id . '_' . $langId . '_' . $absolute;
-        $cacheConfig = 'commerce_memory_services';
+        // $cacheKey = 'variant-getPageLinkVariant_' . $id . '_' . $langId . '_' . $absolute;
+        $cacheKey = 'variant-' . $id . '_' . $langId . '_' . $absolute;
+        // $cacheConfig = 'commerce_memory_services';
+        $cacheConfig = 'commerce_big_services';
         $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-//        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
-//        if (!empty($results)) return $results;
+        // $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+        // if (!empty($results)) return $results;
         $cache = $this->getServiceManager()->get($cacheConfig);
         if ($cache->hasItem($cacheKey)){
             return $cache->getItem($cacheKey);

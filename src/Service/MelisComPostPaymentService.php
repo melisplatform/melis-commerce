@@ -45,15 +45,15 @@ class MelisComPostPaymentService extends MelisComGeneralService
             
             // Payment Details
             $payment['payment_details'] = array(
-                'paymentType' => $postValues['payment-type-value'],
+                'paymentType' => $postValues['payment-type-value'] ?? null,
                 'transactionId' => $postValues['payment-transaction-id'],
-                'transactionReturnCode' => $postValues['payment-transaction-return-code'],
+                'transactionReturnCode' => $postValues['payment-transaction-return-code'] ?? null,
                 'transactionPricePaid' => $postValues['payment-transaction-price-paid'],
                 'transactionFullRawResponse' => $postValues['payment-transaction-full-Raw-Response'] ?? json_encode($postValues),
                 'transactionPricepaidConfirm' => $postValues['payment-transaction-price-paid-confirm'],
                 'transactionDateTime' => $postValues['payment-transaction-date'],
                 'transactionCountryId' => $postValues['payment-transaction-country-id'],
-                'transactionCourrencyCode' => $postValues['payment-transaction-currency-code']
+                'transactionCourrencyCode' => $postValues['payment-transaction-currency-code'] ?? null
             );
             
             // Shipping Total Amount

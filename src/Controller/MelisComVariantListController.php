@@ -438,6 +438,9 @@ class MelisComVariantListController extends MelisAbstractActionController
         $data = array("var_status" => $status);
         $res = $varTbl->save($data, $variantId);
 
+        $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
+        $commerceCacheService->deleteCache('variant', $variantId);
+
         if($res){
             $success = true;
         }

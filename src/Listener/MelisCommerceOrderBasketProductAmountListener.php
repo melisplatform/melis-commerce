@@ -55,7 +55,7 @@ class MelisCommerceOrderBasketProductAmountListener extends MelisGeneralListener
                     $e->setParam('results', $price);
                 }
             },
-            +999
+            9999
         );
 
         $this->attachEventListener(
@@ -91,13 +91,13 @@ class MelisCommerceOrderBasketProductAmountListener extends MelisGeneralListener
                         $discount = 0;
 
                     // Set new price to result
-                    $price['total_discount'] = $discount;
+                    $price['total_discount'] = abs($discount);
 
                     // Set param from updated price
                     $e->setParam('results', $price);
                 }
             },
-            -9999
+            -900
         );
     }
 }

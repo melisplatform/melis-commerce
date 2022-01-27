@@ -79,6 +79,8 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
 
         $siteId = (!empty($this->pluginFrontConfig['m_add_site_id'])) ? $this->pluginFrontConfig['m_add_site_id'] : null;
         $overrideData = (!empty($this->pluginFrontConfig['m_add_override_data'])) ? $this->pluginFrontConfig['m_add_override_data'] : false;
+        $saveAddresses = (isset($this->pluginFrontConfig['m_save_addresses'])) ? $this->pluginFrontConfig['m_save_addresses'] : true;
+        $checkoutAddressUse = (isset($this->pluginFrontConfig['m_checkout_address'])) ? $this->pluginFrontConfig['m_checkout_address'] : 'Person';
 
         // Get the parameters and config from $this->pluginFrontConfig (default > hardcoded > get > post)
         $appConfigDeliveryAddForm = (!empty($this->pluginFrontConfig['forms']['delivery_address'])) ? $this->pluginFrontConfig['forms']['delivery_address'] : array();
@@ -169,8 +171,12 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
             }
 
             $clientSrv = $this->getServiceManager()->get('MelisComClientService');
-            $personDelAddress = $clientSrv->getClientAddressesByClientPersonId($personId, 'DEL');
-            if (empty($personDelAddress))
+            if ($checkoutAddressUse == 'Person')
+                $delAddress = $clientSrv->getClientAddressesByClientPersonId($personId, 'DEL');
+            else
+                $delAddress = $clientSrv->getClientAddressesByClientId($clientId, 'DEL');
+
+            if (empty($delAddress))
             {
                 $deliveryAddForm->get('m_add_delivery_id')->setValue('new_address')->setAttribute('type', 'hidden');
             }
@@ -179,14 +185,14 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
              * This fill up the delivery form
              * if delivery session is empty
              */
-            $personFillDelAdd = array();
+            $fillDelAdd = array();
             if(empty($deliveryAddFormSessData)){
-                if(!empty($personDelAddress)) {
-                    if(isset($personDelAddress[0])) {
-                        foreach ($personDelAddress[0] As $key => $val) {
-                            $personFillDelAdd[str_replace('cadd_', 'm_add_delivery_', $key)] = $val;
+                if(!empty($delAddress)) {
+                    if(isset($delAddress[0])) {
+                        foreach ($delAddress[0] As $key => $val) {
+                            $fillDelAdd[str_replace('cadd_', 'm_add_delivery_', $key)] = $val;
                         }
-                        $deliveryAddFormSessData = $personFillDelAdd;
+                        $deliveryAddFormSessData = $fillDelAdd;
                     }
                 }
             }
@@ -205,7 +211,11 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
                  * this will retrieve from db and set to the Form
                  */
                 $clientSrv = $this->getServiceManager()->get('MelisComClientService');
-                $clientPersonDelAdd = $clientSrv->getClientPersonAddressByAddressId($personId, $deliverySelectAddress);
+                if ($checkoutAddressUse == 'Person')
+                    $clientPersonDelAdd = $clientSrv->getClientPersonAddressByAddressId($personId, $deliverySelectAddress);
+                else 
+                    $clientPersonDelAdd = $clientSrv->getClientAddressByAddressId($clientId, $deliverySelectAddress);
+
                 if (!empty($clientPersonDelAdd))
                 {
                     $personDelAdd = array();
@@ -278,7 +288,11 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
                  * this will retrieve from db and set to the Form
                  */
                 $clientSrv = $this->getServiceManager()->get('MelisComClientService');
-                $clientPersonBilAdd = $clientSrv->getClientPersonAddressByAddressId($personId, $billingSelectAddress);
+                if ($checkoutAddressUse == 'Person')
+                    $clientPersonBilAdd = $clientSrv->getClientPersonAddressByAddressId($personId, $billingSelectAddress);
+                else
+                    $clientPersonBilAdd = $clientSrv->getClientAddressByAddressId($clientId, $billingSelectAddress);
+
                 if (!empty($clientPersonBilAdd))
                 {
                     $personBilAdd = array();
@@ -440,37 +454,45 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
                     $deliveryAddId = null;
 
                     $checkoutAddresses = $validatedAddresses['addresses'];
-                    krsort($checkoutAddresses);
-                    foreach ($checkoutAddresses As $key => $val)
-                    {
-                        $val['address']['cadd_client_id'] = $container['checkout'][$siteId]['clientId'];
-                        $val['address']['cadd_client_person'] = $container['checkout'][$siteId]['contactId'];
 
-                        $addId  = null;
+                    if ($saveAddresses) {
 
-                        if (!empty($val['address']['cadd_id']) && $val['address']['cadd_id'] != 'new_address' && $overrideData)
-                        {
-                            $addId = $val['address']['cadd_id'];
-                        }
-
-                        if ($key == 'delivery')
-                        {
-                            $addId = $clientSrv->saveClientAddress($val['address'], $addId);
-                            $deliveryAddId = $addId;
-                        }
-                        else
-                        {
-                            if ($sameAddress)
+                        krsort($checkoutAddresses);
+                        foreach ($checkoutAddresses As $key => $val) {
+                            $val['address']['cadd_client_id'] = $container['checkout'][$siteId]['clientId'];
+    
+                            if (in_array($deliverySelectAddress, ['', 'new_address']))
+                                $val['address']['cadd_client_person'] = $container['checkout'][$siteId]['contactId']; // TODO need to confirm in other cases
+    
+                            $addId  = null;
+    
+                            if (!empty($val['address']['cadd_id']) && $val['address']['cadd_id'] != 'new_address' && $overrideData)
                             {
-                                $addId = $deliveryAddId;
+                                $addId = $val['address']['cadd_id'];
+                            }
+    
+                            if ($key == 'delivery')
+                            {
+                                $addId = $clientSrv->saveClientAddress($val['address'], $addId);
+                                $deliveryAddId = $addId;
                             }
                             else
                             {
-                                $addId = $clientSrv->saveClientAddress($val['address'], $addId);
+                                if ($sameAddress)
+                                {
+                                    $addId = $deliveryAddId;
+                                }
+                                else
+                                {
+                                    $addId = $clientSrv->saveClientAddress($val['address'], $addId);
+                                }
                             }
+    
+                            if ($checkoutAddressUse == 'Person')
+                                $validatedAddresses['addresses'][$key]['address'] = (Array) $clientSrv->getClientPersonAddressByAddressId($personId, $addId);
+                            else
+                                $validatedAddresses['addresses'][$key]['address'] = (Array) $clientSrv->getClientAddressByAddressId($clientId, $addId);
                         }
-
-                        $validatedAddresses['addresses'][$key]['address'] = (Array) $clientSrv->getClientPersonAddressByAddressId($personId, $addId);
                     }
 
                     $container['checkout'][$siteId]['addresses'] = $validatedAddresses;

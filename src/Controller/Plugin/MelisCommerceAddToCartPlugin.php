@@ -85,24 +85,15 @@ class MelisCommerceAddToCartPlugin extends MelisTemplatingPlugin
         
         $clientKey = $ecomAuthSrv->getId();
         $clientId = null;
-        if ($ecomAuthSrv->hasIdentity())
-        {
+        if ($ecomAuthSrv->hasIdentity()) {
             $clientId = $ecomAuthSrv->getClientId();
             $clientKey = $ecomAuthSrv->getClientKey();
         }
-        
-        $currentBasket = $basketSrv->getBasket($clientId, $clientKey);
-        if(!empty($currentBasket))
-        {
-            foreach($currentBasket as $item)
-            {
-                if($item->getVariantId() == $variantId)
-                {
-                    $currentQty = $item->getQuantity();
-                }
-            }
-        }
-        
+
+        $basketItem = $basketSrv->getBasketItemByFields($clientId, $clientKey, $variantId);
+        if(!empty($basketItem)) 
+            $currentQty = $basketItem->getQuantity();
+
         $data['m_variant_id'] = $variantId;
         $data['m_variant_quantity'] = $quantity;
         $data['m_variant_country'] = $countryId;

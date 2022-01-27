@@ -113,11 +113,12 @@ class MelisCommerceCheckoutSummaryPlugin extends MelisTemplatingPlugin
                         
                         foreach ($clientOrderVariant As $key => $val)
                         {
+                            $basketId = $val['basket_id'];
                             $variantId = $val['variant_id'];
                             $variantErr = '';
-                            if (!empty($validatedBasket['basket']['ko'][$variantId]['error']))
+                            if (!empty($validatedBasket['basket']['ko'][$basketId]['error']))
                             {
-                                $variantErr = $translator->translate('tr_'.$validatedBasket['basket']['ko'][$variantId]['error']);
+                                $variantErr = $translator->translate('tr_'.$validatedBasket['basket']['ko'][$basketId]['error']);
                                 $hasErr = true;
                             }
                             

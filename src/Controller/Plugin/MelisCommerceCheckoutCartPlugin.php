@@ -68,6 +68,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
         $subTotal = 0;
         $totalDiscount = 0;
         $subTotalWithProdDiscount = 0;
+        $totalProductDiscount = 0;
         $orderDiscount = 0;
         $discountInfo = array();
         $shippingTotal = 0;
@@ -91,6 +92,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
         $siteId                         = (!empty($formData['m_cc_site_id']))                    ? $formData['m_cc_site_id'] : null;
         $variantQuantities              = (!empty($formData['m_cc_var_qty']))                    ? $formData['m_cc_var_qty'] : null;
         $variantIdRemove                = (!empty($formData['m_cc_var_remove']))                 ? $formData['m_cc_var_remove'] : null;
+        $skipAddVariant                 = (!empty($formData['m_cc_skip_add_variant']))           ? $formData['m_cc_skip_add_variant'] : false;
         $checkoutCartCouponParameters   = (!empty($formData['checkout_cart_coupon_parameters'])) ? $formData['checkout_cart_coupon_parameters'] : array();
         $checkoutCartCouponParameters   = ArrayUtils::merge($checkoutCartCouponParameters, array('id' => 'checkoutCoupon_'.$formData['id'], 'pageId' => $formData['pageId']));
 
@@ -146,7 +148,8 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                             
                             if ($varStock >= $varQty)
                             {
-                                $basketSrv->addVariantToBasket($varId, $varQty, $clientId, $clientKey);
+                                if (!$skipAddVariant)
+                                    $basketSrv->addVariantToBasket($varId, $varQty, $clientId, $clientKey);
                             }
                             else
                             {
@@ -166,10 +169,11 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                                         }
                                     }
                                 }
-                                $stockRemaining = $varStock - $currentQty;
-                                $stockRemaining = ($stockRemaining > 0) ? $stockRemaining : 0;
+                                // TODO Change - Variant stock display instead of the computation below
+                                // $stockRemaining = $varStock - $currentQty;
+                                // $stockRemaining = ($stockRemaining > 0) ? $stockRemaining : 0;
 
-                                $errors[$varId] = sprintf($translator->translate('tr_meliscommerce_products_plugins_stock_left'), $stockRemaining);
+                                $errors[$varId] = sprintf($translator->translate('tr_meliscommerce_products_plugins_stock_left'), $varStock);
                             }
                         }
                         else 
@@ -226,6 +230,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                 $basketErr = $orderBasket['cost']['order']['errors'];
 
             foreach ($orderBasket As $item) {
+
                 $variantId = $item['variant_id'];
                 $variant = $melisComVariantService->getVariantById($variantId)->getVariant();
                 $productId = $variant->var_prd_id;
@@ -277,6 +282,7 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
                     'var_discount_percentage' => $discountPercentage,
                     'var_discount_value' => $discountValue,
                     'price_details' => $item['price_details'],
+                    'basket_details' => $item['basket_details']
                 ];
 
                 $checkOutCart[] = $data;
@@ -311,6 +317,8 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
             
             $orderDiscount = $clientOrderCost['costs']['order']['totalGeneralDiscount'] ?? 0;
             
+            $totalProductDiscount = $clientOrderCost['costs']['order']['totalProductDiscount'] ?? 0;
+            
             $total = $clientOrderCost['costs']['order']['total'];
         }
 
@@ -320,17 +328,19 @@ class MelisCommerceCheckoutCartPlugin extends MelisTemplatingPlugin
         
         $viewVariables = [
             'checkOutCart' => $checkOutCart,
-            'checkOutCartSubTotal' => number_format($subTotal, 2),
-            'checkOutCartDiscount' => number_format($orderDiscount, 2),
+            'checkOutCartSubTotal' => $subTotal,
+            'checkOutCartDiscount' => $orderDiscount,
             'checkOutCartDiscountInfo' => $discountInfo,
-            'checkoutShipping' => number_format($shippingTotal, 2),
-            'checkOutCartTotal' => number_format($total, 2),
+            'checkoutShipping' => $shippingTotal,
+            'checkoutTotalProductDiscount' => $totalProductDiscount,
+            'checkOutCartTotal' => $total,
             'checkOutCurrency' => $currency,
             'checkoutErrors' => $errors,
             'checkoutCoupon' => $couponView,
             'checkoutHasCoupon' => $hasDiscount,
             'checkoutHasErr' => $hasErr,
         ];
+
         // return the variable array and let the view be created
         return $viewVariables;
     }

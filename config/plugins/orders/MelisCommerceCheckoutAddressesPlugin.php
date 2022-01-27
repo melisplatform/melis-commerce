@@ -20,6 +20,11 @@ return [
                         'm_add_site_id' => 1,
                         // Override submitted data existing data
                         'm_add_override_data' => false,
+                        // Saving addresses after validation
+                        'm_save_addresses' => true,
+                        // Checkout address use Client/Person
+                        // As default Person address used for checkout
+                        'm_checkout_address' => 'Person',
                         
                         // delivery form fields
                         'm_add_delivery_id' => '',

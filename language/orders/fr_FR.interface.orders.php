@@ -257,4 +257,7 @@
         'tr_melis_commerce_orders_return_product_form_header' => 'You wish to return this product, please fill the form :',
         'tr_melis_commerce_orders_return_product_placed_on' => 'Placed On :',
         'tr_melis_commerce_orders_return_details' => 'Details :',
+        'tr_melis_commerce_orders_return_folder_not_writable' => '%s is not writable.',
+        'tr_melis_commerce_orders_return_folder_dont_exist' => '%s don\'t exist.',
+        'tr_melis_commerce_orders_return_image_error_invalid'  => 'Format de l\'image invalide, veuillez en choisir un autre',
 	);

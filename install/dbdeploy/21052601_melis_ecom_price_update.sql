@@ -1,1 +1,0 @@
-ALTER TABLE `melis_ecom_price` ADD `price_min_qty` DECIMAL(10,2) NULL AFTER `price_net`, ADD `price_net_2` DECIMAL(10,2) NULL AFTER `price_min_qty`, ADD `price_min_qty_2` DECIMAL(10,2) NULL AFTER `price_net_2`;

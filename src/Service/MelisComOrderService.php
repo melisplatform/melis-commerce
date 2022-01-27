@@ -1000,6 +1000,9 @@ class MelisComOrderService extends MelisComGeneralService
 				$melisEcomOrderAddressTable->deleteById($arrayParameters['addressId']);
 			}
 			
+			if (empty($arrayParameters['address']['oadd_civility']))
+				$arrayParameters['address']['oadd_civility'] = null;
+				
 			// Add Type Address to Address Data
 			$arrayParameters['address']['oadd_type'] = $arrayParameters['type'];
 			

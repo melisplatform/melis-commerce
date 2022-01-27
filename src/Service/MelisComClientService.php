@@ -537,6 +537,38 @@ class MelisComClientService extends MelisComGeneralService
 		
 		return $arrayParameters['results'];
 	}
+
+	/**
+	 * Returns the specific address of the client by providing the address ID
+	 * @param $addrId
+	 * @return mixed
+	 */
+	public function getClientAddressByAddressId($clientId, $addrId)
+	{
+		// Event parameters prepare
+		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+		$results = array();
+	
+		// Sending service start event
+		$arrayParameters = $this->sendEvent('meliscommerce_service_client_address_by_address_id_start', $arrayParameters);
+	
+		// Service implementation start
+		
+		$addrTable = $this->getServiceManager()->get('MelisEcomClientAddressTable');
+		$address  = $addrTable->getClientAddressByAddressId($arrayParameters['clientId'], $arrayParameters['addrId']);
+		if (!empty($address))
+		{
+			$results = $address->current();
+		}
+		// Service implementation end
+	
+		// Adding results to parameters for events treatment if needed
+		$arrayParameters['results'] = $results;
+		// Sending service end event
+		$arrayParameters = $this->sendEvent('meliscommerce_service_client_address_by_address_id_end', $arrayParameters);
+	
+		return $arrayParameters['results'];
+	}
 	
 	/**
 	 *

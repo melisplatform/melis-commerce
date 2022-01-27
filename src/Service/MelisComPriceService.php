@@ -38,24 +38,24 @@ class MelisComPriceService extends MelisComGeneralService
         // Service implementation start
 		$priceTable = $this->getServiceManager()->get('MelisEcomPriceTable');
         $price = $this->validatePrice($priceTable->getItemPrice($arrayParameters['type'], $arrayParameters['itemId'], 
-                        $arrayParameters['countryId'], $arrayParameters['groupId'])->current());
+                        $arrayParameters['countryId'], $arrayParameters['groupId'])->current(), $arrayParameters['data']);
 
         /** General Prices **/
 
         // General Price Group
         if (empty($price)) 
             $price = $this->validatePrice($priceTable->getItemPrice($arrayParameters['type'], $arrayParameters['itemId'], 
-                    $arrayParameters['countryId'])->current());
+                    $arrayParameters['countryId'])->current(), $arrayParameters['data']);
 	
         //  Client Group in General Country
         if (empty($price))
             $price = $this->validatePrice($priceTable->getItemPrice($arrayParameters['type'], $arrayParameters['itemId'], 
-                    -1, $arrayParameters['groupId'])->current());
+                    -1, $arrayParameters['groupId'])->current(), $arrayParameters['data']);
 		
 		// General Country and General Client Group
         if (empty($price))
             $price = $this->validatePrice($priceTable->getItemPrice($arrayParameters['type'], $arrayParameters['itemId'],
-                    -1)->current());
+                    -1)->current(), $arrayParameters['data']);
 
         if (!empty($price)) {
 
@@ -65,8 +65,8 @@ class MelisComPriceService extends MelisComGeneralService
                 if(!is_bool(strpos($key, 'price_')))
                     $priceDetails[$key] = $val;
 
-
-            $priceNet = (float)$price->price_net;
+            // price column
+            $priceNet = (float)$price->{$price->price_col};
             
             $results = [
                 'price' => $priceNet,
@@ -116,15 +116,32 @@ class MelisComPriceService extends MelisComGeneralService
     /**
 	 * Validating Product price
 	 */
-	private function validatePrice($productPrice)
+	private function validatePrice($productPrice, $data, $priceCol = 'price_net')
 	{
-		if (!empty($productPrice)) {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_validate_price_start', $arrayParameters);
+
+        $price = null;
+
+		if (!empty($arrayParameters['productPrice'])) {
 			// Just to be sure that data on Price is in Numeric data type
-			if (is_numeric((float)$productPrice->price_net) && !is_null($productPrice->price_net))
-				return $productPrice;
+			if (is_numeric((float)$arrayParameters['productPrice']->{$arrayParameters['priceCol']}) 
+                && !is_null($arrayParameters['productPrice']->{$arrayParameters['priceCol']})) {
+                    $price = $arrayParameters['productPrice'];
+                    $price->{'price_col'} = $arrayParameters['priceCol'];
+                }
 		}
 
-		return null;
+
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $price;
+
+        $arrayParameters = $this->sendEvent('meliscommerce_service_validate_price_end', $arrayParameters);
+
+		return $arrayParameters['results'];
 	}
 
     public function translateLogs($priceLogs)
@@ -162,7 +179,7 @@ class MelisComPriceService extends MelisComGeneralService
                                 $text = str_replace($vKey, $value, $text);
                             }
                         } else {
-                            $text = sprintf($text, $value);
+                            $text = sprintf($text, $values);
                         }
 
                         $priceLogs[$key] = $text;

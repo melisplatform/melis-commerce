@@ -74,6 +74,17 @@ class MelisEcomClientAddressTable extends MelisEcomGenericTable
         $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
+
+    public function getClientAddressByAddressId($clientId, $addrId)
+    {
+        $select = $this->getTableGateway()->getSql()->select();
+        
+        $select->where('cadd_client_id ='.$clientId);
+        $select->where('cadd_id ='.$addrId);
+        
+        $resultData = $this->getTableGateway()->selectWith($select);
+        return $resultData;
+    }
     
     public function getClientPersonAddressByAddressId($personId, $addrId)
     {

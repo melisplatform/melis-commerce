@@ -67,6 +67,7 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
     {
         $returnProducts = [];
         $success = 0;
+        $errors = [];
         
         $ecomAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
         $orderSvc = $this->getServiceManager()->get('MelisComOrderService');
@@ -76,6 +77,7 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
         $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
         $prodSvc = $this->getServiceManager()->get('MelisComProductService');
         $trans = $this->getServiceManager()->get('translator');
+        $melisGeneralService = $this->getServiceManager()->get('MelisGeneralService');
 
         $container = new Container('melisplugins');
         $langId = $container['melis-plugins-lang-id'];
@@ -84,6 +86,10 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
 
         $orderId  = !empty($formData['m_rp_order_id']) ? $formData['m_rp_order_id'] : null;
         $isSubmit  = !empty($formData['m_rp_is_submit']) ? $formData['m_rp_is_submit'] : 0;
+        $orderReturnStatus  = !empty($formData['m_rp_status']) ? $formData['m_rp_status'] : [4];
+        $includePrdDetailsOnMsg  = !is_null($formData['m_rp_include_info_on_msg']) ? $formData['m_rp_include_info_on_msg'] : true;
+        $returnProductImages  = !empty($formData['m_rp_images']) ? $formData['m_rp_images'] : [];
+
         //consist of variant id ang quantity to return
         /**
          * Format:
@@ -132,107 +138,137 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
 
                 $data = $orderSvc->getOrderById($orderId, $langId);
 
-                //check if order is already delivered to the customer
-                if ($data->getOrder()->ord_status == 4 || $this->renderMode == 'melis') {//order delivered
+                //check for order status
+                if (in_array($data->getOrder()->ord_status, $orderReturnStatus) || $this->renderMode == 'melis') {//order delivered
                     //check if form is submitted
-                    if ($isSubmit) {
-                        if (!empty($returnVariantData)) {
-                            //get all return product to get the quantity
-                            $returnProduct = $productReturn->getOrderProductReturnList($orderId);
-                            $isQtyOk = true;
-                            //re check returned quantity
-                            foreach ($returnVariantData as $variantId => $returnQty) {
-                                $returnProd = 0;
-                                //count already returned product
-                                foreach ($returnProduct as $key => $rProduct) {
-                                    if ($rProduct['pretd_variant_id'] == $variantId) {
-                                        $returnProd += $rProduct['pretd_quantity'];
+                    if($isSubmit) {
+                        $addMessageForm->setData($formData);
+                        //validate form
+                        if ($addMessageForm->isValid()) {
+                            if (!empty($returnVariantData)) {
+                                //get all return product to get the quantity
+                                $returnProduct = $productReturn->getOrderProductReturnList($orderId);
+                                $isQtyOk = true;
+                                //re check returned quantity
+                                foreach ($returnVariantData as $variantId => $returnQty) {
+                                    $returnProd = 0;
+                                    //count already returned product
+                                    foreach ($returnProduct as $key => $rProduct) {
+                                        if ($rProduct['pretd_variant_id'] == $variantId) {
+                                            $returnProd += $rProduct['pretd_quantity'];
+                                        }
                                     }
+                                    foreach ($data->getBasket() as $bas) {
+                                        if ($variantId == $bas->obas_variant_id) {
+                                            $remainingQty = $bas->obas_quantity - $returnProd;
+                                            if ($returnQty > $remainingQty) {
+                                                $isQtyOk = false;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    //if quantity is not okay, break the loop
+                                    if (!$isQtyOk)
+                                        break;
                                 }
-                                foreach ($data->getBasket() as $bas) {
-                                    if ($variantId == $bas->obas_variant_id) {
-                                        $remainingQty = $bas->obas_quantity - $returnProd;
-                                        if ($returnQty > $remainingQty) {
-                                            $isQtyOk = false;
-                                            break;
+                                //set and event in case we need to process some logic like checking again the quantity before saving
+                                $returnedListenerData = $melisGeneralService->sendEvent('meliscommerce_return_product_plugin_save_start', ['isQtyOk' => $isQtyOk, 'returnVariantData' => $returnVariantData, 'orderId' => $orderId]);
+
+                                $isQtyOk = $returnedListenerData['isQtyOk'];
+                                $returnVariantData = $returnedListenerData['returnVariantData'];
+                                /**
+                                 * Check if return quantity is not greater that the ordered quantity
+                                 */
+                                if ($isQtyOk) {
+                                    $postValues = $formData;
+
+                                    $orderMesasge = [];
+                                    $returnProductData = [];
+                                    $returnProductDetailsData = [];
+                                    //prepare return product data
+                                    foreach ($postValues as $key => $val) {
+                                        if (strpos($key, 'pret_') !== false) {
+                                            $returnProductData[$key] = $val;
+                                        }
+                                    }
+                                    //prepare return product details data
+                                    foreach ($postValues as $key => $val) {
+                                        if (strpos($key, 'pretd_') !== false) {
+                                            $returnProductDetailsData[$key] = $val;
+                                        }
+                                    }
+                                    //prepare order msg data
+                                    foreach ($postValues as $key => $val) {
+                                        if (strpos($key, 'omsg_') !== false) {
+                                            $orderMesasge[$key] = $val;
+                                        }
+                                    }
+
+                                    //start saving
+                                    //set order id
+                                    $returnProductData['pret_order_id'] = $orderId;
+                                    //include client id
+                                    $returnProductData['pret_client_id'] = $clientId;
+                                    /**
+                                     * Check if there some images in the return
+                                     */
+                                    if(!empty($returnProductImages)){
+                                        $retImages = $this->processImages($returnProductImages, $orderId, $errors);
+                                        $returnProductData = array_merge($returnProductData, $retImages);
+                                    }
+                                    /**
+                                     * End Images
+                                     */
+                                    if(empty($errors)) {
+                                        $pretId = $productReturn->saveOrderProductReturn($returnProductData);
+                                        if (!empty($pretId)) {
+                                            //pepare product details to include on message
+                                            if ($includePrdDetailsOnMsg)
+                                                $msgProdDetails = '<p>' . $trans->translate('tr_melis_commerce_orders_return_details') . '<br>';
+                                            //start save the details
+                                            foreach ($returnVariantData as $variantId => $quantity) {
+                                                //get variant info
+                                                $variant = $variantSvc->getVariantById($variantId, $langId)->getVariant();
+                                                //get product name
+                                                $productId = $variant->var_prd_id;
+                                                $productName = $prodSvc->getProductName($productId, $langId);
+
+                                                //add other return details
+                                                $returnProductDetailsData['pretd_sku'] = $variant->var_sku;
+                                                $returnProductDetailsData['pretd_pret_id'] = $pretId;
+                                                $returnProductDetailsData['pretd_quantity'] = $quantity;
+                                                $returnProductDetailsData['pretd_variant_id'] = $variantId;
+
+                                                //save product return details
+                                                $productReturn->saveOrderProductReturnDetails($returnProductDetailsData);
+
+                                                //set msg product details
+                                                if ($includePrdDetailsOnMsg)
+                                                    $msgProdDetails .= "<span>" . $productName . " / " . $productId . " / " . $variant->var_sku . ": " . $quantity . "</span><br>";
+                                            }
+                                            if ($includePrdDetailsOnMsg)
+                                                $msgProdDetails .= "</p>";
+
+                                            //save message
+                                            if ($includePrdDetailsOnMsg)
+                                                $orderMesasge['omsg_message'] .= htmlentities($msgProdDetails);
+
+                                            $orderMesasge['omsg_order_id'] = $orderId;
+                                            $orderMesasge['omsg_pret_id'] = $pretId;
+                                            $orderMesasge['omsg_client_id'] = $clientId;
+                                            $orderMesasge['omsg_client_person_id'] = $personid;
+                                            $orderMesasge['omsg_date_creation'] = date('Y-m-d H:i:s');
+                                            $orderMesasge['omsg_type'] = 'RETURN';
+                                            $orderSvc->saveOrderMessage($orderMesasge);
+
+                                            $success = 1;
                                         }
                                     }
                                 }
-                                //if quantity is not okay, break the loop
-                                if (!$isQtyOk)
-                                    break;
                             }
-                            /**
-                             * Check if return quantity is not greater that the ordered quantity
-                             */
-                            if ($isQtyOk) {
-                                $postValues = $formData;
-
-                                $orderMesasge = [];
-                                $returnProductData = [];
-                                $returnProductDetailsData = [];
-                                //prepare return product data
-                                foreach ($postValues as $key => $val) {
-                                    if (strpos($key, 'pret_') !== false) {
-                                        $returnProductData[$key] = $val;
-                                    }
-                                }
-                                //prepare return product details data
-                                foreach ($postValues as $key => $val) {
-                                    if (strpos($key, 'pretd_') !== false) {
-                                        $returnProductDetailsData[$key] = $val;
-                                    }
-                                }
-                                //prepare order msg data
-                                foreach ($postValues as $key => $val) {
-                                    if (strpos($key, 'omsg_') !== false) {
-                                        $orderMesasge[$key] = $val;
-                                    }
-                                }
-
-                                //start saving
-                                //set order id
-                                $returnProductData['pret_order_id'] = $orderId;
-                                //include client id
-                                $returnProductData['pret_client_id'] = $clientId;
-                                $pretId = $productReturn->saveOrderProductReturn($returnProductData);
-                                if (!empty($pretId)) {
-                                    //pepare product details to include on message
-                                    $msgProdDetails = '<p>' . $trans->translate('tr_melis_commerce_orders_return_details') . '<br>';
-                                    //start save the details
-                                    foreach ($returnVariantData as $variantId => $quantity) {
-                                        //get variant info
-                                        $variant = $variantSvc->getVariantById($variantId, $langId)->getVariant();
-                                        //get product name
-                                        $productId = $variant->var_prd_id;
-                                        $productName = $prodSvc->getProductName($productId, $langId);
-
-                                        //add other return details
-                                        $returnProductDetailsData['pretd_sku'] = $variant->var_sku;
-                                        $returnProductDetailsData['pretd_pret_id'] = $pretId;
-                                        $returnProductDetailsData['pretd_quantity'] = $quantity;
-                                        $returnProductDetailsData['pretd_variant_id'] = $variantId;
-
-                                        //save product return details
-                                        $productReturn->saveOrderProductReturnDetails($returnProductDetailsData);
-
-                                        //set msg product details
-                                        $msgProdDetails .= "<span>" . $productName . " / " . $productId . " / " . $variant->var_sku . ": " . $quantity . "</span><br>";
-                                    }
-                                    $msgProdDetails .= "</p>";
-
-                                    //save message
-                                    $orderMesasge['omsg_message'] .= htmlentities($msgProdDetails);
-                                    $orderMesasge['omsg_order_id'] = $orderId;
-                                    $orderMesasge['omsg_client_id'] = $clientId;
-                                    $orderMesasge['omsg_client_person_id'] = $personid;
-                                    $orderMesasge['omsg_date_creation'] = date('Y-m-d H:i:s');
-                                    $orderMesasge['omsg_type'] = 'RETURN';
-                                    $orderSvc->saveOrderMessage($orderMesasge);
-
-                                    $success = 1;
-                                }
-                            }
+                        }else{
+                            // Getting the form error messages
+                            $errors = $addMessageForm->getMessages();
                         }
                     }
                     //get already returned product list
@@ -305,6 +341,7 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
                                 $details['total'] = ($basket->obas_price_net * $basket->obas_quantity) - $basket->discount;
                                 $details['discount'] = $basket->discount;
                                 $details['quantity'] = $basket->obas_quantity;
+                                $details['basketId'] = $basket->obas_id;
 
                                 //count already returned product
                                 foreach ($returnProduct as $key => $rProduct) {
@@ -314,6 +351,10 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
                                 }
                                 $details['returnedProduct'] = $returnProductValue;
                                 $details['remainingQtyToReturn'] = (int)$basket->obas_quantity - $returnProductValue;
+                                //set and event if we need to add some logic or update the details or reprocess the return product details
+                                $returnedListenerData = $melisGeneralService->sendEvent('meliscommerce_return_product_plugin_item_details', ['details' => $details, 'orderId' => $orderId, 'returnProduct' => $returnProduct, 'basket' => $basket]);
+                                $details = $returnedListenerData['details'];
+
                                 $items[] = $details;
                             }
 
@@ -339,13 +380,67 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
         $viewVariables = array(
             'returnProducts' => $returnProducts,
             'addMessageForm' => $addMessageForm,
-            'success' => $success
+            'success' => $success,
+            'errors' => $errors
         );
         
         // return the variable array and let the view be created
         return $viewVariables;
     }
-    
+
+    /**
+     * @param $images
+     * @param $orderId
+     * @param $errors
+     * @return array
+     */
+    private function processImages($images, $orderId, &$errors)
+    {
+        $translator = $this->getServiceManager()->get('translator');
+        $imagesPath = [];
+        $filePath = '/media/commerce/return/'.$orderId.'/';
+        $dirName = $_SERVER['DOCUMENT_ROOT'].$filePath;
+        if(!file_exists($dirName))
+        {
+            mkdir($dirName, 0777, true);
+        }
+        if(file_exists($dirName))
+        {
+            chmod($dirName, 0777);
+            if(is_writable($dirName)) {
+                //process the saving of image
+                foreach($images as $key => $img) {
+                    if (!empty($img['name'])) {
+                        $fileName = basename($img["name"]);
+                        $targetFilePath = $dirName . $fileName;
+
+                        // Upload file to server
+                        if(move_uploaded_file($img["tmp_name"], $targetFilePath)){
+                            $imagesPath['pret_doc_'.($key+1)] = $filePath.$fileName;
+                        }else{
+                            $errors['image_error'] = [
+                                'label' => 'Error Upload Image',
+                                'uploadError' => $translator->translate('tr_melis_commerce_orders_return_image_error_invalid'),
+                            ];
+                            break;
+                        }
+                    }
+                }
+            }else{
+                $errors['image_error'] = [
+                    'label' => 'Not Writable',
+                    'notWritable' => sprintf($translator->translate('tr_melis_commerce_orders_retur_folder_not_writable'), $dirName),
+                ];
+            }
+        }else{
+            $errors['image_error'] = [
+                'label' => 'Directory dont exist',
+                'notFound' => sprintf($translator->translate('tr_melis_commerce_orders_retur_folder_dont_exist'), $dirName),
+            ];
+        }
+        return $imagesPath;
+    }
+
     /**
      * This function generates the form displayed when editing the parameters of the plugin
      */

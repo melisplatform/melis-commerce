@@ -21,6 +21,7 @@ return [
                         
                         'm_cc_var_qty' => [],
                         'm_cc_var_remove' => null,
+                        'm_cc_skip_add_variant' => false,
                         
                         // Paramaters of MelisCommerceCheckoutCouponPlugin() plugin
                         'checkout_cart_coupon_parameters' => [],

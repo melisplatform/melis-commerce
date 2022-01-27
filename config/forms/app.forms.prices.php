@@ -77,48 +77,6 @@ return [
                             ],
                             [
                                 'spec' => [
-                                    'name' => 'price_min_qty',
-                                    'type' => 'MelisText',
-                                    'options' => [
-                                        'label' => 'Minimum quantity',
-                                        'tooltip' => 'TODO',
-                                    ],
-                                    'attributes' => [
-                                        'id' => '',
-                                        'maxlength' => '10'
-                                    ],
-                                ],
-                            ],
-                            [
-                                'spec' => [
-                                    'name' => 'price_net_2',
-                                    'type' => 'MelisText',
-                                    'options' => [
-                                        'label' => 'Net price 2',
-                                        'tooltip' => 'TODO',
-                                    ],
-                                    'attributes' => [
-                                        'id' => '',
-                                        'maxlength' => '10'
-                                    ],
-                                ],
-                            ],
-                            [
-                                'spec' => [
-                                    'name' => 'price_min_qty_2',
-                                    'type' => 'MelisText',
-                                    'options' => [
-                                        'label' => 'Minimum quantity 2',
-                                        'tooltip' => 'TODO',
-                                    ],
-                                    'attributes' => [
-                                        'id' => '',
-                                        'maxlength' => '10'
-                                    ],
-                                ],
-                            ],
-                            [
-                                'spec' => [
                                     'name' => 'price_gross',
                                     'type' => 'MelisText',
                                     'options' => [

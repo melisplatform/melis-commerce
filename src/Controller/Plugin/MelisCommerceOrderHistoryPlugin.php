@@ -128,6 +128,8 @@ class MelisCommerceOrderHistoryPlugin extends MelisTemplatingPlugin
                     $details['price'] = $basket->obas_price_net;
                     $details['quantity'] = $basket->obas_quantity;                   
                     $details['attributes'] = $basket->obas_attributes;
+                    $details['basketId'] = $basket->obas_id;
+                    $details['variant_id'] = $basket->obas_variant_id;
 
                     $orderDetails['items'][] = $details;
                 }

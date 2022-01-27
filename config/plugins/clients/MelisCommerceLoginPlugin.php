@@ -21,6 +21,7 @@ return [
                         'm_password' => '',
                         'm_remember_me' => '',
                         'm_redirection_link_ok' => '',
+                        'm_required_login' => false,
                         
                         // flag true if a form is submitted
                         'm_login_is_submit' => false,

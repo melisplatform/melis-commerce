@@ -76,9 +76,11 @@ class MelisCommerceOrderMessagesPlugin extends MelisTemplatingPlugin
         
         $orderId        = !empty($this->pluginFrontConfig['m_om_order_id'])           ? $this->pluginFrontConfig['m_om_order_id'] : null;
         $message        = !empty($this->pluginFrontConfig['m_om_message'])            ? $this->pluginFrontConfig['m_om_message'] : '';
+        $returnId       = !empty($this->pluginFrontConfig['m_om_pret_id'])            ? $this->pluginFrontConfig['m_om_pret_id'] : null;
+        $msgType        = !empty($this->pluginFrontConfig['m_om_message_type'])       ? $this->pluginFrontConfig['m_om_message_type'] : 'MSG';
         $isSubmit       = !empty($this->pluginFrontConfig['m_om_message_is_submit'])  ? $this->pluginFrontConfig['m_om_message_is_submit'] : 0;
         $appConfigForm  = (!empty($this->pluginFrontConfig['forms']['meliscommerce_order_add_message_form'])) ? $this->pluginFrontConfig['forms']['meliscommerce_order_add_message_form'] : array();
-        
+
         $factory = new \Laminas\Form\Factory();
         $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
@@ -89,7 +91,7 @@ class MelisCommerceOrderMessagesPlugin extends MelisTemplatingPlugin
         {
             if ($ecomAuthSrv->hasIdentity()) 
             {
-                $addMessageForm->setData(array('m_om_order_id' => $orderId, 'm_om_message' => $message));
+                $addMessageForm->setData(array('m_om_order_id' => $orderId, 'm_om_message' => $message, 'm_om_pret_id' => $returnId));
                 
                 if ($addMessageForm->isValid()) 
                 {
@@ -98,6 +100,7 @@ class MelisCommerceOrderMessagesPlugin extends MelisTemplatingPlugin
                     $data = $addMessageForm->getData();
                     $messageData = array(
                         'omsg_order_id' => $data['m_om_order_id'],
+                        'omsg_pret_id' => $data['m_om_pret_id'],
                         'omsg_client_id' => $ecomAuthSrv->getClientId(),
                         'omsg_client_person_id' => $ecomAuthSrv->getPersonId(),
                         'omsg_message' => $data['m_om_message'],
@@ -126,7 +129,7 @@ class MelisCommerceOrderMessagesPlugin extends MelisTemplatingPlugin
         
         if(!empty($orderId))
         {
-            foreach($orderSvc->getOrderMessageByOrderId($orderId, 'MSG') as $message)
+            foreach($orderSvc->getOrderMessageByOrderId($orderId, $msgType) as $message)
             {
                 $tmp = array();
                 $tmp = $message->getArrayCopy();

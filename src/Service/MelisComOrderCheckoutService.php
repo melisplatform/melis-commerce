@@ -393,7 +393,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             if (!is_null($clientBasket)) {
 
                 $container = new Container('meliscommerce');
-                $clientCountryId = $container['checkout'][$this->siteId]['countryId'];
+                $clientCountryId = $container['checkout'][$this->siteId]['countryId']; // TODO if checkout didn't get thru process, this will not get value too
 
                 // Check Client Group
                 $clientGroupId = 1;
@@ -402,7 +402,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                     $client = $melisComClientSrv->getClientById($arrayParameters['clientId']);
                     $clientGroupId = $client->cli_group_id;
                 }
-                
+
                 foreach ($clientBasket As $val) {
 
                     $variantId = $val->getVariantId();
@@ -422,13 +422,15 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                             // if ($varianTotalAmount > 0)
                             // {
                                 $variantDetails[] = [
+                                    'basket_id' => $val->getId(), 
                                     'variant_id' => $variantId, 
                                     'unit_price' => $prdVarPrice['price'], 
                                     'quantity' => $variantQty,
                                     'discount' => $prdVarPrice['total_discount'],
                                     // 'sub_total_amount' => $prdVarPrice['sub_total_amount'],
                                     'total_price' => $prdVarPrice['total_amount'],
-                                    'price_details' => $prdVarPrice
+                                    'price_details' => $prdVarPrice,
+                                    'basket_details' => $val
                                 ];
                                 // $subTotalCost += $prdVarPrice['sub_total_amount'];
                                 $totalCost += $prdVarPrice['total_amount'];
@@ -478,7 +480,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
 
         if ($arrayParameters['results']['costs']['order']['total'] < 0)
             $arrayParameters['results']['costs']['order']['total'] = 0;
-    
+
         return $arrayParameters['results'];
     }
     
@@ -565,7 +567,6 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             unset($billingAdd['cadd_address_name']);
             
             foreach ($billingAdd As $bKey => $bVal) {
-                $newIndex = substr($bKey, 1);
                 $billingAdd['o'.substr($bKey, 1)] = $bVal;
                 unset($billingAdd[$bKey]);
             }
@@ -576,7 +577,6 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             $billingAdd['oadd_creation_date'] = date('Y-m-d H:i:s');
             $billingAddress[] = $billingAdd;
             
-            
             $deliveryAdd = $container['checkout'][$this->siteId]['addresses']['addresses']['delivery']['address'];
             
             unset($deliveryAdd['cadd_client_id']);
@@ -584,7 +584,6 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             unset($deliveryAdd['cadd_address_name']);
             
             foreach ($deliveryAdd As $bKey => $bVal) {
-                $newIndex = substr($bKey, 1);
                 $deliveryAdd['o'.substr($bKey, 1)] = $bVal;
                 unset($deliveryAdd[$bKey]);
             }
@@ -594,10 +593,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             
             $deliveryAdd['oadd_creation_date'] = date('Y-m-d H:i:s');
             $deliveryAddress[] = $deliveryAdd;
-            
-            $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
-            $clientMainPerson = $melisEcomClientPersonTable->getClientMainPersonByClientId($container['checkout'][$this->siteId]['clientId'])->current();
-            
+
             $contactId = $container['checkout'][$this->siteId]['contactId'];
             $ordDeliveryMethod = (!empty($container['checkout'][$this->siteId]['deliveryMethod']) ? $container['checkout'][$this->siteId]['deliveryMethod'] : 'delivery');
             
@@ -621,7 +617,6 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             $melisComPriceService = $this->getServiceManager()->get('MelisComPriceService');
             $melisComCategoryService = $this->getServiceManager()->get('MelisComCategoryService');
             $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
-            $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
             
             $clientBasket = $melisComBasketService->getBasket($container['checkout'][$this->siteId]['clientId']);
 
@@ -686,7 +681,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
 
                 // Sending service end event
                 $basketResults = $this->sendEvent('meliscommerce_service_checkout_step1_prepayment_order_basket_end', 
-                            ['order_basket' => $data, 'basket' => $val]);
+                            ['order_basket' => $data, 'basket' => $val, 'price' => $prdVarPrice]);
                 
                 array_push($basket, $basketResults['order_basket']);
             }
@@ -1196,7 +1191,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         
         $results = array(
             'success' => true,
-            'clientId' => $arrayParameters['orderId'],
+            'orderId' => $arrayParameters['orderId'],
             'costs' => array(
                 'shipment' => array(
                     'total' => 0,

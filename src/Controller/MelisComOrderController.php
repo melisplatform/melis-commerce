@@ -566,6 +566,7 @@ class MelisComOrderController extends MelisAbstractActionController
     public function renderOrdersContentTabsContentPaymentDetailsContentListAction()
     {        
         $payments = $this->layout()->payment;
+
         //order by most recent date
         usort($payments, function($a, $b) {
             return strtotime($b->opay_date_payment) - strtotime($a->opay_date_payment);

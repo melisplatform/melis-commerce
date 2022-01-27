@@ -12,14 +12,24 @@
     $ctr = 0;
     $txtType = array();
     $del = '<label class="float-right clearfix"><a data-text-identifier="%s"><i class="deleteTextInput fa fa-trash-o"></i></a><div class="clearfix"></div>';
+          
+    $prodTextArr = array();
+    $prodTextArr = $this->layout()->prodText;
+
+    //sort by ptxt_id
+    if($prodTextArr){
+        $ptxt_id = array_column($this->layout()->prodText, 'ptxt_id');
+        if($ptxt_id){
+            array_multisort($ptxt_id, SORT_ASC, $prodTextArr);
+        }        
+    }
     
-    foreach($this->layout()->prodText as $txt){
+    foreach($prodTextArr as $txt){
         if(isset($txt->ptxt_type)){
             $txtType[] = $txt->ptxt_type;
         }else{
             $txtType[] = $txt->ptt_id;
-        }
-        
+        }        
     }
     
     if(!empty($txtType)){
@@ -29,13 +39,14 @@
     $txtForms = array();
     foreach($txtType as $key => $value){
         $tmp['ptxt_type'] = $value;
-        $tmp['ptt_field_type'] = $this->layout()->prodText[$key]->ptt_field_type;
-        $tmp['ptt_name'] = $this->layout()->prodText[$key]->ptt_name;
-        $tmp['ptt_code'] = $this->layout()->prodText[$key]->ptt_code;
+        $tmp['ptt_field_type'] = $prodTextArr[$key]->ptt_field_type;
+        $tmp['ptt_name'] = $prodTextArr[$key]->ptt_name;
+        $tmp['ptt_code'] = $prodTextArr[$key]->ptt_code;
         $tmp['ptt_id'] = $value;
         $txtForms[] = $tmp;
     }
     
+
 foreach($this->lang as $lang) {
     
     $href = $this->layout()->productId . '_id_meliscommerce_products_page_content_tab_text_language_list_field_'.$lang->elang_locale;

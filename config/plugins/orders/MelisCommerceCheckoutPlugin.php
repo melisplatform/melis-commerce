@@ -26,8 +26,10 @@ return [
                         'm_checkout_page_link' => '',
                         // page link ro reroute user if not logged in
                         'm_login_page_link' => '',
+                        // if true this will allow plugin to redirect to a url
+                        'm_redirect_to_url' => true,
                         
-                        // Sub plugin paramaters
+                        // Sub plugin parameters
                         'checkout_cart_parameters' => [],
                         'checkout_addresses_parameters' => [],
                         'checkout_summary_parameters' => [],

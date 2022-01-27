@@ -117,7 +117,7 @@ class MelisComProductService extends MelisComGeneralService
 	public function getProductAssociation($productId)
     {
         // Retrieve cache version if front mode to avoid multiple calls
-        $cacheKey = 'product-' . $productId . '-getProductAssociation_' . $productId . '_' . $langId;
+        $cacheKey = 'product-' . $productId . '-getProductAssociation_' . $productId;
         $cacheConfig = 'commerce_big_services';
         $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 
@@ -1195,6 +1195,7 @@ class MelisComProductService extends MelisComGeneralService
 		$product = [
 			'prd_id' => $arrayParameters['productId'],
 			'prd_text' => (!empty($prdText)) ? $prdText : $product->prd_reference,
+			'prd_details' => (array)$product,
 			'prd_price_details' => $prdPriceDetails,
 			'prd_categories' => $prdCats,
 			'prd_docs_image' => $prdDocsImages
