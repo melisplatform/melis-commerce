@@ -765,14 +765,15 @@ class MelisComCategoryService extends MelisComGeneralService
             // Saving Category SEO
             
             // SEO Service
-            $categorySeo = $arrayParameters['categorySeo'];
-            $melisComSeoService = $this->getServiceManager()->get('MelisComSeoService');
-            $result = $melisComSeoService->saveSeoDataAction('category', $catId, $categorySeo);
-            
-            if ($result!=true)
-            {
-                return null;
+            if (!empty($arrayParameters['categorySeo'])) {
+                $categorySeo = $arrayParameters['categorySeo'];
+                $melisComSeoService = $this->getServiceManager()->get('MelisComSeoService');
+                $result = $melisComSeoService->saveSeoDataAction('category', $catId, $categorySeo);
+                
+                if ($result != true)
+                    return null;
             }
+            
 
             $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
             $commerceCacheService->deleteCache('category', $catId, $arrayParameters['category']['cat_father_cat_id'] ?? null);
