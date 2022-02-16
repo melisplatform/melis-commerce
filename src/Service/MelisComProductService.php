@@ -1161,9 +1161,9 @@ class MelisComProductService extends MelisComGeneralService
 		$prdVarPrice = $melisComPriceService->getItemPrice($arrayParameters['productId'], $arrayParameters['countryId'], $arrayParameters['groupId'], 'product');
 
 		$prdPriceDetails = [
-			'prd_currency_symbol' => (!empty($prdVarPrice['price_currency']['symbol'])) ?? null,
-			'prd_currency_code' => (!empty($prdVarPrice['price_currency']['code'])) ?? null,
-			'prd_price_net' => (!empty($prdVarPrice['price'])) ?? null,
+			'prd_currency_symbol' => $prdVarPrice['price_currency']['symbol'] ?? null,
+			'prd_currency_code' => $prdVarPrice['price_currency']['code'] ?? null,
+			'prd_price_net' => $prdVarPrice['price'] ?? null,
 		];
 
 		$productTbl = $this->getServiceManager()->get('MelisEcomProductTable');

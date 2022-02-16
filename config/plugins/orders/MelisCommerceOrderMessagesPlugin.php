@@ -17,8 +17,12 @@ return [
                         'id' => 'orderMessages',
                         // Order Id
                         'm_om_order_id' => null,
+                        //Return ID
+                        'm_om_pret_id' => null,
                         // order message
                         'm_om_message' => '',
+                        //order message type
+                        'm_om_message_type' => 'MSG',
                         // flag true if form is submitted
                         'm_om_message_is_submit' => 0,
                         
