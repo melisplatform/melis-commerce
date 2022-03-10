@@ -292,7 +292,7 @@ return [
                                     ],
                                     'attributes' => [
                                         'id' => 'cper_email',
-                                        'required' => 'required',
+                                        // 'required' => 'required',
                                     ]
                                 ]
                             ],
@@ -310,7 +310,7 @@ return [
                                         'id' => 'cper_password',
                                         'Type' => 'password',
                                         'autocomplete' => 'off',
-                                        'required' => 'required',
+                                        // 'required' => 'required',
                                     ]
                                 ]
                             ],
@@ -328,7 +328,7 @@ return [
                                         'id' => 'cper_confirm_password',
                                         'Type' => 'password',
                                         'autocomplete' => 'off',
-                                        'required' => 'required',
+                                        // 'required' => 'required',
                                     ]
                                 ]
                             ],
@@ -480,7 +480,7 @@ return [
                             ],
                             'cper_email' => [
                                 'name'     => 'cper_email',
-                                'required' => true,
+                                'required' => false,
                                 'validators' => [
                                     [
                                         'name' => 'EmailAddress',
@@ -518,7 +518,7 @@ return [
                             ],
                             'cper_password' => [
                                 'name'     => 'cper_password',
-                                'required' => true,
+                                'required' => false,
                                 'validators' => [
                                     [
                                         'name' => '\MelisCommerce\Validator\MelisPasswordValidator',
@@ -557,7 +557,7 @@ return [
                             ],
                             'cper_confirm_password' => [
                                 'name'     => 'cper_confirm_password',
-                                'required' => true,
+                                'required' => false,
                                 'validators' => [
                                     [
                                         'name' => 'Identical',
