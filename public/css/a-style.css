@@ -744,7 +744,7 @@ textarea {
 }
 #id_meliscommerce_categories_category.fix-cat .panel-heading {
     position: fixed;
-	top: 38px;
+	top: 37px;
     z-index: 105;
 }
 
