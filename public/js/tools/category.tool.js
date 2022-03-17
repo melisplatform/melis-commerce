@@ -8,10 +8,6 @@ if ( melisCore.screenSize >= 768 ) {
 
 			if ( stickyCatNav.length ) {
 				var position = stickyCatNav.position();
-					console.log("Log Output ~ file: category.tool.js ~ line 19 ~ $ ~ position.top < $(window).scrollTop(): ", position.top < $(window).scrollTop() );
-					console.log("Log Output ~ file: category.tool.js ~ line 15 ~ $ ~ position.top: ", position.top);
-					console.log("Log Output ~ file: category.tool.js ~ line 18 ~ $ ~ $(window).scrollTop(): ", $(window).scrollTop());
-					console.log("Log Output ~ file: category.tool.js ~ line 18 ~ $ ~ $tabSeo.length !== 1: ", $tabSeo.length !== 1);
 					// < $(window).scrollTop()
 					if ( position.top < $(window).scrollTop() && $tabSeo.length !== 1 ) {
 						$("#id_meliscommerce_categories_category").addClass("fix-cat");
