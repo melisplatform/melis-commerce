@@ -1,7 +1,7 @@
 <?php 
     $id = '';
     if (!empty($this->zoneconfig['conf']['id'])){
-        $id = 'id="'.$this->zoneconfig['conf']['id'] .'"';
+        $id = 'id="'.$this->clientId.'_'.$this->zoneconfig['conf']['id'] .'"';
     }
     $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
 ?>
