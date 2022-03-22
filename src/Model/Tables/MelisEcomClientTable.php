@@ -34,7 +34,7 @@ class MelisEcomClientTable extends MelisEcomGenericTable
     }
 
     public function getClientList($countryId = null, $dateCreationMin = null, $dateCreationMax = null, 
-	                              $onlyValid = null, $start = 0, $limit = null, $order = array(), $search = null)
+                                $onlyValid = null, $start = 0, $limit = null, $order = array(), $search = null)
     {
         $select = $this->tableGateway->getSql()->select();
         $select->quantifier('DISTINCT');
@@ -212,7 +212,7 @@ class MelisEcomClientTable extends MelisEcomGenericTable
         
         if (!is_null($couponId))
         {
-             $select->where('melis_ecom_coupon_client.ccli_coupon_id ='.$couponId);
+            $select->where('melis_ecom_coupon_client.ccli_coupon_id ='.$couponId);
         }
         
         if (!is_null($onlyValid)&&in_array($onlyValid, array('0','1'))){
