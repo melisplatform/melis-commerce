@@ -45,19 +45,19 @@ class MelisComClientController extends MelisAbstractActionController
         
         $success = 0;
         $textTitle = $translator->translate('tr_meliscommerce_clients_get_contact_name');
-        $textMessage = $translator->translate('tr_meliscore_error_message');;
+        $textMessage = $translator->translate('tr_meliscore_error_message');
         $errors = array();
         
         $clientContactName = '';
         
         $request = $this->getRequest();
         
-        if($request->isPost())
-        {
+        if($request->isPost()) {
+
             $postValues = $request->getPost()->toArray();
             
-            if (!empty($postValues['clientId']))
-            {
+            if (!empty($postValues['clientId'])) {
+
                 $clientId = $postValues['clientId'];
                 // Getting Client Data from Client Service
                 $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
@@ -65,27 +65,29 @@ class MelisComClientController extends MelisAbstractActionController
                 // Getting data from Client object
                 $clientPerson = $clientData->getPersons();
                 
-                if (!empty($clientPerson))
-                {
-                    foreach ($clientPerson As $row)
-                    {
+                if (!empty($clientPerson)) {
+                    foreach ($clientPerson As $row) {
                         // First Person would use as default Name of the client
                         $clientContactName = $row->cper_firstname.' '.$row->cper_name;
                         break;
                     }
-                    $success = 1;
+                    
+                } else {
+                    $clientContactName = $clientId;
                 }
+
+                $success = 1;
             }
         }
         
-        $response = array(
+        $response = [
             'success' => $success,
             'textTitle' => $textTitle,
             'textMessage' => $textMessage,
             'clientId' => $textTitle,
             'clientContactName' => $clientContactName,
             'errors' => $errors,
-        );
+        ];
         
         return new JsonModel($response);
     }
@@ -102,11 +104,9 @@ class MelisComClientController extends MelisAbstractActionController
         $clientId = $this->params()->fromQuery('clientId', '');
         
         $translator = $this->getServiceManager()->get('translator');
-        
         $title = $translator->translate('tr_meliscommerce_clients_add_client');
         
-        if ($clientId)
-        {
+        if ($clientId) {
             $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
             $clientData = $melisComClientService->getClientByIdAndClientPerson($clientId);
             
@@ -114,27 +114,30 @@ class MelisComClientController extends MelisAbstractActionController
             
             $mainContactName = '';
             
-            if (!empty($clientPerson))
-            {
-                foreach ($clientPerson As $row)
-                {
+            if (!empty($clientPerson)) {
+                foreach ($clientPerson As $row) {
                     $mainContactName = $row->cper_firstname.' '.$row->cper_name;
                     break;
                 }
-                $success = 1;
                 
                 $clientCompany = $clientData->getCompany();
-                $comapanyName = '';
+                $comName = '';
                 
                 if (!empty($clientCompany))
-                {
                     if (!empty($clientCompany[0]->ccomp_name))
-                    {
-                        $comapanyName = ' ('.$clientCompany[0]->ccomp_name.')';
-                    }
-                }
+                        $comName = ' ('.$clientCompany[0]->ccomp_name.')';
                 
-                $title = $translator->translate('tr_meliscommerce_clients_common_label_client').' / '.$mainContactName.$comapanyName;
+                $title = $translator->translate('tr_meliscommerce_clients_common_label_client').' / '.$mainContactName.$comName;
+            } else {
+
+                $clientCompany = $clientData->getCompany();
+                $comName = '';
+                
+                if (!empty($clientCompany))
+                    if (!empty($clientCompany[0]->ccomp_name))
+                        $comName = ' ('.$clientCompany[0]->ccomp_name.')';
+
+                $title = $translator->translate('tr_meliscommerce_clients_common_label_client').' / '.$clientId.$comName;
             }
         }
         

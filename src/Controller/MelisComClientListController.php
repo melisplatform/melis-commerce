@@ -283,7 +283,6 @@ class MelisComClientListController extends MelisAbstractActionController
         $totalFiltered = 0;
         $draw = 0;
         $tableData = array();
-        
         if($this->getRequest()->isPost())
         {
             // Get the locale used from meliscore session
@@ -317,73 +316,52 @@ class MelisComClientListController extends MelisAbstractActionController
 
             $groupId = $this->getRequest()->getPost('cgroup_id', null);
             
-           $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
-            $dataCount = $melisEcomClientPersonTable->getTotalData();
+            $melisEcomClientTable = $this->getServiceManager()->get('MelisEcomClientTable');
         
-            $getData = $melisEcomClientPersonTable->getClientList(array(
-                'where' => array(
+            $getData = $melisEcomClientTable->clientList([
+                'where' => [
                     'key' => 'cli_id',
                     'value' => $search,
-                ),
-                'order' => array(
+                ],
+                'order' => [
                     'key' => $selCol,
                     'dir' => $sortOrder,
-                ),
+                ],
                 'start' => $start,
                 'limit' => $length,
                 'columns' => $melisTool->getSearchableColumns(),
-                'date_filter' => array(),
                 'groupId' => $groupId
-            ));
+            ]);
             
-//             if(!empty($search)){
-//                 $getData['where'] = array(
-//                     'key' => 'cli_id',
-//                     'value' => $search,
-//                 );
-//             }
-        
-            // store fetched data for data modification (if needed)
             $contactData = $getData->toArray();
-             
-            $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
 
-            foreach ($contactData As $val)
-            {
-                $contactStatus = '<i class="fa fa-circle text-danger"></i>';
+            foreach ($contactData As $val) {
                 // Generating contact status html form
+                $contactStatus = '<i class="fa fa-circle text-danger"></i>';
                 if ($val['cli_status'])
-                {
                     $contactStatus = '<i class="fa fa-circle text-success"></i>';
-                }
                 
-                // Getting the Contact number of Order(s)
-                $contactOrderData = $melisEcomOrderTable->getEntryByField('ord_client_person_id', $val['cper_id']);
-                $contactOrder = $contactOrderData->toArray();
-                $contactNumOrders = count($contactOrder);
-                $lastOrder = !empty($val['cli_last_order'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_last_order'])), 0, 10) : '';
-                $clientCreated = !empty($val['cli_date_creation'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_date_creation'])), 0, 10) : '';
+                $clientCreated = !empty($val['cli_date_creation']) ? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_date_creation'])), 0, 10) : '';
                 
-                $rowdata = array(
+                $tableData[] = [
                     'DT_RowId' => $val['cli_id'],
                     'cli_id' => $val['cli_id'],
-                    'cgroup_name' => $val['cgroup_name'],
+                    'cgroup_name' => $val['client_group'],
                     'cli_status' => $contactStatus,
-                    'cli_company' => $val['cli_company'],
+                    'cli_company' => $val['client_company'],
                     'cli_date_creation' => $clientCreated,
-                    'cli_person' => $val['cli_person'],
-                    'cper_email' => $melisTool->sanitize($val['cper_email']),
-                    'cli_num_orders' => $contactNumOrders,
-                    'cli_last_order' => $lastOrder,
-                );
-                
-                array_push($tableData, $rowdata);
+                    'cli_person' => $val['contact_person'],
+                    'cli_num_orders' => $val['total_num_order'],
+                    'cli_last_order' => $val['date_last_order'],
+                ];
+
+                $dataCount = $val['total_records'];
             }
         }
         return new JsonModel(array(
             'draw' => (int) $draw,
             'recordsTotal' => $dataCount,
-            'recordsFiltered' => $melisEcomClientPersonTable->getTotalFiltered(),
+            'recordsFiltered' => $dataCount,
             'data' => $tableData,
         ));
     }
