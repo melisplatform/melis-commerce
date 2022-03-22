@@ -346,13 +346,13 @@ class MelisComClientListController extends MelisAbstractActionController
                 $tableData[] = [
                     'DT_RowId' => $val['cli_id'],
                     'cli_id' => $val['cli_id'],
-                    'cgroup_name' => $val['client_group'],
+                    'client_group' => $val['client_group'],
                     'cli_status' => $contactStatus,
-                    'cli_company' => $val['client_company'],
+                    'client_company' => $val['client_company'],
                     'cli_date_creation' => $clientCreated,
-                    'cli_person' => $val['contact_person'],
-                    'cli_num_orders' => $val['total_num_order'],
-                    'cli_last_order' => $val['date_last_order'],
+                    'contact_person' => $val['contact_person'],
+                    'total_num_order' => $val['total_num_order'],
+                    'date_last_order' => $val['date_last_order'],
                 ];
 
                 $dataCount = $val['total_records'];

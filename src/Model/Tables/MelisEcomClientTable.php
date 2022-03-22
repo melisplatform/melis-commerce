@@ -162,13 +162,11 @@ class MelisEcomClientTable extends MelisEcomGenericTable
         $orderDir = !empty($options['order']['dir']) ? $options['order']['dir'] : 'ASC';
         $select->order($order . ' ' . $orderDir);
 
-        if (!isset($options['totalCount'])) {
-            // Start and Limit/Offset
-            $start = (int) $options['start'];
-            $limit = (int) $options['limit'];
-            $select->offset($start);
-            $select->limit($limit);
-        }
+        // Start and Limit/Offset
+        $start = (int) $options['start'];
+        $limit = (int) $options['limit'];
+        $select->offset($start);
+        $select->limit($limit);
 
         return $this->getTableGateway()->selectWith($select);
     }
