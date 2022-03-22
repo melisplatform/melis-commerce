@@ -9,6 +9,11 @@
 
 namespace MelisCommerce\Model\Tables;
 
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Predicate\Like;
+use Laminas\Db\Sql\Predicate\Operator;
+use Laminas\Db\Sql\Predicate\PredicateSet;
+use Laminas\Db\Sql\Where;
 use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomClientTable extends MelisEcomGenericTable 
@@ -86,6 +91,86 @@ class MelisEcomClientTable extends MelisEcomGenericTable
 
         $resultData = $this->tableGateway->selectWith($select);
         return $resultData;
+    }
+
+    public function clientList(array $options, $fixedCriteria = null)
+    {
+        $select = $this->getTableGateway()->getSql()->select();
+    
+        $totalRecords = new Expression('(SELECT COUNT(cli_id) As count FROM melis_ecom_client)');
+        $clientGroup = new Expression('(SELECT cgroup_name FROM melis_ecom_client_groups WHERE cgroup_id = melis_ecom_client.cli_group_id)');
+        $contactName = new Expression('(SELECT CONCAT(COALESCE(cper_firstname)," ",COALESCE(cper_middle_name)," ",COALESCE("cper_name")) FROM melis_ecom_client_person WHERE cper_client_id = melis_ecom_client.cli_id AND cper_is_main_person = 1)');
+        $clientCompany = new Expression('(SELECT ccomp_name FROM melis_ecom_client_company WHERE ccomp_client_id = melis_ecom_client.cli_id)');
+        $dateLastOrder = new Expression('(SELECT ord_date_creation FROM melis_ecom_order WHERE ord_client_id = melis_ecom_client.cli_id ORDER BY ord_date_creation DESC LIMIT 1)');
+        $totalNumberOrder = new Expression('(SELECT COUNT(ord_id) FROM melis_ecom_order WHERE ord_client_id = melis_ecom_client.cli_id ORDER BY ord_date_creation DESC LIMIT 1)');
+        $select->columns(['*', 'total_records' => $totalRecords, 'client_group' => $clientGroup, 'contact_person' => $contactName, 'client_company' => $clientCompany, 'total_num_order' => $totalNumberOrder, 'date_last_order' => $dateLastOrder]);
+    
+        // Options
+        $whereValue = $options['where']['value'] ?? '';
+
+        // Search statement
+        if(!empty($whereValue)) {
+            $columns = $options['columns'];
+
+            // Table columns prefix
+            $tableColPrefix = [];
+            foreach ($columns As $col) {
+
+                if (!is_bool(strpos($col, 'cli'))) {
+                    $tableColPrefix['cli'][] = $col;
+                }
+                elseif (!is_bool(strpos($col, 'cper'))) {
+                    $tableColPrefix['cper'][] = $col;
+                }
+                elseif (!is_bool(strpos($col, 'ccomp'))) {
+                    $tableColPrefix['ccomp'][] = $col;
+                }
+            }
+
+            $filters = [];
+            foreach ($tableColPrefix As $prefix => $cols) {
+                $likes = null;
+                foreach($cols as $colKeys)
+                    $likes[] = $colKeys . ' LIKE \'%' . $whereValue . '%\'';
+
+                switch ($prefix) {
+                    case 'cli':
+                            $filters[] = '(' . implode(' OR ', $likes) .')';
+                        break;
+                    case 'cper':
+                        if (empty($like))
+                            $filters[] = '(SELECT cper_client_id FROM melis_ecom_client_person WHERE (' . implode(' OR ', $likes) . ') and cper_client_id = melis_ecom_client.cli_id)';
+                        break;
+                    case 'ccomp':
+                        if (empty($like))
+                            $filters[] = '(SELECT ccomp_client_id FROM melis_ecom_client_company WHERE (' . implode(' OR ', $likes) . ') and ccomp_client_id = melis_ecom_client.cli_id)';
+                        break;
+                }
+            }
+
+            if (!empty($filters))
+                $select->where('(' . implode(' OR ', $filters) .')');
+        }
+
+        // Client group
+        $groupId = $options['groupId'];
+        if (!empty($groupId)) 
+            $select->where(['cli_group_id' => $groupId]);
+
+        // Order
+        $order = !empty($options['order']['key']) ? $options['order']['key'] : '';
+        $orderDir = !empty($options['order']['dir']) ? $options['order']['dir'] : 'ASC';
+        $select->order($order . ' ' . $orderDir);
+
+        if (!isset($options['totalCount'])) {
+            // Start and Limit/Offset
+            $start = (int) $options['start'];
+            $limit = (int) $options['limit'];
+            $select->offset($start);
+            $select->limit($limit);
+        }
+
+        return $this->getTableGateway()->selectWith($select);
     }
     
     public function getClientByEmailAndPassword($personEmail, $personPassword)
