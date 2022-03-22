@@ -1233,6 +1233,10 @@ div#clients_group_list select {
 	width: auto !important;
 }
 
+div#clients_status_list select {
+	width: auto !important;
+}
+
 /** -------------------------------------
 *       A-STYLE
 *       a-style.css

@@ -222,7 +222,30 @@ class MelisComClientListController extends MelisAbstractActionController
         $view->options = $options;
         return $view;
     }
-    
+
+    /**
+     * @return ViewModel
+     */
+    public function renderClientListTableStatusFilterAction()
+    {
+        $translator = $this->getServiceManager()->get('translator');
+
+        $groups = [
+            '1' => $translator->translate('tr_meliscommerce_client_status_active'),
+            '0' => $translator->translate('tr_meliscommerce_client_status_inactive'),
+        ];
+
+        $options = '<option  value="">'.$translator->translate('tr_meliscommerce_clients_common_label_all').'</option>';
+        foreach($groups as $val => $name){
+            $selected = ($val == 1) ? 'selected' : '';
+            $options .= '<option '.$selected.' value="'.$val.'">'.$name.'</option>';
+        }
+
+        $view =  new ViewModel();
+        $view->options = $options;
+        return $view;
+    }
+
     /**
      * Render Client List view button for client info
      * 
@@ -316,6 +339,7 @@ class MelisComClientListController extends MelisAbstractActionController
             $search = $search['value'];
 
             $groupId = $this->getRequest()->getPost('cgroup_id', null);
+            $clientStatus = $this->getRequest()->getPost('cli_status', null);
             
            $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
             $dataCount = $melisEcomClientPersonTable->getTotalData();
@@ -333,7 +357,8 @@ class MelisComClientListController extends MelisAbstractActionController
                 'limit' => $length,
                 'columns' => $melisTool->getSearchableColumns(),
                 'date_filter' => array(),
-                'groupId' => $groupId
+                'groupId' => $groupId,
+                'clientStatus' => $clientStatus
             ));
             
 //             if(!empty($search)){

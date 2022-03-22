@@ -214,6 +214,8 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
         $limit = (int) $options['limit'] === -1 ? $this->getTotalData() : (int) $options['limit'];
 
         $groupId = $options['groupId'];
+
+        $clientStatus = $options['clientStatus'];
     
         $columns = $options['columns'];
          
@@ -238,6 +240,9 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
 
         if(!is_null($groupId) && $groupId != "")
             $select->where->equalTo('cli_group_id', $groupId);
+
+        if(!is_null($clientStatus) && $clientStatus != "")
+            $select->where->equalTo('cli_status', $clientStatus);
 
         // this is used when searching
         if(!empty($where)) {
