@@ -66,27 +66,27 @@ return [
                                 'css' => ['width' => '5%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],
-                            'cgroup_name' => [
+                            'client_group' => [
                                 'text' => 'tr_meliscommerce_clients_group_common_group',
                                 'css' => ['width' => '10%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],
-                            'cli_person' => [
+                            'contact_person' => [
                                 'text' => 'tr_meliscommerce_clients_table_Client_person',
                                 'css' => ['width' => '20%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],
-                            'cli_company' => [
+                            'client_company' => [
                                 'text' => 'tr_meliscommerce_clients_table_Client_company',
                                 'css' => ['width' => '20%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],
-                            'cli_num_orders' => [
+                            'total_num_order' => [
                                 'text' => 'tr_meliscommerce_clients_table_Client_num_orders',
                                 'css' => ['width' => '10%', 'padding-right' => '0'],
-                                'sortable' => false,
+                                'sortable' => true,
                             ],
-                            'cli_last_order' => [
+                            'date_last_order' => [
                                 'text' => 'tr_meliscommerce_clients_table_Client_last_order',
                                 'css' => ['width' => '15%', 'padding-right' => '0'],
                                 'sortable' => true,

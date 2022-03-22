@@ -34,7 +34,7 @@ class MelisEcomClientTable extends MelisEcomGenericTable
     }
 
     public function getClientList($countryId = null, $dateCreationMin = null, $dateCreationMax = null, 
-	                              $onlyValid = null, $start = 0, $limit = null, $order = array(), $search = null)
+                                $onlyValid = null, $start = 0, $limit = null, $order = array(), $search = null)
     {
         $select = $this->tableGateway->getSql()->select();
         $select->quantifier('DISTINCT');
@@ -162,13 +162,11 @@ class MelisEcomClientTable extends MelisEcomGenericTable
         $orderDir = !empty($options['order']['dir']) ? $options['order']['dir'] : 'ASC';
         $select->order($order . ' ' . $orderDir);
 
-        if (!isset($options['totalCount'])) {
-            // Start and Limit/Offset
-            $start = (int) $options['start'];
-            $limit = (int) $options['limit'];
-            $select->offset($start);
-            $select->limit($limit);
-        }
+        // Start and Limit/Offset
+        $start = (int) $options['start'];
+        $limit = (int) $options['limit'];
+        $select->offset($start);
+        $select->limit($limit);
 
         return $this->getTableGateway()->selectWith($select);
     }
@@ -214,7 +212,7 @@ class MelisEcomClientTable extends MelisEcomGenericTable
         
         if (!is_null($couponId))
         {
-             $select->where('melis_ecom_coupon_client.ccli_coupon_id ='.$couponId);
+            $select->where('melis_ecom_coupon_client.ccli_coupon_id ='.$couponId);
         }
         
         if (!is_null($onlyValid)&&in_array($onlyValid, array('0','1'))){
