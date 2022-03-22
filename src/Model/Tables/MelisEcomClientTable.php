@@ -99,7 +99,7 @@ class MelisEcomClientTable extends MelisEcomGenericTable
     
         $totalRecords = new Expression('(SELECT COUNT(cli_id) As count FROM melis_ecom_client)');
         $clientGroup = new Expression('(SELECT cgroup_name FROM melis_ecom_client_groups WHERE cgroup_id = melis_ecom_client.cli_group_id)');
-        $contactName = new Expression('(SELECT CONCAT(COALESCE(cper_firstname)," ",COALESCE(cper_middle_name)," ",COALESCE("cper_name")) FROM melis_ecom_client_person WHERE cper_client_id = melis_ecom_client.cli_id AND cper_is_main_person = 1)');
+        $contactName = new Expression('(SELECT CONCAT(COALESCE(cper_firstname)," ",COALESCE(cper_middle_name)," ",COALESCE(cper_name)) FROM melis_ecom_client_person WHERE cper_client_id = melis_ecom_client.cli_id AND cper_is_main_person = 1)');
         $clientCompany = new Expression('(SELECT ccomp_name FROM melis_ecom_client_company WHERE ccomp_client_id = melis_ecom_client.cli_id)');
         $dateLastOrder = new Expression('(SELECT ord_date_creation FROM melis_ecom_order WHERE ord_client_id = melis_ecom_client.cli_id ORDER BY ord_date_creation DESC LIMIT 1)');
         $totalNumberOrder = new Expression('(SELECT COUNT(ord_id) FROM melis_ecom_order WHERE ord_client_id = melis_ecom_client.cli_id ORDER BY ord_date_creation DESC LIMIT 1)');
