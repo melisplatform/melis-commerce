@@ -106,7 +106,8 @@ class MelisComPriceService extends MelisComGeneralService
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $results;
 
-        $arrayParameters = $this->sendEvent('meliscommerce_service_get_item_price_end', $arrayParameters);
+        if (!empty($price))
+            $arrayParameters = $this->sendEvent('meliscommerce_service_get_item_price_end', $arrayParameters);
 
         return $arrayParameters['results'];
     }
