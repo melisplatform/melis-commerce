@@ -93,17 +93,21 @@ class MelisEcomClientTable extends MelisEcomGenericTable
         return $resultData;
     }
 
-    public function clientList(array $options, $fixedCriteria = null)
+    public function clientList(array $options)
     {
         $select = $this->getTableGateway()->getSql()->select();
     
-        $totalRecords = new Expression('(SELECT COUNT(cli_id) As count FROM melis_ecom_client)');
-        $clientGroup = new Expression('(SELECT cgroup_name FROM melis_ecom_client_groups WHERE cgroup_id = melis_ecom_client.cli_group_id)');
-        $contactName = new Expression('(SELECT CONCAT(COALESCE(cper_firstname)," ",COALESCE(cper_middle_name)," ",COALESCE(cper_name)) FROM melis_ecom_client_person WHERE cper_client_id = melis_ecom_client.cli_id AND cper_is_main_person = 1)');
-        $clientCompany = new Expression('(SELECT ccomp_name FROM melis_ecom_client_company WHERE ccomp_client_id = melis_ecom_client.cli_id)');
-        $dateLastOrder = new Expression('(SELECT ord_date_creation FROM melis_ecom_order WHERE ord_client_id = melis_ecom_client.cli_id ORDER BY ord_date_creation DESC LIMIT 1)');
-        $totalNumberOrder = new Expression('(SELECT COUNT(ord_id) FROM melis_ecom_order WHERE ord_client_id = melis_ecom_client.cli_id ORDER BY ord_date_creation DESC LIMIT 1)');
-        $select->columns(['*', 'total_records' => $totalRecords, 'client_group' => $clientGroup, 'contact_person' => $contactName, 'client_company' => $clientCompany, 'total_num_order' => $totalNumberOrder, 'date_last_order' => $dateLastOrder]);
+        if (isset($options['count'])) {
+            $totalRecords = new Expression('COUNT(cli_id)');
+            $select->columns(['total_records' => $totalRecords]);
+        } else {
+            $clientGroup = new Expression('(SELECT cgroup_name FROM melis_ecom_client_groups WHERE cgroup_id = melis_ecom_client.cli_group_id)');
+            $contactName = new Expression('(SELECT CONCAT(COALESCE(cper_firstname)," ",COALESCE(cper_middle_name)," ",COALESCE(cper_name)) FROM melis_ecom_client_person WHERE cper_client_id = melis_ecom_client.cli_id ORDER BY cper_is_main_person DESC LIMIT 1)');
+            $clientCompany = new Expression('(SELECT ccomp_name FROM melis_ecom_client_company WHERE ccomp_client_id = melis_ecom_client.cli_id)');
+            $dateLastOrder = new Expression('(SELECT ord_date_creation FROM melis_ecom_order WHERE ord_client_id = melis_ecom_client.cli_id ORDER BY ord_date_creation DESC LIMIT 1)');
+            $totalNumberOrder = new Expression('(SELECT COUNT(ord_id) FROM melis_ecom_order WHERE ord_client_id = melis_ecom_client.cli_id ORDER BY ord_date_creation DESC LIMIT 1)');
+            $select->columns(['*', 'client_group' => $clientGroup, 'contact_person' => $contactName, 'client_company' => $clientCompany, 'total_num_order' => $totalNumberOrder, 'date_last_order' => $dateLastOrder]);
+        }
     
         // Options
         $whereValue = $options['where']['value'] ?? '';
@@ -152,21 +156,25 @@ class MelisEcomClientTable extends MelisEcomGenericTable
                 $select->where('(' . implode(' OR ', $filters) .')');
         }
 
+        $select->where('(SELECT cper_id FROM melis_ecom_client_person WHERE cper_client_id = melis_ecom_client.cli_id LIMIT 1) IS NOT NULL');
+
         // Client group
         $groupId = $options['groupId'];
         if (!empty($groupId)) 
             $select->where(['cli_group_id' => $groupId]);
 
-        // Order
-        $order = !empty($options['order']['key']) ? $options['order']['key'] : '';
-        $orderDir = !empty($options['order']['dir']) ? $options['order']['dir'] : 'ASC';
-        $select->order($order . ' ' . $orderDir);
+        if (!isset($options['count'])) {
+            // Order
+            $order = !empty($options['order']['key']) ? $options['order']['key'] : '';
+            $orderDir = !empty($options['order']['dir']) ? $options['order']['dir'] : 'ASC';
+            $select->order($order . ' ' . $orderDir);
 
-        // Start and Limit/Offset
-        $start = (int) $options['start'];
-        $limit = (int) $options['limit'];
-        $select->offset($start);
-        $select->limit($limit);
+            // Start and Limit/Offset
+            $start = (int) $options['start'];
+            $limit = (int) $options['limit'];
+            $select->offset($start);
+            $select->limit($limit);
+        }
 
         return $this->getTableGateway()->selectWith($select);
     }
