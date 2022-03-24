@@ -317,8 +317,7 @@ class MelisComClientListController extends MelisAbstractActionController
             $groupId = $this->getRequest()->getPost('cgroup_id', null);
             
             $melisEcomClientTable = $this->getServiceManager()->get('MelisEcomClientTable');
-        
-            $getData = $melisEcomClientTable->clientList([
+            $criteria = [
                 'where' => [
                     'key' => 'cli_id',
                     'value' => $search,
@@ -331,10 +330,10 @@ class MelisComClientListController extends MelisAbstractActionController
                 'limit' => $length,
                 'columns' => $melisTool->getSearchableColumns(),
                 'groupId' => $groupId
-            ]);
+            ];
             
+            $getData = $melisEcomClientTable->clientList($criteria);
             $contactData = $getData->toArray();
-
             foreach ($contactData As $val) {
                 // Generating contact status html form
                 $contactStatus = '<i class="fa fa-circle text-danger"></i>';
@@ -354,10 +353,11 @@ class MelisComClientListController extends MelisAbstractActionController
                     'total_num_order' => $val['total_num_order'],
                     'date_last_order' => $val['date_last_order'],
                 ];
-
-                $dataCount = $val['total_records'];
             }
+
+            $dataCount = $melisEcomClientTable->clientList(array_merge($criteria, ['count' => 1]))->current()->total_records;
         }
+        
         return new JsonModel(array(
             'draw' => (int) $draw,
             'recordsTotal' => $dataCount,
