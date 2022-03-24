@@ -77,11 +77,13 @@ class MelisComClientListController extends MelisAbstractActionController
     public function renderClientListWidgetsNumClientsAction()
     {
         $clientSvc = $this->getServiceManager()->get('MelisComClientService');
-        $clientCount = $clientSvc->getClientList();
+        $clientCount = $clientSvc->getClientList(null, null, null, null,
+            0, null, null, null, true);
+
         $view = new ViewModel();
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view->melisKey = $melisKey;
-        $view->num = count($clientCount);
+        $view->num = $clientCount->total ?? 0;
         return $view;
     }
     
