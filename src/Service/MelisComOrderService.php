@@ -32,12 +32,13 @@ class MelisComOrderService extends MelisComGeneralService
 	 * @param int $status if true, returns only orders with specific status
 	 * @param int $start If not specified, it will start at the begining of the list
 	 * @param int $limit If not specified, it will bring all categories of the list
+     * @param bool $count
 	 * 
 	 * @return MelisOrder[] Array of Order objects
 	 */
 	public function getOrderList($orderStatusId = null, $onlyValid = null, $langId = null, $clientId = null, 
 								$clientPersonId = null, $couponId = null, $reference = null,  $start = null, 
-								$limit = null, $colOrder = null, $search = '', $startDate = null, $endDate = null)
+								$limit = null, $colOrder = null, $search = '', $startDate = null, $endDate = null, $count = false)
 	{
 		// Event parameters prepare
 		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -54,12 +55,16 @@ class MelisComOrderService extends MelisComGeneralService
 													$arrayParameters['couponId'], $arrayParameters['reference'],
 													$arrayParameters['start'], $arrayParameters['limit'], 
 													$arrayParameters['colOrder'], $arrayParameters['search'], 
-													$arrayParameters['startDate'], $arrayParameters['endDate'] )->toArray();
-		foreach ($orderData As $key => $val)
-		{
-			$melisOrder = $this->getOrderById($val['ord_id'], $arrayParameters['langId']);
-			array_push($results, $melisOrder);
-		}
+													$arrayParameters['startDate'], $arrayParameters['endDate'],$arrayParameters['count']);
+        if($arrayParameters['count']){
+            $results = $orderData->current();
+        }else {
+            $orderData = $orderData->toArray();
+            foreach ($orderData As $key => $val) {
+                $melisOrder = $this->getOrderById($val['ord_id'], $arrayParameters['langId']);
+                array_push($results, $melisOrder);
+            }
+        }
 		// Service implementation end
 		
 		// Adding results to parameters for events treatment if needed

@@ -32,11 +32,15 @@ class MelisEcomOrderTable extends MelisEcomGenericTable
 
     public function getOrderList($orderStatusId = null, $onlyValid, $clientId = null, $clientPersonId = null,
                                  $couponId = null, $reference = null, $start = 0, $limit = null, $order = 'ord_id', 
-                                 $search = null, $startDate = null, $endDate = null)
+                                 $search = null, $startDate = null, $endDate = null, $count = false)
     {
         $select = $this->getTableGateway()->getSql()->select();
-        $select->quantifier('DISTINCT');
-        $select->columns(array('ord_id'));
+        if($count){
+            $select->columns(['total' => new \Laminas\Db\Sql\Expression('COUNT(*)')]);
+        }else {
+            $select->quantifier('DISTINCT');
+            $select->columns(array('ord_id'));
+        }
         
         //nested select for left join baskets
         $basketQuery = new \Laminas\Db\Sql\Select ('melis_ecom_order_basket');
@@ -104,21 +108,20 @@ class MelisEcomOrderTable extends MelisEcomGenericTable
             ->or->like('melis_ecom_client_company.ccomp_name', $search);
         }
 
-        if (!is_null($start))
-        {
-            $select->offset($start);
-        }
+        if(!$count) {
+            if (!is_null($start)) {
+                $select->offset($start);
+            }
 
-        if (!is_null($limit)&&$limit!=-1)
-        {
-            $select->limit($limit);
-        }
+            if (!is_null($limit) && $limit != -1) {
+                $select->limit($limit);
+            }
 
-        if (!is_null($order))
-        {
-            $select->order($order);
+            if (!is_null($order)) {
+                $select->order($order);
+            }
+            $select->group('melis_ecom_order.ord_id');
         }
-        $select->group('melis_ecom_order.ord_id');
 
 
 
