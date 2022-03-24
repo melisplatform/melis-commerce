@@ -40,6 +40,7 @@
 	    'tr_meliscommerce_attribute_col_value' => 'Value',
 	    
 	    //modal
+	    'tr_meliscommerce_attribute_label_all_updated' => 'Fill this field to set all languages at once',
 	    'tr_meliscommerce_attribute_value_modal_description' => 'Enter here one of your attribute value. <br>You can enter a same value for all of the languages that you are using from the upper field or a value adapted to each language.',
 	    'tr_meliscommerce_attribute_value_modal_each_language' => 'Or fill in individually for each language',
 	    'tr_meliscommerce_attribute_value_modal_value_form' => 'Value',
