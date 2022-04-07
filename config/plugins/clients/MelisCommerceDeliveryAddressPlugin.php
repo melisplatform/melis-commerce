@@ -50,7 +50,7 @@ return [
                                     'name' => 'select_delivery_address',
                                     'method' => 'POST',
                                 ],
-                                'hydrator'  => 'Laminas\\Hydrator\ArraySerializable',
+                                'hydrator'  => 'Laminas\\Hydrator\ArraySerializableHydrator',
                                 'elements' => [
                                     [
                                         'spec' => [
@@ -91,7 +91,7 @@ return [
                                     'name' => 'delivery_address',
                                     'method' => 'POST',
                                 ],
-                                'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                                'hydrator'  => 'Laminas\Hydrator\ArraySerializableHydrator',
                                 'elements' => [
                                     [
                                         'spec' => [

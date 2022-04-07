@@ -172,7 +172,7 @@ class MelisComOrderService extends MelisComGeneralService
 	 * @param int $langId language id
 	 * @return array()
 	 */
-	public function exportOrderList($orderStatus = null, $dateStart = null, $dateEnd = null, $separator, $encapseulate = '', $langId = null)
+	public function exportOrderList($orderStatus, $dateStart, $dateEnd, $separator, $encapseulate = '', $langId = null)
 	{
 		// Event parameters prepare
 		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -1363,7 +1363,7 @@ class MelisComOrderService extends MelisComGeneralService
 		return $arrayParameters['results'];
 	}
 
-	public function getOrdersDataByDate($type = 'daily', $date)
+	public function getOrdersDataByDate($type, $date)
 	{
 		$count = 0;
 
@@ -1503,7 +1503,7 @@ class MelisComOrderService extends MelisComGeneralService
 		return $count;
 	}
 
-	public function getSalesRevenueDataByDate($type = 'hourly', $date)
+	public function getSalesRevenueDataByDate($type, $date)
 	{
 		$value = [];
 		$value['totalOrderPrice'] = 0;

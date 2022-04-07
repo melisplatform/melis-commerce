@@ -30,7 +30,7 @@ class MelisEcomOrderTable extends MelisEcomGenericTable
         $this->idField = self::PRIMARY_KEY;
     }
 
-    public function getOrderList($orderStatusId = null, $onlyValid, $clientId = null, $clientPersonId = null,
+    public function getOrderList($orderStatusId, $onlyValid, $clientId = null, $clientPersonId = null,
                                  $couponId = null, $reference = null, $start = 0, $limit = null, $order = 'ord_id', 
                                  $search = null, $startDate = null, $endDate = null, $count = false)
     {

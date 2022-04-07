@@ -873,8 +873,11 @@ class MelisComAttributeService extends MelisComGeneralService
             
             $results = $attributeTransTable->deleteById($arrayParameters['attributeTransId']);
 
-            $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
-            $commerceCacheService->deleteCache('attribute', $attTransDatas->atrans_attribute_id);
+            if ($attTransDatas) {
+                $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
+                $commerceCacheService->deleteCache('attribute', $attTransDatas->atrans_attribute_id);
+            }
+            
         }catch (\Exception $e){
             
         }

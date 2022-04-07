@@ -205,7 +205,7 @@ class MelisComClientService extends MelisComGeneralService
 	}
 	
 	
-	public function exportClientList($clientStatus = null, $startDate = null, $endDate = null, $separator, $encapseulate ="", $langId)
+	public function exportClientList($clientStatus, $startDate, $endDate, $separator, $encapseulate, $langId)
 	{
 		// Event parameters prepare
 		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -262,7 +262,7 @@ class MelisComClientService extends MelisComGeneralService
 		return $arrayParameters['results'];
 	}
 	
-	public function formatClientToCsv($clientEntity, $separator, $encapsulate = '', $langId)
+	public function formatClientToCsv($clientEntity, $separator, $encapsulate, $langId)
 	{
 		// Event parameters prepare
 		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());

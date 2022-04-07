@@ -280,7 +280,7 @@ class MelisComProductListController extends MelisAbstractActionController
      * @param array $args
      * @return string
      */
-    private function getTranslation($key, $args = null) 
+    private function getTranslation($key, $args = []) 
     {
         $translator = $this->getServiceManager()->get('translator');
         $text = vsprintf($translator->translate($key), $args);
