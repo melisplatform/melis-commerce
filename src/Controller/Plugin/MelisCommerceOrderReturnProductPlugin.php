@@ -86,7 +86,8 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
 
         $orderId  = !empty($formData['m_rp_order_id']) ? $formData['m_rp_order_id'] : null;
         $isSubmit  = !empty($formData['m_rp_is_submit']) ? $formData['m_rp_is_submit'] : 0;
-        $orderReturnStatus  = !empty($formData['m_rp_status']) ? $formData['m_rp_status'] : [4];
+        // $orderReturnStatus  = !empty($formData['m_rp_status']) ? $formData['m_rp_status'] : [4];
+        $orderReturnStatus  = !empty($formData['m_rp_status']) ? $formData['m_rp_status'] : 4;
         $includePrdDetailsOnMsg  = !is_null($formData['m_rp_include_info_on_msg']) ? $formData['m_rp_include_info_on_msg'] : true;
         $returnProductImages  = !empty($formData['m_rp_images']) ? $formData['m_rp_images'] : [];
 
@@ -138,10 +139,10 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
 
                 $data = $orderSvc->getOrderById($orderId, $langId);
 
-                //check order status
-                if (in_array($data->getOrder()->ord_status, $orderReturnStatus) || $this->renderMode == 'melis') {
+                //check if order is already delivered to the customer
+                if ($data->getOrder()->ord_status == $orderReturnStatus || $this->renderMode == 'melis') {//order delivered
                     //check if form is submitted
-                    if ($isSubmit) {
+                    if($isSubmit) {
                         $addMessageForm->setData($formData);
                         //validate form
                         if ($addMessageForm->isValid()) {
@@ -264,6 +265,19 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
                                             $success = 1;
                                         }
                                     }
+                                    $msgProdDetails .= "</p>";
+
+                                    //save message
+                                    $orderMesasge['omsg_message'] .= htmlentities($msgProdDetails);
+                                    $orderMesasge['omsg_order_id'] = $orderId;
+                                    $orderMesasge['omsg_pret_id'] = $pretId;
+                                    $orderMesasge['omsg_client_id'] = $clientId;
+                                    $orderMesasge['omsg_client_person_id'] = $personid;
+                                    $orderMesasge['omsg_date_creation'] = date('Y-m-d H:i:s');
+                                    $orderMesasge['omsg_type'] = 'RETURN';
+                                    $orderSvc->saveOrderMessage($orderMesasge);
+
+                                    $success = 1;
                                 }
                             }
                         }else{
@@ -429,13 +443,13 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
             }else{
                 $errors['image_error'] = [
                     'label' => 'Not Writable',
-                    'notWritable' => sprintf($translator->translate('tr_melis_commerce_orders_return_folder_not_writable'), $dirName),
+                    'notWritable' => sprintf($translator->translate('tr_melis_commerce_orders_retur_folder_not_writable'), $dirName),
                 ];
             }
         }else{
             $errors['image_error'] = [
                 'label' => 'Directory dont exist',
-                'notFound' => sprintf($translator->translate('tr_melis_commerce_orders_return_folder_dont_exist'), $dirName),
+                'notFound' => sprintf($translator->translate('tr_melis_commerce_orders_retur_folder_dont_exist'), $dirName),
             ];
         }
         return $imagesPath;
