@@ -17,6 +17,7 @@ class MelisBasket
 	protected $variant;    // MelisVariant
 	protected $quantity;   // quantity
 	protected $dateAdded;  // datetime
+	protected $extra = array();
 
 	public function getId()
 	{
@@ -81,5 +82,13 @@ class MelisBasket
 	public function getArrayCopy()
 	{
 		return get_object_vars($this);
+	}
+	public function setExtra($var, $val)
+	{
+		$this->extra[$var] = $val;
+	}
+	public function getExtra()
+	{
+		return $this->extra; 
 	}
 }
