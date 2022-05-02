@@ -115,6 +115,7 @@ return [
             'MelisComPriceService'                          => \MelisCommerce\Service\MelisComPriceService::class,
             'MelisComOrderProductReturnService'             => \MelisCommerce\Service\MelisComOrderProductReturnService::class,
             'MelisComCacheService'                          => \MelisCommerce\Service\MelisComCacheService::class,
+            'MelisCommerceGdprAutoDeleteService'            => \MelisCommerce\Service\MelisCommerceGdprAutoDeleteService::class,
 
             // Tables
             'MelisEcomAttributeTable'                       => \MelisCommerce\Model\Tables\MelisEcomAttributeTable::class,

@@ -18,7 +18,14 @@ use Laminas\Db\ResultSet\HydratingResultSet;
 use Laminas\Stdlib\ArrayUtils;
 use Laminas\Session\Container;
 use Laminas\ModuleManager\ModuleEvent;
-
+use MelisCommerce\Listener\GDPR\MelisCommerceGdprAutoDeleteActionDeleteUserListener;
+use MelisCommerce\Listener\GDPR\MelisCommerceGdprAutoDeleteGetEmailListener;
+use MelisCommerce\Listener\GDPR\MelisCommerceGdprAutoDeleteModuleListListener;
+use MelisCommerce\Listener\GDPR\MelisCommerceGdprAutoDeleteSecondWarningListUsersListener;
+use MelisCommerce\Listener\GDPR\MelisCommerceGdprAutoDeleteTagsListListener;
+use MelisCommerce\Listener\GDPR\MelisCommerceGdprAutoDeleteWarningListUsersListener;
+use MelisCommerce\Listener\GDPR\MelisCommerceGdprUserExtractListener;
+use MelisCommerce\Listener\GDPR\MelisCommerceGdprUserInfoListener;
 use MelisCommerce\Listener\MelisCommerceCategoryListener;
 use MelisCommerce\Listener\MelisCommerceFlashMessengerListener;
 use MelisCommerce\Listener\MelisCommerceSaveProductListener;
@@ -51,6 +58,7 @@ use MelisCommerce\Listener\MelisCommerceOrderBasketProductAmountListener;
 use MelisCommerce\Listener\MelisCommerceComputeOrderCostListener;
 use MelisCommerce\Listener\MelisCommerceProductPriceLogsTranslationListener;
 use MelisCommerce\Listener\MelisCommerceDataTableTranslationsListener;
+
 /**
  * Class Module
  * @package MelisCmsNews
@@ -129,7 +137,16 @@ class Module
         (new MelisCommerceOrderBasketProductAmountListener())->attach($eventManager);
         (new MelisCommerceComputeOrderCostListener())->attach($eventManager);
         (new MelisCommerceProductPriceLogsTranslationListener())->attach($eventManager);
-        
+
+        // GDPR
+        (new MelisCommerceGdprAutoDeleteActionDeleteUserListener())->attach($eventManager);
+        (new MelisCommerceGdprAutoDeleteGetEmailListener())->attach($eventManager);
+        (new MelisCommerceGdprAutoDeleteModuleListListener())->attach($eventManager);
+        (new MelisCommerceGdprAutoDeleteSecondWarningListUsersListener())->attach($eventManager);
+        (new MelisCommerceGdprAutoDeleteTagsListListener())->attach($eventManager);
+        (new MelisCommerceGdprAutoDeleteWarningListUsersListener())->attach($eventManager);
+        (new MelisCommerceGdprUserExtractListener())->attach($eventManager);
+        (new MelisCommerceGdprUserInfoListener())->attach($eventManager);
     }
     
     public function init(ModuleManager $manager)
@@ -269,6 +286,9 @@ class Module
             include __DIR__ . '/../config/dashboard-plugins/MelisCommerceDashboardPluginOrdersNumber.config.php',
             include __DIR__ . '/../config/dashboard-plugins/MelisCommerceDashboardPluginSalesRevenue.config.php',
             include __DIR__ . '/../config/dashboard-plugins/MelisCommerceDashboardPluginOrderMessages.config.php',
+
+            // GDPR
+            include __DIR__ . '/../config/gdpr.config.php',
         ];
         
         foreach ($configFiles as $file) {
