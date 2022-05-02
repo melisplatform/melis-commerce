@@ -24,7 +24,7 @@ class MelisCommerceGdprLoginListener extends MelisGeneralListener
             'meliscommerce_service_authentication_login_end',
             function($e) {
                 $params = $e->getParams();
-                
+
                 if (empty($params['results']))
                     return;
 
@@ -35,7 +35,7 @@ class MelisCommerceGdprLoginListener extends MelisGeneralListener
                 $ecomAuthSrv = $sm->get('MelisComAuthenticationService');
                 if ($ecomAuthSrv->hasIdentity()) {
                     $personId = $ecomAuthSrv->getPersonId();
-                    $sm->get('MelisEcomClientPersonTable')->save(['cper_date_edit' => date('Y-m-d')], $personId);
+                    $sm->get('MelisEcomClientPersonTable')->save(['cper_last_login' => date('Y-m-d')], $personId);
                 }
             }
         );

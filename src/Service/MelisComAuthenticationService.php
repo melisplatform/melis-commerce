@@ -15,6 +15,7 @@ use Laminas\ServiceManager\ServiceManager;
 use Laminas\Session\SessionManager;
 use Laminas\Authentication\Adapter\DbTable as AuthAdapter;
 use Laminas\Authentication\Result;
+use Laminas\EventManager\EventManagerAwareInterface;
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\Session\Config\SessionConfig;
 use Laminas\Stdlib\ArrayUtils;
@@ -23,7 +24,7 @@ use Laminas\Stdlib\ArrayUtils;
  * This service handles the Authentication system of MelisCommerce.
  *
  */
-class MelisComAuthenticationService extends Session
+class MelisComAuthenticationService extends Session implements EventManagerAwareInterface
 {
     /**
      * @var Laminas\ServiceManager\ServiceManager $serviceManager
