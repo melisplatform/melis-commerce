@@ -1,0 +1,3 @@
+ALTER TABLE `melis_ecom_order_product_return` ADD `pret_reason` VARCHAR(255) NULL AFTER `pret_client_id`;
+ALTER TABLE `melis_ecom_order_product_return` ADD `pret_doc_1` VARCHAR(255) NULL AFTER `pret_reason`, ADD `pret_doc_2` VARCHAR(255) NULL AFTER `pret_doc_1`, ADD `pret_doc_3` VARCHAR(255) NULL AFTER `pret_doc_2`, ADD `pret_doc_4` VARCHAR(255) NULL AFTER `pret_doc_3`, ADD `pret_doc_5` VARCHAR(255) NULL AFTER `pret_doc_4`;
+ALTER TABLE `melis_ecom_order_product_return` ADD `pret_status` TINYINT NULL DEFAULT '1' AFTER `pret_reason`;
