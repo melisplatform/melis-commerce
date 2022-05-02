@@ -1,0 +1,1 @@
+ALTER TABLE `melis_ecom_client_person` ADD `cper_last_login` DATE NULL AFTER `cper_date_edit`, ADD `cper_anonymized` INT NULL AFTER `cper_last_login`;

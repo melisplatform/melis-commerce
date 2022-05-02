@@ -24,6 +24,7 @@ use MelisCommerce\Listener\GDPR\MelisCommerceGdprAutoDeleteModuleListListener;
 use MelisCommerce\Listener\GDPR\MelisCommerceGdprAutoDeleteSecondWarningListUsersListener;
 use MelisCommerce\Listener\GDPR\MelisCommerceGdprAutoDeleteTagsListListener;
 use MelisCommerce\Listener\GDPR\MelisCommerceGdprAutoDeleteWarningListUsersListener;
+use MelisCommerce\Listener\GDPR\MelisCommerceGdprLoginListener;
 use MelisCommerce\Listener\GDPR\MelisCommerceGdprUserExtractListener;
 use MelisCommerce\Listener\GDPR\MelisCommerceGdprUserInfoListener;
 use MelisCommerce\Listener\MelisCommerceCategoryListener;
@@ -147,6 +148,7 @@ class Module
         (new MelisCommerceGdprAutoDeleteWarningListUsersListener())->attach($eventManager);
         (new MelisCommerceGdprUserExtractListener())->attach($eventManager);
         (new MelisCommerceGdprUserInfoListener())->attach($eventManager);
+        (new MelisCommerceGdprLoginListener())->attach($eventManager);
     }
     
     public function init(ModuleManager $manager)
