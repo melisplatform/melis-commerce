@@ -259,8 +259,8 @@ return [
                                             'options' => [
                                                 'label' => 'tr_meliscommerce_general_common_autologin',
                                                 'tooltip' => 'tr_meliscommerce_general_common_autologin tooltip',
-                                                'checked_value' => 1,
-                                                'unchecked_value' => 0,
+                                                'checked_value' => '1',
+                                                'unchecked_value' => '0',
                                                 'switchOptions' => [
                                                     'label-on' => 'tr_meliscommerce_categories_common_label_yes',
                                                     'label-off' => 'tr_meliscommerce_categories_common_label_no',

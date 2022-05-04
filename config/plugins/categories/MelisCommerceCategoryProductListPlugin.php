@@ -134,8 +134,8 @@ return [
                                             'options' => [
                                                 'label' => 'tr_meliscommerce_plugin_category_product_list_include_sub_cat_prds',
                                                 'tooltip' => 'tr_meliscommerce_plugin_category_product_list_include_sub_cat_prds tooltip',
-                                                'checked_value' => 1,
-                                                'unchecked_value' => 0,
+                                                'checked_value' => '1',
+                                                'unchecked_value' => '0',
                                                 'switchOptions' => [
                                                     'label-on' => 'tr_meliscommerce_categories_common_label_yes',
                                                     'label-off' => 'tr_meliscommerce_categories_common_label_no',
