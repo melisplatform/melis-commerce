@@ -318,6 +318,9 @@ class MelisComClientService extends MelisComGeneralService
 			$tmp = array();
 			
 			foreach($company as $detail){
+				if ($key == 'ccomp_logo') {
+					$detail = base64_encode($detail);
+				}
 				$tmp[] = addslashes($detail);
 			}
 			$content[] = $e.implode($e.$s.$e, $tmp).$e.$s;
