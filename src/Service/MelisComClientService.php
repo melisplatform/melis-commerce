@@ -317,7 +317,7 @@ class MelisComClientService extends MelisComGeneralService
 		foreach($companies as $company){
 			$tmp = array();
 			
-			foreach($company as $detail){
+			foreach($company as $key => $detail){
 				if ($key == 'ccomp_logo') {
 					$detail = base64_encode($detail);
 				}
