@@ -1233,6 +1233,10 @@ div#clients_group_list select {
 	width: auto !important;
 }
 
+div#clients_status_list select {
+	width: auto !important;
+}
+
 /** -------------------------------------
 *       A-STYLE
 *       a-style.css
@@ -3379,4 +3383,23 @@ i.fa.fa-download {
 .bs-tooltip-auto[x-placement^="right"] .arrow::before,
 .bs-tooltip-right .arrow::before {
 	border-right-color: #c52127;
+}
+/*for the add product text accordion*/
+#idAddProductText .card-header .product-text-accordion-toggle:before {
+	font-family: "Glyphicons Halflings";
+	content: "\e080";	
+	background-color: #e61c23 !important;
+	padding: 0 10px 0px 0px !important;
+	color: #fff !important;	 
+    margin: 0px !important;
+}
+#idAddProductText .card-header .product-text-accordion-toggle.collapsed:before {
+	font-family: "Glyphicons Halflings";
+	content: "\e114";
+	float: left;
+	color: #fff !important;
+	margin: 12px 0 0;
+	padding: 0 10px;
+	display: block;
+	background-color: #e61c23 !important;
 }

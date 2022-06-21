@@ -221,7 +221,7 @@ class MelisComStockEmailAlertService extends MelisComGeneralService
                 $nameTo  = !empty($emails)? '' : $emailConfig['headers']['name_to'];
                 $replyTo = $emailConfig['headers']['replyTo'];
                 $subject = sprintf($translator->translate($emailConfig['contents'][$langLocale]['subject']), $productName, $variant->getVariant()->var_sku);
-                $content =  vsprintf($translator->translate($emailConfig['contents'][$langLocale]['html']), null);
+                $content =  vsprintf($translator->translate($emailConfig['contents'][$langLocale]['html']), []);
                 $contentTagReplace =  $emailConfig['headers']['tags'];
                 $contentTagReplace = explode(',', $contentTagReplace);
                 $contentTag['PRODUCT_TEXT'] = $productName;

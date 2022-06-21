@@ -96,11 +96,12 @@ class MelisComOrderListController extends MelisAbstractActionController
     public function renderOrderListWidgetsNumOrdersAction()
     {
         $melisComOrderService = $this->getServiceManager()->get('MelisComOrderService');
-        $orderCount = $melisComOrderService->getOrderList(null, true);
+        $orderCount = $melisComOrderService->getOrderList(null, true, null, null, null, null, null,  null,
+            null, null, '', null, null, true);
         $view = new ViewModel();
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view->melisKey = $melisKey;
-        $view->num = count($orderCount);
+        $view->num = $orderCount->total ?? 0;
         return $view;
     }
     
@@ -418,17 +419,23 @@ class MelisComOrderListController extends MelisAbstractActionController
                 $couponId = ($this->getRequest()->getPost('couponId'))? $this->getRequest()->getPost('couponId'): -1;;
             }
             $tmp = $melisComOrderService->getOrderList(
-                $osta_id, $onlyValid, null, $clientId, 
-                null, $couponId, null, null, 
-                null, null, $search, $startDate, $endDate
-                );
-            $dataFilter = count($tmp);
+                $osta_id, $onlyValid, null, $clientId,
+                null, $couponId, null, null,
+                null, null, $search, $startDate, $endDate, true
+            );
+
+            $dataFilter = $tmp->total ?? 0;
             $orderData = $melisComOrderService->getOrderList(
                 $osta_id, $onlyValid, $langId, $clientId, 
                 null, $couponId, null, $start, 
                 $length, $colOrder, $search, $startDate, $endDate
             );
-            $dataCount = count($orderData);
+            $dataCount = $melisComOrderService->getOrderList(
+                $osta_id, $onlyValid, $langId, $clientId,
+                null, $couponId, null, $start,
+                $length, $colOrder, $search, $startDate, $endDate, true
+            );
+            $dataCount = $dataCount->total ?? 0;
             $c = 0;
 
             foreach($orderData as $order){

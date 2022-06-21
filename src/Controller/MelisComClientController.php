@@ -1982,7 +1982,7 @@ class MelisComClientController extends MelisAbstractActionController
                 $request
             );
 
-            $postValues = get_object_vars($this->getRequest()->getPost());
+            $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
             $melisComClientService = $this->getServiceManager()->get('MelisComClientService');

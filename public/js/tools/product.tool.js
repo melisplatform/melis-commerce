@@ -924,6 +924,16 @@ $(function() {
 
         melisLinkTree.createInputTreeModal('#' + formId + ' ' + '#prod_page_assoc_3');
     });
+    $body.on("click", ".product-text-accordion-toggle", function(event) {
+       var target = event.target,
+            id = $(target).attr("href");
+        $(id).collapse("toggle");
+        if ($('[href$="'+id+'"]').hasClass('collapsed')) {          
+            $('[href$="'+id+'"]').removeClass('collapsed');
+        } else{         
+            $('[href$="'+id+'"]').addClass('collapsed');
+        }
+    });  
 });
 
 window.initProductsTableData = function (tableData) {

@@ -29,10 +29,14 @@ class MelisEcomClientTable extends MelisEcomGenericTable
     }
 
     public function getClientList($countryId = null, $dateCreationMin = null, $dateCreationMax = null, 
-	                              $onlyValid = null, $start = 0, $limit = null, $order = array(), $search = null)
+	                              $onlyValid = null, $start = 0, $limit = null, $order = array(), $search = null, $count = false)
     {
         $select = $this->tableGateway->getSql()->select();
-        $select->quantifier('DISTINCT');
+        if($count){
+            $select->columns(['total' => new \Laminas\Db\Sql\Expression('COUNT(*)')]);
+        }else {
+            $select->quantifier('DISTINCT');
+        }
         $select->join('melis_ecom_client_person', 'melis_ecom_client_person.cper_client_id=melis_ecom_client.cli_id',
             array(),$select::JOIN_LEFT);
         $select->join('melis_ecom_client_company', 'melis_ecom_client_company.ccomp_client_id=melis_ecom_client.cli_id',
@@ -72,17 +76,18 @@ class MelisEcomClientTable extends MelisEcomGenericTable
             ->or->like('melis_ecom_client_company.ccomp_name', $search)
             ->or->like('melis_ecom_client_groups.cgroup_name', $search);
         }
-        
-        if (!is_null($start) && is_numeric($start))
-        {
-            $select->offset((int)$start);
+
+        if(!$count) {
+            if (!is_null($start) && is_numeric($start)) {
+                $select->offset((int)$start);
+            }
+
+            if (!is_null($limit) && is_numeric($limit) && $limit != -1) {
+                $select->limit((int)$limit);
+            }
+
+            $select->order(array('cli_id' => $order));
         }
-        
-        if (!is_null($limit) && is_numeric($limit) && $limit != -1){
-            $select->limit((int)$limit);
-        }
-        
-        $select->order(array('cli_id' => $order));
 
         $resultData = $this->tableGateway->selectWith($select);
         return $resultData;

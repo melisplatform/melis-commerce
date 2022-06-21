@@ -879,6 +879,13 @@ $(function() {
 			.find(".client-email-dropdown-content")
 			.removeClass("show");
 	});
+
+    // client status filter
+    $body.on("change", "#clientsStatusSelect", function() {
+        $("#clientListTbl")
+            .DataTable()
+            .ajax.reload();
+    });
 });
 
 window.clientHighlightErrors = function(success, errors, divContainer) {
@@ -1071,4 +1078,10 @@ window.initClientsFilters = function(d) {
 	if ($("#clientsGroupSelect").length) {
 		d.cgroup_id = $("#clientsGroupSelect").val();
 	}
+    //clients status filter
+    if ($("#clientsStatusSelect").length) {
+        d.cli_status = $("#clientsStatusSelect").val();
+    }else{
+        d.cli_status = 1;//display the active clients if no filter
+    }
 };

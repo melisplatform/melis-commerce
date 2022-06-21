@@ -31,11 +31,12 @@ class MelisComClientService extends MelisComGeneralService
 	 * @param boolean $onlyValid if true, returns only active status clients
 	 * @param int $start If not specified, it will start at the begining of the list
 	 * @param int $limit If not specified, it will bring all categories of the list
-	 * 
+	 * @param bool $count
+	 *
 	 * @return MelisClient[] Array of Client objects
 	 */
 	public function getClientList($countryId = null, $dateCreationMin = null, $dateCreationMax = null, $onlyValid = null, 
-									$start = 0, $limit = null, $order = null, $search = null)
+									$start = 0, $limit = null, $order = null, $search = null, $count = false)
 	{
 		// Event parameters prepare
 		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -51,53 +52,53 @@ class MelisComClientService extends MelisComGeneralService
 		
 		// Get Client Data
 		$clientData = $melisEcomClientTable->getClientList($arrayParameters['countryId'], $arrayParameters['dateCreationMin'], $arrayParameters['dateCreationMax'], $arrayParameters['onlyValid'], 
-														$arrayParameters['start'], $arrayParameters['limit'], $arrayParameters['order'],$arrayParameters['search']);
-		$ctr = 0;
-		foreach ($clientData As $val)
-		{
-			$companySearchFlag = false;
-			
-			$melisClient = new \MelisCommerce\Entity\MelisClient();
-			$melisClient->setId($val->cli_id);
-			
-			// Set Client Data to MelisClient
-			$melisClient->setClient($val);
-			
-			// Set Person Data to MelisClient
-			$clientPersonData = $melisEcomClientPersonTable->getClientPersonByClientId($val->cli_id);
-			$clientPerson = array();
-			foreach ($clientPersonData As $pval)
-			{
-				$pval->civility_trans = $this->getCivilityTransByCivilityIdAndLangId($pval->civ_id);
-				$pval->addresses = $this->getClientAddressesByClientPersonId($pval->cper_id);
-				
-				array_push($clientPerson, $pval);
-			}
-			
-			$melisClient->setPersons($clientPerson);
-			
-			// Set Addresses to MelisClient
-			$clientAddressData = $melisEcomClientAddressTable->getClientAddressByClientId($val->cli_id);
-			$clientAddress = array();
-			foreach ($clientAddressData As $aVal)
-			{
-				$aVal->civility_trans = $this->getCivilityTransByCivilityIdAndLangId($aVal->civ_id);
-				$aVal->address_trans = $this->getAddressTransByAddressTypeIdAndLangId($aVal->catype_id);
-				array_push($clientAddress, $aVal);
-			}
-			$melisClient->setAddresses($clientAddress);
-			
-			// Set Company to MelisClient
-			$clientCompanyData = $this->getCompanyByClientId($val->cli_id);
-			$clientCompany = array();
-			foreach ($clientCompanyData As $cVal)
-			{
-				array_push($clientCompany, $cVal);
-			}
-			$melisClient->setCompany($clientCompany);
-			
-			array_push($results, $melisClient);
-		}
+														$arrayParameters['start'], $arrayParameters['limit'], $arrayParameters['order'],$arrayParameters['search'], $arrayParameters['count']);
+        if(!$arrayParameters['count']) {
+            $ctr = 0;
+            foreach ($clientData As $val) {
+                $companySearchFlag = false;
+
+                $melisClient = new \MelisCommerce\Entity\MelisClient();
+                $melisClient->setId($val->cli_id);
+
+                // Set Client Data to MelisClient
+                $melisClient->setClient($val);
+
+                // Set Person Data to MelisClient
+                $clientPersonData = $melisEcomClientPersonTable->getClientPersonByClientId($val->cli_id);
+                $clientPerson = array();
+                foreach ($clientPersonData As $pval) {
+                    $pval->civility_trans = $this->getCivilityTransByCivilityIdAndLangId($pval->civ_id);
+                    $pval->addresses = $this->getClientAddressesByClientPersonId($pval->cper_id);
+
+                    array_push($clientPerson, $pval);
+                }
+
+                $melisClient->setPersons($clientPerson);
+
+                // Set Addresses to MelisClient
+                $clientAddressData = $melisEcomClientAddressTable->getClientAddressByClientId($val->cli_id);
+                $clientAddress = array();
+                foreach ($clientAddressData As $aVal) {
+                    $aVal->civility_trans = $this->getCivilityTransByCivilityIdAndLangId($aVal->civ_id);
+                    $aVal->address_trans = $this->getAddressTransByAddressTypeIdAndLangId($aVal->catype_id);
+                    array_push($clientAddress, $aVal);
+                }
+                $melisClient->setAddresses($clientAddress);
+
+                // Set Company to MelisClient
+                $clientCompanyData = $this->getCompanyByClientId($val->cli_id);
+                $clientCompany = array();
+                foreach ($clientCompanyData As $cVal) {
+                    array_push($clientCompany, $cVal);
+                }
+                $melisClient->setCompany($clientCompany);
+
+                array_push($results, $melisClient);
+            }
+        }else{
+            $results = $clientData->current();
+        }
 		// Service implementation end
 		
 		// Adding results to parameters for events treatment if needed
@@ -204,7 +205,7 @@ class MelisComClientService extends MelisComGeneralService
 	}
 	
 	
-	public function exportClientList($clientStatus = null, $startDate = null, $endDate = null, $separator, $encapseulate ="", $langId)
+	public function exportClientList($clientStatus, $startDate, $endDate, $separator, $encapseulate, $langId)
 	{
 		// Event parameters prepare
 		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -261,7 +262,7 @@ class MelisComClientService extends MelisComGeneralService
 		return $arrayParameters['results'];
 	}
 	
-	public function formatClientToCsv($clientEntity, $separator, $encapsulate = '', $langId)
+	public function formatClientToCsv($clientEntity, $separator, $encapsulate, $langId)
 	{
 		// Event parameters prepare
 		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());

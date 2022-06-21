@@ -419,7 +419,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         return $variants;
     }
     
-    public function getProductByNameTextTypeAttrIdsAndPrice($productSearchKey = null, $textTypeCode = array(), $selectedVariants = array(), $categoryIds = array(), $minPrice, $maxPrice, $langId = null, $countryId = null, $status = 1, $start = 0, $limit = null, $order = null, $priceColumn = null)
+    public function getProductByNameTextTypeAttrIdsAndPrice($productSearchKey, $textTypeCode , $selectedVariants, $categoryIds, $minPrice, $maxPrice, $langId = null, $countryId = null, $status = 1, $start = 0, $limit = null, $order = null, $priceColumn = null)
     {
         if(empty($priceColumn)){
             $priceColumn = 'price_net';
@@ -624,7 +624,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         return $resultSet;
     }
     
-    public function getProductCategoryPriceByProductId($productId = null, $categoryIds = array(), $langId, $countryId = null, $fieldsTypeCodes = array('TITLE'), $documents = array('mainImage' => 'DEFAULT'))
+    public function getProductCategoryPriceByProductId($productId, $categoryIds, $langId, $countryId = null, $fieldsTypeCodes = array('TITLE'), $documents = array('mainImage' => 'DEFAULT'))
     {
         $select = $this->getTableGateway()->getSql()->select();
         
