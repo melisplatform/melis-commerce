@@ -501,11 +501,20 @@ class MelisEcomProductTable extends MelisEcomGenericTable
             $select->where->and->in('melis_ecom_product_category.pcat_cat_id', $categoryIds);
         }
         
-        if($maxPrice) {
-            $select->where->NEST->and
-            ->between('prod_price.'.$priceColumn, (float) $minPrice, (float) $maxPrice)
-            ->or->between('var_price.'.$priceColumn, (float) $minPrice, (float) $maxPrice);
-        }
+        if (is_numeric($minPrice))
+            if ($minPrice <= 0)
+                $select->where->greaterThan('prod_price.'.$priceColumn, $minPrice);
+            else    
+                $select->where->greaterThanOrEqualTo('prod_price.'.$priceColumn, $minPrice);
+
+        if (is_numeric($maxPrice))
+            $select->where->lessThanOrEqualTo('prod_price.'.$priceColumn, $maxPrice);
+        
+        // if($maxPrice) {
+        //     $select->where->NEST->and
+        //     ->between('prod_price.'.$priceColumn, (float) $minPrice, (float) $maxPrice)
+        //     ->or->between('var_price.'.$priceColumn, (float) $minPrice, (float) $maxPrice);
+        // }
         
         if(!is_null($order)){
             $select->order($order);

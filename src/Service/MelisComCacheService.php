@@ -345,10 +345,14 @@ class MelisComCacheService extends MelisComGeneralService
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
         $arrayParameters = $this->sendEvent('meliscommerce_cache_service_delete_category_products_cache_start', $arrayParameters);
 
-        $categoryProducts = $this->getCategoryProducts($arrayParameters['id']);
+        // $categoryProducts = $this->getCategoryProducts($arrayParameters['id']);
+        // $categoryProducts = $this->getCategoryProducts($arrayParameters['id']);
 
-        foreach ($categoryProducts as $product) {
-            $this->deleteCache('product', $product->getId());
+        $prdCatTbl = $this->getServiceManager()->get('MelisEcomProductCategoryTable');
+        $catPrd = $prdCatTbl->getEntryByField('pcat_cat_id', $arrayParameters['id']);
+
+        foreach ($catPrd as $product) {
+            $this->deleteCache('product', $product->pcat_prd_id);
         }
 
         $arrayParameters = $this->sendEvent('meliscommerce_cache_service_delete_category_products_cache_end', $arrayParameters);

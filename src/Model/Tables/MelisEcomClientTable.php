@@ -131,32 +131,53 @@ class MelisEcomClientTable extends MelisEcomGenericTable
                 }
             }
 
-            $filters = [];
-            foreach ($tableColPrefix As $prefix => $cols) {
-                $likes = null;
-                foreach($cols as $colKeys)
-                    $likes[] = $colKeys . ' LIKE \'%' . $whereValue . '%\'';
+            // Sub query for client table
+            if (isset($tableColPrefix['cli'])) {
+                $subTg = new TableGateway('melis_ecom_client', $this->getTableGateway()->getAdapter());
+                $subSelect = $subTg->getSql()->select();
+                $subSelect->columns(['cli_id']);
 
-                switch ($prefix) {
-                    case 'cli':
-                            $filters[] = '(' . implode(' OR ', $likes) .')';
-                        break;
-                    case 'cper':
-                        if (empty($like))
-                            $filters[] = '(SELECT cper_client_id FROM melis_ecom_client_person WHERE (' . implode(' OR ', $likes) . ') and cper_client_id = melis_ecom_client.cli_id)';
-                        break;
-                    case 'ccomp':
-                        if (empty($like))
-                            $filters[] = '(SELECT ccomp_client_id FROM melis_ecom_client_company WHERE (' . implode(' OR ', $likes) . ') and ccomp_client_id = melis_ecom_client.cli_id)';
-                        break;
-                }
+                foreach ($tableColPrefix['cli'] As $key => $col)
+                    if (!$key) 
+                        $subSelect->where->like($col, '%' . $whereValue . '%');
+                    else
+                        $subSelect->where->or->like($col, '%' . $whereValue . '%');
+                    
+                $select->where->or->in('cli_id', $subSelect);
             }
 
-            if (!empty($filters))
-                $select->where('(' . implode(' OR ', $filters) .')');
-        }
+            // Sub query for client person table
+            if (isset($tableColPrefix['cper'])) {
+                $subTg = new TableGateway(['p' => 'melis_ecom_client_person'], $this->getTableGateway()->getAdapter());
+                $subSelect = $subTg->getSql()->select();
+                $subSelect->columns(['cper_client_id']);
+                $subSelect->join('melis_ecom_client', 'p.cper_client_id = melis_ecom_client.cli_id', [], $subSelect::JOIN_LEFT);
 
-        $select->where('(SELECT cper_id FROM melis_ecom_client_person WHERE cper_client_id = melis_ecom_client.cli_id LIMIT 1) IS NOT NULL');
+                foreach ($tableColPrefix['cper'] As $key => $col)
+                    if (!$key) 
+                        $subSelect->where->like($col, '%' . $whereValue . '%');
+                    else
+                        $subSelect->where->or->like($col, '%' . $whereValue . '%');
+                        
+                $select->where->or->in('cli_id', $subSelect);
+            }
+
+            // Sub query for client company table
+            if (isset($tableColPrefix['ccomp'])) {
+                $subTg = new TableGateway(['c' => 'melis_ecom_client_company'], $this->getTableGateway()->getAdapter());
+                $subSelect = $subTg->getSql()->select();
+                $subSelect->columns(['ccomp_client_id']);
+                $subSelect->join('melis_ecom_client', 'c.ccomp_client_id = melis_ecom_client.cli_id', [], $subSelect::JOIN_LEFT);
+
+                foreach ($tableColPrefix['ccomp'] As $key => $col)
+                    if (!$key) 
+                        $subSelect->where->like($col, '%' . $whereValue . '%');
+                    else
+                        $subSelect->where->or->like($col, '%' . $whereValue . '%');
+
+                $select->where->or->in('cli_id', $subSelect);
+            }
+        }
 
         // Client group
         $groupId = $options['groupId'];

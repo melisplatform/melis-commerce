@@ -47,6 +47,10 @@ class MelisComAuthenticationService extends Session implements EventManagerAware
              * and use as Session name of the Site
              */
             $moduleName = getenv('MELIS_MODULE');
+
+            // TODO Temporary 
+            if (empty($moduleName))
+                $moduleName = 'meliscommerce';
             
             // Session storage name using module name of the site
             $this->session = new Session($moduleName);

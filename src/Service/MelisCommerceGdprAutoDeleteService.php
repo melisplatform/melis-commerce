@@ -134,12 +134,14 @@ class MelisCommerceGdprAutoDeleteService extends MelisGeneralService implements 
                         $data = (array)$this->getUserById($id);
                         if (!empty($data)) {
 
+                            $contactData = $data;
+
                             $configCols = $this->getServiceManager()->get('MelisConfig')->getItem('/meliscommerce/gdpr/columns');
 
                             $tmpVal = Gdpr::ANO_VALUE; 
 
                             $data['cper_status'] = 0; // deactivating contat
-                            $data['cper_password'] = null; // removing password and recovery key
+                            $data['cper_password'] = $tmpVal.uniqid(); // removing password and recovery key
                             $data['cper_password_recovery_key'] = null;
                             $data['cper_anonymized'] = 1; // flag as anonymized
                             $columns = $configCols['override_columns']['contact'] ?? $configCols['contact'];
@@ -148,6 +150,10 @@ class MelisCommerceGdprAutoDeleteService extends MelisGeneralService implements 
                             
                             // perform updates
                             $this->getServiceManager()->get('MelisEcomClientPersonTable')->save($data, $id);
+
+                            // perform deletion on contact emails
+                            $this->getServiceManager()->get('MelisEcomClientPersonEmailsTable')
+                                ->deleteByField('cpmail_email', $contactData['cper_email']);
 
                             // Contact addresses
                             $personAddressTbl = $this->getServiceManager()->get('MelisEcomClientAddressTable');
@@ -209,20 +215,21 @@ class MelisCommerceGdprAutoDeleteService extends MelisGeneralService implements 
                 foreach ($clients as $i => $data) {
                     // do not include data that was already anonymized
                     if (!$data['cper_anonymized'] && (!is_null($data['cper_last_login']) || !is_null($data['cper_date_creation']))) {
+                        
                         // tags
-                        $tags = $this->assigningValueOfTags($tags, $data);
+                        $assigningValueOfTags = $this->assigningValueOfTags($tags, $data);
                         $config = [
                             'site_id'    => 1,  // TODO 
                             'lang'       => $langAvailable, 
                             'last_date'  => $data['cper_last_login'] ?? $data['cper_date_creation'],
                             'account_id' => $data['cper_id'],
-                            'validationKey' => md5(implode('', array_keys($tags)) . $type . $data['cper_id']),
+                            'validationKey' => md5(implode('', array_keys($assigningValueOfTags)) . $type . $data['cper_id']),
                             'email' => $data['cper_email'] ?? null
                         ];
 
                         $userList[$data['cper_id']] = [
                             // append tags with value
-                            'tags' => $tags, 
+                            'tags' => $assigningValueOfTags, 
                             // append config
                             'config' => $config 
                         ]; 

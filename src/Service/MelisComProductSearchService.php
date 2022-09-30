@@ -236,7 +236,6 @@ class MelisComProductSearchService extends MelisComGeneralService
 		// Event parameters prepare
 		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
 		$results = array();
-	
 		// Sending service start event
 		$arrayParameters = $this->sendEvent('meliscommerce_service_productsearch_full_pricerange_start', $arrayParameters);
 
@@ -302,7 +301,7 @@ class MelisComProductSearchService extends MelisComGeneralService
 
 		$productData = array();
 		$data = $prodTbl->getProductByNameTextTypeAttrIdsAndPrice($arrayParameters['search'], $arrayParameters['fieldsTypeCodes'],
-			$selectedVariants, $arrayParameters['categoryId'], (float) $arrayParameters['priceMin'], (float) $arrayParameters['priceMax'],  $arrayParameters['langId'],
+			$selectedVariants, $arrayParameters['categoryId'], $arrayParameters['priceMin'], $arrayParameters['priceMax'],  $arrayParameters['langId'],
 			$arrayParameters['countryId'], (int) $arrayParameters['onlyValid'], $arrayParameters['start'], $arrayParameters['limit'], $arrayParameters['sort'], $arrayParameters['priceColumn']
 		);
 

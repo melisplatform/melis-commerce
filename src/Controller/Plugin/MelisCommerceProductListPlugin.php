@@ -81,8 +81,8 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
         $onlyValid          = true;
         $search             = !empty($data['m_box_product_search'])                          ? $data['m_box_product_search'] : '';
         $fieldType          = !empty($data['m_box_product_field_type'])                ? $data['m_box_product_field_type'] : array();
-        $min                = !empty($data['m_box_product_price_min'])                       ? $data['m_box_product_price_min'] : null;
-        $max                = !empty($data['m_box_product_price_max'])                       ? $data['m_box_product_price_max'] : null;
+        $min                = !empty($data['m_box_product_price_min']) || is_numeric($data['m_box_product_price_min']) ? $data['m_box_product_price_min'] : null;
+        $max                = !empty($data['m_box_product_price_max']) || is_numeric($data['m_box_product_price_max']) ? $data['m_box_product_price_max'] : null;
         $country            = !empty($data['m_box_product_country'])                         ? $data['m_box_product_country'] : null;
         $categoryId         = !empty($data['m_box_category_tree_ids_selected'])         ? $data['m_box_category_tree_ids_selected'] : array();
 
@@ -98,7 +98,7 @@ class MelisCommerceProductListPlugin extends MelisTemplatingPlugin
         $pageCurrent        = !empty($data['m_page_current'])                ? $data['m_page_current'] : 1;
         $pageNbPerPage      = !empty($data['m_page_nb_per_page'])            ? $data['m_page_nb_per_page'] : null;
         $pageNbBeforeAfter  = !empty($data['m_page_nb_page_before_after'])   ? $data['m_page_nb_page_before_after'] : 3;
-         
+
         foreach($categoryId as $catId){
             $categoryId = array_merge($categoryId, $this->categoryIdIterator($categorySvc->getAllSubCategoryIdById($catId, $onlyValid)));
         }
