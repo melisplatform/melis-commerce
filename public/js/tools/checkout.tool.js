@@ -344,9 +344,12 @@ $(function() {
 
 	// Refresh button for Contact List table
 	$body.on("click", ".orderCheckoutContactListRefresh", function() {
+		var $this = $(this),
+			clientId = $this.data("clientid"); //in case the New Order comes from the clients
 		melisHelper.zoneReload(
 			"id_meliscommerce_order_checkout_choose_contact_step_content",
-			"meliscommerce_order_checkout_choose_contact_step_content"
+			"meliscommerce_order_checkout_choose_contact_step_content",
+			{ clientId: clientId, activateTab: true }
 		);
 	});
 

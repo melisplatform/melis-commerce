@@ -362,6 +362,8 @@ class MelisComOrderListController extends MelisAbstractActionController
         $clientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
         $civilityTransTable = $this->getServiceManager()->get('MelisEcomCivilityTransTable');
         $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
+        $viewHelperManager = $this->getServiceManager()->get('ViewHelperManager');
+        $toolTipTable = $viewHelperManager->get('ToolTipTable');
         
         $confOrder = $melisCoreConfig->getItem('meliscommerce/conf/orderStatus');
         $colId = array();
@@ -438,6 +440,7 @@ class MelisComOrderListController extends MelisAbstractActionController
             $dataCount = $dataCount->total ?? 0;
             $c = 0;
 
+            $toolTipTextTag = '<a id="row-%s" class="clientOrderRefToolTipHoverEvent tooltipTable" data-orderId="%s" data-hasqtip="1" aria-describedby="qtip-%s">%s</a>';
             foreach($orderData as $order){
                 $price = 0;
                 $products = 0;
@@ -493,7 +496,6 @@ class MelisComOrderListController extends MelisAbstractActionController
                 $tableData[$c]['DT_RowId'] = $order->getId();
                 $tableData[$c]['order_table_checkbox'] = sprintf($checkBox, $order->getId());                
                 $tableData[$c]['ord_id'] = $order->getId();
-                $tableData[$c]['ord_reference'] = $this->getTool()->escapeHtml($order->getOrder()->ord_reference);
                 $tableData[$c]['ord_status'] = sprintf($status, $class, $order->getId(), $disabled, $orderStatus->osta_id, $orderStatus->ostt_status_name);
                 $tableData[$c]['products'] = number_format($products, 0);
                 $tableData[$c]['price'] = number_format($price, 2) . "€";
@@ -503,6 +505,19 @@ class MelisComOrderListController extends MelisAbstractActionController
                 $tableData[$c]['cper_name'] = $this->getTool()->escapeHtml($cper_name);
                 $tableData[$c]['ord_date_creation'] = $this->getTool()->dateFormatLocale($order->getOrder()->ord_date_creation);
                 $tableData[$c]['last_status_update'] = '';
+                //for the tooltip of the reference order                
+                $toolTipTable->setTable('orderBasketTable'.$order->getId(), 'table-row-'.($c+1). ' ' . 'orderBasketTable'.$order->getId(), '');
+                $toolTipTable->setColumns($this->getToolTipColumns());
+                // Detect if Mobile remove qTipTable
+                $useragent=$_SERVER['HTTP_USER_AGENT'];
+                if(preg_match('/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i',$useragent)||preg_match('/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i',substr($useragent,0,4)))
+                {
+                    $tableData[$c]['ord_reference'] = sprintf($toolTipTextTag, ($c+1), $order->getId(), ($c+1), $this->getTool()->escapeHtml($order->getOrder()->ord_reference));
+                } 
+                else 
+                {
+                    $tableData[$c]['ord_reference'] = sprintf($toolTipTextTag, ($c+1), $order->getId(), ($c+1), $this->getTool()->escapeHtml($order->getOrder()->ord_reference)) . $toolTipTable->render();
+                }
                 
                 $c++;
             }
@@ -513,6 +528,106 @@ class MelisComOrderListController extends MelisAbstractActionController
             'recordsTotal' => $dataCount,
             'recordsFiltered' =>  $dataFilter,
             'data' => $tableData,
+        ));
+    }
+    /**
+     * Returns the translation text
+     * @param String $key
+     * @param array $args
+     * @return string
+     */
+    private function getTranslation($key, $args = []) 
+    {
+        $translator = $this->getServiceManager()->get('translator');
+        $text = vsprintf($translator->translate($key), $args);
+        return $text;
+    }
+    /**
+     * Returns the array of columns used in the basket tooltip table 
+     * @return Laminas\View\Model\JsonModel
+     */  
+    private function getToolTipColumns()
+    {
+        $columns = array(
+            $this->getTranslation('tr_meliscommerce_order_list_col_id') => array(
+                'class' => 'center',               
+                'style' => 'width:10px;',
+            ),
+            $this->getTranslation('tr_meliscommerce_order_list_col_image') => array(
+                'class' => 'center',                
+                'style' => 'width:100px;',
+            ),
+            $this->getTranslation('tr_meliscommerce_order_basket_list_name') => array(
+                'class' => 'text-left',                
+            ),
+            $this->getTranslation('tr_meliscommerce_order_basket_list_sku') => array(
+                'class' => 'text-left',                
+            ),
+            $this->getTranslation('tr_meliscommerce_order_basket_list_qty') => array(
+                'class' => 'text-left',                
+            ),
+            $this->getTranslation('tr_meliscommerce_order_list_col_price') => array(
+                'class' => 'text-left',                
+            ),          
+        );
+        return $columns;
+    }
+    /**
+     * Returns the basket data of the given order id which will be displayed in the tooltip table 
+     * @return Laminas\View\Model\JsonModel
+     */      
+    public function getOrderBasketToolTipAction()
+    {
+        $content = array();
+        if($this->getRequest()->isPost()) {
+            $orderId = (int) $this->getRequest()->getPost('orderId');
+            $orderSvc = $this->getServiceManager()->get('MelisComOrderService');
+            $docService = $this->getServiceManager()->get('MelisComDocumentService');
+            $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
+            $prodSvc = $this->getServiceManager()->get('MelisComProductService');
+            //retrieve the basket given the order id           
+            $basketList = $orderSvc->getOrderBasketByOrderId($orderId);
+            $imageDom = '<img src="%s" width="60" class="rounded-circle"/>';
+            $viewHelperManager = $this->getServiceManager()->get('ViewHelperManager');
+            $table = $viewHelperManager->get('ToolTipTable');
+            $langId = $this->getTool()->getCurrentLocaleID();
+            if ($basketList) {
+                $sContent = '';
+                foreach($basketList as $basket) {
+                    $sContent = '';
+                    // TBODY START
+                    $sContent .= $table->getBody();
+                    $sContent .= $table->openTableRow();
+                    // ID
+                    $sContent .= $table->setRowData($basket->obas_id, array('class' => 'center'));                    
+                    // IMAGE
+                    $imageSrc = '';  
+                    /*get variant image first*/
+                    if (!empty($basket->obas_variant_id)) {
+                        $imageSrc = $docService->getDocDefaultImageFilePath('variant', $basket->obas_variant_id);
+                    }
+                    /*if no variant image then get product image*/
+                    if (empty($imageSrc)) {                                  
+                        $var = $variantSvc->getVariantById($basket->obas_variant_id, $this->getTool()->getCurrentLocaleID());                    
+                        $prod = $prodSvc->getProductById($var->getVariant()->var_prd_id, $this->getTool()->getCurrentLocaleID());                    
+                        $imageSrc = $docService->getDocDefaultImageFilePath('product', $prod->getId());                       
+                    }                        
+                    $image = sprintf($imageDom, $imageSrc);
+                    $sContent .= $table->setRowData($image, array('class' => 'center'));
+                    //Name
+                    $sContent .= $table->setRowData($this->getTool()->escapeHtml($basket->obas_product_name), array('class' => 'center'));
+                    //SKU
+                    $sContent .= $table->setRowData($this->getTool()->escapeHtml($basket->obas_sku), array('class' => 'center'));
+                    //QTY
+                    $sContent .= $table->setRowData($basket->obas_quantity, array('class' => 'center'));
+                    //PRICE
+                    $sContent .= $table->setRowData($basket->obas_price_net . "€", array('class' => 'center'));
+                    $content[] = $sContent;                    
+                }
+            }            
+        }
+        return new JsonModel(array(
+            'content' => $content
         ));
     }
 

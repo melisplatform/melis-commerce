@@ -297,5 +297,7 @@
 		'tr_meliscommerce_clients_contact_person_email_message_fail' => 'Impossible de supprimer l\'email du contact',
 		'tr_meliscommerce_clients_contact_person_email_list_choose_in_list' => 'Choisissez dans la liste',
 		// Files tab
-		'tr_meliscommerce_clients_Contact_tab_files' => 'Fichiers'
+		'tr_meliscommerce_clients_Contact_tab_files' => 'Fichiers',
+		// New order button inside the order tab
+		'tr_meliscommerce_clients_add_new_order' => 'Nouvelle Commande',
 	);

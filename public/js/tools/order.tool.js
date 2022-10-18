@@ -1118,3 +1118,9 @@ window.initCheckPermStatus = function(tblSettings) {
 
 	btnDelete.remove();
 };
+window.initClientIdForNewOrder = function (data) {  	
+	var clientId = $("#id_meliscommerce_order_checkout_choose_contact_step_content").data("clientid");   
+	if (typeof clientId != undefined) {
+		data.clientId = clientId;
+	}
+};
