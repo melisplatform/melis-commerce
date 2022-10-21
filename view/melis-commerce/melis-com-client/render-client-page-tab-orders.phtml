@@ -29,7 +29,7 @@
 		<h3><?php echo $this->translate('tr_meliscommerce_client_page_tab_orders_title')?></h3>					
 		<?php 
 				if (!empty($this->clientId)) { ?>
-					<?php echo $this->translate('tr_meliscommerce_clients_add_new_order')?></button>
+					<button class="btn btn-success addNewClientOrder" style="float:right;" data-clientid="<?=$this->clientId?>"><i class="fa fa-plus"></i> <?php echo $this->translate('tr_meliscommerce_clients_add_new_order')?></button>
 		<?php	}
 		?>		
 	</div>
