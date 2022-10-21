@@ -237,7 +237,21 @@ $(function() {
 
 	// Next button event
 	$body.on("click", ".orderCheckoutNextStep", function() {
-		checkoutNextStep();	
+		var $body = $("html, body"),
+			$contactStep = $("#id_meliscommerce_order_checkout_choose_contact_step"),
+			$contactTabRefresh = $contactStep.find(
+				".orderCheckoutContactListRefresh"
+			);
+		$body.stop().animate({ scrollTop: 0 }, "500", "swing");
+		setTimeout(function() {
+			if (
+				$contactStep.hasClass("active") &&
+				$contactTabRefresh.length > 0 &&
+				melisCore.screenSize < 768
+			) {
+				$contactTabRefresh.trigger("click");
+			}
+		}, 3000);	
 	});
 
 	// Preview button, activating previews step of the checkout steps
@@ -267,9 +281,56 @@ $(function() {
 	// Selecting Contact on Checkout Second Step
 	$body.on("click", ".orderCheckoutSelectContact", function() {
 		var btn = $(this),
-		 	contactId = null,
-		 	nextTabId = null;
-		selectContact(btn, contactId, nextTabId);		
+			tr = btn.closest("tr"),
+			contactId = tr.attr("id"),
+			nxtTabid = btn.data("tabid"),
+			dataString = new Array();
+		btn.attr("disabled", true);
+		dataString.push({
+			name: "contactId",
+			value: contactId,
+		});
+		$.ajax({
+			type: "POST",
+			url: "/melis/MelisCommerce/MelisComOrderCheckout/selectContact",
+			data: dataString,
+			dataType: "json",
+			encode: true,
+		})
+			.done(function(data) {
+				if (data.success) {
+					melisCommerce.switchOrderTab(nxtTabid);
+					setTimeout(function() {
+						melisHelper.zoneReload(
+							"id_meliscommerce_order_checkout_product_list",
+							"meliscommerce_order_checkout_product_list"
+						);
+						melisHelper.zoneReload(
+							"id_meliscommerce_order_checkout_product_bakset",
+							"meliscommerce_order_checkout_product_bakset"
+						);
+						melisHelper.zoneReload(
+							"id_meliscommerce_order_checkout_billing_address",
+							"meliscommerce_order_checkout_billing_address"
+						);
+						melisHelper.zoneReload(
+							"id_meliscommerce_order_checkout_delivery_address",
+							"meliscommerce_order_checkout_delivery_address"
+						);
+					}, 300);
+				} else {
+					melisHelper.melisKoNotification(
+						data.textTitle,
+						data.textMessage,
+						data.errors
+					);
+				}
+				btn.attr("disabled", false);
+			})
+			.fail(function() {
+				btn.attr("disabled", false);
+				alert(translations.tr_meliscore_error_message);
+			});		
 	});
 
 	// Refresh button for Contact List table
@@ -671,25 +732,8 @@ function selectContact(btn, contactId, nextTabId) {
 				alert(translations.tr_meliscore_error_message);
 			});	
 	} 
-}	
 
 //refresh contact list when clicking the next step button
-function checkoutNextStep() {
-	var $body = $("html, body"),
-		$contactStep = $("#id_meliscommerce_order_checkout_choose_contact_step"),
-		$contactTabRefresh = $contactStep.find(
-			".orderCheckoutContactListRefresh"
-		);
-	$body.stop().animate({ scrollTop: 0 }, "500", "swing");
-	setTimeout(function() {
-		if (
-			$contactStep.hasClass("active") &&
-			$contactTabRefresh.length > 0 &&
-			melisCore.screenSize < 768
-		) {
-			$contactTabRefresh.trigger("click");
-		}
-	}, 3000);
 }
 
 window.productNextButtonState = function() {
@@ -761,14 +805,4 @@ window.initCheckoutSelectContactTable = function() {
 	);
 };
 
-window.activateProductsTab = function() {	
-	var clientId = $("#id_meliscommerce_order_checkout").data("clientid");
-	if (typeof clientId !== 'undefined' && clientId != '') {
-		var btn = null,
-			nxtTabid = "#id_meliscommerce_order_checkout_choose_product_step_nav";
-		melisCommerce.switchOrderTab(nxtTabid);
 
-		selectContact(btn, clientId, nxtTabid);
-		checkoutNextStep();	
-	}	
-};

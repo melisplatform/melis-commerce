@@ -896,28 +896,34 @@ $(function() {
 	$body.on("click", "[id^='orderBasketTable']", function() {
 		viewClientOrder($(this).attr("data-orderid"), $(this).attr("data-ref"));		
 	});
+
 	$body.on("click", ".addNewClientOrder", function() {
 		var navTabsGroup = "id_meliscommerce_order_list_page",
 		 	clientId = $(this).attr("data-clientid");
+		 	
 		melisHelper.tabOpen(
 			translations.tr_meliscommerce_orders_Orders,
 			"fa fa fa-cart-plus fa-2x",
 			"id_meliscommerce_order_list_page",
 			"meliscommerce_order_list_page"
 		);
+
 		var alreadyOpen = $(
 			"body #melis-id-nav-bar-tabs li a.tab-element[data-id='id_meliscommerce_order_list_page']"
 		);
+
 		var checkOrdersTab = setInterval(function() {
 			if (alreadyOpen.length) {
+				var oldClientIdInNewOrderTab = $('#id_meliscommerce_order_checkout').data('clientid');
 				melisHelper.tabOpen(
-			translations.tr_meliscommerce_order_checkout_title,
-			"fa fa fa-plus fa-2x",
-			"id_meliscommerce_order_checkout",
-			"meliscommerce_order_checkout",
+					translations.tr_meliscommerce_order_checkout_title,
+					"fa fa fa-plus fa-2x",
+					"id_meliscommerce_order_checkout",
+					"meliscommerce_order_checkout",
 					{clientId: clientId},
-			navTabsGroup
-		);
+					navTabsGroup,
+					addNewClientOrderCallback(oldClientIdInNewOrderTab, clientId)
+				);
 				clearInterval(checkOrdersTab);
 			}
 		}, 500);		
@@ -1036,6 +1042,12 @@ function melisClientKoNotification(title, message, errors, closeByButtonOnly) {
 	$body.append(div);
 }
 
+//will reload the new order tab if the selected client id from the client tab is changed 
+function addNewClientOrderCallback(oldClientIdInNewOrderTab, curClientId) {
+	if (typeof oldClientIdInNewOrderTab !== 'undefined' && oldClientIdInNewOrderTab != curClientId) {		
+		melisHelper.zoneReload('id_meliscommerce_order_checkout', 'meliscommerce_order_checkout', {clientId: curClientId},);
+	} 
+}
 window.initClientStatus = function() {
 	$("#cli_status").bootstrapSwitch();
 };

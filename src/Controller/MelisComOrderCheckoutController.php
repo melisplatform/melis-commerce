@@ -705,11 +705,13 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
         $columns['actions'] = array('text' => $translator->translate('tr_meliscommerce_order_checkout_common_action'));
 
         $melisKey = $this->params()->fromRoute('melisKey', '');
+        $clientId = $this->params()->fromQuery('clientId', ''); 
                 
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->tableColumns = $columns;
         $view->getToolDataTableConfig = $melisTool->getDataTableConfiguration();
+        $view->clientId = $clientId;
         return $view;
     }
 
@@ -753,6 +755,8 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
             $search = $this->getRequest()->getPost('search');
             $search = $search['value'];
 
+            //get client id if there are any
+            $clientId = $this->getRequest()->getPost('clientId', null);
             $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
             $dataCount = $melisEcomClientPersonTable->getTotalData();
 
@@ -768,7 +772,8 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                 'start' => $start,
                 'limit' => $length,
                 'columns' => $melisTool->getSearchableColumns(),
-                'date_filter' => array()                
+                'date_filter' => array(),
+                'client_id' => $clientId
             ), null , 1 , 1);
 
             // store fetched data for data modification (if needed)
