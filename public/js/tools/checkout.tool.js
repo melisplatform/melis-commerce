@@ -3,6 +3,7 @@ $(function() {
 
 	$body.on("click", ".addNewOrder", function() {
 		var navTabsGroup = "id_meliscommerce_order_list_page";
+		var oldClientIdInNewOrderTab = $('#id_meliscommerce_order_checkout').data('clientid');
 
 		melisHelper.tabOpen(
 			translations.tr_meliscommerce_order_checkout_title,
@@ -10,7 +11,8 @@ $(function() {
 			"id_meliscommerce_order_checkout",
 			"meliscommerce_order_checkout",
 			"",
-			navTabsGroup
+			navTabsGroup,
+			addNewOrderCallback(oldClientIdInNewOrderTab, '')
 		);
 	});
 

@@ -922,7 +922,7 @@ $(function() {
 					"meliscommerce_order_checkout",
 					{clientId: clientId},
 					navTabsGroup,
-					addNewClientOrderCallback(oldClientIdInNewOrderTab, clientId)
+					addNewOrderCallback(oldClientIdInNewOrderTab, clientId)
 				);
 				clearInterval(checkOrdersTab);
 			}
@@ -1043,7 +1043,7 @@ function melisClientKoNotification(title, message, errors, closeByButtonOnly) {
 }
 
 //will reload the new order tab if the selected client id from the client tab is changed 
-function addNewClientOrderCallback(oldClientIdInNewOrderTab, curClientId) {
+function addNewOrderCallback(oldClientIdInNewOrderTab, curClientId) {
 	if (typeof oldClientIdInNewOrderTab !== 'undefined' && oldClientIdInNewOrderTab != curClientId) {		
 		melisHelper.zoneReload('id_meliscommerce_order_checkout', 'meliscommerce_order_checkout', {clientId: curClientId},);
 	} 
