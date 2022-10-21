@@ -34,6 +34,7 @@ return [
                         'module' => 'MelisCommerce',
                         'controller' => 'MelisComOrderCheckout',
                         'action' => 'render-order-checkout-page',
+                        'jscallback' => 'activateProductsTab();'
                     ],
                     'interface' => [
                         'meliscommerce_order_checkout_header' => [

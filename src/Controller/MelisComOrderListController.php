@@ -506,7 +506,7 @@ class MelisComOrderListController extends MelisAbstractActionController
                 $tableData[$c]['ord_date_creation'] = $this->getTool()->dateFormatLocale($order->getOrder()->ord_date_creation);
                 $tableData[$c]['last_status_update'] = '';
                 //for the tooltip of the reference order                
-                $toolTipTable->setTable('orderBasketTable'.$order->getId(), 'table-row-'.($c+1). ' ' . 'orderBasketTable'.$order->getId(), '');
+                $toolTipTable->setTable('orderBasketTable'.$order->getId(), 'table-row-'.($c+1). ' ' . 'orderBasketTable'.$order->getId(), 'cursor:pointer;');
                 $toolTipTable->setColumns($this->getToolTipColumns());
                 // Detect if Mobile remove qTipTable
                 $useragent=$_SERVER['HTTP_USER_AGENT'];

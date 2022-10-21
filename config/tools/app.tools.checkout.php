@@ -78,7 +78,7 @@ return [
                     'table' => [
                         'target' => '#orderCheckoutContactListTbl',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComOrderCheckout/getContactList',
-                        'dataFunction' => 'initClientIdForNewOrder',
+                        'dataFunction' => '',
                         'ajaxCallback' => 'initCheckoutSelectContactTable();',
                         'filters' => [
                             'left' => [
