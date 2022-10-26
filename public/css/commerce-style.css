@@ -3403,3 +3403,8 @@ i.fa.fa-download {
 	display: block;
 	background-color: #e61c23 !important;
 }
+/*specific for the order page*/
+.order-info-page .content-cont .widget.widget-tabs-double-2 > .widget-head {	
+	border:1px solid #e5e5e5 !important; 	
+ 	height:70px
+}

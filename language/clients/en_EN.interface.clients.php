@@ -298,5 +298,7 @@
 		'tr_meliscommerce_clients_contact_person_email_message_fail' => 'Unable to delete contact email',
 		'tr_meliscommerce_clients_contact_person_email_list_choose_in_list' => 'Choose in list',
 		// Files tab
-		'tr_meliscommerce_clients_Contact_tab_files' => 'Files'
+		'tr_meliscommerce_clients_Contact_tab_files' => 'Files',
+		// New order button inside the order tab
+		'tr_meliscommerce_clients_add_new_order' => 'New order',
 	);

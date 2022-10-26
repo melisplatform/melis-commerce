@@ -675,40 +675,12 @@ $(function() {
 	});
 
 	$body.on("click", ".clientOrderView", function() {
-		var $this = $(this),
-			orderId = $this.closest("tr").attr("id"),
-			orderRef = $this
-				.closest("tr")
-				.find("td:nth-child(2)")
-				.text(),
-			navTabsGroup = "id_meliscommerce_order_list_page";
+		viewClientOrder($(this).closest("tr").attr("id"), $(this).closest("tr").find("td:nth-child(2) a").text());	
 
 		// Open parent tab
-		melisHelper.tabOpen(
-			translations.tr_meliscommerce_orders_Orders,
-			"fa fa fa-cart-plus fa-2x",
-			"id_meliscommerce_order_list_page",
-			"meliscommerce_order_list_page"
-		);
 
-		var alreadyOpen = $(
-			"body #melis-id-nav-bar-tabs li a.tab-element[data-id='id_meliscommerce_order_list_page']"
-		);
 
 		// check if it exists
-		var checkOrders = setInterval(function() {
-			if (alreadyOpen.length) {
-				melisHelper.tabOpen(
-					orderRef,
-					"fa fa fa-cart-plus fa-2x",
-					orderId + "_id_meliscommerce_orders_page",
-					"meliscommerce_orders_page",
-					{ orderId: orderId },
-					navTabsGroup
-				);
-				clearInterval(checkOrders);
-			}
-		}, 500);
 	});
 
 	$body.on("click", ".clientOrderListRefresh", function() {
@@ -886,7 +858,102 @@ $(function() {
             .DataTable()
             .ajax.reload();
     });
+    $body.on("mouseenter mouseout", ".clientOrderRefToolTipHoverEvent", function(e) {
+	    var $this = $(this),
+	        orderId = $this.data("orderid"),
+	        orderRef = $(this).text(),
+	        loaderText  = '<div class="qtipLoader"><hr/><span class="text-center col-lg-12">Loading...</span><br/></div>';
+	        $("table#orderBasketTable"+orderId).attr('data-orderid', orderId);
+	        $("table#orderBasketTable"+orderId).attr('data-ref', orderRef);
+	        $(".thClassColId").attr("style", "");
+	        $.each($("table#orderBasketTable"+orderId + " thead").nextAll(), function(i,v) {
+	            $(v).remove();
+	        });
+	        $(loaderText).insertAfter("table#orderBasketTable"+orderId + " thead");
+	        $.ajax({
+	            type        : 'POST',
+	            url         : '/melis/MelisCommerce/MelisComOrderList/getOrderBasketToolTip',
+	            data		: {orderId : orderId},
+	            dataType    : 'json',
+	            encode		: true,
+	        }).done(function(data){
+	            $("div.qtipLoader").remove();
+	            if(data.content.length === 0) {
+	                $('<div class="qtipLoader"><hr/><span class="text-center col-lg-12">'+translations.tr_meliscommerce_product_tooltip_no_variants+'</span><br/></div>').insertAfter("table.qtipTable thead");
+	            }
+	            else {
+	                $.each($("table#orderBasketTable"+orderId + " thead").nextAll(), function(i,v) {
+	                    $(v).remove();
+	                });
+	                $.each(data.content.reverse(), function(i ,v) {
+	                    $(v).insertAfter("table#orderBasketTable"+orderId + " thead")
+	                });
+	            }
+	        }).fail(function() {
+	            alert( translations.tr_meliscore_error_message );
+	        });
+	});
+	$body.on("click", "[id^='orderBasketTable']", function() {
+		viewClientOrder($(this).attr("data-orderid"), $(this).attr("data-ref"));		
+	});
+
+	$body.on("click", ".addNewClientOrder", function() {
+		var navTabsGroup = "id_meliscommerce_order_list_page",
+		 	clientId = $(this).attr("data-clientid");
+		 	
+		melisHelper.tabOpen(
+			translations.tr_meliscommerce_orders_Orders,
+			"fa fa fa-cart-plus fa-2x",
+			"id_meliscommerce_order_list_page",
+			"meliscommerce_order_list_page"
+		);
+
+		var alreadyOpen = $(
+			"body #melis-id-nav-bar-tabs li a.tab-element[data-id='id_meliscommerce_order_list_page']"
+		);
+
+		var checkOrdersTab = setInterval(function() {
+			if (alreadyOpen.length) {
+				var oldClientIdInNewOrderTab = $('#id_meliscommerce_order_checkout').data('clientid');
+				melisHelper.tabOpen(
+					translations.tr_meliscommerce_order_checkout_title,
+					"fa fa fa-plus fa-2x",
+					"id_meliscommerce_order_checkout",
+					"meliscommerce_order_checkout",
+					{clientId: clientId},
+					navTabsGroup,
+					addNewOrderCallback(oldClientIdInNewOrderTab, clientId)
+				);
+				clearInterval(checkOrdersTab);
+			}
+		}, 500);		
+	});
 });
+function viewClientOrder(orderId, orderRef) {
+	var navTabsGroup = "id_meliscommerce_order_list_page";
+	melisHelper.tabOpen(
+		translations.tr_meliscommerce_orders_Orders,
+		"fa fa fa-cart-plus fa-2x",
+		"id_meliscommerce_order_list_page",
+		"meliscommerce_order_list_page"
+	);
+	var alreadyOpen = $(
+		"body #melis-id-nav-bar-tabs li a.tab-element[data-id='id_meliscommerce_order_list_page']"
+	);
+	var checkOrders = setInterval(function() {
+		if (alreadyOpen.length) {
+			melisHelper.tabOpen(
+				orderRef,
+				"fa fa fa-cart-plus fa-2x",
+				orderId + "_id_meliscommerce_orders_page",
+				"meliscommerce_orders_page",
+				{ orderId: orderId },
+				navTabsGroup
+			);
+			clearInterval(checkOrders);
+		}
+	}, 500);
+}
 
 window.clientHighlightErrors = function(success, errors, divContainer) {
 	// if all form fields are error color them red
@@ -975,6 +1042,12 @@ function melisClientKoNotification(title, message, errors, closeByButtonOnly) {
 	$body.append(div);
 }
 
+//will reload the new order tab if the selected client id from the client tab is changed 
+function addNewOrderCallback(oldClientIdInNewOrderTab, curClientId) {
+	if (typeof oldClientIdInNewOrderTab !== 'undefined' && oldClientIdInNewOrderTab != curClientId) {		
+		melisHelper.zoneReload('id_meliscommerce_order_checkout', 'meliscommerce_order_checkout', {clientId: curClientId},);
+	} 
+}
 window.initClientStatus = function() {
 	$("#cli_status").bootstrapSwitch();
 };
@@ -1084,4 +1157,32 @@ window.initClientsFilters = function(d) {
     }else{
         d.cli_status = 1;//display the active clients if no filter
     }
+};
+window.initOrderToolTip = function () {
+    $(".tooltipTable").each(function() {
+        var $this = $(this);
+        $this.qtip({
+            content: {
+                text: $(this).next(".tooltiptext"),
+            },
+            overwrite: false,
+            style: {
+                classes: "qtip-tipsy qtip-shadow",
+                width: "auto",
+            },
+            hide: {
+                fixed: true,
+                delay: 300,
+                event: "mouseleave",
+            },
+            position: {
+                target: "mouse",
+                adjust: {
+                    mouse: false,
+                },
+                my: "center center",
+                at: "center center",
+            },
+        });
+    });
 };

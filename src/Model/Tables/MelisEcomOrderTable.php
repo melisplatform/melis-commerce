@@ -104,6 +104,7 @@ class MelisEcomOrderTable extends MelisEcomGenericTable
             ->or->like('melis_ecom_order.ord_reference', $search)
             ->or->like('melis_ecom_order.ord_status', $search)
             ->or->like('melis_ecom_client_person.cper_name', $search)
+            ->or->like('melis_ecom_client_person.cper_email', $search)
             ->or->like('melis_ecom_client_person.cper_firstname', $search)
             ->or->like('melis_ecom_client_company.ccomp_name', $search);
         }

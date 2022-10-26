@@ -27,6 +27,11 @@
     </style>				
 	<div class="melis-product-heading border-bottom" style="margin-bottom: 20px">
 		<h3><?php echo $this->translate('tr_meliscommerce_client_page_tab_orders_title')?></h3>					
+		<?php 
+				if (!empty($this->clientId)) { ?>
+					<button class="btn btn-success addNewClientOrder" style="float:right;" data-clientid="<?=$this->clientId?>"><i class="fa fa-plus"></i> <?php echo $this->translate('tr_meliscommerce_clients_add_new_order')?></button>
+		<?php	}
+		?>		
 	</div>
 	<?php 
     	$this->melisGenericTable()->setTable(array(
@@ -90,6 +95,8 @@
 			    	},
 			        ranges: rangeStringParam,
 			    }, cb);			
+			    //initialize qtip for the order tab
+			    window.initOrderToolTip();
 			});
 		});
 	</script>

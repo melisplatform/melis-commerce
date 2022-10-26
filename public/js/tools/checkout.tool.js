@@ -3,6 +3,7 @@ $(function() {
 
 	$body.on("click", ".addNewOrder", function() {
 		var navTabsGroup = "id_meliscommerce_order_list_page";
+		var oldClientIdInNewOrderTab = $('#id_meliscommerce_order_checkout').data('clientid');
 
 		melisHelper.tabOpen(
 			translations.tr_meliscommerce_order_checkout_title,
@@ -10,7 +11,8 @@ $(function() {
 			"id_meliscommerce_order_checkout",
 			"meliscommerce_order_checkout",
 			"",
-			navTabsGroup
+			navTabsGroup,
+			addNewOrderCallback(oldClientIdInNewOrderTab, '')
 		);
 	});
 
@@ -242,9 +244,7 @@ $(function() {
 			$contactTabRefresh = $contactStep.find(
 				".orderCheckoutContactListRefresh"
 			);
-
 		$body.stop().animate({ scrollTop: 0 }, "500", "swing");
-
 		setTimeout(function() {
 			if (
 				$contactStep.hasClass("active") &&
@@ -253,7 +253,7 @@ $(function() {
 			) {
 				$contactTabRefresh.trigger("click");
 			}
-		}, 3000);
+		}, 3000);	
 	});
 
 	// Preview button, activating previews step of the checkout steps
@@ -284,18 +284,14 @@ $(function() {
 	$body.on("click", ".orderCheckoutSelectContact", function() {
 		var btn = $(this),
 			tr = btn.closest("tr"),
-			// Getting the contactId from the row id attribute
 			contactId = tr.attr("id"),
 			nxtTabid = btn.data("tabid"),
 			dataString = new Array();
-
 		btn.attr("disabled", true);
-
 		dataString.push({
 			name: "contactId",
 			value: contactId,
 		});
-
 		$.ajax({
 			type: "POST",
 			url: "/melis/MelisCommerce/MelisComOrderCheckout/selectContact",
@@ -305,15 +301,12 @@ $(function() {
 		})
 			.done(function(data) {
 				if (data.success) {
-					// switch tab
 					melisCommerce.switchOrderTab(nxtTabid);
-
 					setTimeout(function() {
 						melisHelper.zoneReload(
 							"id_meliscommerce_order_checkout_product_list",
 							"meliscommerce_order_checkout_product_list"
 						);
-
 						melisHelper.zoneReload(
 							"id_meliscommerce_order_checkout_product_bakset",
 							"meliscommerce_order_checkout_product_bakset"
@@ -339,14 +332,14 @@ $(function() {
 			.fail(function() {
 				btn.attr("disabled", false);
 				alert(translations.tr_meliscore_error_message);
-			});
+			});		
 	});
 
 	// Refresh button for Contact List table
 	$body.on("click", ".orderCheckoutContactListRefresh", function() {
 		melisHelper.zoneReload(
 			"id_meliscommerce_order_checkout_choose_contact_step_content",
-			"meliscommerce_order_checkout_choose_contact_step_content"
+			"meliscommerce_order_checkout_choose_contact_step_content"			
 		);
 	});
 
@@ -677,6 +670,12 @@ $(function() {
 	});
 });
 
+//select a contact for the new order
+
+
+
+//refresh contact list when clicking the next step button
+
 window.productNextButtonState = function() {
 	var nextButton = $(".orderCheckoutFirstStepBtn");
 
@@ -745,3 +744,5 @@ window.initCheckoutSelectContactTable = function() {
 		translations.tr_meliscommerce_checkout_tbl_cper_num_orders
 	);
 };
+
+

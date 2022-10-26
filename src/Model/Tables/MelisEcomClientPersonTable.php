@@ -171,6 +171,10 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
             }
              
         }
+        //for the client id 
+        if (!empty($options['client_id'])) {
+            $select->where('cper_client_id = '.$options['client_id']);
+        }
         
         $select->where('cli_status = 1');
         $select->where('cper_status = 1');
