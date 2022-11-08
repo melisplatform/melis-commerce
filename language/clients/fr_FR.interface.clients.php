@@ -53,6 +53,7 @@
 		'tr_meliscommerce_clients_table_Client_id' => 'ID',
 		'tr_meliscommerce_clients_table_Client_status' => 'Statut',
 		'tr_meliscommerce_clients_table_Client_person' => 'Client(s)',
+		'tr_meliscommerce_clients_table_Client_email' => 'Email',
 		'tr_meliscommerce_clients_table_Client_company' => 'Société',
 		'tr_meliscommerce_clients_table_Client_num_orders' => 'Commande(s)',
 		'tr_meliscommerce_clients_table_Client_last_order' => 'Dernière commande',

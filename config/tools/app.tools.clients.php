@@ -81,6 +81,11 @@ return [
                                 'css' => ['width' => '20%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],
+                            'cper_email' => [
+                                'text' => 'tr_meliscommerce_clients_table_Client_email',
+                                'css' => ['width' => '20%', 'padding-right' => '0'],
+                                'sortable' => true,
+                            ],
                             'cli_company' => [
                                 'text' => 'tr_meliscommerce_clients_table_Client_company',
                                 'css' => ['width' => '20%', 'padding-right' => '0'],
@@ -109,6 +114,7 @@ return [
                             'cper_firstname',
                             'ccomp_name',
                             'cli_date_creation',
+                            'cper_email'
                         ],
                         'actionButtons' => [
                             'edit' => [
