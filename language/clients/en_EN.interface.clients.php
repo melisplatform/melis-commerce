@@ -164,6 +164,8 @@
 		'tr_meliscommerce_client_Contact_address_company_state' => 'State',
 		'tr_meliscommerce_client_Contact_address_company_country' => 'Country',
 		'tr_meliscommerce_client_Contact_address_company_logo' => 'Logo',
+        'tr_meliscommerce_client_Contact_address_company_phone_number' => 'Phone Number',
+        'tr_meliscommerce_client_Contact_address_company_website' => 'Website',
 		// Validation and Messages
 		'tr_meliscommerce_client_Contact_unable_to_add' => 'Unable to add contact, please try again',
 		'tr_meliscommerce_client_Contact_input_empty' => 'The input is required and can\'t be empty',

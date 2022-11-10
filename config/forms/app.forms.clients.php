@@ -1476,6 +1476,30 @@ return [
                             ],
                             [
                                 'spec' => [
+                                    'name' => 'ccomp_phone_number',
+                                    'type' => 'MelisText',
+                                    'options' => [
+                                        'label' => 'tr_meliscommerce_client_Contact_address_company_phone_number'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'ccomp_phone_number',
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'ccomp_website',
+                                    'type' => 'MelisText',
+                                    'options' => [
+                                        'label' => 'tr_meliscommerce_client_Contact_address_company_website'
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'ccomp_website',
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'ccomp_logo',
                                     'type' => 'file',
                                     'attributes' => [
