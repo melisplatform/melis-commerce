@@ -78,6 +78,53 @@ return [
                         'jscallback' => '',
                         'jsdatas' => []
                     ],
+                    'modal_form' => [
+                        'revenue_plugin_tab_01' => array(
+                            'tab_title' => 'tr_meliscommerce_general_common_configuration',
+                            'tab_icon'  => 'fa fa-cog',
+                            'tab_form_layout' => 'MelisCommerce/plugin-common-form-config',
+                            'attributes' => array(
+                                'name' => 'revenue_plugin_tab_01',
+                                'id' => 'revenue_plugin_tab_01',
+                                'method' => '',
+                                'action' => '',
+                            ),
+                            'hydrator'  => 'Laminas\Hydrator\ArraySerializableHydrator',
+                            'elements' => array(
+                                array(
+                                    'spec' => array(
+                                        'name' => 'activeFilter',
+                                        'type' => 'Select',
+                                        'options' => [
+                                            'label' => 'tr_meliscommerce_general_default_filter',
+                                            'disable_inarray_validator' => true,
+                                            'value_options' => [
+                                                'hourly' => 'tr_melis_commerce_orders_dashboard_statistics_hourly',
+                                                'daily' => 'tr_melis_commerce_orders_dashboard_statistics_daily',
+                                                'weekly' => 'tr_melis_commerce_orders_dashboard_statistics_weekly',
+                                                'monthly' => 'tr_melis_commerce_orders_dashboard_statistics_monthly',
+                                            ],
+                                        ],
+                                        'attributes' => array(
+                                            'id' => 'activeFilter',
+                                            'class' => 'form-control'
+                                        ),
+                                    ),
+                                ),
+                            ),
+                            'input_filter' => array(
+                                'activeFilter' => array(
+                                    'name'     => 'activeFilter',
+                                    'required' => false,
+                                    'validators' => array(
+                                        
+                                    ),
+                                    'filters'  => array(
+                                    ),
+                                ),
+                            )
+                        )
+                    ]
                 ],
             ],
         ],

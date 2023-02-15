@@ -65,4 +65,6 @@
 
         // Modal
         'tr_meliscommerce_general_plugin_properties_title' => 'Properties',
+
+        'tr_meliscommerce_general_default_filter' => 'Default filter',
 	);

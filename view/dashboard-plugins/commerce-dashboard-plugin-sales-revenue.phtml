@@ -1,11 +1,14 @@
 <?php if($this->isAccessable) { ?>
+    <?php
+        $activeFilter = $this->pluginConfig['datas']['activeFilter'];    
+    ?>
     <div class="row row-merge">
         <div class="col-sm-12 bg-white">
             <div class="innerAll">
                 <div class="tab-content">
-                    <div class="tab-pane active commerce-dashboard-plugin-sales-revenue-button-header" id="chart-simple-lines-<?php echo $this->pluginConfig['plugin_id']?>">
+                    <div id="chart-simple-lines-<?php echo $this->pluginConfig['plugin_id']?>" class="tab-pane active commerce-dashboard-plugin-sales-revenue-button-header">
                         <div class="btn-group float-right" data-toggle="buttons">
-                            <label class="btn btn-default btn-sm active <?= ($activeFilter == 'hourly') ? 'active' : '' ?>">
+                            <label class="btn btn-default btn-sm <?= ($activeFilter == 'hourly') ? 'active' : '' ?>">
                                 <input type="radio" class="commerce-dashboard-plugin-sales-revenue" name="commerce-dashboard-plugin-sales-revenue" value="hourly"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_hourly')?>
                             </label>
                             <label class="btn btn-default btn-sm <?= ($activeFilter == 'daily') ? 'active' : '' ?>">
@@ -19,7 +22,7 @@
                             </label>
                         </div>
                         <div class="separator bottom"></div>
-                        <div class="flotchart-holder commerce-dashboard-plugin-sales-revenue-placeholder" id="commerce-dashboard-plugin-sales-revenue-placeholder-<?php echo $this->pluginConfig['plugin_id']?>" ></div>
+                        <div class="flotchart-holder commerce-dashboard-plugin-sales-revenue-placeholder" id="commerce-dashboard-plugin-sales-revenue-placeholder-<?php echo $this->pluginConfig['plugin_id']?>" data-activefilter="<?= $activeFilter ?>"></div>
                     </div>
                 </div>
             </div>
