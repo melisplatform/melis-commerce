@@ -1812,6 +1812,69 @@ return [
                             ],
                         ]
                     ],
+                    'meliscommerce_client_list_export_company_contacts_form' => [
+                        'attributes' => [
+                            'name' => 'client-list-export-company-contacts',
+//                            'id' => '',
+                            'method' => 'POST',
+                            'action' => '',
+                        ],
+                        'hydrator'  => 'Laminas\Hydrator\ArraySerializableHydrator',
+                        'elements' => [
+                            [
+                                'spec' => [
+                                    'name' => 'export_type',
+                                    'type' => 'Select',
+                                    'options' => [
+                                        'label' => 'tr_meliscommerce_clients_common_label_type',
+                                        'disable_inarray_validator' => true,
+                                        'value_options' => [
+                                            'contact' => 'tr_meliscommerce_clients_common_label_contact',
+                                            'company' => 'tr_meliscommerce_clients_table_Client_company',
+                                        ],
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'export_type',
+                                        'class' => 'form-control',
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'separator',
+                                    'type' => 'MelisText',
+                                    'options' => [
+                                        'label' => 'tr_meliscommerce_orders_sperator',
+                                    ],
+                                    'attributes' => [
+                                        'id' => '',
+                                        'value' => ';',
+                                        'maxlength' => '1'
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'input_filter' => [
+                            'separator' => [
+                                'name' => 'separator',
+                                'require' => true,
+                                'validators' => [
+                                    [
+                                        'name' => 'NotEmpty',
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_address_error_empty',
+                                            ],
+                                        ],
+                                    ]
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                        ],
+                    ],
                 ]
             ]
         ]

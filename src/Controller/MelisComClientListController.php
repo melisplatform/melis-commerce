@@ -192,7 +192,18 @@ class MelisComClientListController extends MelisAbstractActionController
         $view->melisKey = $melisKey;
         return $view;
     }
-    
+
+    /**
+     * @return \Laminas\View\Model\ViewModel
+     */
+    public function renderClientListTableExportAccountsAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        return $view;
+    }
+
     /**
      * Render Client custom page refresh button, this button attach to table plugin
      * 
@@ -296,7 +307,31 @@ class MelisComClientListController extends MelisAbstractActionController
         $view->setVariable('meliscommerce_client_list_export_form', $clientExportForm);
         return $view;
     }
-    
+
+    /**
+     * @return ViewModel
+     */
+    public function renderClientListContentExportCompanyContactsFormAction()
+    {
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
+        $datepickerInit = $melisTool->datePickerInit('date_start');
+        $datepickerInit .= $melisTool->datePickerInit('date_end');
+
+        $view = new ViewModel();
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
+        $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_client_list_export_company_contacts_form','meliscommerce_client_list_export_company_contacts_form');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+        $clientExportForm = $factory->createForm($appConfigForm);
+
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view->melisKey = $melisKey;
+        $view->datePickerInit = $datepickerInit;
+        $view->setVariable('meliscommerce_client_list_export_company_contacts_form', $clientExportForm);
+        return $view;
+    }
+
     /**
      * This method will return the List of Clients
      * 
@@ -582,5 +617,158 @@ class MelisComClientListController extends MelisAbstractActionController
         
         return $response;
 
+    }
+
+    /**
+     * @return HttpResponse|string
+     */
+    public function exportClientsCompanyContactsAction()
+    {
+        ini_set('max_execution_time', -1);
+        // set memory limit to infinte
+        ini_set('memory_limit', '-1');
+        $queryData = $this->request->getQuery()->toArray();
+
+        $translator = $this->getServiceManager()->get('translator');
+
+        $delimiter = $queryData['separator'] ?? ';';
+        $exportType = $queryData['export_type'] ?? 'contacts';
+
+        $fileName = date('Ymd').'_'.$exportType.'.csv';
+
+        $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
+        $melisEcomClientCompanyTable = $this->getServiceManager()->get('MelisEcomClientCompanyTable');
+        $civilityTable = $this->getServiceManager()->get('MelisEcomCivilityTransTable');
+
+        $container = new Container('meliscore');
+        $langId = $container['melis-lang-id'];
+
+        if($exportType == 'contact') {
+            $getData = $melisEcomClientPersonTable->getAllContactsAndCompany()->toArray();
+            foreach($getData as $key => $val){
+                //get contact civility
+                $civility = $civilityTable->getCivilityTransByCivilityId($val['cper_civility'], $langId)->current();
+                if(!empty($civility))
+                    $getData[$key]['cper_civility'] = $civility->civt_min_name;
+
+                //remove unnecessary fields
+                unset($getData[$key]['cper_password']);
+                unset($getData[$key]['cper_lang_id']);
+                unset($getData[$key]['cper_status']);
+                unset($getData[$key]['cper_password_recovery_key']);
+                unset($getData[$key]['cper_date_edit']);
+            }
+        }else {
+            $getData = $melisEcomClientCompanyTable->fetchAll()->toArray();
+        }
+
+        $exportData = [];
+        foreach($getData as $key => $val){
+            $dt = [];
+            foreach($val as $k => $d){
+                $fname = $translator->translate('tr_meliscommerce_clients_export_col_'.$k);
+                $dt["$fname"] = $d;
+
+                unset($val[$k]);
+            }
+            $exportData[$key] = $dt;
+        }
+
+        $data = $exportData;
+        $data = $this->mbEncode($data);
+
+        return $this->executeCompanyContactExport($data, $fileName, $delimiter);
+    }
+
+    /**
+     * applied utf8_encode
+     */
+    private function mbEncode($data)
+    {
+        $newData = [];
+        if (! empty($data)) {
+            foreach ($data as $idx => $val) {
+                foreach (array_keys($val) as $key) {
+                    $tmp = $val[$key];
+                    // encode utf8_encode
+                    $newData[$idx][utf8_encode($key)] = $tmp;
+
+                }
+            }
+        }
+
+        return $newData;
+    }
+
+    /**
+     * @param $data
+     * @param $fileName
+     * @param null $customSeparator
+     * @param null $customIsEnclosed
+     * @return HttpResponse|string
+     */
+    private function executeCompanyContactExport($data, $fileName, $customSeparator = null, $customIsEnclosed = null)
+    {
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
+
+        $csvConfig = $melisCoreConfig->getItem('meliscore/datas/default/export/csv');
+        $separator = empty($customSeparator) ? $csvConfig['separator'] : $customSeparator;
+
+        if($customIsEnclosed != null)
+            $enclosed = $customIsEnclosed == 0 ? '' : '"';
+        else
+            $enclosed = $csvConfig['enclosed'];
+
+        $striptags = (int) $csvConfig['striptags'] == 1 ? true : false;
+        $response = '';
+
+        if ($data) {
+            $csvColumn = $data[0];
+
+            $content = '';
+
+            // for columns
+            foreach ($csvColumn as $key => $colText) {
+                $content .= $key . $separator;
+            }
+            $content .= "\r\n";
+
+            // for contents
+            foreach ($data as $dataKey => $dataValue) {
+
+                foreach ($dataValue as $key => $value) {
+
+                    if ($striptags) {
+                        $value = utf8_encode($value);
+                    } else {
+                        if (is_int($value)) {
+                            $value = (string) $value;
+                            $value = utf8_encode($value);
+                        }
+                    }
+
+                    /**
+                     * to solve the issue of 1 double quoute is to replace it with 2 double quote
+                     * so that it will not break the csv file
+                     */
+                    $value = str_replace('"', '""', $value);
+                    // content
+                    $content .= $enclosed . $value . $enclosed . $separator;
+
+                }
+                $content .= "\r\n";
+            }
+
+            $response = new Response();
+            $headers = $response->getHeaders();
+            $headers->addHeaderLine('Content-Type', 'text/csv; charset=utf-8');
+            $headers->addHeaderLine('Content-Disposition', "attachment; filename=\"" . $fileName . "\"");
+            $headers->addHeaderLine('Accept-Ranges', 'bytes');
+            $headers->addHeaderLine('Content-Length', strlen($content));
+            $headers->addHeaderLine('fileName', $fileName);
+            $response->setContent($content);
+        }
+
+        return $response;
     }
 }

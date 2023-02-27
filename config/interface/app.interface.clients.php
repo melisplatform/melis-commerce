@@ -515,6 +515,18 @@ return [
                                 'action' => 'render-client-list-content-export-form',
                             ],
                         ],
+                        'meliscommerce_client_list_content_export_company_contacts_form' => [
+                            'conf' => [
+                                'id' => 'id_meliscommerce_client_list_content_export_company_contacts_form',
+                                'name' => 'tr_meliscommerce_client_list_content_export_company_contacts_form',
+                                'melisKey' => 'meliscommerce_client_list_content_export_company_contacts_form',
+                            ],
+                            'forward' => [
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComClientList',
+                                'action' => 'render-client-list-content-export-company-contacts-form',
+                            ],
+                        ],
                     ],
                 ],
                 'meliscommerce_client_modal' => [
