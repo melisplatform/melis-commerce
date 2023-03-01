@@ -64,4 +64,6 @@
 	    'tr_meliscommerce_input_empty' => 'Le champ ne peut être vide',
 
         'tr_meliscommerce_general_plugin_properties_title' => 'Propriétés',
+
+		'tr_meliscommerce_general_default_filter' => 'Filtre par défaut',
 	);

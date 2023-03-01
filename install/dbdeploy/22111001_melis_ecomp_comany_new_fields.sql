@@ -1,0 +1,1 @@
+ALTER TABLE `melis_ecom_client_company` ADD `ccomp_phone_number` VARCHAR(50) NULL AFTER `ccomp_add_country`, ADD `ccomp_website` VARCHAR(100) NULL AFTER `ccomp_phone_number`;
