@@ -683,7 +683,7 @@ class MelisComClientListController extends MelisAbstractActionController
     /**
      * applied utf8_encode
      */
-    private function mbEncode($data)
+    public function mbEncode($data)
     {
         $newData = [];
         if (! empty($data)) {
@@ -707,7 +707,7 @@ class MelisComClientListController extends MelisAbstractActionController
      * @param null $customIsEnclosed
      * @return HttpResponse|string
      */
-    private function executeCompanyContactExport($data, $fileName, $customSeparator = null, $customIsEnclosed = null)
+    public function executeCompanyContactExport($data, $fileName, $customSeparator = null, $customIsEnclosed = null)
     {
         $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
 

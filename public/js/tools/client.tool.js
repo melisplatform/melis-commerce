@@ -738,7 +738,9 @@ $(function() {
         }
     });
 
-    $body.on("click", "#exportClientsCompanyContacts", function(){
+    $body.on("click", "#exportClientsCompanyContacts", function(e){
+    	e.preventDefault();
+
         var _this = $(this);
         var data = $("form#client-list-export-company-contacts").serializeArray();
 
