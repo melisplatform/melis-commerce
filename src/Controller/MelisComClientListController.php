@@ -752,6 +752,7 @@ class MelisComClientListController extends MelisAbstractActionController
                      * so that it will not break the csv file
                      */
                     $value = str_replace('"', '""', $value);
+                    $value = str_replace(array("\r", "\n"), '', $value);
                     // content
                     $content .= $enclosed . $value . $enclosed . $separator;
 
