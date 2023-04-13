@@ -24,12 +24,21 @@ class MelisComLinksService extends MelisComGeneralService
      * @param int $typeLink category/product/variant
      * @param int $id id of the item
      * @param int $langId lang id of the item
+     * @param int $pageId preferred page id 
      * @return string the link
      */
-    public function getPageLink($typeLink, $id, $langId, $absolute = false)
+    public function getPageLink($typeLink, $id, $langId, $absolute = false, $pageId = null)
     {
+
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_page_link_start', $arrayParameters);
+
         // Retrieve cache version if front mode to avoid multiple calls
-        $cacheKey = 'getPageLink_' . $typeLink . '_' . $id . '_' . $langId . '_' . $absolute;
+        $cacheKey = 'getPageLink_' . implode('_', $arrayParameters); //$typeLink . '_' . $id . '_' . $langId . '_' . $absolute;
         $cacheConfig = 'commerce_memory_services';
         $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
@@ -39,18 +48,11 @@ class MelisComLinksService extends MelisComGeneralService
             return $cache->getItem($cacheKey);
         }
         
-        // Event parameters prepare
-        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
-        $results = array();
-        
-        // Sending service start event
-        $arrayParameters = $this->sendEvent('meliscommerce_service_get_page_link_start', $arrayParameters);
-        
         switch ($typeLink)
         {
-            case 'category': $results = $this->getPageLinkCategory($id, $langId, $absolute); break;
-            case 'product': $results = $this->getPageLinkProduct($id, $langId, $absolute); break;
-            case 'variant': $results = $this->getPageLinkVariant($id, $langId, $absolute); break;
+            case 'category': $results = $this->getPageLinkCategory($arrayParameters['id'], $arrayParameters['langId'], $arrayParameters['absolute'], false, $arrayParameters['pageId']); break;
+            case 'product': $results = $this->getPageLinkProduct($arrayParameters['id'], $arrayParameters['langId'], $arrayParameters['absolute'], false, $arrayParameters['pageId']); break;
+            case 'variant': $results = $this->getPageLinkVariant($arrayParameters['id'], $arrayParameters['langId'], $arrayParameters['absolute'], false, $arrayParameters['pageId']); break;
             default: $results = '';
         }
         
@@ -65,7 +67,7 @@ class MelisComLinksService extends MelisComGeneralService
         return $arrayParameters['results'];
     }
     
-    public function getPageIdAssociated($typeLink, $id, $langId)
+    public function getPageIdAssociated($typeLink, $id, $langId, $pageId = null)
     {
         // Retrieve cache version if front mode to avoid multiple calls
         $cacheKey = 'getPageIdAssociated_' . $typeLink . '_' . $id . '_' . $langId;
@@ -87,9 +89,9 @@ class MelisComLinksService extends MelisComGeneralService
         
         switch ($typeLink)
         {
-            case 'category': $results = $this->getPageLinkCategory($id, $langId, false, true); break;
-            case 'product': $results = $this->getPageLinkProduct($id, $langId, false, true); break;
-            case 'variant': $results = $this->getPageLinkVariant($id, $langId, false, true); break;
+            case 'category': $results = $this->getPageLinkCategory($id, $langId, false, true, $pageId); break;
+            case 'product': $results = $this->getPageLinkProduct($id, $langId, false, true, $pageId); break;
+            case 'variant': $results = $this->getPageLinkVariant($id, $langId, false, true, $pageId); break;
             default: $results = '';
         }
         
@@ -111,11 +113,19 @@ class MelisComLinksService extends MelisComGeneralService
      * @param int $langId lang id of the item
      * @return string the link
      */
-    public function getPageLinkCategory($id, $langId, $absolute = false, $onlyPageId = false)
+    public function getPageLinkCategory($id, $langId, $absolute = false, $onlyPageId = false, $pageId = null)
     {
+
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+    
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_page_link_category_start', $arrayParameters);
+
         // Retrieve cache version if front mode to avoid multiple calls
         // $cacheKey = 'category-getPageLinkCategory_' . $id . '_' . $langId . '_' . $absolute;
-        $cacheKey = 'category-' . $id . '_' . $langId . '_' . $absolute;
+        $cacheKey = 'category-' .implode('_', $arrayParameters); // 'category-' . $arrayParameters['id'] . '_' . $arrayParameters['langId'] . '_' . $arrayParameters['absolute'] . '_' . $arrayParameters['absolute'];
         // $cacheConfig = 'commerce_memory_services';
         $cacheConfig = 'commerce_big_services';
         $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
@@ -126,13 +136,6 @@ class MelisComLinksService extends MelisComGeneralService
         if ($cache->hasItem($cacheKey)){
             return $cache->getItem($cacheKey);
         }
-        
-        // Event parameters prepare
-        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
-        $results = array();
-    
-        // Sending service start event
-        $arrayParameters = $this->sendEvent('meliscommerce_service_get_page_link_category_start', $arrayParameters);
     
         // Service implementation start
         $melisComCategoryService = $this->getServiceManager()->get('MelisComCategoryService');
@@ -140,8 +143,8 @@ class MelisComLinksService extends MelisComGeneralService
 
         krsort($catSeo);
 
+        $pageId = $arrayParameters['pageId'];
         $pageUrl = '';
-        $pageId = null;
         $link = '';
         if (!empty($catSeo))
         {
@@ -196,11 +199,18 @@ class MelisComLinksService extends MelisComGeneralService
      * @param int $langId lang id of the item
      * @return string the link
      */
-    public function getPageLinkProduct($id, $langId, $absolute = false, $onlyPageId = false)
+    public function getPageLinkProduct($id, $langId, $absolute = false, $onlyPageId = false, $pageId = null)
     {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+    
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_page_link_product_start', $arrayParameters);
+
         // Retrieve cache version if front mode to avoid multiple calls
         // $cacheKey = 'product-getPageLinkProduct_' . $id . '_' . $langId . '_' . $absolute;
-        $cacheKey = 'product-' . $id . '_' . $langId . '_' . $absolute;
+        $cacheKey = 'product-' . implode('_', $arrayParameters); // $id . '_' . $langId . '_' . $absolute;
         // $cacheConfig = 'commerce_memory_services';
         $cacheConfig = 'commerce_big_services';
         $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
@@ -211,26 +221,19 @@ class MelisComLinksService extends MelisComGeneralService
             return $cache->getItem($cacheKey);
         }
         
-        // Event parameters prepare
-        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
-        $results = array();
-    
-        // Sending service start event
-        $arrayParameters = $this->sendEvent('meliscommerce_service_get_page_link_product_start', $arrayParameters);
-    
         // Service implementation start
         $melisComProductService = $this->getServiceManager()->get('MelisComProductService');
         
         $productDatas = $melisComProductService->getProductTitleAndSeoById($id, $langId);
 
-        $pageId = null;
+        $pageId = $arrayParameters['pageId'];
         $link = '';
         $pageUrl = '';
         if (!empty($productDatas))
         {
             if (!empty($productDatas->eseo_page_id))
                 $pageId = $productDatas->eseo_page_id;
-            else
+            elseif (empty($pageId))
             {
                 $commerceConfig = $this->getServiceManager()->get('config');
                 $defaultProductPage = $commerceConfig['plugins']['meliscommerce']['datas']['seo_default_pages']['product'];
@@ -276,11 +279,18 @@ class MelisComLinksService extends MelisComGeneralService
      * @param int $langId lang id of the item
      * @return string the link
      */
-    public function getPageLinkVariant($id, $langId, $absolute = false, $onlyPageId = false)
+    public function getPageLinkVariant($id, $langId, $absolute = false, $onlyPageId = false, $pageId = null)
     {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+    
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_page_link_variant_start', $arrayParameters);
+
         // Retrieve cache version if front mode to avoid multiple calls
         // $cacheKey = 'variant-getPageLinkVariant_' . $id . '_' . $langId . '_' . $absolute;
-        $cacheKey = 'variant-' . $id . '_' . $langId . '_' . $absolute;
+        $cacheKey = 'variant-' . implode('_', $arrayParameters); // $id . '_' . $langId . '_' . $absolute;
         // $cacheConfig = 'commerce_memory_services';
         $cacheConfig = 'commerce_big_services';
         $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
@@ -290,27 +300,20 @@ class MelisComLinksService extends MelisComGeneralService
         if ($cache->hasItem($cacheKey)){
             return $cache->getItem($cacheKey);
         }
-        
-        // Event parameters prepare
-        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
-        $results = array();
-    
-        // Sending service start event
-        $arrayParameters = $this->sendEvent('meliscommerce_service_get_page_link_variant_start', $arrayParameters);
     
         // Service implementation start
         $melisComVariantService = $this->getServiceManager()->get('MelisComVariantService');
         
         $variantDatas = $melisComVariantService->getVariantAndSeoById($id, $langId);
 
-        $pageId = null;
+        $pageId = $arrayParameters['pageId'];
         $link = '';
         $pageUrl = '';
         if (!empty($variantDatas))
         {
             if (!empty($variantDatas->eseo_page_id))
                 $pageId = $variantDatas->eseo_page_id;
-            else
+            elseif (empty($pageId))
             {
                 $commerceConfig = $this->getServiceManager()->get('config');
                 $defaultVariantPage = $commerceConfig['plugins']['meliscommerce']['datas']['seo_default_pages']['variant'];

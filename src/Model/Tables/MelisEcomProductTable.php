@@ -410,18 +410,18 @@ class MelisEcomProductTable extends MelisEcomGenericTable
     {
         $variants = array();
         $attrSelect = new \Laminas\Db\Sql\Select;
-        $attrSelect->columns(array(new Expression('DISTINCT(melis_ecom_variant_attribute_value.vatv_variant_id) AS variants')));
+
         $attrSelect->from('melis_ecom_variant_attribute_value');
-        foreach($attrValIds as $key => $val){
-            $attrSelect->join(array($key.'_var_attr'=>'melis_ecom_variant_attribute_value'), $key.'_var_attr.'.'vatv_variant_id = melis_ecom_variant_attribute_value.vatv_variant_id', array());
-            $attrSelect->where->in($key.'_var_attr.'.'vatv_attribute_value_id', $val);
-        }
+        $attrSelect->columns(['vatv_variant_id', 'ctr' => new Expression('Count(vatv_variant_id)')]);
+        $attrSelect->where->in('vatv_attribute_value_id', $attrValIds);
+        $attrSelect->group('vatv_variant_id');
+        $attrSelect->having('ctr ='. count($attrValIds));
 
         $attrResult = $this->getTableGateway()->selectwith($attrSelect);
 
-        foreach ($attrResult As $val){
-            array_push($variants, $val->variants);
-        }
+        foreach ($attrResult As $val)
+            array_push($variants, $val->vatv_variant_id);
+
         return $variants;
     }
     

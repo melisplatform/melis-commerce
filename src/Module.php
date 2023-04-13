@@ -59,6 +59,7 @@ use MelisCommerce\Listener\MelisCommerceOrderBasketProductAmountListener;
 use MelisCommerce\Listener\MelisCommerceComputeOrderCostListener;
 use MelisCommerce\Listener\MelisCommerceProductPriceLogsTranslationListener;
 use MelisCommerce\Listener\MelisCommerceDataTableTranslationsListener;
+use MelisCommerce\Listener\MelisCommerceDeleteProductVariantListener;
 
 /**
  * Class Module
@@ -138,6 +139,7 @@ class Module
         (new MelisCommerceOrderBasketProductAmountListener())->attach($eventManager);
         (new MelisCommerceComputeOrderCostListener())->attach($eventManager);
         (new MelisCommerceProductPriceLogsTranslationListener())->attach($eventManager);
+        (new MelisCommerceDeleteProductVariantListener())->attach($eventManager);
 
         // GDPR
         (new MelisCommerceGdprAutoDeleteActionDeleteUserListener())->attach($eventManager);

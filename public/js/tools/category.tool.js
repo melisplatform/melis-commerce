@@ -1061,51 +1061,54 @@ window.initCategoryProducts = function(data, tblSettings) {
 	data.catLangLocale = catLangLocale;
 
 	$("#categoryProductListTbl").on("row-reorder.dt", function(e, diff, edit) {
-		var result =
-			"Reorder started on row: " + edit.triggerRow.data()[1] + "<br>";
+		
+		// var result =
+		// 	"Reorder started on row: " + edit.triggerRow.data()[1] + "<br>";
 
-		for (var i = 0, ien = diff.length; i < ien; i++) {
-			var rowData = $categoryProductListTbl.row(diff[i].node).data();
-			result +=
-				rowData[1] +
-				" updated to be in position " +
-				diff[i].newData +
-				" (was " +
-				diff[i].oldData +
-				")<br>";
+		// for (var i = 0, ien = diff.length; i < ien; i++) {
+		// 	var rowData = $categoryProductListTbl.row(diff[i].node).data();
+		// 	result +=
+		// 		rowData[1] +
+		// 		" updated to be in position " +
+		// 		diff[i].newData +
+		// 		" (was " +
+		// 		diff[i].oldData +
+		// 		")<br>";
+		// }
+
+		/*  
+			Description: This code is to get the new order of the products,save them to an array
+			and send it to the MelisComCategoryController method reOrderCategoryProductsAction
+		*/
+		let newOrder = [];
+		let table = $("#categoryProductListTbl  tbody tr");
+		let rows = table.filter('[data-categoryid]');
+		let categoryID = rows[0].getAttribute('data-categoryid');
+		for(let i = 0; i<= rows.length - 1; i++){
+			newOrder.push(rows[i].getAttribute('id'));
 		}
 
-		if (!$.isEmptyObject(diff)) {
-			var dataString = new Array(),
-				prdNodes = new Array();
+		
 
-			$.each(diff, function() {
-				prdNodes.push(this.node.id + "-" + this.newPosition);
-			});
-
-			dataString.push({
-				name: "catPrdOrderData",
-				value: prdNodes.join(),
-			});
-
-			dataString = $.param(dataString);
-
-			$.ajax({
-				type: "POST",
-				url: "/melis/MelisCommerce/MelisComCategory/reOrderCategoryProducts",
-				data: dataString,
-				dataType: "json",
-				encode: true,
-			})
-				.done(function(data) {
-					if (!data.success) {
-						alert(translations.tr_meliscore_error_message);
-					}
-				})
-				.fail(function() {
-					alert(translations.tr_meliscore_error_message);
-				});
-		}
+		$.ajax({
+			type: "POST",
+			url: "/melis/MelisCommerce/MelisComCategory/reOrderCategoryProducts",
+			data: {
+				'newOrder' : newOrder,
+				'categoryID' : categoryID
+			},
+			dataType: "json",
+			encode: true,
+		})
+		.done(function(data) {
+			if (!data.success) {
+				alert(translations.tr_meliscore_error_message);
+			}
+		})
+		.fail(function() {
+			alert(translations.tr_meliscore_error_message);
+		});
+		
 	});
 };
 

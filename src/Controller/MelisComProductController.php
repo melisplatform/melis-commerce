@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Melis Technology (http://www.melistechnology.com)
  *
@@ -1175,7 +1174,6 @@ class MelisComProductController extends MelisAbstractActionController
     public function saveProductAction()
     {
         $data = $this->getRequest()->getPost()->toArray();
-
         $success = 0;
         $errors = array();
         $textTitle = 'tr_meliscommerce_products_Products';
@@ -1189,9 +1187,10 @@ class MelisComProductController extends MelisAbstractActionController
         if($this->getRequest()->isPost()) {
 
             $data = $this->getRequest()->getPost()->toArray();
+
             $data = $this->getTool()->sanitizeRecursive($data, array('ptxt_field_short','ptxt_field_long'));
 
-            $productId = $data['product'][0]['prd_id'] ? (int) $data['product'][0]['prd_id'] : null;
+            $productId = isset($data['product'][0]['prd_id']) ? (int) $data['product'][0]['prd_id'] : null;
             
             if ($productId){
                 $logTypeCode = 'ECOM_PRODUCT_UPDATE';

@@ -679,7 +679,14 @@ class MelisComCategoryService extends MelisComGeneralService
         if (!empty($categoryRes))
         {
             $categoryRes = $categoryRes[0];
-            
+           /* Checking if the category name is empty, if it is empty then it is setting the language id
+           to 2 or 1 depending on the language id. Then it is getting the parent category and
+           setting the category result to the first element of the array. */
+            if(empty($categoryRes['catt_name'])) {
+                $languageId = $arrayParameters['langId'] == 1 ? 2 : 1;
+                $categoryRes = $categoryTbl->getParentCategory($arrayParameters['parentId'], $languageId, $arrayParameters['addSeo']);
+                $categoryRes = $categoryRes[0];
+            }
             // Checking if the Parent Id is not -1 which is the root of categories
             if ($categoryRes['cat_father_cat_id'] != -1)
             {

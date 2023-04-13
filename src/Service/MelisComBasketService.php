@@ -697,4 +697,27 @@ class MelisComBasketService extends MelisComGeneralService
         
         return $arrayParameters['results'];
     }
+
+    public function deleteVariantFromBasketByVariantId($variantId)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = false;
+        
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_basket_transfer_start', $arrayParameters);
+
+        // Removing variants from Anonymous Basket 
+        $basketAnonymousTable = $this->getServiceManager()->get('MelisEcomBasketAnonymousTable');
+        $basketAnonymousTable->deleteByField('bano_variant_id', $variantId);
+
+        // Removing variants from Persistent Basket 
+        $basketPersistentTable = $this->getServiceManager()->get('MelisEcomBasketPersistentTable');
+        $basketPersistentTable->deleteByField('bper_variant_id', $variantId);
+
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_delete_variant_from_basket_by_variant_id_end', $arrayParameters);
+
+        return $arrayParameters;
+    }
 }

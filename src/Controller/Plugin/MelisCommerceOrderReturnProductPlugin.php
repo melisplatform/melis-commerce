@@ -231,7 +231,20 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
                                                 $variant = $variantSvc->getVariantById($variantId, $langId)->getVariant();
                                                 //get product name
                                                 $productId = $variant->var_prd_id;
-                                                $productName = $prodSvc->getProductName($productId, $langId);
+                                                // $productName = $prodSvc->getProductName($productId, $langId);
+
+                                                $productDetails = []; 
+                                                $productDetails = $prodSvc->getProductBasicDetails($productId, null, null, $langId);
+                                                $productNameLangId = null;
+                                                $productName = '';
+                                                if ($productDetails) {
+                                                    $productName = $productDetails['prd_text'];
+                                                    $productNameLangId = $productDetails['prd_text_lang_id'];
+                                                    $productDetails[] = $productName;
+                                                }
+                                                $productDetails[] = $productId;
+                                                $productDetails[] = $variant->var_sku;
+                                                
 
                                                 //add other return details
                                                 $returnProductDetailsData['pretd_sku'] = $variant->var_sku;
@@ -244,7 +257,7 @@ class MelisCommerceOrderReturnProductPlugin extends MelisTemplatingPlugin
 
                                                 //set msg product details
                                                 if ($includePrdDetailsOnMsg)
-                                                    $msgProdDetails .= "<span>" . $productName . " / " . $productId . " / " . $variant->var_sku . ": " . $quantity . "</span><br>";
+                                                    $msgProdDetails .= "<span>" . implode(' \ ', $productDetails) . ": " . $quantity . "</span><br>";
                                             }
                                             if ($includePrdDetailsOnMsg)
                                                 $msgProdDetails .= "</p>";

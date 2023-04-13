@@ -973,7 +973,6 @@ class MelisComCategoryController extends MelisAbstractActionController
      */
     public function reOrderCategoryProductsAction(){
         $translator = $this->getServiceManager()->get('translator');
-
         $request = $this->getRequest();
         // Default Values
         $errors = array();
@@ -982,22 +981,24 @@ class MelisComCategoryController extends MelisAbstractActionController
         $textMessage = '';
 
         if($request->isPost()) {
+            $MelisEcomProductCategoryTable = $this->getServiceManager()->get('MelisEcomProductCategoryTable');
             $postValues = $request->getPost()->toArray();
-
-            $catPrdOrderData = explode(',', $postValues['catPrdOrderData']);
-
-            $melisComCategoryService = $this->getServiceManager()->get('MelisComCategoryService');
-
-            foreach ($catPrdOrderData As $val){
-                $catPrdTemp = explode('-', $val);
-
-                // Saving new Product Order
-                $melisComCategoryService->updateCategoryProductsOrdering($catPrdTemp[0], ($catPrdTemp[1] + 1));
+            $newOrder = $postValues['newOrder'];
+            $categoryID = (int) $postValues['categoryID'];
+            foreach($newOrder as $index => $value) {
+                $MelisEcomProductCategoryTable->updateWithMultipleCondition(
+                [
+                    'pcat_order' => $index + 1,
+                ],
+                [
+                    'pcat_id' => $value,
+                    'pcat_cat_id' => $categoryID   
+                ]);
             }
-
+            $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
+            $commerceCacheService->deleteCache('category', $categoryID);
             $status = 1;
         }
-
         $response = array(
             'success' => $status,
             'textTitle' => $textTitle,
@@ -1202,7 +1203,11 @@ class MelisComCategoryController extends MelisAbstractActionController
                         if ($cval->pcat_cat_id == $catId) {
                             $categoryProduct['pcat_order'] = $cval->pcat_order;
                             $categoryProduct['DT_RowId'] = $cval->pcat_id;
-                            $categoryProduct['DT_RowAttr'] = array('data-productid' => $productId, 'data-productname' => $productStr);
+                            $categoryProduct['DT_RowAttr'] = [
+                                'data-productid' => $productId,
+                                'data-productname' => $productStr,
+                                'data-categoryid' => $cval->pcat_cat_id
+                            ];
                         }
 
                     }

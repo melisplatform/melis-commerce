@@ -926,7 +926,7 @@ class MelisComClientService extends MelisComGeneralService
 		
 		try
 		{
-			if (is_null($arrayParameters['clientId']))
+			if (is_null($arrayParameters['clientId']) || empty($arrayParameters['clientId']))
 			{
 				$arrayParameters['client']['cli_date_creation'] = date('Y-m-d H:i:s');
 			}

@@ -729,14 +729,17 @@ class MelisComClientController extends MelisAbstractActionController
                 // email checking
                 if (! empty($postValues['cper_email'])) {
                     // check if email is not used twice
-                    $personWithSameEmail = $clientSvc->getPersonsByEmail($postValues['cper_email']);
+                    
+                    if($postValues['cper_status'] == 1) {
+                        $personWithSameEmail = $clientSvc->getPersonsByEmail($postValues['cper_email']);
 
-                    foreach ($personWithSameEmail as $mail) {
-                        if ($mail['cpmail_cper_id'] != $postValues['cper_id']) {
-                            $errors['cper_email'] = [
-                                'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
-                                'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
-                            ];
+                        foreach ($personWithSameEmail as $mail) {
+                            if ($mail['cpmail_cper_id'] != $postValues['cper_id']) {
+                                $errors['cper_email'] = [
+                                    'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
+                                    'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
+                                ];
+                            }
                         }
                     }
                 }
@@ -744,20 +747,25 @@ class MelisComClientController extends MelisAbstractActionController
                 if (! empty($postValues['cper_email'])) {
                     // check if email is not used twice
                     if (! in_array($postValues['cper_email'], $emailList)) {
-                        $emailList[] = $postValues['cper_email'];
-                        $personWithSameEmail = $clientSvc->getPersonsByEmail($postValues['cper_email']);
 
-                        if (! empty($personWithSameEmail)) {
+                        if($postValues['cper_status'] == 1) { 
+                            $emailList[] = $postValues['cper_email'];
+                            $personWithSameEmail = $clientSvc->getPersonsByEmail($postValues['cper_email']);
+
+                            if (! empty($personWithSameEmail)) {
+                                $errors['cper_email'] = [
+                                    'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
+                                    'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
+                                ];
+                            }
+                        }
+                    } else {
+                        if($postValues['cper_status'] == 1) { 
                             $errors['cper_email'] = [
                                 'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
                                 'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
                             ];
                         }
-                    } else {
-                        $errors['cper_email'] = [
-                            'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
-                            'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
-                        ];
                     }
                 }
             }
@@ -829,6 +837,7 @@ class MelisComClientController extends MelisAbstractActionController
             'textTitle' => $textTitle,
             'textMessage' => $textMessage,
             'errors' => $errors,
+            "debug" => $postValues['cper_status'],
             'clientContactDom' => $clientContactDom
         );
         

@@ -459,12 +459,22 @@ class MelisComProductService extends MelisComGeneralService
 	 * Returns the product name of the selected product ID based on the language ID
 	 * @param String $productId
 	 * @param int $langId
+	 * @param int $suffixLang this will add language name if the param langId not match
 	 * @return String
 	 */
-	public function getProductName($productId, $langId)
+	public function getProductName($productId, $langId, $suffixLang = 1)
 	{
+		// Event parameters prepare
+		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+		$results = array();
+		
+		// Sending service start event
+		$prodTextTable = $this->getServiceManager()->get('MelisEcomProductTextTable');
+		$arrayParameters = $this->sendEvent('meliscommerce_service_product_get_product_name_start', $arrayParameters);
+
 		// Retrieve cache version if front mode to avoid multiple calls
-		$cacheKey = 'product-' . $productId . '-getProductName_' . $productId . '_' . $langId;
+		$cacheKey = 'product-' .implode('_', array_merge($arrayParameters, [__FUNCTION__])); //. $productId . '-getProductName_' . $productId . '_' . $langId;
+
 		$cacheConfig = 'commerce_big_services';
 		$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
 //        $results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
@@ -473,14 +483,6 @@ class MelisComProductService extends MelisComGeneralService
 		if ($cache->hasItem($cacheKey)){
 			return $cache->getItem($cacheKey);
 		}
-		
-		// Event parameters prepare
-		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
-		$results = array();
-		
-		// Sending service start event
-		$prodTextTable = $this->getServiceManager()->get('MelisEcomProductTextTable');
-		$arrayParameters = $this->sendEvent('meliscommerce_service_product_get_product_name_start', $arrayParameters);
 	
 		// Service implementation start 
 		$data = $this->getProductTextsById($arrayParameters['productId'], 'TITLE');
@@ -494,8 +496,11 @@ class MelisComProductService extends MelisComGeneralService
 		if(empty($productName)) {
 			foreach($data as $text) {
 				if(!empty($text->ptxt_field_short)) {
-					$produecText = $prodTextTable->getProductTextsWithLang($arrayParameters['productId'], $text->ptxt_lang_id)->current();
-					$productName = $produecText->ptxt_field_short.' ('.$produecText->elang_name.')';
+					$productText = $prodTextTable->getProductTextsWithLang($arrayParameters['productId'], $text->ptxt_lang_id)->current();
+					$productName = $productText->ptxt_field_short;
+
+					if ($arrayParameters['suffixLang'])
+						$productName .= ' ('.$productText->elang_name.')';
 				}
 			}
 		}
@@ -1181,10 +1186,13 @@ class MelisComProductService extends MelisComGeneralService
 		/**
 		 * Product texts
 		 */
+		$prdTextLang = null;
 		$prdText = '';
 		$prdTexts = $this->getProductTextsById($arrayParameters['productId'], 'TITLE', $arrayParameters['langId']);
-		if (!empty($prdTexts))
+		if (!empty($prdTexts)) {
 			$prdText = ($prdTexts[0]->ptxt_type == 1) ? $prdTexts[0]->ptxt_field_short : $prdTexts[0]->ptxt_field_long;
+			$prdTextLang = $prdTexts[0]->ptxt_lang_id;
+		}
 
 		/**
 		 * Product categories
@@ -1195,6 +1203,7 @@ class MelisComProductService extends MelisComGeneralService
 		$product = [
 			'prd_id' => $arrayParameters['productId'],
 			'prd_text' => (!empty($prdText)) ? $prdText : $product->prd_reference,
+			'prd_text_lang_id' => $prdTextLang,
 			'prd_details' => (array)$product,
 			'prd_price_details' => $prdPriceDetails,
 			'prd_categories' => $prdCats,

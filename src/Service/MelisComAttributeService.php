@@ -1119,7 +1119,7 @@ class MelisComAttributeService extends MelisComGeneralService
                             $attributeData = $attrValTable->getParentAttributeByAttrId($val)->toArray();
                             if(!empty($attributeData)){
                                 foreach($attributeData as $atts){
-                                    $attrNewKey = strtolower(str_replace(' ', '_', $atts['attr_reference']));
+                                    $attrNewKey = $atts['attr_reference'];//strtolower(str_replace(' ', '_', $atts['attr_reference']));
                                     if(!array_key_exists($attrNewKey, $newDatas)){
                                         $newDatas[$attrNewKey] = [];
                                     }
