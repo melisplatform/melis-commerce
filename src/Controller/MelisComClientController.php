@@ -1546,6 +1546,13 @@ class MelisComClientController extends MelisAbstractActionController
                             $hasMainContact = true;
                         }
                     }
+
+                    // if the contact is inactive, assign cper_email to temp variable then unset it to $val to remove validation
+                    $tempEmailHolder = null;
+                    if((int)$val['cper_status'] != 1) {
+                        $tempEmailHolder = $val['cper_email'];
+                        unset($val['cper_email']);
+                    }
                     
                     // PropertyFrom 1 assign as Client Contact Form
                     $propertyForm_1 = $factory_1->createForm($appConfigForm_1);
@@ -1560,17 +1567,20 @@ class MelisComClientController extends MelisAbstractActionController
                             $propertyForm_1->getInputFilter()->remove('cper_password');
                             $propertyForm_1->getInputFilter()->remove('cper_confirm_password');
                         }
-                        
-                        if (! empty($val['cper_email'])) {
-                            $personWithSameEmail = $melisComClientService->getPersonsByEmail($val['cper_email']);
+                        if((int)$val['cper_status'] != 0) {
+                            if (! empty($val['cper_email'])) {
+                                $personWithSameEmail = $melisComClientService->getPersonsByEmail($val['cper_email']);
 
-                            foreach ($personWithSameEmail as $mail) {
-                                if ($mail['cpmail_cper_id'] != $val['cper_id']) {
-                                    $errors_1_temp['cper_email'] = array(
-                                        'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
-                                        'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
-                                    );
-                                }
+                                // foreach ($personWithSameEmail as $mail) {
+                                    if(count($personWithSameEmail) >= 1) {
+                                        if ($personWithSameEmail[0]['cpmail_cper_id'] != $val['cper_id']) {
+                                            $errors_1_temp['cper_email'] = array(
+                                                'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
+                                                'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
+                                            );
+                                        }
+                                    }
+                                // }
                             }
                         }
                     }
