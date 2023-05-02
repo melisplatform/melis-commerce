@@ -292,7 +292,7 @@ return [
                                     ],
                                     'attributes' => [
                                         'id' => 'cper_email',
-                                        'required' => 'required',
+                                        // 'required' => 'required',
                                     ]
                                 ]
                             ],
@@ -480,7 +480,7 @@ return [
                             ],
                             'cper_email' => [
                                 'name'     => 'cper_email',
-                                'required' => true,
+                                'required' => false,
                                 'validators' => [
                                     [
                                         'name' => 'EmailAddress',
