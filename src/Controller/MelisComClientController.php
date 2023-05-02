@@ -1591,7 +1591,9 @@ class MelisComClientController extends MelisAbstractActionController
                             $clientContactsDataTemp = $propertyForm_1->getData();
                             // After validation confirm password would remove from final and validated data for contact datas
                             unset($clientContactsDataTemp['cper_confirm_password']);
-                            
+                            if((int)$val['cper_status'] != 1) {
+                                $clientContactsDataTemp['cper_email'] = $tempEmailHolder;
+                            }
                             // Client Contact Addresses validations
                             if (!empty($val['contact_address'])) {
                                 $clientContactAddresses = $val['contact_address'];
