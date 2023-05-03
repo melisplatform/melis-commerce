@@ -937,8 +937,10 @@ class MelisComClientService extends MelisComGeneralService
 				unset($val['contact_address']);
 				unset($val['reset_pass_flag']);
 				$successflag = $this->saveClientPerson($val, $personAddress, $cperId);
-				$successflag = $this->saveClientPersonEmail($cperId ?? $successflag, $val['cper_email']);
-				
+				if(!empty($val['cper_email']) && (int)$val['cper_status'] != 0)
+				{	
+					$successflag = $this->saveClientPersonEmail($cperId ?? $successflag, $val['cper_email']);
+				}
 				if (!$successflag)
 				{
 					return null;
