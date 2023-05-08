@@ -85,7 +85,9 @@ class MelisComAttributeService extends MelisComGeneralService
             
             $entAttribute->setAttribute($data);
             foreach($this->getAttrValByField('atval_attribute_id', $data->attr_id) as $attrVal){
-                $attributeValues = array_merge($attributeValues, $this->getAttributeValuesById($attrVal['atval_id'], $arrayParameters['langId']));
+                if(is_array($attributeValues) && is_array($this->getAttributeValuesById($attrVal['atval_id'], $arrayParameters['langId']))) {
+                    $attributeValues = array_merge($attributeValues, $this->getAttributeValuesById($attrVal['atval_id'], $arrayParameters['langId']));
+                }
             }
 
             $entAttribute->setAttributeValues($attributeValues);

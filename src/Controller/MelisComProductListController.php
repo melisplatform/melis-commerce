@@ -566,10 +566,12 @@ class MelisComProductListController extends MelisAbstractActionController
         
                 //if no corresponding translation get the first available trans
                 if(!$foundTrans){
-                    foreach($attr->atval_trans as $valTrans){
-                        $foundTrans = true;
-                        $value = $valTrans->$valCol;
-                        break;
+                    if(is_array($attr->atval_trans)) {
+                        foreach($attr->atval_trans as $valTrans){
+                            $foundTrans = true;
+                            $value = $valTrans->$valCol;
+                            break;
+                        }
                     }
                 }
         

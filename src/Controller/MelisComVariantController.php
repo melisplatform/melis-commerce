@@ -490,44 +490,46 @@ class MelisComVariantController extends MelisAbstractActionController
             
             //set the attribute values
             $attrVals = array();
-            foreach($tmp->getAttributeValues() as $attrVal){
-                // check for attribute translations
-                $value = '';
-                $id = $attrVal->atval_id;
-                $valCol = 'avt_v_'.$attrVal->atype_column_value;
-                
-                //check for attribute value translations
-                $foundTrans = false;
-                foreach($attrVal->atval_trans as $valTrans){
-                    if($valTrans->avt_lang_id == $langId){
-                        $foundTrans = true;
-                        $value = $valTrans->$valCol;
-                    }
-                }
-                
-                //if no corresponding tranlsation get the first available trans
-                if(!$foundTrans){
+            if(is_array($tmp->getAttributeValues())) {
+                foreach($tmp->getAttributeValues() as $attrVal){
+                    // check for attribute translations
+                    $value = '';
+                    $id = $attrVal->atval_id;
+                    $valCol = 'avt_v_'.$attrVal->atype_column_value;
+                    
+                    //check for attribute value translations
+                    $foundTrans = false;
                     foreach($attrVal->atval_trans as $valTrans){
-                        $foundTrans = true;
-                        $value = $valTrans->$valCol;
-                        break;
+                        if($valTrans->avt_lang_id == $langId){
+                            $foundTrans = true;
+                            $value = $valTrans->$valCol;
+                        }
                     }
+                    
+                    //if no corresponding tranlsation get the first available trans
+                    if(!$foundTrans){
+                        foreach($attrVal->atval_trans as $valTrans){
+                            $foundTrans = true;
+                            $value = $valTrans->$valCol;
+                            break;
+                        }
+                    }
+                    
+                    //use the attribute value reference as name if no translation
+                    if(!$foundTrans){
+                        $value = $attrVal->atval_reference;
+                    } 
+                    
+                    // edit value before rendering if necessary
+                    switch($valCol){
+                        case 'avt_v_datetime': $value = $this->getTool()->dateFormatLocale($value); break;
+                        case 'avt_v_text':
+                        case 'avt_v_varchar' : $value = $this->getTool()->limitedText($value,50); break;
+                    }                
+                    
+                    $attrVals[] = array('id' => $id, 'value' => $value);
+                    
                 }
-                
-                //use the attribute value reference as name if no translation
-                if(!$foundTrans){
-                    $value = $attrVal->atval_reference;
-                } 
-                
-                // edit value before rendering if necessary
-                switch($valCol){
-                    case 'avt_v_datetime': $value = $this->getTool()->dateFormatLocale($value); break;
-                    case 'avt_v_text':
-                    case 'avt_v_varchar' : $value = $this->getTool()->limitedText($value,50); break;
-                }                
-                
-                $attrVals[] = array('id' => $id, 'value' => $value);
-                
             }
             $attribute['values'] = $attrVals;
             $attributes[] = $attribute;
