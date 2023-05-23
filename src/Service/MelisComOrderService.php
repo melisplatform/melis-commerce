@@ -297,7 +297,7 @@ class MelisComOrderService extends MelisComGeneralService
 		$line1[] = addslashes($order->ord_status);
 		$line1[] = addslashes($order->status_name);
 		$line1[] = addslashes($order->ord_client_person_id);
-		$line1[] = addslashes($person->civility_trans[0]->civt_min_name);
+		$line1[] = addslashes($person->civility_trans[0]->civt_min_name ?? '');
 		$line1[] = addslashes($person->cper_name);
 		$line1[] = addslashes($person->cper_firstname);
 		$line1[] = addslashes($client->client_company_name);
