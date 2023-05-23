@@ -51,7 +51,7 @@ class MelisComBasketService extends MelisComGeneralService
         return $arrayParameters['results'];
     }
 
-    public function getBasketItemByFields($clientId, $clientKey = null, $variantId, $fields = [], $langId = null)
+    public function getBasketItemByFields($clientId, $clientKey, $variantId, $fields = [], $langId = null)
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());

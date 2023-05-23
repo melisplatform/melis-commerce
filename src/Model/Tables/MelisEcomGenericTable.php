@@ -202,4 +202,11 @@ class MelisEcomGenericTable extends  MelisGenericTable
 		
 		return $rowset;
 	}
+
+	private function array_map_assoc($callback , $array ){
+		$r = array();
+		foreach ($array as $key=>$value)
+			$r[$key] = $callback($key,$value);
+		return $r;
+	}
 }
