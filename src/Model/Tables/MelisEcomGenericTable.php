@@ -179,4 +179,34 @@ class MelisEcomGenericTable extends  MelisGenericTable
         
         return $resultSet;
 	}
+
+	public function getEntryByFields($fields)
+	{
+		$cacheKey = get_class($this) . '_getEntryByFields_' . implode(',', $this->array_map_assoc(function($k,$v){return "$k ($v)";}, $fields));
+		$cacheConfig = 'commerce_memory_services';
+		if ($this->cacheResults)
+		{
+			// Retrieve cache version if front mode to avoid multiple calls
+			$melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
+			$results = $melisEngineCacheSystem->getCacheByKey($cacheKey, $cacheConfig);
+			if (!empty($results)) return $results;
+		} 
+
+		$select = $this->getTableGateway()->getSql()->select();
+		$where = new Where();
+		$select->where($fields);
+		$rowset = $this->getTableGateway()->selectwith($select);
+		
+		if ($this->cacheResults)
+			$melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $rowset);
+		
+		return $rowset;
+	}
+
+	private function array_map_assoc($callback , $array ){
+		$r = array();
+		foreach ($array as $key=>$value)
+			$r[$key] = $callback($key,$value);
+		return $r;
+	}
 }
