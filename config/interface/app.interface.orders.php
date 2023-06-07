@@ -184,6 +184,13 @@ return [
                                 'name' => 'tr_meliscommerce_orders_Orders',
                                 'icon' => 'fa fa-cart-plus',
                             ],
+                            'interface' => [
+                                'meliscommerce_order_list_page' => [
+                                    'conf' => [
+                                        'type' => 'meliscommerce/interface/meliscommerce_order_list/interface/meliscommerce_order_list_page',
+                                    ]
+                                ]
+                            ]
                         ],
                         'meliscommerce_order_list_page' => [
                             'conf' => [
