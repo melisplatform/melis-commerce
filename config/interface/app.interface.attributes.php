@@ -32,6 +32,14 @@ return [
                                 'name' => 'tr_meliscommerce_attribute_list_page',
                                 'icon' => 'fa fa-cubes',
                             ],
+                            'interface' => [
+                                'meliscommerce_attribute_list_page' => [
+                                    'conf' => [
+                                        'type' => 'meliscommerce/interface/meliscommerce_attribute_list/interface/meliscommerce_attribute_list_page',
+                                        
+                                    ],
+                                ]
+                            ]
                         ],
                         'meliscommerce_attribute_list_page' => [
                             'conf' => [

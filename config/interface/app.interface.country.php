@@ -32,6 +32,14 @@ return [
                                 'name' => 'tr_meliscommerce_countries',
                                 'icon' => 'fa fa-globe',
                             ],
+							'interface' => [
+                                'meliscommerce_country_list_container' => [
+                                    'conf' => [
+                                        'type' => 'meliscommerce/interface/meliscommerce_country_list/interface/meliscommerce_country_list_container',
+                                        
+                                    ],
+                                ]
+                            ]
                         ],
 			            // country TOOL
 			            'meliscommerce_country_list_container' => [

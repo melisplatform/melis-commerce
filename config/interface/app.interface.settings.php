@@ -32,6 +32,14 @@ return [
                                 'name' => 'tr_meliscommerce_settings',
                                 'icon' => 'fa fa-wrench',
                             ],
+                            'interface' => [
+                                'meliscommerce_settings_page' => [
+                                    'conf' => [
+                                        'type' => 'meliscommerce/interface/meliscommerce_settings/interface/meliscommerce_settings_page',
+                                        
+                                    ],
+                                ]
+                            ]
                         ],
                         'meliscommerce_settings_page' => [
                             'conf' => [

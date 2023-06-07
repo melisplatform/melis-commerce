@@ -31,6 +31,14 @@ return [
                                 'icon' => 'fa fa-euro',
                                 'rights_checkbox_disable' => true,
                             ],
+                            'interface' => [
+                                'meliscommerce_currency_conf' => [
+                                    'conf' => [
+                                        'type' => 'meliscommerce/interface/meliscommerce_currency_lists/interface/meliscommerce_currency_conf',
+                                        
+                                    ],
+                                ]
+                            ]
                         ],
                         'meliscommerce_currency_conf' => [
                             'conf' => [

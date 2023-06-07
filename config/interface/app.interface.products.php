@@ -36,6 +36,13 @@ return [
                                   'name' => 'tr_meliscommerce_products_Products',
                                   'icon' => 'icon-shippment',
                               ],
+                              'interface' => [
+                                'meliscommerce_product_list_container' => [
+                                    'conf' => [
+                                        'type' => 'meliscommerce/interface/meliscommerce_product_list/interface/meliscommerce_product_list_container'
+                                    ]
+                                ]
+                            ]
                           ],
                           'meliscommerce_product_list_container' => [
                               'conf' => [

@@ -32,6 +32,14 @@ return [
                                 'name' => 'tr_meliscommerce_language',
                                 'icon' => 'fa fa-language',
                             ],
+							'interface' => [
+                                'meliscommerce_language_list_container' => [
+                                    'conf' => [
+                                        'type' => 'meliscommerce/interface/meliscommerce_language_list/interface/meliscommerce_language_list_container',
+                                        
+                                    ],
+                                ]
+                            ]
                         ],
 			            // LANGUAGE TOOL
 			            'meliscommerce_language_list_container' => [

@@ -34,6 +34,14 @@ return [
                                 'name' => 'tr_meliscommerce_coupon_list_page',
                                 'icon' => 'fa fa-ticket',
                             ],
+                            'interface' => [
+                                'meliscommerce_coupon_list_page' => [
+                                    'conf' => [
+                                        'type' => 'meliscommerce/interface/meliscommerce_coupon_list/interface/meliscommerce_coupon_list_page',
+                                        
+                                    ],
+                                ]
+                            ]
                         ],
                         'meliscommerce_coupon_list_page' => [
                             'conf' => [

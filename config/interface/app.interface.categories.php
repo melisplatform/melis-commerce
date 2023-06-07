@@ -37,6 +37,14 @@ return [
                                 'name' => 'tr_meliscommerce_categories_Categories',
                                 'icon' => 'fa fa-book',
                             ],
+                            'interface' => [
+                                'meliscommerce_categories_page' => [
+                                    'conf' => [
+                                        'type' => 'meliscommerce/interface/meliscommerce_categories/interface/meliscommerce_categories_page',
+                                        
+                                    ],
+                                ]
+                            ]
                         ],
                         'meliscommerce_categories_page' => [
                             'conf' => [

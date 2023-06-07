@@ -56,6 +56,14 @@ return [
                                 'name' => 'tr_meliscommerce_order_status_tool_leftmenu',
                                 'icon' => 'fa fa-plus-square',
                             ],
+                            'interface' => [
+                                'meliscommerce_order_status_tool_page' => [
+                                    'conf' => [
+                                        'type' => 'meliscommerce/interface/meliscommerce_order_status_tool/interface/meliscommerce_order_status_tool_page',
+                                        
+                                    ],
+                                ]
+                            ]
                         ],
                         'meliscommerce_order_status_tool_page' => [
                             'conf' => [
