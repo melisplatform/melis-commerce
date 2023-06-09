@@ -76,9 +76,9 @@
 		'tr_meliscommerce_price_coupon_applied' => '%m: Coupon applied to q% product(s) with a price of ps% for a total of t%',
 		'tr_meliscommerce_price_coupon_applied_remaining' => '%m: The remaining q product(s) used a regular price of p%, for a total of t%',
 
-		'tr_meliscommerce_coupon_list_header_container' => 'Coupon list header',
-		'tr_meliscommerce_coupon_list_header_left_container' => 'Left container',
-		'tr_meliscommerce_coupon_list_header_right_container' => 'Right container',
-		'tr_meliscommerce_coupon_list_content' => 'Coupon list content',
-		'tr_meliscommerce_coupon_list_content_table' => 'Coupon list table', 
+		'tr_meliscommerce_coupon_list_header_container' => 'Header',
+		'tr_meliscommerce_coupon_list_header_left_container' => 'Header Left',
+		'tr_meliscommerce_coupon_list_header_right_container' => 'Header Right',
+		'tr_meliscommerce_coupon_list_content' => 'Content',
+		'tr_meliscommerce_coupon_list_content_table' => 'Table', 
 	);

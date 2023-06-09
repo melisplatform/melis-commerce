@@ -161,5 +161,9 @@ return array(
     'tr_meliscommerce_products_page_page_association_3' => 'Page associée 3',
     'tr_meliscommerce_products_page_page_association_tooltip' => 'Saisissez l\'identifiant de la page à associer ou sélectionnez la page depuis l\'arborescence. Pour une page externe saisissez l\'URL de la page.',
     'tr_meliscommerce_products_table_select' => 'Choisissez',
-    'tr_meliscommerce_products_text_filter' => 'Filtrer'
+    'tr_meliscommerce_products_text_filter' => 'Filtrer',
+    
+    'tr_meliscommerce_products_Products_header' => 'En-tête',
+    'tr_meliscommerce_products_Products_header_add' => 'Ajouter un produit',
+    'tr_meliscommerce_products_Products_content' => 'Contenu',
 );

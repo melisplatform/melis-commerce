@@ -75,4 +75,11 @@
 
         'tr_meliscommerce_attribute_delete_product_attr_title' => 'Attribut du produit',
         'tr_meliscommerce_attribute_delete_product_attr_title_msg' => 'Impossible de supprimer l\'attribut, certaines variantes utilisent cet attribut.',
+
+		'tr_meliscommerce_attribute_list_header_container' => 'En-tête',
+		'tr_meliscommerce_attribute_list_header_left_container' => 'En-tête gauche',
+		'tr_meliscommerce_attribute_list_header_right_container' => 'En-tête droite',
+		'tr_meliscommerce_attribute_list_content' => 'Contenu',
+		'tr_meliscommerce_attribute_list_content_table' => 'Liste',
+
 	);

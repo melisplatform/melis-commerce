@@ -257,4 +257,20 @@
         'tr_melis_commerce_orders_return_product_form_header' => 'You wish to return this product, please fill the form :',
         'tr_melis_commerce_orders_return_product_placed_on' => 'Placed On :',
         'tr_melis_commerce_orders_return_details' => 'Details :',
+
+        'tr_meliscommerce_order_status_tool_page' => 'Statuts commande',
+        'tr_meliscommerce_order_status_header_container' => 'En-tête',
+        'tr_meliscommerce_order_status_header_left_container' => 'En-tête gauche',
+        'tr_meliscommerce_order_status_header_right_container' => 'En-tête droite',
+        'tr_meliscommerce_order_status_content' => 'Contenu',
+        'tr_meliscommerce_order_status_content_table' => 'Liste',
+
+        'tr_meliscommerce_order_list_header_container' => 'En-tête',
+        'tr_meliscommerce_order_list_widgets' => 'Indicateurs',
+        'tr_meliscommerce_order_list_content' => 'Contenu',
+        'tr_meliscommerce_order_list_content_table' => 'Liste',
+        'tr_meliscommerce_order_list_header_left_container' => 'En-tête gauche',
+        'tr_meliscommerce_order_list_header_right_container' => 'En-tête droite',
+        'tr_meliscommerce_order_list_add_order' => 'Créer une commande',
+
 	);

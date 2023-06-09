@@ -75,4 +75,10 @@
 		'tr_meliscommerce_price_coupon_value' => '%m: Coupon de %v',
 		'tr_meliscommerce_price_coupon_applied' => '%m: Coupon appliqué à %q produit(s) avec un prix de %p, pour un total de %t',
 		'tr_meliscommerce_price_coupon_applied_remaining' => '%m: Les %q produits restant ont utilisé un prix de base de %p, pour un total de %t',
+
+		'tr_meliscommerce_coupon_list_header_container' => 'En-tête',
+		'tr_meliscommerce_coupon_list_header_left_container' => 'En-tête gauche',
+		'tr_meliscommerce_coupon_list_header_right_container' => 'En-tête droite',
+		'tr_meliscommerce_coupon_list_content' => 'Contenu',
+		'tr_meliscommerce_coupon_list_content_table' => 'Liste', 
 	);

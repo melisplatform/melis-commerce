@@ -13,4 +13,9 @@ return [
     'tr_meliscommerce_clients_group_delete_ko' => 'Impossible de supprimer le groupe',
     'tr_meliscommerce_clients_group_delete_confirm_msg' => 'Etes-vous sûr(e) de vouloir supprimer ce groupe ?',
     'tr_meliscommerce_clients_group_delete_confirm_title' =>  'Supprimer le groupe',
+
+    'tr_meliscommerce_clients_group_tool_header_container' => 'En-tête',
+    'tr_meliscommerce_clients_group_tool_header_add_button' => 'boutton ajouter',
+    'tr_meliscommerce_clients_group_tool_content' => 'Contenu',
+    'tr_meliscommerce_clients_group_tool_content_modal' => 'Modal',
 ];

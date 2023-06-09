@@ -76,9 +76,9 @@
         'tr_meliscommerce_attribute_delete_product_attr_title' => 'Product attribute',
         'tr_meliscommerce_attribute_delete_product_attr_title_msg' => 'Cannot delete attribute, some variants are using this attribute.',
 
-		'tr_meliscommerce_attribute_list_header_container' => 'Attribute list header',
-		'tr_meliscommerce_attribute_list_header_left_container' => 'Left container',
-		'tr_meliscommerce_attribute_list_header_right_container' => 'Right container',
-		'tr_meliscommerce_attribute_list_content' => 'Attribute list content',
-		'tr_meliscommerce_attribute_list_content_table' => 'Attribute list table',
+		'tr_meliscommerce_attribute_list_header_container' => 'Header',
+		'tr_meliscommerce_attribute_list_header_left_container' => 'Header Left',
+		'tr_meliscommerce_attribute_list_header_right_container' => 'Header Right',
+		'tr_meliscommerce_attribute_list_content' => 'Content listing',
+		'tr_meliscommerce_attribute_list_content_table' => 'Table listing',
 	);

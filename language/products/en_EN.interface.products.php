@@ -162,7 +162,7 @@ return array(
     'tr_meliscommerce_products_page_page_association_tooltip' => 'Either type in the ID of the page to associate or select the page in the treeview. For an external page just type in the URL of the page.',
     'tr_meliscommerce_products_table_select' => 'Select',
     'tr_meliscommerce_products_text_filter' => 'Filter',
-    'tr_meliscommerce_products_Products_header' => 'Products header',
+    'tr_meliscommerce_products_Products_header' => 'Header',
     'tr_meliscommerce_products_Products_header_add' => 'Add products',
-    'tr_meliscommerce_products_Products_content' => 'Products content',
+    'tr_meliscommerce_products_Products_content' => 'Content',
 );

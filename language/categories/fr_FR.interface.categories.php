@@ -206,4 +206,8 @@
         'tr_meliscommerce_plugin_category_product_list_product' => 'Produits',
 		
 		'tr_MelisCommerceFilterMenuCategoryListPlugin_Title' => 'Catégories',
+
+		'tr_meliscommerce_categories_category_tab_content' => 'Contenu',
+		'tr_meliscommerce_categories_category_tab_main_header' => 'En-tête',
+		'tr_meliscommerce_categories_category_form_date_validity' => 'Dates de validité catégorie',	
 	);

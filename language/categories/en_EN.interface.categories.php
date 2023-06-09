@@ -208,7 +208,7 @@
 		'tr_MelisCommerceFilterMenuCategoryListPlugin_Title' => 'Categories',
 
 		'tr_MelisCommerceFilterMenuCategoryListPlugin_Title' => 'Categories',
-		'tr_meliscommerce_categories_category_tab_content' => 'Category content',
-		'tr_meliscommerce_categories_category_tab_main_header' => 'Category Header',
-		'tr_meliscommerce_categories_category_form_date_validity' => 'Category form date validity',	
+		'tr_meliscommerce_categories_category_tab_content' => 'Content',
+		'tr_meliscommerce_categories_category_tab_main_header' => 'Header',
+		'tr_meliscommerce_categories_category_form_date_validity' => 'Category date validity',	
 	);
