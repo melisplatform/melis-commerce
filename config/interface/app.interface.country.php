@@ -47,7 +47,7 @@ return [
 			                    'id' => 'id_meliscommerce_country_list_container',
 			                    'name' => 'tr_meliscommerce_country',
 			                    'melisKey' => 'meliscommerce_country_list_container',
-			                    'icon' => 'fa-country',
+			                    'icon' => 'fa fa fa-globe',
 			                    'rights_checkbox_disable' => true,
 			                ],
 			                'forward' => [
