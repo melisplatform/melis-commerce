@@ -303,4 +303,10 @@
 		'tr_meliscommerce_clients_Contact_tab_files' => 'Files',
 		// New order button inside the order tab
 		'tr_meliscommerce_clients_add_new_order' => 'New order',
+
+		'tr_meliscommerce_clients_list_add_client' => 'Add client',
+		'tr_meliscommerce_clients_list_widgets' => 'Clients Widgets',
+		'tr_meliscommerce_order_list_widgets_num_orders' => 'Total number of orders',
+		'tr_meliscommerce_order_list_widgets_month_orders' => 'Number of orders this month',
+		'tr_meliscommerce_order_list_widgets_avg_orders' => 'Average monthly orders',
 	);

@@ -13,4 +13,9 @@
         'tr_meliscommerce_clients_group_delete_ko' => 'Cannot delete clients group',
         'tr_meliscommerce_clients_group_delete_confirm_msg' => 'Are you sure you want to delete this group?',
         'tr_meliscommerce_clients_group_delete_confirm_title' => 'Delete clients group',
+
+        'tr_meliscommerce_clients_group_tool_header_container' => 'Clients group header',
+		'tr_meliscommerce_clients_group_tool_header_add_button' => 'Add button',
+		'tr_meliscommerce_clients_group_tool_content' => 'Clients group content',
+		'tr_meliscommerce_clients_group_tool_content_modal' => 'Modal',
     ];

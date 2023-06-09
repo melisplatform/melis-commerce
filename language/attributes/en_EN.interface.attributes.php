@@ -75,4 +75,10 @@
 
         'tr_meliscommerce_attribute_delete_product_attr_title' => 'Product attribute',
         'tr_meliscommerce_attribute_delete_product_attr_title_msg' => 'Cannot delete attribute, some variants are using this attribute.',
+
+		'tr_meliscommerce_attribute_list_header_container' => 'Attribute list header',
+		'tr_meliscommerce_attribute_list_header_left_container' => 'Left container',
+		'tr_meliscommerce_attribute_list_header_right_container' => 'Right container',
+		'tr_meliscommerce_attribute_list_content' => 'Attribute list content',
+		'tr_meliscommerce_attribute_list_content_table' => 'Attribute list table',
 	);
