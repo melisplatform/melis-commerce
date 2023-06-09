@@ -46,6 +46,8 @@ return [
                                 'id' => 'id_meliscommerce_attribute_list_page',
                                 'melisKey' => 'meliscommerce_attribute_list_page',
                                 'name' => 'tr_meliscommerce_attribute_list_page',
+                                'icon' => 'fa fa-cubes',
+
                             ],
                             'forward' => [
                                 'module' => 'MelisCommerce',

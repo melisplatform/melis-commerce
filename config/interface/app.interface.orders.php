@@ -70,6 +70,8 @@ return [
                                 'id' => 'id_meliscommerce_order_status_tool_page',
                                 'melisKey' => 'meliscommerce_order_status_tool_page',
                                 'name' => 'tr_meliscommerce_order_status_tool_page',
+                                'icon' => 'fa fa-plus-square',
+
                             ],
                             'forward' => [
                                 'module' => 'MelisCommerce',
@@ -197,6 +199,7 @@ return [
                                 'id' => 'id_meliscommerce_order_list_page',
                                 'melisKey' => 'meliscommerce_order_list_page',
                                 'name' => 'tr_meliscommerce_orders_Orders',
+                                'icon' => 'fa fa fa-cart-plus'
                             ],
                             'forward' => [
                                 'module' => 'MelisCommerce',

@@ -62,7 +62,8 @@ return [
                             'conf' => [
                                 'id' => 'id_meliscommerce_clients_list_page',
                                 'melisKey' => 'meliscommerce_clients_list_page',
-                                'name' => 'tr_meliscommerce_clients_list_page'
+                                'name' => 'tr_meliscommerce_clients_Clients',
+                                'icon' => 'fa fa-users',
                             ],
                             'forward' => [
                                 'module' => 'MelisCommerce',

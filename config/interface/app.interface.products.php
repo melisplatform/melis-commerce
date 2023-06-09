@@ -49,6 +49,7 @@ return [
                                   'id' => 'id_meliscommerce_product_list_container',
                                   'melisKey' => 'meliscommerce_product_list_container',
                                   'name' => 'tr_meliscommerce_products_Products',
+                                  'icon' => 'icon-shippment',
                               ],
                               'forward' => [
                                   'module' => 'MelisCommerce',

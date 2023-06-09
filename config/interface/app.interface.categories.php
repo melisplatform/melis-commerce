@@ -50,7 +50,8 @@ return [
                             'conf' => [
                                 'id' => 'id_meliscommerce_categories_page',
                                 'melisKey' => 'meliscommerce_categories_page',
-                                'name' => 'tr_meliscommerce_categories_page'
+                                'name' => 'tr_meliscommerce_categories_Categories',
+                                'icon' => 'fa fa-book',
                             ],
                             'forward' => [
                                 'module' => 'MelisCommerce',

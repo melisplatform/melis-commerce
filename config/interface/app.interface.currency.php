@@ -45,6 +45,8 @@ return [
                                 'id' => 'id_meliscommerce_currency_conf',
                                 'melisKey' => 'meliscommerce_currency_conf',
                                 'name' => 'tr_meliscommerce_currency',
+                                'icon' => 'fa fa-euro',
+
                             ],
                             'forward' => [
                                 'module' => 'MelisCommerce',

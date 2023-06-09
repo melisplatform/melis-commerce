@@ -46,6 +46,8 @@ return [
                                 'id' => 'id_meliscommerce_settings_page',
                                 'melisKey' => 'meliscommerce_settings_page',
                                 'name' => 'tr_meliscommerce_settings',
+                                'icon' => 'fa fa-wrench',
+
                             ],
                             'forward' => [
                                 'module' => 'MelisCommerce',
