@@ -50,13 +50,6 @@ return [
                                 'name' => 'tr_meliscommerce_clients_Clients',
                                 'icon' => 'fa fa-users',
                             ],
-                            'interface' => [
-                                'meliscommerce_clients_list_page' => [
-                                    'conf' => [
-                                        'type' => 'meliscommerce/interface/meliscommerce_clients_list/interface/meliscommerce_clients_list_page',
-                                    ]
-                                ]
-                            ]
                         ],
                         'meliscommerce_clients_list_page' => [
                             'conf' => [
