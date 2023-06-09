@@ -26,6 +26,12 @@ return [
                 'meliscommerce_clients_group_tool' => [
                     'interface' => [
                         'meliscommerce_clients_group_tool_leftmenu' => [
+                            'conf' => [
+                                'id' => 'id_meliscommerce_clients_group_tool_container',
+                                'name' => 'tr_meliscommerce_clients_group',
+                                'melisKey' => 'meliscommerce_clients_group_tool_container',
+                                'icon' => 'fa fa-user-times',
+                            ],
                             'interface' => [
                                 'meliscommerce_clients_group_tool_container' => [
                                     'conf' => [

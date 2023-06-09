@@ -62,7 +62,7 @@ return [
                                       'conf' => [
                                           'id' => 'id_meliscommerce_product_list_header',
                                           'melisKey' => 'meliscommerce_product_list_header',
-                                          'name' => 'tr_meliscommerce_products_Products header',
+                                          'name' => 'tr_meliscommerce_products_Products_header',
                                       ],
                                       'forward' => [
                                           'module' => 'MelisCommerce',
@@ -76,7 +76,7 @@ return [
                                                 'conf' => [
                                                     'id' => 'id_meliscommerce_product_list_header_add',
                                                     'melisKey' => 'meliscommerce_product_list_header_add',
-                                                    'name' => 'tr_meliscommerce_products_Products header add',
+                                                    'name' => 'tr_meliscommerce_products_Products_header_add',
                                                 ],
                                                 'forward' => [
                                                     'module' => 'MelisCommerce',
@@ -93,7 +93,7 @@ return [
                                       'conf' => [
                                           'id' => 'id_meliscommerce_product_list_content',
                                           'melisKey' => 'meliscommerce_product_list_content',
-                                          'name' => 'tr_meliscommerce_products_Products content',
+                                          'name' => 'tr_meliscommerce_products_Products_content',
                                       ],
                                       'forward' => [
                                           'module' => 'MelisCommerce',
