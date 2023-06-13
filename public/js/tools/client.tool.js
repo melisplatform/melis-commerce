@@ -928,6 +928,37 @@ $(function() {
 			}
 		}, 500);		
 	});
+
+	$body.on("click", ".deleteClient", function(){
+        var current_row = $(this).parents('tr');//Get the current row
+        if (current_row.hasClass('child')) {//Check if the current row is a child row
+            current_row = current_row.prev();//If it is, then point to the row before it (its 'parent')
+        }
+        var accountId = current_row.attr("id");
+
+        melisCoreTool.confirm(
+            translations.tr_meliscommerce_clients_common_label_yes,
+            translations.tr_meliscommerce_clients_common_label_no,
+            translations.tr_meliscommerce_client_delete_account,
+            translations.tr_meliscommerce_client_delete_account_msg,
+            function() {
+				$.ajax({
+					'url': '/melis/MelisCommerce/MelisComClient/deleteAccount',
+					'data': {accountId: accountId},
+					'type': 'POST'
+				}).done(function(data){
+					if(data.success){
+                        $("#clientListTbl").DataTable().ajax.reload();
+                        melisHelper.melisOkNotification(data.textTitle, data.textMessage);
+                        //reload widgets
+                        melisHelper.zoneReload('id_meliscommerce_clients_list_widgets', 'meliscommerce_clients_list_widgets');
+					}else{
+                        melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.error);
+					}
+				});
+            }
+        );
+	});
 });
 function viewClientOrder(orderId, orderRef) {
 	var navTabsGroup = "id_meliscommerce_order_list_page";
@@ -1184,5 +1215,14 @@ window.initOrderToolTip = function () {
                 at: "center center",
             },
         });
+    });
+};
+window.accountsTableCallback = function()
+{
+    var tbody = $("#clientListTbl tbody");
+    var tr = tbody.find("tr[data-hasorder='1']");
+    //remove delete button if client doesn't have order
+    tr.each(function(){
+        $(this).find("td").find(".deleteClient").addClass("d-none");
     });
 };

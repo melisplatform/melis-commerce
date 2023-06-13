@@ -2045,4 +2045,35 @@ class MelisComClientController extends MelisAbstractActionController
 
         return $view;
     }
+
+    /**
+     * Function to delete account
+     *
+     * @return JsonModel
+     */
+    public function deleteAccountAction()
+    {
+        $accountId = $this->getRequest()->getPost('accountId', '');
+        $success = 0;
+        $error = [];
+        $title = 'tr_meliscommerce_client_delete_account';
+        $message = 'tr_meliscommerce_client_delete_account_failed';
+
+        $translator = $this->getServiceManager()->get('translator');
+        $clientService = $this->getServiceManager()->get('MelisComClientService');
+        if($this->request->isPost()){
+            $res = $clientService->deleteAccount($accountId);
+            if($res){
+                $success = 1;
+                $message = 'tr_meliscommerce_client_delete_account_success';
+            }
+        }
+
+        return new JsonModel([
+            'success' => $success,
+            'error' => $error,
+            'textTitle' => $translator->translate($title),
+            'textMessage' => $translator->translate($message)
+        ]);
+    }
 }

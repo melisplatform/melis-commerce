@@ -1521,7 +1521,7 @@ class MelisComClientService extends MelisComGeneralService
 		* @param varchar $identifier accepts curMonth|avgMonth
 		* @return float|null , float on success, otherwise null
 		*/
-	public function getWidgetClients($identifier)
+	public function getWidgetClients($identifier, $param = null)
 	{
 		// Event parameters prepare
 		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -1535,8 +1535,8 @@ class MelisComClientService extends MelisComGeneralService
 		switch($arrayParameters['identifier']){
 			case 'curMonth':
 				$results = $clientTable->getCurrentMonth()->count(); break;
-			case 'avgMonth':
-				$results = $clientTable->getAvgMonth()->current(); break;
+			case 'activeInactive':
+				$results = $clientTable->getActiveInactive($param)->current(); break;
 			default:
 				break;
 		}
@@ -1740,4 +1740,34 @@ class MelisComClientService extends MelisComGeneralService
 
 		return $arrayParameters['results'];
 	}
+
+    /**
+     * Function to physically delete account
+     *
+     * @param $accountId
+     * @return mixed
+     */
+	public function deleteAccount($accountId)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_client_delete_account_start', $arrayParameters);
+
+        // Service implementation start
+        $melisEcomClientTable = $this->getServiceManager()->get('MelisEcomClientTable');
+        $result = null;
+        if(!empty($arrayParameters['accountId'])) {
+            $result = $melisEcomClientTable->deleteById($arrayParameters['accountId']);
+        }
+
+        $arrayParameters['results'] = $result;
+
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_client_delete_account_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+
+    }
 }

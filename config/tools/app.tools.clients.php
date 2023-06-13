@@ -21,7 +21,7 @@ return [
                         'target' => '#clientListTbl',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComClientList/getClientList',
                         'dataFunction' => 'initClientsFilters',
-                        'ajaxCallback' => '',
+                        'ajaxCallback' => 'accountsTableCallback(); ',
                         'filters' => [
                             'left' => [
                                 'meliscommerce-clients-list-tbl-limit' => [
@@ -111,6 +111,11 @@ return [
                             'cli_date_creation',
                         ],
                         'actionButtons' => [
+                            'delete' => [
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComClientList',
+                                'action' => 'render-client-list-table-delete',
+                            ],
                             'edit' => [
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComClientList',

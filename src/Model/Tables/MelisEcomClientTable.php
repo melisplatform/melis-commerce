@@ -180,4 +180,17 @@ class MelisEcomClientTable extends MelisEcomGenericTable
     
         return $resultData;
     }
+
+    public function getActiveInactive($type)
+    {
+        $select = $this->tableGateway->getSql()->select();
+        $select->columns(['total' => new \Laminas\Db\Sql\Expression('COUNT(*)')]);
+        if($type == 'active')
+            $select->where->equalTo('cli_status', 1);
+        elseif($type == 'inactive')
+            $select->where->equalTo('cli_status', 0);
+
+        $resultData = $this->tableGateway->selectWith($select);
+        return $resultData;
+    }
 }

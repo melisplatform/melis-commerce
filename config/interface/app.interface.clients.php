@@ -127,7 +127,7 @@ return [
                                                 'action' => 'render-client-list-widgets-month-clients',
                                             ],
                                         ],
-                                        'meliscommerce_clients_list_widgets_avg_clients' => [
+                                        'meliscommerce_clients_list_widgets_active_inactive' => [
                                             'conf' => [
                                                 'id' => 'id_meliscommerce_clients_list_widgets_avg_clients',
                                                 'melisKey' => 'meliscommerce_clients_list_widgets_avg_clients',
@@ -137,7 +137,7 @@ return [
                                             'forward' => [
                                                 'module' => 'MelisCommerce',
                                                 'controller' => 'MelisComClientList',
-                                                'action' => 'render-client-list-widgets-avg-clients',
+                                                'action' => 'render-client-list-widgets-active-inactive',
                                             ],
                                         ],
                                     ],

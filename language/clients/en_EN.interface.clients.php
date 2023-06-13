@@ -1,11 +1,11 @@
 <?php 
 	return array(
-		'tr_meliscommerce_clients_Clients' => 'Clients',
+		'tr_meliscommerce_clients_Clients' => 'Accounts',
 		// Page Title
-		'tr_meliscommerce_clients_tool_title' => 'Client tool',
-		'tr_meliscommerce_clients_Client_listing' => 'Client list',
+		'tr_meliscommerce_clients_tool_title' => 'Account tool',
+		'tr_meliscommerce_clients_Client_listing' => 'Account list',
 		'tr_meliscommerce_clients_Client_listing_description' => 'List of all acquired customers.',
-		'tr_meliscommerce_clients_Client' => 'Client info',
+		'tr_meliscommerce_clients_Client' => 'Account info',
 
 		// Common labels
 		'tr_meliscommerce_clients_common_btn_close' => 'Close',
@@ -33,33 +33,33 @@
 		'tr_meliscommerce_clients_list_col_price_title' => 'Amount',
 		
 		//Client list widgets
-		'tr_meliscommerce_client_list_widgets_num_client' => 'Total number of clients',
-		'tr_meliscommerce_client_list_widgets_month_clients' => 'Number of clients this month',
-		'tr_meliscommerce_client_list_widgets_avg_clients' => 'Average monthly clients',
+		'tr_meliscommerce_client_list_widgets_num_client' => 'Total number of accounts',
+		'tr_meliscommerce_client_list_widgets_month_clients' => 'Number of accounts this month',
+		'tr_meliscommerce_client_list_widgets_avg_clients' => 'Accounts',
 		
 		// Interface Names
-		'tr_meliscommerce_clients_list_page' => 'Client list',
-		'tr_meliscommerce_clients_list_header' => 'Client list header',
-		'tr_meliscommerce_clients_list_content' => 'Client list content',
-		'tr_meliscommerce_clients_list_table' => 'Client list table',
-		'tr_meliscommerce_client_page' => 'Client page',
-		'tr_meliscommerce_client_page_header' => 'Client header',
-		'tr_meliscommerce_client_page_Content' => 'Client content',
+		'tr_meliscommerce_clients_list_page' => 'Account list',
+		'tr_meliscommerce_clients_list_header' => 'Account list header',
+		'tr_meliscommerce_clients_list_content' => 'Account list content',
+		'tr_meliscommerce_clients_list_table' => 'Account list table',
+		'tr_meliscommerce_client_page' => 'Account page',
+		'tr_meliscommerce_client_page_header' => 'Account header',
+		'tr_meliscommerce_client_page_Content' => 'Account content',
 		
 		// Tool Names
-		'tr_meliscommerce_clients_list' => 'Client list table',
+		'tr_meliscommerce_clients_list' => 'Account list table',
 		
 		// Client List Table
 		'tr_meliscommerce_clients_table_Client_id' => 'ID',
 		'tr_meliscommerce_clients_table_Client_status' => 'Status',
-		'tr_meliscommerce_clients_table_Client_person' => 'Client(s)',
+		'tr_meliscommerce_clients_table_Client_person' => 'Account',
 		'tr_meliscommerce_clients_table_Client_company' => 'Company',
 		'tr_meliscommerce_clients_table_Client_num_orders' => 'Order(s)',
 		'tr_meliscommerce_clients_table_Client_last_order' => 'Last order',
 		
 		// Buttons
-		'tr_meliscommerce_clients_add_client' => 'Add client',
-		'tr_meliscommerce_clients_save_client_info' => 'Save client',
+		'tr_meliscommerce_clients_add_client' => 'Add account',
+		'tr_meliscommerce_clients_save_client_info' => 'Save account',
 		'tr_meliscommerce_clients_add_contact' => 'Add contact',
 		'tr_meliscommerce_clients_edit_contact' => 'Edit contact',
 		'tr_meliscommerce_clients_save_contact' => 'Save contact',
@@ -202,7 +202,12 @@
 		'tr_meliscommerce_client_delete_new_contact_confirm_msg' => 'Are you sure you want to delete this new added contact?',
 		'tr_meliscommerce_client_delete_address' => 'Delete address',
 		'tr_meliscommerce_client_delete_address_confirm_msg' => 'Are you sure you want to delete this address?',
-		
+        //Delete account
+        'tr_meliscommerce_client_delete_account' => 'Delete Account',
+        'tr_meliscommerce_client_delete_account_msg' => 'Are you sure you want to delete this account?',
+        'tr_meliscommerce_client_delete_account_success' => 'Account successfully deleted',
+        'tr_meliscommerce_client_delete_account_failed' => 'Error occurred while deleting account',
+
 		// Saving Messages
 		'tr_meliscommerce_client_save_success' => 'Client has been saved successfully',
 		'tr_meliscommerce_client_unable_to_save' => 'Unable to save client, please try again',

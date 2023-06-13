@@ -106,15 +106,17 @@ class MelisComClientListController extends MelisAbstractActionController
      * renders the client list page average client count
      * @return \Laminas\View\Model\ViewModel
      */
-    public function renderClientListWidgetsAvgClientsAction()
+    public function renderClientListWidgetsActiveInactiveAction()
     {
         $clientSvc = $this->getServiceManager()->get('MelisComClientService');
-        $clientCount = $clientSvc->getWidgetClients('avgMonth');
-    
+        $clientActive = $clientSvc->getWidgetClients('activeInactive', 'active');
+        $clientInactive = $clientSvc->getWidgetClients('activeInactive', 'inactive');
+
         $view = new ViewModel();
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view->melisKey = $melisKey;
-        $view->num = (float) $clientCount['average'];
+        $view->clientActive = $clientActive->total ?? 0;
+        $view->clientInActive = $clientInactive->total ?? 0;
         return $view;
     }
     
@@ -260,6 +262,18 @@ class MelisComClientListController extends MelisAbstractActionController
         $view->melisKey = $melisKey;
         return $view;
     }
+
+    /**
+     * @return ViewModel
+     */
+    public function renderClientListTableDeleteAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view = new ViewModel();
+
+        $view->melisKey = $melisKey;
+        return $view;
+    }
     
     /**
      * renders the client list modal container
@@ -402,6 +416,9 @@ class MelisComClientListController extends MelisAbstractActionController
                     'cper_email' => $melisTool->sanitize($val['cper_email']),
                     'cli_num_orders' => $contactNumOrders,
                     'cli_last_order' => $lastOrder,
+                    'DT_RowAttr' => [
+                        'data-hasorder' => !empty($contactNumOrders) ? 1 : 0
+                    ]
                 );
                 
                 array_push($tableData, $rowdata);

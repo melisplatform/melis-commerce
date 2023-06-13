@@ -1,11 +1,11 @@
 <?php 
 	return array(
-		'tr_meliscommerce_clients_Clients' => 'Clients',
+		'tr_meliscommerce_clients_Clients' => 'Comptes',
 		// Page Title
-		'tr_meliscommerce_clients_tool_title' => 'Outil clients',
-		'tr_meliscommerce_clients_Client_listing' => 'Liste des clients',
-		'tr_meliscommerce_clients_Client_listing_description' => 'Liste de l\'ensemble des clients acquis',
-		'tr_meliscommerce_clients_Client' => 'Informations client',
+		'tr_meliscommerce_clients_tool_title' => 'Outil comptes',
+		'tr_meliscommerce_clients_Client_listing' => 'Liste des comptes',
+		'tr_meliscommerce_clients_Client_listing_description' => 'Liste de l\'ensemble des comptes acquis',
+		'tr_meliscommerce_clients_Client' => 'Informations comptes',
 
 		// Common labels
 		'tr_meliscommerce_clients_common_btn_close' => 'Annuler',
@@ -28,38 +28,38 @@
 		'tr_meliscommerce_clients_common_label_address' => 'Adresses',
 		'tr_meliscommerce_clients_common_label_new' => 'Nouveau',
 		'tr_meliscommerce_clients_common_label_loading' => 'Chargement',
-		'tr_meliscommerce_clients_common_label_client' => 'Client',
+		'tr_meliscommerce_clients_common_label_client' => 'Compte',
 		'tr_meliscommerce_clients_list_col_products' => 'Produits',
 		'tr_meliscommerce_clients_list_col_price_title' => 'Montant',
 
 		//Client list widgets
-		'tr_meliscommerce_client_list_widgets_num_client' => 'Nombre de clients',
-		'tr_meliscommerce_client_list_widgets_month_clients' => 'Nombre de clients ce mois',
-		'tr_meliscommerce_client_list_widgets_avg_clients' => 'Moyenne des clients par mois',
+		'tr_meliscommerce_client_list_widgets_num_client' => 'Nombre de comptes',
+		'tr_meliscommerce_client_list_widgets_month_clients' => 'Nombre de comptes ce mois',
+		'tr_meliscommerce_client_list_widgets_avg_clients' => 'Comptes',
 		
 		// Interface Names
-		'tr_meliscommerce_clients_list_page' => 'Liste des clients',
-		'tr_meliscommerce_clients_list_header' => 'En-tête liste des clients',
-		'tr_meliscommerce_clients_list_content' => 'Contenu liste des clients',
-		'tr_meliscommerce_clients_list_table' => 'Tableau liste des clients',
-		'tr_meliscommerce_client_page' => 'Page client',
-		'tr_meliscommerce_client_page_header' => 'En-tête client',
-		'tr_meliscommerce_client_page_Content' => 'Contenu client',
+		'tr_meliscommerce_clients_list_page' => 'Liste des comptes',
+		'tr_meliscommerce_clients_list_header' => 'En-tête liste des comptes',
+		'tr_meliscommerce_clients_list_content' => 'Contenu liste des comptes',
+		'tr_meliscommerce_clients_list_table' => 'Tableau liste des comptes',
+		'tr_meliscommerce_client_page' => 'Page compte',
+		'tr_meliscommerce_client_page_header' => 'En-tête compte',
+		'tr_meliscommerce_client_page_Content' => 'Contenu compte',
 		
 		// Tool Names
-		'tr_meliscommerce_clients_list' => 'Tableau ciste des clients',
+		'tr_meliscommerce_clients_list' => 'Tableau ciste des comptes',
 		
 		// Clients List Table
 		'tr_meliscommerce_clients_table_Client_id' => 'ID',
 		'tr_meliscommerce_clients_table_Client_status' => 'Statut',
-		'tr_meliscommerce_clients_table_Client_person' => 'Client(s)',
+		'tr_meliscommerce_clients_table_Client_person' => 'Compte',
 		'tr_meliscommerce_clients_table_Client_company' => 'Société',
 		'tr_meliscommerce_clients_table_Client_num_orders' => 'Commande(s)',
 		'tr_meliscommerce_clients_table_Client_last_order' => 'Dernière commande',
 		
 		// Buttons
-		'tr_meliscommerce_clients_add_client' => 'Ajouter un client',
-		'tr_meliscommerce_clients_save_client_info' => 'Enregistrer le client',
+		'tr_meliscommerce_clients_add_client' => 'Ajouter un comptes',
+		'tr_meliscommerce_clients_save_client_info' => 'Enregistrer le comptes',
 		'tr_meliscommerce_clients_add_contact' => 'Ajouter un contact',
 		'tr_meliscommerce_clients_edit_contact' => 'Editer un contact',
 		'tr_meliscommerce_clients_save_contact' => 'Sauvegarder le contact',
@@ -201,7 +201,12 @@
 		'tr_meliscommerce_client_delete_new_contact_confirm_msg' => 'Etes-vous sûr de vouloir supprimer ce contact ?',
 		'tr_meliscommerce_client_delete_address' => 'Supprimer l\'adresse',
 		'tr_meliscommerce_client_delete_address_confirm_msg' => 'Etes-vous sûr de vouloir supprimer cette adresse ?',
-		
+		//Delete account
+        'tr_meliscommerce_client_delete_account' => 'Supprimer le compte',
+        'tr_meliscommerce_client_delete_account_msg' => 'Etes-vous sûr de vouloir supprimer ce compte ?',
+        'tr_meliscommerce_client_delete_account_success' => 'Account successfully deleted',
+        'tr_meliscommerce_client_delete_account_failed' => 'Error occurred while deleting account',
+
 		// Saving Messages
 		'tr_meliscommerce_client_save_success' => 'Le client a été sauvegardé avec succès',
 		'tr_meliscommerce_client_unable_to_save' => 'Impossible de sauvegarder le client, veuillez réessayer',
