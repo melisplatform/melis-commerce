@@ -67,22 +67,43 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
     public function getClientPersonByClientIdPersonIdAndPersonEmail($clientId, $personId = null, $personEmail = null)
     {
         $select = $this->getTableGateway()->getSql()->select();
-        
+
         $select->join('melis_ecom_civility', 'melis_ecom_civility.civ_id=melis_ecom_client_person.cper_civility',
             array('*'), $select::JOIN_LEFT);
-        
+
         $select->where('cper_client_id ='.$clientId);
-        
+
         if (!is_null($personId)){
             $select->where('cper_id ='.$personId);
         }
-        
+
         if (!is_null($personEmail)){
             $select->where('cper_email = "'.$personEmail.'"');
         }
-        
+
         $select->order('cper_is_main_person DESC', 'cper_firstname', 'cper_name');
-        
+
+        $resultData = $this->getTableGateway()->selectWith($select);
+        return $resultData;
+    }
+
+    /**
+     * @param $clientId
+     * @return \Laminas\Db\ResultSet\ResultSetInterface
+     */
+    public function getContactListByClientId($clientId)
+    {
+        $select = $this->getTableGateway()->getSql()->select();
+
+        $select->join('melis_ecom_client_person_rel', 'melis_ecom_client_person_rel.cpr_client_person_id=melis_ecom_client_person.cper_id',
+            array('*'), $select::JOIN_LEFT);
+        $select->join('melis_ecom_civility', 'melis_ecom_civility.civ_id=melis_ecom_client_person.cper_civility',
+            array('*'), $select::JOIN_LEFT);
+
+        $select->where('melis_ecom_client_person_rel.cpr_client_id ='.$clientId);
+
+        $select->order('melis_ecom_client_person_rel.cpr_default_client DESC');
+
         $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }

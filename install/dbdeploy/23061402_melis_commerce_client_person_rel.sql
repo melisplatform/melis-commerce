@@ -1,0 +1,2 @@
+CREATE TABLE `democommerce`.`melis_ecom_client_person_rel` ( `cpr_id` INT NOT NULL AUTO_INCREMENT , `cpr_client_id` INT NOT NULL , `cpr_client_person_id` INT NOT NULL , `cpr_default_client` INT NOT NULL , PRIMARY KEY (`cpr_id`)) ENGINE = InnoDB;
+ALTER TABLE `melis_ecom_client_person_rel` CHANGE `cpr_default_client` `cpr_default_client` INT(11) NULL;

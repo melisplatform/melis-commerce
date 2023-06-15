@@ -64,7 +64,7 @@ class MelisComClientController extends MelisAbstractActionController
                 $clientData = $melisComClientService->getClientByIdAndClientPerson($clientId);
                 // Getting data from Client object
                 $clientPerson = $clientData->getPersons();
-                
+
                 if (!empty($clientPerson))
                 {
                     foreach ($clientPerson As $row)
@@ -259,9 +259,11 @@ class MelisComClientController extends MelisAbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $clientId = $this->params()->fromQuery('clientId', '');
+        $activateTab = $this->params()->fromQuery('activateTab', '');
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->clientId = $clientId;
+        $view->activateTab = ($activateTab) ? 'active' : '';
         return $view;
     }
     
@@ -295,7 +297,19 @@ class MelisComClientController extends MelisAbstractActionController
         $view->clientId = $clientId;
         return $view;
     }
-    
+
+    /**
+     * @return ViewModel
+     */
+    public function renderAccountContactListTableUnlinkAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        return $view;
+    }
+
+
     /**
      * Render Client tab Contact Content
      * This method return Contact Form and Addresses Form
@@ -304,42 +318,22 @@ class MelisComClientController extends MelisAbstractActionController
      */
     public function renderClientPageTabContactContentAction()
     {
-        $view = new ViewModel();
-        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
+        $melisTool->setMelisToolKey(self::PLUGIN_INDEX, 'meliscommerce_clients_contact_list');
+
         $clientId = $this->params()->fromQuery('clientId', '');
-        
-        $clientPerson = array();
-        if (!empty($clientId))
-        {
-            // Getting the Client Data from Service
-            $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
-            $clientPerson = $melisComClientService->getClientByIdAndClientPerson($clientId);
-            // Getting Client Person form Client Object
-            $clientPerson = $clientPerson->getPersons();
-            $this->placeMainEmailFirstInList($clientPerson);
-            
-            // Preparing Form for Contact and Addresses Forms
-            $factory = new \Laminas\Form\Factory();
-            $formElements = $this->getServiceManager()->get('FormElementManager');
-            $factory->setFormElementManager($formElements);
-            
-            // Melis Core Config Service Manager
-            $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
-            
-            // Getting Client Contact Form from Config using CoreConfig
-            $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_contact_form','meliscommerce_clients_contact_form');
-            $propertyForm = $factory->createForm($appConfigForm);
-            $view->setVariable('meliscommerce_clients_contact_form', $propertyForm);
-            
-            // Getting Client Address Form from Config using CoreConfig
-            $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_addresses_form','meliscommerce_clients_addresses_form');
-            $propertyForm = $factory->createForm($appConfigForm);
-            $view->setVariable('meliscommerce_clients_addresses_form', $propertyForm);
-        }
-        
-        $view->clientPerson = $clientPerson;
-        $view->melisKey = $melisKey;
+
+        // DataTable costume configuration
+        $columns = $melisTool->getColumns();
+        $translator = $this->getServiceManager()->get('translator');
+        $columns['actions'] = array('text' => $translator->translate('tr_meliscommerce_clients_common_label_action'));
+
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view = new ViewModel();
         $view->clientId = $clientId;
+        $view->melisKey = $melisKey;
+        $view->tableColumns = $columns;
+        $view->getToolDataTableConfig = $melisTool->getDataTableConfiguration('#'.$clientId.'_accountContactList', null, null, array('order' => '[[ 0, "desc" ]]'));
         return $view;
     }
     
@@ -842,14 +836,14 @@ class MelisComClientController extends MelisAbstractActionController
     {
         // Getting Validated Data from Client Contact Form
         $tabId = md5(date('YmdHis'));
-        
+
         $clientId = '';
-        
+
         // Getting Data form Post
         $request = $this->getRequest();
-        
+
         $translator = $this->getServiceManager()->get('translator');
-        
+
         // Getting Client Contact Form form Config
         $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_contact_form','meliscommerce_clients_contact_form');
@@ -857,7 +851,7 @@ class MelisComClientController extends MelisAbstractActionController
         $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $propertyForm = $factory->createForm($appConfigForm);
-        
+
         if ($request->getPost())
         {
             $postValues = $request->getPost()->toArray();
@@ -865,7 +859,7 @@ class MelisComClientController extends MelisAbstractActionController
             // Client Id
             $clientId = $postValues['clientId'];
         }
-        
+
         $view = new ViewModel();
         $view->clientId = $clientId;
         $view->tabId = $tabId;
@@ -1308,7 +1302,13 @@ class MelisComClientController extends MelisAbstractActionController
             unset($container['action-client-tmp']);
             // Getting Datas validated
             $clientData = $this->getTool()->sanitizeRecursive($datas['client']);
-            $contactsData = $this->getTool()->sanitizeRecursive($datas['clientContacts']);
+
+            /**
+             * Contacts data is already in separate tool
+             */
+            $contactsData = [];
+//            $contactsData = $this->getTool()->sanitizeRecursive($datas['clientContacts']);
+
             $companyData = $this->getTool()->sanitizeRecursive($datas['clientCompany']);
             // reapply company logo data because we can't use the sanitized one
             if (! empty($datas['clientCompany']['ccomp_logo']))
@@ -1320,9 +1320,9 @@ class MelisComClientController extends MelisAbstractActionController
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
 
-            for($i = 0; $i < count($contactsData); $i++) {
-                $contactsData[$i]['reset_pass_flag'] = true;
-            }
+//            for($i = 0; $i < count($contactsData); $i++) {
+//                $contactsData[$i]['reset_pass_flag'] = true;
+//            }
 
             $clientId = $postValues['clientId'];
             

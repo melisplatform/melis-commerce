@@ -1,0 +1,1 @@
+ALTER TABLE `melis_ecom_client_person` CHANGE `cper_client_id` `cper_client_id` INT(11) NULL COMMENT 'client Id';

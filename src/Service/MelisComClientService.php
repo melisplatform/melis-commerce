@@ -163,8 +163,7 @@ class MelisComClientService extends MelisComGeneralService
 			
 		// Set Person Data to MelisClient
 		$melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
-		$clientPerson = $melisEcomClientPersonTable->getClientPersonByClientIdPersonIdAndPersonEmail($arrayParameters['clientId'], 
-																	$arrayParameters['personId'], $arrayParameters['personEmail']);
+		$clientPerson = $melisEcomClientPersonTable->getContactListByClientId($arrayParameters['clientId']);
 
 		$clientPersonData = array();
 		foreach ($clientPerson As  $pval)
@@ -1766,6 +1765,34 @@ class MelisComClientService extends MelisComGeneralService
 
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_client_delete_account_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+
+    }
+
+    /**
+     * @param $clientId
+     * @return mixed
+     */
+    public function getClientDefaultContactByClientId($clientId)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_client_default_contact_by_client_id_start', $arrayParameters);
+
+        // Service implementation start
+        $melisEcomClientTable = $this->getServiceManager()->get('MelisEcomClientTable');
+        $result = null;
+        if(!empty($arrayParameters['clientId'])) {
+            $result = $melisEcomClientTable->getClientDefaultContactByClientId($arrayParameters['clientId']);
+        }
+
+        $arrayParameters['results'] = $result;
+
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_client_default_contact_by_client_id_end', $arrayParameters);
 
         return $arrayParameters['results'];
 

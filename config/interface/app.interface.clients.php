@@ -356,20 +356,20 @@ return [
                                                         'controller' => 'MelisComClient',
                                                         'action' => 'render-client-page-tab-contact-header',
                                                     ],
-                                                    'interface' => [
-                                                        'meliscommerce_client_add_contact' => [
-                                                            'conf' => [
-                                                                'id' => 'id_meliscommerce_client_add_contact',
-                                                                'melisKey' => 'meliscommerce_client_add_contact',
-                                                                'name' => 'tr_meliscommerce_client_add_contact',
-                                                            ],
-                                                            'forward' => [
-                                                                'module' => 'MelisCommerce',
-                                                                'controller' => 'MelisComClient',
-                                                                'action' => 'render-client-add-contact',
-                                                            ],
-                                                        ]
-                                                    ]
+//                                                    'interface' => [
+//                                                        'meliscommerce_client_add_contact' => [
+//                                                            'conf' => [
+//                                                                'id' => 'id_meliscommerce_client_add_contact',
+//                                                                'melisKey' => 'meliscommerce_client_add_contact',
+//                                                                'name' => 'tr_meliscommerce_client_add_contact',
+//                                                            ],
+//                                                            'forward' => [
+//                                                                'module' => 'MelisCommerce',
+//                                                                'controller' => 'MelisComClient',
+//                                                                'action' => 'render-client-add-contact',
+//                                                            ],
+//                                                        ]
+//                                                    ]
                                                 ],
                                                 'meliscommerce_client_page_tab_contact_content' => [
                                                     'conf' => [

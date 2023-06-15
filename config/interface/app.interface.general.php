@@ -30,6 +30,11 @@ return [
                                         'type' => 'meliscommerce/interface/meliscommerce_clients_list/interface/meliscommerce_clients_list_leftmenu'
                                     ],
                                 ],
+                                'meliscommerce_contact_list' => [
+                                    'conf' => [
+                                        'type' => 'meliscommerce/interface/meliscommerce_contact_list/interface/meliscommerce_contact_list_leftmenu'
+                                    ],
+                                ],
                                 'meliscommerce_order_list' => [
                                     'conf' => [
                                         'type' => 'meliscommerce/interface/meliscommerce_order_list/interface/meliscommerce_order_list_leftmenu'

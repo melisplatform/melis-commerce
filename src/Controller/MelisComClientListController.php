@@ -357,10 +357,10 @@ class MelisComClientListController extends MelisAbstractActionController
             $groupId = $this->getRequest()->getPost('cgroup_id', null);
             $clientStatus = $this->getRequest()->getPost('cli_status', null);
             
-           $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
+           $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientTable');
             $dataCount = $melisEcomClientPersonTable->getTotalData();
         
-            $getData = $melisEcomClientPersonTable->getClientList(array(
+            $getData = $melisEcomClientPersonTable->getAccountToolList(array(
                 'where' => array(
                     'key' => 'cli_id',
                     'value' => $search,
@@ -376,19 +376,11 @@ class MelisComClientListController extends MelisAbstractActionController
                 'groupId' => $groupId,
                 'clientStatus' => $clientStatus
             ));
-            
-//             if(!empty($search)){
-//                 $getData['where'] = array(
-//                     'key' => 'cli_id',
-//                     'value' => $search,
-//                 );
-//             }
         
             // store fetched data for data modification (if needed)
             $contactData = $getData->toArray();
-             
-            $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
 
+            $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
             foreach ($contactData As $val)
             {
                 $contactStatus = '<i class="fa fa-circle text-danger"></i>';

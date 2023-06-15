@@ -28,7 +28,7 @@
 		'tr_meliscommerce_clients_common_label_address' => 'Address',
 		'tr_meliscommerce_clients_common_label_new' => 'New',
 		'tr_meliscommerce_clients_common_label_loading' => 'Loading',
-		'tr_meliscommerce_clients_common_label_client' => 'Client',
+		'tr_meliscommerce_clients_common_label_client' => 'Account',
 		'tr_meliscommerce_clients_list_col_products' => 'Products',
 		'tr_meliscommerce_clients_list_col_price_title' => 'Amount',
 		

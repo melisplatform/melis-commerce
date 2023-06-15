@@ -192,7 +192,8 @@ class Module
             include __DIR__ . '/../config/interface/app.interface.groups.php',
             include __DIR__ . '/../config/interface/app.interface.settings.php',
             include __DIR__ . '/../config/interface/app.interface.product-page-associations.php',
-        
+            include __DIR__ . '/../config/interface/app.interface.contact.php',
+
             include __DIR__ . '/../config/forms/app.forms.general.php',
             include __DIR__ . '/../config/forms/app.forms.documents.php',
             include __DIR__ . '/../config/forms/app.forms.categories.php',
@@ -227,6 +228,7 @@ class Module
             include __DIR__ . '/../config/tools/app.tools.country.php',
             include __DIR__ . '/../config/tools/app.tools.assoc_var.php',
             include __DIR__ . '/../config/tools/app.tools.clients_group.php',
+            include __DIR__ . '/../config/tools/app.tools.contact.php',
 
             // categories plugin configs
             include __DIR__ . '/../config/plugins/categories/MelisCommerceCategoryProductListPlugin.php',
@@ -342,6 +344,7 @@ class Module
                 'duplication',
                 'clients-group',
                 'settings',
+                'contact',
             ];
             
             $translationType = [
