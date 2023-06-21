@@ -573,6 +573,20 @@ class MelisComClientController extends MelisAbstractActionController
         $view->clientId = $clientId;
         return $view;
     }
+
+    /**
+     * @return ViewModel
+     */
+    public function renderAccountContactListTableRefreshAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $accountId = $this->params()->fromQuery('clientId', '');
+
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        $view->accountId = $accountId;
+        return $view;
+    }
     
     /**
      * Render Client Status 
@@ -677,153 +691,6 @@ class MelisComClientController extends MelisAbstractActionController
         $view->clientId = $clientId;
         $view->setVariable('meliscommerce_clients_main_form', $propertyForm);
         return $view;
-    }
-    
-    /**
-     * This method validate Client Contact Form and Add to the Client Contact list
-     * 
-     * @return \Laminas\View\Model\JsonModel
-     */
-    public function addClientContactAction()
-    {
-        $translator = $this->getServiceManager()->get('translator');
-        
-        $success = 0;
-        $textTitle = $translator->translate('tr_meliscommerce_clients_add_contact');
-        $textMessage = '';
-        $errors = array();
-        
-        $clientContactDom = array();
-        
-        $request = $this->getRequest();
-        
-        if($request->isPost())
-        {
-            // Getting Client Contact Form from Config
-            $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
-            $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_contact_form','meliscommerce_clients_contact_form');
-            $factory = new \Laminas\Form\Factory();
-            $formElements = $this->getServiceManager()->get('FormElementManager');
-            $factory->setFormElementManager($formElements);
-            $propertyForm = $factory->createForm($appConfigForm);
-            $clientSvc = $this->getServiceManager()->get('MelisComClientService');
-            
-            // Getting the Elements/fields of the Client COntact form
-            $appConfigFormElements = $appConfigForm['elements'];
-            
-            // Gtting Data from Post and Set as values to the Client Contact Form
-            $postValues = $request->getPost()->toArray();
-            $propertyForm->setData($postValues);
-            $emailList = explode(',', $postValues['emailList']);
-
-            if (! empty($postValues['cper_id'])) {
-                // email checking
-                if (! empty($postValues['cper_email'])) {
-                    // check if email is not used twice
-                    $personWithSameEmail = $clientSvc->getPersonsByEmail($postValues['cper_email']);
-
-                    foreach ($personWithSameEmail as $mail) {
-                        if ($mail['cpmail_cper_id'] != $postValues['cper_id']) {
-                            $errors['cper_email'] = [
-                                'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
-                                'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
-                            ];
-                        }
-                    }
-                }
-            } else {
-                if (! empty($postValues['cper_email'])) {
-                    // check if email is not used twice
-                    if (! in_array($postValues['cper_email'], $emailList)) {
-                        $emailList[] = $postValues['cper_email'];
-                        $personWithSameEmail = $clientSvc->getPersonsByEmail($postValues['cper_email']);
-
-                        if (! empty($personWithSameEmail)) {
-                            $errors['cper_email'] = [
-                                'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
-                                'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
-                            ];
-                        }
-                    } else {
-                        $errors['cper_email'] = [
-                            'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
-                            'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
-                        ];
-                    }
-                }
-            }
-            
-            // Cehcking if the Client Contact form is valid after set the Data from Post
-            if ($propertyForm->isValid())
-            {
-                // Getting Validated Data from Client Contact Form
-                $data = $propertyForm->getData();
-                
-                // Encrypting datetime as unique ID for tabulation Navigation
-                $tabId = md5(date('YmdHis'));
-                
-                // Generating tabulation navigation for to new Added Client Contact
-                $tabNav = '<li class="'.$tabId.'_client_contact">
-                                <a class="clearfix" data-toggle="tab" id="nav_'.$tabId.'" href="#'.$tabId.'" aria-expanded="false">
-                                    <span>
-                                        '.$data['cper_firstname'].' '.$data['cper_name'].'
-                                        <label class="label label-success">'.$translator->translate('tr_meliscommerce_clients_common_label_new').'</label>
-                                    </span>
-                                    <i class="fa fa-times deleteClientContactAddress" data-tabclass="'.$tabId.'" ></i>
-                                </a>
-                            </li>';
-                
-                // Getting Client Contact Tabulation Content from dispatcher,
-                // Return would be in HTML code and return as ajax request
-                $dispatchHandler = array(
-                    'module' => 'MelisCommerce',
-                    'controller' => 'MelisComClient',
-                    'action' => 'render-client-contact-tab-content'
-                );
-                $melisTool = $this->getServiceManager()->get('MelisCoreTool');
-                $tabContent = $melisTool->getViewContent($dispatchHandler);
-                
-                // Assigning New Client Contact data to one array container
-                $clientContactDom = array(
-                    'tabId' => $tabId,
-                    'tabNav' => $tabNav,
-                    'tabContent' => $tabContent,
-                );
-                
-                $success = 1;
-            }
-            else 
-            {
-                $textMessage = $translator->translate('tr_meliscommerce_client_Contact_unable_to_add');
-                $errors = ArrayUtils::merge($errors, $propertyForm->getMessages());
-            }
-            
-            // Preparing the error messages if error is occured
-            foreach ($errors as $keyError => $valueError)
-            {
-                foreach ($appConfigFormElements as $keyForm => $valueForm)
-                {
-                    if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
-                    {
-                        $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
-                    }
-                }
-            }
-        }
-        
-        if(!empty($errors)){
-            $success = 0;
-        }
-        
-        $response = array(
-            'success' => $success,
-            'textTitle' => $textTitle,
-            'textMessage' => $textMessage,
-            'errors' => $errors,
-            'clientContactDom' => $clientContactDom
-        );
-        
-        return new JsonModel($response);
     }
     
     /**

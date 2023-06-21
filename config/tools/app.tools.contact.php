@@ -56,7 +56,12 @@ return [
                                 'css' => ['width' => '5%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],
-                            'contact_name' => [
+                            'cper_firstname' => [
+                                'text' => 'tr_meliscommerce_contact_firstname',
+                                'css' => ['width' => '10%', 'padding-right' => '0'],
+                                'sortable' => true,
+                            ],
+                            'cper_name' => [
                                 'text' => 'tr_meliscommerce_contact_name',
                                 'css' => ['width' => '10%', 'padding-right' => '0'],
                                 'sortable' => true,
@@ -66,13 +71,19 @@ return [
                                 'css' => ['width' => '20%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],
+                            'cli_name' => [
+                                'text' => 'tr_meliscommerce_contact_default_account_name',
+                                'css' => ['width' => '20%', 'padding-right' => '0'],
+                                'sortable' => true,
+                            ],
                         ],
                         // define what columns can be used in searching
                         'searchables' => [
                             'cper_id',
                             'cper_name',
                             'cper_firstname',
-                            'cper_email'
+                            'cper_email',
+                            'client.cli_name'
                         ],
                         'actionButtons' => [
                             'edit' => [

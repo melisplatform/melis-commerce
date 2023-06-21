@@ -210,7 +210,8 @@ class Module
             include __DIR__ . '/../config/forms/app.forms.duplications.php',
             include __DIR__ . '/../config/forms/app.forms.settings.php',
             include __DIR__ . '/../config/forms/app.forms.products-page-associations.php',
-        
+            include __DIR__ . '/../config/forms/app.forms.contact.php',
+
             include __DIR__ . '/../config/tools/app.tools.general.php',
             include __DIR__ . '/../config/tools/app.tools.documents.php',
             include __DIR__ . '/../config/tools/app.tools.categories.php',

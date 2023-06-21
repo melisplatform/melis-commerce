@@ -1,17 +1,5 @@
 $(function() {
 	var $body = $("body");
-
-	$body.on("click", ".addNewClient", function() {
-		melisHelper.tabOpen(
-			translations.tr_meliscommerce_clients_add_client,
-			"fa fa-user-plus",
-			"0_id_meliscommerce_client_page",
-			"meliscommerce_client_page",
-			{ clientId: 0 },
-			"id_meliscommerce_clients_list_page"
-		);
-	});
-
 	//removes modal elements when clicking outside
 	$body.on("click", function(e) {
 		var $comModalCon = $(
@@ -96,79 +84,6 @@ $(function() {
 				$(".addNewContact").removeAttr("disabled");
 			}
 		);
-	});
-
-	$body.on("click", "#saveClientContact", function() {
-		var $this = $(this),
-			clientId = $this.data("clientid");
-		emailList = [];
-
-		// serialize the new array and send it to server
-		dataString = $("#melisCommerceClientContactFormModal").serializeArray();
-
-		dataString.push({
-			name: "clientId",
-			value: clientId,
-		});
-
-		$("#" + activeTabId)
-			.find(".client-contact-tab-content form")
-			.each(function(index, element) {
-				emailList.push(
-					$(this)
-						.find("#cper_email")
-						.val()
-				);
-			});
-
-		dataString.push({
-			name: "emailList",
-			value: emailList,
-		});
-
-		dataString = $.param(dataString);
-
-		$("#saveClientContact").attr("disabled", "disabled");
-
-		$.ajax({
-			type: "POST",
-			url: "/melis/MelisCommerce/MelisComClient/addClientContact",
-			data: dataString,
-			dataType: "json",
-			encode: true,
-			cache: false,
-		})
-			.done(function(data) {
-				$("#saveClientContact").removeAttr("disabled");
-
-				if (data.success) {
-					$("#" + clientId + "_client_contact_tab_nav").append(
-						data.clientContactDom.tabNav
-					);
-					$("#" + clientId + "_client_contact_tab_content").append(
-						data.clientContactDom.tabContent
-					);
-					$("#nav_" + data.clientContactDom.tabId).tab("show");
-					$("#id_meliscommerce_client_modal_contact_form_container").modal(
-						"hide"
-					);
-				} else {
-					melisHelper.melisKoNotification(
-						data.textTitle,
-						data.textMessage,
-						data.errors
-					);
-					melisCoreTool.highlightErrors(
-						data.success,
-						data.errors,
-						"melisCommerceClientContactFormModal"
-					);
-				}
-			})
-			.fail(function() {
-				$("#saveClientContact").removeAttr("disabled");
-				alert(translations.tr_meliscore_error_message);
-			});
 	});
 
 	$body.on("click", ".addNewContactAddress", function() {

@@ -9,6 +9,7 @@
 
 namespace MelisCommerce\Model\Tables;
 
+use Laminas\Db\Sql\Expression;
 use Laminas\Db\TableGateway\TableGateway;
 use Laminas\Db\Sql\Select;
 use Laminas\Db\Metadata\Metadata;
@@ -33,6 +34,63 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
     public function __construct()
     {
         $this->idField = self::PRIMARY_KEY;
+    }
+
+    /**
+     * @param null $accountId
+     * @param string $searchValue
+     * @param array $searchKeys
+     * @param null $start
+     * @param null $limit
+     * @param string $orderColumn
+     * @param string $order
+     * @param bool $defaultAccountOnly
+     * @param bool $count
+     * @return \Laminas\Db\ResultSet\ResultSetInterface
+     */
+    public function getContactLists($accountId = null, $searchValue = '', $searchKeys = [], $start = null, $limit = null, $orderColumn = 'cper_id', $order = 'DESC', $defaultAccountOnly = false, $count = false)
+    {
+        $select = $this->getTableGateway()->getSql()->select();
+
+        $slct = ['*', new Expression($this->getTableGateway()->getTable() . '.' . $this->idField.' As DT_RowId')];
+        if ($count) {
+            $slct = [new Expression('COUNT(' . $this->getTableGateway()->getTable() . '.' . $this->idField . ') As totalRecords')];
+        }
+        $select->columns($slct);
+
+        if($defaultAccountOnly)
+            $select->join('melis_ecom_client_person_rel', new Expression('melis_ecom_client_person_rel.cpr_client_person_id = melis_ecom_client_person.cper_id AND melis_ecom_client_person_rel.cpr_default_client = 1'), array(), $select::JOIN_LEFT);
+        else
+            $select->join('melis_ecom_client_person_rel', 'melis_ecom_client_person_rel.cpr_client_person_id = melis_ecom_client_person.cper_id', array(), $select::JOIN_LEFT);
+
+        $select->join(['client' => 'melis_ecom_client'], 'client.cli_id = melis_ecom_client_person_rel.cpr_client_id', array('cli_name'), $select::JOIN_LEFT);
+
+        if (!empty($searchValue)){
+            $search = [];
+            foreach ($searchKeys As $col)
+                $search[$col] = new Like($col, '%'.$searchValue.'%');
+
+            $filters = [new PredicateSet($search, PredicateSet::COMBINED_BY_OR)];
+            $select->where($filters);
+        }
+
+        if(!empty($accountId))
+            $select->where->equalTo('client.cli_id', $accountId);
+
+        if (!empty($start))
+        {
+            $select->offset($start);
+        }
+
+        if (!empty($limit) && $limit != -1)
+        {
+            $select->limit((int) $limit);
+        }
+
+        $select->order($orderColumn .' '. $order);
+
+        $resultData = $this->getTableGateway()->selectWith($select);
+        return $resultData;
     }
 
     public function getClientPersonByClientId($clientId)

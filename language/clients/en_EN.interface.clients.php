@@ -308,4 +308,7 @@
 		'tr_meliscommerce_clients_Contact_tab_files' => 'Files',
 		// New order button inside the order tab
 		'tr_meliscommerce_clients_add_new_order' => 'New order',
+
+        'tr_meliscommerce_client_account_name' => 'Account Name',
+        'tr_meliscommerce_client_tags' => 'Tags',
 	);
