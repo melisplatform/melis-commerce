@@ -41,9 +41,9 @@ class MelisEcomClientTable extends MelisEcomGenericTable
     {
         $select = $this->getTableGateway()->getSql()->select();
 
-        $cper_contact = new \Laminas\Db\Sql\Predicate\Expression("CONCAT(COALESCE(`cper_firstname`,''),' ',COALESCE(`cper_middle_name`,''),' ',COALESCE(`cper_name`,'')) as cli_person");
-        $max_order_date = new \Laminas\Db\Sql\Predicate\Expression('(SELECT ord_date_creation FROM melis_ecom_order WHERE ord_client_id = cper_client_id ORDER BY ord_date_creation DESC LIMIT 1)');
-        $select->columns(array('*', $cper_contact, 'cli_last_order' => $max_order_date));
+//        $cper_contact = new \Laminas\Db\Sql\Predicate\Expression("CONCAT(COALESCE(`cper_firstname`,''),' ',COALESCE(`cper_middle_name`,''),' ',COALESCE(`cper_name`,'')) as cli_person");
+        $max_order_date = new \Laminas\Db\Sql\Predicate\Expression('(SELECT ord_date_creation FROM melis_ecom_order WHERE ord_client_id = cli_id ORDER BY ord_date_creation DESC LIMIT 1)');
+        $select->columns(array('*', 'cli_last_order' => $max_order_date));
 
         $where = !empty($options['where']['key']) ? $options['where']['key'] : '';
         $whereValue = !empty($options['where']['value']) ? $options['where']['value'] : '';
@@ -70,15 +70,15 @@ class MelisEcomClientTable extends MelisEcomGenericTable
             }
         }
 
-        $select->join('melis_ecom_client_person_rel', 'melis_ecom_client.cli_id=melis_ecom_client_person_rel.cpr_client_id',
-            array('*'), $select::JOIN_LEFT);
-        $select->join('melis_ecom_client_person', 'melis_ecom_client_person_rel.cpr_client_person_id = melis_ecom_client_person.cper_id',
-            array('cper_firstname', 'cper_name','cper_id', 'cper_email'), $select::JOIN_LEFT);
+//        $select->join('melis_ecom_client_person_rel', 'melis_ecom_client.cli_id=melis_ecom_client_person_rel.cpr_client_id',
+//            array('*'), $select::JOIN_LEFT);
+//        $select->join('melis_ecom_client_person', 'melis_ecom_client_person_rel.cpr_client_person_id = melis_ecom_client_person.cper_id',
+//            array('cper_firstname', 'cper_name','cper_id', 'cper_email'), $select::JOIN_LEFT);
         $select->join('melis_ecom_client_company', 'melis_ecom_client_company.ccomp_client_id = melis_ecom_client.cli_id', array('cli_company' => 'ccomp_name'), $select::JOIN_LEFT);
         $select->join('melis_ecom_client_groups', 'melis_ecom_client_groups.cgroup_id=melis_ecom_client.cli_group_id',
             array('cgroup_name'),$select::JOIN_LEFT);
 
-        $select->where('melis_ecom_client_person_rel.cpr_default_client = 1');
+//        $select->where('melis_ecom_client_person_rel.cpr_default_client = 1');
 
         if(!is_null($groupId) && $groupId != "")
             $select->where->equalTo('cli_group_id', $groupId);

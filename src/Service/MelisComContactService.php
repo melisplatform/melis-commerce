@@ -65,6 +65,50 @@ class MelisComContactService extends MelisComGeneralService
     }
 
     /**
+     * Return all associated account for this contact
+     *
+     * @param null $contactId
+     * @param string $searchValue
+     * @param array $searchKeys
+     * @param null $start
+     * @param null $limit
+     * @param string $orderColumn
+     * @param string $order
+     * @param bool $count
+     * @return mixed
+     */
+    public function getContactAssocAccountLists($contactId = null, $searchValue = '', $searchKeys = [], $start = null, $limit = null, $orderColumn = 'cper_id', $order = 'DESC', $count = false)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_contact_lists_start', $arrayParameters);
+
+        // Service implementation start
+        $personTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
+        $result = null;
+        $result = $personTable->getContactAssocAccountLists(
+            $arrayParameters['contactId'],
+            $arrayParameters['searchValue'],
+            $arrayParameters['searchKeys'],
+            $arrayParameters['start'],
+            $arrayParameters['limit'],
+            $arrayParameters['orderColumn'],
+            $arrayParameters['order'],
+            $arrayParameters['count']
+        );
+
+        $arrayParameters['results'] = $result;
+
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_contact_lists_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+
+    }
+
+    /**
      *
      * This method saves a client person in database.
      *
@@ -229,6 +273,66 @@ class MelisComContactService extends MelisComGeneralService
 
         // Sending service end event
         $arrayParameters = $this->sendEvent('meliscommerce_service_contact_get_contact_by_id_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
+
+
+    /**
+     * @param $contactId
+     * @param null $addressType
+     * @param null $caddId
+     * @return mixed
+     */
+    public function getContactAddressById($contactId, $addressType = null, $caddId = null)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_contact_get_contact_address_by_id_start', $arrayParameters);
+
+        // Service implementation start
+        $melisEcomClientAddressTable = $this->getServiceManager()->get('MelisEcomClientAddressTable');
+        $clientAddress = $melisEcomClientAddressTable->getPersonAddressByPersonId($arrayParameters['contactId'], $arrayParameters['addressType'], $arrayParameters['caddId']);
+        foreach ($clientAddress As $val)
+        {
+            array_push($results, $val);
+        }
+        // Service implementation end
+
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_contact_get_contact_address_by_id_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
+
+    /**
+     * @param $accountId
+     * @param $contactId
+     * @return mixed
+     */
+    public function unlinkAccountContact($accountId, $contactId)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = null;
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_contact_unlink_account_contact_start', $arrayParameters);
+
+        // Service implementation start
+        $personRelTable = $this->getServiceManager()->get('MelisEcomClientPersonRelTable');
+        $results = $personRelTable->unlinkAccountContact($arrayParameters['accountId'], $arrayParameters['contactId']);
+        // Service implementation end
+
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_contact_unlink_account_contact_end', $arrayParameters);
 
         return $arrayParameters['results'];
     }

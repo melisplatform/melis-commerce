@@ -76,8 +76,8 @@ return [
                                 'css' => ['width' => '10%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],
-                            'cli_person' => [
-                                'text' => 'tr_meliscommerce_clients_table_Client_person',
+                            'cli_name' => [
+                                'text' => 'tr_meliscommerce_clients_table_account_name',
                                 'css' => ['width' => '20%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],
@@ -105,8 +105,7 @@ return [
                         // define what columns can be used in searching
                         'searchables' => [
                             'cli_id',
-                            'cper_name',
-                            'cper_firstname',
+                            'cli_name',
                             'ccomp_name',
                             'cli_date_creation',
                         ],
@@ -235,7 +234,7 @@ return [
                         'target' => '#accountContactList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComContact/getContactList',
                         'dataFunction' => 'setClientId',
-                        'ajaxCallback' => '',
+                        'ajaxCallback' => 'accountContactListTblCallback(); ',
                         'filters' => [
                             'left' => [
                                 'meliscommerce-account-contact-list-tbl-limit' => [

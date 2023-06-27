@@ -6,6 +6,7 @@ return [
     'tr_meliscommerce_contact_name' => 'Name',
     'tr_meliscommerce_contact_firstname' => 'Firstname',
     'tr_meliscommerce_contact_default_account_name' => 'Default account name',
+    'tr_meliscommerce_contact_account_name' => 'Account name',
     'tr_meliscommerce_contact_add_contact_button' => 'Add Contact',
     'tr_meliscommerce_contact_save_success' => 'Contact successfully saved',
     'tr_meliscommerce_contact_save_failed' => 'Error occurred while saving contact',
@@ -26,4 +27,11 @@ return [
     'tr_meliscommerce_contact_page_content_tab_association' => 'Association',
     'tr_meliscommerce_contact_page_content_tab_information_header' => 'Information Header',
     'tr_meliscommerce_contact_page_content_tab_information_content' => 'Information Content',
+
+    'tr_meliscommerce_contact_page_content_tab_address_save_success' => 'Address successfully saved',
+    'tr_meliscommerce_contact_page_content_tab_address_save_failed' => 'Error occurred while saving address',
+    'tr_meliscommerce_contact_page_content_tab_address_delete_success' => 'Address successfully deleted',
+    'tr_meliscommerce_contact_page_content_tab_address_delete_failed' => 'Error occurred while deleting address',
+    'tr_meliscommerce_contact_page_content_tab_address_delete' => 'Delete Address',
+    'tr_meliscommerce_contact_page_content_tab_address_delete_msg' => 'Are you sure you want to delete this address?',
 ];

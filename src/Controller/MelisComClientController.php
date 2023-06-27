@@ -39,7 +39,7 @@ class MelisComClientController extends MelisAbstractActionController
      * 
      * @return \Laminas\View\Model\JsonModel
      */
-    public function getClientContactNameAction()
+    public function getAccountNameAction()
     {
         $translator = $this->getServiceManager()->get('translator');
         
@@ -48,42 +48,36 @@ class MelisComClientController extends MelisAbstractActionController
         $textMessage = $translator->translate('tr_meliscore_error_message');;
         $errors = array();
         
-        $clientContactName = '';
+        $accountName = '';
         
         $request = $this->getRequest();
+        $accountId = 0;
         
         if($request->isPost())
         {
             $postValues = $request->getPost()->toArray();
             
-            if (!empty($postValues['clientId']))
+            if (!empty($postValues['accountId']))
             {
-                $clientId = $postValues['clientId'];
+                $accountId = $postValues['accountId'];
                 // Getting Client Data from Client Service
                 $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
-                $clientData = $melisComClientService->getClientByIdAndClientPerson($clientId);
-                // Getting data from Client object
-                $clientPerson = $clientData->getPersons();
+                $clientData = $melisComClientService->getClientById($accountId);
 
-                if (!empty($clientPerson))
+                if (!empty($clientData))
                 {
-                    foreach ($clientPerson As $row)
-                    {
-                        // First Person would use as default Name of the client
-                        $clientContactName = $row->cper_firstname.' '.$row->cper_name;
-                        break;
-                    }
+                    $accountName = $clientData->cli_name;
                     $success = 1;
                 }
             }
         }
-        
+
         $response = array(
             'success' => $success,
             'textTitle' => $textTitle,
             'textMessage' => $textMessage,
-            'clientId' => $textTitle,
-            'clientContactName' => $clientContactName,
+            'accountId' => $accountId,
+            'accountName' => $accountName,
             'errors' => $errors,
         );
         
@@ -109,20 +103,13 @@ class MelisComClientController extends MelisAbstractActionController
         {
             $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
             $clientData = $melisComClientService->getClientByIdAndClientPerson($clientId);
+
+            $accountData = $clientData->getClient();
             
-            $clientPerson = $clientData->getPersons();
-            
-            $mainContactName = '';
-            
-            if (!empty($clientPerson))
+            if (!empty($accountData))
             {
-                foreach ($clientPerson As $row)
-                {
-                    $mainContactName = $row->cper_firstname.' '.$row->cper_name;
-                    break;
-                }
-                $success = 1;
-                
+                $accountName = $accountData->cli_name;
+
                 $clientCompany = $clientData->getCompany();
                 $comapanyName = '';
                 
@@ -134,7 +121,7 @@ class MelisComClientController extends MelisAbstractActionController
                     }
                 }
                 
-                $title = $translator->translate('tr_meliscommerce_clients_common_label_client').' / '.$mainContactName.$comapanyName;
+                $title = $translator->translate('tr_meliscommerce_clients_common_label_client').' / '.$accountName.$comapanyName;
             }
         }
         
@@ -735,102 +722,6 @@ class MelisComClientController extends MelisAbstractActionController
     }
     
     /**
-     * This method add Client Address to Client Content
-     * This will also validate Data assign to Client Address and return Form with validated datas
-     * 
-     * @return \Laminas\View\Model\JsonModel
-     */
-    public function addClientContactAddressAction()
-    {
-        $translator = $this->getServiceManager()->get('translator');
-        
-        $success = 0;
-        $textTitle = $translator->translate('tr_meliscommerce_clients_add_contact_address');
-        $textMessage = '';
-        $errors = array();
-        
-        $clientContactAddressDom = array();
-        
-        $request = $this->getRequest();
-        
-        if($request->isPost())
-        {
-            // Geting Client Address from Config
-            $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
-            $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_addresses_form','meliscommerce_clients_addresses_form');
-            $factory = new \Laminas\Form\Factory();
-            $formElements = $this->getServiceManager()->get('FormElementManager');
-            $factory->setFormElementManager($formElements);
-            $propertyForm = $factory->createForm($appConfigForm);
-
-            // Getting Data from Post and set data to Client Address Form
-            $postValues = $request->getPost()->toArray();
-            $propertyForm->setData($postValues);
-            // Getting Client Address form elements/fields
-            $appConfigFormElements = $appConfigForm['elements'];
-        
-            // Checking if Data setted to Form is valid
-            if ($propertyForm->isValid())
-            {
-                // Getting Validated Data from Form
-                $data = $propertyForm->getData();
-                
-                // Encrypting dattime as unique Id
-                $contactAddressId = md5(date('YmdHis'));
-                
-                $clientId = $postValues['clientId'];
-                $tabId = $postValues['tabId'];
-            
-                // Getting Client Contact Tabulation Content from dispatcher,
-                // Return would be in HTML code and return as ajax request
-                $dispatchHandler = array(
-                    'module' => 'MelisCommerce',
-                    'controller' => 'MelisComClient',
-                    'action' => 'render-client-contact-address-accordion-content'
-                );
-                $melisTool = $this->getServiceManager()->get('MelisCoreTool');
-                $accordionContent = $melisTool->getViewContent($dispatchHandler);
-                
-                // Assigning New Address data to one array container
-                $clientContactAddressDom = array(
-                    'tabId' => $tabId,
-                    'contactAddressId' => $contactAddressId,
-                    'accordionContent' => $accordionContent,
-                );
-                
-                $success = 1;
-            }
-            else
-            {
-                $textMessage = $translator->translate('tr_meliscommerce_client_Contact_unable_to_add_address');
-                $errors = $propertyForm->getMessages();
-            }
-            
-            // Preparing Error message if error occured
-            foreach ($errors as $keyError => $valueError)
-            {
-                foreach ($appConfigFormElements as $keyForm => $valueForm)
-                {
-                    if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
-                    {
-                        $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
-                    }
-                }
-            }
-        }
-        
-        $response = array(
-            'success' => $success,
-            'textTitle' => $textTitle,
-            'textMessage' => $textMessage,
-            'errors' => $errors,
-            'clientContactAddressDom' => $clientContactAddressDom,
-        );
-        
-        return new JsonModel($response);
-    }
-    
-    /**
         * Render Client Contact Address in Accordion Contect
         * 
         * @return \Laminas\View\Model\ViewModel
@@ -1066,36 +957,6 @@ class MelisComClientController extends MelisAbstractActionController
         $view->melisKey = $melisKey;
         $view->tabId = $tabId;
         $view->setVariable('meliscommerce_clients_contact_form', $propertyForm);
-        $view->clientId = ($clientId) ? $clientId : 0;
-        return $view;
-    }
-    
-    /**
-        * Render Client Contact Address Form modal
-        * This method return Client Contact Address Form
-        * 
-        * @return \Laminas\View\Model\ViewModel
-        */
-    public function renderClientModalContactAddressFormAction()
-    {
-        $translator = $this->getServiceManager()->get('translator');
-    
-        $melisKey = $this->params()->fromRoute('melisKey', '');
-        $clientId = $this->params()->fromQuery('clientId');
-        $tabId = $this->params()->fromQuery('tabId');
-        
-        // Getting Client Contact Address Form from Config
-        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
-        $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_addresses_form','meliscommerce_clients_addresses_form');
-        $factory = new \Laminas\Form\Factory();
-        $formElements = $this->getServiceManager()->get('FormElementManager');
-        $factory->setFormElementManager($formElements);
-        $propertyForm = $factory->createForm($appConfigForm);
-        
-        $view = new ViewModel();
-        $view->melisKey = $melisKey;
-        $view->tabId = $tabId;
-        $view->setVariable('meliscommerce_clients_addresses_form', $propertyForm);
         $view->clientId = ($clientId) ? $clientId : 0;
         return $view;
     }
@@ -1938,6 +1799,38 @@ class MelisComClientController extends MelisAbstractActionController
 
         return new JsonModel([
             'success' => $success,
+            'error' => $error,
+            'textTitle' => $translator->translate($title),
+            'textMessage' => $translator->translate($message)
+        ]);
+    }
+
+    /**
+     * @return JsonModel
+     */
+    public function unlinkAccountContactAction()
+    {
+        $accountId = $this->getRequest()->getPost('accountId', '');
+        $contactId = $this->getRequest()->getPost('contactId', '');
+
+        $success = 0;
+        $error = [];
+        $title = 'tr_meliscommerce_client_unlink_contact';
+        $message = 'tr_meliscommerce_client_unlink_contact_failed';
+
+        $translator = $this->getServiceManager()->get('translator');
+        $contactService = $this->getServiceManager()->get('MelisComContactService');
+        if($this->request->isPost()){
+            $res = $contactService->unlinkAccountContact($accountId, $contactId);
+            if($res){
+                $success = 1;
+                $message = 'tr_meliscommerce_client_unlink_contact_success';
+            }
+        }
+
+        return new JsonModel([
+            'success' => $success,
+            'accountId' => $accountId,
             'error' => $error,
             'textTitle' => $translator->translate($title),
             'textMessage' => $translator->translate($message)

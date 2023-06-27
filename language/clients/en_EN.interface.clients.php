@@ -56,6 +56,7 @@
 		'tr_meliscommerce_clients_table_Client_company' => 'Company',
 		'tr_meliscommerce_clients_table_Client_num_orders' => 'Order(s)',
 		'tr_meliscommerce_clients_table_Client_last_order' => 'Last order',
+        'tr_meliscommerce_clients_table_account_name' => 'Account',
 		
 		// Buttons
 		'tr_meliscommerce_clients_add_client' => 'Add account',
@@ -207,6 +208,11 @@
         'tr_meliscommerce_client_delete_account_msg' => 'Are you sure you want to delete this account?',
         'tr_meliscommerce_client_delete_account_success' => 'Account successfully deleted',
         'tr_meliscommerce_client_delete_account_failed' => 'Error occurred while deleting account',
+        //unlink contact
+        'tr_meliscommerce_client_unlink_contact' => 'Unlink contact',
+        'tr_meliscommerce_client_unlink_contact_msg' => 'Are you sure you want to unlink this contact',
+        'tr_meliscommerce_client_unlink_contact_success' => 'Contact successfully unlinked',
+        'tr_meliscommerce_client_unlink_contact_failed' => 'Error occurred while un-linking contact',
 
 		// Saving Messages
 		'tr_meliscommerce_client_save_success' => 'Client has been saved successfully',

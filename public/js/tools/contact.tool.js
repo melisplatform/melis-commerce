@@ -152,7 +152,148 @@ $(function(){
             { clientId: accountid, activateTab: true }
         );
     });
+
+    $body.on("click", ".addContactAddress", function() {
+        var $this = $(this),
+            contactId = $this.data("contactid"),
+            tabId = $this.data("tabid");
+
+        $(".addNewContactAddress").attr("disabled", "disabled");
+
+        // initialation of local variable
+        zoneId = "id_meliscommerce_client_modal_contact_address_form";
+        melisKey = "meliscommerce_client_modal_contact_address_form";
+        modalUrl = "/melis/MelisCommerce/MelisComClient/renderClientModal";
+
+        // requesitng to create modal and display after
+        melisHelper.createModal(
+            zoneId,
+            melisKey,
+            false,
+            { contactId: contactId, tabId: tabId },
+            modalUrl,
+            function() {
+                $(".addNewContactAddress").removeAttr("disabled");
+            }
+        );
+    });
+
+    $body.on("click", "#saveClientContactAddress", function() {
+        var $this = $(this),
+            contactId = $this.data("contactid"),
+            tabId = $this.data("tabid");
+
+        // serialize the new array and send it to server
+        var dataString = $(
+            "#melisCommerceClientContactAddressFormModal"
+        ).serializeArray();
+
+        dataString.push({
+            name: "contactId",
+            value: contactId
+        });
+
+        dataString.push({
+            name: "tabId",
+            value: tabId
+        });
+
+        dataString = $.param(dataString);
+
+        $("#saveClientContactAddress").attr("disabled", "disabled");
+
+        $.ajax({
+            type: "POST",
+            url: "/melis/MelisCommerce/MelisComContact/addContactAddress",
+            data: dataString,
+            dataType: "json",
+            encode: true,
+            cache: false
+        })
+            .done(function(data) {
+                $("#saveClientContactAddress").removeAttr("disabled");
+
+                if (data.success) {
+                    melisHelper.melisOkNotification(
+                        data.textTitle,
+                        data.textMessage
+                    );
+                    $(
+                        "#id_meliscommerce_client_modal_contact_address_form_container"
+                    ).modal("hide");
+
+                    melisHelper.zoneReload(contactId+'_id_meliscommerce_contact_page_content_tab_address', 'meliscommerce_contact_page_content_tab_address', {contactId:contactId, reload: true});
+                } else {
+                    melisHelper.melisKoNotification(
+                        data.textTitle,
+                        data.textMessage,
+                        data.errors
+                    );
+                    melisCoreTool.highlightErrors(
+                        data.success,
+                        data.errors,
+                        "melisCommerceClientContactAddressFormModal"
+                    );
+                }
+            })
+            .fail(function() {
+                $("#saveClientContactAddress").removeAttr("disabled");
+                alert(translations.tr_meliscore_error_message);
+            });
+    });
+
+    $body.on("click", ".deleteContactAddress", function(){
+        var $this   = $(this),
+            addressId    = $this.data("addressid"),
+            contactId    = $this.data("contactid");
+
+        melisCoreTool.confirm(
+            translations.tr_meliscore_common_yes,
+            translations.tr_meliscore_common_no,
+            translations.tr_meliscommerce_contact_page_content_tab_address_delete,
+            translations.tr_meliscommerce_contact_page_content_tab_address_delete_msg,
+            function() {
+                $.ajax({
+                    type: "POST",
+                    url: "/melis/MelisCommerce/MelisComContact/deleteContactAddress",
+                    data: {addressId: addressId},
+                    dataType: "json",
+                    encode: true,
+                    cache: false
+                }).done(function(data){
+                    if(data.success){
+                        melisHelper.melisOkNotification(
+                            data.textTitle,
+                            data.textMessage
+                        );
+                        melisHelper.zoneReload(contactId+'_id_meliscommerce_contact_page_content_tab_address', 'meliscommerce_contact_page_content_tab_address', {contactId:contactId, reload: true});
+                    }else{
+                        melisHelper.melisKoNotification(
+                            data.textTitle,
+                            data.textMessage,
+                            data.errors
+                        );
+                    }
+                });
+            }
+        );
+    });
+
+    $body.on("click", ".refreshAsocc", function() {
+        var $this = $(this),
+            contactid = $this.data("contactid");
+
+        melisHelper.zoneReload(
+            "id_meliscommerce_contact_page_content_tab_association_content_list",
+            "meliscommerce_contact_page_content_tab_association_content_list",
+            { contactId: contactid, activateTab: true }
+        );
+    });
 });
 window.setClientId = function(d){
     d.clientId = activeTabId.replace('_id_meliscommerce_client_page','');
+};
+
+window.setContactId = function(d){
+    d.contactId = activeTabId.replace('_id_meliscommerce_contact_page','');
 };

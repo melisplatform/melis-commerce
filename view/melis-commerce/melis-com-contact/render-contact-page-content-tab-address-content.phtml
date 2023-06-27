@@ -1,0 +1,49 @@
+<div class="accordion client-contact-address client-contact-tab-content" id="<?php echo  $this->tabId.'_contact_address' ?>">
+    <?php foreach ($this->addresses As $pVal):?>
+        <?php $contactAddressId = md5($pVal->cadd_id)?>
+        <?php $tabId = md5($pVal->cadd_client_person);?>
+        <div class="card default-card" id="<?php echo $contactAddressId.'_contact_address_content'?>">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-11">
+                        <h4 class="card-title">
+                            <a class="accordion-toggle collapsed" id="<?php echo 'nav_'.$contactAddressId ?>" data-toggle="collapse" data-parent="#<?php echo  $tabId.'_address' ?>" href="#<?php echo $contactAddressId.'_address_acordion' ?>">
+                                <?php echo $pVal->cadd_address_name ?>
+                            </a>
+                        </h4>
+                    </div>
+                    <div class="col-1">
+                        <i class="fa fa-times float-right fa-lg deleteContactAddress" data-contactid="<?= $this->contactId;?>" data-tabid="<?php echo $tabId?>" data-addressid="<?php echo $pVal->cadd_id ?>" data-addressaccordionid="<?php echo $contactAddressId ?>" data-isnewadded="0" style="margin-top: 5px; cursor: pointer"></i>
+                    </div>
+                </div>
+            </div>
+            <div id="<?php echo $contactAddressId.'_address_acordion' ?>" class="card-collapse collapse">
+                <div class="card-body">
+                    <div class="innerAll spacing-x2">
+                        <?php
+                        $addForm = clone($this->meliscommerce_clients_addresses_form);
+                        $addForm->setAttribute('id', $contactAddressId.'_contact_address_form');
+                        $addForm->setAttribute('data-contactaddressid', $contactAddressId);
+                        $addForm->setAttribute('class', 'clientContactAddressForm');
+
+                        $addForm->prepare();
+
+                        foreach($addForm->getElements() as $element => $attributes)  {
+                            $el =  $addForm->get((string) $element);
+                            $elId = $el->getAttribute('id') ?? $el->getName();
+
+                            $el->setAttribute('id', $contactAddressId . '_' . $elId);
+                        }
+
+                        $addForm->bind($pVal);
+
+                        echo $this->form()->openTag($addForm);
+                        echo $this->melisFieldCollection($addForm);
+                        echo $this->form()->closeTag();
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php endforeach;?>
+</div>

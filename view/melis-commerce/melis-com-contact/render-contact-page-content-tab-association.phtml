@@ -1,11 +1,11 @@
 <?php 
     $id = '';
     if (!empty($this->zoneconfig['conf']['id'])){
-        $id = 'id="'.$this->clientId.'_'.$this->zoneconfig['conf']['id'] .'"';
+        $id = 'id="'.$this->contactId.'_'.$this->zoneconfig['conf']['id'] .'"';
     }
     $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
 ?>
-<div class="tab-pane" <?php echo $id. ' '.$data_melisKey?>>				
+<div class="tab-pane <?php echo $this->activateTab ?>" <?php echo $id. ' '.$data_melisKey?>>
 	<?php 
     	if(!empty($this->zoneconfig['interface'])) {
     	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {

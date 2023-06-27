@@ -178,7 +178,7 @@ class MelisComContactController extends MelisAbstractActionController
                 }
 
                 $tableData[$key]['cper_status'] = $contactStatus;
-//                $tableData[$key]['contact_name'] = $val['cper_firstname'].' '.$val['cper_name'];
+                $tableData[$key]['DT_RowAttr']    = ['data-accountid' => $accountId];
             }
         }
         return new JsonModel(array(
@@ -452,7 +452,7 @@ class MelisComContactController extends MelisAbstractActionController
         $contactId = $this->params()->fromQuery('contactId', '');
         $view = new ViewModel();
         $view->melisKey = $melisKey;
-        $view->clientId = $contactId;
+        $view->contactId = $contactId;
         return $view;
     }
 
@@ -463,9 +463,11 @@ class MelisComContactController extends MelisAbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $contactId = $this->params()->fromQuery('contactId', '');
+        $reload = $this->params()->fromQuery('reload', false);
         $view = new ViewModel();
         $view->melisKey = $melisKey;
-        $view->clientId = $contactId;
+        $view->contactId = $contactId;
+        $view->reload = $reload;
         return $view;
     }
 
@@ -478,7 +480,7 @@ class MelisComContactController extends MelisAbstractActionController
         $contactId = $this->params()->fromQuery('contactId', '');
         $view = new ViewModel();
         $view->melisKey = $melisKey;
-        $view->clientId = $contactId;
+        $view->contactId = $contactId;
         return $view;
     }
 
@@ -491,7 +493,7 @@ class MelisComContactController extends MelisAbstractActionController
         $contactId = $this->params()->fromQuery('contactId', '');
         $view = new ViewModel();
         $view->melisKey = $melisKey;
-        $view->clientId = $contactId;
+        $view->contactId = $contactId;
         return $view;
     }
 
@@ -535,5 +537,378 @@ class MelisComContactController extends MelisAbstractActionController
         $view->clientId = $contactId;
         $view->contactForm = $contactForm;
         return $view;
+    }
+
+    /**
+     * @return \Laminas\View\Model\ViewModel
+     */
+    public function renderContactPageContentTabAddressHeaderAction()
+    {
+        $tabId = md5(date('YmdHis'));
+
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $contactId = $this->params()->fromQuery('contactId', '');
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        $view->contactId = $contactId;
+        $view->tabId = $tabId;
+        return $view;
+    }
+
+    /**
+     * @return \Laminas\View\Model\ViewModel
+     */
+    public function renderContactPageContentTabAddressHeaderButtonAddAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $contactId = $this->params()->fromQuery('contactId', '');
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        $view->contactId = $contactId;
+        return $view;
+    }
+
+    /**
+     * @return \Laminas\View\Model\ViewModel
+     */
+    public function renderContactPageContentTabAddressContentAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $contactId = $this->params()->fromQuery('contactId', '');
+
+        // Getting Client Contact Address form from Config
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
+        $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_addresses_form','meliscommerce_clients_addresses_form');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+        $propertyForm = $factory->createForm($appConfigForm);
+
+        $clientService = $this->getServiceManager()->get('MelisComClientService');
+        $contactAddresses = $clientService->getClientAddressesByClientPersonId($contactId);
+
+        $view = new ViewModel();
+        $view->setVariable('meliscommerce_clients_addresses_form', $propertyForm);
+        $view->addresses = $contactAddresses;
+        $view->melisKey = $melisKey;
+        $view->contactId = $contactId;
+        return $view;
+    }
+
+    /**
+     * This method add Contact Address
+     *
+     * @return \Laminas\View\Model\JsonModel
+     */
+    public function addContactAddressAction()
+    {
+        $translator = $this->getServiceManager()->get('translator');
+
+        $success = 0;
+        $textTitle = $translator->translate('tr_meliscommerce_clients_add_contact_address');
+        $textMessage = 'tr_meliscommerce_contact_page_content_tab_address_save_failed';
+        $errors = array();
+
+        $request = $this->getRequest();
+
+        if($request->isPost())
+        {
+            // Geting Client Address from Config
+            $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
+            $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_addresses_form','meliscommerce_clients_addresses_form');
+            $factory = new \Laminas\Form\Factory();
+            $formElements = $this->getServiceManager()->get('FormElementManager');
+            $factory->setFormElementManager($formElements);
+            $propertyForm = $factory->createForm($appConfigForm);
+
+            // Getting Data from Post and set data to Client Address Form
+            $postValues = $request->getPost()->toArray();
+            $propertyForm->setData($postValues);
+            // Getting Client Address form elements/fields
+            $appConfigFormElements = $appConfigForm['elements'];
+
+            // Checking if Data setted to Form is valid
+            if ($propertyForm->isValid())
+            {
+                if($postValues['contactId']) {
+                    // Getting Validated Data from Form
+                    $data = $propertyForm->getData();
+                    $clientService = $this->getServiceManager()->get('MelisComClientService');
+                    //set person id
+                    $data['cadd_client_person'] = $postValues['contactId'];
+                    $data['cadd_client_id'] = 0;
+                    $res = $clientService->saveClientAddress($data);
+                    if ($res) {
+                        $success = 1;
+                        $textMessage = 'tr_meliscommerce_contact_page_content_tab_address_save_success';
+                    }
+                }else{
+                    $errors = $propertyForm->getMessages();
+                }
+            }
+            else
+            {
+                $errors = $propertyForm->getMessages();
+            }
+
+            // Preparing Error message if error occured
+            foreach ($errors as $keyError => $valueError)
+            {
+                foreach ($appConfigFormElements as $keyForm => $valueForm)
+                {
+                    if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
+                    {
+                        $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                    }
+                }
+            }
+        }
+
+        $response = array(
+            'success' => $success,
+            'textTitle' => $textTitle,
+            'textMessage' => $textMessage,
+            'errors' => $errors
+        );
+
+        return new JsonModel($response);
+    }
+
+    /**
+     * Render Client Contact Address Form modal
+     * This method return Client Contact Address Form
+     *
+     * @return \Laminas\View\Model\ViewModel
+     */
+    public function renderContactModalContactAddressFormAction()
+    {
+        $translator = $this->getServiceManager()->get('translator');
+
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $contactId = $this->params()->fromQuery('contactId');
+        $tabId = $this->params()->fromQuery('tabId');
+
+        // Getting Client Contact Address Form from Config
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
+        $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_addresses_form','meliscommerce_clients_addresses_form');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+        $propertyForm = $factory->createForm($appConfigForm);
+
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        $view->tabId = $tabId;
+        $view->setVariable('meliscommerce_clients_addresses_form', $propertyForm);
+        $view->contactId = ($contactId) ? $contactId : 0;
+        return $view;
+    }
+
+    /**
+     * @return JsonModel
+     */
+    public function deleteContactAddressAction()
+    {
+        $translator = $this->getServiceManager()->get('translator');
+
+        $success = 0;
+        $textTitle = $translator->translate('tr_meliscommerce_contact_page_content_tab_address_delete');
+        $textMessage = 'tr_meliscommerce_contact_page_content_tab_address_delete_failed';
+        $errors = array();
+
+        $request = $this->getRequest();
+
+        $addressId = $request->getPost('addressId', null);
+        $contactId = $request->getPost('contactId', null);
+
+        if($request->isPost())
+        {
+            if(!empty($addressId)) {
+                $clientService = $this->getServiceManager()->get('MelisComClientService');
+                $res = $clientService->deleteClientAddress($addressId);
+                if($res){
+                    $success = 1;
+                    $textMessage = 'tr_meliscommerce_contact_page_content_tab_address_delete_success';
+                }
+            }
+        }
+
+        $response = array(
+            'success' => $success,
+            'textTitle' => $textTitle,
+            'textMessage' => $translator->translate($textMessage),
+            'errors' => $errors,
+            'contactId' => $contactId
+        );
+
+        return new JsonModel($response);
+    }
+
+    /**
+     * @return \Laminas\View\Model\ViewModel
+     */
+    public function renderContactPageContentTabAssociationHeaderAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $contactId = $this->params()->fromQuery('contactId', '');
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        $view->contactId = $contactId;
+        return $view;
+    }
+
+    /**
+     * @return \Laminas\View\Model\ViewModel
+     */
+    public function renderContactPageContentTabAssociationContentAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $contactId = $this->params()->fromQuery('contactId', '');
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        $view->contactId = $contactId;
+        return $view;
+    }
+
+    /**
+     * @return \Laminas\View\Model\ViewModel
+     */
+    public function renderContactPageContentTabAssociationContentAddAccountAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $contactId = $this->params()->fromQuery('contactId', '');
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        $view->contactId = $contactId;
+        return $view;
+    }
+
+    /**
+     * @return \Laminas\View\Model\ViewModel
+     */
+    public function renderContactPageContentTabAssociationContentListAction()
+    {
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
+        $melisTool->setMelisToolKey(self::PLUGIN_INDEX, 'meliscommerce_contact_associated_account_list');
+
+        $contactId = $this->params()->fromQuery('contactId', '');
+
+        // DataTable costume configuration
+        $columns = $melisTool->getColumns();
+        $translator = $this->getServiceManager()->get('translator');
+        $columns['actions'] = array('text' => $translator->translate('tr_meliscommerce_clients_common_label_action'));
+
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view = new ViewModel();
+        $view->contactId = $contactId;
+        $view->melisKey = $melisKey;
+        $view->tableColumns = $columns;
+        $view->getToolDataTableConfig = $melisTool->getDataTableConfiguration('#'.$contactId.'_contactAssocAccountList', null, null, array('order' => '[[ 0, "desc" ]]'));
+        return $view;
+    }
+
+    /**
+     * @return ViewModel
+     */
+    public function renderAccountContactAssocAccountListTableSearchAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        return $view;
+    }
+
+    /**
+     * @return ViewModel
+     */
+    public function renderAccountContactAssocAccountListTableLimitAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        return $view;
+    }
+
+    /**
+     * @return ViewModel
+     */
+    public function renderAccountContactAssocAccountListTableRefreshAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $contactId = $this->params()->fromQuery('contactId', '');
+
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        $view->contactId = $contactId;
+        return $view;
+    }
+
+    /**
+     * @return ViewModel
+     */
+    public function renderAccountContactAssocAccountListTableEditAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        return $view;
+    }
+
+    /**
+     * @return JsonModel
+     */
+    public function getContactAssociatedAccountListAction()
+    {
+        $dataCount = 0;
+        $draw = 0;
+        $tableData = array();
+
+        if($this->getRequest()->isPost())
+        {
+            $contactId = $this->getRequest()->getPost('contactId', null);
+
+            $melisTool = $this->getServiceManager()->get('MelisCoreTool');
+            $melisTool->setMelisToolKey(self::PLUGIN_INDEX, 'meliscommerce_contact_associated_account_list');
+
+            $colId = array_keys($melisTool->getColumns());
+
+            $sortOrder = $this->getRequest()->getPost('order');
+            $sortOrder = $sortOrder[0]['dir'];
+
+            $selCol = $this->getRequest()->getPost('order');
+            $selCol = $colId[$selCol[0]['column']];
+
+            $draw = $this->getRequest()->getPost('draw');
+
+            $start = $this->getRequest()->getPost('start');
+            $length =  $this->getRequest()->getPost('length');
+
+            $search = $this->getRequest()->getPost('search');
+            $search = $search['value'];
+
+            $contactService = $this->getServiceManager()->get('MelisComContactService');
+
+            $tableData = $contactService->getContactAssocAccountLists($contactId, $search, $melisTool->getSearchableColumns(), $start, $length, $selCol, $sortOrder)->toArray();
+            $dataCount = $contactService->getContactAssocAccountLists($contactId, $search, $melisTool->getSearchableColumns(), null, null, null, 'ASC', true)->current();
+
+            $contactStatus = '<i class="fa fa-circle text-danger"></i>';
+            foreach ($tableData as $key => $val)
+            {
+                // Generating contact status html form
+                if ($val['cli_status'])
+                {
+                    $contactStatus = '<i class="fa fa-circle text-success"></i>';
+                }
+
+                $tableData[$key]['cli_status'] = $contactStatus;
+                $tableData[$key]['default_account'] = '';
+            }
+        }
+        return new JsonModel(array(
+            'draw' => (int) $draw,
+            'recordsTotal' => count($tableData),
+            'recordsFiltered' => $dataCount->totalRecords,
+            'data' => $tableData,
+        ));
     }
 }

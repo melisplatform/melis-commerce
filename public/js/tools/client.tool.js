@@ -18,17 +18,17 @@ $(function() {
 
 	$body.on("click", ".viewCleintInfo", function() {
 		var $this = $(this),
-			clientId = $this.parents("tr").attr("id"),
+			accountId = $this.parents("tr").attr("id"),
 			dataString = new Array();
 
 		dataString.push({
-			name: "clientId",
-			value: clientId,
+			name: "accountId",
+			value: accountId
 		});
 
 		$.ajax({
 			type: "POST",
-			url: "/melis/MelisCommerce/MelisComClient/getClientContactName",
+			url: "/melis/MelisCommerce/MelisComClient/getAccountName",
 			data: dataString,
 			dataType: "json",
 			encode: true,
@@ -41,11 +41,11 @@ $(function() {
 					var navTabsGroup = "id_meliscommerce_clients_list_page";
 
 					melisHelper.tabOpen(
-						data.clientContactName,
+						data.accountName,
 						"fa fa-user",
-						clientId + "_id_meliscommerce_client_page",
+                        accountId + "_id_meliscommerce_client_page",
 						"meliscommerce_client_page",
-						{ clientId: clientId },
+						{ clientId: accountId },
 						navTabsGroup
 					);
 				} else {
@@ -84,93 +84,6 @@ $(function() {
 				$(".addNewContact").removeAttr("disabled");
 			}
 		);
-	});
-
-	$body.on("click", ".addNewContactAddress", function() {
-		var $this = $(this),
-			clientId = $this.data("clientid"),
-			tabId = $this.data("tabid");
-
-		$(".addNewContactAddress").attr("disabled", "disabled");
-
-		// initialation of local variable
-		zoneId = "id_meliscommerce_client_modal_contact_address_form";
-		melisKey = "meliscommerce_client_modal_contact_address_form";
-		modalUrl = "/melis/MelisCommerce/MelisComClient/renderClientModal";
-
-		// requesitng to create modal and display after
-		melisHelper.createModal(
-			zoneId,
-			melisKey,
-			false,
-			{ clientId: clientId, tabId: tabId },
-			modalUrl,
-			function() {
-				$(".addNewContactAddress").removeAttr("disabled");
-			}
-		);
-	});
-
-	$body.on("click", "#saveClientContactAddress", function() {
-		var $this = $(this),
-			clientId = $this.data("clientid");
-		tabId = $this.data("tabid");
-
-		// serialize the new array and send it to server
-		dataString = $(
-			"#melisCommerceClientContactAddressFormModal"
-		).serializeArray();
-
-		dataString.push({
-			name: "clientId",
-			value: clientId,
-		});
-
-		dataString.push({
-			name: "tabId",
-			value: tabId,
-		});
-
-		dataString = $.param(dataString);
-
-		$("#saveClientContactAddress").attr("disabled", "disabled");
-
-		$.ajax({
-			type: "POST",
-			url: "/melis/MelisCommerce/MelisComClient/addClientContactAddress",
-			data: dataString,
-			dataType: "json",
-			encode: true,
-			cache: false,
-		})
-			.done(function(data) {
-				$("#saveClientContactAddress").removeAttr("disabled");
-
-				if (data.success) {
-					$("#" + tabId + "_contact_address").append(
-						data.clientContactAddressDom.accordionContent
-					);
-					$("#nav_" + data.clientContactAddressDom.contactAddressId).click();
-					$(
-						"#id_meliscommerce_client_modal_contact_address_form_container"
-					).modal("hide");
-				} else {
-					melisHelper.melisKoNotification(
-						data.textTitle,
-						data.textMessage,
-						data.errors
-					);
-					melisCoreTool.highlightErrors(
-						data.success,
-						data.errors,
-						"melisCommerceClientContactAddressFormModal"
-					);
-				}
-			})
-			.fail(function() {
-				$("#saveClientContactAddress").removeAttr("disabled");
-				alert(translations.tr_meliscore_error_message);
-			});
 	});
 
 	$body.on("click", ".addNewAddress", function() {
@@ -874,6 +787,36 @@ $(function() {
             }
         );
 	});
+
+	$body.on("click", ".accountContactUnlink", function(){
+        var current_row = $(this).parents('tr');//Get the current row
+        if (current_row.hasClass('child')) {//Check if the current row is a child row
+            current_row = current_row.prev();//If it is, then point to the row before it (its 'parent')
+        }
+        var accountId = current_row.attr("data-accountid");
+        var contactId = current_row.attr("id");
+
+        melisCoreTool.confirm(
+            translations.tr_meliscommerce_clients_common_label_yes,
+            translations.tr_meliscommerce_clients_common_label_no,
+            translations.tr_meliscommerce_client_unlink_contact,
+            translations.tr_meliscommerce_client_unlink_contact_msg,
+            function() {
+                $.ajax({
+                    'url': '/melis/MelisCommerce/MelisComClient/unlinkAccountContact',
+                    'data': {accountId: accountId, contactId: contactId},
+                    'type': 'POST'
+                }).done(function(data){
+                    if(data.success){
+                        $("#"+data.accountId+"_accountContactList").DataTable().ajax.reload();
+                        melisHelper.melisOkNotification(data.textTitle, data.textMessage);
+                    }else{
+                        melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.error);
+                    }
+                });
+            }
+        );
+	});
 });
 function viewClientOrder(orderId, orderRef) {
 	var navTabsGroup = "id_meliscommerce_order_list_page";
@@ -1140,4 +1083,14 @@ window.accountsTableCallback = function()
     tr.each(function(){
         $(this).find("td").find(".deleteClient").addClass("d-none");
     });
+};
+window.accountContactListTblCallback = function ()
+{
+	var accountId = activeTabId.replace('_id_meliscommerce_client_page', '');
+    var tbody = $("#"+accountId+"_accountContactList tbody");
+    var tr = tbody.find("tr");
+    //if only one contact remain, remove the unlink button
+    if($(tr).length == 1){
+        $(tr).find("td").find(".accountContactUnlink").addClass("d-none");
+	}
 };

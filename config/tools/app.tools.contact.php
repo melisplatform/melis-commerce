@@ -12,10 +12,6 @@ return [
         'meliscommerce' => [
             'tools' => [
                 'meliscommerce_contact_list' => [
-                    'conf' => [
-                        'title' => 'tr_meliscommerce_contact_list',
-                        'id' => 'id_meliscommerce_contact_list',
-                    ],
                     'table' => [
                         // table ID
                         'target' => '#contactList',
@@ -90,6 +86,72 @@ return [
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComContact',
                                 'action' => 'render-account-contact-list-table-edit',
+                            ],
+                        ]
+                    ],
+                ],
+                'meliscommerce_contact_associated_account_list' => [
+                    'table' => [
+                        // table ID
+                        'target' => '#contactAssociatedAccountList',
+                        'ajaxUrl' => '/melis/MelisCommerce/MelisComContact/getContactAssociatedAccountList',
+                        'dataFunction' => 'setContactId',
+                        'ajaxCallback' => '',
+                        'filters' => [
+                            'left' => [
+                                'meliscommerce-account-contact-assoc-account-list-tbl-limit' => [
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComContact',
+                                    'action' => 'render-account-contact-assoc-account-list-table-limit',
+                                ],
+                            ],
+                            'center' => [
+                                'meliscommerce-account-contact-assoc-account-list-tbl-search' => [
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComContact',
+                                    'action' => 'render-account-contact-assoc-account-list-table-search',
+                                ],
+                            ],
+                            'right' => [
+                                'meliscommerce-account-contact-assoc-account-list-tbl-refresh' => [
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComContact',
+                                    'action' => 'render-account-contact-assoc-account-list-table-refresh',
+                                ],
+                            ],
+                        ],
+                        'columns' => [
+                            'cli_id' => [
+                                'text' => 'tr_meliscommerce_clients_table_Client_id',
+                                'css' => ['width' => '5%', 'padding-right' => '0'],
+                                'sortable' => true,
+                            ],
+                            'cli_status' => [
+                                'text' => 'tr_meliscommerce_clients_table_Client_status',
+                                'css' => ['width' => '5%', 'padding-right' => '0'],
+                                'sortable' => true,
+                            ],
+                            'cli_name' => [
+                                'text' => 'tr_meliscommerce_contact_account_name',
+                                'css' => ['width' => '10%', 'padding-right' => '0'],
+                                'sortable' => true,
+                            ],
+                            'default_account' => [
+                                'text' => 'tr_meliscommerce_contact_default_account_name',
+                                'css' => ['width' => '10%', 'padding-right' => '0'],
+                                'sortable' => true,
+                            ],
+                        ],
+                        // define what columns can be used in searching
+                        'searchables' => [
+                            'cli_id',
+                            'cli_name'
+                        ],
+                        'actionButtons' => [
+                            'edit' => [
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComContact',
+                                'action' => 'render-account-contact-assoc-account-list-table-edit',
                             ],
                         ]
                     ],

@@ -376,7 +376,7 @@ class MelisComClientListController extends MelisAbstractActionController
                 'groupId' => $groupId,
                 'clientStatus' => $clientStatus
             ));
-        
+
             // store fetched data for data modification (if needed)
             $contactData = $getData->toArray();
 
@@ -391,7 +391,7 @@ class MelisComClientListController extends MelisAbstractActionController
                 }
                 
                 // Getting the Contact number of Order(s)
-                $contactOrderData = $melisEcomOrderTable->getEntryByField('ord_client_person_id', $val['cper_id']);
+                $contactOrderData = $melisEcomOrderTable->getEntryByField('ord_client_id', $val['cli_id']);
                 $contactOrder = $contactOrderData->toArray();
                 $contactNumOrders = count($contactOrder);
                 $lastOrder = !empty($val['cli_last_order'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_last_order'])), 0, 10) : '';
@@ -404,8 +404,7 @@ class MelisComClientListController extends MelisAbstractActionController
                     'cli_status' => $contactStatus,
                     'cli_company' => $val['cli_company'],
                     'cli_date_creation' => $clientCreated,
-                    'cli_person' => $val['cli_person'],
-                    'cper_email' => $melisTool->sanitize($val['cper_email']),
+                    'cli_name' => $val['cli_name'],
                     'cli_num_orders' => $contactNumOrders,
                     'cli_last_order' => $lastOrder,
                     'DT_RowAttr' => [

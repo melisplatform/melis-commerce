@@ -27,4 +27,20 @@ class MelisEcomClientPersonRelTable extends MelisEcomGenericTable
     {
         $this->idField = self::PRIMARY_KEY;
     }
+
+    /**
+     * @param $accountId
+     * @param $contactId
+     * @return mixed
+     */
+    public function unlinkAccountContact($accountId, $contactId)
+    {
+        $delete = $this->tableGateway->getSql()->delete();
+
+        $delete->where->equalTo('cpr_client_id', $accountId);
+        $delete->where->equalTo('cpr_client_person_id', $contactId);
+
+        $resultData = $this->tableGateway->deleteWith($delete);
+        return $resultData;
+    }
 }

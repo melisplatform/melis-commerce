@@ -549,8 +549,8 @@ return [
                             ],
                             'forward' => [
                                 'module' => 'MelisCommerce',
-                                'controller' => 'MelisComClient',
-                                'action' => 'render-client-modal-contact-address-form',
+                                'controller' => 'MelisComContact',
+                                'action' => 'render-contact-modal-contact-address-form',
                                 'jscallback' => 'initClientContactAddressForm();'
                             ],
                         ],
