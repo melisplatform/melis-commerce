@@ -336,4 +336,68 @@ class MelisComContactService extends MelisComGeneralService
 
         return $arrayParameters['results'];
     }
+
+    /**
+     * @param $data
+     * @param null $id
+     * @return mixed
+     */
+    public function linkAccountContact($data, $id = null)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = null;
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_contact_link_account_contact_start', $arrayParameters);
+
+        // Service implementation start
+        $personRelTable = $this->getServiceManager()->get('MelisEcomClientPersonRelTable');
+        $results = $personRelTable->save($arrayParameters['data'], $arrayParameters['id']);
+        // Service implementation end
+
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_contact_link_account_contact_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
+
+    /**
+     * This function will fetch all contact except for those who are
+     * already link to the account
+     *
+     * @param $contactId
+     * @param $accountId
+     * @param $searchValue
+     * @param $searchKeys
+     * @return mixed
+     */
+    public function fetchAllContactForLinking($contactId, $accountId, $searchValue, $searchKeys)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = null;
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_contact_fetch_all_contact_for_linking_start', $arrayParameters);
+
+        // Service implementation start
+        $personRelTable = $this->getServiceManager()->get('MelisEcomClientPersonRelTable');
+        $results = $personRelTable->fetchAllContactForLinking(
+            $arrayParameters['contactId'],
+            $arrayParameters['accountId'],
+            $arrayParameters['searchValue'],
+            $arrayParameters['searchKeys']
+        );
+        // Service implementation end
+
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_contact_fetch_all_contact_for_linking_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
 }

@@ -1,1 +1,20 @@
-<button class="btn btn-success addNewContact" data-loading-text="<?php echo $this->translate('tr_meliscommerce_clients_common_label_loading') ?>" data-clientid="<?php echo $this->clientId ?>"><i class="fa fa-plus"></i> <?php echo $this->translate('tr_meliscommerce_clients_add_contact')?></button>
+<div class="link-contact float-right">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="input-autosuggest">
+                <input data-accountid="<?= $this->clientId;?>" data-contactid="" class="form-control link-contact-data" type="text"/>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="linkContactBtn">
+                <button class="btn btn-success accountContactLink"><i class="fa fa-link"></i> Link Contact</button>
+            </div>
+        </div>
+    </div>
+    <script type="application/javascript">
+        $(document).ready(function(){
+            var element = "#"+activeTabId+" input.link-contact-data";
+            initContactAutoSuggesst(element);
+        });
+    </script>
+</div>

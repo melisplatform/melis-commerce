@@ -122,7 +122,7 @@ class MelisComContactController extends MelisAbstractActionController
 
     /**
      * Function to get contact lists
-     * Used in contact tool and contact lists inside the account tool
+     * Used in contact tool
      *
      * @return JsonModel
      */
@@ -135,12 +135,6 @@ class MelisComContactController extends MelisAbstractActionController
         if($this->getRequest()->isPost())
         {
             $defaultAccountOnly = true;
-            /**
-             * This condition is used in contact tab inside account tool
-             */
-            $accountId = $this->getRequest()->getPost('clientId', null);
-            if($accountId)
-                $defaultAccountOnly = false;
 
             $melisTool = $this->getServiceManager()->get('MelisCoreTool');
             $melisTool->setMelisToolKey(self::PLUGIN_INDEX, 'meliscommerce_contact_list');
@@ -163,8 +157,8 @@ class MelisComContactController extends MelisAbstractActionController
 
             $contactService = $this->getServiceManager()->get('MelisComContactService');
 
-            $tableData = $contactService->getContactLists($accountId, $search, $melisTool->getSearchableColumns(), $start, $length, $selCol, $sortOrder, $defaultAccountOnly)->toArray();
-            $dataCount = $contactService->getContactLists($accountId, $search, $melisTool->getSearchableColumns(), null, null, null, 'ASC', $defaultAccountOnly, true)->current();
+            $tableData = $contactService->getContactLists(null, $search, $melisTool->getSearchableColumns(), $start, $length, $selCol, $sortOrder, $defaultAccountOnly)->toArray();
+            $dataCount = $contactService->getContactLists(null, $search, $melisTool->getSearchableColumns(), null, null, null, 'ASC', $defaultAccountOnly, true)->current();
 
             // store fetched data for data modification (if needed)
 
@@ -178,7 +172,6 @@ class MelisComContactController extends MelisAbstractActionController
                 }
 
                 $tableData[$key]['cper_status'] = $contactStatus;
-                $tableData[$key]['DT_RowAttr']    = ['data-accountid' => $accountId];
             }
         }
         return new JsonModel(array(
@@ -478,9 +471,11 @@ class MelisComContactController extends MelisAbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $contactId = $this->params()->fromQuery('contactId', '');
+        $activateTab = $this->params()->fromQuery('activateTab', '');
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->contactId = $contactId;
+        $view->activateTab = $activateTab ? 'active' : '';
         return $view;
     }
 
@@ -760,33 +755,20 @@ class MelisComContactController extends MelisAbstractActionController
     /**
      * @return \Laminas\View\Model\ViewModel
      */
+    public function renderContactPageContentTabAssociationHeaderAddAccountAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $contactId = $this->params()->fromQuery('contactId', '');
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        $view->contactId = $contactId;
+        return $view;
+    }
+
+    /**
+     * @return \Laminas\View\Model\ViewModel
+     */
     public function renderContactPageContentTabAssociationContentAction()
-    {
-        $melisKey = $this->params()->fromRoute('melisKey', '');
-        $contactId = $this->params()->fromQuery('contactId', '');
-        $view = new ViewModel();
-        $view->melisKey = $melisKey;
-        $view->contactId = $contactId;
-        return $view;
-    }
-
-    /**
-     * @return \Laminas\View\Model\ViewModel
-     */
-    public function renderContactPageContentTabAssociationContentAddAccountAction()
-    {
-        $melisKey = $this->params()->fromRoute('melisKey', '');
-        $contactId = $this->params()->fromQuery('contactId', '');
-        $view = new ViewModel();
-        $view->melisKey = $melisKey;
-        $view->contactId = $contactId;
-        return $view;
-    }
-
-    /**
-     * @return \Laminas\View\Model\ViewModel
-     */
-    public function renderContactPageContentTabAssociationContentListAction()
     {
         $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $melisTool->setMelisToolKey(self::PLUGIN_INDEX, 'meliscommerce_contact_associated_account_list');
@@ -855,6 +837,31 @@ class MelisComContactController extends MelisAbstractActionController
     }
 
     /**
+     * @return ViewModel
+     */
+    public function renderAccountContactAssocAccountListTableSetDefaultAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $contactId = $this->params()->fromQuery('contactId', '');
+
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        $view->contactId = $contactId;
+        return $view;
+    }
+
+    /**
+     * @return ViewModel
+     */
+    public function renderAccountContactAssocAccountListTableUnlinkAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        return $view;
+    }
+
+    /**
      * @return JsonModel
      */
     public function getContactAssociatedAccountListAction()
@@ -894,14 +901,21 @@ class MelisComContactController extends MelisAbstractActionController
             $contactStatus = '<i class="fa fa-circle text-danger"></i>';
             foreach ($tableData as $key => $val)
             {
+                $isDefault = '<i class="fa fa-star-o fa-2x"></i>';
                 // Generating contact status html form
                 if ($val['cli_status'])
                 {
                     $contactStatus = '<i class="fa fa-circle text-success"></i>';
                 }
+                if($val['cpr_default_client']){
+                    $isDefault = '<i class="fa fa-star fa-2x"></i>';
+                }
+
 
                 $tableData[$key]['cli_status'] = $contactStatus;
-                $tableData[$key]['default_account'] = '';
+                $tableData[$key]['default_account'] = $isDefault;
+
+                $tableData[$key]['DT_RowAttr']    = ['data-isdefault' => $val['cpr_default_client'], 'data-cprid' => $val['cpr_id']];
             }
         }
         return new JsonModel(array(
@@ -910,5 +924,176 @@ class MelisComContactController extends MelisAbstractActionController
             'recordsFiltered' => $dataCount->totalRecords,
             'data' => $tableData,
         ));
+    }
+
+    /**
+     * Function used for auto suggest
+     *
+     * @return JsonModel
+     */
+    public function fetchAllContactAction()
+    {
+        $searchPhrase = $this->params()->fromQuery('phrase', '');
+        $accountId = $this->params()->fromQuery('accountId', '');
+
+        $lists = [];
+        if (!empty($searchPhrase)) {
+            $contactService = $this->getServiceManager()->get('MelisComContactService');
+            $data = $contactService->getContactLists(null, $searchPhrase, ['cper_name', 'cper_firstname'], null, null, 'cper_firstname', 'ASC', true)->toArray();
+            if(!empty($accountId)) {
+                //fetch first all linked contact
+                $personRelTable = $this->getServiceManager()->get('MelisEcomClientPersonRelTable');
+                $linkContacts = $personRelTable->getEntryByField('cpr_client_id', $accountId)->toArray();
+                if (!empty($linkContacts)) {
+                    $ids = [];
+                    foreach ($linkContacts as $k => $v) {
+                        $ids[] = $v['cpr_client_person_id'];
+                    }
+                    /**
+                     * Exclude contact in the list if it is already selected
+                     */
+                    foreach ($data as $key => $val) {
+                        if (!in_array($val['cper_id'], $ids)) {
+                            $lists[] = $val;
+                        }
+                    }
+                }
+            }else{
+                $lists = $data;
+            }
+        }
+
+        return new JsonModel($lists);
+    }
+
+    /**
+     * Function used for auto suggest
+     *
+     * @return JsonModel
+     */
+    public function fetchAllAccountAction()
+    {
+        $searchPhrase = $this->params()->fromQuery('phrase', '');
+        $contactId = $this->params()->fromQuery('contactId', '');
+
+        $lists = [];
+        if (!empty($searchPhrase)) {
+            $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientTable');
+            $data = $melisEcomClientPersonTable->getAccountToolList(array(
+                'where' => array(
+                    'key' => 'cli_name',
+                    'value' => $searchPhrase,
+                ),
+                'order' => array(
+                    'key' => 'cli_name',
+                    'dir' => 'ASC',
+                ),
+                'start' => 1,
+                'limit' => -1,
+                'columns' => ['cli_name'],
+                'date_filter' => array(),
+                'groupId' => null,
+                'clientStatus' => 1
+            ))->toArray();
+
+
+            if(!empty($contactId)) {
+                //fetch first all linked contact
+                $personRelTable = $this->getServiceManager()->get('MelisEcomClientPersonRelTable');
+                $linkAccounts = $personRelTable->getEntryByField('cpr_client_person_id', $contactId)->toArray();
+                if (!empty($linkAccounts)) {
+                    $ids = [];
+                    foreach ($linkAccounts as $k => $v) {
+                        $ids[] = $v['cpr_client_id'];
+                    }
+                    /**
+                     * Exclude account in the list if it is already selected
+                     */
+                    foreach ($data as $key => $val) {
+                        if (!in_array($val['cli_id'], $ids)) {
+                            $lists[] = $val;
+                        }
+                    }
+                }
+            }else{
+                $lists = $data;
+            }
+        }
+
+        return new JsonModel($lists);
+    }
+
+    /**
+     * @return JsonModel
+     */
+    public function linkContactAccountAction()
+    {
+        $accountId = $this->getRequest()->getPost('accountId', '');
+        $contactId = $this->getRequest()->getPost('contactId', '');
+
+        $success = 0;
+        $error = [];
+        $title = 'tr_meliscommerce_contact_link_account';
+        $message = 'tr_meliscommerce_contact_link_account_failed';
+
+        $translator = $this->getServiceManager()->get('translator');
+        $contactService = $this->getServiceManager()->get('MelisComContactService');
+        if($this->request->isPost()){
+            if(!empty($contactId)) {
+                if(!empty($accountId)) {//insert new linked contact
+                    $res = $contactService->linkAccountContact(['cpr_client_id' => $accountId, 'cpr_client_person_id' => $contactId]);
+                    if ($res) {
+                        $success = 1;
+                        $message = 'tr_meliscommerce_contact_link_account_success';
+                    }
+                }
+            }
+        }
+
+        return new JsonModel([
+            'success' => $success,
+            'accountId' => $accountId,
+            'error' => $error,
+            'textTitle' => $translator->translate($title),
+            'textMessage' => $translator->translate($message)
+        ]);
+    }
+
+    /**
+     * @return JsonModel
+     */
+    public function updateDefaultAccountAction()
+    {
+        $cpr_default_client = $this->getRequest()->getPost('cpr_default_client', 0);
+        $cprId = $this->getRequest()->getPost('cprId', '');
+        $contactId = $this->getRequest()->getPost('contactId', '');
+
+        $success = 0;
+        $error = [];
+        $title = ($cpr_default_client) ? 'tr_meliscommerce_contact_set_default' : 'tr_meliscommerce_contact_remove_default';
+        $message = ($cpr_default_client) ? 'tr_meliscommerce_contact_set_default_account_failed' : 'tr_meliscommerce_contact_remove_default_account_failed';
+
+        $translator = $this->getServiceManager()->get('translator');
+        $contactRelTable = $this->getServiceManager()->get('MelisEcomClientPersonRelTable');
+        if($this->request->isPost()){
+            if(!empty($cprId)) {
+                if($cpr_default_client)
+                    //remove first the current default account
+                    $contactRelTable->update(['cpr_default_client' => 0], 'cpr_client_person_id', $contactId);
+                //set the new default account
+                $res = $contactRelTable->save(['cpr_default_client' => $cpr_default_client], $cprId);
+                if ($res) {
+                    $success = 1;
+                    $message = ($cpr_default_client) ? 'tr_meliscommerce_contact_set_default_account_success' : 'tr_meliscommerce_contact_remove_default_account_success';
+                }
+            }
+        }
+
+        return new JsonModel([
+            'success' => $success,
+            'error' => $error,
+            'textTitle' => $translator->translate($title),
+            'textMessage' => $translator->translate($message)
+        ]);
     }
 }

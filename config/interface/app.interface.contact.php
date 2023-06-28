@@ -251,6 +251,23 @@ return [
                                                         'controller' => 'MelisComContact',
                                                         'action' => 'render-contact-page-content-tab-association-header',
                                                     ],
+                                                    'interface' => [
+                                                        'meliscommerce_contact_page_content_tab_association_header_add_account' => [
+                                                            'conf' => [
+                                                                'id' => 'id_meliscommerce_contact_page_content_tab_association_header_add_account',
+                                                                'melisKey' => 'meliscommerce_contact_page_content_tab_association_header_add_account',
+                                                                'name' => 'tr_meliscommerce_contact_page_content_tab_association_header_add_account',
+                                                            ],
+                                                            'forward' => [
+                                                                'module' => 'MelisCommerce',
+                                                                'controller' => 'MelisComContact',
+                                                                'action' => 'render-contact-page-content-tab-association-header-add-account',
+                                                            ],
+                                                            'interface' => [
+
+                                                            ]
+                                                        ],
+                                                    ]
                                                 ],
                                                 'meliscommerce_contact_page_content_tab_association_content' => [
                                                     'conf' => [
@@ -262,32 +279,6 @@ return [
                                                         'module' => 'MelisCommerce',
                                                         'controller' => 'MelisComContact',
                                                         'action' => 'render-contact-page-content-tab-association-content',
-                                                    ],
-                                                    'interface' => [
-                                                        'meliscommerce_contact_page_content_tab_association_content_add_account' => [
-                                                            'conf' => [
-                                                                'id' => 'id_meliscommerce_contact_page_content_tab_association_content_add_account',
-                                                                'melisKey' => 'meliscommerce_contact_page_content_tab_association_content_add_account',
-                                                                'name' => 'tr_meliscommerce_contact_page_content_tab_association_content_add_account',
-                                                            ],
-                                                            'forward' => [
-                                                                'module' => 'MelisCommerce',
-                                                                'controller' => 'MelisComContact',
-                                                                'action' => 'render-contact-page-content-tab-association-content-add-account',
-                                                            ],
-                                                        ],
-                                                        'meliscommerce_contact_page_content_tab_association_content_list' => [
-                                                            'conf' => [
-                                                                'id' => 'id_meliscommerce_contact_page_content_tab_association_content_list',
-                                                                'melisKey' => 'meliscommerce_contact_page_content_tab_association_content_list',
-                                                                'name' => 'tr_meliscommerce_contact_page_content_tab_association_content_list',
-                                                            ],
-                                                            'forward' => [
-                                                                'module' => 'MelisCommerce',
-                                                                'controller' => 'MelisComContact',
-                                                                'action' => 'render-contact-page-content-tab-association-content-list',
-                                                            ],
-                                                        ]
                                                     ]
                                                 ]
                                             ]

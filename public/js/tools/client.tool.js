@@ -468,7 +468,7 @@ $(function() {
 					melisHelper.tabClose(clientId + "_id_meliscommerce_client_page");
 					melisHelper.melisOkNotification(data.textTitle, data.textMessage);
 					melisHelper.tabOpen(
-						data.clientContactName,
+						data.clientName,
 						"fa fa-user",
 						data.clientId + "_id_meliscommerce_client_page",
 						"meliscommerce_client_page",
@@ -817,6 +817,30 @@ $(function() {
             }
         );
 	});
+
+	$body.on("click", ".accountContactLink", function(){
+		var input = $("#"+activeTabId+" input.link-contact-data");
+		var contactId = input.data("contactid");
+		var accountId = input.data("accountid");
+        $.ajax({
+            'url': '/melis/MelisCommerce/MelisComClient/linkAccountContact',
+            'data': {accountId: accountId, contactId: contactId},
+            'type': 'POST'
+        }).done(function(data){
+            if(data.success){
+                // $("#"+data.accountId+"_accountContactList").DataTable().ajax.reload();
+                melisHelper.melisOkNotification(data.textTitle, data.textMessage);
+
+                melisHelper.zoneReload(
+                    accountId + "_id_meliscommerce_client_page_tab_contact",
+                    "meliscommerce_client_page_tab_contact",
+                    { clientId: accountId, activateTab: true }
+                );
+            }else{
+                melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.error);
+            }
+        });
+	});
 });
 function viewClientOrder(orderId, orderRef) {
 	var navTabsGroup = "id_meliscommerce_order_list_page";
@@ -1093,4 +1117,43 @@ window.accountContactListTblCallback = function ()
     if($(tr).length == 1){
         $(tr).find("td").find(".accountContactUnlink").addClass("d-none");
 	}
+
+    var tr = tbody.find("tr[data-accountid='0']");
+    //hide all unlink button if creation of account
+    tr.each(function(){
+        $(this).find("td").find(".accountContactUnlink").addClass("d-none");
+    });
+	//hide search on creation of account
+    $("#0_accountContactList_wrapper").find(".meliscommerce-account-contact-list-tbl-search").addClass("d-none");
+};
+
+window.initContactAutoSuggesst = function($element)
+{
+    let options = {
+        url: function(searchPhrase) {
+            var accountId = $($element).attr("data-accountid");
+
+            return "/melis/MelisCommerce/MelisComContact/fetchAllContact?phrase="+searchPhrase+"&accountId="+accountId;
+        },
+        getValue: function(element) {
+            return element.cper_firstname + " " + element.cper_name;
+        },
+        ajaxSettings: {
+            dataType: "json",
+            method: "GET",
+            data: {
+                dataType: "json"
+            }
+        },
+        requestDelay: 300,
+        list: {
+            maxNumberOfElements: 20,
+            onChooseEvent: function(){
+                var data = $($element).getSelectedItemData();
+                $($element).attr("data-contactid", data.cper_id);
+			}
+        }
+    };
+
+    $($element).easyAutocomplete(options);
 };

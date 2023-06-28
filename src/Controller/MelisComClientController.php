@@ -28,6 +28,11 @@ class MelisComClientController extends MelisAbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $clientId = $this->params()->fromQuery('clientId', '');
+
+        //prepare container to use when creating new account(for linking contact)
+        $container = new Container('meliscommerce');
+        $container['temp-linked-contacts'] = [];
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->clientId = $clientId;
@@ -247,6 +252,7 @@ class MelisComClientController extends MelisAbstractActionController
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $clientId = $this->params()->fromQuery('clientId', '');
         $activateTab = $this->params()->fromQuery('activateTab', '');
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->clientId = $clientId;
@@ -1001,7 +1007,7 @@ class MelisComClientController extends MelisAbstractActionController
         $textMessage = '';
         $errors = array();
         $clientId = null;
-        $clientContactName = '';
+        $clientName = '';
         $logTypeCode = '';
         $request = $this->getRequest();
         
@@ -1033,8 +1039,12 @@ class MelisComClientController extends MelisAbstractActionController
 
             /**
              * Contacts data is already in separate tool
+             * we saved it as a linked only between client and contact
              */
             $contactsData = [];
+            if(empty($postValues['clientId'])){//for new account
+                $contactsData = $container['temp-linked-contacts'] ?? [];
+            }
 //            $contactsData = $this->getTool()->sanitizeRecursive($datas['clientContacts']);
 
             $companyData = $this->getTool()->sanitizeRecursive($datas['clientCompany']);
@@ -1075,19 +1085,17 @@ class MelisComClientController extends MelisAbstractActionController
                     $textMessage = 'tr_meliscommerce_client_save_success';
                     // Getting Client Data
                     $client = $melisComClientService->getClientByIdAndClientPerson($clientId);
-                    $clientPerson = $client->getPersons();
-                    
-                    if (!empty($clientPerson))
+                    $client = $client->getClient();
+
+                    if (!empty($client))
                     {
-                        foreach ($clientPerson As $row)
-                        {
-                            // returning the Client firm contact as title tab of the page
-                            $clientContactName = $row->cper_firstname.' '.$row->cper_name;
-                            break;
-                        }
+                        // returning the Client name as title tab of the page
+                        $clientName = $client->cli_name;
                         $success = 1;
                     }
                     $success = 1;
+                    //remove session for linked contacts
+                    unset($container['temp-linked-contacts']);
                 }
                 else
                 {
@@ -1104,7 +1112,7 @@ class MelisComClientController extends MelisAbstractActionController
             'textMessage' => $textMessage,
             'errors' => $errors,
             'clientId' => $clientId,
-            'clientContactName' => $clientContactName
+            'clientName' => $clientName
         );
         
         $this->getEventManager()->trigger('meliscommerce_clients_save_end',
@@ -1835,5 +1843,130 @@ class MelisComClientController extends MelisAbstractActionController
             'textTitle' => $translator->translate($title),
             'textMessage' => $translator->translate($message)
         ]);
+    }
+
+    /**
+     * @return JsonModel
+     */
+    public function linkAccountContactAction()
+    {
+        $accountId = $this->getRequest()->getPost('accountId', '');
+        $contactId = $this->getRequest()->getPost('contactId', '');
+
+        $success = 0;
+        $error = [];
+        $title = 'tr_meliscommerce_client_link_contact';
+        $message = 'tr_meliscommerce_client_link_contact_failed';
+
+        $translator = $this->getServiceManager()->get('translator');
+        $contactService = $this->getServiceManager()->get('MelisComContactService');
+        if($this->request->isPost()){
+            if(!empty($contactId)) {
+                if(!empty($accountId)) {//insert new linked contact
+                    $res = $contactService->linkAccountContact(['cpr_client_id' => $accountId, 'cpr_client_person_id' => $contactId]);
+                    if ($res) {
+                        $success = 1;
+                        $message = 'tr_meliscommerce_client_link_contact_success';
+                    }
+                }else{//temp store contact to session
+                    $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
+                    $data = $melisEcomClientPersonTable->getEntryById($contactId)->toArray();
+                    if(!empty($data)) {
+                        $container = new Container('meliscommerce');
+
+                        //remove unneccessary fields
+                        unset($data[0]['cper_password']);
+                        unset($data[0]['cper_password_recovery_key']);
+                        unset($data[0]['cper_date_creation']);
+                        unset($data[0]['cper_date_edit']);
+
+                        //set row id
+                        $data[0]['DT_RowId'] = $data[0]['cper_id'];
+                        $container['temp-linked-contacts'][] = $data[0];
+
+                        $success = 1;
+                        $message = 'tr_meliscommerce_client_link_contact_success';
+                    }
+                }
+            }
+        }
+
+        return new JsonModel([
+            'success' => $success,
+            'accountId' => $accountId,
+            'error' => $error,
+            'textTitle' => $translator->translate($title),
+            'textMessage' => $translator->translate($message)
+        ]);
+    }
+
+    /**
+     * Function to get contact lists
+     * Used in contact lists inside the account tool
+     *
+     * @return JsonModel
+     */
+    public function getAccountContactListAction()
+    {
+        $dataCount = 0;
+        $draw = 0;
+        $tableData = array();
+
+        if($this->getRequest()->isPost())
+        {
+            $accountId = $this->getRequest()->getPost('clientId');
+            if(!empty($accountId)) {
+                $defaultAccountOnly = false;
+
+                $melisTool = $this->getServiceManager()->get('MelisCoreTool');
+                $melisTool->setMelisToolKey(self::PLUGIN_INDEX, 'meliscommerce_contact_list');
+
+                $colId = array_keys($melisTool->getColumns());
+
+                $sortOrder = $this->getRequest()->getPost('order');
+                $sortOrder = $sortOrder[0]['dir'];
+
+                $selCol = $this->getRequest()->getPost('order');
+                $selCol = $colId[$selCol[0]['column']];
+
+                $draw = $this->getRequest()->getPost('draw');
+
+                $start = $this->getRequest()->getPost('start');
+                $length = $this->getRequest()->getPost('length');
+
+                $search = $this->getRequest()->getPost('search');
+                $search = $search['value'];
+
+                $contactService = $this->getServiceManager()->get('MelisComContactService');
+
+                $tableData = $contactService->getContactLists($accountId, $search, $melisTool->getSearchableColumns(), $start, $length, $selCol, $sortOrder, $defaultAccountOnly)->toArray();
+                $dataCount = $contactService->getContactLists($accountId, $search, $melisTool->getSearchableColumns(), null, null, null, 'ASC', $defaultAccountOnly, true)->current();
+                $dataCount = $dataCount->totalRecords;
+
+            }else{
+                $container = new Container('meliscommerce');
+                $tableData = $container['temp-linked-contacts'];
+                $dataCount = count($tableData);
+            }
+
+            $contactStatus = '<i class="fa fa-circle text-danger"></i>';
+            foreach ($tableData as $key => $val)
+            {
+                // Generating contact status html form
+                if ($val['cper_status'])
+                {
+                    $contactStatus = '<i class="fa fa-circle text-success"></i>';
+                }
+
+                $tableData[$key]['cper_status'] = $contactStatus;
+                $tableData[$key]['DT_RowAttr']    = ['data-accountid' => $accountId];
+            }
+        }
+        return new JsonModel(array(
+            'draw' => (int) $draw,
+            'recordsTotal' => count($tableData),
+            'recordsFiltered' => $dataCount,
+            'data' => $tableData,
+        ));
     }
 }

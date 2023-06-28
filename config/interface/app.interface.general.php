@@ -98,6 +98,7 @@ return [
                     '/MelisCommerce/js/ecommerce-common.js',
                     '/MelisCommerce/assets/common/fuelux-checkbox.js',
                     '/MelisCommerce/assets/common/jquery.qtip.min.js',
+                    '/MelisCommerce/assets/auto-complete/jquery.easy-autocomplete.min.js',
                     // '/MelisCommerce/assets/common/bootstrap-datetimepicker.min.js',
                     //'/MelisCommerce/assets/common/bootstrap3-typeahead.min.js',
                     '/MelisCommerce/assets/common/awesomplete.min.js',
@@ -106,6 +107,7 @@ return [
                 ],
                 'css' => [
                     '/MelisCommerce/assets/jstree/dist/themes/proton/style.min.css',
+                    '/MelisCommerce/css/easy-autocomplete.min.css',
                     '/MelisCommerce/css/commerce-style.css',
                 ],
                 /**

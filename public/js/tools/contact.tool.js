@@ -284,10 +284,58 @@ $(function(){
             contactid = $this.data("contactid");
 
         melisHelper.zoneReload(
-            "id_meliscommerce_contact_page_content_tab_association_content_list",
-            "meliscommerce_contact_page_content_tab_association_content_list",
+            contactid+"_id_meliscommerce_contact_page_content_tab_association",
+            "meliscommerce_contact_page_content_tab_association",
             { contactId: contactid, activateTab: true }
         );
+    });
+
+    $body.on("click", ".contactAccountLink", function(){
+        var input = $("#"+activeTabId+" input.link-account-data");
+        var contactId = input.data("contactid");
+        var accountId = input.data("accountid");
+        $.ajax({
+            'url': '/melis/MelisCommerce/MelisComContact/linkContactAccount',
+            'data': {accountId: accountId, contactId: contactId},
+            'type': 'POST'
+        }).done(function(data){
+            if(data.success){
+                // $("#"+data.accountId+"_accountContactList").DataTable().ajax.reload();
+                melisHelper.melisOkNotification(data.textTitle, data.textMessage);
+
+                melisHelper.zoneReload(
+                    contactId + "_id_meliscommerce_contact_page_content_tab_association",
+                    "meliscommerce_contact_page_content_tab_association",
+                    { contactId: contactId, activateTab: true }
+                );
+            }else{
+                melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.error);
+            }
+        });
+    });
+
+    $body.on("click", ".updateDefaultAccount", function(){
+        var current_row = $(this).parents('tr');//Get the current row
+        if (current_row.hasClass('child')) {//Check if the current row is a child row
+            current_row = current_row.prev();//If it is, then point to the row before it (its 'parent')
+        }
+        var $this = $(this);
+        var cprId = current_row.attr("data-cprid");
+        var contactId = $this.data("contactid");
+        var data = $this.data("vdata");
+
+        $.ajax({
+            'url': '/melis/MelisCommerce/MelisComContact/updateDefaultAccount',
+            'data': {contactId: contactId, cprId: cprId, cpr_default_client: data},
+            'type': 'POST'
+        }).done(function(data){
+            if(data.success){
+                $("#"+contactId+"_contactAssocAccountList").DataTable().ajax.reload();
+                melisHelper.melisOkNotification(data.textTitle, data.textMessage);
+            }else{
+                melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.error);
+            }
+        });
     });
 });
 window.setClientId = function(d){
@@ -296,4 +344,54 @@ window.setClientId = function(d){
 
 window.setContactId = function(d){
     d.contactId = activeTabId.replace('_id_meliscommerce_contact_page','');
+};
+
+window.initAccountAutoSuggest = function($element)
+{
+    let options = {
+        url: function(searchPhrase) {
+            var contactId = $($element).attr("data-contactid");
+
+            return "/melis/MelisCommerce/MelisComContact/fetchAllAccount?phrase="+searchPhrase+"&contactId="+contactId;
+        },
+        getValue: function(element) {
+            return element.cli_name;
+        },
+        ajaxSettings: {
+            dataType: "json",
+            method: "GET",
+            data: {
+                dataType: "json"
+            }
+        },
+        requestDelay: 300,
+        list: {
+            maxNumberOfElements: 20,
+            onChooseEvent: function(){
+                var data = $($element).getSelectedItemData();
+                $($element).attr("data-accountid", data.cli_id);
+            }
+        }
+    };
+
+    $($element).easyAutocomplete(options);
+};
+
+window.contactAssociatedAccountCallback = function () {
+    var contactId = activeTabId.replace('_id_meliscommerce_contact_page','');
+    $("#" + contactId + "_contactAssocAccountList tbody tr").each(function () {
+        var $this = $(this),
+            isDefault = $this.data("isdefault");
+
+        if (isDefault == 1) {
+            //change button style
+            $this.find("button.updateDefaultAccount").removeClass("btn-info");
+            $this.find("button.updateDefaultAccount").addClass("btn-danger");
+            $this.find("button.updateDefaultAccount").attr("title", translations.tr_meliscommerce_contact_remove_default);
+            $this.find("button.updateDefaultAccount").data("vdata", 0);
+            //change icon
+            $this.find(".ico-set-default").removeClass("fa-check");
+            $this.find(".ico-set-default").addClass("fa-times");
+        }
+    });
 };

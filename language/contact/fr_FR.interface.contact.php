@@ -34,4 +34,16 @@ return [
     'tr_meliscommerce_contact_page_content_tab_address_delete_failed' => 'Error occurred while deleting address',
     'tr_meliscommerce_contact_page_content_tab_address_delete' => 'Delete Address',
     'tr_meliscommerce_contact_page_content_tab_address_delete_msg' => 'Are you sure you want to delete this address?',
+
+    //link account
+    'tr_meliscommerce_contact_link_account' => 'Link account',
+    'tr_meliscommerce_contact_link_account_success' => 'Account successfully linked',
+    'tr_meliscommerce_contact_link_account_failed' => 'Error occurred while linking account',
+
+    'tr_meliscommerce_contact_set_default' => 'Set default',
+    'tr_meliscommerce_contact_remove_default' => 'Remove default',
+    'tr_meliscommerce_contact_set_default_account_success' => 'Default account successfully set',
+    'tr_meliscommerce_contact_set_default_account_failed' => 'Error occurred while setting default account',
+    'tr_meliscommerce_contact_remove_default_account_success' => 'Default account successfully removed',
+    'tr_meliscommerce_contact_remove_default_account_failed' => 'Error occurred while removing default account',
 ];

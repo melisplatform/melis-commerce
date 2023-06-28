@@ -232,7 +232,7 @@ return [
                     'table' => [
                         // table ID
                         'target' => '#accountContactList',
-                        'ajaxUrl' => '/melis/MelisCommerce/MelisComContact/getContactList',
+                        'ajaxUrl' => '/melis/MelisCommerce/MelisComClient/getAccountContactList',
                         'dataFunction' => 'setClientId',
                         'ajaxCallback' => 'accountContactListTblCallback(); ',
                         'filters' => [

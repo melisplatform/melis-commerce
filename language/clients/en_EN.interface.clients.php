@@ -213,6 +213,10 @@
         'tr_meliscommerce_client_unlink_contact_msg' => 'Are you sure you want to unlink this contact',
         'tr_meliscommerce_client_unlink_contact_success' => 'Contact successfully unlinked',
         'tr_meliscommerce_client_unlink_contact_failed' => 'Error occurred while un-linking contact',
+		//link
+        'tr_meliscommerce_client_link_contact' => 'Link contact',
+        'tr_meliscommerce_client_link_contact_success' => 'Contact successfully linked',
+        'tr_meliscommerce_client_link_contact_failed' => 'Error occurred while linking contact',
 
 		// Saving Messages
 		'tr_meliscommerce_client_save_success' => 'Client has been saved successfully',

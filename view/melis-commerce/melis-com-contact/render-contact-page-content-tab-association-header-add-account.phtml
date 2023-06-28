@@ -1,0 +1,20 @@
+<div class="link-account float-right">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="input-autosuggest">
+                <input data-contactid="<?= $this->contactId;?>" data-accountid="" class="form-control link-account-data" type="text"/>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="linkAccountBtn">
+                <button class="btn btn-success contactAccountLink"><i class="fa fa-link"></i> Link Account</button>
+            </div>
+        </div>
+    </div>
+    <script type="application/javascript">
+        $(document).ready(function(){
+            var element = "#"+activeTabId+" input.link-account-data";
+            initAccountAutoSuggest(element);
+        });
+    </script>
+</div>

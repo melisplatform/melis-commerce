@@ -916,31 +916,17 @@ class MelisComClientService extends MelisComGeneralService
 		if (!is_null($clntId))
 		{
 			$successflag = true;
-			
-			// Saving Client Person Details
+
+            /**
+             * Saving of contacts is not in separate tool,
+             * we save only the links between client and contact
+             */
 			$personsData = $arrayParameters['persons'];
 			foreach ($personsData As $key => $val)
 			{
-				$cperId = (!empty($val['cper_id'])) ? $val['cper_id'] : null;
-				if (!isset($val['cper_id']))
-				{
-					unset($val['cper_id']);
-				}
-				$val['cper_client_id'] = $clntId;
-				
-				$personAddress = array();
-				if (!empty($val['contact_address']))
-				{
-					$personAddress = $val['contact_address'];
-				}
-				unset($val['contact_address']);
-				unset($val['reset_pass_flag']);
-                /**
-                 * Saving of contact is now independent tool
-                 */
-//				$successflag = $this->saveClientPerson($val, $personAddress, $cperId);
-//				$successflag = $this->saveClientPersonEmail($cperId ?? $successflag, $val['cper_email']);
-				
+                $contactService = $this->getServiceManager()->get('MelisComContactService');
+                $successflag = $contactService->linkAccountContact(['cpr_client_id' => $clntId, 'cpr_client_person_id' => $val['cper_id']]);
+
 				if (!$successflag)
 				{
 					return null;

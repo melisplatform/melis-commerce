@@ -9,6 +9,8 @@
 
 namespace MelisCommerce\Model\Tables;
 
+use Laminas\Db\Sql\Predicate\Like;
+use Laminas\Db\Sql\Predicate\PredicateSet;
 use Laminas\Db\TableGateway\TableGateway;
 
 class MelisEcomClientPersonRelTable extends MelisEcomGenericTable
