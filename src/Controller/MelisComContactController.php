@@ -187,12 +187,14 @@ class MelisComContactController extends MelisAbstractActionController
      *
      * @return \Laminas\View\Model\JsonModel
      */
-    public function addContactAction()
+    public function saveContactAction()
     {
         $translator = $this->getServiceManager()->get('translator');
 
+        $personId = null;
+        $clientContactName = null;
         $success = 0;
-        $textTitle = $translator->translate('tr_meliscommerce_clients_add_contact');
+        $textTitle = $translator->translate('tr_meliscommerce_contact_save');
         $textMessage = 'tr_meliscommerce_contact_save_failed';
         $errors = array();
 
@@ -200,112 +202,179 @@ class MelisComContactController extends MelisAbstractActionController
 
         if($request->isPost())
         {
-            // Getting Client Contact Form from Config
-            $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
-            $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_contact_form','meliscommerce_clients_contact_form');
-            $factory = new \Laminas\Form\Factory();
-            $formElements = $this->getServiceManager()->get('FormElementManager');
-            $factory->setFormElementManager($formElements);
-            $propertyForm = $factory->createForm($appConfigForm);
-            $clientSvc = $this->getServiceManager()->get('MelisComClientService');
+            if(empty($errors)) {
+                $contactData = [];
+                $addressData = [];
+                /**
+                 * validate contact data
+                 */
+                $this->validateContact($errors, $contactData);
+                /**
+                 * Validate contact address data
+                 */
+                $this->validateContactAddress($errors, $addressData);
 
-            // Getting the Elements/fields of the Client COntact form
-            $appConfigFormElements = $appConfigForm['elements'];
+                if(empty($errors)){
+                    $postValues = $this->getRequest()->getPost()->toArray();
+                    if (! empty($postValues['cper_id'])) {
+                        $personId = $postValues['cper_id'];
+                    }
 
-            // Gtting Data from Post and Set as values to the Client Contact Form
-            $postValues = $request->getPost()->toArray();
-            $propertyForm->setData($postValues);
-            $emailList = explode(',', $postValues['emailList']);
+                    $service = $this->getServiceManager()->get('MelisComContactService');
+                    $id = $service->saveContact($contactData, $addressData, $personId);
+                    if ($id) {
+                        $melisComContactService = $this->getServiceManager()->get('MelisComContactService');
+                        $contactData = $melisComContactService->getContactById($id);
 
-            if (! empty($postValues['cper_id'])) {
-                // Checking if the Contact Form has data of the password
-                if (empty($val['cper_password'])) {
-                    // If the existing Contact password empty, this means contact not updating the current password
-                    // removing Input from Contact form will also remove from the validation
-                    $propertyForm->getInputFilter()->remove('cper_password');
-                    $propertyForm->getInputFilter()->remove('cper_confirm_password');
-                }
-
-                // email checking
-                if (! empty($postValues['cper_email'])) {
-                    // check if email is not used twice
-                    $personWithSameEmail = $clientSvc->getPersonsByEmail($postValues['cper_email']);
-
-                    foreach ($personWithSameEmail as $mail) {
-                        if ($mail['cpmail_cper_id'] != $postValues['cper_id']) {
-                            $errors['cper_email'] = [
-                                'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
-                                'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
-                            ];
+                        if (!empty($contactData))
+                        {
+                            if($contactData->cper_type == 'company')
+                                $clientContactName = $contactData->cper_firstname;
+                            else
+                                $clientContactName = $contactData->cper_firstname.' '.$contactData->cper_name;
                         }
-                    }
-                }
-            } else {
-                if (! empty($postValues['cper_email'])) {
-                    // check if email is not used twice
-                    if (! in_array($postValues['cper_email'], $emailList)) {
-                        $emailList[] = $postValues['cper_email'];
-                        $personWithSameEmail = $clientSvc->getPersonsByEmail($postValues['cper_email']);
 
-                        if (! empty($personWithSameEmail)) {
-                            $errors['cper_email'] = [
-                                'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
-                                'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
-                            ];
-                        }
-                    } else {
-                        $errors['cper_email'] = [
-                            'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
-                            'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
-                        ];
+                        $success = 1;
+                        $textMessage = 'tr_meliscommerce_contact_save_success';
                     }
                 }
             }
-
-            // Cehcking if the Client Contact form is valid after set the Data from Post
-            if ($propertyForm->isValid())
-            {
-                // Getting Validated Data from Client Contact Form
-                $data = $propertyForm->getData();
-                $service = $this->getServiceManager()->get('MelisComContactService');
-                unset($data['cper_confirm_password']);
-                $res = $service->saveContact($data);
-                if($res) {
-                    $success = 1;
-                    $textMessage = 'tr_meliscommerce_contact_save_success';
-                }
-            }
-            else
-            {
-                $textMessage = $translator->translate('tr_meliscommerce_client_Contact_unable_to_add');
-                $errors = ArrayUtils::merge($errors, $propertyForm->getMessages());
-            }
-
-            // Preparing the error messages if error is occured
-            foreach ($errors as $keyError => $valueError)
-            {
-                foreach ($appConfigFormElements as $keyForm => $valueForm)
-                {
-                    if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
-                    {
-                        $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
-                    }
-                }
-            }
-        }
-
-        if(!empty($errors)){
-            $success = 0;
         }
 
         $response = array(
             'success' => $success,
             'textTitle' => $textTitle,
             'textMessage' => $translator->translate($textMessage),
-            'errors' => $errors
+            'errors' => $errors,
+            'clientContactName' => $clientContactName
         );
 
         return new JsonModel($response);
+    }
+
+    /**
+     * @param $errors
+     * @param $contactData
+     */
+    private function validateContact(&$errors, &$contactData)
+    {
+        $personEmail = [];
+        $translator = $this->getServiceManager()->get('translator');
+        // Getting Client Contact Form from Config
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
+        $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_contact_form','meliscommerce_clients_contact_form');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+        $propertyForm = $factory->createForm($appConfigForm);
+        $clientSvc = $this->getServiceManager()->get('MelisComClientService');
+
+        $postValues = $this->getRequest()->getPost()->toArray();
+        unset($postValues['contactAddress']);
+
+        if($postValues['cper_type'] == 'company'){
+            $propertyForm->getInputFilter()->remove('cper_name');
+            unset($postValues['cper_name']);
+        }
+
+        // Getting the Elements/fields of the Client COntact form
+        $appConfigFormElements = $appConfigForm['elements'];
+
+        $propertyForm->setData($postValues);
+
+        if (! empty($postValues['cper_id'])) {
+            // Checking if the Contact Form has data of the password
+            if (empty($val['cper_password'])) {
+                // If the existing Contact password empty, this means contact not updating the current password
+                // removing Input from Contact form will also remove from the validation
+                $propertyForm->getInputFilter()->remove('cper_password');
+                $propertyForm->getInputFilter()->remove('cper_confirm_password');
+            }
+        }
+
+        if (! empty($postValues['cper_email'])) {
+            // check if email is not used twice
+            $personWithSameEmail = $clientSvc->getPersonsByEmail($postValues['cper_email']);
+            if(!empty($personWithSameEmail)) {
+                foreach ($personWithSameEmail as $mail) {
+                    if ($mail['cpmail_cper_id'] != $postValues['cper_id']) {
+                        $errors['cper_email'] = [
+                            'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
+                            'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
+                        ];
+                        break;
+                    } else {
+                        $personEmail[$mail['cpmail_id']] = [
+                            'cpmail_email' => $postValues['cper_email']
+                        ];
+                    }
+                }
+            }else{
+                $personEmail[0] = [
+                    'cpmail_email' => $postValues['cper_email']
+                ];
+            }
+        }
+
+        if ($propertyForm->isValid()) {
+            // Getting Validated Data from Client Contact Form
+            $contactData = $propertyForm->getData();
+            $contactData['emails'] = $personEmail;
+            unset($contactData['cper_confirm_password']);
+        } else {
+            $errors = ArrayUtils::merge($errors, $propertyForm->getMessages());
+        }
+
+        // Preparing the error messages if error is occured
+        foreach ($errors as $keyError => $valueError)
+        {
+            foreach ($appConfigFormElements as $keyForm => $valueForm)
+            {
+                if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
+                {
+                    $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                }
+            }
+        }
+    }
+
+    /**
+     * @param $errors
+     * @param $addressData
+     */
+    private function validateContactAddress(&$errors, &$addressData)
+    {
+        $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
+        $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_addresses_form','meliscommerce_clients_addresses_form');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+        $propertyForm = $factory->createForm($appConfigForm);
+
+        // Getting Data from Post and set data to Client Address Form
+        $postValues = $this->getRequest()->getPost()->toArray();
+        if(!empty($postValues['contactAddress'])) {
+            foreach($postValues['contactAddress'] as $key => $add) {
+                $propertyForm->setData($add);
+                // Getting Client Address form elements/fields
+                $appConfigFormElements = $appConfigForm['elements'];
+
+                // Checking if Data setted to Form is valid
+                if ($propertyForm->isValid()) {
+                    $addressData[$key] = $propertyForm->getData();
+                } else {
+                    $errors = array_merge_recursive($errors, $propertyForm->getMessages());
+                }
+                // Preparing Error message if error occured
+                foreach ($errors as $keyError => $valueError) {
+                    foreach ($appConfigFormElements as $keyForm => $valueForm) {
+                        if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label'])) {
+                            $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -345,7 +414,11 @@ class MelisComContactController extends MelisAbstractActionController
 
             if (!empty($contactData))
             {
-                $mainContactName = $contactData->cper_firstname.' '.$contactData->cper_name;
+                if($contactData->cper_type == 'company')
+                    $mainContactName = $contactData->cper_firstname;
+                else
+                    $mainContactName = $contactData->cper_firstname.' '.$contactData->cper_name;
+
                 $title = $translator->translate('tr_meliscommerce_contact').' / '.$mainContactName;
             }
         }
@@ -388,7 +461,11 @@ class MelisComContactController extends MelisAbstractActionController
 
                 if (!empty($contactData))
                 {
-                    $clientContactName = $contactData->cper_firstname.' '.$contactData->cper_name;
+                    if($contactData->cper_type == 'company')
+                        $clientContactName = $contactData->cper_firstname;
+                    else
+                        $clientContactName = $contactData->cper_firstname.' '.$contactData->cper_name;
+
                     $textMessage = '';
                     $success = 1;
                 }
@@ -915,7 +992,11 @@ class MelisComContactController extends MelisAbstractActionController
                 $tableData[$key]['cli_status'] = $contactStatus;
                 $tableData[$key]['default_account'] = $isDefault;
 
-                $tableData[$key]['DT_RowAttr']    = ['data-isdefault' => $val['cpr_default_client'], 'data-cprid' => $val['cpr_id']];
+                $tableData[$key]['DT_RowAttr']    = [
+                    'data-isdefault' => $val['cpr_default_client'],
+                    'data-cprid' => $val['cpr_id'],
+                    'data-accountid' => $val['cli_id']
+                ];
             }
         }
         return new JsonModel(array(
@@ -940,6 +1021,7 @@ class MelisComContactController extends MelisAbstractActionController
         if (!empty($searchPhrase)) {
             $contactService = $this->getServiceManager()->get('MelisComContactService');
             $data = $contactService->getContactLists(null, $searchPhrase, ['cper_name', 'cper_firstname'], null, null, 'cper_firstname', 'ASC', true)->toArray();
+
             if(!empty($accountId)) {
                 //fetch first all linked contact
                 $personRelTable = $this->getServiceManager()->get('MelisEcomClientPersonRelTable');
@@ -957,6 +1039,8 @@ class MelisComContactController extends MelisAbstractActionController
                             $lists[] = $val;
                         }
                     }
+                }else{
+                    $lists = $data;
                 }
             }else{
                 $lists = $data;
@@ -1091,6 +1175,40 @@ class MelisComContactController extends MelisAbstractActionController
 
         return new JsonModel([
             'success' => $success,
+            'error' => $error,
+            'textTitle' => $translator->translate($title),
+            'textMessage' => $translator->translate($message)
+        ]);
+    }
+
+    /**
+     * @return JsonModel
+     */
+    public function unlinkAccountContactAction()
+    {
+        $accountId = $this->getRequest()->getPost('accountId', '');
+        $contactId = $this->getRequest()->getPost('contactId', '');
+        $type = $this->getRequest()->getPost('type', 'contact');
+
+        $success = 0;
+        $error = [];
+        $title = ($type =='contact') ? 'tr_meliscommerce_client_unlink_contact' : 'tr_meliscommerce_contact_unlink_account';
+        $message = ($type == 'contact') ? 'tr_meliscommerce_client_unlink_contact_failed' : 'tr_meliscommerce_contact_unlink_account_failed';
+
+        $translator = $this->getServiceManager()->get('translator');
+        $contactService = $this->getServiceManager()->get('MelisComContactService');
+        if($this->request->isPost()){
+            $res = $contactService->unlinkAccountContact($accountId, $contactId);
+            if($res){
+                $success = 1;
+                $message = ($type == 'contact') ? 'tr_meliscommerce_client_unlink_contact_success' : 'tr_meliscommerce_contact_unlink_account_success';
+            }
+        }
+
+        return new JsonModel([
+            'success' => $success,
+            'accountId' => $accountId,
+            'contactId' => $contactId,
             'error' => $error,
             'textTitle' => $translator->translate($title),
             'textMessage' => $translator->translate($message)

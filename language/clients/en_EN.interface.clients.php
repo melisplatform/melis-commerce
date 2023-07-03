@@ -221,8 +221,8 @@
 		// Saving Messages
 		'tr_meliscommerce_client_save_success' => 'Client has been saved successfully',
 		'tr_meliscommerce_client_unable_to_save' => 'Unable to save client, please try again',
-		'tr_meliscommerce_client_Contact_must_atleast_one' => 'Client contact must have atleast one entry',
-		'tr_meliscommerce_client_Address_must_atleast_one' => 'Client address must have atleast one entry',
+		'tr_meliscommerce_client_Contact_must_atleast_one' => 'Account contact must have atleast one entry',
+		'tr_meliscommerce_client_Address_must_atleast_one' => 'Account address must have atleast one entry',
 		'tr_meliscommerce_client_Contact_active_must_atleast_one' => 'Client contact must have atleast one active',
 		
 		// tooltip messages

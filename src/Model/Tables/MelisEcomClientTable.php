@@ -149,8 +149,6 @@ class MelisEcomClientTable extends MelisEcomGenericTable
         }else {
             $select->quantifier('DISTINCT');
         }
-        $select->join('melis_ecom_client_person', 'melis_ecom_client_person.cper_client_id=melis_ecom_client.cli_id',
-            array(),$select::JOIN_LEFT);
         $select->join('melis_ecom_client_company', 'melis_ecom_client_company.ccomp_client_id=melis_ecom_client.cli_id',
             array(),$select::JOIN_LEFT);
         $select->join('melis_ecom_client_groups', 'melis_ecom_client_groups.cgroup_id=melis_ecom_client.cli_group_id',
@@ -184,7 +182,7 @@ class MelisEcomClientTable extends MelisEcomGenericTable
             $search = '%'.$search.'%';
             $select->where->NEST->like('cli_id', $search)
             ->or->like('melis_ecom_client_person.cper_name', $search)
-            ->or->like('melis_ecom_client_person.cper_firstname', $search)
+
             ->or->like('melis_ecom_client_company.ccomp_name', $search)
             ->or->like('melis_ecom_client_groups.cgroup_name', $search);
         }

@@ -158,7 +158,9 @@ class MelisComContactService extends MelisComGeneralService
             }
 
             $arrayParameters['person']['cper_firstname'] = ucwords(mb_strtolower($arrayParameters['person']['cper_firstname']));
-            $arrayParameters['person']['cper_name'] = mb_strtoupper($arrayParameters['person']['cper_name']);
+
+            if(!empty($arrayParameters['person']['cper_name']))
+                $arrayParameters['person']['cper_name'] = mb_strtoupper($arrayParameters['person']['cper_name']);
 
             if (!empty($arrayParameters['person']['cper_middle_name']))
             {
@@ -167,7 +169,19 @@ class MelisComContactService extends MelisComGeneralService
 
             $arrayParameters['person']['cper_email'] = mb_strtolower($arrayParameters['person']['cper_email']);
             unset($arrayParameters['person']['cper_id']);
+            //get emails
+            $perEmails = $arrayParameters['person']['emails'];
+            unset($arrayParameters['person']['emails']);
+
             $perId = $melisEcomClientPersonTable->save($arrayParameters['person'], $arrayParameters['personId']);
+            //insert person email
+            $personEmails = $this->getServiceManager()->get('MelisEcomClientPersonEmailsTable');
+            if(!empty($perEmails)) {
+                foreach($perEmails as $id => $pEmData) {
+                    $pEmData['cpmail_cper_id'] = $perId;
+                    $personEmails->save($pEmData, $id);
+                }
+            }
 
             $clientPersonAddData = $arrayParameters['clientPersonAddresses'];
             foreach ($clientPersonAddData As $key => $val)

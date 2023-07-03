@@ -803,8 +803,8 @@ $(function() {
             translations.tr_meliscommerce_client_unlink_contact_msg,
             function() {
                 $.ajax({
-                    'url': '/melis/MelisCommerce/MelisComClient/unlinkAccountContact',
-                    'data': {accountId: accountId, contactId: contactId},
+                    'url': '/melis/MelisCommerce/MelisComContact/unlinkAccountContact',
+                    'data': {accountId: accountId, contactId: contactId, type: "contact"},
                     'type': 'POST'
                 }).done(function(data){
                     if(data.success){

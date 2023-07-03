@@ -8,6 +8,7 @@ return [
     'tr_meliscommerce_contact_default_account_name' => 'Default account name',
     'tr_meliscommerce_contact_account_name' => 'Account name',
     'tr_meliscommerce_contact_add_contact_button' => 'Add Contact',
+    'tr_meliscommerce_contact_save' => 'Save Contact',
     'tr_meliscommerce_contact_save_success' => 'Contact successfully saved',
     'tr_meliscommerce_contact_save_failed' => 'Error occurred while saving contact',
     'tr_meliscommerce_contact_button_save_contact' => 'Save Contact',
@@ -46,4 +47,9 @@ return [
     'tr_meliscommerce_contact_set_default_account_failed' => 'Error occurred while setting default account',
     'tr_meliscommerce_contact_remove_default_account_success' => 'Default account successfully removed',
     'tr_meliscommerce_contact_remove_default_account_failed' => 'Error occurred while removing default account',
+
+    'tr_meliscommerce_contact_unlink_account' => 'Unlink Account',
+    'tr_meliscommerce_contact_unlink_account_msg' => 'Are you sure you want to unlink this account?',
+    'tr_meliscommerce_contact_unlink_account_success' => 'Account successfully unlinked',
+    'tr_meliscommerce_contact_unlink_account_failed' => 'Error occurred while un-linking account',
 ];

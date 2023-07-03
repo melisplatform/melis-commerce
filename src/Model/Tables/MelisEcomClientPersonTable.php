@@ -108,7 +108,7 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
     {
         $select = $this->getTableGateway()->getSql()->select();
 
-        $slct = ['*', new Expression($this->getTableGateway()->getTable() . '.' . $this->idField.' As DT_RowId')];
+        $slct = ['*', new Expression('client.cli_id As DT_RowId')];
         if ($count) {
             $slct = [new Expression('COUNT(' . $this->getTableGateway()->getTable() . '.' . $this->idField . ') As totalRecords')];
         }

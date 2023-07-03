@@ -891,7 +891,7 @@ class MelisComClientService extends MelisComGeneralService
 		// Service implementation start
 		$melisEcomClientTable = $this->getServiceManager()->get('MelisEcomClientTable');
 		$clntId = null;
-		
+
 		try
 		{
 			if (is_null($arrayParameters['clientId']))
@@ -912,26 +912,27 @@ class MelisComClientService extends MelisComGeneralService
 		{
 			
 		}
-		
+
 		if (!is_null($clntId))
 		{
 			$successflag = true;
 
             /**
-             * Saving of contacts is not in separate tool,
+             * Saving of contacts is now in separate tool,
              * we save only the links between client and contact
              */
-			$personsData = $arrayParameters['persons'];
-			foreach ($personsData As $key => $val)
-			{
-                $contactService = $this->getServiceManager()->get('MelisComContactService');
-                $successflag = $contactService->linkAccountContact(['cpr_client_id' => $clntId, 'cpr_client_person_id' => $val['cper_id']]);
 
-				if (!$successflag)
-				{
-					return null;
-				}
-			}
+			$personsData = $arrayParameters['persons'];
+			if(!empty($personsData)) {
+                foreach ($personsData As $key => $val) {
+                    $contactService = $this->getServiceManager()->get('MelisComContactService');
+                    $successflag = $contactService->linkAccountContact(['cpr_client_id' => $clntId, 'cpr_client_person_id' => $val['cper_id']]);
+
+                    if (!$successflag) {
+                        return null;
+                    }
+                }
+            }
 			
 			// Saving Client Addresses Details
 			$clientAccountAddressesData = $arrayParameters['clientAccountAddresses'];
