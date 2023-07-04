@@ -233,6 +233,46 @@ return [
                                                 ],
                                             ],
                                         ],
+                                        'meliscommerce_settings_page_tabs_accounts' => [
+                                            'conf' => [
+                                                'id' => 'id_meliscommerce_settings_page_tabs_accounts',
+                                                'melisKey' => 'meliscommerce_settings_page_tabs_accounts',
+                                                'name' => 'tr_meliscommerce_settings_page_tabs_accounts',
+                                                'icon' => 'glyphicons parents',
+                                            ],
+                                            'forward' => [
+                                                'module' => 'MelisCommerce',
+                                                'controller' => 'MelisComSettings',
+                                                'action' => 'render-settings-page-tabs-accounts',
+                                            ],
+                                            'interface' => [
+                                                'meliscommerce_settings_page_tabs_accounts_header' => [
+                                                    'conf' => [
+                                                        'id' => 'id_meliscommerce_settings_page_tabs_accounts_header',
+                                                        'melisKey' => 'meliscommerce_settings_page_tabs_accounts_header',
+                                                        'name' => 'tr_meliscommerce_settings_page_tabs_accounts_header',
+                                                        'icon' => 'glyphicons parents',
+                                                    ],
+                                                    'forward' => [
+                                                        'module' => 'MelisCommerce',
+                                                        'controller' => 'MelisComSettings',
+                                                        'action' => 'render-settings-page-tabs-accounts-header',
+                                                    ],
+                                                ],
+                                                'meliscommerce_settings_page_tabs_accounts_content' => [
+                                                    'conf' => [
+                                                        'id' => 'id_meliscommerce_settings_page_tabs_accounts_content',
+                                                        'melisKey' => 'meliscommerce_settings_page_tabs_accounts_content',
+                                                        'name' => 'tr_meliscommerce_settings_page_tabs_accounts_content',
+                                                    ],
+                                                    'forward' => [
+                                                        'module' => 'MelisCommerce',
+                                                        'controller' => 'MelisComSettings',
+                                                        'action' => 'render-settings-page-tabs-accounts-content',
+                                                    ],
+                                                ]
+                                            ]
+                                        ],
                                     ],
                                 ],
                             ],

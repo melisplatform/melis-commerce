@@ -174,6 +174,7 @@ return [
             'MelisEcomOrderProductReturnDetailsTable'       => \MelisCommerce\Model\Tables\MelisEcomOrderProductReturnDetailsTable::class,
             'MelisEcomProductLinksTable'                    => \MelisCommerce\Model\Tables\MelisEcomProductLinksTable::class,
             'MelisEcomClientPersonRelTable'                 => \MelisCommerce\Model\Tables\MelisEcomClientPersonRelTable::class,
+            'MelisEcomSettingsAccountTable'                 => \MelisCommerce\Model\Tables\MelisEcomSettingsAccountTable::class,
         ],
         'abstract_factories' => [
             'Laminas\Cache\Service\StorageCacheAbstractServiceFactory',

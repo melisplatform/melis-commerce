@@ -357,7 +357,7 @@ class MelisComClientListController extends MelisAbstractActionController
             $groupId = $this->getRequest()->getPost('cgroup_id', null);
             $clientStatus = $this->getRequest()->getPost('cli_status', null);
             
-           $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientTable');
+            $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientTable');
             $dataCount = $melisEcomClientPersonTable->getTotalData();
         
             $getData = $melisEcomClientPersonTable->getAccountToolList(array(

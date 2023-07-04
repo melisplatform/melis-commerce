@@ -66,6 +66,7 @@ var melisCommerceSettings = (function(window) {
 	
 	function submitStockAlertSettings(pageContainer) {
 		var stockAlertForm 	= $(pageContainer).find('#id_meliscommerce_settings_tabs_content_main_details_left form'),
+			accountForm 	= $(pageContainer).find('#id_meliscommerce_settings_page_tabs_accounts_content form'),
 			dataString 		= [],
 			url 			= 'melis/MelisCommerce/MelisComSettings/saveSettings',
 			emails 			= $(pageContainer).find('.alert-email-values'),
@@ -75,6 +76,8 @@ var melisCommerceSettings = (function(window) {
 			sea_user_id 	= '';
 
 			Array.prototype.push.apply(dataString,$(stockAlertForm).serializeArray());
+			//include account forms
+			Array.prototype.push.apply(dataString,$(accountForm).serializeArray());
 			
 			emails.each(function(){
 				var $this = $(this);

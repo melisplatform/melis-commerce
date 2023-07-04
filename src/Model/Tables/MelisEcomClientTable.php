@@ -126,9 +126,15 @@ class MelisEcomClientTable extends MelisEcomGenericTable
         $getCount = $this->getTableGateway()->selectWith($select);
         $this->setCurrentDataCount((int) $getCount->count());
 
-        // this is used in paginations
-        $select->limit($limit);
-        $select->offset($start);
+        if (!empty($start))
+        {
+            $select->offset($start);
+        }
+
+        if (!empty($limit))
+        {
+            $select->limit($limit);
+        }
 
         $select->group('cli_id');
 

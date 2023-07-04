@@ -16,7 +16,7 @@ return [
                         // table ID
                         'target' => '#contactList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComContact/getContactList',
-                        'dataFunction' => '',
+                        'dataFunction' => 'contactListTableDataFunction',
                         'ajaxCallback' => '',
                         'filters' => [
                             'left' => [
@@ -24,6 +24,11 @@ return [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComContact',
                                     'action' => 'render-account-contact-list-table-limit',
+                                ],
+                                'meliscommerce-account-contact-list-tbl-account-select' => [
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComContact',
+                                    'action' => 'render-account-contact-list-table-account-select',
                                 ],
                             ],
                             'center' => [
@@ -158,11 +163,11 @@ return [
                                 'controller' => 'MelisComContact',
                                 'action' => 'render-account-contact-assoc-account-list-table-set-default',
                             ],
-                            'unlink' => [
-                                'module' => 'MelisCommerce',
-                                'controller' => 'MelisComContact',
-                                'action' => 'render-account-contact-assoc-account-list-table-unlink',
-                            ],
+//                            'unlink' => [
+//                                'module' => 'MelisCommerce',
+//                                'controller' => 'MelisComContact',
+//                                'action' => 'render-account-contact-assoc-account-list-table-unlink',
+//                            ],
                         ]
                     ],
                 ],

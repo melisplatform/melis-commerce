@@ -170,8 +170,11 @@ class MelisComContactService extends MelisComGeneralService
             $arrayParameters['person']['cper_email'] = mb_strtolower($arrayParameters['person']['cper_email']);
             unset($arrayParameters['person']['cper_id']);
             //get emails
-            $perEmails = $arrayParameters['person']['emails'];
-            unset($arrayParameters['person']['emails']);
+            $perEmails = [];
+            if(!empty($arrayParameters['person']['emails'])){
+                $perEmails = $arrayParameters['person']['emails'];
+                unset($arrayParameters['person']['emails']);
+            }
 
             $perId = $melisEcomClientPersonTable->save($arrayParameters['person'], $arrayParameters['personId']);
             //insert person email

@@ -14,9 +14,8 @@ $(function(){
 
     $body.on("click", "#saveClientContact", function() {
         var $this = $(this),
-            clientId = $this.data("clientid");
-        emailList = [];
-
+            clientId = $this.data("clientid"),
+        // emailList = [],
         // serialize the new array and send it to server
         dataString = $("#melisCommerceClientContactFormModal").serializeArray();
 
@@ -25,20 +24,20 @@ $(function(){
             value: clientId,
         });
 
-        $("#" + activeTabId)
-            .find(".client-contact-tab-content form")
-            .each(function(index, element) {
-                emailList.push(
-                    $(this)
-                        .find("#cper_email")
-                        .val()
-                );
-            });
-
-        dataString.push({
-            name: "emailList",
-            value: emailList,
-        });
+        // $("#" + activeTabId)
+        //     .find(".client-contact-tab-content form")
+        //     .each(function(index, element) {
+        //         emailList.push(
+        //             $(this)
+        //                 .find("#cper_email")
+        //                 .val()
+        //         );
+        //     });
+        //
+        // dataString.push({
+        //     name: "emailList",
+        //     value: emailList,
+        // });
 
         dataString = $.param(dataString);
 
@@ -429,6 +428,10 @@ $(function(){
             alert(translations.tr_meliscore_error_message);
         });
     });
+
+    $body.on("change", "#contactAccountSelect", function(){
+        $("#contactList").DataTable().ajax.reload();
+    });
 });
 window.setClientId = function(d){
     d.clientId = activeTabId.replace('_id_meliscommerce_client_page','');
@@ -486,4 +489,9 @@ window.contactAssociatedAccountCallback = function () {
             $this.find(".ico-set-default").addClass("fa-times");
         }
     });
+};
+
+window.contactListTableDataFunction = function(d)
+{
+    d.accountId = $("#contactAccountSelect").val();
 };

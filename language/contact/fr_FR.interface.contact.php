@@ -13,10 +13,13 @@ return [
     'tr_meliscommerce_contact_save_failed' => 'Error occurred while saving contact',
     'tr_meliscommerce_contact_button_save_contact' => 'Save Contact',
     'tr_meliscommerce_contact_get_contact_name' => 'Get contact name',
+    'tr_meliscommerce_contact_contact_name' => 'Contact name',
+    'tr_meliscommerce_contact_table_account_filter' => 'Comptes',
 
     'tr_meliscommerce_contact_common_Type' => 'Type',
     'tr_meliscommerce_contact_common_person' => 'Person',
-    'tr_meliscommerce_contact_common_company' => 'Company',
+    'tr_meliscommerce_contact_common_company' => 'Société',
+    'tr_meliscommerce_contact_common_choose' => 'Choose',
 
     //interface names
     'tr_meliscommerce_contact_page' => 'Contact Page',
