@@ -333,7 +333,6 @@ class MelisComClientListController extends MelisAbstractActionController
             $melisTranslation = $this->getServiceManager()->get('MelisCoreTranslation');
             // Client Service Managers
             $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
-            $melisEcomClientTable = $this->getServiceManager()->get('MelisEcomClientTable');
             
             $melisTool = $this->getServiceManager()->get('MelisCoreTool');
             $melisTool->setMelisToolKey(self::PLUGIN_INDEX, 'meliscommerce_clients_list');
@@ -404,7 +403,7 @@ class MelisComClientListController extends MelisAbstractActionController
                     'cli_status' => $contactStatus,
                     'cli_company' => $val['cli_company'],
                     'cli_date_creation' => $clientCreated,
-                    'cli_name' => $val['cli_name'],
+                    'cli_name' => $melisComClientService->getAccountName($val['cli_id']),
                     'cli_num_orders' => $contactNumOrders,
                     'cli_last_order' => $lastOrder,
                     'DT_RowAttr' => [

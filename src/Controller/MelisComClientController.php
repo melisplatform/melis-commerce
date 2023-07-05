@@ -671,11 +671,18 @@ class MelisComClientController extends MelisAbstractActionController
             $clieData = $melisComClientService->getClientByIdAndClientPerson($clientId);
             // Getting Client data form Client Object
             $client = $clieData->getClient();
-            
             if (!empty($client))
             {
                 // Binding Client data to Client Form
                 $propertyForm->bind($client);
+            }
+
+            //check account settings
+            $settings = $melisComClientService->getAccountNameSetting();
+            if(!empty($settings)){
+                if($settings->sa_type == 'company_name' || $settings->sa_type == 'contact_name'){
+                    $propertyForm->get('cli_name')->setAttribute('disabled', true);
+                }
             }
         }
         
@@ -1151,7 +1158,20 @@ class MelisComClientController extends MelisAbstractActionController
             
             // Setting the Posted Data to Form as Form Data
             $propertyForm->setData($postValues);
-            
+
+            /**
+             * Check account settings for form validation
+             */
+            $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
+            //check account settings
+            $settings = $melisComClientService->getAccountNameSetting();
+            if(!empty($settings)){
+                if($settings->sa_type == 'company_name' || $settings->sa_type == 'contact_name'){
+                    $propertyForm->getInputFilter()->remove('cli_name');
+                    $propertyForm->remove('cli_name');
+                }
+            }
+
             // Checking if Form with datas is Valid
             if ($propertyForm->isValid())
             {

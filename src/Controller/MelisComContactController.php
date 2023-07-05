@@ -1010,6 +1010,7 @@ class MelisComContactController extends MelisAbstractActionController
             $search = $search['value'];
 
             $contactService = $this->getServiceManager()->get('MelisComContactService');
+            $clientService = $this->getServiceManager()->get('MelisComClientService');
 
             $tableData = $contactService->getContactAssocAccountLists($contactId, $search, $melisTool->getSearchableColumns(), $start, $length, $selCol, $sortOrder)->toArray();
             $dataCount = $contactService->getContactAssocAccountLists($contactId, $search, $melisTool->getSearchableColumns(), null, null, null, 'ASC', true)->current();
@@ -1030,6 +1031,7 @@ class MelisComContactController extends MelisAbstractActionController
 
                 $tableData[$key]['cli_status'] = $contactStatus;
                 $tableData[$key]['default_account'] = $isDefault;
+                $tableData[$key]['cli_name'] = $clientService->getAccountName($val['cli_id']);
 
                 $tableData[$key]['DT_RowAttr']    = [
                     'data-isdefault' => $val['cpr_default_client'],

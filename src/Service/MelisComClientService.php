@@ -94,6 +94,33 @@ class MelisComClientService extends MelisComGeneralService
                 }
                 $melisClient->setCompany($clientCompany);
 
+                /**
+                 * Change the client name depending the melis commerce account settings
+                 */
+                $accountSettings = $this->getAccountNameSetting();
+                if(!empty($accountSettings)){
+                    $cliInfo = $melisClient->getClient();
+                    if($accountSettings->sa_type == 'contact_name'){//account name set to contact name
+                        $perName = '';
+                        if(!empty($clientPersonData)){
+                            foreach($clientPersonData as $k => $per){
+                                if($per->cpr_default_client){
+                                    $perName = $per->cper_firstname.' '.$per->cper_name;
+                                    break;
+                                }
+                            }
+                        }
+                        $cliInfo->cli_name = $perName;
+                    }elseif($accountSettings->sa_type == 'company_name'){//account name set to company name
+                        $compName = '';
+                        if(!empty($clientCompany)){
+                            $compName = $clientCompany[0]->ccomp_name ?? null;
+                        }
+                        $cliInfo->cli_name = $compName;
+                    }
+                    $melisClient->setClient($cliInfo);
+                }
+
                 array_push($results, $melisClient);
             }
         }else{
@@ -109,6 +136,10 @@ class MelisComClientService extends MelisComGeneralService
 		return $arrayParameters['results'];
 	}
 
+    /**
+     * @param $clientId
+     * @return mixed
+     */
 	public function getClientById($clientId)
 	{
 		// Event parameters prepare
@@ -122,6 +153,37 @@ class MelisComClientService extends MelisComGeneralService
 
 		$melisEcomClientTable = $this->getServiceManager()->get('MelisEcomClientTable');
 		$results = $melisEcomClientTable->getEntryById($arrayParameters['clientId'])->current();
+
+        /**
+         * Change client name depending on account settings
+         */
+		if(!empty($results)){
+		    $settings = $this->getAccountNameSetting();
+            $cliName = '';
+		    if(!empty($settings)){
+		        if($settings->sa_type == 'contact_name'){
+                    // Set Person Data to MelisClient
+                    $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
+                    $clientPersonData = $melisEcomClientPersonTable->getContactListByClientId($arrayParameters['clientId'])->toArray();
+                    if(!empty($clientPersonData)){
+                        foreach($clientPersonData as $k => $per){
+                            if($per['cpr_default_client']){
+                                $cliName = $per['cper_firstname'].' '.$per['cper_name'];
+                                break;
+                            }
+                        }
+                    }
+                }elseif($settings->sa_type == 'company_name'){
+		            $companyData = $this->getCompanyByClientId($arrayParameters['clientId']);
+		            if(!empty($companyData)){
+                        $cliName = $companyData[0]->ccomp_name ?? null;
+                    }
+                }else{
+                    $cliName = $results->cli_name;
+                }
+            }
+            $results->cli_name = $cliName;
+        }
 
 		// Service implementation end
 		
@@ -190,7 +252,34 @@ class MelisComClientService extends MelisComGeneralService
 		// Set Company to MelisClient
 		$clientCompany = $this->getCompanyByClientId($arrayParameters['clientId']);
 		$melisClient->setCompany($clientCompany);
-		
+
+        /**
+         * Change the client name depending the melis commerce account settings
+         */
+        $accountSettings = $this->getAccountNameSetting();
+        if(!empty($accountSettings)){
+            $cliInfo = $melisClient->getClient();
+            if($accountSettings->sa_type == 'contact_name'){//account name set to contact name
+                $perName = '';
+                if(!empty($clientPersonData)){
+                    foreach($clientPersonData as $k => $per){
+                        if($per->cpr_default_client){
+                            $perName = $per->cper_firstname.' '.$per->cper_name;
+                            break;
+                        }
+                    }
+                }
+                $cliInfo->cli_name = $perName;
+            }elseif($accountSettings->sa_type == 'company_name'){//account name set to company name
+                $compName = '';
+                if(!empty($clientCompany)){
+                    $compName = $clientCompany[0]->ccomp_name ?? null;
+                }
+                $cliInfo->cli_name = $compName;
+            }
+            $melisClient->setClient($cliInfo);
+        }
+
 		// Push MelisClient Object to Return Array
 		$results = $melisClient;
 		// Service implementation end
@@ -1786,5 +1875,53 @@ class MelisComClientService extends MelisComGeneralService
 
         return $arrayParameters['results'];
 
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAccountNameSetting()
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_settings_get_account_name_settings_start', $arrayParameters);
+
+        // Service implementation start
+        $settingsAccountTable = $this->getServiceManager()->get('MelisEcomSettingsAccountTable');
+        $result = $settingsAccountTable->fetchAll()->current();
+
+        $arrayParameters['results'] = $result;
+
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_settings_get_account_name_settings_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
+
+    /**
+     * @param $clientId
+     * @return mixed
+     */
+    public function getAccountName($clientId)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_client_get_account_name_start', $arrayParameters);
+        $result = null;
+        // Service implementation start
+        $result = $this->getClientById($arrayParameters['clientId']);
+        if(!empty($result))
+            $result = $result->cli_name;
+
+        $arrayParameters['results'] = $result;
+
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_client_get_account_name_end', $arrayParameters);
+
+        return $arrayParameters['results'];
     }
 }
