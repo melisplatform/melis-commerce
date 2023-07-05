@@ -544,6 +544,68 @@ $(function() {
 		}
 	});
 
+    $body.on("click", ".clientsExportAccounts", function() {
+        if (!melisCoreTool.isTableEmpty("clientListTbl")) {
+            // initialation of local variable
+            zoneId = "id_meliscommerce_client_list_content_export_company_contacts_form";
+            melisKey = "meliscommerce_client_list_content_export_company_contacts_form";
+            modalUrl =
+                "/melis/MelisCommerce/MelisComClientList/renderClientListModal";
+
+            // requesitng to create modal and display after
+            melisHelper.createModal(
+                zoneId,
+                melisKey,
+                false,
+                {},
+                modalUrl,
+                function() {
+                    melisCoreTool.done(this);
+                }
+            );
+        }
+    });
+
+    $body.on("click", "#exportClientsCompanyContacts", function(e){
+    	e.preventDefault();
+
+        var _this = $(this);
+        var data = $("form#client-list-export-company-contacts").serializeArray();
+
+        $.ajax({
+            url: "/melis/MelisCommerce/MelisComClientList/exportClientsCompanyContacts",
+            data: data,
+            type: "GET",
+            beforeSend: function(){
+                _this.attr("disabled", true);
+            }
+        }).done(function(data, status, request){
+            var fileName = request.getResponseHeader("fileName");
+            //decode utf-8
+            fileName = decodeURIComponent(escape(fileName));
+            var mime = request.getResponseHeader("Content-Type");
+            var newContent = "";
+
+            for (var i = 0; i < data.length; i++) {
+                newContent += String.fromCharCode(data.charCodeAt(i) & 0xFF);
+            }
+
+            var bytes = new Uint8Array(newContent.length);
+
+            for (var i = 0; i < newContent.length; i++) {
+                bytes[i] = newContent.charCodeAt(i);
+            }
+
+            var blob = new Blob([bytes], {type: mime});
+            saveAs(blob, fileName);
+
+            _this.attr("disabled", false);
+            $("#id_meliscommerce_client_list_content_export_company_contacts_form_container").modal('hide');
+        }).fail(function(){
+            alert(translations.tr_meliscore_error_message);
+        });
+    });
+
 	$body.on("click", "#exportClients", function() {
 		var button = $(this),
 			formValues = button

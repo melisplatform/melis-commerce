@@ -57,7 +57,7 @@
 		'tr_meliscommerce_clients_table_Client_num_orders' => 'Commande(s)',
 		'tr_meliscommerce_clients_table_Client_last_order' => 'Dernière commande',
         'tr_meliscommerce_clients_table_account_name' => 'Compte',
-		
+
 		// Buttons
 		'tr_meliscommerce_clients_add_client' => 'Ajouter un comptes',
 		'tr_meliscommerce_clients_save_client_info' => 'Enregistrer le comptes',
@@ -320,4 +320,38 @@
 
         'tr_meliscommerce_client_account_name' => 'Account Name',
         'tr_meliscommerce_client_tags' => 'Tags',
+
+        //export columns
+        'tr_meliscommerce_clients_export_common_label_export_company_contacts' => 'Exporter Company/Contacts',
+        'tr_meliscommerce_clients_export_col_ccomp_id' => 'Société ID',
+        'tr_meliscommerce_clients_export_col_ccomp_name' => 'Nom de la Société',
+        'tr_meliscommerce_clients_export_col_ccomp_group' => 'Groupe',
+        'tr_meliscommerce_clients_export_col_ccomp_number_id' => 'SIREN',
+        'tr_meliscommerce_clients_export_col_ccomp_vat_number' => 'Numéro de TVA intracommunautaire',
+        'tr_meliscommerce_clients_export_col_ccomp_employee_nb' => 'Nombre d\'employés',
+        'tr_meliscommerce_clients_export_col_ccomp_identifier' => 'SIRET/ID international',
+        'tr_meliscommerce_clients_export_col_ccomp_add_zipcode' => 'Code Postal',
+        'tr_meliscommerce_clients_export_col_ccomp_add_city' => 'Ville',
+        'tr_meliscommerce_clients_export_col_ccomp_add_country' => 'Pays',
+        'tr_meliscommerce_clients_export_col_ccomp_phone_number' => 'Phone Number',
+        'tr_meliscommerce_clients_export_col_ccomp_website' => 'Website',
+        'tr_meliscommerce_clients_export_col_ccomp_add_street' => 'Adresse 1',
+        'tr_meliscommerce_clients_export_col_ccomp_add_building' => 'Adresse 2',
+        'tr_meliscommerce_clients_export_col_ccomp_add_state' => 'Département',
+        'tr_meliscommerce_clients_export_col_ccomp_add_floor' => 'Floor',
+        'tr_meliscommerce_clients_export_col_ccomp_date_creation' => 'Creation Date',
+        'tr_meliscommerce_clients_export_col_ccomp_date_edit' => 'Date Edit',
+        'tr_meliscommerce_clients_export_col_ccomp_add_number' => 'Address Number',
+        'tr_meliscommerce_clients_export_col_cper_id' => 'Contact Id',
+        'tr_meliscommerce_clients_export_col_cper_civility' => 'Civilité',
+        'tr_meliscommerce_clients_export_col_cper_is_main_person' => 'Is main person',
+        'tr_meliscommerce_clients_export_col_cper_email' => 'Adresse email',
+        'tr_meliscommerce_clients_export_col_cper_name' => 'Nom',
+        'tr_meliscommerce_clients_export_col_cper_firstname' => 'Prénom',
+        'tr_meliscommerce_clients_export_col_cper_middle_name' => 'Middle name',
+        'tr_meliscommerce_clients_export_col_cper_tel_mobile' => 'Téléphone mobile',
+        'tr_meliscommerce_clients_export_col_cper_job_title' => 'Profession',
+        'tr_meliscommerce_clients_export_col_cper_job_service' => 'Département',
+        'tr_meliscommerce_clients_export_col_cper_tel_landline' => 'Téléphone fixe',
+        'tr_meliscommerce_clients_export_col_cper_date_creation' => 'Contact date creation',
 	);

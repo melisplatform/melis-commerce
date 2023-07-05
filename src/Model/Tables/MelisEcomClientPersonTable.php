@@ -445,5 +445,14 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
         
         return $resultData;
     }
+
+    public function getAllContactsAndCompany()
+    {
+        $select = $this->getTableGateway()->getSql()->select();
+        $select->join('melis_ecom_client_company', 'melis_ecom_client_company.ccomp_client_id = melis_ecom_client_person.cper_client_id', array('ccomp_id', 'ccomp_name'), $select::JOIN_LEFT);
+
+        $resultData = $this->getTableGateway()->selectWith($select);
+        return $resultData;
+    }
     
 }
