@@ -432,6 +432,76 @@ $(function(){
     $body.on("change", "#contactAccountSelect", function(){
         $("#contactList").DataTable().ajax.reload();
     });
+
+    $body.on("click", ".contactsExport", function() {
+        if (!melisCoreTool.isTableEmpty("contactList")) {
+            // initialation of local variable
+            zoneId = "id_meliscommerce_contact_list_export_contacts_form";
+            melisKey = "meliscommerce_contact_list_export_contacts_form";
+            modalUrl =
+                "/melis/MelisCommerce/MelisComContact/renderContactListModal";
+
+            // requesitng to create modal and display after
+            melisHelper.createModal(
+                zoneId,
+                melisKey,
+                false,
+                {},
+                modalUrl,
+                function() {
+                    melisCoreTool.done(this);
+                }
+            );
+        }
+    });
+
+    $body.on("click", "#exportContacts", function(e){
+        e.preventDefault();
+
+        var _this = $(this);
+        var filters = {};
+
+        var data = $("form#contact-list-export-contacts").serializeArray();
+        filters['accountId'] = $("#contactAccountSelect").val();
+        filters['search'] = $("#contactList_filter input[type='search']").val();
+
+        $.each(data, function(key, val){
+            filters[val.name] = val.value;
+        });
+
+        $.ajax({
+            url: "/melis/MelisCommerce/MelisComContact/exportContacts",
+            data: $.param(filters),
+            type: "GET",
+            beforeSend: function(){
+                _this.attr("disabled", true);
+            }
+        }).done(function(data, status, request){
+            var fileName = request.getResponseHeader("fileName");
+            //decode utf-8
+            fileName = decodeURIComponent(escape(fileName));
+            var mime = request.getResponseHeader("Content-Type");
+            var newContent = "";
+
+            for (var i = 0; i < data.length; i++) {
+                newContent += String.fromCharCode(data.charCodeAt(i) & 0xFF);
+            }
+
+            var bytes = new Uint8Array(newContent.length);
+
+            for (var i = 0; i < newContent.length; i++) {
+                bytes[i] = newContent.charCodeAt(i);
+            }
+
+            var blob = new Blob([bytes], {type: mime});
+            saveAs(blob, fileName);
+
+            _this.attr("disabled", false);
+            $("#id_meliscommerce_contact_list_export_contacts_form_container").modal('hide');
+        }).fail(function(){
+            alert(translations.tr_meliscore_error_message);
+        });
+    });
 });
 window.setClientId = function(d){
     d.clientId = activeTabId.replace('_id_meliscommerce_client_page','');

@@ -22,7 +22,7 @@ if (!empty($this->zoneconfig['conf']['id']))
                             	<div class="col-md-12">
 
                                     <?php
-                                    $form = $this->meliscommerce_client_list_export_company_contacts_form;
+                                    $form = $this->meliscommerce_contact_list_export_contacts_form;
                                     $form->prepare();
                                     echo $this->form()->openTag($form);
                                     foreach($form->getElements() as $key => $val)  {
@@ -38,31 +38,14 @@ if (!empty($this->zoneconfig['conf']['id']))
                                             echo $required;
                                             echo $this->formLabel()->closeTag();
                                         }
-
-                                        if($key == 'export_type'){
-                                            foreach($val->getValueOptions() as $k => $v) {
-                                                $selected = "";
-                                                if(empty($val->getValue())){
-                                                    if($k == "contact") {
-                                                        $selected = "checked";
-                                                    }
-                                                }else {
-                                                    $selected = ($k == $val->getValue()) ? "checked" : "";
-                                                }
-                                                echo '<div class="form-check form-check-inline"><input class="form-check-input" data-cat-type="'.strtoupper($v).'" type="radio" id="'.$key.'_' . $k . '" name="'.$key.'" value="' . $k . '" '.$selected.'>
-                                        <label class="form-check-label" for="'.$key.'_' . $k . '">' . $v . '</label>
-                                        </input></div>';
-                                            }
-                                        }else {
-                                            echo $this->formElement($val, array('class' => 'form-control'));
-                                        }
+                                        echo $this->formElement($val, array('class' => 'form-control'));
                                         echo '</div>';
                                     }
                                     ?>
 
                                  	<div class="footer-modal d-flex flex-row justify-content-between">
                                  		<button data-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
-                                 		<button class="btn btn-success" id="exportClientsCompanyContacts" ><i class="fa fa-save"></i>  <?php echo $this->translate('tr_meliscommerce_order_export_label') ?></button>
+                                 		<button class="btn btn-success" id="exportContacts" ><i class="fa fa-save"></i>  <?php echo $this->translate('tr_meliscommerce_order_export_label') ?></button>
                                  	</div>
                             	</div>
                             </div>

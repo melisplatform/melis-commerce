@@ -53,11 +53,6 @@ return [
                                     'controller' => 'MelisComClientList',
                                     'action' => 'render-client-list-table-export-accounts',
                                 ],
-                                'meliscommerce-clients-list-tbl-export' => [
-                                    'module' => 'MelisCommerce',
-                                    'controller' => 'MelisComClientList',
-                                    'action' => 'render-client-list-table-export',
-                                ],
                                 'meliscommerce-clients-list-tbl-refresh' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComClientList',
@@ -113,6 +108,9 @@ return [
                             'cli_name',
                             'ccomp_name',
                             'cli_date_creation',
+//                            'cper_name',
+//                            'cper_firstname',
+//                            'cper_middle_name',
                         ],
                         'actionButtons' => [
                             'delete' => [

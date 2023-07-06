@@ -515,16 +515,16 @@ return [
                                 'action' => 'render-client-list-content-export-form',
                             ],
                         ],
-                        'meliscommerce_client_list_content_export_company_contacts_form' => [
+                        'meliscommerce_client_list_export_accounts_form' => [
                             'conf' => [
-                                'id' => 'id_meliscommerce_client_list_content_export_company_contacts_form',
-                                'name' => 'tr_meliscommerce_client_list_content_export_company_contacts_form',
-                                'melisKey' => 'meliscommerce_client_list_content_export_company_contacts_form',
+                                'id' => 'id_meliscommerce_client_list_export_accounts_form',
+                                'name' => 'tr_meliscommerce_client_list_export_accounts_form',
+                                'melisKey' => 'meliscommerce_client_list_export_accounts_form',
                             ],
                             'forward' => [
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComClientList',
-                                'action' => 'render-client-list-content-export-company-contacts-form',
+                                'action' => 'render-client-list-content-export-accounts-form',
                             ],
                         ],
                     ],

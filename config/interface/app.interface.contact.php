@@ -288,6 +288,32 @@ return [
                             ]
                         ]
                     ]
+                ],
+                'meliscommerce_contact_list_modal' => [
+                    'conf' => [
+                        'id' => 'id_meliscommerce_contact_list_modal',
+                        'name' => 'tr_meliscommerce_contact_list_modal',
+                        'melisKey' => 'meliscommerce_contact_list_modal',
+                    ],
+                    'forward' => [
+                        'module' => 'MelisCommerce',
+                        'controller' => 'MelisComContact',
+                        'action' => 'render-contact-list-modal',
+                    ],
+                    'interface' => [
+                        'meliscommerce_contact_list_export_contacts_form' => [
+                            'conf' => [
+                                'id' => 'id_meliscommerce_contact_list_export_contacts_form',
+                                'name' => 'tr_meliscommerce_contact_list_export_contacts_form',
+                                'melisKey' => 'meliscommerce_contact_list_export_contacts_form',
+                            ],
+                            'forward' => [
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComContact',
+                                'action' => 'render-contact-list-content-export-contacts-form',
+                            ],
+                        ],
+                    ],
                 ]
             ]
         ]

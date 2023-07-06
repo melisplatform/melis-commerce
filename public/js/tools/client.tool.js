@@ -547,8 +547,8 @@ $(function() {
     $body.on("click", ".clientsExportAccounts", function() {
         if (!melisCoreTool.isTableEmpty("clientListTbl")) {
             // initialation of local variable
-            zoneId = "id_meliscommerce_client_list_content_export_company_contacts_form";
-            melisKey = "meliscommerce_client_list_content_export_company_contacts_form";
+            zoneId = "id_meliscommerce_client_list_export_accounts_form";
+            melisKey = "meliscommerce_client_list_export_accounts_form";
             modalUrl =
                 "/melis/MelisCommerce/MelisComClientList/renderClientListModal";
 
@@ -566,15 +566,24 @@ $(function() {
         }
     });
 
-    $body.on("click", "#exportClientsCompanyContacts", function(e){
-    	e.preventDefault();
+    $body.on("click", "#exportAccounts", function(e){
+        e.preventDefault();
 
         var _this = $(this);
-        var data = $("form#client-list-export-company-contacts").serializeArray();
+        var filters = {};
+
+        var data = $("form#client-list-export-accounts").serializeArray();
+        filters['groupId'] = $("#clientsGroupSelect").val();
+        filters['status'] = $("#clientsStatusSelect").val();
+        filters['search'] = $("#clientListTbl_filter input[type='search']").val();
+
+        $.each(data, function(key, val){
+            filters[val.name] = val.value;
+        });
 
         $.ajax({
-            url: "/melis/MelisCommerce/MelisComClientList/exportClientsCompanyContacts",
-            data: data,
+            url: "/melis/MelisCommerce/MelisComClientList/exportAccounts",
+            data: $.param(filters),
             type: "GET",
             beforeSend: function(){
                 _this.attr("disabled", true);
@@ -600,7 +609,7 @@ $(function() {
             saveAs(blob, fileName);
 
             _this.attr("disabled", false);
-            $("#id_meliscommerce_client_list_content_export_company_contacts_form_container").modal('hide');
+            $("#id_meliscommerce_client_list_content_export_accounts_form_container").modal('hide');
         }).fail(function(){
             alert(translations.tr_meliscore_error_message);
         });

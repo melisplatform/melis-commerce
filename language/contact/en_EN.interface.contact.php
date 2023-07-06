@@ -55,4 +55,22 @@ return [
     'tr_meliscommerce_contact_unlink_account_msg' => 'Are you sure you want to unlink this account?',
     'tr_meliscommerce_contact_unlink_account_success' => 'Account successfully unlinked',
     'tr_meliscommerce_contact_unlink_account_failed' => 'Error occurred while un-linking account',
+
+    //contact export
+    'tr_contact_export_col_cper_id' => 'Contact Id',
+    'tr_contact_export_col_cper_lang_id' => 'Language',
+    'tr_contact_export_col_cper_type' => 'Type',
+    'tr_contact_export_col_cper_status' => 'Status',
+    'tr_contact_export_col_cper_email' => 'Email',
+    'tr_contact_export_col_cper_civility' => 'Civility',
+    'tr_contact_export_col_cper_name' => 'Name',
+    'tr_contact_export_col_cper_middle_name' => 'Middle name',
+    'tr_contact_export_col_cper_firstname' => 'Firstname',
+    'tr_contact_export_col_cper_job_title' => 'Job title',
+    'tr_contact_export_col_cper_job_service' => 'Job service',
+    'tr_contact_export_col_cper_tel_mobile' => 'Mobile',
+    'tr_contact_export_col_cper_tel_landline' => 'Landline',
+    'tr_contact_export_col_cper_date_creation' => 'Creation date',
+    'tr_contact_export_col_cli_id' => 'Default account id',
+    'tr_contact_export_col_cli_name' => 'Default account name',
 ];

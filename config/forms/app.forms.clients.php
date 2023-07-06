@@ -1884,33 +1884,15 @@ return [
                             ],
                         ]
                     ],
-                    'meliscommerce_client_list_export_company_contacts_form' => [
+                    'meliscommerce_client_list_export_accounts_form' => [
                         'attributes' => [
-                            'name' => 'client-list-export-company-contacts',
-//                            'id' => '',
+                            'name' => 'client-list-export-accounts',
+                            'id' => 'client-list-export-accounts',
                             'method' => 'POST',
                             'action' => '',
                         ],
                         'hydrator'  => 'Laminas\Hydrator\ArraySerializableHydrator',
                         'elements' => [
-                            [
-                                'spec' => [
-                                    'name' => 'export_type',
-                                    'type' => 'Select',
-                                    'options' => [
-                                        'label' => 'tr_meliscommerce_clients_common_label_type',
-                                        'disable_inarray_validator' => true,
-                                        'value_options' => [
-                                            'contact' => 'tr_meliscommerce_clients_common_label_contact',
-                                            'company' => 'tr_meliscommerce_clients_table_Client_company',
-                                        ],
-                                    ],
-                                    'attributes' => [
-                                        'id' => 'export_type',
-                                        'class' => 'form-control',
-                                    ],
-                                ],
-                            ],
                             [
                                 'spec' => [
                                     'name' => 'separator',

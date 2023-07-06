@@ -39,6 +39,11 @@ return [
                                 ],
                             ],
                             'right' => [
+                                'meliscommerce-account-contact-list-tbl-export' => [
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComContact',
+                                    'action' => 'render-account-contact-list-table-export',
+                                ],
                                 'meliscommerce-account-contact-list-tbl-refresh' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComContact',

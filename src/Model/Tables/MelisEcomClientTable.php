@@ -320,10 +320,11 @@ class MelisEcomClientTable extends MelisEcomGenericTable
 
         $select->join('melis_ecom_client_person_rel', 'melis_ecom_client_person_rel.cpr_client_id=melis_ecom_client.cli_id',
             array(),$select::JOIN_LEFT);
-        $select->join('melis_ecom_client_person', 'melis_ecom_client_person.cper_id=melis_ecom_client_person_rel.cpr_client_person_id',
+        $select->join('melis_ecom_client_person', 'melis_ecom_client_person_rel.cpr_client_person_id=melis_ecom_client_person.cper_id',
             array('*'),$select::JOIN_LEFT);
 
         $select->where(array('cli_id' => $clientId));
+        $select->where(array('cpr_default_client' => 1));
 
         $resultData = $this->tableGateway->selectWith($select);
         return $resultData;
