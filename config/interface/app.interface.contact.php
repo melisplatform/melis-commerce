@@ -11,6 +11,9 @@ return [
     'plugins' => [
         'meliscommerce' => [
             'ressources' => [
+                'css' => [
+                    '/MelisCommerce/css/contacts.css',
+                ],
                 'js' => [
                     '/MelisCommerce/js/tools/contact.tool.js',
                 ],
@@ -311,6 +314,18 @@ return [
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComContact',
                                 'action' => 'render-contact-list-content-export-contacts-form',
+                            ],
+                        ],
+                        'meliscommerce_contact_list_import_contacts_form' => [
+                            'conf' => [
+                                'id' => 'id_meliscommerce_contact_list_import_contacts_form',
+                                'name' => 'tr_meliscommerce_contact_list_import_contacts_form',
+                                'melisKey' => 'meliscommerce_contact_list_import_contacts_form',
+                            ],
+                            'forward' => [
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComContact',
+                                'action' => 'render-contact-list-content-import-contacts-form',
                             ],
                         ],
                     ],

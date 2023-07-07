@@ -20,6 +20,10 @@ return [
     'tr_meliscommerce_contact_common_person' => 'Person',
     'tr_meliscommerce_contact_common_company' => 'Société',
     'tr_meliscommerce_contact_common_choose' => 'Choose',
+    'tr_meliscommerce_contact_common_export' => 'Export',
+    'tr_meliscommerce_contact_common_import' => 'Import',
+    'tr_meliscommerce_contact_common_empty_file' => 'File is empty',
+    'tr_meliscommerce_contact_common_line' => 'Line',
 
     //interface names
     'tr_meliscommerce_contact_page' => 'Contact Page',
@@ -73,4 +77,18 @@ return [
     'tr_contact_export_col_cper_date_creation' => 'Date de création',
     'tr_contact_export_col_cli_id' => 'Default compte id',
     'tr_contact_export_col_cli_name' => 'Default compte nom',
+
+    'tr_meliscommerce_contact_import_csv_file' => 'Upload CSV file',
+    'tr_meliscommerce_contact_import_choose_file' => 'Choose file',
+    'tr_meliscommerce_contact_import_title' => 'Import contacts',
+    'tr_meliscommerce_contact_import_failed' => 'Importing contacts failed',
+    'tr_meliscommerce_contact_import_success' => 'Contacts successfully imported',
+
+    'tr_meliscommerce_contact_import_is_mandatory' => ' is a mandatory field.',
+    'tr_meliscommerce_contact_import_invalid_email' => ' is an invalid email',
+    'tr_meliscommerce_contact_import_email_already_exist' => ' is already exist',
+    'tr_meliscommerce_contact_import_checking' => 'Checking ... ',
+    'tr_meliscommerce_contact_import_progress' => 'Progress ... ',
+    'tr_meliscommerce_contact_import_address_name' => 'Address name',
+    'tr_meliscommerce_contact_import_address_type' => 'Type',
 ];

@@ -110,7 +110,20 @@ class MelisComContactService extends MelisComGeneralService
 
     /**
      *
-     * This method saves a client person in database.
+     * This method saves a contact in database.
+     *
+     * Note: Contact emails must be included in the persons data
+     * Ex:
+     * [
+     *      cper_name => 'Test',
+     *      cper_firstname => 'Test',
+     *      .......
+     *      .......
+     *      emails => [
+     *          '0' => ['cpmail_email' => 'test@test.com']
+     *      ]
+     * ]
+     * *email keys are the id of email in the table, 0 for new email
      *
      * @param array $person Person reflecting the melis_ecom_client_person table
      * @param array[] $clientAccountAddresses Array of addresses reflecting the melis_ecom_client_address table
@@ -133,7 +146,7 @@ class MelisComContactService extends MelisComGeneralService
 
         try
         {
-            $clientId = $arrayParameters['person']['cper_client_id'];
+//            $clientId = $arrayParameters['person']['cper_client_id'];
             if (is_null($arrayParameters['personId']))
             {
                 $arrayParameters['person']['cper_date_creation'] = date('Y-m-d H:i:s');
@@ -174,6 +187,10 @@ class MelisComContactService extends MelisComGeneralService
             if(!empty($arrayParameters['person']['emails'])){
                 $perEmails = $arrayParameters['person']['emails'];
                 unset($arrayParameters['person']['emails']);
+            }else{//create email array as new
+                $perEmails[] = [
+                    'cpmail_email' => $arrayParameters['person']['cper_email']
+                ];
             }
 
             $perId = $melisEcomClientPersonTable->save($arrayParameters['person'], $arrayParameters['personId']);
@@ -189,9 +206,9 @@ class MelisComContactService extends MelisComGeneralService
             $clientPersonAddData = $arrayParameters['clientPersonAddresses'];
             foreach ($clientPersonAddData As $key => $val)
             {
-                $val['cadd_client_id'] = $clientId;
+                $val['cadd_client_id'] = 0;//$clientId; //contact now is totally separated form accounts/clients
                 $val['cadd_client_person'] = $perId;
-                $caddId = $val['cadd_id'] ? $val['cadd_id'] : null;
+                $caddId = !empty($val['cadd_id']) ? $val['cadd_id'] : null;
                 unset($val['cadd_id']);
 
                 if (is_null($caddId))
@@ -416,5 +433,270 @@ class MelisComContactService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_contact_fetch_all_contact_for_linking_end', $arrayParameters);
 
         return $arrayParameters['results'];
+    }
+
+    /**
+     * @param $email
+     * @return mixed
+     */
+    public function getContactByEmail($email)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_contact_get_contacts_by_email_start', $arrayParameters);
+
+        // Service implementation start
+        $table = $this->getServiceManager()->get('MelisEcomClientPersonEmailsTable');
+        $arrayParameters['results'] = $table->getEntryByField('cpmail_email', $arrayParameters['email'])->toArray();
+
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_contact_get_contact_by_email_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
+
+    /**
+     * @param $fileContents
+     * @param $postData
+     * @param string $delimiter
+     * @return mixed
+     */
+    public function importContacts($fileContents, $postData, $delimiter = ';')
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $contactId = 0;
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_contact_import_contacts_start', $arrayParameters);
+
+        $contacts = explode(PHP_EOL, $fileContents);
+
+        /*
+         * remove first line cause it is label for them
+         */
+        if (! empty($contacts)) {
+            unset($contacts[0]);
+        }
+
+        $civilityTable = $this->getServiceManager()->get('MelisEcomCivilityTransTable');
+        $languageTable = $this->getServiceManager()->get('MelisEcomLangTable');
+
+        foreach($contacts as $contact){
+            if(!empty($contact)) {
+                $contactsData = explode($delimiter, $contact);
+
+                //get civility id
+                $civD = $civilityTable->getEntryByField('civt_min_name', $contactsData[4])->current();
+                //get language id
+                $langD = $languageTable->getEntryByField('elang_name', $contactsData[0])->current();
+
+                //prepare contacts data
+                $contactData = [
+                    'cper_type' => $contactsData[1] ?? 'person',
+                    'cper_lang_id' => !empty($langD) ? $langD->elang_id : 2,
+                    'cper_status' => 1,
+                    'cper_email' => $contactsData[3],
+                    'cper_civility' => !empty($civD) ? $civD->civt_civ_id : 0,
+                    'cper_name' => $contactsData[5],
+                    'cper_middle_name' => $contactsData[6] ?? null,
+                    'cper_firstname' => $contactsData[7],
+                    'cper_job_title' => $contactsData[8] ?? null,
+                    'cper_job_service' => $contactsData[9] ?? null,
+                    'cper_tel_mobile' => $contactsData[10] ?? null,
+                    'cper_tel_landline' => $contactsData[11] ?? null,
+                    'cper_date_creation' => date('Ymd'),
+                ];
+                //prepare address data
+                //get civility id
+                $civD = $civilityTable->getEntryByField('civt_min_name', $contactsData[14])->current();
+                $type = [
+                    'billing' => 1,
+                    'delivery' => 2
+                ];
+                $addressData = [
+                    [
+                        'cadd_address_name' => $contactsData[12],
+                        'cadd_type' => $type[strtolower($contactsData[13])],
+                        'cadd_civility' => !empty($civD) ? $civD->civt_civ_id : 0,
+                        'cadd_firstname' => $contactsData[15],
+                        'cadd_middle_name' => $contactsData[16],
+                        'cadd_name' => $contactsData[17],
+                        'cadd_num' => $contactsData[18],
+                        'cadd_street' => $contactsData[19],
+                        'cadd_building_name' => $contactsData[20],
+                        'cadd_stairs' => $contactsData[21],
+                        'cadd_city' => $contactsData[22],
+                        'cadd_state' => $contactsData[23],
+                        'cadd_country' => $contactsData[24],
+                        'cadd_zipcode' => $contactsData[25],
+                        'cadd_company' => $contactsData[26],
+                        'cadd_phone_mobile' => $contactsData[27],
+                        'cadd_phone_landline' => $contactsData[28],
+                        'cadd_complementary' => $contactsData[29],
+                    ]
+                ];
+                //insert contact datas
+                $contactId = $this->saveContact($contactData, $addressData);
+            }
+        }
+
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $contactId;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_contact_import_contacts_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
+
+    /**
+     * @param $fileContents
+     * @param string $delimiter
+     * @return mixed
+     */
+    public function importFileValidator($fileContents, $delimiter = ';')
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_contact_import_file_validator_start', $arrayParameters);
+
+        $translator = $this->getServiceManager()->get('translator');
+
+        $errors = [];
+
+        // Transferring parameters to their original variables for readability
+        $fileContents = $arrayParameters['fileContents'];
+        $delimiter = $arrayParameters['delimiter'];
+
+        if (!empty(trim($fileContents))) {
+            $contacts = explode(PHP_EOL, $fileContents);
+
+            // remove first line cause it's label for them
+            if (!empty($contacts)){
+                unset($contacts[0]);
+            }
+            $index = 0;
+            foreach ($contacts as $contact) {
+                $index++;
+                $tmpErrors = null;
+                if(!empty(trim($contact))) {
+                    $contactsData = array_filter(explode($delimiter, trim($contact)));
+                    /**
+                     * Check for Mandatory Fields
+                     */
+                    $tmperrors = [];
+                    if (! empty($contactsData)) {
+                        $tmpErrors = $this->checkMandatoryFields($errors, $contactsData, $index);
+                    }
+                    if ($tmpErrors) {
+                        // Report empty mandatory fields
+                        foreach ($tmpErrors as $error) {
+                            $errors[] = $error;
+                        }
+                        continue;
+                    }
+
+                    /**
+                     * Check email format
+                     */
+                    $tmpErrors = $this->checkEmailFormat($errors, $contactsData, $index);
+                    if ($tmpErrors) {
+                        // Report empty mandatory fields
+                        foreach ($tmpErrors as $error) {
+                            $errors[] = $error;
+                        }
+                        continue;
+                    }
+                }
+            }
+        } else $errors[] = $translator->translate('tr_meliscommerce_contact_common_empty_file');
+
+        $results['errors'] = $errors;
+
+        // END BUSINESS LOGIC
+
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_contact_import_file_validator_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
+
+    /**
+     * Returns an empty array when all mandatory fields are filled
+     * otherwise, returns an array of errors
+     *
+     * @param array $contactsData
+     * @param null $index
+     * @param $errors
+     */
+    private function checkMandatoryFields(&$errors, $contactsData = [], $index = null)
+    {
+        $translator = $this->getServiceManager()->get('translator');
+        $prefix = $translator->translate('tr_meliscommerce_contact_common_line') .' '. $index . ': ';
+        /**
+         * Set Mandatory Field positions here (index: 0)
+         */
+        $mandatoryFields = [
+             $translator->translate('tr_contact_export_col_cper_lang_id') => 0,  // Language
+             $translator->translate('tr_contact_export_col_cper_name') => 5,  // last name
+             $translator->translate('tr_contact_export_col_cper_firstname') => 7,  // first name
+             $translator->translate('tr_meliscommerce_contact_import_address_name') => 12,  // first name
+             $translator->translate('tr_meliscommerce_contact_import_address_type') => 13,  // first name
+        ];
+
+        foreach ($mandatoryFields as $fieldName => $position) {
+            if (empty($contactsData[$position])) {
+                $errors[] = $prefix . $fieldName . $translator->translate('tr_meliscommerce_contact_import_is_mandatory');
+            }
+        }
+
+        //check if one of the phone has data
+        // if(empty($contactsData[6]) && empty($contactsData[7])) {
+        //     $errors[] = $prefix . '(' .
+        //         $translator->translate('tr_prospects_tool_phone_field_name') . ', ' . $translator->translate('tr_prospects_tool_cell_phone_field_name') .
+        //         ')' . $translator->translate('tr_prospects_tool_empty_opt_mandatory');
+        // }
+    }
+
+    /**
+     * @param $errors
+     * @param array $contactsData
+     * @param null $index
+     */
+    private function checkEmailFormat(&$errors, $contactsData = [], $index = null)
+    {
+        $translator = $this->getServiceManager()->get('translator');
+        $prefix = $translator->translate('tr_meliscommerce_contact_common_line') .' '. $index . ': ';
+
+        $email = [
+            $translator->translate('tr_contact_export_col_cper_email') => 3,  // Email
+        ];
+
+        foreach($email as $fieldName => $position){
+            $isValid = true;
+            if(!empty($contactsData[$position])) {
+                $regex = "/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i";
+                if (!preg_match($regex, $contactsData[$position])) {
+                    $isValid = false;
+                    $errors[] = $prefix . $fieldName . ' "' . $contactsData[$position] . '"' . $translator->translate('tr_meliscommerce_contact_import_invalid_email');
+                }
+
+                /**
+                 * Check if email already exist
+                 */
+                if($isValid){
+                    $emails = $this->getContactByEmail($contactsData[$position]);
+                    if(!empty($emails)){
+                        $errors[] = $prefix . $fieldName . ' "' . $contactsData[$position] . '"' . $translator->translate('tr_meliscommerce_contact_import_email_already_exist');
+                    }
+                }
+            }
+        }
     }
 }

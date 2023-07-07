@@ -1,0 +1,1 @@
+ALTER TABLE `melis_ecom_client_address` CHANGE `cadd_name` `cadd_name` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT 'Name', CHANGE `cadd_firstname` `cadd_firstname` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT 'Firstname';

@@ -1,0 +1,10 @@
+.test-results .results {
+    max-height: 300px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.test-results .results ul{
+    margin-left: 18px;
+}
+

@@ -818,7 +818,7 @@ return [
                                     ],
                                     'attributes' => [
                                         'id' => 'cadd_firstname',
-                                        'required' => 'required',
+//                                        'required' => 'required',
                                     ]
                                 ]
                             ],
@@ -832,7 +832,7 @@ return [
                                     ],
                                     'attributes' => [
                                         'id' => 'cadd_name',
-                                        'required' => 'required',
+//                                        'required' => 'required',
                                     ]
                                 ]
                             ],
@@ -1073,7 +1073,7 @@ return [
                             ],
                             'cadd_name' => [
                                 'name'     => 'cadd_name',
-                                'required' => true,
+                                'required' => false,
                                 'validators' => [
                                     [
                                         'name'    => 'StringLength',
@@ -1085,14 +1085,14 @@ return [
                                             ],
                                         ],
                                     ],
-                                    [
-                                        'name' => 'NotEmpty',
-                                        'options' => [
-                                            'messages' => [
-                                                \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_client_Contact_input_empty',
-                                            ],
-                                        ],
-                                    ],
+//                                    [
+//                                        'name' => 'NotEmpty',
+//                                        'options' => [
+//                                            'messages' => [
+//                                                \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_client_Contact_input_empty',
+//                                            ],
+//                                        ],
+//                                    ],
                                 ],
                                 'filters'  => [
                                     ['name' => 'StripTags'],
@@ -1101,7 +1101,7 @@ return [
                             ],
                             'cadd_firstname' => [
                                 'name'     => 'cadd_firstname',
-                                'required' => true,
+                                'required' => false,
                                 'validators' => [
                                     [
                                         'name'    => 'StringLength',
@@ -1113,14 +1113,14 @@ return [
                                             ],
                                         ],
                                     ],
-                                    [
-                                        'name' => 'NotEmpty',
-                                        'options' => [
-                                            'messages' => [
-                                                \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_client_Contact_input_empty',
-                                            ],
-                                        ],
-                                    ],
+//                                    [
+//                                        'name' => 'NotEmpty',
+//                                        'options' => [
+//                                            'messages' => [
+//                                                \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_client_Contact_input_empty',
+//                                            ],
+//                                        ],
+//                                    ],
                                 ],
                                 'filters'  => [
                                     ['name' => 'StripTags'],
