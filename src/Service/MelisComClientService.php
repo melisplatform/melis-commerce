@@ -1027,7 +1027,7 @@ class MelisComClientService extends MelisComGeneralService
 			$clientAccountAddressesData = $arrayParameters['clientAccountAddresses'];
 			foreach ($clientAccountAddressesData As $key => $val)
 			{
-				$caddId = $val['cadd_id'] ? $val['cadd_id'] : null;
+				$caddId = !empty($val['cadd_id']) ? $val['cadd_id'] : null;
 				unset($val['cadd_id']);
 				$val['cadd_client_id'] = $clntId;
 				
@@ -1820,12 +1820,13 @@ class MelisComClientService extends MelisComGeneralService
 	}
 
     /**
-     * Function to physically delete account
+     * Function to physically delete account and its address and company
+     * as well as its persistent basket
      *
      * @param $accountId
      * @return mixed
      */
-	public function deleteAccount($accountId)
+	public function physicallyDeleteAccount($accountId)
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -1837,7 +1838,25 @@ class MelisComClientService extends MelisComGeneralService
         $melisEcomClientTable = $this->getServiceManager()->get('MelisEcomClientTable');
         $result = null;
         if(!empty($arrayParameters['accountId'])) {
-            $result = $melisEcomClientTable->deleteById($arrayParameters['accountId']);
+            $melisEcomBasketPersistentTable = $this->getServiceManager()->get('MelisEcomBasketPersistentTable');
+            $melisEcomClientCompanyTable = $this->getServiceManager()->get('MelisEcomClientCompanyTable');
+            $addrTable   = $this->getServiceManager()->get('MelisEcomClientAddressTable');
+
+            $adapter = $this->getServiceManager()->get('Laminas\Db\Adapter\Adapter');
+            $con = $adapter->getDriver()->getConnection();//get db driver connection
+            $con->beginTransaction();//begin transaction
+            try{
+                $result = $melisEcomClientTable->deleteById($arrayParameters['accountId']);
+                //delete company
+                $melisEcomClientCompanyTable->deleteByField('ccomp_client_id', $arrayParameters['accountId']);
+                //delete address
+                $addrTable->deleteByField('cadd_client_id', $arrayParameters['accountId']);
+                // Physical Deletion on Basket Persistent
+                $melisEcomBasketPersistentTable->deleteByField('bper_client_id', $arrayParameters['accountId']);
+                $con->commit();
+            }catch (\Exception $ex){
+                $con->rollback();
+            }
         }
 
         $arrayParameters['results'] = $result;
@@ -1923,5 +1942,294 @@ class MelisComClientService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_client_get_account_name_end', $arrayParameters);
 
         return $arrayParameters['results'];
+    }
+
+    /**
+     * @param $fileContents
+     * @param $postData
+     * @param string $delimiter
+     * @return mixed
+     */
+    public function importAccounts($fileContents, $postData, $delimiter = ';')
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $accountId = 0;
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_account_import_accounts_start', $arrayParameters);
+
+        $contacts = explode(PHP_EOL, $fileContents);
+
+        /*
+         * remove first line cause it is label for them
+         */
+        if (! empty($contacts)) {
+            unset($contacts[0]);
+        }
+
+        $civilityTable = $this->getServiceManager()->get('MelisEcomCivilityTransTable');
+        $countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
+        $group = $this->getServiceManager()->get('MelisEcomClientGroupsTable');
+
+        foreach($contacts as $contact){
+            if(!empty($contact)) {
+                $accountsData = explode($delimiter, $contact);
+
+                //get country id
+                $countryD = $countryTable->getEntryByField('ctry_name', $accountsData[1])->current();
+                //get group id
+                $groupId = $group->getEntryByField('cgroup_name', $accountsData[3])->current();
+
+                $comSettings = $this->getAccountNameSetting();
+                $accountName = $accountsData[0];
+                if($comSettings->sa_type != 'manual_input'){
+                    $accountName = null;
+                }
+                //prepare contacts data
+                $clientData = [
+                    'cli_status' => 1,
+                    'cli_name' => str_replace('"','',$accountName),
+                    'cli_tags' => str_replace('"','',$accountsData[2]),
+                    'cli_country_id' => !empty($countryD) ? $countryD->ctry_id : 1,
+                    'cli_group_id' => !empty($groupId) ? $groupId->cgroup_id : 1,
+                    'cli_date_creation' => date('Ymd'),
+                ];
+                //prepare address data
+                //get civility id
+                $civD = $civilityTable->getEntryByField('civt_min_name', $accountsData[6])->current();
+                $type = [
+                    'billing' => 1,
+                    'delivery' => 2
+                ];
+                $addressData = [
+                    [
+                        'cadd_address_name' => $accountsData[4],
+                        'cadd_type' => $type[strtolower($accountsData[5])],
+                        'cadd_civility' => !empty($civD) ? $civD->civt_civ_id : 0,
+                        'cadd_firstname' => $accountsData[7] ?? null,
+                        'cadd_middle_name' => $accountsData[8] ?? null,
+                        'cadd_name' => $accountsData[9] ?? null,
+                        'cadd_num' => $accountsData[10] ?? null,
+                        'cadd_street' => $accountsData[11] ?? null,
+                        'cadd_building_name' => $accountsData[12] ?? null,
+                        'cadd_stairs' => $accountsData[13] ?? null,
+                        'cadd_city' => $accountsData[14] ?? null,
+                        'cadd_state' => $accountsData[15] ?? null,
+                        'cadd_country' => $accountsData[16] ?? null,
+                        'cadd_zipcode' => $accountsData[17] ?? null,
+                        'cadd_company' => $accountsData[18] ?? null,
+                        'cadd_phone_mobile' => $accountsData[19] ?? null,
+                        'cadd_phone_landline' => $accountsData[20] ?? null,
+                        'cadd_complementary' => $accountsData[21] ?? null,
+                    ]
+                ];
+                //company data
+                $companyData = [
+                    'ccomp_name' => $accountsData[22],
+                    'ccomp_number_id' => $accountsData[23] ?? null,
+                    'ccomp_vat_number' => $accountsData[24] ?? null,
+                    'ccomp_group' => $accountsData[25] ?? null,
+                    'ccomp_comp_creation_date' => date('Ymd'),
+                    'ccomp_employee_nb' => $accountsData[26] ?? null,
+                    'ccomp_add_number' => $accountsData[27] ?? null,
+                    'ccomp_add_street' => $accountsData[28] ?? null,
+                    'ccomp_add_building' => $accountsData[29] ?? null,
+                    'ccomp_add_zipcode' => $accountsData[30] ?? null,
+                    'ccomp_add_city' => $accountsData[31] ?? null,
+                    'ccomp_add_state' => $accountsData[32] ?? null,
+                    'ccomp_add_country' => $accountsData[33] ?? null,
+                    'ccomp_phone_number' => $accountsData[34] ?? null,
+                    'ccomp_website' => $accountsData[35] ?? null,
+                ];
+                //contact data
+                $contactId = null;
+                $cTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
+                if(!empty($accountsData[37])){
+                    $emails = $cTable->getEntryByField('cper_email', $accountsData[37])->current();
+                    $contactId = $emails->cper_id;
+                }elseif(!empty($accountsData[36])){
+                    $contactId = $accountsData[36];
+                }
+                $contactData = [
+                    [
+                        'cper_id' => $contactId
+                    ]
+                ];
+
+                //insert client datas
+                $accountId = $this->saveClient($clientData, $contactData, $addressData, $companyData);
+            }
+        }
+
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $accountId;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_account_import_accounts_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
+
+    /**
+     * @param $fileContents
+     * @param string $delimiter
+     * @return mixed
+     */
+    public function importFileValidator($fileContents, $delimiter = ';')
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = array();
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_client_import_file_validator_start', $arrayParameters);
+
+        $translator = $this->getServiceManager()->get('translator');
+
+        $errors = [];
+
+        // Transferring parameters to their original variables for readability
+        $fileContents = $arrayParameters['fileContents'];
+        $delimiter = $arrayParameters['delimiter'];
+
+        if (!empty(trim($fileContents))) {
+            $accounts = explode(PHP_EOL, $fileContents);
+
+            // remove first line cause it's label for them
+            if (!empty($accounts)){
+                unset($accounts[0]);
+            }
+            $index = 0;
+            foreach ($accounts as $account) {
+                $index++;
+                $tmpErrors = null;
+                if(!empty(trim($account))) {
+                    $accountsData = array_filter(explode($delimiter, trim($account)));
+                    /**
+                     * Check for Mandatory Fields
+                     */
+                    $tmperrors = [];
+                    if (! empty($accountsData)) {
+                        $tmpErrors = $this->checkMandatoryFields($errors, $accountsData, $index);
+                    }
+                    if ($tmpErrors) {
+                        // Report empty mandatory fields
+                        foreach ($tmpErrors as $error) {
+                            $errors[] = $error;
+                        }
+                        continue;
+                    }
+
+                    /**
+                     * Check contact format
+                     */
+                    $tmpErrors = $this->checkContact($errors, $accountsData, $index);
+                    if ($tmpErrors) {
+                        foreach ($tmpErrors as $error) {
+                            $errors[] = $error;
+                        }
+                        continue;
+                    }
+                }
+            }
+        } else $errors[] = $translator->translate('tr_meliscommerce_contact_common_empty_file');
+
+        $results['errors'] = $errors;
+
+        // END BUSINESS LOGIC
+
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_account_import_file_validator_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
+
+    /**
+     * Returns an empty array when all mandatory fields are filled
+     * otherwise, returns an array of errors
+     *
+     * @param array $accountsData
+     * @param null $index
+     * @param $errors
+     */
+    private function checkMandatoryFields(&$errors, $accountsData = [], $index = null)
+    {
+        $translator = $this->getServiceManager()->get('translator');
+        $clientTable = $this->getServiceManager()->get('MelisEcomClientTable');
+        $compTable = $this->getServiceManager()->get('MelisEcomClientCompanyTable');
+
+        $prefix = $translator->translate('tr_meliscommerce_contact_common_line') .' '. $index . ': ';
+        /**
+         * Set Mandatory Field positions here (index: 0)
+         */
+        $comSettings = $this->getAccountNameSetting();
+        $mandatoryFields = [
+            $translator->translate('tr_client_accounts_import_col_company_name') => 22,  // company name
+        ];
+
+        if($comSettings->sa_type == 'manual_input'){
+            $mandatoryFields = array_merge($mandatoryFields, [
+                $translator->translate('tr_client_accounts_import_col_cli_name') => 0,  // client name
+            ]);
+        }
+
+        if(!empty($mandatoryFields)) {
+            foreach ($mandatoryFields as $fieldName => $position) {
+                if (empty($accountsData[$position])) {
+                    $errors[] = $prefix . $fieldName . $translator->translate('tr_meliscommerce_contact_import_is_mandatory');
+                }else{//check of company name already exist
+                    if($position == 22) {
+                        $compData = $compTable->getEntryByField('ccomp_name', $accountsData[$position])->current();
+                        if (!empty($compData)){
+                            $errors[] = $prefix . $fieldName . $translator->translate('tr_client_accounts_import_col_account_already_exist');
+                        }
+                    }
+                }
+
+                //check if client already exist
+                if($position == 0){
+                    $name = str_replace('"', '', $accountsData[$position]);
+                    $cliData = $clientTable->getEntryByField('cli_name', $name)->current();
+                    if(!empty($cliData)){
+                        $errors[] = $prefix . $fieldName . $translator->translate('tr_client_accounts_import_col_account_already_exist');
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param $errors
+     * @param array $accountsData
+     * @param null $index
+     */
+    private function checkContact(&$errors, $accountsData = [], $index = null)
+    {
+        $translator = $this->getServiceManager()->get('translator');
+        $contactService = $this->getServiceManager()->get('MelisComContactService');
+        $prefix = $translator->translate('tr_meliscommerce_contact_common_line') .' '. $index . ': ';
+
+//        $mandatoryFields = [
+//            $translator->translate('tr_client_accounts_import_col_account_contact') => 36,  // contact id
+//            $translator->translate('tr_client_accounts_import_col_account_contact') => 37,  // contact email
+//        ];
+
+        if(!empty($accountsData)) {
+            $fieldName = $translator->translate('tr_client_accounts_import_col_account_contact');
+            /**
+             * we check if contact is exist
+             */
+            $emails = [];
+            if(!empty($accountsData[37])){
+                $emails = $contactService->getContactByEmail($accountsData[37]);
+            }elseif(!empty($accountsData[36])){
+                $emails = $contactService->getContactById($accountsData[36]);
+            }
+
+            if(empty($emails)){
+                $errors[] = $prefix . $fieldName . $translator->translate('tr_client_accounts_import_col_account_contact_not_exist');
+            }
+        }
     }
 }

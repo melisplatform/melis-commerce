@@ -496,6 +496,7 @@ return [
                         'id' => 'id_meliscommerce_client_list_modal',
                         'name' => 'tr_meliscommerce_client_list_modal',
                         'melisKey' => 'meliscommerce_client_list_modal',
+                        'rightsDisplay' => 'none',
                     ],
                     'forward' => [
                         'module' => 'MelisCommerce',
@@ -527,6 +528,18 @@ return [
                                 'action' => 'render-client-list-content-export-accounts-form',
                             ],
                         ],
+                        'meliscommerce_client_list_import_accounts_form' => [
+                            'conf' => [
+                                'id' => 'id_meliscommerce_client_list_import_accounts_form',
+                                'name' => 'tr_meliscommerce_client_list_import_accounts_form',
+                                'melisKey' => 'meliscommerce_client_list_import_accounts_form',
+                            ],
+                            'forward' => [
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComClientList',
+                                'action' => 'render-client-list-content-import-accounts-form',
+                            ],
+                        ],
                     ],
                 ],
                 'meliscommerce_client_modal' => [
@@ -534,6 +547,7 @@ return [
                         'id' => 'id_meliscommerce_client_modal',
                         'melisKey' => 'meliscommerce_client_modal',
                         'name' => 'tr_meliscommerce_client_modal',
+                        'rightsDisplay' => 'none',
                     ],
                     'forward' => [
                         'module' => 'MelisCommerce',

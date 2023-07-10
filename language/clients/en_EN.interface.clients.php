@@ -335,4 +335,17 @@
         'tr_client_accounts_export_col_default_contact_id' => 'Default contact id',
         'tr_client_accounts_export_col_default_contact_name' => 'Default contact name',
         'tr_client_accounts_export_col_default_contact_email' => 'Default contact email',
+        //import columns
+        'tr_meliscommerce_accounts_import' => 'Import accounts',
+        'tr_meliscommerce_accounts_import_failed' => 'Importing accounts failed',
+        'tr_meliscommerce_accounts_import_success' => 'Accounts successfully imported',
+        'tr_client_accounts_import_col_cli_status' => 'Status',
+        'tr_client_accounts_import_col_cli_name' => 'Client name',
+        'tr_client_accounts_import_col_cli_country_id' => 'Country',
+        'tr_client_accounts_import_col_cli_tags' => 'Tags',
+        'tr_client_accounts_import_col_cgroup_name' => 'Group name',
+        'tr_client_accounts_import_col_company_name' => 'Company name',
+        'tr_client_accounts_import_col_account_contact' => 'Contact',
+        'tr_client_accounts_import_col_account_contact_not_exist' => ' does not exist',
+        'tr_client_accounts_import_col_account_already_exist' => ' already exist',
 	);

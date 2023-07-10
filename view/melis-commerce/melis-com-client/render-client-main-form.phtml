@@ -20,22 +20,22 @@
         foreach ($form->getElements() As $key => $val)
         {
             if($key == 'cli_name' && !$name){
-                echo '<h4><span class="fa fa-user"></span> '.$val->getLabel().'</h4>';
+                echo '<h4 class="'.$key.'"><span class="fa fa-user"></span> '.$val->getLabel().'</h4>';
                 $name = true;
             }
 
             if($key == 'cli_group_id' && !$groupFlag){
-                echo '<h4><span class="fa fa-user-times"></span> '.$val->getLabel().'</h4>';
+                echo '<h4 class="'.$key.'"><span class="fa fa-user-times"></span> '.$val->getLabel().'</h4>';
                 $groupFlag = true;
             }
 
             if($key == 'cli_country_id' && !$countryFlag){
-                echo '<h4><span class="fa fa-flag"></span> '.$val->getLabel().'</h4>';
+                echo '<h4 class="'.$key.'"><span class="fa fa-flag"></span> '.$val->getLabel().'</h4>';
                 $countryFlag = true;
             }
 
             if($key == 'cli_tags' && !$tags){
-                echo '<h4><span class="fa fa-tags"></span> '.$val->getLabel().'</h4>';
+                echo '<h4 class="'.$key.'"><span class="fa fa-tags"></span> '.$val->getLabel().'</h4>';
                 $tags = true;
             }
 

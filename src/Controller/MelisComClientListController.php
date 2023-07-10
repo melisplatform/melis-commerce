@@ -183,7 +183,7 @@ class MelisComClientListController extends MelisAbstractActionController
     }
     
     /**
-     * Render Client custom page refresh button, this button attach to table plugin
+     * Render Client custom page export button, this button attach to table plugin
      * 
      * @return \Laminas\View\Model\ViewModel
      */
@@ -199,6 +199,17 @@ class MelisComClientListController extends MelisAbstractActionController
      * @return \Laminas\View\Model\ViewModel
      */
     public function renderClientListTableExportAccountsAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        return $view;
+    }
+
+    /**
+     * @return \Laminas\View\Model\ViewModel
+     */
+    public function renderClientListTableImportAccountsAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
@@ -338,6 +349,25 @@ class MelisComClientListController extends MelisAbstractActionController
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view->melisKey = $melisKey;
         $view->setVariable('meliscommerce_client_list_export_accounts_form', $clientExportForm);
+        return $view;
+    }
+
+    /**
+     * @return ViewModel
+     */
+    public function renderClientListContentImportAccountsFormAction()
+    {
+        $view = new ViewModel();
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
+        $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_client_list_import_accounts_form','meliscommerce_client_list_import_accounts_form');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+        $clientExportForm = $factory->createForm($appConfigForm);
+
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view->melisKey = $melisKey;
+        $view->setVariable('meliscommerce_client_list_import_accounts_form', $clientExportForm);
         return $view;
     }
 

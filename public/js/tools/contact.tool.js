@@ -546,7 +546,7 @@ $(function(){
                 importContacts(formData, "/melis/MelisCommerce/MelisComContact/importContacts");
             }else{
                 melisHelper.melisKoNotification(data.title, data.message, data.errors);
-                melisHelper.highlightMultiErrors(data.success, data.errors, "#importContactsForm");
+                melisHelper.highlightMultiErrors(data.success, data.errors, "#contact-list-import-contacts");
             }
 
             // _this.attr('disabled', false);

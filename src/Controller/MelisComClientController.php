@@ -1629,7 +1629,7 @@ class MelisComClientController extends MelisAbstractActionController
         $translator = $this->getServiceManager()->get('translator');
         $clientService = $this->getServiceManager()->get('MelisComClientService');
         if($this->request->isPost()){
-            $res = $clientService->deleteAccount($accountId);
+            $res = $clientService->physicallyDeleteAccount($accountId);
             if($res){
                 $success = 1;
                 $message = 'tr_meliscommerce_client_delete_account_success';
@@ -1767,5 +1767,133 @@ class MelisComClientController extends MelisAbstractActionController
             'recordsFiltered' => $dataCount,
             'data' => $tableData,
         ));
+    }
+
+    /**
+     * @return JsonModel
+     */
+    public function validateAccountsImportsFormAction()
+    {
+        $success = 0;
+        $errors = [];
+        $message = '';
+
+        $translator = $this->getServiceManager()->get('translator');
+        $request = $this->getRequest();
+
+        //merge the file for validation
+        $postData = array_merge_recursive(
+            $request->getPost()->toArray(),
+            $request->getFiles()->toArray()
+        );
+
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
+        $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_client_list_import_accounts_form','meliscommerce_client_list_import_accounts_form');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+        $importsForm = $factory->createForm($appConfigForm);
+
+        //set data to the form
+        $importsForm->setData($postData);
+
+        if ($importsForm->isValid()){
+            $success = 1;
+        }else{
+            $errors = $importsForm->getMessages();
+            $appConfigForm = $appConfigForm['elements'];
+
+            foreach ($errors as $keyError => $valueError)
+            {
+                foreach ($appConfigForm as $keyForm => $valueForm)
+                {
+                    if ($valueForm['spec']['name'] == $keyError &&
+                        !empty($valueForm['spec']['options']['label']))
+                        $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                }
+            }
+        }
+
+        $result = [
+            'title' => $translator->translate('tr_meliscommerce_contact_import_title'),
+            'success' => $success,
+            'message' => $message,
+            'errors' => $errors,
+        ];
+
+        return new JsonModel($result);
+    }
+
+    public function importAccountsAction()
+    {
+        $success = 0;
+        $message = 'tr_meliscommerce_accounts_import';
+        $title = 'tr_meliscommerce_contact_import_title';
+        $errors = [];
+        $request = $this->getRequest();
+        $defaultDelimiter = ';';
+        $translator = $this->getServiceManager()->get('translator');
+
+        if ($request->isPost()) {
+            $post = $request->getPost()->toArray();
+            $accountService = $this->getServiceManager()->get('MelisComClientService');
+
+            $delimiter = !empty($post['separator']) ? $post['separator'] : $defaultDelimiter;
+
+            $file = $this->params()->fromFiles('account_file');
+            $fileContents = $this->readImportedCsv($file);
+
+            $result = $accountService->importFileValidator($fileContents, $delimiter);
+
+            if (empty($result['errors'])) {
+                //execute saving records with transactions
+                $adapter = $this->getServiceManager()->get('Laminas\Db\Adapter\Adapter');
+                $con = $adapter->getDriver()->getConnection();//get db driver connection
+                $con->beginTransaction();//begin transaction
+                try{
+                    $accountService->importAccounts($fileContents, $post, $delimiter);
+                    $con->commit();
+                    $success = 1;
+                    $message = 'tr_meliscommerce_accounts_import_success';
+                }catch (\Exception $ex){
+                    $success = 0;
+                    $message = 'tr_meliscommerce_accounts_import_failed';
+                    $con->rollback();
+                }
+            } else
+                $errors = $result['errors'];
+        }
+
+        $response = [
+            'success' => $success,
+            'textTitle' => $translator->translate($title),
+            'textMessage' => $translator->translate($message),
+            'errors' => $errors,
+            'typeCode' => 'IMPORT_ACCOUNTS'
+        ];
+
+        return new JsonModel($response);
+    }
+
+    /**
+     * Reads the imported CSV file
+     * Returns null if the file's encoding is not in UTF-8
+     * @param null $fileParameters
+     * @return array|bool|null|string
+     */
+    private function readImportedCsv($fileParameters = null)
+    {
+        $data = array();
+
+        if (!empty($fileParameters['tmp_name'])) {
+            $data = file_get_contents($fileParameters['tmp_name']);
+            //encode data to utf
+            $data = utf8_encode($data);
+            if (!mb_check_encoding($data, 'UTF-8')) {
+                $data = null;   // NOT IN UTF-8
+            }
+        }
+
+        return $data;
     }
 }

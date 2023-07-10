@@ -847,10 +847,9 @@ $(function() {
 					'type': 'POST'
 				}).done(function(data){
 					if(data.success){
-                        $("#clientListTbl").DataTable().ajax.reload();
                         melisHelper.melisOkNotification(data.textTitle, data.textMessage);
-                        //reload widgets
-                        melisHelper.zoneReload('id_meliscommerce_clients_list_widgets', 'meliscommerce_clients_list_widgets');
+
+                        melisHelper.zoneReload('id_meliscommerce_clients_list_page', 'meliscommerce_clients_list_page');
 					}else{
                         melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.error);
 					}
@@ -912,6 +911,128 @@ $(function() {
             }
         });
 	});
+
+    $body.on("click", ".accountsImport", function() {
+        if (!melisCoreTool.isTableEmpty("clientListTbl")) {
+            // initialation of local variable
+            zoneId = "id_meliscommerce_client_list_import_accounts_form";
+            melisKey = "meliscommerce_client_list_import_accounts_form";
+            modalUrl =
+                "/melis/MelisCommerce/MelisComContact/renderContactListModal";
+
+            // requesitng to create modal and display after
+            melisHelper.createModal(
+                zoneId,
+                melisKey,
+                false,
+                {},
+                modalUrl,
+                function() {
+                    melisCoreTool.done(this);
+                }
+            );
+        }
+    });
+
+    //test contact imports
+    $body.on("click", "#importAccounts", function(e){
+        var form = $("#account-list-import-accounts");
+        var formData = new FormData(form[0]);
+
+        $.ajax({
+            type: 'POST',
+            url: '/melis/MelisCommerce/MelisComClient/validateAccountsImportsForm',
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            beforeSend: function(){
+                // _this.attr('disabled', true);s
+            }
+        }).done(function (data) {
+            if(data.success){
+                importContacts(formData, "/melis/MelisCommerce/MelisComClient/importAccounts");
+            }else{
+                melisHelper.melisKoNotification(data.title, data.message, data.errors);
+                melisHelper.highlightMultiErrors(data.success, data.errors, "#account-list-import-accounts");
+            }
+
+            // _this.attr('disabled', false);
+        }).fail(function () {
+            alert(translations.tr_meliscore_error_message);
+        });
+
+        e.preventDefault();
+    });
+
+    /**
+     * Run import
+     * @param data
+     * @param url
+     * @param type
+     */
+    function importContacts(data, url) {
+        var resultsContainer = $(".test-results .results ul").empty();
+        var title = $(".test-results .results p").empty();
+
+        updateProgressValue(0);
+
+        $("#account-list-import-accounts").hide();
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            beforeSend: function(){
+                updateProgressValue(20);
+                $("#importAccounts").attr("disabled", true);
+            }
+        }).done(function (data) {
+            updateProgressValue(90);
+            setTimeout(function(){
+                updateProgressValue(100);
+                if(data.success){
+                    title.text(data.textMessage);
+                    // $('#clientListTbl').DataTable().ajax.reload();
+					melisHelper.zoneReload('id_meliscommerce_clients_list_page', 'meliscommerce_clients_list_page');
+                    //hide modal
+                    $("#id_meliscommerce_client_list_import_accounts_form_container").modal("hide");
+                    //show notifications
+                    melisHelper.melisOkNotification(data.textTitle, data.textMessage);
+                    // update flash messenger values
+                    melisCore.flashMessenger();
+                }else{
+                    title.text(data.textMessage);
+                    if(data.errors) {
+                        $.each(data.errors, function (i, msg) {
+                            resultsContainer.append("<li>" + msg + "</li>");
+                        });
+                    }
+                    //disable import button
+                    $("#importAccounts").attr("disabled", true);
+                }
+            }, 500);
+        }).fail(function () {
+            alert(translations.tr_meliscore_error_message);
+        });
+    }
+
+    /**
+     * Function to show progress
+     * on importing pages
+     *
+     * @param val
+     */
+    function updateProgressValue(val) {
+        $(".accounts-import-progress prog_percent").text(val);
+
+        $("div#accountsImportProgressBar").attr("arial-valuenow", val)
+            .css("width", val + "%")
+            .parent().parent().parent().removeClass("hidden");
+    }
 });
 function viewClientOrder(orderId, orderRef) {
 	var navTabsGroup = "id_meliscommerce_order_list_page";
@@ -952,12 +1073,18 @@ window.clientHighlightErrors = function(success, errors, divContainer) {
 					$("#" + fvalue + " .form-control[name='" + key + "']")
 						.prev("label")
 						.css("color", "red");
+
+                    $("#" + fvalue +" h4."+key)
+                        .css("color", "red");
 				});
 			} else {
 				if (divContainer !== "") {
 					$("#" + divContainer + " .form-control[name='" + key + "']")
 						.prev("label")
 						.css("color", "red");
+
+                    $("#" + divContainer + " h4."+key)
+                        .css("color", "red");
 				}
 			}
 		});
@@ -965,6 +1092,8 @@ window.clientHighlightErrors = function(success, errors, divContainer) {
 	// remove red color for correctly inputted fields
 	else {
 		$("#" + divContainer + " .form-group label").css("color", "#686868");
+        $("#" + divContainer + " h4")
+            .css("color", "#686868");
 	}
 };
 

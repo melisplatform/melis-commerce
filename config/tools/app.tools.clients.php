@@ -48,6 +48,11 @@ return [
                                 ],
                             ],
                             'right' => [
+                                'meliscommerce-clients-list-tbl-import-accounts' => [
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComClientList',
+                                    'action' => 'render-client-list-table-import-accounts',
+                                ],
                                 'meliscommerce-clients-list-tbl-export-accounts' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComClientList',
