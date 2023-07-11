@@ -86,58 +86,77 @@ class MelisComAuthenticationService extends Session
 
         $translator = $this->getServiceManager()->get('translator');
         $clientSrv = $this->getServiceManager()->get('MelisComClientService');
+        $contactSrv = $this->getServiceManager()->get('MelisComContactService');
         $clientInfo = $clientSrv->getClientPersonByEmail($email);
 
         //check if email exist
         if(!empty($clientInfo))
         {
-            //check password
-            $isCorrect = $this->isPasswordCorrect($password, $clientInfo->cper_password);
-            if ($isCorrect)
-            {
-                $dbAdapter = $this->getServiceManager()->get('Laminas\Db\Adapter\Adapter');
-                $authAdapter = new AuthAdapter(
-                    $dbAdapter,
-                    'melis_ecom_client_person', // there is a method setTableName to do the same
-                    'cper_email', // there is a method setIdentityColumn to do the same
-                    'cper_password' // there is a method setCredentialColumn to do the same
-                );
+            $getContactAssociatedAccounts = $contactSrv->getContactDefaultAccount($clientInfo->cper_id)->toArray();
+            /**
+             * Contact must have a default account
+             */
+            if(!empty($getContactAssociatedAccounts)) {
+                //check password
+                $isCorrect = $this->isPasswordCorrect($password, $clientInfo->cper_password);
+                if ($isCorrect) {
+                    $dbAdapter = $this->getServiceManager()->get('Laminas\Db\Adapter\Adapter');
+                    $authAdapter = new AuthAdapter(
+                        $dbAdapter,
+                        'melis_ecom_client_person', // there is a method setTableName to do the same
+                        'cper_email', // there is a method setIdentityColumn to do the same
+                        'cper_password' // there is a method setCredentialColumn to do the same
+                    );
 
-                $authAdapter->setIdentity($email)->setCredential($clientInfo->cper_password);
+                    $authAdapter->setIdentity($email)->setCredential($clientInfo->cper_password);
 
-                $result = $this->authenticationService->authenticate($authAdapter);
-                switch ($result->getCode()) {
-                    case Result::SUCCESS:
-                        $storage = $this->getStorage();
+                    $result = $this->authenticationService->authenticate($authAdapter);
+                    switch ($result->getCode()) {
+                        case Result::SUCCESS:
+                            $storage = $this->getStorage();
 
-                        $personIdentity = $authAdapter->getResultRowObject(
-                            null,
-                            ['cper_password'] // removing the password from the result object
-                        );
+                            $personIdentity = $authAdapter->getResultRowObject(
+                                null,
+                                ['cper_password'] // removing the password from the result object
+                            );
 
-                        $personIdentity->clientKey = $this->getId();
+                            $personIdentity->clientKey = $this->getId();
 
-                        // Client group
-                        $personIdentity->client_group = $clientSrv->getClientById($clientInfo->cper_client_id)->cli_group_id;
+                            // Client group
+                            $groupId = 1;//general
+                            $clientId = 0;
+                            foreach($getContactAssociatedAccounts as $key => $val){
+                                $cliData = $clientSrv->getClientById($val['cli_id']);
+                                if(!empty($cliData)) {//first account to find
+                                    $groupId = $cliData->cli_group_id ?? 1;
+                                    $clientId = $cliData->cli_id;
+                                    break;
+                                }
+                            }
+                            $personIdentity->client_group = $groupId;
+                            $personIdentity->client_id = $clientId;
 
-                        $storage->write($personIdentity);
+                            $storage->write($personIdentity);
 
-                        $config = $this->getServiceManager()->get('config');
-                        $ecomClientConfig = $config['plugins']['meliscommerce']['datas']['default']['session'];
+                            $config = $this->getServiceManager()->get('config');
+                            $ecomClientConfig = $config['plugins']['meliscommerce']['datas']['default']['session'];
 
-                        /**
-                         * Getting the ttl for Session expiry from config
-                         * Ttl of session will depend on login option "remember me"
-                         */
-                        $ecomDefaultTtl = ($rememberMe) ? $ecomClientConfig['remember_me_ttl'] : $ecomClientConfig['default_ttl'];
-                        $this->sessionManager->rememberMe($ecomDefaultTtl);
+                            /**
+                             * Getting the ttl for Session expiry from config
+                             * Ttl of session will depend on login option "remember me"
+                             */
+                            $ecomDefaultTtl = ($rememberMe) ? $ecomClientConfig['remember_me_ttl'] : $ecomClientConfig['default_ttl'];
+                            $this->sessionManager->rememberMe($ecomDefaultTtl);
 
-                        $message = $translator->translate('tr_meliscommerce_plugin_login_success');
-                        $success = 1;
-                        break;
-                    default:
-                        $message = $translator->translate('tr_meliscommerce_plugin_login_invalid_email_or_password');
-                        break;
+                            $message = $translator->translate('tr_meliscommerce_plugin_login_success');
+                            $success = 1;
+                            break;
+                        default:
+                            $message = $translator->translate('tr_meliscommerce_plugin_login_invalid_email_or_password');
+                            break;
+                    }
+                } else {
+                    $message = $translator->translate('tr_meliscommerce_plugin_login_invalid_email_or_password');
                 }
             }else{
                 $message = $translator->translate('tr_meliscommerce_plugin_login_invalid_email_or_password');
@@ -156,7 +175,7 @@ class MelisComAuthenticationService extends Session
     {
         $sessionData = $this->authenticationService->getIdentity();
         if ($this->hasIdentity() && !empty($sessionData))
-            return $sessionData->cper_client_id;
+            return $sessionData->client_id;
         
         return null;
     }

@@ -756,31 +756,32 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
             $search = $search['value'];
 
             //get client id if there are any
-            $clientId = $this->getRequest()->getPost('clientId', null);
+            $accountId = $this->getRequest()->getPost('accountId', null);
             $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
             $dataCount = $melisEcomClientPersonTable->getTotalData();
 
-            $getData = $melisEcomClientPersonTable->getContacts(array(
-                'where' => array(
-                    'key' => 'usr_id',
-                    'value' => $search,
-                ),
-                'order' => array(
-                    'key' => $selCol,
-                    'dir' => $sortOrder,
-                ),
-                'start' => $start,
-                'limit' => $length,
-                'columns' => $melisTool->getSearchableColumns(),
-                'date_filter' => array(),
-                'client_id' => $clientId
-            ), null , 1 , 1);
+//            $getData = $melisEcomClientPersonTable->getContacts(array(
+//                'where' => array(
+//                    'key' => 'usr_id',
+//                    'value' => $search,
+//                ),
+//                'order' => array(
+//                    'key' => $selCol,
+//                    'dir' => $sortOrder,
+//                ),
+//                'start' => $start,
+//                'limit' => $length,
+//                'columns' => $melisTool->getSearchableColumns(),
+//                'date_filter' => array(),
+//                'client_id' => $clientId
+//            ), null , 1 , 1);
 
-            // store fetched data for data modification (if needed)
-            $contactData = $getData->toArray();
+            $contactService = $this->getServiceManager()->get('MelisComContactService');
+
+            $contactData = $contactService->getContactLists($accountId, $search, $melisTool->getSearchableColumns(), $start, $length, $selCol, $sortOrder, true)->toArray();
+            $dataCount = $contactService->getContactLists($accountId, $search, $melisTool->getSearchableColumns(), null, null, null, 'ASC', true, true)->current();
 
             $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
-            $melisComClientSrv = $this->getServiceManager()->get('MelisComClientService');
 
             foreach ($contactData As $val)
             {
@@ -819,8 +820,8 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
 
         return new JsonModel(array(
             'draw' => (int) $draw,
-            'recordsTotal' => $dataCount,
-            'recordsFiltered' => $melisEcomClientPersonTable->getTotalFiltered(),
+            'recordsTotal' => count($tableData),
+            'recordsFiltered' => $dataCount->totalRecords,
             'data' => $tableData,
         ));
     }
@@ -895,15 +896,19 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
             $postValues = $request->getPost()->toArray();
 
             // Getting the contact details from database
-            $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
-            $contactData = $melisEcomClientPersonTable->getEntryById($postValues['contactId']);
-            $contact = $contactData->current();
-
-            // Checkout session initialization for contact details
+            $contactSrv = $this->getServiceManager()->get('MelisComContactService');
+            $contact = $contactSrv->getContactDefaultAccount($postValues['contactId'])->toArray();
             $container = new Container('meliscommerce');
-            $container['checkout'][self::SITE_ID]['contactId'] = $contact->cper_id;
-            $container['checkout'][self::SITE_ID]['clientId'] = $contact->cper_client_id;
-            $container['checkout'][self::SITE_ID]['clientEmail'] = $contact->cper_email;
+            if(!empty($contact)) {
+                // Checkout session initialization for contact details
+                foreach($contact as $key => $val) {
+                    //get only the first found
+                    $container['checkout'][self::SITE_ID]['contactId'] = $val['cper_id'];
+                    $container['checkout'][self::SITE_ID]['clientId'] = $val['cli_id'];
+                    $container['checkout'][self::SITE_ID]['clientEmail'] = $val['cper_email'];
+                    break;
+                }
+            }
 
             $clientId = $container['checkout'][self::SITE_ID]['clientId'];
             $clientKey = (!empty($container['checkout'][self::SITE_ID]['clientKey'])) ? $container['checkout'][self::SITE_ID]['clientKey'] : null;

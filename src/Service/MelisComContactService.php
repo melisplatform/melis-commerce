@@ -699,4 +699,32 @@ class MelisComContactService extends MelisComGeneralService
             }
         }
     }
+
+    /**
+     * @param $contactId
+     * @return mixed
+     */
+    public function getContactDefaultAccount($contactId)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_contact_default_account_start', $arrayParameters);
+
+        // Service implementation start
+        $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
+        $result = null;
+        if(!empty($arrayParameters['contactId'])) {
+            $result = $melisEcomClientPersonTable->getContactDefaultAccount($arrayParameters['contactId']);
+        }
+
+        $arrayParameters['results'] = $result;
+
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_contact_default_account_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+
+    }
 }

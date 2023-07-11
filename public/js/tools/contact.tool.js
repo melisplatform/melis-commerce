@@ -124,8 +124,8 @@ $(function(){
     });
 
     $body.on("click", ".cper_type", function(){
-        var clientId = activeTabId.split("_")[0];
-        var form = $(this).closest("#"+clientId+"_contactForm");
+        var contactId = activeTabId.split("_")[0];
+        var form = $(this).closest("#"+contactId+"_contactForm");
         if($(this).val() == 'company'){
             form.find("#cper_civility").closest(".form-group").addClass("d-none");
             form.find("#cper_name").closest(".form-group").addClass("d-none");
@@ -140,6 +140,24 @@ $(function(){
             form.find("#cper_job_title").closest(".form-group").removeClass("d-none");
         }
     });
+
+    $body.on("click", "#melisCommerceClientContactFormModal .cper_type", function(){
+        var form = $("#melisCommerceClientContactFormModal");
+        if($(this).val() == 'company'){
+            form.find("#cper_civility").closest(".form-group").addClass("d-none");
+            form.find("#cper_name").closest(".form-group").addClass("d-none");
+            form.find("#cper_middle_name").closest(".form-group").addClass("d-none");
+            form.find("#cper_job_service").closest(".form-group").addClass("d-none");
+            form.find("#cper_job_title").closest(".form-group").addClass("d-none");
+        } else{
+            form.find("#cper_civility").closest(".form-group").removeClass("d-none");
+            form.find("#cper_name").closest(".form-group").removeClass("d-none");
+            form.find("#cper_middle_name").closest(".form-group").removeClass("d-none");
+            form.find("#cper_job_service").closest(".form-group").removeClass("d-none");
+            form.find("#cper_job_title").closest(".form-group").removeClass("d-none");
+        }
+    });
+
 
     $body.on("click", ".accountContactListRefresh", function() {
         var $this = $(this),

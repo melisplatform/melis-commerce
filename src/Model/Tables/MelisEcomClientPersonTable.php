@@ -64,6 +64,7 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
             $select->join('melis_ecom_client_person_rel', 'melis_ecom_client_person_rel.cpr_client_person_id = melis_ecom_client_person.cper_id', array(), $select::JOIN_LEFT);
 
         $select->join(['client' => 'melis_ecom_client'], 'client.cli_id = melis_ecom_client_person_rel.cpr_client_id', array('cli_id', 'cli_name'), $select::JOIN_LEFT);
+        $select->join('melis_ecom_client_groups', 'melis_ecom_client_groups.cgroup_id=client.cli_group_id', array('cgroup_name'), $select::JOIN_LEFT);
 
         if (!empty($searchValue)){
             $search = [];
@@ -452,6 +453,26 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
         $select->join('melis_ecom_client_company', 'melis_ecom_client_company.ccomp_client_id = melis_ecom_client_person.cper_client_id', array('ccomp_id', 'ccomp_name'), $select::JOIN_LEFT);
 
         $resultData = $this->getTableGateway()->selectWith($select);
+        return $resultData;
+    }
+
+    /**
+     * @param $contactId
+     * @return mixed
+     */
+    public function getContactDefaultAccount($contactId)
+    {
+        $select = $this->tableGateway->getSql()->select();
+
+        $select->join('melis_ecom_client_person_rel', 'melis_ecom_client_person_rel.cpr_client_person_id=melis_ecom_client_person.cper_id',
+            array(),$select::JOIN_LEFT);
+        $select->join('melis_ecom_client', 'melis_ecom_client_person_rel.cpr_client_id=melis_ecom_client.cli_id',
+            array('*'),$select::JOIN_LEFT);
+
+        $select->where(array('cper_id' => $contactId));
+        $select->where(array('cpr_default_client' => 1));
+
+        $resultData = $this->tableGateway->selectWith($select);
         return $resultData;
     }
     

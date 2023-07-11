@@ -1122,7 +1122,6 @@ class MelisComContactController extends MelisAbstractActionController
                 'clientStatus' => 1
             ))->toArray();
 
-
             if(!empty($contactId)) {
                 //fetch first all linked contact
                 $personRelTable = $this->getServiceManager()->get('MelisEcomClientPersonRelTable');
@@ -1140,6 +1139,8 @@ class MelisComContactController extends MelisAbstractActionController
                             $lists[] = $val;
                         }
                     }
+                }else{
+                    $lists = $data;
                 }
             }else{
                 $lists = $data;
