@@ -183,19 +183,40 @@ class MelisComContactService extends MelisComGeneralService
             $arrayParameters['person']['cper_email'] = mb_strtolower($arrayParameters['person']['cper_email']);
             unset($arrayParameters['person']['cper_id']);
             //get emails
+            $personEmails = $this->getServiceManager()->get('MelisEcomClientPersonEmailsTable');
             $perEmails = [];
             if(!empty($arrayParameters['person']['emails'])){
                 $perEmails = $arrayParameters['person']['emails'];
                 unset($arrayParameters['person']['emails']);
-            }else{//create email array as new
-                $perEmails[] = [
-                    'cpmail_email' => $arrayParameters['person']['cper_email']
-                ];
+            }else{
+                if(!empty($arrayParameters['personId'])) {
+                    // check if email is not used twice
+                    $personWithSameEmail = $personEmails->getEntryByField('cpmail_email', $arrayParameters['person']['cper_email'])->current();
+                    if (!empty($personWithSameEmail)) {
+                        foreach ($personWithSameEmail as $k => $mail) {
+                            if ($mail->cpmail_cper_id != $arrayParameters['personId']) {
+                                $perEmails[] = [//new email entry
+                                    'cpmail_email' => $arrayParameters['person']['cper_email']
+                                ];
+                            } else {
+                                $perEmails[$mail->cpmail_id] = [
+                                    'cpmail_email' => $arrayParameters['person']['cper_email']
+                                ];
+                            }
+                        }
+                    } else {
+                        $perEmails[] = [//new email entry
+                            'cpmail_email' => $arrayParameters['person']['cper_email']
+                        ];
+                    }
+                }else {
+                    $perEmails[] = [//new email entry
+                        'cpmail_email' => $arrayParameters['person']['cper_email']
+                    ];
+                }
             }
-
             $perId = $melisEcomClientPersonTable->save($arrayParameters['person'], $arrayParameters['personId']);
             //insert person email
-            $personEmails = $this->getServiceManager()->get('MelisEcomClientPersonEmailsTable');
             if(!empty($perEmails)) {
                 foreach($perEmails as $id => $pEmData) {
                     $pEmData['cpmail_cper_id'] = $perId;

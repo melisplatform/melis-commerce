@@ -1748,9 +1748,9 @@ class MelisComClientController extends MelisAbstractActionController
                 $dataCount = count($tableData);
             }
 
-            $contactStatus = '<i class="fa fa-circle text-danger"></i>';
             foreach ($tableData as $key => $val)
             {
+
                 // Generating contact status html form
                 if ($val['cper_status'])
                 {

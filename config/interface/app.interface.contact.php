@@ -162,6 +162,20 @@ return [
                                                         'controller' => 'MelisComContact',
                                                         'action' => 'render-contact-page-content-tab-information-header',
                                                     ],
+                                                    'interface' => [
+                                                        'meliscommerce_contact_page_content_tab_information_header_status' => [
+                                                            'conf' => [
+                                                                'id' => 'id_meliscommerce_contact_page_content_tab_information_header_status',
+                                                                'melisKey' => 'meliscommerce_contact_page_content_tab_information_header_status',
+                                                                'name' => 'tr_meliscommerce_contact_page_content_tab_information_header_status',
+                                                            ],
+                                                            'forward' => [
+                                                                'module' => 'MelisCommerce',
+                                                                'controller' => 'MelisComContact',
+                                                                'action' => 'render-contact-page-content-tab-information-header-status',
+                                                            ],
+                                                        ]
+                                                    ]
                                                 ],
                                                 'meliscommerce_contact_page_content_tab_information_content' => [
                                                     'conf' => [

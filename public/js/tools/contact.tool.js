@@ -21,23 +21,8 @@ $(function(){
 
         dataString.push({
             name: "clientId",
-            value: clientId,
+            value: clientId
         });
-
-        // $("#" + activeTabId)
-        //     .find(".client-contact-tab-content form")
-        //     .each(function(index, element) {
-        //         emailList.push(
-        //             $(this)
-        //                 .find("#cper_email")
-        //                 .val()
-        //         );
-        //     });
-        //
-        // dataString.push({
-        //     name: "emailList",
-        //     value: emailList,
-        // });
 
         dataString = $.param(dataString);
 
@@ -132,12 +117,16 @@ $(function(){
             form.find("#cper_middle_name").closest(".form-group").addClass("d-none");
             form.find("#cper_job_service").closest(".form-group").addClass("d-none");
             form.find("#cper_job_title").closest(".form-group").addClass("d-none");
+            //change firstname label to company
+            form.find("#cper_firstname").closest(".form-group").find("label").html(translations.tr_meliscommerce_contact_common_company +" "+"<sup>*</sup>");
         } else{
             form.find("#cper_civility").closest(".form-group").removeClass("d-none");
             form.find("#cper_name").closest(".form-group").removeClass("d-none");
             form.find("#cper_middle_name").closest(".form-group").removeClass("d-none");
             form.find("#cper_job_service").closest(".form-group").removeClass("d-none");
             form.find("#cper_job_title").closest(".form-group").removeClass("d-none");
+            //change firstname label to company
+            form.find("#cper_firstname").closest(".form-group").find("label").html(translations.tr_meliscommerce_contact_firstname +" "+"<sup>*</sup>");
         }
     });
 
@@ -149,12 +138,16 @@ $(function(){
             form.find("#cper_middle_name").closest(".form-group").addClass("d-none");
             form.find("#cper_job_service").closest(".form-group").addClass("d-none");
             form.find("#cper_job_title").closest(".form-group").addClass("d-none");
+            //change firstname label to company
+            form.find("#cper_firstname").closest(".form-group").find("label").html(translations.tr_meliscommerce_contact_common_company +" "+"<sup>*</sup>");
         } else{
             form.find("#cper_civility").closest(".form-group").removeClass("d-none");
             form.find("#cper_name").closest(".form-group").removeClass("d-none");
             form.find("#cper_middle_name").closest(".form-group").removeClass("d-none");
             form.find("#cper_job_service").closest(".form-group").removeClass("d-none");
             form.find("#cper_job_title").closest(".form-group").removeClass("d-none");
+            //change firstname label to company
+            form.find("#cper_firstname").closest(".form-group").find("label").html(translations.tr_meliscommerce_contact_firstname +" "+"<sup>*</sup>");
         }
     });
 
@@ -411,6 +404,15 @@ $(function(){
             });
         });
 
+        var cperStatus = 0;
+        if ($("#" + contactId + "_cper_status input").is(":checked")) {
+            cperStatus = 1;
+        }
+        dataString.push({
+            name: "cper_status",
+            value: cperStatus
+        });
+
         $.ajax({
             type: "POST",
             url: "/melis/MelisCommerce/MelisComContact/saveContact",
@@ -439,6 +441,7 @@ $(function(){
                     data.textMessage,
                     data.errors
                 );
+                melisHelper.highlightMultiErrors(data.success, data.errors, "#"+contactId+"_contactForm")
             }
         })
         .fail(function() {

@@ -72,6 +72,7 @@ class MelisComContactController extends MelisAbstractActionController
      */
     public function renderAccountContactListTableAccountSelectAction()
     {
+        $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
         $translator = $this->getServiceManager()->get('translator');
         $melisKey = $this->params()->fromRoute('melisKey', '');
 
@@ -95,7 +96,8 @@ class MelisComContactController extends MelisAbstractActionController
         ))->toArray();
 
         foreach($lists as $key => $account){
-            $options .= '<option value="'.$account['cli_id'].'">'.$account['cli_name'].'</option>';
+            $cliName = $melisComClientService->getAccountName($account['cli_id']);
+            $options .= '<option value="'.$account['cli_id'].'">'.$cliName.'</option>';
         }
 
         $view =  new ViewModel();
@@ -176,6 +178,7 @@ class MelisComContactController extends MelisAbstractActionController
 
             $accountId = $this->getRequest()->getPost('accountId', null);
 
+            $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
             $melisTool = $this->getServiceManager()->get('MelisCoreTool');
             $melisTool->setMelisToolKey(self::PLUGIN_INDEX, 'meliscommerce_contact_list');
 
@@ -200,17 +203,16 @@ class MelisComContactController extends MelisAbstractActionController
             $tableData = $contactService->getContactLists($accountId, $search, $melisTool->getSearchableColumns(), $start, $length, $selCol, $sortOrder, $defaultAccountOnly)->toArray();
             $dataCount = $contactService->getContactLists($accountId, $search, $melisTool->getSearchableColumns(), null, null, null, 'ASC', $defaultAccountOnly, true)->current();
 
-            // store fetched data for data modification (if needed)
-
-            $contactStatus = '<i class="fa fa-circle text-danger"></i>';
             foreach ($tableData as $key => $val)
             {
+                $contactStatus = '<i class="fa fa-circle text-danger"></i>';
                 // Generating contact status html form
                 if ($val['cper_status'])
                 {
                     $contactStatus = '<i class="fa fa-circle text-success"></i>';
                 }
 
+                $tableData[$key]['cli_name'] = $melisComClientService->getAccountName($val['cli_id']);
                 $tableData[$key]['cper_status'] = $contactStatus;
             }
         }
@@ -324,7 +326,7 @@ class MelisComContactController extends MelisAbstractActionController
 
         if (! empty($postValues['cper_id'])) {
             // Checking if the Contact Form has data of the password
-            if (empty($val['cper_password'])) {
+            if (empty($postValues['cper_password'])) {
                 // If the existing Contact password empty, this means contact not updating the current password
                 // removing Input from Contact form will also remove from the validation
                 $propertyForm->getInputFilter()->remove('cper_password');
@@ -610,6 +612,31 @@ class MelisComContactController extends MelisAbstractActionController
     }
 
     /**
+     * @return ViewModel
+     */
+    public function renderContactPageContentTabInformationHeaderStatusAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $contactId = $this->params()->fromQuery('contactId', '');
+
+        $status = '';
+        if (!empty($contactId))
+        {
+            // Getting Client Data from Client Service
+            $melisComClientService = $this->getServiceManager()->get('MelisComContactService');
+            $contactData = $melisComClientService->getContactById($contactId);
+            // Assigning Data to init the Client Status Swithc plugin
+            $status = ($contactData->cper_status) ? 'checked' : '';
+        }
+
+        $view = new ViewModel();
+        $view->status = $status;
+        $view->melisKey = $melisKey;
+        $view->contactId = $contactId;
+        return $view;
+    }
+
+    /**
      * @return \Laminas\View\Model\ViewModel
      */
     public function renderContactPageContentTabInformationContentAction()
@@ -627,9 +654,6 @@ class MelisComContactController extends MelisAbstractActionController
         $contactForm->setAttribute('name', $contactId.'_contactForm');
         $contactForm->setAttribute('id', $contactId.'_contactForm');
 
-        $contactForm->remove('cper_password');
-        $contactForm->remove('cper_confirm_password');
-
         $translator = $this->getServiceManager()->get('translator');
 
         if(!empty($contactId)) {
@@ -637,6 +661,9 @@ class MelisComContactController extends MelisAbstractActionController
             $contactData = $melisComContactService->getContactById($contactId);
             if(!empty($contactData)) {
                 $contactForm->setData((array)$contactData);
+
+                $contactForm->get('cper_password')->setValue('');//set empty value on the password
+                $contactForm->get('cper_confirm_password')->setValue('');//set empty value on the password
 
                 if($contactData->cper_type == 'company'){
                     $contactForm->get('cper_firstname')->setLabel($translator->translate('tr_meliscommerce_contact_common_company'));

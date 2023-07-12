@@ -220,32 +220,47 @@ class MelisEcomClientTable extends MelisEcomGenericTable
         $resultData = $this->tableGateway->selectWith($select);
         return $resultData;
     }
-    
-    public function getCouponClientList($langId = null, $onlyValid = null, $isMain = null, $couponId = null, $start = 0, $limit = null, $order = 'cli_id ASC', $search = null)
+
+    /**
+     * @param null $langId
+     * @param null $onlyValid
+     * @param null $isMain
+     * @param null $couponId
+     * @param int $start
+     * @param null $limit
+     * @param string $order
+     * @param null $searchValue
+     * @param array $searchKeys
+     * @param bool $count
+     * @return mixed
+     */
+    public function getCouponClientList($onlyValid = null, $isMain = null, $couponId = null, $start = 0, $limit = null, $order = 'cli_id ASC', $searchValue = null, $searchKeys = [], $count = false)
     {
         $select = $this->tableGateway->getSql()->select();
-        $select->quantifier('DISTINCT');
-        $select->join('melis_ecom_client_person', 'melis_ecom_client_person.cper_client_id=melis_ecom_client.cli_id',
-            array(),$select::JOIN_LEFT);
+
+        if($count){
+            $select->columns(['total' => new \Laminas\Db\Sql\Expression('COUNT(*)')]);
+        }else {
+            $select->quantifier('DISTINCT');
+        }
+
+
+//        $select->join('melis_ecom_client_person_rel', 'melis_ecom_client_person_rel.cpr_client_id = melis_ecom_client.cli_id',
+//            array(), $select::JOIN_LEFT);
+//        $select->join('melis_ecom_client_person', 'melis_ecom_client_person.cper_id=melis_ecom_client_person_rel.cpr_client_person_id',
+//            array(),$select::JOIN_LEFT);
         $select->join('melis_ecom_client_company', 'melis_ecom_client_company.ccomp_client_id=melis_ecom_client.cli_id',
-            array(),$select::JOIN_LEFT);
-        $select->join('melis_ecom_civility_trans', 'melis_ecom_civility_trans.civt_civ_id=melis_ecom_client_person.cper_civility',
             array(),$select::JOIN_LEFT);
         $select->join('melis_ecom_coupon_client', 'melis_ecom_coupon_client.ccli_client_id=melis_ecom_client.cli_id',
             array(),$select::JOIN_LEFT);
-        
-        if(!is_null($search)){
-            $search = '%'.$search.'%';
-            $select->where->NEST->like('cli_id', $search)
-            ->or->like('melis_ecom_client_person.cper_name', $search)
-            ->or->like('melis_ecom_client_person.cper_firstname', $search)
-            ->or->like('melis_ecom_client_person.cper_email', $search)
-            ->or->like('melis_ecom_client_company.ccomp_name', $search);
-        }
-        
-        if (!is_null($langId))
-        {
-            $select->where('melis_ecom_civility_trans.civt_lang_id ='.$langId);
+
+        if (!empty($searchValue)){
+            $search = [];
+            foreach ($searchKeys As $col)
+                $search[$col] = new Like($col, '%'.$searchValue.'%');
+
+            $filters = [new PredicateSet($search, PredicateSet::COMBINED_BY_OR)];
+            $select->where($filters);
         }
         
         if (!is_null($couponId))
@@ -259,7 +274,7 @@ class MelisEcomClientTable extends MelisEcomGenericTable
         
         if (!is_null($isMain))
         {
-            $select->where('melis_ecom_client_person.cper_is_main_person ='.$isMain);
+//            $select->where('melis_ecom_client_person_rel.cpr_default_client ='.$isMain);
         }
         
         if (!is_null($start))
@@ -271,10 +286,10 @@ class MelisEcomClientTable extends MelisEcomGenericTable
         {
             $select->limit($limit);
         }
-        
-        $select->where('melis_ecom_client.cli_status = 1');
-    
+
         $select->order($order);
+        $select->group('cli_id');
+
         $resultData = $this->tableGateway->selectWith($select);
         return $resultData;
     }

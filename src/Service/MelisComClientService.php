@@ -65,7 +65,7 @@ class MelisComClientService extends MelisComGeneralService
                 $melisClient->setClient($val);
 
                 // Set Person Data to MelisClient
-                $clientPersonData = $melisEcomClientPersonTable->getClientPersonByClientId($val->cli_id);
+                $clientPersonData = $melisEcomClientPersonTable->getContactListByClientId($val->cli_id);
                 $clientPerson = array();
                 foreach ($clientPersonData As $pval) {
                     $pval->civility_trans = $this->getCivilityTransByCivilityIdAndLangId($pval->civ_id);

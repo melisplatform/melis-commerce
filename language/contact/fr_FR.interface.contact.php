@@ -17,7 +17,7 @@ return [
     'tr_meliscommerce_contact_table_account_filter' => 'Comptes',
 
     'tr_meliscommerce_contact_common_Type' => 'Type',
-    'tr_meliscommerce_contact_common_person' => 'Person',
+    'tr_meliscommerce_contact_common_person' => 'Personne',
     'tr_meliscommerce_contact_common_company' => 'Société',
     'tr_meliscommerce_contact_common_choose' => 'Choose',
     'tr_meliscommerce_contact_common_export' => 'Export',
