@@ -1129,6 +1129,8 @@ class MelisComContactController extends MelisAbstractActionController
         $searchPhrase = $this->params()->fromQuery('phrase', '');
         $contactId = $this->params()->fromQuery('contactId', '');
 
+        $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
+
         $lists = [];
         if (!empty($searchPhrase)) {
             $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientTable');
@@ -1171,6 +1173,10 @@ class MelisComContactController extends MelisAbstractActionController
                 }
             }else{
                 $lists = $data;
+            }
+
+            foreach($lists as $key => $account){
+                $lists[$key]['cli_name'] = $melisComClientService->getAccountName($account['cli_id']);
             }
         }
 

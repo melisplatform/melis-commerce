@@ -1336,7 +1336,12 @@ window.initContactAutoSuggesst = function($element)
             return "/melis/MelisCommerce/MelisComContact/fetchAllContact?phrase="+searchPhrase+"&accountId="+accountId;
         },
         getValue: function(element) {
-            return element.cper_firstname + " " + element.cper_name;
+        	var name = element.cper_firstname;
+        	if(element.cper_name != null){
+        		name += " " + element.cper_name;
+			}
+
+            return name;
         },
         ajaxSettings: {
             dataType: "json",

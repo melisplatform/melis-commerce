@@ -91,4 +91,11 @@ return [
     'tr_meliscommerce_contact_import_progress' => 'Progress ... ',
     'tr_meliscommerce_contact_import_address_name' => 'Address name',
     'tr_meliscommerce_contact_import_address_type' => 'Type',
+
+    'tr_meliscommerce_contact_import_file_content_format' => 'File content format <span class="span-8">(Data separated in semi cologne (;), text in <span class="required">red</span> is required)</span>',
+    'tr_meliscommerce_contact_import_file_content_format_header' => 'Language;<span class="required">Type</span>;Status;<span class="required">Email</span>;Civility;<span class="required">Name</span>;Middle name;<span class="required">Firstname</span>;Job title;Job service;Mobile;Landline;<span class="required">Address name</span>;<span class="required">Address Type</span>;Address civility;Address Firstname;Address middlename;Address lastname;Street number;Streetname;Building;Floor;City;State;Country;Postal Code;Company name;Mobile;Landline;Additional',
+    'tr_meliscommerce_contact_import_file_content_format_example' => 'Example',
+    'tr_meliscommerce_contact_import_file_content_format_content' => 'English;person;1;john@melisplatform.com;Mr;Doe;Dela cruz;John;Manager;Job service;09191234567;1111-2222;My address name;Billing;Mr;Juan;Adams;Dela cruz;046;Rue;Building 44;5th;Paris;State;France;02455;Company name;0912333;800-111;Additional info',
+    'tr_meliscommerce_contact_import_file_content_format_content_no_mname' => 'No Middlename',
+    'tr_meliscommerce_contact_import_file_content_format_content_no_mname_sample' => 'English;person;1;john@melisplatform.com;Mr;Doe;;John;Manager;Job service;........',
 ];

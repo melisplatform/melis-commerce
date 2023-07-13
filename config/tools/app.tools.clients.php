@@ -113,9 +113,7 @@ return [
                             'cli_name',
                             'ccomp_name',
                             'cli_date_creation',
-//                            'cper_name',
-//                            'cper_firstname',
-//                            'cper_middle_name',
+                            'cli_tags'
                         ],
                         'actionButtons' => [
                             'delete' => [

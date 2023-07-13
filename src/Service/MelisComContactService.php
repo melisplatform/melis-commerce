@@ -509,15 +509,15 @@ class MelisComContactService extends MelisComGeneralService
                 $contactsData = explode($delimiter, $contact);
 
                 //get civility id
-                $civD = $civilityTable->getEntryByField('civt_min_name', $contactsData[4])->current();
+                $civD = $civilityTable->getEntryByField('civt_min_name', ucfirst($contactsData[4]))->current();
                 //get language id
-                $langD = $languageTable->getEntryByField('elang_name', $contactsData[0])->current();
+                $langD = $languageTable->getEntryByField('elang_name', ucfirst($contactsData[0]))->current();
 
                 //prepare contacts data
                 $contactData = [
                     'cper_type' => $contactsData[1] ?? 'person',
                     'cper_lang_id' => !empty($langD) ? $langD->elang_id : 2,
-                    'cper_status' => 1,
+                    'cper_status' => $contactsData[2] ?? 1,
                     'cper_email' => $contactsData[3],
                     'cper_civility' => !empty($civD) ? $civD->civt_civ_id : 0,
                     'cper_name' => $contactsData[5],
@@ -531,7 +531,7 @@ class MelisComContactService extends MelisComGeneralService
                 ];
                 //prepare address data
                 //get civility id
-                $civD = $civilityTable->getEntryByField('civt_min_name', $contactsData[14])->current();
+                $civD = $civilityTable->getEntryByField('civt_min_name', ucfirst($contactsData[14]))->current();
                 $type = [
                     'billing' => 1,
                     'delivery' => 2
