@@ -9,6 +9,7 @@
 
 namespace MelisCommerce\Model\Tables;
 
+use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Predicate\Like;
 use Laminas\Db\Sql\Predicate\Operator;
 use Laminas\Db\Sql\Predicate\PredicateSet;
@@ -30,6 +31,57 @@ class MelisEcomClientTable extends MelisEcomGenericTable
     public function __construct()
     {
         $this->idField = self::PRIMARY_KEY;
+    }
+
+    /**
+     * @param $accountId
+     * @param string $searchValue
+     * @param array $searchKeys
+     * @param null $start
+     * @param null $limit
+     * @param string $orderColumn
+     * @param string $order
+     * @param bool $count
+     * @return \Laminas\Db\ResultSet\ResultSetInterface
+     */
+    public function getAccountAssocContactLists($accountId, $searchValue = '', $searchKeys = [], $start = null, $limit = null, $orderColumn = 'cli_id', $order = 'DESC', $count = false)
+    {
+        $select = $this->getTableGateway()->getSql()->select();
+
+        $slct = ['*', new Expression('person.cper_id As DT_RowId')];
+        if ($count) {
+            $slct = [new Expression('COUNT(' . $this->getTableGateway()->getTable() . '.' . $this->idField . ') As totalRecords')];
+        }
+        $select->columns($slct);
+
+        $select->join('melis_ecom_client_account_rel', 'melis_ecom_client_account_rel.car_client_id = melis_ecom_client.cli_id', array('car_id','car_default_person'), $select::JOIN_LEFT);
+        $select->join(['person' => 'melis_ecom_client_person'], 'person.cper_id = melis_ecom_client_account_rel.car_client_person_id', array('cper_id','cper_firstname','cper_name','cper_status','cper_email'), $select::JOIN_LEFT);
+
+        if (!empty($searchValue)){
+            $search = [];
+            foreach ($searchKeys As $col)
+                $search[$col] = new Like($col, '%'.$searchValue.'%');
+
+            $filters = [new PredicateSet($search, PredicateSet::COMBINED_BY_OR)];
+            $select->where($filters);
+        }
+
+        $select->where->equalTo('melis_ecom_client_account_rel.car_client_id', $accountId);
+
+        if (!empty($start))
+        {
+            $select->offset($start);
+        }
+
+        if (!empty($limit) && $limit != -1)
+        {
+            $select->limit((int) $limit);
+        }
+
+        $select->order($orderColumn .' '. $order);
+
+        $resultData = $this->getTableGateway()->selectWith($select);
+        return $resultData;
     }
 
     /**
@@ -333,15 +385,38 @@ class MelisEcomClientTable extends MelisEcomGenericTable
     {
         $select = $this->tableGateway->getSql()->select();
 
-        $select->join('melis_ecom_client_person_rel', 'melis_ecom_client_person_rel.cpr_client_id=melis_ecom_client.cli_id',
+        $select->join('melis_ecom_client_account_rel', 'melis_ecom_client_account_rel.car_client_id=melis_ecom_client.cli_id',
             array(),$select::JOIN_LEFT);
-        $select->join('melis_ecom_client_person', 'melis_ecom_client_person_rel.cpr_client_person_id=melis_ecom_client_person.cper_id',
+        $select->join('melis_ecom_client_person', 'melis_ecom_client_account_rel.car_client_person_id=melis_ecom_client_person.cper_id',
             array('*'),$select::JOIN_LEFT);
 
         $select->where(array('cli_id' => $clientId));
-        $select->where(array('cpr_default_client' => 1));
+        $select->where(array('car_default_client' => 1));
 
         $resultData = $this->tableGateway->selectWith($select);
+        return $resultData;
+    }
+
+    /**
+     * @param $clientId
+     * @return \Laminas\Db\ResultSet\ResultSetInterface
+     */
+    public function getContactListByClientId($clientId)
+    {
+        $select = $this->getTableGateway()->getSql()->select();
+
+        $select->join('melis_ecom_client_account_rel', 'melis_ecom_client_account_rel.car_client_id=melis_ecom_client.cli_id',
+            array('*'), $select::JOIN_LEFT);
+        $select->join('melis_ecom_client_person', 'melis_ecom_client_account_rel.car_client_person_id=melis_ecom_client_person.cper_id',
+            array('*'), $select::JOIN_LEFT);
+        $select->join('melis_ecom_civility', 'melis_ecom_civility.civ_id=melis_ecom_client_person.cper_civility',
+            array('*'), $select::JOIN_LEFT);
+
+        $select->where('melis_ecom_client_account_rel.car_client_id ='.$clientId);
+
+        $select->order('melis_ecom_client_account_rel.car_default_person DESC');
+
+        $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
 }

@@ -778,8 +778,8 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
 
             $contactService = $this->getServiceManager()->get('MelisComContactService');
 
-            $contactData = $contactService->getContactLists($accountId, $search, $melisTool->getSearchableColumns(), $start, $length, $selCol, $sortOrder, true)->toArray();
-            $dataCount = $contactService->getContactLists($accountId, $search, $melisTool->getSearchableColumns(), null, null, null, 'ASC', true, true)->current();
+            $contactData = $contactService->getContactLists($accountId, $search, $melisTool->getSearchableColumns(), $start, $length, $selCol, $sortOrder, true, true)->toArray();
+            $dataCount = $contactService->getContactLists($accountId, $search, $melisTool->getSearchableColumns(), null, null, null, 'ASC', true, true, true)->current();
 
             $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
 

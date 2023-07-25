@@ -219,6 +219,13 @@
         'tr_meliscommerce_client_link_contact_success' => 'Contact successfully linked',
         'tr_meliscommerce_client_link_contact_failed' => 'Error occurred while linking contact',
 
+        'tr_meliscommerce_client_set_default' => 'Set default',
+        'tr_meliscommerce_client_remove_default' => 'Remove default',
+        'tr_meliscommerce_client_set_default_account_success' => 'Default contact successfully set',
+        'tr_meliscommerce_client_set_default_account_failed' => 'Error occurred while setting default contact',
+        'tr_meliscommerce_client_remove_default_account_success' => 'Default contact successfully removed',
+        'tr_meliscommerce_client_remove_default_account_failed' => 'Error occurred while removing default contact',
+
 		// Saving Messages
 		'tr_meliscommerce_client_save_success' => 'Le client a été sauvegardé avec succès',
 		'tr_meliscommerce_client_unable_to_save' => 'Impossible de sauvegarder le client, veuillez réessayer',

@@ -201,7 +201,7 @@ class MelisComContactController extends MelisAbstractActionController
             $contactService = $this->getServiceManager()->get('MelisComContactService');
 
             $tableData = $contactService->getContactLists($accountId, $search, $melisTool->getSearchableColumns(), $start, $length, $selCol, $sortOrder, $defaultAccountOnly)->toArray();
-            $dataCount = $contactService->getContactLists($accountId, $search, $melisTool->getSearchableColumns(), null, null, null, 'ASC', $defaultAccountOnly, true)->current();
+            $dataCount = $contactService->getContactLists($accountId, $search, $melisTool->getSearchableColumns(), null, null, null, 'ASC', $defaultAccountOnly, false, true)->current();
 
             foreach ($tableData as $key => $val)
             {

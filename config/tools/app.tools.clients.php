@@ -240,7 +240,7 @@ return [
                         'target' => '#accountContactList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComClient/getAccountContactList',
                         'dataFunction' => 'setClientId',
-                        'ajaxCallback' => 'accountContactListTblCallback(); ',
+                        'ajaxCallback' => 'accountAssocContactListTblCallback(); ',
                         'filters' => [
                             'left' => [
                                 'meliscommerce-account-contact-list-tbl-limit' => [
@@ -303,6 +303,11 @@ return [
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComClient',
                                 'action' => 'render-account-contact-list-table-unlink',
+                            ],
+                            'set_default' => [
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComClient',
+                                'action' => 'render-account-contact-list-table-set-default',
                             ],
                             'edit' => [
                                 'module' => 'MelisCommerce',

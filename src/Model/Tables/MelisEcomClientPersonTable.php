@@ -45,10 +45,11 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
      * @param string $orderColumn
      * @param string $order
      * @param bool $defaultAccountOnly
+     * @param bool $hasDefaultOnly
      * @param bool $count
      * @return \Laminas\Db\ResultSet\ResultSetInterface
      */
-    public function getContactLists($accountId = null, $searchValue = '', $searchKeys = [], $start = null, $limit = null, $orderColumn = 'cper_id', $order = 'DESC', $defaultAccountOnly = false, $count = false)
+    public function getContactLists($accountId = null, $searchValue = '', $searchKeys = [], $start = null, $limit = null, $orderColumn = 'cper_id', $order = 'DESC', $defaultAccountOnly = false, $hasDefaultOnly = false,$count = false)
     {
         $select = $this->getTableGateway()->getSql()->select();
 
@@ -74,6 +75,9 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
             $filters = [new PredicateSet($search, PredicateSet::COMBINED_BY_OR)];
             $select->where($filters);
         }
+
+        if($hasDefaultOnly)
+            $select->where->equalTo('melis_ecom_client_person_rel.cpr_default_client', 1);
 
         if(!empty($accountId))
             $select->where->equalTo('client.cli_id', $accountId);
@@ -248,13 +252,13 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
     {
         $select = $this->getTableGateway()->getSql()->select();
 
-        $select->join('melis_ecom_client_person_rel', 'melis_ecom_client_person_rel.cpr_client_person_id=melis_ecom_client_person.cper_id',
+        $select->join('melis_ecom_client_account_rel', 'melis_ecom_client_account_rel.car_client_person_id=melis_ecom_client_person.cper_id',
             array('*'), $select::JOIN_LEFT);
         $select->join('melis_ecom_civility', 'melis_ecom_civility.civ_id=melis_ecom_client_person.cper_civility',
             array('*'), $select::JOIN_LEFT);
 
-        $select->where('melis_ecom_client_person_rel.cpr_client_id ='.$clientId);
-        $select->where('cpr_default_client = 1');
+        $select->where('melis_ecom_client_account_rel.car_client_id ='.$clientId);
+        $select->where('car_default_person = 1');
         
         $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;

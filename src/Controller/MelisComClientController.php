@@ -302,6 +302,19 @@ class MelisComClientController extends MelisAbstractActionController
         return $view;
     }
 
+    /**
+     * @return ViewModel
+     */
+    public function renderAccountContactListTableSetDefaultAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $accountId = $this->params()->fromQuery('clientId', '');
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        $view->accountId = $accountId;
+        return $view;
+    }
+
 
     /**
      * Render Client tab Contact Content
@@ -1658,11 +1671,11 @@ class MelisComClientController extends MelisAbstractActionController
         $message = 'tr_meliscommerce_client_link_contact_failed';
 
         $translator = $this->getServiceManager()->get('translator');
-        $contactService = $this->getServiceManager()->get('MelisComContactService');
+        $contactService = $this->getServiceManager()->get('MelisComClientService');
         if($this->request->isPost()){
             if(!empty($contactId)) {
                 if(!empty($accountId)) {//insert new linked contact
-                    $res = $contactService->linkAccountContact(['cpr_client_id' => $accountId, 'cpr_client_person_id' => $contactId]);
+                    $res = $contactService->linkAccountContact(['car_client_id' => $accountId, 'car_client_person_id' => $contactId]);
                     if ($res) {
                         $success = 1;
                         $message = 'tr_meliscommerce_client_link_contact_success';
@@ -1700,8 +1713,7 @@ class MelisComClientController extends MelisAbstractActionController
     }
 
     /**
-     * Function to get contact lists
-     * Used in contact lists inside the account tool
+     * Function to get contact lists assoc to account
      *
      * @return JsonModel
      */
@@ -1715,8 +1727,6 @@ class MelisComClientController extends MelisAbstractActionController
         {
             $accountId = $this->getRequest()->getPost('clientId');
             if(!empty($accountId)) {
-                $defaultAccountOnly = false;
-
                 $melisTool = $this->getServiceManager()->get('MelisCoreTool');
                 $melisTool->setMelisToolKey(self::PLUGIN_INDEX, 'meliscommerce_contact_list');
 
@@ -1736,10 +1746,10 @@ class MelisComClientController extends MelisAbstractActionController
                 $search = $this->getRequest()->getPost('search');
                 $search = $search['value'];
 
-                $contactService = $this->getServiceManager()->get('MelisComContactService');
+                $clientService = $this->getServiceManager()->get('MelisComClientService');
 
-                $tableData = $contactService->getContactLists($accountId, $search, $melisTool->getSearchableColumns(), $start, $length, $selCol, $sortOrder, $defaultAccountOnly)->toArray();
-                $dataCount = $contactService->getContactLists($accountId, $search, $melisTool->getSearchableColumns(), null, null, null, 'ASC', $defaultAccountOnly, true)->current();
+                $tableData = $clientService->getAccountAssocContactLists($accountId, $search, $melisTool->getSearchableColumns(), $start, $length, $selCol, $sortOrder)->toArray();
+                $dataCount = $clientService->getAccountAssocContactLists($accountId, $search, $melisTool->getSearchableColumns(), null, null, null, 'ASC', true)->current();
                 $dataCount = $dataCount->totalRecords;
 
             }else{
@@ -1750,6 +1760,7 @@ class MelisComClientController extends MelisAbstractActionController
 
             foreach ($tableData as $key => $val)
             {
+                $contactStatus = '<i class="fa fa-circle text-danger"></i>';
 
                 // Generating contact status html form
                 if ($val['cper_status'])
@@ -1758,7 +1769,12 @@ class MelisComClientController extends MelisAbstractActionController
                 }
 
                 $tableData[$key]['cper_status'] = $contactStatus;
-                $tableData[$key]['DT_RowAttr']    = ['data-accountid' => $accountId];
+
+                $tableData[$key]['DT_RowAttr']    = [
+                    'data-isdefault' => $val['car_default_person'],
+                    'data-carid' => $val['car_id'],
+                    'data-accountid' => $val['cli_id']
+                ];
             }
         }
         return new JsonModel(array(
@@ -1767,6 +1783,45 @@ class MelisComClientController extends MelisAbstractActionController
             'recordsFiltered' => $dataCount,
             'data' => $tableData,
         ));
+    }
+
+    /**
+     * @return JsonModel
+     */
+    public function updateDefaultContactAction()
+    {
+        $car_default_client = $this->getRequest()->getPost('car_default_person', 0);
+        $carId = $this->getRequest()->getPost('carId', '');
+        $accountId = $this->getRequest()->getPost('accountId', '');
+
+        $success = 0;
+        $error = [];
+        $title = ($car_default_client) ? 'tr_meliscommerce_client_set_default' : 'tr_meliscommerce_client_remove_default';
+        $message = ($car_default_client) ? 'tr_meliscommerce_client_set_default_account_failed' : 'tr_meliscommerce_client_remove_default_account_failed';
+
+        $translator = $this->getServiceManager()->get('translator');
+        $accountRelTable = $this->getServiceManager()->get('MelisEcomClientAccountRelTable');
+        if($this->request->isPost()){
+            if(!empty($carId)) {
+
+                if($car_default_client)
+                    //remove first the current default account
+                    $accountRelTable->update(['car_default_person' => 0], 'car_client_id', $accountId);
+                //set the new default account
+                $res = $accountRelTable->save(['car_default_person' => $car_default_client], $carId);
+                if ($res) {
+                    $success = 1;
+                    $message = ($car_default_client) ? 'tr_meliscommerce_client_set_default_account_success' : 'tr_meliscommerce_client_remove_default_account_success';
+                }
+            }
+        }
+
+        return new JsonModel([
+            'success' => $success,
+            'error' => $error,
+            'textTitle' => $translator->translate($title),
+            'textMessage' => $translator->translate($message)
+        ]);
     }
 
     /**

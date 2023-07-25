@@ -29,10 +29,11 @@ class MelisComContactService extends MelisComGeneralService
      * @param string $orderColumn
      * @param string $order
      * @param bool $defaultAccountOnly
+     * @param bool $hasDefaultOnly
      * @param bool $count
      * @return mixed
      */
-    public function getContactLists($accountId = null, $searchValue = '', $searchKeys = [], $start = null, $limit = null, $orderColumn = 'cper_id', $order = 'DESC', $defaultAccountOnly = false, $count = false)
+    public function getContactLists($accountId = null, $searchValue = '', $searchKeys = [], $start = null, $limit = null, $orderColumn = 'cper_id', $order = 'DESC', $defaultAccountOnly = false, $hasDefaultOnly = false, $count = false)
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -52,6 +53,7 @@ class MelisComContactService extends MelisComGeneralService
             $arrayParameters['orderColumn'],
             $arrayParameters['order'],
             $arrayParameters['defaultAccountOnly'],
+            $arrayParameters['hasDefaultOnly'],
             $arrayParameters['count']
         );
 

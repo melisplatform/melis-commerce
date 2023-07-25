@@ -174,6 +174,7 @@ return [
             'MelisEcomOrderProductReturnDetailsTable'       => \MelisCommerce\Model\Tables\MelisEcomOrderProductReturnDetailsTable::class,
             'MelisEcomProductLinksTable'                    => \MelisCommerce\Model\Tables\MelisEcomProductLinksTable::class,
             'MelisEcomClientPersonRelTable'                 => \MelisCommerce\Model\Tables\MelisEcomClientPersonRelTable::class,
+            'MelisEcomClientAccountRelTable'                 => \MelisCommerce\Model\Tables\MelisEcomClientAccountRelTable::class,
             'MelisEcomSettingsAccountTable'                 => \MelisCommerce\Model\Tables\MelisEcomSettingsAccountTable::class,
         ],
         'abstract_factories' => [

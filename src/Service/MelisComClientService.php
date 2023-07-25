@@ -20,6 +20,51 @@ use Laminas\Http\Response;
  */
 class MelisComClientService extends MelisComGeneralService
 {
+
+    /**
+     * Return all associated contact for this account
+     *
+     * @param null $accountId
+     * @param string $searchValue
+     * @param array $searchKeys
+     * @param null $start
+     * @param null $limit
+     * @param string $orderColumn
+     * @param string $order
+     * @param bool $count
+     * @return mixed
+     */
+    public function getAccountAssocContactLists($accountId, $searchValue = '', $searchKeys = [], $start = null, $limit = null, $orderColumn = 'cper_id', $order = 'DESC', $count = false)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_account_assoc_contact_lists_start', $arrayParameters);
+
+        // Service implementation start
+        $personTable = $this->getServiceManager()->get('MelisEcomClientTable');
+        $result = null;
+        $result = $personTable->getAccountAssocContactLists(
+            $arrayParameters['accountId'],
+            $arrayParameters['searchValue'],
+            $arrayParameters['searchKeys'],
+            $arrayParameters['start'],
+            $arrayParameters['limit'],
+            $arrayParameters['orderColumn'],
+            $arrayParameters['order'],
+            $arrayParameters['count']
+        );
+
+        $arrayParameters['results'] = $result;
+
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_get_account_assoc_contact_lists_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+
+    }
+
 	/**
 	 * 
 	 * This method gets all clients account.
@@ -65,7 +110,7 @@ class MelisComClientService extends MelisComGeneralService
                 $melisClient->setClient($val);
 
                 // Set Person Data to MelisClient
-                $clientPersonData = $melisEcomClientPersonTable->getContactListByClientId($val->cli_id);
+                $clientPersonData = $melisEcomClientTable->getContactListByClientId($val->cli_id);
                 $clientPerson = array();
                 foreach ($clientPersonData As $pval) {
                     $pval->civility_trans = $this->getCivilityTransByCivilityIdAndLangId($pval->civ_id);
@@ -104,7 +149,7 @@ class MelisComClientService extends MelisComGeneralService
                         $perName = '';
                         if(!empty($clientPersonData)){
                             foreach($clientPersonData as $k => $per){
-                                if($per->cpr_default_client){
+                                if($per->car_default_person){
                                     $perName = $per->cper_firstname.' '.$per->cper_name;
                                     break;
                                 }
@@ -163,11 +208,10 @@ class MelisComClientService extends MelisComGeneralService
 		    if(!empty($settings)){
 		        if($settings->sa_type == 'contact_name'){
                     // Set Person Data to MelisClient
-                    $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
-                    $clientPersonData = $melisEcomClientPersonTable->getContactListByClientId($arrayParameters['clientId'])->toArray();
+                    $clientPersonData = $melisEcomClientTable->getContactListByClientId($arrayParameters['clientId'])->toArray();
                     if(!empty($clientPersonData)){
                         foreach($clientPersonData as $k => $per){
-                            if($per['cpr_default_client']){
+                            if($per['car_default_person']){
                                 $cliName = $per['cper_firstname'].' '.$per['cper_name'];
                                 break;
                             }
@@ -2231,5 +2275,32 @@ class MelisComClientService extends MelisComGeneralService
                 $errors[] = $prefix . $fieldName . $translator->translate('tr_client_accounts_import_col_account_contact_not_exist');
             }
         }
+    }
+
+    /**
+     * @param $data
+     * @param null $id
+     * @return mixed
+     */
+    public function linkAccountContact($data, $id = null)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = null;
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_client_link_account_contact_start', $arrayParameters);
+
+        // Service implementation start
+        $accountRelTable = $this->getServiceManager()->get('MelisEcomClientAccountRelTable');
+        $results = $accountRelTable->save($arrayParameters['data'], $arrayParameters['id']);
+        // Service implementation end
+
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_client_link_account_contact_end', $arrayParameters);
+
+        return $arrayParameters['results'];
     }
 }
