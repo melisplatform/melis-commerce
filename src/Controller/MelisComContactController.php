@@ -131,8 +131,16 @@ class MelisComContactController extends MelisAbstractActionController
     public function renderAccountListPageHeaderButtonAddContactAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
+
+        //get user rights
+        $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
+        $xmlRights = $melisCoreAuth->getAuthRights();
+        $rights = $this->getServiceManager()->get('MelisCoreRights');
+        $canAccess = $rights->isAccessible($xmlRights, 'meliscore_interface', 'meliscommerce_contacts_list_add_contact_button');
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
+        $view->canAccess = $canAccess;
         return $view;
     }
 
@@ -534,9 +542,16 @@ class MelisComContactController extends MelisAbstractActionController
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $contactId = $this->params()->fromQuery('contactId', '');
 
+        //get user rights
+        $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
+        $xmlRights = $melisCoreAuth->getAuthRights();
+        $rights = $this->getServiceManager()->get('MelisCoreRights');
+        $canAccess = $rights->isAccessible($xmlRights, 'meliscore_interface', 'meliscommerce_contacts_save_contact_button');
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->contactId = $contactId;
+        $view->canAccess = $canAccess;
         return $view;
     }
 
@@ -1331,8 +1346,16 @@ class MelisComContactController extends MelisAbstractActionController
     public function renderAccountContactListTableExportAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
+
+        //get user rights
+        $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
+        $xmlRights = $melisCoreAuth->getAuthRights();
+        $rights = $this->getServiceManager()->get('MelisCoreRights');
+        $canAccess = $rights->isAccessible($xmlRights, 'meliscore_interface', 'meliscommerce_contacts_list_export_contact_button');
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
+        $view->canAccess = $canAccess;
         return $view;
     }
 
@@ -1536,8 +1559,16 @@ class MelisComContactController extends MelisAbstractActionController
     public function renderAccountContactListTableImportAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
+
+        //get user rights
+        $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
+        $xmlRights = $melisCoreAuth->getAuthRights();
+        $rights = $this->getServiceManager()->get('MelisCoreRights');
+        $canAccess = $rights->isAccessible($xmlRights, 'meliscore_interface', 'meliscommerce_contacts_list_import_contact_button');
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
+        $view->canAccess = $canAccess;
         return $view;
     }
 

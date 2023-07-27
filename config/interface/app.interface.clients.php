@@ -50,6 +50,43 @@ return [
                                 'name' => 'tr_meliscommerce_clients_Clients',
                                 'icon' => 'fa fa-users',
                             ],
+                            'interface' => [
+                                'meliscommerce_clients_list_add_client_button' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_clients_list_add_client_button',
+                                        'melisKey' => 'meliscommerce_clients_list_add_client_button',
+                                        'name' => 'tr_meliscommerce_clients_list_add_client_button',
+                                    ],
+                                ],
+                                'meliscommerce_clients_list_export_client_button' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_clients_list_export_client_button',
+                                        'melisKey' => 'meliscommerce_clients_list_export_client_button',
+                                        'name' => 'tr_meliscommerce_clients_list_export_client_button',
+                                    ],
+                                ],
+                                'meliscommerce_clients_list_import_client_button' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_clients_list_import_client_button',
+                                        'melisKey' => 'meliscommerce_clients_list_import_client_button',
+                                        'name' => 'tr_meliscommerce_clients_list_import_client_button',
+                                    ],
+                                ],
+                                'meliscommerce_clients_list_delete_client_button' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_clients_list_delete_client_button',
+                                        'melisKey' => 'meliscommerce_clients_list_delete_client_button',
+                                        'name' => 'tr_meliscommerce_clients_list_delete_client_button',
+                                    ],
+                                ],
+                                'meliscommerce_clients_list_save_client_button' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_clients_list_save_client_button',
+                                        'melisKey' => 'meliscommerce_clients_list_save_client_button',
+                                        'name' => 'tr_meliscommerce_clients_list_save_client_button',
+                                    ],
+                                ],
+                            ]
                         ],
                         'meliscommerce_clients_list_page' => [
                             'conf' => [

@@ -365,4 +365,10 @@
         'tr_meliscommerce_accounts_import_file_content_format_content' => 'My account name;France;tag1,tag2;General;My address name;Billing;Mrs;Juan;Adams;Dela cruz;048;Rue;Building 44;5th;Paris;State;France;02455;Company name;09191234567;800-111;Additional info;Juan Company Inc.;091111;90-1990-1;General;100-1010;101 Rue;Rue;Building 45;6529;Paris;state;France;091234567;www.test.com;1;mymaincontact@demo.com',
         'tr_meliscommerce_accounts_import_file_content_format_content_no_mname' => 'No Middlename',
         'tr_meliscommerce_accounts_import_file_content_format_content_no_mname_sample' => 'My account name;France;tag1,tag2;General;My address name;Billing;Mr;Juan;;Dela cruz;048;Rue;Building 44.......',
-	);
+
+        'tr_meliscommerce_clients_list_import_client_button' => 'Import accounts',
+        'tr_meliscommerce_clients_list_export_client_button' => 'Export accounts',
+        'tr_meliscommerce_clients_list_delete_client_button' => 'Delete account',
+        'tr_meliscommerce_clients_list_add_client_button' => 'Add account',
+        'tr_meliscommerce_clients_list_save_client_button' => 'Save account',
+);

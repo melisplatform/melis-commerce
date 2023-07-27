@@ -53,8 +53,16 @@ class MelisComClientListController extends MelisAbstractActionController
     public function renderClientListAddClientAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
+
+        //get user rights
+        $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
+        $xmlRights = $melisCoreAuth->getAuthRights();
+        $rights = $this->getServiceManager()->get('MelisCoreRights');
+        $canAccess = $rights->isAccessible($xmlRights, 'meliscore_interface', 'meliscommerce_clients_list_add_client_button');
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
+        $view->canAccess = $canAccess;
         return $view;
     }
     
@@ -201,8 +209,16 @@ class MelisComClientListController extends MelisAbstractActionController
     public function renderClientListTableExportAccountsAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
+
+        //get user rights
+        $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
+        $xmlRights = $melisCoreAuth->getAuthRights();
+        $rights = $this->getServiceManager()->get('MelisCoreRights');
+        $canAccess = $rights->isAccessible($xmlRights, 'meliscore_interface', 'meliscommerce_clients_list_import_client_button');
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
+        $view->canAccess = $canAccess;
         return $view;
     }
 
@@ -212,8 +228,16 @@ class MelisComClientListController extends MelisAbstractActionController
     public function renderClientListTableImportAccountsAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
+
+        //get user rights
+        $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
+        $xmlRights = $melisCoreAuth->getAuthRights();
+        $rights = $this->getServiceManager()->get('MelisCoreRights');
+        $canAccess = $rights->isAccessible($xmlRights, 'meliscore_interface', 'meliscommerce_clients_list_import_client_button');
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
+        $view->canAccess = $canAccess;
         return $view;
     }
 
@@ -291,9 +315,16 @@ class MelisComClientListController extends MelisAbstractActionController
     public function renderClientListTableDeleteAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
-        $view = new ViewModel();
 
+        //get user rights
+        $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
+        $xmlRights = $melisCoreAuth->getAuthRights();
+        $rights = $this->getServiceManager()->get('MelisCoreRights');
+        $canAccess = $rights->isAccessible($xmlRights, 'meliscore_interface', 'meliscommerce_clients_list_delete_client_button');
+
+        $view = new ViewModel();
         $view->melisKey = $melisKey;
+        $view->canAccess = $canAccess;
         return $view;
     }
     

@@ -1,1 +1,1 @@
-<button class="btn btn-success addNewContact" ><i class="fa fa-user-plus"></i> <?php echo $this->translate('tr_meliscommerce_contact_add_contact_button')?></button>
+<button class="btn btn-success addNewContact <?= $this->canAccess ?: 'd-none';?>" ><i class="fa fa-user-plus"></i> <?php echo $this->translate('tr_meliscommerce_contact_add_contact_button')?></button>

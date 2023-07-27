@@ -31,6 +31,36 @@ return [
                                 'name' => 'tr_meliscommerce_contact',
                                 'icon' => 'fa fa-user',
                             ],
+                            'interface' => [
+                                'meliscommerce_contacts_list_add_contact_button' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_contacts_list_add_contact_button',
+                                        'melisKey' => 'meliscommerce_contacts_list_add_contact_button',
+                                        'name' => 'tr_meliscommerce_contacts_list_add_contact_button',
+                                    ],
+                                ],
+                                'meliscommerce_contacts_list_export_contact_button' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_contacts_list_export_contact_button',
+                                        'melisKey' => 'meliscommerce_contacts_list_export_contact_button',
+                                        'name' => 'tr_meliscommerce_contacts_list_export_contact_button',
+                                    ],
+                                ],
+                                'meliscommerce_contacts_list_import_contact_button' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_contacts_list_import_contact_button',
+                                        'melisKey' => 'meliscommerce_contacts_list_import_contact_button',
+                                        'name' => 'tr_meliscommerce_contacts_list_import_contact_button',
+                                    ],
+                                ],
+                                'meliscommerce_contacts_save_contact_button' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_contacts_save_contact_button',
+                                        'melisKey' => 'meliscommerce_contacts_save_contact_button',
+                                        'name' => 'tr_meliscommerce_contacts_save_contact_button',
+                                    ],
+                                ],
+                            ]
                         ],
                         'meliscommerce_contact_list_page' => [
                             'conf' => [

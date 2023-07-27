@@ -98,4 +98,9 @@ return [
     'tr_meliscommerce_contact_import_file_content_format_content' => 'English;person;1;john@melisplatform.com;Mr;Doe;Dela cruz;John;Manager;Job service;09191234567;1111-2222;My address name;Billing;Mr;Juan;Adams;Dela cruz;046;Rue;Building 44;5th;Paris;State;France;02455;Company name;0912333;800-111;Additional info',
     'tr_meliscommerce_contact_import_file_content_format_content_no_mname' => 'No Middlename',
     'tr_meliscommerce_contact_import_file_content_format_content_no_mname_sample' => 'English;person;1;john@melisplatform.com;Mr;Doe;;John;Manager;Job service;........',
+
+    'tr_meliscommerce_contacts_list_import_contact_button' => 'Import contacts',
+    'tr_meliscommerce_contacts_list_export_contact_button' => 'Export contacts',
+    'tr_meliscommerce_contacts_list_add_contact_button' => 'Add contact',
+    'tr_meliscommerce_contacts_save_contact_button' => 'Save contact',
 ];
