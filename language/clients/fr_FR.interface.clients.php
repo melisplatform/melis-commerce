@@ -369,4 +369,7 @@
         'tr_meliscommerce_clients_list_delete_client_button' => 'Delete account',
         'tr_meliscommerce_clients_list_add_client_button' => 'Add account',
         'tr_meliscommerce_clients_list_save_client_button' => 'Save account',
+
+        'tr_meliscommerce_clients_is_default' => 'Is default',
+        'tr_meliscommerce_clients_default_contact_name' => 'Default contact',
     );

@@ -1079,7 +1079,7 @@ class MelisComContactController extends MelisAbstractActionController
                 $tableData[$key]['DT_RowAttr']    = [
                     'data-isdefault' => $val['cpr_default_client'],
                     'data-cprid' => $val['cpr_id'],
-                    'data-accountid' => $val['cli_id']
+                    'data-contactid' => $val['cper_id']
                 ];
             }
         }
@@ -1279,12 +1279,11 @@ class MelisComContactController extends MelisAbstractActionController
     {
         $accountId = $this->getRequest()->getPost('accountId', '');
         $contactId = $this->getRequest()->getPost('contactId', '');
-        $type = $this->getRequest()->getPost('type', 'contact');
 
         $success = 0;
         $error = [];
-        $title = ($type =='contact') ? 'tr_meliscommerce_client_unlink_contact' : 'tr_meliscommerce_contact_unlink_account';
-        $message = ($type == 'contact') ? 'tr_meliscommerce_client_unlink_contact_failed' : 'tr_meliscommerce_contact_unlink_account_failed';
+        $title = 'tr_meliscommerce_contact_unlink_account';
+        $message = 'tr_meliscommerce_contact_unlink_account_failed';
 
         $translator = $this->getServiceManager()->get('translator');
         $contactService = $this->getServiceManager()->get('MelisComContactService');
@@ -1292,7 +1291,7 @@ class MelisComContactController extends MelisAbstractActionController
             $res = $contactService->unlinkAccountContact($accountId, $contactId);
             if($res){
                 $success = 1;
-                $message = ($type == 'contact') ? 'tr_meliscommerce_client_unlink_contact_success' : 'tr_meliscommerce_contact_unlink_account_success';
+                $message = 'tr_meliscommerce_contact_unlink_account_success';
             }
         }
 

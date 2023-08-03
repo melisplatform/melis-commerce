@@ -2303,4 +2303,31 @@ class MelisComClientService extends MelisComGeneralService
 
         return $arrayParameters['results'];
     }
+
+    /**
+     * @param $accountId
+     * @param $contactId
+     * @return mixed
+     */
+    public function unlinkAccountContact($accountId, $contactId)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = null;
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_client_unlink_account_contact_start', $arrayParameters);
+
+        // Service implementation start
+        $personRelTable = $this->getServiceManager()->get('MelisEcomClientAccountRelTable');
+        $results = $personRelTable->unlinkAccountContact($arrayParameters['accountId'], $arrayParameters['contactId']);
+        // Service implementation end
+
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_client_unlink_account_contact_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
 }

@@ -122,15 +122,15 @@ class MelisEcomClientTable extends MelisEcomGenericTable
             }
         }
 
-//        $select->join('melis_ecom_client_person_rel', 'melis_ecom_client.cli_id=melis_ecom_client_person_rel.cpr_client_id',
-//            array('*'), $select::JOIN_LEFT);
-//        $select->join('melis_ecom_client_person', 'melis_ecom_client_person_rel.cpr_client_person_id = melis_ecom_client_person.cper_id',
-//            array('cper_firstname', 'cper_name','cper_id', 'cper_email'), $select::JOIN_LEFT);
+        $select->join('melis_ecom_client_account_rel', 'melis_ecom_client.cli_id=melis_ecom_client_account_rel.car_client_id',
+            array('*'), $select::JOIN_LEFT);
+        $select->join('melis_ecom_client_person', 'melis_ecom_client_account_rel.car_client_person_id = melis_ecom_client_person.cper_id',
+            array('cper_firstname', 'cper_name','cper_id', 'cper_email'), $select::JOIN_LEFT);
         $select->join('melis_ecom_client_company', 'melis_ecom_client_company.ccomp_client_id = melis_ecom_client.cli_id', array('cli_company' => 'ccomp_name'), $select::JOIN_LEFT);
         $select->join('melis_ecom_client_groups', 'melis_ecom_client_groups.cgroup_id=melis_ecom_client.cli_group_id',
             array('cgroup_name'),$select::JOIN_LEFT);
 
-//        $select->where('melis_ecom_client_person_rel.cpr_default_client = 1');
+//        $select->where('melis_ecom_client_account_rel.car_default_person = 1');
 
         if(!is_null($groupId) && $groupId != "")
             $select->where->equalTo('cli_group_id', $groupId);

@@ -6,6 +6,7 @@ return [
     'tr_meliscommerce_contact_name' => 'Name',
     'tr_meliscommerce_contact_firstname' => 'Firstname',
     'tr_meliscommerce_contact_default_account_name' => 'Default account name',
+    'tr_meliscommerce_contact_is_default' => 'Is default',
     'tr_meliscommerce_contact_account_name' => 'Account name',
     'tr_meliscommerce_contact_add_contact_button' => 'Add Contact',
     'tr_meliscommerce_contact_save' => 'Save Contact',

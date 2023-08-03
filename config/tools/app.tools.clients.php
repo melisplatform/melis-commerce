@@ -86,6 +86,11 @@ return [
                                 'css' => ['width' => '20%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],
+                            'default_contact' => [
+                                'text' => 'tr_meliscommerce_clients_default_contact_name',
+                                'css' => ['width' => '20%', 'padding-right' => '0'],
+                                'sortable' => true,
+                            ],
                             'cli_company' => [
                                 'text' => 'tr_meliscommerce_clients_table_Client_company',
                                 'css' => ['width' => '20%', 'padding-right' => '0'],
@@ -288,6 +293,11 @@ return [
                             'cper_email' => [
                                 'text' => 'tr_meliscommerce_contact_email',
                                 'css' => ['width' => '20%', 'padding-right' => '0'],
+                                'sortable' => true,
+                            ],
+                            'is_default' => [
+                                'text' => 'tr_meliscommerce_clients_is_default',
+                                'css' => ['width' => '10%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],
                         ],

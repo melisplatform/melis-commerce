@@ -353,8 +353,8 @@ $(function(){
         if (current_row.hasClass('child')) {//Check if the current row is a child row
             current_row = current_row.prev();//If it is, then point to the row before it (its 'parent')
         }
-        var accountId = current_row.attr("data-accountid");
-        var contactId = current_row.attr("id");
+        var contactId = current_row.attr("data-contactid");
+        var accountId = current_row.attr("id");
 
         melisCoreTool.confirm(
             translations.tr_meliscommerce_clients_common_label_yes,
@@ -364,7 +364,7 @@ $(function(){
             function() {
                 $.ajax({
                     'url': '/melis/MelisCommerce/MelisComContact/unlinkAccountContact',
-                    'data': {accountId: accountId, contactId: contactId, type: "account"},
+                    'data': {accountId: accountId, contactId: contactId},
                     'type': 'POST'
                 }).done(function(data){
                     if(data.success){

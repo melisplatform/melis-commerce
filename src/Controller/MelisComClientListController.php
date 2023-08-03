@@ -18,7 +18,7 @@ use MelisCore\Controller\MelisAbstractActionController;
 class MelisComClientListController extends MelisAbstractActionController
 {
     const PLUGIN_INDEX = 'meliscommerce';
-    
+
     /**
      * Render Client List Page
      * 
@@ -486,7 +486,12 @@ class MelisComClientListController extends MelisAbstractActionController
                 $contactNumOrders = count($contactOrder);
                 $lastOrder = !empty($val['cli_last_order'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_last_order'])), 0, 10) : '';
                 $clientCreated = !empty($val['cli_date_creation'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_date_creation'])), 0, 10) : '';
-                
+
+                $defaultContact = '';
+
+                if($val['car_default_person'])
+                    $defaultContact = $val['cper_firstname'].' '.$val['cper_name'];
+
                 $rowdata = array(
                     'DT_RowId' => $val['cli_id'],
                     'cli_id' => $val['cli_id'],
@@ -497,6 +502,7 @@ class MelisComClientListController extends MelisAbstractActionController
                     'cli_name' => $melisComClientService->getAccountName($val['cli_id']),
                     'cli_num_orders' => $contactNumOrders,
                     'cli_last_order' => $lastOrder,
+                    'default_contact' => $defaultContact,
                     'DT_RowAttr' => [
                         'data-hasorder' => !empty($contactNumOrders) ? 1 : 0
                     ]

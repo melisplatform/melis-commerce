@@ -305,7 +305,10 @@ class MelisComClientController extends MelisAbstractActionController
     public function renderAccountContactListTableUnlinkAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
+        $accountId = $this->params()->fromQuery('clientId', '');
+
         $view = new ViewModel();
+        $view->accountId = $accountId;
         $view->melisKey = $melisKey;
         return $view;
     }
@@ -1721,6 +1724,39 @@ class MelisComClientController extends MelisAbstractActionController
     }
 
     /**
+     * @return JsonModel
+     */
+    public function unlinkAccountContactAction()
+    {
+        $accountId = $this->getRequest()->getPost('accountId', '');
+        $contactId = $this->getRequest()->getPost('contactId', '');
+
+        $success = 0;
+        $error = [];
+        $title = 'tr_meliscommerce_client_unlink_contact';
+        $message = 'tr_meliscommerce_client_unlink_contact_failed';
+
+        $translator = $this->getServiceManager()->get('translator');
+        $clientService = $this->getServiceManager()->get('MelisComClientService');
+        if($this->request->isPost()){
+            $res = $clientService->unlinkAccountContact($accountId, $contactId);
+            if($res){
+                $success = 1;
+                $message = 'tr_meliscommerce_client_unlink_contact_success';
+            }
+        }
+
+        return new JsonModel([
+            'success' => $success,
+            'accountId' => $accountId,
+            'contactId' => $contactId,
+            'error' => $error,
+            'textTitle' => $translator->translate($title),
+            'textMessage' => $translator->translate($message)
+        ]);
+    }
+
+    /**
      * Function to get contact lists assoc to account
      *
      * @return JsonModel
@@ -1776,6 +1812,12 @@ class MelisComClientController extends MelisAbstractActionController
                     $contactStatus = '<i class="fa fa-circle text-success"></i>';
                 }
 
+                $isDefault = '<i class="fa fa-star-o fa-2x"></i>';
+                if($val['car_default_person']){
+                    $isDefault = '<i class="fa fa-star fa-2x"></i>';
+                }
+
+                $tableData[$key]['is_default'] = $isDefault;
                 $tableData[$key]['cper_status'] = $contactStatus;
 
                 $tableData[$key]['DT_RowAttr']    = [

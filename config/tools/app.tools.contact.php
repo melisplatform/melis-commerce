@@ -152,7 +152,7 @@ return [
                                 'sortable' => true,
                             ],
                             'default_account' => [
-                                'text' => 'tr_meliscommerce_contact_default_account_name',
+                                'text' => 'tr_meliscommerce_contact_is_default',
                                 'css' => ['width' => '10%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],
@@ -173,11 +173,11 @@ return [
                                 'controller' => 'MelisComContact',
                                 'action' => 'render-account-contact-assoc-account-list-table-set-default',
                             ],
-//                            'unlink' => [
-//                                'module' => 'MelisCommerce',
-//                                'controller' => 'MelisComContact',
-//                                'action' => 'render-account-contact-assoc-account-list-table-unlink',
-//                            ],
+                            'unlink' => [
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComContact',
+                                'action' => 'render-account-contact-assoc-account-list-table-unlink',
+                            ],
                         ]
                     ],
                 ],
