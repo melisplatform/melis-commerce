@@ -391,7 +391,7 @@ class MelisEcomClientTable extends MelisEcomGenericTable
             array('*'),$select::JOIN_LEFT);
 
         $select->where(array('cli_id' => $clientId));
-        $select->where(array('car_default_client' => 1));
+        $select->where(array('car_default_person' => 1));
 
         $resultData = $this->tableGateway->selectWith($select);
         return $resultData;

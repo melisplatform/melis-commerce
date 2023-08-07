@@ -78,6 +78,7 @@ return [
     'tr_contact_export_col_cper_date_creation' => 'Creation date',
     'tr_contact_export_col_cli_id' => 'Default account id',
     'tr_contact_export_col_cli_name' => 'Default account name',
+    'tr_contact_export_col_cgroup_name' => 'Group name',
 
     'tr_meliscommerce_contact_import_csv_file' => 'Upload CSV file',
     'tr_meliscommerce_contact_import_choose_file' => 'Choose file',

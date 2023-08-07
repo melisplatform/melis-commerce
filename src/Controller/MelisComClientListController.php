@@ -743,6 +743,7 @@ class MelisComClientListController extends MelisAbstractActionController
         //loop through each to modify or add new data
         if(!empty($getData)){
             foreach($getData as $key => $val){
+
                 //check first the commerce account settings if we use contact name or company or the default client name
                 $getData[$key]['cli_name'] = $melisComClientService->getAccountName($val['cli_id']);
                 //get client default contact
@@ -774,8 +775,10 @@ class MelisComClientListController extends MelisAbstractActionController
             foreach($getData as $key => $val){
                 $dt = [];
                 foreach($val as $k => $d){
-                    $fname = $translator->translate('tr_client_accounts_export_col_'.$k);
-                    $dt["$fname"] = $d;
+                    if(!in_array($k, ['car_id','car_client_id','car_client_person_id','car_default_person','cper_firstname','cper_name','cper_id','cper_email'])) {
+                        $fname = $translator->translate('tr_client_accounts_export_col_' . $k);
+                        $dt["$fname"] = $d;
+                    }
                 }
                 $exportData[$key] = $dt;
             }
