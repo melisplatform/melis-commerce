@@ -158,11 +158,11 @@ class MelisComContactService extends MelisComGeneralService
                 $arrayParameters['person']['cper_date_edit'] = date('Y-m-d H:i:s');
             }
 
-            if (! empty($arrayParameters['personId'])) {
-                if (! empty($arrayParameters['person']['cper_is_main_person'])) {
-                    $arrayParameters['person']['cper_is_main_person'] = $arrayParameters['person']['cper_is_main_person'];
-                }
-            }
+//            if (! empty($arrayParameters['personId'])) {
+//                if (! empty($arrayParameters['person']['cper_is_main_person'])) {
+                    $arrayParameters['person']['cper_is_main_person'] = (int)$arrayParameters['person']['cper_is_main_person'] ?? 0;
+//                }
+//            }
 
             $arrayParameters['person']['cper_civility'] = (!empty($arrayParameters['person']['cper_civility'])) ? $arrayParameters['person']['cper_civility'] : 0;
 

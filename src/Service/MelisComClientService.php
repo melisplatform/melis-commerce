@@ -307,7 +307,7 @@ class MelisComClientService extends MelisComGeneralService
                 $perName = '';
                 if(!empty($clientPersonData)){
                     foreach($clientPersonData as $k => $per){
-                        if($per->cpr_default_client){
+                        if($per->car_default_person){
                             $perName = $per->cper_firstname.' '.$per->cper_name;
                             break;
                         }

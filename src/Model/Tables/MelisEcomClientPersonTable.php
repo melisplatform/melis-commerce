@@ -228,6 +228,8 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
     }
 
     /**
+     * This function will get all contact associated to the given account/client
+     *
      * @param $clientId
      * @return \Laminas\Db\ResultSet\ResultSetInterface
      */
@@ -235,14 +237,14 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
     {
         $select = $this->getTableGateway()->getSql()->select();
 
-        $select->join('melis_ecom_client_person_rel', 'melis_ecom_client_person_rel.cpr_client_person_id=melis_ecom_client_person.cper_id',
+        $select->join('melis_ecom_client_account_rel', 'melis_ecom_client_account_rel.car_client_person_id=melis_ecom_client_person.cper_id',
             array('*'), $select::JOIN_LEFT);
         $select->join('melis_ecom_civility', 'melis_ecom_civility.civ_id=melis_ecom_client_person.cper_civility',
             array('*'), $select::JOIN_LEFT);
 
-        $select->where('melis_ecom_client_person_rel.cpr_client_id ='.$clientId);
+        $select->where('melis_ecom_client_account_rel.car_client_id ='.$clientId);
 
-        $select->order('melis_ecom_client_person_rel.cpr_default_client DESC');
+        $select->order('melis_ecom_client_account_rel.car_default_person DESC');
 
         $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
