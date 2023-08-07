@@ -1108,12 +1108,12 @@ class MelisComContactController extends MelisAbstractActionController
 
             if(!empty($accountId)) {
                 //fetch first all linked contact
-                $personRelTable = $this->getServiceManager()->get('MelisEcomClientPersonRelTable');
-                $linkContacts = $personRelTable->getEntryByField('cpr_client_id', $accountId)->toArray();
+                $personRelTable = $this->getServiceManager()->get('MelisEcomClientAccountRelTable');
+                $linkContacts = $personRelTable->getEntryByField('car_client_id', $accountId)->toArray();
                 if (!empty($linkContacts)) {
                     $ids = [];
                     foreach ($linkContacts as $k => $v) {
-                        $ids[] = $v['cpr_client_person_id'];
+                        $ids[] = $v['car_client_person_id'];
                     }
                     /**
                      * Exclude contact in the list if it is already selected
@@ -1158,8 +1158,8 @@ class MelisComContactController extends MelisAbstractActionController
                     'key' => 'cli_name',
                     'dir' => 'ASC',
                 ),
-                'start' => 1,
-                'limit' => -1,
+                'start' => null,
+                'limit' => null,
                 'columns' => ['cli_name'],
                 'date_filter' => array(),
                 'groupId' => null,

@@ -1058,8 +1058,7 @@ class MelisComClientService extends MelisComGeneralService
 			$personsData = $arrayParameters['persons'];
 			if(!empty($personsData)) {
                 foreach ($personsData As $key => $val) {
-                    $contactService = $this->getServiceManager()->get('MelisComContactService');
-                    $successflag = $contactService->linkAccountContact(['cpr_client_id' => $clntId, 'cpr_client_person_id' => $val['cper_id']]);
+                    $successflag = $this->linkAccountContact(['car_client_id' => $clntId, 'car_client_person_id' => $val['cper_id']]);
 
                     if (!$successflag) {
                         return null;
@@ -1885,6 +1884,7 @@ class MelisComClientService extends MelisComGeneralService
             $melisEcomBasketPersistentTable = $this->getServiceManager()->get('MelisEcomBasketPersistentTable');
             $melisEcomClientCompanyTable = $this->getServiceManager()->get('MelisEcomClientCompanyTable');
             $addrTable   = $this->getServiceManager()->get('MelisEcomClientAddressTable');
+            $accountRel   = $this->getServiceManager()->get('MelisEcomClientAccountRelTable');
 
             $adapter = $this->getServiceManager()->get('Laminas\Db\Adapter\Adapter');
             $con = $adapter->getDriver()->getConnection();//get db driver connection
@@ -1897,6 +1897,8 @@ class MelisComClientService extends MelisComGeneralService
                 $addrTable->deleteByField('cadd_client_id', $arrayParameters['accountId']);
                 // Physical Deletion on Basket Persistent
                 $melisEcomBasketPersistentTable->deleteByField('bper_client_id', $arrayParameters['accountId']);
+                //delete accounts in the account relation table
+                $accountRel->deleteByField('car_client_id', $arrayParameters['accountId']);
                 $con->commit();
             }catch (\Exception $ex){
                 $con->rollback();

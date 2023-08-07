@@ -1343,9 +1343,10 @@ window.accountAssocContactListTblCallback = function ()
 	}
 
     var tr = tbody.find("tr[data-accountid='0']");
-    //hide all unlink button if creation of account
+    //hide all unlink/set default button if creation of account
     tr.each(function(){
         $(this).find("td").find(".accountContactUnlink").addClass("d-none");
+        $(this).find("td").find(".updateDefaultContact").addClass("d-none");
     });
 	//hide search on creation of account
     $("#0_accountContactList_wrapper").find(".meliscommerce-account-contact-list-tbl-search").addClass("d-none");

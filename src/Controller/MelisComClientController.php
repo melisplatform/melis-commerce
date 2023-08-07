@@ -1705,6 +1705,12 @@ class MelisComClientController extends MelisAbstractActionController
 
                         //set row id
                         $data[0]['DT_RowId'] = $data[0]['cper_id'];
+
+                        //set default temp data
+                        $data[0]['car_default_person'] = 0;
+                        $data[0]['car_id'] = 0;
+                        $data[0]['cli_id'] = 0;
+
                         $container['temp-linked-contacts'][] = $data[0];
 
                         $success = 1;
