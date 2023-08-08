@@ -71,7 +71,7 @@ class MelisComClientController extends MelisAbstractActionController
 
                 if (!empty($clientData))
                 {
-                    $accountName = $clientData->cli_name;
+                    $accountName = $clientData->cli_name ?? "";
                     $success = 1;
                 }
             }
