@@ -20,41 +20,41 @@ return [
                         'ajaxCallback' => '',
                         'filters' => [
                             'left' => [
-                                'meliscommerce-account-contact-list-tbl-limit' => [
+                                'meliscommerce-contact-list-tbl-limit' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComContact',
                                     'action' => 'render-account-contact-list-table-limit',
                                 ],
-                                'meliscommerce-account-contact-list-tbl-account-select' => [
+                                'meliscommerce-contact-list-tbl-account-select' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComContact',
                                     'action' => 'render-account-contact-list-table-account-select',
                                 ],
                             ],
                             'center' => [
-                                'meliscommerce-account-contact-list-tbl-search' => [
+                                'meliscommerce-contact-list-tbl-search' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComContact',
                                     'action' => 'render-account-contact-list-table-search',
                                 ],
-                                'meliscommerce-account-contact-list-tbl-type-select' => [
+                                'meliscommerce-contact-list-tbl-type-select' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComContact',
                                     'action' => 'render-account-contact-list-table-type-select',
                                 ],
                             ],
                             'right' => [
-                                'meliscommerce-account-contact-list-tbl-import' => [
+                                'meliscommerce-contact-list-tbl-import' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComContact',
                                     'action' => 'render-account-contact-list-table-import',
                                 ],
-                                'meliscommerce-account-contact-list-tbl-export' => [
+                                'meliscommerce-contact-list-tbl-export' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComContact',
                                     'action' => 'render-account-contact-list-table-export',
                                 ],
-                                'meliscommerce-account-contact-list-tbl-refresh' => [
+                                'meliscommerce-contact-list-tbl-refresh' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComContact',
                                     'action' => 'render-account-contact-list-table-refresh',

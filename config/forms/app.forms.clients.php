@@ -383,6 +383,7 @@ return [
                                         'Type' => 'password',
                                         'autocomplete' => 'off',
                                         'required' => 'required',
+                                        'placeholder' => 'tr_meliscore_login_pass_placeholder'
                                     ]
                                 ]
                             ],
@@ -401,6 +402,7 @@ return [
                                         'Type' => 'password',
                                         'autocomplete' => 'off',
                                         'required' => 'required',
+                                        'placeholder' => 'tr_meliscore_login_pass_placeholder'
                                     ]
                                 ]
                             ],
