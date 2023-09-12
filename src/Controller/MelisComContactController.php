@@ -106,6 +106,25 @@ class MelisComContactController extends MelisAbstractActionController
         return $view;
     }
 
+    public function renderAccountContactListTableTypeSelectAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $translator = $this->getServiceManager()->get('translator');
+        $lists = [
+            'person' => $translator->translate('tr_meliscommerce_contact_common_person'),
+            'company' => $translator->translate('tr_meliscommerce_contact_common_company'),
+        ];
+        $options = '<option  value="">'.$translator->translate('tr_meliscommerce_contact_common_all').'</option>';
+        foreach($lists as $key => $type){
+            $options .= '<option value="'.$key.'">'.$type.'</option>';
+        }
+
+        $view =  new ViewModel();
+        $view->selectOption = $options;
+        $view->melisKey = $melisKey;
+        return $view;
+    }
+
     /**
      * @return ViewModel
      */
@@ -185,6 +204,7 @@ class MelisComContactController extends MelisAbstractActionController
             $defaultAccountOnly = true;
 
             $accountId = $this->getRequest()->getPost('accountId', null);
+            $type = $this->getRequest()->getPost('type', null);
 
             $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
             $melisTool = $this->getServiceManager()->get('MelisCoreTool');
@@ -208,8 +228,8 @@ class MelisComContactController extends MelisAbstractActionController
 
             $contactService = $this->getServiceManager()->get('MelisComContactService');
 
-            $tableData = $contactService->getContactLists($accountId, $search, $melisTool->getSearchableColumns(), $start, $length, $selCol, $sortOrder, $defaultAccountOnly)->toArray();
-            $dataCount = $contactService->getContactLists($accountId, $search, $melisTool->getSearchableColumns(), null, null, null, 'ASC', $defaultAccountOnly, false, true)->current();
+            $tableData = $contactService->getContactLists($accountId, $type, $search, $melisTool->getSearchableColumns(), $start, $length, $selCol, $sortOrder, $defaultAccountOnly)->toArray();
+            $dataCount = $contactService->getContactLists($accountId, $type, $search, $melisTool->getSearchableColumns(), null, null, null, 'ASC', $defaultAccountOnly, false, true)->current();
 
             foreach ($tableData as $key => $val)
             {
@@ -222,6 +242,8 @@ class MelisComContactController extends MelisAbstractActionController
 
                 $tableData[$key]['cli_name'] = $melisComClientService->getAccountName($val['cli_id']);
                 $tableData[$key]['cper_status'] = $contactStatus;
+                $tableData[$key]['cper_firstname'] = "<span class='d-none td-tooltip'>".$val['cper_firstname']."</span>".mb_strimwidth($val['cper_firstname'], 0, 30, '...');
+                $tableData[$key]['cper_name'] = "<span class='d-none td-tooltip'>".$val['cper_name']."</span>".mb_strimwidth($val['cper_name'], 0, 30, '...');
             }
         }
         return new JsonModel(array(
@@ -716,9 +738,16 @@ class MelisComContactController extends MelisAbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $contactId = $this->params()->fromQuery('contactId', '');
+
+        $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
+        $xmlRights = $melisCoreAuth->getAuthRights();
+        $rights = $this->getServiceManager()->get('MelisCoreRights');
+        $canAccess = $rights->isAccessible($xmlRights, 'meliscore_interface', 'meliscommerce_contact_page_content_tab_address_header_button_ad');
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->contactId = $contactId;
+        $view->canAccess = $canAccess;
         return $view;
     }
 
@@ -741,11 +770,17 @@ class MelisComContactController extends MelisAbstractActionController
         $clientService = $this->getServiceManager()->get('MelisComClientService');
         $contactAddresses = $clientService->getClientAddressesByClientPersonId($contactId);
 
+        $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
+        $xmlRights = $melisCoreAuth->getAuthRights();
+        $rights = $this->getServiceManager()->get('MelisCoreRights');
+        $canAccess = $rights->isAccessible($xmlRights, 'meliscore_interface', 'meliscommerce_contact_page_content_tab_address_header_button_delete_address');
+
         $view = new ViewModel();
         $view->form = $propertyForm;
         $view->addresses = $contactAddresses;
         $view->melisKey = $melisKey;
         $view->contactId = $contactId;
+        $view->canAccess = $canAccess;
         return $view;
     }
 
@@ -918,9 +953,16 @@ class MelisComContactController extends MelisAbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $contactId = $this->params()->fromQuery('contactId', '');
+
+        $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
+        $xmlRights = $melisCoreAuth->getAuthRights();
+        $rights = $this->getServiceManager()->get('MelisCoreRights');
+        $canAccess = $rights->isAccessible($xmlRights, 'meliscore_interface', 'meliscommerce_contact_page_content_tab_association_header_add_account');
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->contactId = $contactId;
+        $view->canAccess = $canAccess;
         return $view;
     }
 
@@ -1104,7 +1146,7 @@ class MelisComContactController extends MelisAbstractActionController
         $lists = [];
         if (!empty($searchPhrase)) {
             $contactService = $this->getServiceManager()->get('MelisComContactService');
-            $data = $contactService->getContactLists(null, $searchPhrase, ['cper_name', 'cper_firstname'], null, null, 'cper_firstname', 'ASC', true)->toArray();
+            $data = $contactService->getContactLists(null, null, $searchPhrase, ['cper_name', 'cper_firstname'], null, null, 'cper_firstname', 'ASC', true)->toArray();
 
             if(!empty($accountId)) {
                 //fetch first all linked contact
@@ -1392,7 +1434,7 @@ class MelisComContactController extends MelisAbstractActionController
 
         $contactService = $this->getServiceManager()->get('MelisComContactService');
 
-        $tableData = $contactService->getContactLists($accountId, $search, $melisTool->getSearchableColumns(), null, null, 'cper_id', 'ASC', true)->toArray();
+        $tableData = $contactService->getContactLists($accountId, null, $search, $melisTool->getSearchableColumns(), null, null, 'cper_id', 'ASC', true)->toArray();
 
         $data = [];
         //loop through each to modify or add new data

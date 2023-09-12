@@ -23,3 +23,10 @@
 .sample_import_format span.required{
     color: #ff0016;
 }
+#contactList tbody td span.td-tooltip{
+    background: #000;
+    position: absolute;
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: #fff;
+}

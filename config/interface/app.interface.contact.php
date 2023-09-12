@@ -64,6 +64,30 @@ return [
                                         'left_menu_display' => false
                                     ],
                                 ],
+                                'meliscommerce_contact_page_content_tab_association_header_add_account' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_contact_page_content_tab_association_header_add_account',
+                                        'melisKey' => 'meliscommerce_contact_page_content_tab_association_header_add_account',
+                                        'name' => 'tr_meliscommerce_contact_page_content_tab_association_header_add_account',
+                                        'left_menu_display' => false
+                                    ],
+                                ],
+                                'meliscommerce_contact_page_content_tab_address_header_button_ad' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_contact_page_content_tab_address_header_button_ad',
+                                        'melisKey' => 'meliscommerce_contact_page_content_tab_address_header_button_ad',
+                                        'name' => 'tr_meliscommerce_contact_page_content_tab_address_header_button_ad',
+                                        'left_menu_display' => false
+                                    ],
+                                ],
+                                'meliscommerce_contact_page_content_tab_address_header_button_delete_address' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_contact_page_content_tab_address_header_button_delete_address',
+                                        'melisKey' => 'meliscommerce_contact_page_content_tab_address_header_button_delete_address',
+                                        'name' => 'tr_meliscommerce_contact_page_content_tab_address_header_button_delete_address',
+                                        'left_menu_display' => false
+                                    ],
+                                ]
                             ]
                         ],
                         'meliscommerce_contact_list_page' => [

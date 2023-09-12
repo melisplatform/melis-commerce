@@ -489,8 +489,12 @@ class MelisComClientListController extends MelisAbstractActionController
 
                 $defaultContact = '';
 
-                if($val['car_default_person'])
-                    $defaultContact = $val['cper_firstname'].' '.$val['cper_name'];
+                if($val['car_default_person']) {
+                    $defaultContact = $val['cper_firstname'] . ' ' . $val['cper_name'];
+                    $defaultContact = "<span class='d-none td-tooltip'>".$defaultContact."</span>".mb_strimwidth($defaultContact, 0, 30, '...');
+                }
+
+                $cliname = $melisComClientService->getAccountName($val['cli_id']);
 
                 $rowdata = array(
                     'DT_RowId' => $val['cli_id'],
@@ -499,7 +503,7 @@ class MelisComClientListController extends MelisAbstractActionController
                     'cli_status' => $contactStatus,
                     'cli_company' => $val['cli_company'],
                     'cli_date_creation' => $clientCreated,
-                    'cli_name' => $melisComClientService->getAccountName($val['cli_id']),
+                    'cli_name' => "<span class='d-none td-tooltip'>".$cliname."</span>".mb_strimwidth($cliname, 0, 30, '...'),
                     'cli_num_orders' => $contactNumOrders,
                     'cli_last_order' => $lastOrder,
                     'default_contact' => $defaultContact,

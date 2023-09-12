@@ -3408,3 +3408,12 @@ i.fa.fa-download {
 	border:1px solid #e5e5e5 !important; 	
  	height:70px
 }
+
+/*#clientListTbl tbody td span.td-tooltip{*/
+tbody td span.td-tooltip{
+	background: #000;
+	position: absolute;
+	padding: 5px 10px;
+	border-radius: 5px;
+	color: #fff;
+}

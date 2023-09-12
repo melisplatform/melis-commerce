@@ -1,1 +1,3 @@
-<button class="btn btn-success addContactAddress float-right" data-contactid="<?php echo $this->contactId ?>" data-tabid="<?php echo $this->tabId ?>"><i class="fa fa-plus"></i> <?php echo $this->translate('tr_meliscommerce_clients_add_contact_address')?></button>
+<?php if($this->canAccess) { ?>
+    <button class="btn btn-success addContactAddress float-right" data-contactid="<?php echo $this->contactId ?>" data-tabid="<?php echo $this->tabId ?>"><i class="fa fa-plus"></i> <?php echo $this->translate('tr_meliscommerce_clients_add_contact_address')?></button>
+<?php } ?>

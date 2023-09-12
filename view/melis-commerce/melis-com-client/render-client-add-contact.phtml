@@ -6,25 +6,27 @@ if (!empty($this->zoneconfig['conf']['id'])){
 $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
 ?>
 <div <?php echo $id. ' '.$data_melisKey?>>
-    <div class="link-contact float-right">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="input-autosuggest">
-                    <input placeholder="<?= $this->translate('tr_meliscommerce_contact_contact_name');?>" data-accountid="<?= $this->clientId;?>" data-contactid="" class="form-control link-contact-data" type="text"/>
+    <?php if($this->canAccess) { ?>
+        <div class="link-contact float-right">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-autosuggest">
+                        <input placeholder="<?= $this->translate('tr_meliscommerce_contact_contact_name');?>" data-accountid="<?= $this->clientId;?>" data-contactid="" class="form-control link-contact-data" type="text"/>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="linkContactBtn">
+                        <button class="btn btn-success accountContactLink"><i class="fa fa-link"></i> Link Contact</button>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="linkContactBtn">
-                    <button class="btn btn-success accountContactLink"><i class="fa fa-link"></i> Link Contact</button>
-                </div>
-            </div>
+            <script type="application/javascript">
+                $(document).ready(function(){
+                    var element = "#"+activeTabId+" input.link-contact-data";
+                    initContactAutoSuggesst(element);
+                    $(element).closest(".easy-autocomplete").width("150");
+                });
+            </script>
         </div>
-        <script type="application/javascript">
-            $(document).ready(function(){
-                var element = "#"+activeTabId+" input.link-contact-data";
-                initContactAutoSuggesst(element);
-                $(element).closest(".easy-autocomplete").width("150");
-            });
-        </script>
-    </div>
+    <?php } ?>
 </div>

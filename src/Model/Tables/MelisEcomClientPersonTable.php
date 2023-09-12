@@ -38,6 +38,7 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
 
     /**
      * @param null $accountId
+     * @param null $type
      * @param string $searchValue
      * @param array $searchKeys
      * @param null $start
@@ -49,7 +50,7 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
      * @param bool $count
      * @return \Laminas\Db\ResultSet\ResultSetInterface
      */
-    public function getContactLists($accountId = null, $searchValue = '', $searchKeys = [], $start = null, $limit = null, $orderColumn = 'cper_id', $order = 'DESC', $defaultAccountOnly = false, $hasDefaultOnly = false,$count = false)
+    public function getContactLists($accountId = null, $type = null, $searchValue = '', $searchKeys = [], $start = null, $limit = null, $orderColumn = 'cper_id', $order = 'DESC', $defaultAccountOnly = false, $hasDefaultOnly = false,$count = false)
     {
         $select = $this->getTableGateway()->getSql()->select();
 
@@ -81,6 +82,9 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
 
         if(!empty($accountId))
             $select->where->equalTo('client.cli_id', $accountId);
+
+        if(!empty($type))
+            $select->where->equalTo('cper_type', $type);
 
         if (!empty($start))
         {

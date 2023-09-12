@@ -25,6 +25,7 @@ return [
     'tr_meliscommerce_contact_common_import' => 'Import',
     'tr_meliscommerce_contact_common_empty_file' => 'File is empty',
     'tr_meliscommerce_contact_common_line' => 'Line',
+    'tr_meliscommerce_contact_common_all' => 'All',
 
     //interface names
     'tr_meliscommerce_contact_page' => 'Contact Page',
@@ -105,4 +106,8 @@ return [
     'tr_meliscommerce_contacts_list_export_contact_button' => 'Export contacts',
     'tr_meliscommerce_contacts_list_add_contact_button' => 'Add contact',
     'tr_meliscommerce_contacts_save_contact_button' => 'Save contact',
+
+    'tr_meliscommerce_contact_page_content_tab_association_header_add_account' => 'Associate account',
+    'tr_meliscommerce_contact_page_content_tab_address_header_button_ad' => 'Add address',
+    'tr_meliscommerce_contact_page_content_tab_address_header_button_delete_address' => 'Delete address',
 ];

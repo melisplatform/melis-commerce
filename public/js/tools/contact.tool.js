@@ -454,6 +454,10 @@ $(function(){
         $("#contactList").DataTable().ajax.reload();
     });
 
+    $body.on("change", "#contactTypeSelect", function(){
+        $("#contactList").DataTable().ajax.reload();
+    });
+
     $body.on("click", ".contactsExport", function() {
         if (!melisCoreTool.isTableEmpty("contactList")) {
             // initialation of local variable
@@ -484,6 +488,7 @@ $(function(){
 
         var data = $("form#contact-list-export-contacts").serializeArray();
         filters['accountId'] = $("#contactAccountSelect").val();
+        filters['type'] = $("#contactTypeSelect").val();
         filters['search'] = $("#contactList_filter input[type='search']").val();
 
         $.each(data, function(key, val){
@@ -645,6 +650,16 @@ $(function(){
             .css("width", val + "%")
             .parent().parent().parent().removeClass("hidden");
     }
+
+    //to show td tooltip
+    $("body").on("mouseover", "#contactList tbody td", function(){
+        if($(this).find("span.td-tooltip") != undefined){
+            $(this).find("span.td-tooltip").removeClass("d-none").css("left", $(this).position().left + 250);
+        }
+    });
+    $("body").on("mouseout", "#contactList tbody td", function(){
+        $(this).find("span.td-tooltip").addClass("d-none");
+    });
 });
 window.setClientId = function(d){
     d.clientId = activeTabId.replace('_id_meliscommerce_client_page','');
@@ -707,4 +722,5 @@ window.contactAssociatedAccountCallback = function () {
 window.contactListTableDataFunction = function(d)
 {
     d.accountId = $("#contactAccountSelect").val();
+    d.type = $("#contactTypeSelect").val();
 };

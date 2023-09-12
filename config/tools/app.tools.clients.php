@@ -314,16 +314,16 @@ return [
                                 'controller' => 'MelisComClient',
                                 'action' => 'render-account-contact-list-table-unlink',
                             ],
-                            'set_default' => [
-                                'module' => 'MelisCommerce',
-                                'controller' => 'MelisComClient',
-                                'action' => 'render-account-contact-list-table-set-default',
-                            ],
                             'edit' => [
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComContact',
                                 'action' => 'render-account-contact-list-table-edit',
                             ],
+                            'set_default' => [
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComClient',
+                                'action' => 'render-account-contact-list-table-set-default',
+                            ]
                         ]
                     ],
                 ],

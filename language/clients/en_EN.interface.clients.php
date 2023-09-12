@@ -374,4 +374,6 @@
 
         'tr_meliscommerce_clients_is_default' => 'Is default',
         'tr_meliscommerce_clients_default_contact_name' => 'Default contact',
+
+        'tr_meliscommerce_client_add_contact' => 'Associate contact'
 );

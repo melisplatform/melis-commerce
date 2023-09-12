@@ -91,6 +91,14 @@ return [
                                         'left_menu_display' => false
                                     ],
                                 ],
+                                'meliscommerce_client_add_contact' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_client_add_contact',
+                                        'melisKey' => 'meliscommerce_client_add_contact',
+                                        'name' => 'tr_meliscommerce_client_add_contact',
+                                        'left_menu_display' => false
+                                    ],
+                                ]
                             ]
                         ],
                         'meliscommerce_clients_list_page' => [

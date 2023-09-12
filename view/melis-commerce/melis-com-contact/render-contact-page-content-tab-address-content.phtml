@@ -23,7 +23,9 @@ $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
                             </h4>
                         </div>
                         <div class="col-1">
-                            <i class="fa fa-times float-right fa-lg deleteContactAddress" data-contactid="<?= $this->contactId;?>" data-addressid="<?php echo $pVal->cadd_id ?>" data-addressaccordionid="<?php echo $contactAddressId ?>" style="margin-top: 5px; cursor: pointer"></i>
+                            <?php if($this->canAccess) { ?>
+                                <i class="fa fa-times float-right fa-lg deleteContactAddress" data-contactid="<?= $this->contactId;?>" data-addressid="<?php echo $pVal->cadd_id ?>" data-addressaccordionid="<?php echo $contactAddressId ?>" style="margin-top: 5px; cursor: pointer"></i>
+                            <?php } ?>
                         </div>
                     </div>
                 </div>

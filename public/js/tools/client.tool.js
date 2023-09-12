@@ -1057,6 +1057,16 @@ $(function() {
             .css("width", val + "%")
             .parent().parent().parent().removeClass("hidden");
     }
+
+    //to show td tooltip
+    $("body").on("mouseover", "table tbody td", function(){
+        if($(this).find("span.td-tooltip") != undefined){
+            $(this).find("span.td-tooltip").removeClass("d-none").css("left", $(this).position().left + 250);
+        }
+    });
+    $("body").on("mouseout", "table tbody td", function(){
+        $(this).find("span.td-tooltip").addClass("d-none");
+    });
 });
 function viewClientOrder(orderId, orderRef) {
 	var navTabsGroup = "id_meliscommerce_order_list_page";
