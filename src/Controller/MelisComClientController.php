@@ -1785,7 +1785,7 @@ class MelisComClientController extends MelisAbstractActionController
             $accountId = $this->getRequest()->getPost('clientId');
             if(!empty($accountId)) {
                 $melisTool = $this->getServiceManager()->get('MelisCoreTool');
-                $melisTool->setMelisToolKey(self::PLUGIN_INDEX, 'meliscommerce_contact_list');
+                $melisTool->setMelisToolKey(self::PLUGIN_INDEX, 'meliscommerce_clients_contact_list');
 
                 $colId = array_keys($melisTool->getColumns());
 
@@ -1825,7 +1825,7 @@ class MelisComClientController extends MelisAbstractActionController
                     $contactStatus = '<i class="fa fa-circle text-success"></i>';
                 }
 
-                $isDefault = '<i class="fa fa-star-o fa-2x"></i>';
+                $isDefault = '';
                 if($val['car_default_person']){
                     $isDefault = '<i class="fa fa-star fa-2x"></i>';
                 }

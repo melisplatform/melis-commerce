@@ -1374,6 +1374,11 @@ window.accountAssocContactListTblCallback = function ()
             //change icon
             $this.find(".ico-set-default").removeClass("fa-check");
             $this.find(".ico-set-default").addClass("fa-times");
+
+            //hide unlink for default contact
+			$this.find("button.accountContactUnlink").addClass("d-none");
+			//hide remove default
+            $this.find("button.updateDefaultContact").addClass("d-none");
         }
     });
 };

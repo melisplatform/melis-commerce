@@ -715,6 +715,9 @@ window.contactAssociatedAccountCallback = function () {
             //change icon
             $this.find(".ico-set-default").removeClass("fa-check");
             $this.find(".ico-set-default").addClass("fa-times");
+
+            $this.find("button.contactAccountUnlink").addClass("d-none");
+            $this.find("button.updateDefaultAccount ").addClass("d-none");
         }
     });
 };

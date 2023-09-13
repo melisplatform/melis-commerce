@@ -1057,8 +1057,17 @@ class MelisComClientService extends MelisComGeneralService
 
 			$personsData = $arrayParameters['persons'];
 			if(!empty($personsData)) {
+			    $hasDefault = false;
                 foreach ($personsData As $key => $val) {
-                    $successflag = $this->linkAccountContact(['car_client_id' => $clntId, 'car_client_person_id' => $val['cper_id']]);
+                    $data = ['car_client_id' => $clntId, 'car_client_person_id' => $val['cper_id']];
+                    //for new account, the first contact will set to default
+                    if(empty($arrayParameters['clientId'])){
+                        if(!$hasDefault){
+                            $data['car_default_person'] = 1;
+                            $hasDefault = true;
+                        }
+                    }
+                    $successflag = $this->linkAccountContact($data);
 
                     if (!$successflag) {
                         return null;

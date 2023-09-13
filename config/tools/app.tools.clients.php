@@ -309,11 +309,6 @@ return [
                             'cper_email'
                         ],
                         'actionButtons' => [
-                            'unlink' => [
-                                'module' => 'MelisCommerce',
-                                'controller' => 'MelisComClient',
-                                'action' => 'render-account-contact-list-table-unlink',
-                            ],
                             'edit' => [
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComContact',
@@ -323,7 +318,12 @@ return [
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComClient',
                                 'action' => 'render-account-contact-list-table-set-default',
-                            ]
+                            ],
+                            'unlink' => [
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComClient',
+                                'action' => 'render-account-contact-list-table-unlink',
+                            ],
                         ]
                     ],
                 ],

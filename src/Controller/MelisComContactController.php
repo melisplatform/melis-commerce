@@ -1103,7 +1103,7 @@ class MelisComContactController extends MelisAbstractActionController
             $contactStatus = '<i class="fa fa-circle text-danger"></i>';
             foreach ($tableData as $key => $val)
             {
-                $isDefault = '<i class="fa fa-star-o fa-2x"></i>';
+                $isDefault = '';
                 // Generating contact status html form
                 if ($val['cli_status'])
                 {
