@@ -229,12 +229,12 @@
 
 
         // Saving Messages
-		'tr_meliscommerce_client_save_success' => 'Client has been saved successfully',
-		'tr_meliscommerce_client_unable_to_save' => 'Unable to save client, please try again',
+		'tr_meliscommerce_client_save_success' => 'Account has been saved successfully',
+		'tr_meliscommerce_client_unable_to_save' => 'Unable to save account, please try again',
 		'tr_meliscommerce_client_Contact_must_atleast_one' => 'Account contact must have atleast one entry',
 		'tr_meliscommerce_client_Address_must_atleast_one' => 'Account address must have atleast one entry',
-		'tr_meliscommerce_client_Contact_active_must_atleast_one' => 'Client contact must have atleast one active',
-		
+		'tr_meliscommerce_client_Contact_active_must_atleast_one' => 'Account contact must have atleast one active',
+
 		// tooltip messages
 		'tr_meliscommerce_client_tooltip_password' => 'The password must be at least of 8 characters and must contain at least a letter AND a number.',
 		'tr_meliscommerce_client_tooltip_password_2' => 'Confirm the password',
@@ -256,8 +256,8 @@
 		'tr_meliscommerce_client_Checkout_cart_empty' => 'Cart is empty',
 		'tr_meliscommerce_client_Checkout_no_identity' => 'Please login to access this page',
 		
-		'tr_meliscommerce_client_export_success' => 'The client(s) has been exported successfully',
-		'tr_meliscommerce_client_export_fail' => 'Failed to export client(s)',
+		'tr_meliscommerce_client_export_success' => 'The account(s) has been exported successfully',
+		'tr_meliscommerce_client_export_fail' => 'Failed to export account(s)',
 
 		'tr_meliscommerce_client_order_refresh' => 'Refresh',
 		'tr_meliscommerce_client_refresh' => 'Refresh',

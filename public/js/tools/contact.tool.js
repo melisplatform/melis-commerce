@@ -693,6 +693,9 @@ window.initAccountAutoSuggest = function($element)
             onChooseEvent: function(){
                 var data = $($element).getSelectedItemData();
                 $($element).attr("data-accountid", data.cli_id);
+
+                //remove disable on select
+                $("#"+activeTabId+" button.contactAccountLink").attr("disabled", false);
             }
         }
     };

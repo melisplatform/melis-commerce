@@ -61,8 +61,8 @@
         'tr_meliscommerce_clients_table_account_name' => 'Compte',
 
 		// Buttons
-		'tr_meliscommerce_clients_add_client' => 'Ajouter un comptes',
-		'tr_meliscommerce_clients_save_client_info' => 'Enregistrer le comptes',
+		'tr_meliscommerce_clients_add_client' => 'Ajouter un compte',
+		'tr_meliscommerce_clients_save_client_info' => 'Enregistrer le compte',
 		'tr_meliscommerce_clients_add_contact' => 'Ajouter un contact',
 		'tr_meliscommerce_clients_edit_contact' => 'Editer un contact',
 		'tr_meliscommerce_clients_save_contact' => 'Sauvegarder le contact',
@@ -227,8 +227,8 @@
         'tr_meliscommerce_client_remove_default_account_failed' => 'Error occurred while removing default contact',
 
 		// Saving Messages
-		'tr_meliscommerce_client_save_success' => 'Le client a été sauvegardé avec succès',
-		'tr_meliscommerce_client_unable_to_save' => 'Impossible de sauvegarder le client, veuillez réessayer',
+		'tr_meliscommerce_client_save_success' => 'Le compte a été sauvegardé avec succès',
+		'tr_meliscommerce_client_unable_to_save' => 'Impossible de sauvegarder le compte, veuillez réessayer',
 		'tr_meliscommerce_client_Contact_must_atleast_one' => 'Au moins un contact doit être saisi',
 		'tr_meliscommerce_client_Address_must_atleast_one' => 'Au moins une adresse doit être saisie',
 		'tr_meliscommerce_client_Contact_active_must_atleast_one' => 'Au moins un contact actif est obligatoire',
@@ -254,7 +254,7 @@
 		'tr_meliscommerce_client_Checkout_cart_empty' => 'Panier vide',
 		'tr_meliscommerce_client_Checkout_no_identity' => 'Veuillez vous connecter pour accéder à cette page',
 		
-		'tr_meliscommerce_client_export_success' => 'Les clients ont été exportés avec succès',
+		'tr_meliscommerce_client_export_success' => 'Les compte ont été exportés avec succès',
 		'tr_meliscommerce_client_export_fail' => 'Echec de l\'export',
 
 		'tr_meliscommerce_client_order_refresh' => 'Rafraîchir',
@@ -348,7 +348,7 @@
         'tr_meliscommerce_accounts_import_failed' => 'Importing accounts failed',
         'tr_meliscommerce_accounts_import_success' => 'Accounts successfully imported',
         'tr_client_accounts_import_col_cli_status' => 'Status',
-        'tr_client_accounts_import_col_cli_name' => 'Client name',
+        'tr_client_accounts_import_col_cli_name' => 'Compte name',
         'tr_client_accounts_import_col_cli_country_id' => 'Country',
         'tr_client_accounts_import_col_cli_tags' => 'Tags',
         'tr_client_accounts_import_col_cgroup_name' => 'Group name',

@@ -16,7 +16,7 @@ $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
                 </div>
                 <div class="col-md-6">
                     <div class="linkContactBtn">
-                        <button class="btn btn-success accountContactLink"><i class="fa fa-link"></i> Link Contact</button>
+                        <button disabled class="btn btn-success accountContactLink"><i class="fa fa-link"></i> Link Contact</button>
                     </div>
                 </div>
             </div>
@@ -25,6 +25,14 @@ $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
                     var element = "#"+activeTabId+" input.link-contact-data";
                     initContactAutoSuggesst(element);
                     $(element).closest(".easy-autocomplete").width("150");
+
+                    //check if field is cleared
+                    $(element).blur(function()
+                    {
+                        if( $(this).val().length === 0 ) {
+                            $("#"+activeTabId+" button.accountContactLink").attr("disabled", true);
+                        }
+                    });
                 });
             </script>
         </div>

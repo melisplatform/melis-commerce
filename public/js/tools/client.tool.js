@@ -1412,6 +1412,9 @@ window.initContactAutoSuggesst = function($element)
             onChooseEvent: function(){
                 var data = $($element).getSelectedItemData();
                 $($element).attr("data-contactid", data.cper_id);
+
+                //remove disable on select
+				$("#"+activeTabId+" button.accountContactLink").attr("disabled", false);
 			}
         }
     };

@@ -64,6 +64,7 @@ return [
                                     'attributes' => [
                                         'id' => 'cli_country_id',
                                         'class' => 'form-control',
+                                        'required' => true
                                     ]
                                 ]
                             ],
