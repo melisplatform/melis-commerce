@@ -488,11 +488,24 @@ class MelisComClientListController extends MelisAbstractActionController
                 $clientCreated = !empty($val['cli_date_creation'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_date_creation'])), 0, 10) : '';
 
                 $defaultContact = '';
-
                 if($val['car_default_person']) {
                     $defaultContact = $val['cper_firstname'] . ' ' . $val['cper_name'];
                     $defaultContact = "<span class='d-none td-tooltip'>".$defaultContact."</span>".mb_strimwidth($defaultContact, 0, 30, '...');
                 }
+//                $accountContactList = $melisComClientService->getAccountAssocContactLists($val['cli_id'])->toArray(0);
+//                if(!empty($accountContactList)){
+//                    foreach($accountContactList as $key => $v){
+//                        $def = ($val['cper_id'] == $v['cper_id']) ? '(default)' : '';
+//
+//                        $n = $v['cper_firstname'].' '.$v['cper_name'].$def;
+//                        if(empty($defaultContact))
+//                            $defaultContact .= $n;
+//                        else
+//                            $defaultContact .= ', '.$n;
+//                    }
+//                }
+//                if(!empty($defaultContact))
+//                    $defaultContact = "<span class='d-none td-tooltip'>".$defaultContact."</span>".mb_strimwidth($defaultContact, 0, 30, '...');
 
                 $cliname = $melisComClientService->getAccountName($val['cli_id']);
 
@@ -503,7 +516,7 @@ class MelisComClientListController extends MelisAbstractActionController
                     'cli_status' => $contactStatus,
                     'cli_company' => $val['cli_company'],
                     'cli_date_creation' => $clientCreated,
-                    'cli_name' => "<span class='d-none td-tooltip'>".$cliname."</span>".mb_strimwidth($cliname, 0, 30, '...'),
+                    'cli_name' => !empty($cliname) ? "<span class='d-none td-tooltip'>".$cliname."</span>".mb_strimwidth($cliname, 0, 30, '...') : null,
                     'cli_num_orders' => $contactNumOrders,
                     'cli_last_order' => $lastOrder,
                     'default_contact' => $defaultContact,
@@ -515,6 +528,7 @@ class MelisComClientListController extends MelisAbstractActionController
                 array_push($tableData, $rowdata);
             }
         }
+
         return new JsonModel(array(
             'draw' => (int) $draw,
             'recordsTotal' => $dataCount,

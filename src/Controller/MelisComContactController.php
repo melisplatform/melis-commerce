@@ -240,10 +240,13 @@ class MelisComContactController extends MelisAbstractActionController
                     $contactStatus = '<i class="fa fa-circle text-success"></i>';
                 }
 
-                $tableData[$key]['cli_name'] = $melisComClientService->getAccountName($val['cli_id']);
+                $cliName = $melisComClientService->getAccountName($val['cli_id']);
+                if(!empty($cliName))
+                    $cliName = "<span class='d-none td-tooltip'>".$cliName."</span>".mb_strimwidth($cliName, 0, 30, '...');
+                $tableData[$key]['cli_name'] = $cliName;
                 $tableData[$key]['cper_status'] = $contactStatus;
-                $tableData[$key]['cper_firstname'] = "<span class='d-none td-tooltip'>".$val['cper_firstname']."</span>".mb_strimwidth($val['cper_firstname'], 0, 30, '...');
-                $tableData[$key]['cper_name'] = "<span class='d-none td-tooltip'>".$val['cper_name']."</span>".mb_strimwidth($val['cper_name'], 0, 30, '...');
+                $tableData[$key]['cper_firstname'] = (!empty($val['cper_firstname'])) ? "<span class='d-none td-tooltip'>".$val['cper_firstname']."</span>".mb_strimwidth($val['cper_firstname'], 0, 30, '...') : '';
+                $tableData[$key]['cper_name'] = !empty($val['cper_name']) ? "<span class='d-none td-tooltip'>".$val['cper_name']."</span>".mb_strimwidth($val['cper_name'], 0, 30, '...') : '';
             }
         }
         return new JsonModel(array(
@@ -1116,7 +1119,9 @@ class MelisComContactController extends MelisAbstractActionController
 
                 $tableData[$key]['cli_status'] = $contactStatus;
                 $tableData[$key]['default_account'] = $isDefault;
-                $tableData[$key]['cli_name'] = $clientService->getAccountName($val['cli_id']);
+
+                $cliName = $clientService->getAccountName($val['cli_id']);
+                $tableData[$key]['cli_name'] = !empty($cliName) ? "<span class='d-none td-tooltip'>".$cliName."</span>".mb_strimwidth($cliName, 0, 30, '...') : null;
 
                 $tableData[$key]['DT_RowAttr']    = [
                     'data-isdefault' => $val['cpr_default_client'],

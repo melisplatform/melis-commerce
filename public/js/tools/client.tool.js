@@ -1061,7 +1061,7 @@ $(function() {
     //to show td tooltip
     $("body").on("mouseover", "table tbody td", function(){
         if($(this).find("span.td-tooltip") != undefined){
-            $(this).find("span.td-tooltip").removeClass("d-none").css("left", $(this).position().left + 250);
+            $(this).find("span.td-tooltip").removeClass("d-none").css("left", $(this).position().left + 87);
         }
     });
     $("body").on("mouseout", "table tbody td", function(){

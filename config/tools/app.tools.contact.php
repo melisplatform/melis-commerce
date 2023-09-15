@@ -82,13 +82,13 @@ return [
                                 'css' => ['width' => '10%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],
-                            'cper_email' => [
-                                'text' => 'tr_meliscommerce_contact_email',
+                            'cli_name' => [
+                                'text' => 'tr_meliscommerce_contact_default_account_name',
                                 'css' => ['width' => '20%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],
-                            'cli_name' => [
-                                'text' => 'tr_meliscommerce_contact_default_account_name',
+                            'cper_email' => [
+                                'text' => 'tr_meliscommerce_contact_email',
                                 'css' => ['width' => '20%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],

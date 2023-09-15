@@ -332,7 +332,7 @@
 
         //export columns
         'tr_client_accounts_export_col_cli_id' => 'Compte Id',
-        'tr_client_accounts_export_col_cli_status' => 'Status',
+        'tr_client_accounts_export_col_cli_status' => 'Statut',
         'tr_client_accounts_export_col_cli_name' => 'Nom',
         'tr_client_accounts_export_col_cli_country_id' => 'Pays',
         'tr_client_accounts_export_col_cli_tags' => 'Tags',
