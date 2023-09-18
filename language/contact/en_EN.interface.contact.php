@@ -15,7 +15,7 @@ return [
     'tr_meliscommerce_contact_button_save_contact' => 'Save Contact',
     'tr_meliscommerce_contact_get_contact_name' => 'Get contact name',
     'tr_meliscommerce_contact_contact_name' => 'Contact name',
-    'tr_meliscommerce_contact_table_account_filter' => 'Account',
+    'tr_meliscommerce_contact_table_account_filter' => 'Accounts',
 
     'tr_meliscommerce_contact_common_Type' => 'Type',
     'tr_meliscommerce_contact_common_person' => 'Person',
@@ -89,7 +89,7 @@ return [
 
     'tr_meliscommerce_contact_import_is_mandatory' => ' is a mandatory field.',
     'tr_meliscommerce_contact_import_invalid_email' => ' is an invalid email',
-    'tr_meliscommerce_contact_import_email_already_exist' => ' is already exist',
+    'tr_meliscommerce_contact_import_email_already_exist' => ' already exist',
     'tr_meliscommerce_contact_import_checking' => 'Checking ... ',
     'tr_meliscommerce_contact_import_progress' => 'Progress ... ',
     'tr_meliscommerce_contact_import_address_name' => 'Address name',

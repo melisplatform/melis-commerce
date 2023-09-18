@@ -221,7 +221,7 @@
         'tr_meliscommerce_client_link_contact_failed' => 'Error occurred while linking contact',
 
         'tr_meliscommerce_client_set_default' => 'Set default',
-        'tr_meliscommerce_client_remove_default' => 'Remove default',
+        'tr_meliscommerce_client_remove_default' => 'Remove default status',
         'tr_meliscommerce_client_set_default_account_success' => 'Default contact successfully set',
         'tr_meliscommerce_client_set_default_account_failed' => 'Error occurred while setting default contact',
         'tr_meliscommerce_client_remove_default_account_success' => 'Default contact successfully removed',
@@ -350,7 +350,7 @@
         'tr_meliscommerce_accounts_import_failed' => 'Importing accounts failed',
         'tr_meliscommerce_accounts_import_success' => 'Accounts successfully imported',
         'tr_client_accounts_import_col_cli_status' => 'Status',
-        'tr_client_accounts_import_col_cli_name' => 'Client name',
+        'tr_client_accounts_import_col_cli_name' => 'Account name',
         'tr_client_accounts_import_col_cli_country_id' => 'Country',
         'tr_client_accounts_import_col_cli_tags' => 'Tags',
         'tr_client_accounts_import_col_cgroup_name' => 'Group name',
