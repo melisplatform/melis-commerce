@@ -413,6 +413,18 @@ class MelisComContactService extends MelisComGeneralService
         // Service implementation start
         $personRelTable = $this->getServiceManager()->get('MelisEcomClientPersonRelTable');
         $results = $personRelTable->save($arrayParameters['data'], $arrayParameters['id']);
+        if(!empty($results)){
+            //insert also data to melis_ecom_client_person_rel table so the association will appear on both tool(contact/account)
+            if(!empty($arrayParameters['data']['cpr_client_id']) && !empty($arrayParameters['data']['cpr_client_person_id'])) {
+                $accountRelTable = $this->getServiceManager()->get('MelisEcomClientAccountRelTable');
+                $results = $accountRelTable->save(
+                    [
+                        'car_client_id' => $arrayParameters['data']['cpr_client_id'],
+                        'car_client_person_id' => $arrayParameters['data']['cpr_client_person_id'],
+                    ]
+                );
+            }
+        }
         // Service implementation end
 
         // Adding results to parameters for events treatment if needed

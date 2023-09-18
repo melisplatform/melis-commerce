@@ -1831,6 +1831,7 @@ class MelisComClientController extends MelisAbstractActionController
                 }
 
                 $tableData[$key]['is_default'] = $isDefault;
+                $tableData[$key]['default_account'] = $this->isDefaultAccount($accountId, $val['cper_id']);
                 $tableData[$key]['cper_status'] = $contactStatus;
                 $tableData[$key]['cper_firstname'] = !empty($val['cper_firstname']) ? "<span class='d-none td-tooltip'>".$val['cper_firstname']."</span>".mb_strimwidth($val['cper_firstname'], 0, 30, '...') : '';
                 $tableData[$key]['cper_name'] = !empty($val['cper_name']) ? "<span class='d-none td-tooltip'>".$val['cper_name']."</span>".mb_strimwidth($val['cper_name'], 0, 30, '...') : '';
@@ -1848,6 +1849,17 @@ class MelisComClientController extends MelisAbstractActionController
             'recordsFiltered' => $dataCount,
             'data' => $tableData,
         ));
+    }
+
+    private function isDefaultAccount($accountId, $contactId)
+    {
+        $personTable = $this->getServiceManager()->get('MelisEcomClientPersonRelTable');
+        $data = $personTable->getDataByAccountAndContactId($accountId, $contactId)->current();
+        if(!empty($data)){
+            if($data->cpr_default_client)
+                return '<i class="fa fa-star fa-2x"></i>';
+        }
+        return '';
     }
 
     /**

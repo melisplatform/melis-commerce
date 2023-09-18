@@ -45,4 +45,18 @@ class MelisEcomClientPersonRelTable extends MelisEcomGenericTable
         $resultData = $this->tableGateway->deleteWith($delete);
         return $resultData;
     }
+
+    /**
+     * @param $accountId
+     * @param $contactId
+     * @return \Laminas\Db\ResultSet\ResultSetInterface
+     */
+    public function getDataByAccountAndContactId($accountId, $contactId)
+    {
+        $select = $this->getTableGateway()->getSql()->select();
+        $select->where->equalTo('cpr_client_id', $accountId);
+        $select->where->equalTo('cpr_client_person_id', $contactId);
+
+        return $this->getTableGateway()->selectwith($select);
+    }
 }

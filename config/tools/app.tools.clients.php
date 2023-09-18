@@ -300,6 +300,11 @@ return [
                                 'css' => ['width' => '10%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],
+                            'default_account' => [
+                                'text' => 'tr_meliscommerce_clients_is_default_account',
+                                'css' => ['width' => '10%', 'padding-right' => '0'],
+                                'sortable' => true,
+                            ],
                         ],
                         // define what columns can be used in searching
                         'searchables' => [

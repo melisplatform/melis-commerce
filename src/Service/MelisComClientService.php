@@ -1894,6 +1894,7 @@ class MelisComClientService extends MelisComGeneralService
             $melisEcomClientCompanyTable = $this->getServiceManager()->get('MelisEcomClientCompanyTable');
             $addrTable   = $this->getServiceManager()->get('MelisEcomClientAddressTable');
             $accountRel   = $this->getServiceManager()->get('MelisEcomClientAccountRelTable');
+            $contactRel   = $this->getServiceManager()->get('MelisEcomClientPersonRelTable');
 
             $adapter = $this->getServiceManager()->get('Laminas\Db\Adapter\Adapter');
             $con = $adapter->getDriver()->getConnection();//get db driver connection
@@ -1908,6 +1909,8 @@ class MelisComClientService extends MelisComGeneralService
                 $melisEcomBasketPersistentTable->deleteByField('bper_client_id', $arrayParameters['accountId']);
                 //delete accounts in the account relation table
                 $accountRel->deleteByField('car_client_id', $arrayParameters['accountId']);
+                //delete accounts in contact rel table
+                $contactRel->deleteByField('cpr_client_id', $arrayParameters['accountId']);
                 $con->commit();
             }catch (\Exception $ex){
                 $con->rollback();
@@ -2305,6 +2308,18 @@ class MelisComClientService extends MelisComGeneralService
         // Service implementation start
         $accountRelTable = $this->getServiceManager()->get('MelisEcomClientAccountRelTable');
         $results = $accountRelTable->save($arrayParameters['data'], $arrayParameters['id']);
+        if(!empty($results)){
+            //insert also data to melis_ecom_client_person_rel table so the association will appear on both tool(contact/account)
+            if(!empty($arrayParameters['data']['car_client_id']) && !empty($arrayParameters['data']['car_client_person_id'])) {
+                $personRelTable = $this->getServiceManager()->get('MelisEcomClientPersonRelTable');
+                $results = $personRelTable->save(
+                    [
+                        'cpr_client_id' => $arrayParameters['data']['car_client_id'],
+                        'cpr_client_person_id' => $arrayParameters['data']['car_client_person_id'],
+                    ]
+                );
+            }
+        }
         // Service implementation end
 
         // Adding results to parameters for events treatment if needed

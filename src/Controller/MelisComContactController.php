@@ -1118,7 +1118,10 @@ class MelisComContactController extends MelisAbstractActionController
 
 
                 $tableData[$key]['cli_status'] = $contactStatus;
+                //check if this account is the default of this contact
                 $tableData[$key]['default_account'] = $isDefault;
+                //check if this contact is the default of this account
+                $tableData[$key]['default_contact'] = $this->isDefaultContact($val['cli_id'], $contactId);
 
                 $cliName = $clientService->getAccountName($val['cli_id']);
                 $tableData[$key]['cli_name'] = !empty($cliName) ? "<span class='d-none td-tooltip'>".$cliName."</span>".mb_strimwidth($cliName, 0, 30, '...') : null;
@@ -1136,6 +1139,17 @@ class MelisComContactController extends MelisAbstractActionController
             'recordsFiltered' => $dataCount->totalRecords,
             'data' => $tableData,
         ));
+    }
+
+    private function isDefaultContact($accountId, $contactId)
+    {
+        $accountTable = $this->getServiceManager()->get('MelisEcomClientAccountRelTable');
+        $data = $accountTable->getDataByAccountAndContactId($accountId, $contactId)->current();
+        if(!empty($data)){
+            if($data->car_default_person)
+                return '<i class="fa fa-star fa-2x"></i>';
+        }
+        return '';
     }
 
     /**

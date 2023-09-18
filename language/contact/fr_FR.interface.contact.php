@@ -6,7 +6,7 @@ return [
     'tr_meliscommerce_contact_name' => 'Name',
     'tr_meliscommerce_contact_firstname' => 'Firstname',
     'tr_meliscommerce_contact_default_account_name' => 'Default account name',
-    'tr_meliscommerce_contact_is_default' => 'Is default',
+    'tr_meliscommerce_contact_is_default' => 'Default account',
     'tr_meliscommerce_contact_account_name' => 'Account name',
     'tr_meliscommerce_contact_add_contact_button' => 'Add Contact',
     'tr_meliscommerce_contact_save' => 'Save Contact',
@@ -110,4 +110,5 @@ return [
     'tr_meliscommerce_contact_page_content_tab_association_header_add_account' => 'Associate account',
     'tr_meliscommerce_contact_page_content_tab_address_header_button_ad' => 'Add address',
     'tr_meliscommerce_contact_page_content_tab_address_header_button_delete_address' => 'Delete address',
+    'tr_meliscommerce_contact_is_default_contact' => 'Default contact',
 ];
