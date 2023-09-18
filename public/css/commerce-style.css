@@ -3145,9 +3145,9 @@ tr.last-tr td {
 .client-contact-address .card-title .accordion-toggle {
 	color: #fff;
 }
-.client-contact-address .card-title .accordion-toggle:hover {
-	text-decoration: underline;
-}
+/*.client-contact-address .card-title .accordion-toggle:hover {*/
+	/*text-decoration: underline;*/
+/*}*/
 /* accordion-toggle heading */
 .content-cont .card-title > a,
 .content-cont .panel-title > a {

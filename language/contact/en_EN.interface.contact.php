@@ -1,7 +1,7 @@
 <?php
 return [
-    'tr_meliscommerce_contact' => 'Contact',
-    'tr_meliscommerce_contact_description' => 'List of Contact',
+    'tr_meliscommerce_contact' => 'Contacts',
+    'tr_meliscommerce_contact_description' => 'List of Contacts',
     'tr_meliscommerce_contact_email' => 'Email',
     'tr_meliscommerce_contact_name' => 'Name',
     'tr_meliscommerce_contact_firstname' => 'Firstname',
