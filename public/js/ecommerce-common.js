@@ -291,12 +291,6 @@ var melisCommerce = (function(window) {
 			id = $(target).attr("href");
 
 		$(id).collapse("toggle");
-
-        if ($('[href$="'+id+'"]').hasClass('collapsed')) {
-            $('[href$="'+id+'"]').removeClass('collapsed');
-        } else{
-            $('[href$="'+id+'"]').addClass('collapsed');
-        }
 	}
 
 	//order-checkout-steps

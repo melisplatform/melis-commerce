@@ -12,38 +12,38 @@ $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
             $ctr++; ?>
             <?php $contactAddressId = md5($pVal->cadd_id)?>
             <?php $tabId = md5($pVal->cadd_client_person);?>
-            <div class="card default-card" id="<?php echo $contactAddressId.'_contact_address_content'?>">
+            <div class="card default-card" id="<?php echo 'address_'.$contactAddressId.'_contact_address_content'?>">
                 <div class="card-header">
                     <div class="row">
                         <div class="col-11">
                             <h4 class="card-title">
-                                <a class="accordion-toggle <?= $ctr > 1 ? 'collapsed' : '';?>" aria-expanded="<?= $ctr == 1 ? 'true' : 'false';?>" id="<?php echo 'nav_'.$contactAddressId ?>" data-toggle="collapse" href="#<?php echo $contactAddressId.'_address_accordion' ?>">
+                                <a class="accordion-toggle <?= $ctr > 1 ? 'collapsed' : '';?>" aria-expanded="<?= $ctr == 1 ? 'true' : 'false';?>" id="<?php echo 'nav_'.$contactAddressId ?>" data-toggle="collapse" href="#<?php echo 'address_'.$contactAddressId.'_address_accordion' ?>">
                                     <?php echo $pVal->cadd_address_name ?>
                                 </a>
                             </h4>
                         </div>
                         <div class="col-1">
                             <?php if($this->canAccess) { ?>
-                                <i class="fa fa-times float-right fa-lg deleteContactAddress" data-contactid="<?= $this->contactId;?>" data-addressid="<?php echo $pVal->cadd_id ?>" data-addressaccordionid="<?php echo $contactAddressId ?>" style="margin-top: 5px; cursor: pointer"></i>
+                                <i class="fa fa-times float-right fa-lg deleteContactAddress" data-contactid="<?= $this->contactId;?>" data-addressid="<?php echo $pVal->cadd_id ?>" data-addressaccordionid="<?php echo 'address_'.$contactAddressId ?>" style="margin-top: 5px; cursor: pointer"></i>
                             <?php } ?>
                         </div>
                     </div>
                 </div>
-                <div id="<?php echo $contactAddressId.'_address_accordion' ?>" class="card-collapse collapse <?= $ctr == 1 ? 'show' : '';?>">
+                <div id="<?php echo 'address_'.$contactAddressId.'_address_accordion' ?>" class="card-collapse collapse <?= $ctr == 1 ? 'show' : '';?>">
                     <div class="card-body">
                         <div class="innerAll spacing-x2">
                             <?php
                             $addForm = clone $this->form;
-                            $addForm->setAttribute('id', $contactAddressId.'_contact_address_form');
-                            $addForm->setAttribute('name', $contactAddressId.'_contact_address_form');
-                            $addForm->setAttribute('data-contactaddressid', $contactAddressId);
+                            $addForm->setAttribute('id', 'address_'.$contactAddressId.'_contact_address_form');
+                            $addForm->setAttribute('name', 'address_'.$contactAddressId.'_contact_address_form');
+                            $addForm->setAttribute('data-contactaddressid', 'address_'.$contactAddressId);
                             $addForm->setAttribute('class', 'clientContactAddressForm');
 
                             foreach($addForm->getElements() as $element => $attributes)  {
                                 $el =  $addForm->get((string) $element);
                                 $elId = $el->getAttribute('id') ?? $el->getName();
 
-                                $el->setAttribute('id', $contactAddressId . '_' . $elId);
+                                $el->setAttribute('id', 'address_'.$contactAddressId . '_' . $elId);
                             }
 
                             $addForm->bind($pVal);
