@@ -46,6 +46,7 @@ return [
     'tr_meliscommerce_contact_page_content_tab_address_delete_msg' => 'Etes-vous sûr(e) de vouloir supprimer cette adresse ?',
 
     //link account
+    'tr_meliscommerce_contact_link_account_button' => 'Associer ce compte',
     'tr_meliscommerce_contact_link_account' => 'Associer un compte',
     'tr_meliscommerce_contact_link_account_success' => 'Compte associé avec succès',
     'tr_meliscommerce_contact_link_account_failed' => 'Une erreur est survenue lors de l\'association du compte',

@@ -37,7 +37,7 @@
 		//Client list widgets
 		'tr_meliscommerce_client_list_widgets_num_client' => 'Total number of accounts',
 		'tr_meliscommerce_client_list_widgets_month_clients' => 'Number of accounts this month',
-		'tr_meliscommerce_client_list_widgets_avg_clients' => 'Accounts',
+		'tr_meliscommerce_client_list_widgets_avg_clients' => 'Active / Inactive Accounts',
 		
 		// Interface Names
 		'tr_meliscommerce_clients_list_page' => 'Account list',

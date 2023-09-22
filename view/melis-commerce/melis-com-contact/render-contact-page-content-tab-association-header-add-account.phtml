@@ -9,14 +9,14 @@ $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
     <?php if($this->canAccess) { ?>
         <div class="link-account float-right">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-5">
                     <div class="input-autosuggest">
                         <input placeholder="<?= $this->translate('tr_meliscommerce_contact_account_name');?>" data-contactid="<?= $this->contactId;?>" data-accountid="" class="form-control link-account-data" type="text"/>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-7">
                     <div class="linkAccountBtn">
-                        <button disabled class="btn btn-success contactAccountLink"><i class="fa fa-link"></i> Link Account</button>
+                        <button disabled class="btn btn-success contactAccountLink"><i class="fa fa-link"></i> <?= $this->translate('tr_meliscommerce_contact_link_account_button');?></button>
                     </div>
                 </div>
             </div>

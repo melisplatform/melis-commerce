@@ -46,6 +46,7 @@ return [
     'tr_meliscommerce_contact_page_content_tab_address_delete_msg' => 'Are you sure you want to delete this address?',
 
     //link account
+    'tr_meliscommerce_contact_link_account_button' => 'Link account',
     'tr_meliscommerce_contact_link_account' => 'Link account',
     'tr_meliscommerce_contact_link_account_success' => 'Account successfully linked',
     'tr_meliscommerce_contact_link_account_failed' => 'Error occurred while linking account',

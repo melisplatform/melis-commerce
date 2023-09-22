@@ -37,7 +37,7 @@
 		//Client list widgets
 		'tr_meliscommerce_client_list_widgets_num_client' => 'Nombre de comptes',
 		'tr_meliscommerce_client_list_widgets_month_clients' => 'Nombre de comptes ce mois',
-		'tr_meliscommerce_client_list_widgets_avg_clients' => 'Comptes',
+		'tr_meliscommerce_client_list_widgets_avg_clients' => 'Comptes actifs / inactifs',
 		
 		// Interface Names
 		'tr_meliscommerce_clients_list_page' => 'Liste des comptes',
@@ -210,12 +210,12 @@
         'tr_meliscommerce_client_delete_account_success' => 'Compte supprimé avec succès',
         'tr_meliscommerce_client_delete_account_failed' => 'Une errreur est survenue lors de la suppression du compte',
 		//unlink contact
-        'tr_meliscommerce_client_unlink_contact' => 'Dissocier le contact',
+        'tr_meliscommerce_client_unlink_contact' => 'Dissocier ce contact',
         'tr_meliscommerce_client_unlink_contact_msg' => 'Etes-vous sûr(e) de vouloir dissocier le contact ?',
         'tr_meliscommerce_client_unlink_contact_success' => 'Contact dissocié avec succès',
         'tr_meliscommerce_client_unlink_contact_failed' => 'Une erreur est survenue lors de la dissociation du contact',
         //link
-        'tr_meliscommerce_client_link_contact' => 'Associer le contact',
+        'tr_meliscommerce_client_link_contact' => 'Associer ce contact',
         'tr_meliscommerce_client_link_contact_success' => 'Contact associé avec succès',
         'tr_meliscommerce_client_link_contact_failed' => 'Une erreur est survenue lors de l\'association du contact',
 

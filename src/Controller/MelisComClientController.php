@@ -1351,10 +1351,10 @@ class MelisComClientController extends MelisAbstractActionController
                 $companyNameRequired = false;
 
                 // clean data
-//                foreach ($clientCompanyData as $key => $value) {
-//                    if (empty($value))
-//                        unset($clientCompanyData[$key]);
-//                }
+                foreach ($clientCompanyData as $key => $value) {
+                    if (empty($value))
+                        unset($clientCompanyData[$key]);
+                }
                 
                 // Fields names that excluded on checkin value
                 $excludeFields = array('ccomp_id', 'ccomp_client_id', 'ccomp_name', 'ccomp_date_creation', 'ccomp_date_edit');
