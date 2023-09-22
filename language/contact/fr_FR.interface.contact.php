@@ -51,7 +51,7 @@ return [
     'tr_meliscommerce_contact_link_account_success' => 'Compte associé avec succès',
     'tr_meliscommerce_contact_link_account_failed' => 'Une erreur est survenue lors de l\'association du compte',
 
-    'tr_meliscommerce_contact_set_default' => 'Définir par défaut',
+    'tr_meliscommerce_contact_set_default' => 'Définir ce compte par défaut',
     'tr_meliscommerce_contact_remove_default' => 'Retirer le statut par défaut',
     'tr_meliscommerce_contact_set_default_account_success' => 'Compte par défaut défini avec succès',
     'tr_meliscommerce_contact_set_default_account_failed' => 'Une erreur est survenue lors de la définition du statut par défaut du compte',

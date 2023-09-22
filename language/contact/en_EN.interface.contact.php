@@ -51,7 +51,7 @@ return [
     'tr_meliscommerce_contact_link_account_success' => 'Account successfully linked',
     'tr_meliscommerce_contact_link_account_failed' => 'Error occurred while linking account',
 
-    'tr_meliscommerce_contact_set_default' => 'Set default',
+    'tr_meliscommerce_contact_set_default' => 'Set this account as default',
     'tr_meliscommerce_contact_remove_default' => 'Remove default',
     'tr_meliscommerce_contact_set_default_account_success' => 'Default account successfully set',
     'tr_meliscommerce_contact_set_default_account_failed' => 'Error occurred while setting default account',

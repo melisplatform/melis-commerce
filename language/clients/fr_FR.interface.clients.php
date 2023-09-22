@@ -32,7 +32,7 @@
 		'tr_meliscommerce_clients_list_col_products' => 'Produits',
 		'tr_meliscommerce_clients_list_col_price_title' => 'Montant',
 
-        'tr_meliscommerce_general_common_unlink' => 'Unlink',
+        'tr_meliscommerce_general_common_unlink' => 'Dissocier',
 
 		//Client list widgets
 		'tr_meliscommerce_client_list_widgets_num_client' => 'Nombre de comptes',
@@ -167,8 +167,8 @@
 		'tr_meliscommerce_client_Contact_address_company_state' => 'Etat',
 		'tr_meliscommerce_client_Contact_address_company_country' => 'Pays',
 		'tr_meliscommerce_client_Contact_address_company_logo' => 'Logo',
-        'tr_meliscommerce_client_Contact_address_company_phone_number' => 'Phone Number',
-        'tr_meliscommerce_client_Contact_address_company_website' => 'Website',
+        'tr_meliscommerce_client_Contact_address_company_phone_number' => 'Téléphone',
+        'tr_meliscommerce_client_Contact_address_company_website' => 'Site internet',
 		// Validation and Messages
 		'tr_meliscommerce_client_Contact_unable_to_add' => 'Impossible d\'ajouter un contact, veuillez réessayer',
 		'tr_meliscommerce_client_Contact_input_empty' => 'Le champ ne peut être vide',
@@ -219,7 +219,7 @@
         'tr_meliscommerce_client_link_contact_success' => 'Contact associé avec succès',
         'tr_meliscommerce_client_link_contact_failed' => 'Une erreur est survenue lors de l\'association du contact',
 
-        'tr_meliscommerce_client_set_default' => 'Définir par défaut',
+        'tr_meliscommerce_client_set_default' => 'Définir ce contact par défaut',
         'tr_meliscommerce_client_remove_default' => 'Retirer le statut par défaut',
         'tr_meliscommerce_client_set_default_account_success' => 'Contact par défaut défini avec succès',
         'tr_meliscommerce_client_set_default_account_failed' => 'Une erreur est survenue lors de la définition du statut par défaut du contact',

@@ -220,7 +220,7 @@
         'tr_meliscommerce_client_link_contact_success' => 'Contact successfully linked',
         'tr_meliscommerce_client_link_contact_failed' => 'Error occurred while linking contact',
 
-        'tr_meliscommerce_client_set_default' => 'Set default',
+        'tr_meliscommerce_client_set_default' => 'Set this contact as default',
         'tr_meliscommerce_client_remove_default' => 'Remove default status',
         'tr_meliscommerce_client_set_default_account_success' => 'Default contact successfully set',
         'tr_meliscommerce_client_set_default_account_failed' => 'Error occurred while setting default contact',
