@@ -390,14 +390,18 @@ class MelisComClientController extends MelisAbstractActionController
 
             if (! empty($clientCompany[0]->ccomp_logo))
                 $ccomp_logo = 'data:image/png;base64,'.base64_encode($clientCompany[0]->ccomp_logo);
-            
+
             if (!empty($clientCompany))
             {
+                $date = null;
                 if (! empty($clientCompany[0]->ccomp_comp_creation_date)) {
-                    // format the company creation date
-                    $companyCreationDate = \DateTime::createFromFormat('Y-m-d', $clientCompany[0]->ccomp_comp_creation_date);
-                    $clientCompany[0]->ccomp_comp_creation_date = $companyCreationDate->format('m/d/Y');
+                    if ($clientCompany[0]->ccomp_comp_creation_date != '0000-00-00') {
+                        // format the company creation date
+                        $companyCreationDate = \DateTime::createFromFormat('Y-m-d', $clientCompany[0]->ccomp_comp_creation_date);
+                        $date = $companyCreationDate->format('m/d/Y');
+                    }
                 }
+                $clientCompany[0]->ccomp_comp_creation_date = $date;
 
                 $propertyForm->bind($clientCompany[0]);
             }
@@ -1086,7 +1090,7 @@ class MelisComClientController extends MelisAbstractActionController
             if (! empty($datas['clientCompany']['ccomp_logo']))
                 $companyData['ccomp_logo'] = $datas['clientCompany']['ccomp_logo'];
             $addressesData = $this->getTool()->sanitizeRecursive($datas['clientAddresses']);
-            
+
             // Getting Data from Post in array form
             $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
@@ -1347,10 +1351,10 @@ class MelisComClientController extends MelisAbstractActionController
                 $companyNameRequired = false;
 
                 // clean data
-                foreach ($clientCompanyData as $key => $value) {
-                    if (empty($value))
-                        unset($clientCompanyData[$key]);
-                }
+//                foreach ($clientCompanyData as $key => $value) {
+//                    if (empty($value))
+//                        unset($clientCompanyData[$key]);
+//                }
                 
                 // Fields names that excluded on checkin value
                 $excludeFields = array('ccomp_id', 'ccomp_client_id', 'ccomp_name', 'ccomp_date_creation', 'ccomp_date_edit');
@@ -1363,7 +1367,7 @@ class MelisComClientController extends MelisAbstractActionController
                         }
                     }
                 }
-                
+
                 if (empty($clientCompanyData['ccomp_name'])) {
                     if ($companyNameRequired) {
                         // Return Error if Company Name is Flag as Mandatory and no value
@@ -1398,7 +1402,7 @@ class MelisComClientController extends MelisAbstractActionController
         if (empty($errors)){
             $success = 1;
         }
-        
+
         $result = array(
             'success' => $success,
             'errors' => array('clientCompany_err' => $errors),
@@ -1794,6 +1798,8 @@ class MelisComClientController extends MelisAbstractActionController
 
                 $selCol = $this->getRequest()->getPost('order');
                 $selCol = $colId[$selCol[0]['column']];
+                if($selCol == 'is_default')
+                    $selCol = 'car_default_person';
 
                 $draw = $this->getRequest()->getPost('draw');
 

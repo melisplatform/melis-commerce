@@ -1089,6 +1089,11 @@ class MelisComContactController extends MelisAbstractActionController
             $selCol = $this->getRequest()->getPost('order');
             $selCol = $colId[$selCol[0]['column']];
 
+//            if($selCol == 'default_contact')
+//                $selCol = null;
+            if($selCol == 'default_account')
+                $selCol = 'cpr_default_client';
+
             $draw = $this->getRequest()->getPost('draw');
 
             $start = $this->getRequest()->getPost('start');
