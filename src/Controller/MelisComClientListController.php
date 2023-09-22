@@ -435,7 +435,9 @@ class MelisComClientListController extends MelisAbstractActionController
             
             $selCol = $this->getRequest()->getPost('order');
             $selCol = $colId[$selCol[0]['column']];
-            
+            if($selCol == 'default_contact')
+                $selCol = 'car_default_person';
+
             $draw = $this->getRequest()->getPost('draw');
             
             $start = $this->getRequest()->getPost('start');
