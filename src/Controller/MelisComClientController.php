@@ -1750,16 +1750,30 @@ class MelisComClientController extends MelisAbstractActionController
 
         $success = 0;
         $error = [];
+        $clientContactName = '';
         $title = 'tr_meliscommerce_client_unlink_contact';
         $message = 'tr_meliscommerce_client_unlink_contact_failed';
 
         $translator = $this->getServiceManager()->get('translator');
         $clientService = $this->getServiceManager()->get('MelisComClientService');
+        $contactService = $this->getServiceManager()->get('MelisComContactService');
         if($this->request->isPost()){
             $res = $clientService->unlinkAccountContact($accountId, $contactId);
-            if($res){
+            //unlink also the data in contact
+            $resContact = $contactService->unlinkAccountContact($accountId, $contactId);
+            if($res && $resContact){
                 $success = 1;
                 $message = 'tr_meliscommerce_client_unlink_contact_success';
+
+                //get contact name
+                $contactData = $contactService->getContactById($contactId);
+                if (!empty($contactData))
+                {
+                    if($contactData->cper_type == 'company')
+                        $clientContactName = $contactData->cper_firstname;
+                    else
+                        $clientContactName = $contactData->cper_firstname.' '.$contactData->cper_name;
+                }
             }
         }
 
@@ -1767,6 +1781,7 @@ class MelisComClientController extends MelisAbstractActionController
             'success' => $success,
             'accountId' => $accountId,
             'contactId' => $contactId,
+            'clientContactName' => $clientContactName,
             'error' => $error,
             'textTitle' => $translator->translate($title),
             'textMessage' => $translator->translate($message)
@@ -1836,14 +1851,16 @@ class MelisComClientController extends MelisAbstractActionController
                     $isDefault = '<i class="fa fa-star fa-2x"></i>';
                 }
 
+                $isDefaultAccount = $this->isDefaultAccount($accountId, $val['cper_id']);
                 $tableData[$key]['is_default'] = $isDefault;
-                $tableData[$key]['default_account'] = $this->isDefaultAccount($accountId, $val['cper_id']);
+                $tableData[$key]['default_account'] = $isDefaultAccount;
                 $tableData[$key]['cper_status'] = $contactStatus;
                 $tableData[$key]['cper_firstname'] = !empty($val['cper_firstname']) ? "<span class='d-none td-tooltip'>".$val['cper_firstname']."</span>".mb_strimwidth($val['cper_firstname'], 0, 30, '...') : '';
                 $tableData[$key]['cper_name'] = !empty($val['cper_name']) ? "<span class='d-none td-tooltip'>".$val['cper_name']."</span>".mb_strimwidth($val['cper_name'], 0, 30, '...') : '';
 
                 $tableData[$key]['DT_RowAttr']    = [
                     'data-isdefault' => $val['car_default_person'],
+                    'data-isdefaultaccount' => !empty($isDefaultAccount) ? 1 : 0,
                     'data-carid' => $val['car_id'],
                     'data-accountid' => $val['cli_id']
                 ];

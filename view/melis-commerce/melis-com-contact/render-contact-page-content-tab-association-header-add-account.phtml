@@ -23,6 +23,9 @@ $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
             <script type="application/javascript">
                 $(document).ready(function(){
                     var element = "#"+activeTabId+" input.link-account-data";
+                    if(accountToolSelectedContact != '')
+                        element = "#"+accountToolSelectedContact+"_id_meliscommerce_contact_page_content_tab_association_header input.link-account-data";
+
                     initAccountAutoSuggest(element);
                     $(element).closest(".easy-autocomplete").width("150");
 

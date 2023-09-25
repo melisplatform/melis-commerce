@@ -40,14 +40,35 @@ $(function() {
 				if (data.success) {
 					var navTabsGroup = "id_meliscommerce_clients_list_page";
 
-					melisHelper.tabOpen(
-						data.accountName,
-						"fa fa-user",
-                        accountId + "_id_meliscommerce_client_page",
-						"meliscommerce_client_page",
-						{ clientId: accountId },
-						navTabsGroup
-					);
+					if($("#id_meliscommerce_clients_list_page").length > 0) {
+                        melisHelper.tabOpen(
+                            data.accountName,
+                            "fa fa-user",
+                            accountId + "_id_meliscommerce_client_page",
+                            "meliscommerce_client_page",
+                            {clientId: accountId},
+                            navTabsGroup
+                        );
+                    }else{
+                        melisHelper.tabOpen(
+                            translations.tr_meliscommerce_clients_Clients,
+                            "fa fa-users fa-2x",
+                            "id_meliscommerce_clients_list_page",
+                            "meliscommerce_clients_list_page",
+                            {},
+                            null,
+                            function(){
+                                melisHelper.tabOpen(
+                                    data.accountName,
+                                    "fa fa-user",
+                                    accountId + "_id_meliscommerce_client_page",
+                                    "meliscommerce_client_page",
+                                    {clientId: accountId},
+                                    navTabsGroup
+                                );
+                            }
+                        );
+					}
 				} else {
 					melisHelper.melisKoNotification(
 						data.textTitle,
@@ -880,6 +901,18 @@ $(function() {
                     if(data.success){
                         $("#"+data.accountId+"_accountContactList").DataTable().ajax.reload();
                         melisHelper.melisOkNotification(data.textTitle, data.textMessage);
+
+                        if($("#id_meliscommerce_contact_list_page").length > 0){
+                        	if($("#"+contactId+"_id_meliscommerce_contact_page_content_tab_association").length > 0) {
+                                melisHelper.zoneReload(
+                                    contactId + "_id_meliscommerce_contact_page_content_tab_association",
+                                    "meliscommerce_contact_page_content_tab_association",
+                                    {contactId: contactId, activateTab: true}
+                                );
+                                accountToolSelectedContact = contactId;
+                                accountToolInitContactAutoSuggest = true;
+                            }
+                        }
                     }else{
                         melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.error);
                     }
@@ -906,6 +939,18 @@ $(function() {
                     "meliscommerce_client_page_tab_contact",
                     { clientId: accountId, activateTab: true }
                 );
+
+                if($("#id_meliscommerce_contact_list_page").length > 0){
+                	if($("#"+contactId+"_id_meliscommerce_contact_page_content_tab_association").length > 0) {
+                        melisHelper.zoneReload(
+                            contactId + "_id_meliscommerce_contact_page_content_tab_association",
+                            "meliscommerce_contact_page_content_tab_association",
+                            {contactId: contactId, activateTab: true}
+                        );
+                        accountToolSelectedContact = contactId;
+                        accountToolInitContactAutoSuggest = true;
+                    }
+                }
             }else{
                 melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.error);
             }
@@ -1195,6 +1240,11 @@ function addNewOrderCallback(oldClientIdInNewOrderTab, curClientId) {
 		melisHelper.zoneReload('id_meliscommerce_order_checkout', 'meliscommerce_order_checkout', {clientId: curClientId},);
 	} 
 }
+
+window.setClientId = function(d){
+    d.clientId = (contactToolSelectedAccount != '') ? contactToolSelectedAccount : activeTabId.replace('_id_meliscommerce_client_page','');
+};
+
 window.initClientStatus = function() {
 	$("#cli_status").bootstrapSwitch();
 };
@@ -1363,7 +1413,8 @@ window.accountAssocContactListTblCallback = function ()
 
     $("#" + accountId + "_accountContactList tbody tr").each(function () {
         var $this = $(this),
-            isDefault = $this.data("isdefault");
+            isDefault = $this.data("isdefault"),
+            isDefaultAccount = $this.data("isdefaultaccount");
 
         if (isDefault == 1) {
             //change button style
@@ -1375,12 +1426,16 @@ window.accountAssocContactListTblCallback = function ()
             $this.find(".ico-set-default").removeClass("fa-check");
             $this.find(".ico-set-default").addClass("fa-times");
 
-            //hide unlink for default contact
-			$this.find("button.accountContactUnlink").addClass("d-none");
 			//hide remove default
             $this.find("button.updateDefaultContact").addClass("d-none");
         }
+        if(isDefault == 1 || isDefaultAccount == 1){
+            //hide unlink for default contact
+            $this.find("button.accountContactUnlink").addClass("d-none");
+		}
     });
+    contactToolSelectedAccount = '';
+    contactToolInitAccountAutoSuggest = false;
 };
 
 window.initContactAutoSuggesst = function($element)

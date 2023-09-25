@@ -104,6 +104,7 @@ return [
                     '/MelisCommerce/assets/common/awesomplete.min.js',
                     '/MelisCommerce/plugins/js/common/category-jstree.js',
                     '/MelisCommerce/js/widget-collapsible.init.js',
+                    '/MelisCommerce/js/tools/ecom.globals.js',
                 ],
                 'css' => [
                     '/MelisCommerce/assets/jstree/dist/themes/proton/style.min.css',

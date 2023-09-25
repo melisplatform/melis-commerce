@@ -86,14 +86,35 @@ $(function(){
                 if (data.success) {
                     var navTabsGroup = "id_meliscommerce_contact_list_page";
 
-                    melisHelper.tabOpen(
-                        data.clientContactName,
-                        "fa fa-user",
-                        contactId + "_id_meliscommerce_contact_page",
-                        "meliscommerce_contact_page",
-                        { contactId: contactId },
-                        navTabsGroup
-                    );
+                    if($("#id_meliscommerce_contact_list_page").length > 0){
+                        melisHelper.tabOpen(
+                            data.clientContactName,
+                            "fa fa-user",
+                            contactId + "_id_meliscommerce_contact_page",
+                            "meliscommerce_contact_page",
+                            { contactId: contactId },
+                            navTabsGroup
+                        );
+                    }else{
+                        melisHelper.tabOpen(
+                            translations.tr_meliscommerce_contact,
+                            "fa fa-user fa-2x",
+                            "id_meliscommerce_contact_list_page",
+                            "meliscommerce_contact_list_page",
+                            {},
+                            null,
+                            function(){
+                                melisHelper.tabOpen(
+                                    data.clientContactName,
+                                    "fa fa-user",
+                                    contactId + "_id_meliscommerce_contact_page",
+                                    "meliscommerce_contact_page",
+                                    { contactId: contactId },
+                                    navTabsGroup
+                                );
+                            }
+                        );
+                    }
                 } else {
                     melisHelper.melisKoNotification(
                         data.textTitle,
@@ -318,6 +339,28 @@ $(function(){
                     "meliscommerce_contact_page_content_tab_association",
                     { contactId: contactId, activateTab: true }
                 );
+
+                if($("#id_meliscommerce_clients_list_page").length > 0) {
+                    // var navTabsGroup = "id_meliscommerce_clients_list_page";
+                    // melisHelper.tabClose(accountId + "_id_meliscommerce_client_page", navTabsGroup);
+                    // melisHelper.tabOpen(
+                    //     data.accountName,
+                    //     "fa fa-user",
+                    //     accountId + "_id_meliscommerce_client_page",
+                    //     "meliscommerce_client_page",
+                    //     {clientId: accountId},
+                    //     navTabsGroup
+                    // );
+                    if($("#"+accountId + "_id_meliscommerce_client_page_tab_contact").length > 0) {
+                        melisHelper.zoneReload(
+                            accountId + "_id_meliscommerce_client_page_tab_contact",
+                            "meliscommerce_client_page_tab_contact",
+                            {clientId: accountId, activateTab: true}
+                        );
+                        contactToolSelectedAccount = accountId;
+                        contactToolInitAccountAutoSuggest = true;
+                    }
+                }
             }else{
                 melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.error);
             }
@@ -370,6 +413,27 @@ $(function(){
                     if(data.success){
                         $("#"+contactId+"_contactAssocAccountList").DataTable().ajax.reload();
                         melisHelper.melisOkNotification(data.textTitle, data.textMessage);
+
+                        //reload account data
+                        // var navTabsGroup = "id_meliscommerce_clients_list_page";
+                        if($("#id_meliscommerce_clients_list_page").length > 0) {
+                            // melisHelper.tabClose(accountId + "_id_meliscommerce_client_page", navTabsGroup);
+                            // melisHelper.tabOpen(
+                            //     data.accountName,
+                            //     "fa fa-user",
+                            //     accountId + "_id_meliscommerce_client_page",
+                            //     "meliscommerce_client_page",
+                            //     {clientId: accountId},
+                            //     navTabsGroup
+                            // );
+                            melisHelper.zoneReload(
+                                accountId + "_id_meliscommerce_client_page_tab_contact",
+                                "meliscommerce_client_page_tab_contact",
+                                { clientId: accountId, activateTab: true }
+                            );
+                            contactToolSelectedAccount = accountId;
+                            contactToolInitAccountAutoSuggest = true;
+                        }
                     }else{
                         melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.error);
                     }
@@ -661,12 +725,9 @@ $(function(){
         $(this).find("span.td-tooltip").addClass("d-none");
     });
 });
-window.setClientId = function(d){
-    d.clientId = activeTabId.replace('_id_meliscommerce_client_page','');
-};
 
 window.setContactId = function(d){
-    d.contactId = activeTabId.replace('_id_meliscommerce_contact_page','');
+    d.contactId = (accountToolSelectedContact != '') ? accountToolSelectedContact : activeTabId.replace('_id_meliscommerce_contact_page','');
 };
 
 window.initAccountAutoSuggest = function($element)
@@ -707,7 +768,8 @@ window.contactAssociatedAccountCallback = function () {
     var contactId = activeTabId.replace('_id_meliscommerce_contact_page','');
     $("#" + contactId + "_contactAssocAccountList tbody tr").each(function () {
         var $this = $(this),
-            isDefault = $this.data("isdefault");
+            isDefault = $this.data("isdefault"),
+            isDefaultContact = $this.data("isdefaultcontact");
 
         if (isDefault == 1) {
             //change button style
@@ -719,10 +781,15 @@ window.contactAssociatedAccountCallback = function () {
             $this.find(".ico-set-default").removeClass("fa-check");
             $this.find(".ico-set-default").addClass("fa-times");
 
-            $this.find("button.contactAccountUnlink").addClass("d-none");
             $this.find("button.updateDefaultAccount ").addClass("d-none");
         }
+
+        if(isDefault == 1 || isDefaultContact == 1){
+            $this.find("button.contactAccountUnlink").addClass("d-none");
+        }
     });
+    accountToolSelectedContact = '';
+    accountToolInitContactAutoSuggest = false;
 };
 
 window.contactListTableDataFunction = function(d)

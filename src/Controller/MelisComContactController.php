@@ -1126,13 +1126,15 @@ class MelisComContactController extends MelisAbstractActionController
                 //check if this account is the default of this contact
                 $tableData[$key]['default_account'] = $isDefault;
                 //check if this contact is the default of this account
-                $tableData[$key]['default_contact'] = $this->isDefaultContact($val['cli_id'], $contactId);
+                $isDefaultAccount = $this->isDefaultContact($val['cli_id'], $contactId);
+                $tableData[$key]['default_contact'] = $isDefaultAccount;
 
                 $cliName = $clientService->getAccountName($val['cli_id']);
                 $tableData[$key]['cli_name'] = !empty($cliName) ? "<span class='d-none td-tooltip'>".$cliName."</span>".mb_strimwidth($cliName, 0, 30, '...') : null;
 
                 $tableData[$key]['DT_RowAttr']    = [
                     'data-isdefault' => $val['cpr_default_client'],
+                    'data-isdefaultcontact' => !empty($isDefaultAccount) ? 1 : 0,
                     'data-cprid' => $val['cpr_id'],
                     'data-contactid' => $val['cper_id']
                 ];
@@ -1350,14 +1352,20 @@ class MelisComContactController extends MelisAbstractActionController
         $error = [];
         $title = 'tr_meliscommerce_contact_unlink_account';
         $message = 'tr_meliscommerce_contact_unlink_account_failed';
+        $accountName = '';
 
         $translator = $this->getServiceManager()->get('translator');
         $contactService = $this->getServiceManager()->get('MelisComContactService');
+        $clientService = $this->getServiceManager()->get('MelisComClientService');
         if($this->request->isPost()){
             $res = $contactService->unlinkAccountContact($accountId, $contactId);
-            if($res){
+            //unlink also the data in account
+            $resAccount = $clientService->unlinkAccountContact($accountId, $contactId);
+            if($res && $resAccount){
                 $success = 1;
                 $message = 'tr_meliscommerce_contact_unlink_account_success';
+
+                $accountName = $clientService->getAccountName($accountId);
             }
         }
 
@@ -1365,6 +1373,7 @@ class MelisComContactController extends MelisAbstractActionController
             'success' => $success,
             'accountId' => $accountId,
             'contactId' => $contactId,
+            'accountName' => $accountName,
             'error' => $error,
             'textTitle' => $translator->translate($title),
             'textMessage' => $translator->translate($message)
