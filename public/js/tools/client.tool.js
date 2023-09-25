@@ -988,6 +988,7 @@ $(function() {
         var carId = current_row.attr("data-carid");
         var accountId = $this.data("accountid");
         var data = $this.data("vdata");
+        var contactId = current_row.attr("id");
 
         $.ajax({
             'url': '/melis/MelisCommerce/MelisComClient/updateDefaultContact',
@@ -997,6 +998,32 @@ $(function() {
             if(data.success){
                 $("#"+accountId+"_accountContactList").DataTable().ajax.reload();
                 melisHelper.melisOkNotification(data.textTitle, data.textMessage);
+
+                if($("#id_meliscommerce_contact_list_page").length > 0){
+                    // if($("#"+contactId+"_id_meliscommerce_contact_page_content_tab_association").length > 0) {
+                    //     melisHelper.zoneReload(
+                    //         contactId + "_id_meliscommerce_contact_page_content_tab_association",
+                    //         "meliscommerce_contact_page_content_tab_association",
+                    //         {contactId: contactId, activateTab: true}
+                    //     );
+                    //     accountToolSelectedContact = contactId;
+                    //     accountToolInitContactAutoSuggest = true;
+                    // }else{//reload every thing
+                        $("li[data-tool-id='id_meliscommerce_contact_list_page'] .nav-group-dropdown li").each(function () {
+                        // $("#" + contactId + "_contactAssocAccountList tbody tr").each(function () {
+                        	var tableContactId = $(this).data("tool-id").replace("_id_meliscommerce_contact_page","");
+                            melisHelper.zoneReload(
+                                tableContactId + "_id_meliscommerce_contact_page_content_tab_association",
+                                "meliscommerce_contact_page_content_tab_association",
+                                {contactId: tableContactId, activateTab: true},
+								function(){
+                                    accountToolSelectedContact = tableContactId;
+                                    accountToolInitContactAutoSuggest = true;
+								}
+                            );
+                        });
+					// }
+                }
             }else{
                 melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.error);
             }
