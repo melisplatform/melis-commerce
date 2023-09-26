@@ -9,6 +9,7 @@
 
 namespace MelisCommerce\Controller;
 
+use Laminas\Stdlib\ArrayUtils;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
 use Laminas\Session\Container;
@@ -781,22 +782,65 @@ class MelisComClientListController extends MelisAbstractActionController
                     $getData[$key]['cli_country_id'] = $countryData->ctry_name;
                 }
                 //format dates
-                $lastOrder = !empty($val['cli_last_order'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_last_order'])), 0, 10) : '';
+//                $lastOrder = !empty($val['cli_last_order'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_last_order'])), 0, 10) : '';
                 $clientCreated = !empty($val['cli_date_creation'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_date_creation'])), 0, 10) : '';
                 $getData[$key]['cli_date_creation'] = $clientCreated;
-                $getData[$key]['cli_last_order'] = $lastOrder;
-
-                //remove unnecessary fields
-                unset($getData[$key]['cli_group_id']);
-                unset($getData[$key]['cli_date_edit']);
+//                $getData[$key]['cli_last_order'] = $lastOrder;
             }
 
+            //now we include billing address
+            $accountBill = [];
+            foreach($getData as $key => $val){
+                //lets include billing address
+                $this->processAccountAddress($accountBill, $key, $val['cli_id']);
+            }
+
+            //now we include delivery address
+            $accountDel = [];
+            foreach($getData as $key => $val){
+                //lets include billing address
+                $this->processAccountAddress($accountDel, $key, $val['cli_id'], 2);
+            }
+
+            //now we include orders
+            $accountOrders = [];
+            foreach($getData as $key => $val){
+                //lets include billing address
+                $this->processAccountOrders($accountOrders, $key, $val['cli_id']);
+            }
+
+            $keys = [];
+            $this->matchKeys($keys, $data);
+            $this->matchKeys($keys, $accountBill);
+            $this->matchKeys($keys, $accountDel);
+            $this->matchKeys($keys, $accountOrders);
+
+            $getData = ArrayUtils::merge($getData, $accountBill, true);
+            $getData = $this->processKeysToMatch($keys, $getData);
+
+            $getData = ArrayUtils::merge($getData, $accountDel, true);
+            $getData = $this->processKeysToMatch($keys, $getData);
+
+            $getData = ArrayUtils::merge($getData, $accountOrders, true);
+            $getData = $this->processKeysToMatch($keys, $getData);
+
             $exportData = [];
+            $excludeColumns = [
+                'cli_group_id', 'cli_date_edit', 'cli_last_order',
+                'car_id','car_client_id','car_client_person_id','car_default_person',
+                'cper_firstname','cper_name','cper_id','cper_email',
+                'ccomp_name', 'ccomp_logo','ccomp_id','ccomp_client_id', 'ccomp_comp_creation_date','ccomp_date_edit', 'ccomp_add_floor',
+                'cadd_id', 'cadd_client_id', 'cadd_client_person', 'cadd_type',
+                'catype_id', 'catype_code','civ_id'
+            ];
             foreach($getData as $key => $val){
                 $dt = [];
                 foreach($val as $k => $d){
-                    if(!in_array($k, ['car_id','car_client_id','car_client_person_id','car_default_person','cper_firstname','cper_name','cper_id','cper_email'])) {
-                        $fname = $translator->translate('tr_client_accounts_export_col_' . $k);
+                    if(!in_array($k, $excludeColumns)) {
+                        if(strpos($k, 'translated_') !== false)
+                            $fname = str_replace('translated_', '', $k);
+                        else
+                            $fname = $translator->translate('tr_client_accounts_export_col_' . $k);
                         $dt["$fname"] = $d;
                     }
                 }
@@ -804,9 +848,125 @@ class MelisComClientListController extends MelisAbstractActionController
             }
             $data = $exportData;
         }
+
         $data = $this->mbEncode($data);
 
         return $this->executeCompanyContactExport($data, $fileName, $delimiter);
+    }
+
+    private function matchKeys(&$keys, $data)
+    {
+        foreach($data as $i => $val){
+            foreach($val as $k => $v){
+                if(!array_key_exists($k, $keys)){
+                    $keys[$k] = null;
+                }
+            }
+        }
+        return $keys;
+    }
+
+    private function processKeysToMatch($keys, $data)
+    {
+        foreach($data as $i => $val){
+            foreach($keys as $k => $b){
+                if(!array_key_exists($k, $val)){
+                    $data[$i][$k] = null;
+                }
+            }
+        }
+        return $data;
+    }
+
+    private function processAccountOrders(&$orderDatas, $key, $accountId)
+    {
+        $langId = $this->getOrderTool()->getCurrentLocaleID();
+
+        $melisComOrderService = $this->getServiceManager()->get('MelisComOrderService');
+        $translator = $this->getServiceManager()->get('translator');
+        $orders = $melisComOrderService->getOrderList(null, true, null, $accountId);
+        if(!empty($orders)){
+            $orderCount = 1;
+            foreach($orders as $order){
+                $price = 0;
+                $products = 0;
+                $cper_firstname = '';
+                $cper_name = '';
+
+                $orderStatus = null;
+                $statusTrans = $melisComOrderService->getOrderStatusByOrderId($order->getId());
+                foreach($statusTrans as $trans){
+                    if($trans->ostt_lang_id == $langId){
+                        $orderStatus = $trans;
+                    }
+                }
+                $orderStatus = empty($orderStatus)? $statusTrans[0] : $orderStatus;
+                foreach($order->getBasket() as $basket){
+                    $products = $products + $basket->obas_quantity;
+                }
+
+                foreach($order->getPayment() as $payment){
+                    $price = $price + $payment->opay_price_total;
+                }
+
+                $client = $order->getPerson();
+
+                if(!empty($client)){
+                    $cper_firstname = $client->cper_firstname;
+                    $cper_name = $client->cper_name;
+                }
+
+                $orderDatas[$key]['translated_'.$translator->translate('tr_client_accounts_export_col_ord_id').' '.$orderCount] = $order->getId();
+                $orderDatas[$key]['translated_'.$translator->translate('tr_client_accounts_export_col_ord_reference').' '.$orderCount] = $order->getOrder()->ord_reference;
+                $orderDatas[$key]['translated_'.$translator->translate('tr_client_accounts_export_col_ord_status').' '.$orderCount] = $orderStatus->ostt_status_name;
+                $orderDatas[$key]['translated_'.$translator->translate('tr_client_accounts_export_col_products').' '.$orderCount] = number_format($products, 0);
+                $orderDatas[$key]['translated_'.$translator->translate('tr_client_accounts_export_col_price').' '.$orderCount] = number_format($price, 2) . "€";
+                $orderDatas[$key]['translated_'.$translator->translate('tr_client_accounts_export_col_cper_firstname').' '.$orderCount] = $this->getOrderTool()->escapeHtml($cper_firstname);
+                $orderDatas[$key]['translated_'.$translator->translate('tr_client_accounts_export_col_cper_name').' '.$orderCount] = $this->getOrderTool()->escapeHtml($cper_name);
+                $orderDatas[$key]['translated_'.$translator->translate('tr_client_accounts_export_col_ord_date_creation').' '.$orderCount] = $this->getOrderTool()->dateFormatLocale($order->getOrder()->ord_date_creation);
+
+                $orderCount++;
+            }
+        }
+    }
+
+    /**
+     * Returns the Tool Service Class
+     * @return MelisCoreTool
+     */
+    private function getOrderTool()
+    {
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
+        $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_order_list');
+
+        return $melisTool;
+    }
+
+    private function processAccountAddress(&$getData, $key, $accountId, $type = 1)
+    {
+        $translator = $this->getServiceManager()->get('translator');
+        $melisEcomClientAddressTable = $this->getServiceManager()->get('MelisEcomClientAddressTable');
+        $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
+        $clientAddressData = $melisEcomClientAddressTable->getClientAddressByClientId($accountId, $type);
+        $clientAddress = array();
+        foreach ($clientAddressData As $aVal)
+        {
+//            $aVal->civility_trans = $melisComClientService->getCivilityTransByCivilityIdAndLangId($aVal->civ_id);
+//            $aVal->address_trans = $melisComClientService->getAddressTransByAddressTypeIdAndLangId($aVal->catype_id);
+            array_push($clientAddress, $aVal);
+        }
+
+        $addressCount = 1;
+        $type = $type == 1 ? $translator->translate('tr_meliscommerce_clients_common_billing') : $translator->translate('tr_meliscommerce_clients_common_delivery');
+        foreach($clientAddress as $i => $val){
+            foreach($val as $k => $v){
+                if(!in_array($k, ['cadd_id', 'cadd_client_id', 'cadd_client_person', 'cadd_type','catype_id', 'catype_code','civ_id', 'cadd_creation_date'])) {
+                    $fname = $translator->translate('tr_client_accounts_export_col_' . $k);
+                    $getData[$key]['translated_' . $type . ' - ' . $fname . ' ' . $addressCount] = $v;
+                }
+            }
+            $addressCount++;
+        }
     }
 
     /**

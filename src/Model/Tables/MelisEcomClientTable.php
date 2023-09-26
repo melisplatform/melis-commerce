@@ -126,7 +126,7 @@ class MelisEcomClientTable extends MelisEcomGenericTable
             array('*'), $select::JOIN_LEFT);
         $select->join('melis_ecom_client_person', 'melis_ecom_client_account_rel.car_client_person_id = melis_ecom_client_person.cper_id',
             array('cper_firstname', 'cper_name','cper_id', 'cper_email'), $select::JOIN_LEFT);
-        $select->join('melis_ecom_client_company', 'melis_ecom_client_company.ccomp_client_id = melis_ecom_client.cli_id', array('cli_company' => 'ccomp_name'), $select::JOIN_LEFT);
+        $select->join('melis_ecom_client_company', 'melis_ecom_client_company.ccomp_client_id = melis_ecom_client.cli_id', array('cli_company' => 'ccomp_name', '*'), $select::JOIN_LEFT);
         $select->join('melis_ecom_client_groups', 'melis_ecom_client_groups.cgroup_id=melis_ecom_client.cli_group_id',
             array('cgroup_name'),$select::JOIN_LEFT);
 

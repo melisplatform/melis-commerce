@@ -630,7 +630,7 @@ $(function() {
             saveAs(blob, fileName);
 
             _this.attr("disabled", false);
-            $("#id_meliscommerce_client_list_content_export_accounts_form_container").modal('hide');
+            $("#id_meliscommerce_client_list_export_accounts_form_container").modal("hide");
         }).fail(function(){
             alert(translations.tr_meliscore_error_message);
         });
