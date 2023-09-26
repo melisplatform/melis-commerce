@@ -491,24 +491,15 @@ class MelisComClientListController extends MelisAbstractActionController
                 $clientCreated = !empty($val['cli_date_creation'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_date_creation'])), 0, 10) : '';
 
                 $defaultContact = '';
-                if($val['car_default_person']) {
-                    $defaultContact = $val['cper_firstname'] . ' ' . $val['cper_name'];
-                    $defaultContact = "<span class='d-none td-tooltip'>".$defaultContact."</span>".mb_strimwidth($defaultContact, 0, 30, '...');
+                $accountContactList = $melisComClientService->getAccountAssocContactLists($val['cli_id'])->toArray();
+                if(!empty($accountContactList)){
+                    foreach($accountContactList as $key => $v){
+                        if($v['car_default_person']) {
+                            $defaultContact = $v['cper_firstname'] . ' ' . $v['cper_name'];
+                            break;
+                        }
+                    }
                 }
-//                $accountContactList = $melisComClientService->getAccountAssocContactLists($val['cli_id'])->toArray(0);
-//                if(!empty($accountContactList)){
-//                    foreach($accountContactList as $key => $v){
-//                        $def = ($val['cper_id'] == $v['cper_id']) ? '(default)' : '';
-//
-//                        $n = $v['cper_firstname'].' '.$v['cper_name'].$def;
-//                        if(empty($defaultContact))
-//                            $defaultContact .= $n;
-//                        else
-//                            $defaultContact .= ', '.$n;
-//                    }
-//                }
-//                if(!empty($defaultContact))
-//                    $defaultContact = "<span class='d-none td-tooltip'>".$defaultContact."</span>".mb_strimwidth($defaultContact, 0, 30, '...');
 
                 $cliname = $melisComClientService->getAccountName($val['cli_id']);
 

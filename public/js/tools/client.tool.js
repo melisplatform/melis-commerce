@@ -925,6 +925,8 @@ $(function() {
 		var input = $("#"+activeTabId+" input.link-contact-data");
 		var contactId = input.data("contactid");
 		var accountId = input.data("accountid");
+
+        $(this).attr("disabled", true);
         $.ajax({
             'url': '/melis/MelisCommerce/MelisComClient/linkAccountContact',
             'data': {accountId: accountId, contactId: contactId},
@@ -954,6 +956,7 @@ $(function() {
             }else{
                 melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.error);
             }
+            $(this).attr("disabled", false);
         });
 	});
 
@@ -1024,6 +1027,8 @@ $(function() {
                         });
 					// }
                 }
+
+                $('#clientListTbl').DataTable().ajax.reload();
             }else{
                 melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.error);
             }
