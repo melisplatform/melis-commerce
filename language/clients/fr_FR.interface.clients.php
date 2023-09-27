@@ -418,5 +418,6 @@
         'tr_meliscommerce_clients_is_default_account' => 'Compte par défaut',
         'tr_meliscommerce_clients_default_contact_name' => 'Contact par défaut',
 
-        'tr_meliscommerce_client_add_contact' => 'Associer le contact'
+        'tr_meliscommerce_client_add_contact' => 'Associer le contact',
+        'tr_meliscommerce_client_add_contact_tooltip' => 'Sélectionnez un contact pour activer',
     );

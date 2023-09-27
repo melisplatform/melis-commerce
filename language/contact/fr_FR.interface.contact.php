@@ -112,4 +112,6 @@ return [
     'tr_meliscommerce_contact_page_content_tab_address_header_button_ad' => 'Ajouter une adresse',
     'tr_meliscommerce_contact_page_content_tab_address_header_button_delete_address' => 'Supprimer une adresse',
     'tr_meliscommerce_contact_is_default_contact' => 'Contact par défaut',
+
+    'tr_meliscommerce_contact_add_account_tooltip' => 'Sélectionnez un compte pour activer',
 ];
