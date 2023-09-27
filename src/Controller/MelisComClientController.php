@@ -1341,6 +1341,8 @@ class MelisComClientController extends MelisAbstractActionController
                     // Format company creation date
                     $companyCreationDate = \DateTime::createFromFormat('m/d/Y', $clientCompanyData['ccomp_comp_creation_date']);
                     $clientCompanyData['ccomp_comp_creation_date'] = $companyCreationDate->format('Y-m-d');
+                }else{
+                    unset($clientCompanyData['ccomp_comp_creation_date']);
                 }
 
                 // convert company logo to blob
@@ -1352,8 +1354,12 @@ class MelisComClientController extends MelisAbstractActionController
 
                 // clean data
                 foreach ($clientCompanyData as $key => $value) {
-                    if (empty($value))
-                        $clientCompanyData[$key] = null; // to fixed the problem for date or integer fields which given value is an empty string
+                    if (empty($value)){
+                        if($key == 'ccomp_employee_nb' || $key == 'ccomp_id')
+                            $clientCompanyData[$key] = (int)$value;
+                        else
+                            $clientCompanyData[$key] = null; // to fixed the problem for date or integer fields which given value is an empty string
+                    }
                 }
 
 //                // Fields names that excluded on checkin value
