@@ -1348,37 +1348,37 @@ class MelisComClientController extends MelisAbstractActionController
                     $clientCompanyData['ccomp_logo'] = file_get_contents($companyLogoTmpPath);
                 
                 // Flag that indicates if Company Name Field is mandatory
-                $companyNameRequired = false;
+//                $companyNameRequired = false;
 
                 // clean data
                 foreach ($clientCompanyData as $key => $value) {
                     if (empty($value))
-                        unset($clientCompanyData[$key]);
-                }
-                
-                // Fields names that excluded on checkin value
-                $excludeFields = array('ccomp_id', 'ccomp_client_id', 'ccomp_name', 'ccomp_date_creation', 'ccomp_date_edit');
-                foreach ($appConfigFormElements as $keyForm => $valueForm) {
-                    // checking if the element name is exist on exclueded fields
-                    if (!in_array($valueForm['spec']['name'], $excludeFields)) {
-                        if (!empty($clientCompanyData[$valueForm['spec']['name']])) {
-                            // if other fields has value, then Company Name will flag as Mandatory/Required Field
-                            $companyNameRequired = true;
-                        }
-                    }
+                        $clientCompanyData[$key] = null; // to fixed the problem for date or integer fields which given value is an empty string
                 }
 
-                if (empty($clientCompanyData['ccomp_name'])) {
-                    if ($companyNameRequired) {
-                        // Return Error if Company Name is Flag as Mandatory and no value
-                        $errors['ccomp_name'] = array(
-                            'label' => $translator->translate('tr_meliscommerce_client_Company_name'),
-                            'notEmpty' => $translator->translate('tr_meliscommerce_client_Contact_input_empty')
-                        );
-
-                        $clientCompanyData = array();
-                    }
-                }
+//                // Fields names that excluded on checkin value
+//                $excludeFields = array('ccomp_id', 'ccomp_client_id', 'ccomp_name', 'ccomp_date_creation', 'ccomp_date_edit');
+//                foreach ($appConfigFormElements as $keyForm => $valueForm) {
+//                    // checking if the element name is exist on exclueded fields
+//                    if (!in_array($valueForm['spec']['name'], $excludeFields)) {
+//                        if (!empty($clientCompanyData[$valueForm['spec']['name']])) {
+//                            // if other fields has value, then Company Name will flag as Mandatory/Required Field
+//                            $companyNameRequired = true;
+//                        }
+//                    }
+//                }
+//
+//                if (empty($clientCompanyData['ccomp_name'])) {
+//                    if ($companyNameRequired) {
+//                        // Return Error if Company Name is Flag as Mandatory and no value
+//                        $errors['ccomp_name'] = array(
+//                            'label' => $translator->translate('tr_meliscommerce_client_Company_name'),
+//                            'notEmpty' => $translator->translate('tr_meliscommerce_client_Contact_input_empty')
+//                        );
+//
+//                        $clientCompanyData = array();
+//                    }
+//                }
             }
             else 
             {
