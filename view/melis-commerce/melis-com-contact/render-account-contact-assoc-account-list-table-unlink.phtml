@@ -1,1 +1,3 @@
-<button class="btn btn-default contactAccountUnlink" title="<?php echo $this->translate('tr_meliscommerce_general_common_unlink')?>"><i class="fa fa-unlink"></i></button>
+<?php if($this->canAccess) { ?>
+    <button class="btn btn-default contactAccountUnlink" title="<?php echo $this->translate('tr_meliscommerce_contact_unlink_account')?>"><i class="fa fa-unlink"></i></button>
+<?php } ?>

@@ -87,7 +87,23 @@ return [
                                         'name' => 'tr_meliscommerce_contact_page_content_tab_address_header_button_delete_address',
                                         'left_menu_display' => false
                                     ],
-                                ]
+                                ],
+                                'meliscommerce_contacts_set_default_account_button' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_contacts_set_default_account_button',
+                                        'melisKey' => 'meliscommerce_contacts_set_default_account_button',
+                                        'name' => 'tr_meliscommerce_contact_set_default',
+                                        'left_menu_display' => false
+                                    ],
+                                ],
+                                'meliscommerce_contacts_unlink_account_button' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_contacts_unlink_account_button',
+                                        'melisKey' => 'meliscommerce_contacts_unlink_account_button',
+                                        'name' => 'tr_meliscommerce_contact_unlink_account',
+                                        'left_menu_display' => false
+                                    ],
+                                ],
                             ]
                         ],
                         'meliscommerce_contact_list_page' => [

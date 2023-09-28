@@ -1048,9 +1048,15 @@ class MelisComContactController extends MelisAbstractActionController
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $contactId = $this->params()->fromQuery('contactId', '');
 
+        $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
+        $xmlRights = $melisCoreAuth->getAuthRights();
+        $rights = $this->getServiceManager()->get('MelisCoreRights');
+        $canAccess = $rights->isAccessible($xmlRights, 'meliscore_interface', 'meliscommerce_contacts_set_default_account_button');
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->contactId = $contactId;
+        $view->canAccess = $canAccess;
         return $view;
     }
 
@@ -1061,7 +1067,14 @@ class MelisComContactController extends MelisAbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
+
+        $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
+        $xmlRights = $melisCoreAuth->getAuthRights();
+        $rights = $this->getServiceManager()->get('MelisCoreRights');
+        $canAccess = $rights->isAccessible($xmlRights, 'meliscore_interface', 'meliscommerce_contacts_unlink_account_button');
+
         $view->melisKey = $melisKey;
+        $view->canAccess = $canAccess;
         return $view;
     }
 

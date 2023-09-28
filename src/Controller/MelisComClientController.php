@@ -314,9 +314,15 @@ class MelisComClientController extends MelisAbstractActionController
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $accountId = $this->params()->fromQuery('clientId', '');
 
+        $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
+        $xmlRights = $melisCoreAuth->getAuthRights();
+        $rights = $this->getServiceManager()->get('MelisCoreRights');
+        $canAccess = $rights->isAccessible($xmlRights, 'meliscore_interface', 'meliscommerce_client_unlink_contact');
+
         $view = new ViewModel();
         $view->accountId = $accountId;
         $view->melisKey = $melisKey;
+        $view->canAccess = $canAccess;
         return $view;
     }
 
@@ -327,9 +333,16 @@ class MelisComClientController extends MelisAbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $accountId = $this->params()->fromQuery('clientId', '');
+
+        $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
+        $xmlRights = $melisCoreAuth->getAuthRights();
+        $rights = $this->getServiceManager()->get('MelisCoreRights');
+        $canAccess = $rights->isAccessible($xmlRights, 'meliscore_interface', 'meliscommerce_client_set_default_contact');
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->accountId = $accountId;
+        $view->canAccess = $canAccess;
         return $view;
     }
 
