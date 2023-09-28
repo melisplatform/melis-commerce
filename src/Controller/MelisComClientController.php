@@ -420,6 +420,7 @@ class MelisComClientController extends MelisAbstractActionController
                     }
                 }
                 $clientCompany[0]->ccomp_comp_creation_date = $date;
+                $clientCompany[0]->ccomp_employee_nb = !empty($clientCompany[0]->ccomp_employee_nb) ? $clientCompany[0]->ccomp_employee_nb : null;
 
                 $propertyForm->bind($clientCompany[0]);
             }
