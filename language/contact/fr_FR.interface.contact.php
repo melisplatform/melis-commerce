@@ -16,6 +16,7 @@ return [
     'tr_meliscommerce_contact_get_contact_name' => 'Obtenir le nom du contact',
     'tr_meliscommerce_contact_contact_name' => 'Nom du contact',
     'tr_meliscommerce_contact_table_account_filter' => 'Comptes',
+    'tr_meliscommerce_contact_table_type_filter' => 'Type de contact',
 
     'tr_meliscommerce_contact_common_Type' => 'Type',
     'tr_meliscommerce_contact_common_person' => 'Personne',

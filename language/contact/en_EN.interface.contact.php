@@ -16,6 +16,7 @@ return [
     'tr_meliscommerce_contact_get_contact_name' => 'Get contact name',
     'tr_meliscommerce_contact_contact_name' => 'Contact name',
     'tr_meliscommerce_contact_table_account_filter' => 'Accounts',
+    'tr_meliscommerce_contact_table_type_filter' => 'Type of contact',
 
     'tr_meliscommerce_contact_common_Type' => 'Type',
     'tr_meliscommerce_contact_common_person' => 'Person',
