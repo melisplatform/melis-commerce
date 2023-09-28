@@ -991,8 +991,7 @@ class MelisComClientListController extends MelisAbstractActionController
                 foreach (array_keys($val) as $key) {
                     $tmp = $val[$key];
                     // encode utf8_encode
-                    $newData[$idx][utf8_encode($key)] = $tmp;
-
+                    $newData[$idx][utf8_encode($key)] = html_entity_decode($tmp);
                 }
             }
         }
