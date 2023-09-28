@@ -371,7 +371,8 @@ class MelisComClientController extends MelisAbstractActionController
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $clientId = $this->params()->fromQuery('clientId', '');
-        
+
+        $melisTranslation = $this->getServiceManager()->get('MelisCoreTranslation');
         $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_company_form','meliscommerce_clients_company_form');
         $factory = new \Laminas\Form\Factory();
@@ -396,9 +397,13 @@ class MelisComClientController extends MelisAbstractActionController
                 $date = null;
                 if (! empty($clientCompany[0]->ccomp_comp_creation_date)) {
                     if ($clientCompany[0]->ccomp_comp_creation_date != '0000-00-00') {
+                        // Get the locale used from meliscore session
+                        $container = new Container('meliscore');
+                        $locale = $container['melis-lang-locale'];
+                        $date = !empty($clientCompany[0]->ccomp_comp_creation_date)? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($clientCompany[0]->ccomp_comp_creation_date)), 0, 10) : '';
                         // format the company creation date
-                        $companyCreationDate = \DateTime::createFromFormat('Y-m-d', $clientCompany[0]->ccomp_comp_creation_date);
-                        $date = $companyCreationDate->format('m/d/Y');
+//                        $companyCreationDate = \DateTime::createFromFormat('Y-m-d', $clientCompany[0]->ccomp_comp_creation_date);
+//                        $date = $companyCreationDate->format('m/d/Y');
                     }
                 }
                 $clientCompany[0]->ccomp_comp_creation_date = $date;
@@ -1339,7 +1344,15 @@ class MelisComClientController extends MelisAbstractActionController
 
                 if (! empty($clientCompanyData['ccomp_comp_creation_date'])) {
                     // Format company creation date
-                    $companyCreationDate = \DateTime::createFromFormat('m/d/Y', $clientCompanyData['ccomp_comp_creation_date']);
+                    $container = new Container('meliscore');
+                    $locale = $container['melis-lang-locale'];
+                    if ($locale == "fr_FR") {
+                        $dateFormat = 'd/m/Y';
+                    } else {
+                        $dateFormat = 'm/d/Y';
+                    }
+
+                    $companyCreationDate = \DateTime::createFromFormat($dateFormat, trim($clientCompanyData['ccomp_comp_creation_date']));
                     $clientCompanyData['ccomp_comp_creation_date'] = $companyCreationDate->format('Y-m-d');
                 }else{
                     unset($clientCompanyData['ccomp_comp_creation_date']);

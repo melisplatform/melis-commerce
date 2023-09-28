@@ -777,6 +777,9 @@ class MelisComClientListController extends MelisAbstractActionController
                 $clientCreated = !empty($val['cli_date_creation'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_date_creation'])), 0, 10) : '';
                 $getData[$key]['cli_date_creation'] = $clientCreated;
 //                $getData[$key]['cli_last_order'] = $lastOrder;
+                //we use ccomp_comp_creation_date as company creation date
+                $companyCreated = !empty($val['ccomp_comp_creation_date'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['ccomp_comp_creation_date'])), 0, 10) : '';
+                $getData[$key]['ccomp_date_creation'] = $companyCreated;
             }
 
             //now we include billing address
@@ -800,6 +803,10 @@ class MelisComClientListController extends MelisAbstractActionController
                 $this->processAccountOrders($accountOrders, $key, $val['cli_id']);
             }
 
+            /**
+             * This will match keys for every data
+             * For example if field 1 doesn't exist in array 1, it will put field 1 in array 1 to match all the keys
+             */
             $keys = [];
             $this->matchKeys($keys, $data);
             $this->matchKeys($keys, $accountBill);
@@ -815,7 +822,17 @@ class MelisComClientListController extends MelisAbstractActionController
             $getData = ArrayUtils::merge($getData, $accountOrders, true);
             $getData = $this->processKeysToMatch($keys, $getData);
 
+            //reposition fields
+            foreach($getData as $key => $val){
+                $getData[$key] = array_slice($val, 0, 5, true) +
+                    array("cgroup_name" => $val['cgroup_name']) +
+                    array_slice($val, 3, count($val) - 1, true) ;
+            }
+
             $exportData = [];
+            /**
+             * Columns to exclude in the export
+             */
             $excludeColumns = [
                 'cli_group_id', 'cli_date_edit', 'cli_last_order',
                 'car_id','car_client_id','car_client_person_id','car_default_person',
@@ -824,13 +841,16 @@ class MelisComClientListController extends MelisAbstractActionController
                 'cadd_id', 'cadd_client_id', 'cadd_client_person', 'cadd_type',
                 'catype_id', 'catype_code','civ_id'
             ];
+            /**
+             * Translate all fields
+             */
             foreach($getData as $key => $val){
                 $dt = [];
                 foreach($val as $k => $d){
                     if(!in_array($k, $excludeColumns)) {
-                        if(strpos($k, 'translated_') !== false)
+                        if(strpos($k, 'translated_') !== false)//check if field already translated
                             $fname = str_replace('translated_', '', $k);
-                        else
+                        else//translate field
                             $fname = $translator->translate('tr_client_accounts_export_col_' . $k);
                         $dt["$fname"] = $d;
                     }
