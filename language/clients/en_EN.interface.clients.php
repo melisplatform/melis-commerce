@@ -343,9 +343,9 @@
         'tr_client_accounts_export_col_cli_date_creation' => 'Creation date',
         'tr_client_accounts_export_col_cli_last_order' => 'Last order',
         'tr_client_accounts_export_col_cli_company' => 'Company',
-        'tr_client_accounts_export_col_cgroup_name' => 'Group name',
+        'tr_client_accounts_export_col_cgroup_name' => 'Group',
         'tr_client_accounts_export_col_default_contact_id' => 'Default contact id',
-        'tr_client_accounts_export_col_default_contact_name' => 'Default contact name',
+        'tr_client_accounts_export_col_default_contact_name' => 'Default contact',
         'tr_client_accounts_export_col_default_contact_email' => 'Default contact email',
 
         'tr_client_accounts_export_col_ccomp_number_id' => 'Numéro d\'immatriculation',
