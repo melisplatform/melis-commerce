@@ -1144,6 +1144,15 @@ $(function() {
     $("body").on("mouseout", "table tbody td", function(){
         $(this).find("span.td-tooltip").addClass("d-none");
     });
+
+    $("body").on("click", ".remove-company-image", function(){
+    	var logoField = $(this).closest("form#id_meliscommerce_clients_company_form").find("input[name='ccomp_logo']");
+
+		logoField.val("");
+		$("#" + activeTabId + " .client-company-preview").css("display", "none");
+		$("#" + activeTabId + " .client-company-preview img").attr("src", "");
+		$("#" + activeTabId + " .bootstrap-filestyle input").val("");
+	});
 });
 function viewClientOrder(orderId, orderRef) {
 	var navTabsGroup = "id_meliscommerce_order_list_page";

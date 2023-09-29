@@ -3417,3 +3417,19 @@ tbody td span.td-tooltip{
 	border-radius: 5px;
 	color: #fff;
 }
+
+span.remove-company-image{
+	position: absolute;
+	left: 19%;
+	font-size: 13pt;
+	color: #fff;
+	background: red;
+	border-radius: 50%;
+	width: 25px;
+	height: 26px;
+	cursor: pointer;
+}
+
+span.remove-company-image i{
+	margin-left: 5px;
+}
