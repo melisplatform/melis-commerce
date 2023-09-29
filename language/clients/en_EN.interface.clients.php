@@ -334,6 +334,11 @@
         'tr_meliscommerce_client_account_name' => 'Account Name',
         'tr_meliscommerce_client_tags' => 'Tags',
 
+        'tr_meliscommerce_client_account_name_tooltip' => 'Input the account name',
+        'tr_meliscommerce_clients_group_common_group_tooltip' => 'Select the group of the account (by default general)',
+        'tr_meliscommerce_client_Client_country_tooltip' => 'Select the country associated to the account',
+        'tr_meliscommerce_client_tags_tooltip' => 'Separate the tags with a coma',
+
         //export columns
         'tr_client_accounts_export_col_cli_id' => 'Account Id',
         'tr_client_accounts_export_col_cli_status' => 'Status',

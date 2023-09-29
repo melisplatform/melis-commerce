@@ -26,6 +26,7 @@ return [
                                     'name' => 'cli_name',
                                     'type' => 'MelisText',
                                     'options' => [
+                                        'tooltip' => 'tr_meliscommerce_client_account_name_tooltip',
                                         'label' => 'tr_meliscommerce_client_account_name',
                                         'disable_inarray_validator' => true,
                                     ],
@@ -41,6 +42,7 @@ return [
                                     'name' => 'cli_group_id',
                                     'type' => 'EcomOrderClientsGroupSelect',
                                     'options' => [
+                                        'tooltip' => 'tr_meliscommerce_clients_group_common_group_tooltip',
                                         'label' => 'tr_meliscommerce_clients_group_common_group',
                                         'disable_inarray_validator' => true,
                                     ],
@@ -57,6 +59,7 @@ return [
                                     'name' => 'cli_country_id',
                                     'type' => 'EcomCountriesNoAllCountriesSelect',
                                     'options' => [
+                                        'tooltip' => 'tr_meliscommerce_client_Client_country_tooltip',
                                         'label' => 'tr_meliscommerce_client_Client_country',
                                         'empty_option' => 'tr_meliscommerce_clients_common_label_choose',
                                         'disable_inarray_validator' => true,
@@ -73,6 +76,7 @@ return [
                                     'name' => 'cli_tags',
                                     'type' => 'MelisText',
                                     'options' => [
+                                        'tooltip' => 'tr_meliscommerce_client_tags_tooltip',
                                         'label' => 'tr_meliscommerce_client_tags',
                                         'disable_inarray_validator' => true,
                                     ],
