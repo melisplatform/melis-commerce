@@ -496,6 +496,7 @@ class MelisComClientListController extends MelisAbstractActionController
                     foreach($accountContactList as $key => $v){
                         if($v['car_default_person']) {
                             $defaultContact = $v['cper_firstname'] . ' ' . $v['cper_name'];
+                            $defaultContact = "<span class='d-none td-tooltip'>".$defaultContact."</span>".mb_strimwidth($defaultContact, 0, 30, '...');
                             break;
                         }
                     }
