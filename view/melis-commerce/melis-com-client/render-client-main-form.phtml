@@ -80,5 +80,12 @@
         $("#id_meliscommerce_clients_main_form #cli_tags").tagsinput({
             allowDuplicates: false
         });
+
+        //remove extra comma when typing word with comma in the end
+        $("body").on("keyup", '#id_meliscommerce_clients_main_form .bootstrap-tagsinput input', function (e) {
+            if(e.keyCode == 188){//comma
+                $(this).val($(this).val().replace(",",""));
+            }
+        });
     });
 </script>
