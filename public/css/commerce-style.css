@@ -3433,3 +3433,8 @@ span.remove-company-image{
 span.remove-company-image i{
 	margin-left: 5px;
 }
+
+.clientOrderTable thead tr th:nth-child(4).sorting_asc i.icon-shippment,
+.clientOrderTable thead tr th:nth-child(4).sorting_desc i.icon-shippment{
+	margin-left: 1rem;
+}

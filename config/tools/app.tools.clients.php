@@ -212,7 +212,7 @@ return [
                             'cper_firstname' => [
                                 'text' => 'tr_meliscommerce_order_list_col_firstname',
                                 'css' => ['width' => '15%', 'padding-right' => '0'],
-                                'sortable' => false,
+                                'sortable' => true,
                             ],
                             'cper_name' => [
                                 'text' => 'tr_meliscommerce_order_list_col_name',
