@@ -209,6 +209,7 @@ class MelisComClientsGroupController extends MelisAbstractActionController
                 );
 
                 $tableData[$key]['cgroup_status'] = $coreSrv->sendEvent('melis_tool_column_display_dot_color', ['data' => $val['cgroup_status']])['data'];
+                $tableData[$key]['cgroup_name'] = !empty($val['cgroup_name']) ? "<span class='d-none td-tooltip'>".$val['cgroup_name']."</span>".mb_strimwidth($val['cgroup_name'], 0, 70, '...') : null;
 
                 //assign attribute data to table row
                 $tableData[$key]['DT_RowAttr'] = $attrArray;

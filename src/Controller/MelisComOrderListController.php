@@ -492,17 +492,21 @@ class MelisComOrderListController extends MelisAbstractActionController
                     $disabled = 'disabled';
                     $class = '';
                 }
-            
+
+                $companyName = $this->getTool()->escapeHtml($company);
+                $cperFirstname = $this->getTool()->escapeHtml($cper_firstname);
+                $cperName = $this->getTool()->escapeHtml($cper_name);
+
                 $tableData[$c]['DT_RowId'] = $order->getId();
                 $tableData[$c]['order_table_checkbox'] = sprintf($checkBox, $order->getId());                
                 $tableData[$c]['ord_id'] = $order->getId();
                 $tableData[$c]['ord_status'] = sprintf($status, $class, $order->getId(), $disabled, $orderStatus->osta_id, $orderStatus->ostt_status_name);
                 $tableData[$c]['products'] = number_format($products, 0);
                 $tableData[$c]['price'] = number_format($price, 2) . "€";
-                $tableData[$c]['ccomp_name'] = $this->getTool()->escapeHtml($company);
+                $tableData[$c]['ccomp_name'] = (!empty($companyName)) ? "<span class='d-none td-tooltip'>".$companyName."</span>".mb_strimwidth($companyName, 0, 30, '...') : null;
                 $tableData[$c]['civt_min_name'] = $this->getTool()->escapeHtml($civt_min_name);
-                $tableData[$c]['cper_firstname'] = $this->getTool()->escapeHtml($cper_firstname);
-                $tableData[$c]['cper_name'] = $this->getTool()->escapeHtml($cper_name);
+                $tableData[$c]['cper_firstname'] = (!empty($cperFirstname)) ? "<span class='d-none td-tooltip'>".$cperFirstname."</span>".mb_strimwidth($companyName, 0, 30, '...') : null;
+                $tableData[$c]['cper_name'] = (!empty($cperName)) ? "<span class='d-none td-tooltip'>".$cperName."</span>".mb_strimwidth($companyName, 0, 30, '...') : null;
                 $tableData[$c]['ord_date_creation'] = $this->getTool()->dateFormatLocale($order->getOrder()->ord_date_creation);
                 $tableData[$c]['last_status_update'] = '';
                 //for the tooltip of the reference order                

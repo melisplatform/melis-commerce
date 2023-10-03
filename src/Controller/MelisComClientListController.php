@@ -507,9 +507,9 @@ class MelisComClientListController extends MelisAbstractActionController
                 $rowdata = array(
                     'DT_RowId' => $val['cli_id'],
                     'cli_id' => $val['cli_id'],
-                    'cgroup_name' => $val['cgroup_name'],
+                    'cgroup_name' => !empty($val['cgroup_name']) ? "<span class='d-none td-tooltip'>".$val['cgroup_name']."</span>".mb_strimwidth($val['cgroup_name'], 0, 30, '...') : null,
                     'cli_status' => $contactStatus,
-                    'cli_company' => $val['cli_company'],
+                    'cli_company' => !empty($val['cli_company']) ? "<span class='d-none td-tooltip'>".$val['cli_company']."</span>".mb_strimwidth($val['cli_company'], 0, 30, '...') : null,
                     'cli_date_creation' => $clientCreated,
                     'cli_name' => !empty($cliname) ? "<span class='d-none td-tooltip'>".$cliname."</span>".mb_strimwidth($cliname, 0, 30, '...') : null,
                     'cli_num_orders' => $contactNumOrders,
