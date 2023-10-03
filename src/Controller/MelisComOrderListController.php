@@ -505,8 +505,8 @@ class MelisComOrderListController extends MelisAbstractActionController
                 $tableData[$c]['price'] = number_format($price, 2) . "€";
                 $tableData[$c]['ccomp_name'] = (!empty($companyName)) ? "<span class='d-none td-tooltip'>".$companyName."</span>".mb_strimwidth($companyName, 0, 30, '...') : null;
                 $tableData[$c]['civt_min_name'] = $this->getTool()->escapeHtml($civt_min_name);
-                $tableData[$c]['cper_firstname'] = (!empty($cperFirstname)) ? "<span class='d-none td-tooltip'>".$cperFirstname."</span>".mb_strimwidth($companyName, 0, 30, '...') : null;
-                $tableData[$c]['cper_name'] = (!empty($cperName)) ? "<span class='d-none td-tooltip'>".$cperName."</span>".mb_strimwidth($companyName, 0, 30, '...') : null;
+                $tableData[$c]['cper_firstname'] = (!empty($cperFirstname)) ? "<span class='d-none td-tooltip'>".$cperFirstname."</span>".mb_strimwidth($cperFirstname, 0, 30, '...') : null;
+                $tableData[$c]['cper_name'] = (!empty($cperName)) ? "<span class='d-none td-tooltip'>".$cperName."</span>".mb_strimwidth($cperName, 0, 30, '...') : null;
                 $tableData[$c]['ord_date_creation'] = $this->getTool()->dateFormatLocale($order->getOrder()->ord_date_creation);
                 $tableData[$c]['last_status_update'] = '';
                 //for the tooltip of the reference order                
