@@ -5,7 +5,8 @@
 		'tr_meliscommerce_order_checkout_title_description_new' => 'Create here a new order.',
 		'tr_meliscommerce_order_checkout_add_order' => 'Create an order',
 		'tr_meliscommerce_order_checkout_product_description' => 'Select the country to display the associated products then add the products to the order.',
-		'tr_meliscommerce_order_checkout_contact_description' => 'Select the client of the order',
+		'tr_meliscommerce_order_checkout_contact_description' => 'Select the contact of the order',
+		'tr_meliscommerce_order_checkout_contact_account_description' => 'Select the contact account',
 		'tr_meliscommerce_order_checkout_addresses_description' => 'Select or create the delivery and billing addresses',
 		'tr_meliscommerce_order_checkout_recap_description' => 'Summary of the order. You can enter here discount coupons.',
 		'tr_meliscommerce_order_checkout_payment_description' => 'Enter here the payment information.',
@@ -22,6 +23,7 @@
 		// tabs
 		'tr_meliscommerce_order_checkout_Choose_product' => 'Products',
 		'tr_meliscommerce_order_checkout_Choose_contact' => 'Contact',
+		'tr_meliscommerce_order_checkout_Choose_contact_account' => 'Account',
 		'tr_meliscommerce_order_checkout_Select_addresses' => 'Addresses',
 		'tr_meliscommerce_order_checkout_Summary' => 'Summary',
 		'tr_meliscommerce_order_checkout_Payment' => 'Payment',
