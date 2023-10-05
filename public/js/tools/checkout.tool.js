@@ -308,22 +308,22 @@ $(function() {
                             "meliscommerce_order_checkout_choose_contact_account_step_content",
 							{contactId:contactId}
                         );
-						melisHelper.zoneReload(
-							"id_meliscommerce_order_checkout_product_list",
-							"meliscommerce_order_checkout_product_list"
-						);
-						melisHelper.zoneReload(
-							"id_meliscommerce_order_checkout_product_bakset",
-							"meliscommerce_order_checkout_product_bakset"
-						);
-						melisHelper.zoneReload(
-							"id_meliscommerce_order_checkout_billing_address",
-							"meliscommerce_order_checkout_billing_address"
-						);
-						melisHelper.zoneReload(
-							"id_meliscommerce_order_checkout_delivery_address",
-							"meliscommerce_order_checkout_delivery_address"
-						);
+						// melisHelper.zoneReload(
+						// 	"id_meliscommerce_order_checkout_product_list",
+						// 	"meliscommerce_order_checkout_product_list"
+						// );
+						// melisHelper.zoneReload(
+						// 	"id_meliscommerce_order_checkout_product_bakset",
+						// 	"meliscommerce_order_checkout_product_bakset"
+						// );
+						// melisHelper.zoneReload(
+						// 	"id_meliscommerce_order_checkout_billing_address",
+						// 	"meliscommerce_order_checkout_billing_address"
+						// );
+						// melisHelper.zoneReload(
+						// 	"id_meliscommerce_order_checkout_delivery_address",
+						// 	"meliscommerce_order_checkout_delivery_address"
+						// );
 					}, 300);
 				} else {
 					melisHelper.melisKoNotification(
