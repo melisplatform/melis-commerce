@@ -626,25 +626,23 @@ $(function(){
     });
 
     $body.on("click", ".contactsImport", function() {
-        if (!melisCoreTool.isTableEmpty("contactList")) {
-            // initialation of local variable
-            zoneId = "id_meliscommerce_contact_list_import_contacts_form";
-            melisKey = "meliscommerce_contact_list_import_contacts_form";
-            modalUrl =
-                "/melis/MelisCommerce/MelisComContact/renderContactListModal";
+        // initialation of local variable
+        zoneId = "id_meliscommerce_contact_list_import_contacts_form";
+        melisKey = "meliscommerce_contact_list_import_contacts_form";
+        modalUrl =
+            "/melis/MelisCommerce/MelisComContact/renderContactListModal";
 
-            // requesitng to create modal and display after
-            melisHelper.createModal(
-                zoneId,
-                melisKey,
-                false,
-                {},
-                modalUrl,
-                function() {
-                    melisCoreTool.done(this);
-                }
-            );
-        }
+        // requesitng to create modal and display after
+        melisHelper.createModal(
+            zoneId,
+            melisKey,
+            false,
+            {},
+            modalUrl,
+            function() {
+                melisCoreTool.done(this);
+            }
+        );
     });
 
     //test contact imports

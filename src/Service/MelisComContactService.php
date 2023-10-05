@@ -161,9 +161,9 @@ class MelisComContactService extends MelisComGeneralService
             }
 
 //            if (! empty($arrayParameters['personId'])) {
-//                if (! empty($arrayParameters['person']['cper_is_main_person'])) {
+                if (isset($arrayParameters['person']['cper_is_main_person'])) {
                     $arrayParameters['person']['cper_is_main_person'] = (int)$arrayParameters['person']['cper_is_main_person'] ?? 0;
-//                }
+                }
 //            }
 
             $arrayParameters['person']['cper_civility'] = (!empty($arrayParameters['person']['cper_civility'])) ? $arrayParameters['person']['cper_civility'] : 0;
@@ -497,10 +497,11 @@ class MelisComContactService extends MelisComGeneralService
     /**
      * @param $fileContents
      * @param $postData
+     * @param $csvDefaultDelimiter
      * @param string $delimiter
      * @return mixed
      */
-    public function importContacts($fileContents, $postData, $delimiter = ';')
+    public function importContacts($fileContents, $postData, $csvDefaultDelimiter, $delimiter = ';')
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -522,10 +523,14 @@ class MelisComContactService extends MelisComGeneralService
 
         foreach($contacts as $contact){
             if(!empty($contact)) {
-                $contactsData = explode($delimiter, $contact);
+                //check delimiters
+                if($csvDefaultDelimiter != $delimiter)//change delimiters to given one
+                    $contact = str_replace($csvDefaultDelimiter, $delimiter, $contact);
+
+                $contactsData = array_filter(explode($delimiter, trim($contact)));
 
                 //get civility id
-                $civD = $civilityTable->getEntryByField('civt_min_name', ucfirst($contactsData[4]))->current();
+                $civD = (!empty($contactsData[4])) ? $civilityTable->getEntryByField('civt_min_name', ucfirst($contactsData[4]))->current() : null;
                 //get language id
                 $langD = $languageTable->getEntryByField('elang_name', ucfirst($contactsData[0]))->current();
 
@@ -536,7 +541,7 @@ class MelisComContactService extends MelisComGeneralService
                     'cper_status' => $contactsData[2] ?? 1,
                     'cper_email' => $contactsData[3],
                     'cper_civility' => !empty($civD) ? $civD->civt_civ_id : 0,
-                    'cper_name' => $contactsData[5],
+                    'cper_name' => $contactsData[5] ?? null,
                     'cper_middle_name' => $contactsData[6] ?? null,
                     'cper_firstname' => $contactsData[7],
                     'cper_job_title' => $contactsData[8] ?? null,
@@ -589,10 +594,11 @@ class MelisComContactService extends MelisComGeneralService
 
     /**
      * @param $fileContents
+     * @param $csvDefaultDelimiter
      * @param string $delimiter
      * @return mixed
      */
-    public function importFileValidator($fileContents, $delimiter = ';')
+    public function importFileValidator($fileContents, $csvDefaultDelimiter, $delimiter = ';')
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -616,11 +622,16 @@ class MelisComContactService extends MelisComGeneralService
             if (!empty($contacts)){
                 unset($contacts[0]);
             }
+
             $index = 0;
             foreach ($contacts as $contact) {
                 $index++;
                 $tmpErrors = null;
                 if(!empty(trim($contact))) {
+                    //check delimiters
+                    if($csvDefaultDelimiter != $delimiter)//change delimiters to given one
+                        $contact = str_replace($csvDefaultDelimiter, $delimiter, $contact);
+
                     $contactsData = array_filter(explode($delimiter, trim($contact)));
                     /**
                      * Check for Mandatory Fields
@@ -681,11 +692,13 @@ class MelisComContactService extends MelisComGeneralService
          */
         $mandatoryFields = [
              $translator->translate('tr_contact_export_col_cper_lang_id') => 0,  // Language
-             $translator->translate('tr_contact_export_col_cper_name') => 5,  // last name
              $translator->translate('tr_contact_export_col_cper_firstname') => 7,  // first name
              $translator->translate('tr_meliscommerce_contact_import_address_name') => 12,  // first name
              $translator->translate('tr_meliscommerce_contact_import_address_type') => 13,  // first name
         ];
+
+        if($contactsData[1] == 'person')//we include cper name validation only if type is person
+            $mandatoryFields[$translator->translate('tr_contact_export_col_cper_name')] = 5;  // last name]
 
         foreach ($mandatoryFields as $fieldName => $position) {
             if (empty($contactsData[$position])) {

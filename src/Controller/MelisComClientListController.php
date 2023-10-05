@@ -9,6 +9,7 @@
 
 namespace MelisCommerce\Controller;
 
+use Laminas\Http\Headers;
 use Laminas\Stdlib\ArrayUtils;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
@@ -1070,6 +1071,27 @@ class MelisComClientListController extends MelisAbstractActionController
             $response->setContent($content);
         }
 
+        return $response;
+    }
+
+    /**
+     * @return Response\Stream
+     */
+    public function downloadImportTemplateAction()
+    {
+        $file = $_SERVER['DOCUMENT_ROOT'].'/../vendor/melisplatform/melis-commerce/public/template/sample_import _accounts.csv';
+
+        $response = new Response\Stream();
+        $response->setStream(fopen($file, 'r'));
+        $response->setStatusCode(200);
+        $response->setStreamName(basename($file));
+        $headers = new Headers();
+        $headers->addHeaders(array(
+            'Content-Disposition' => 'attachment; filename="' . basename($file) .'"',
+            'Content-Type' => 'application/octet-stream',
+            'Content-Length' => filesize($file),
+        ));
+        $response->setHeaders($headers);
         return $response;
     }
 }

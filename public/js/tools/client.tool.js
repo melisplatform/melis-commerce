@@ -961,25 +961,23 @@ $(function() {
 	});
 
     $body.on("click", ".accountsImport", function() {
-        if (!melisCoreTool.isTableEmpty("clientListTbl")) {
-            // initialation of local variable
-            zoneId = "id_meliscommerce_client_list_import_accounts_form";
-            melisKey = "meliscommerce_client_list_import_accounts_form";
-            modalUrl =
-                "/melis/MelisCommerce/MelisComContact/renderContactListModal";
+		// initialation of local variable
+		zoneId = "id_meliscommerce_client_list_import_accounts_form";
+		melisKey = "meliscommerce_client_list_import_accounts_form";
+		modalUrl =
+			"/melis/MelisCommerce/MelisComContact/renderContactListModal";
 
-            // requesitng to create modal and display after
-            melisHelper.createModal(
-                zoneId,
-                melisKey,
-                false,
-                {},
-                modalUrl,
-                function() {
-                    melisCoreTool.done(this);
-                }
-            );
-        }
+		// requesitng to create modal and display after
+		melisHelper.createModal(
+			zoneId,
+			melisKey,
+			false,
+			{},
+			modalUrl,
+			function() {
+				melisCoreTool.done(this);
+			}
+		);
     });
 
     $body.on("click", ".updateDefaultContact", function(){

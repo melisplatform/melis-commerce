@@ -38,6 +38,26 @@ return [
                             ],
                         ],
                     ],
+                    'download_contact_import_template' => [
+                        'type' => 'Segment',
+                        'options' => [
+                            'route' => 'download-contact-template',
+                            'defaults' => [
+                                'controller' => 'MelisCommerce\Controller\MelisComContactController',
+                                'action' => 'downloadImportTemplate',
+                            ],
+                        ],
+                    ],
+                    'download_accounts_import_template' => [
+                        'type' => 'Segment',
+                        'options' => [
+                            'route' => 'download-account-template',
+                            'defaults' => [
+                                'controller' => 'MelisCommerce\Controller\MelisComClientListController',
+                                'action' => 'downloadImportTemplate',
+                            ],
+                        ],
+                    ],
                 ],
             ],
             'melis-front' => [

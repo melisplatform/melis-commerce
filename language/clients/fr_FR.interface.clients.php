@@ -408,10 +408,10 @@
         'tr_client_accounts_import_col_account_contact_not_exist' => ' n\'existe pas',
         'tr_client_accounts_import_col_account_already_exist' => ' existe déjà',
 
-        'tr_meliscommerce_accounts_import_file_content_format' => 'File content format <span class="span-8">(Data separated in semi cologne (;), text in <span class="required">red</span> is required)</span>',
+        'tr_meliscommerce_accounts_import_file_content_format' => 'Format de l\'import <span class="span-8">(Données séparées par des points-virgules (;), les données en <span class="required">rouges</span> sont obligatoires)</span>',
         'tr_meliscommerce_accounts_import_file_content_format_header' => '<span class="required">Name</span>;Country;Tags;Group name;<span class="required">Address name</span>;<span class="required">Address Type</span>;Address civility;Address Firstname;Address middlename;Address lastname;Street number;Street name;Building;Floor;City;State;Country;Postal Code;Company name;Mobile;Landline;Additional;<span class="required">Company name</span>;Registration number;VAT number;Group;Number of Employees;Street number;Street name;Building;Zip code;City;State;Country;Phone number;Website;<span class="required">Main Contact Id</span>;<span class="required">Main Contact Email</span>',
         'tr_meliscommerce_accounts_import_file_content_format_example' => 'Exemple',
-        'tr_meliscommerce_accounts_import_file_content_format_content' => 'My account name;France;tag1,tag2;General;My address name;Billing;Mrs;Juan;Adams;Dela cruz;048;Rue;Building 44;5th;Paris;State;France;02455;Company name;09191234567;800-111;Additional info;Juan Company Inc.;091111;90-1990-1;General;100-1010;101 Rue;Rue;Building 45;6529;Paris;state;France;091234567;www.test.com;1;mymaincontact@demo.com',
+        'tr_meliscommerce_accounts_import_file_content_format_content' => 'Télécharger le template',
         'tr_meliscommerce_accounts_import_file_content_format_content_no_mname' => 'Pas de deuxième nom',
         'tr_meliscommerce_accounts_import_file_content_format_content_no_mname_sample' => 'Nom de mon compte;France;tag1,tag2;General;Mon addresse;Facturation;Mr;Juan;;Dela cruz;048;Rue;Building 44.......',
 

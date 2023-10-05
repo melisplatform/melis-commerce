@@ -9,6 +9,7 @@
 namespace MelisCommerce\Controller;
 
 
+use Laminas\Http\Headers;
 use Laminas\Http\Response;
 use Laminas\Session\Container;
 use Laminas\Stdlib\ArrayUtils;
@@ -1676,9 +1677,12 @@ class MelisComContactController extends MelisAbstractActionController
             $delimiter = !empty($post['separator']) ? $post['separator'] : $defaultDelimiter;
 
             $file = $this->params()->fromFiles('contact_file');
+
+            $csvDefaultDelimiter = $this->getCsvDelimiter($file['tmp_name']);
+
             $fileContents = $this->readImportedCsv($file);
 
-            $result = $contactService->importFileValidator($fileContents, $delimiter);
+            $result = $contactService->importFileValidator($fileContents, $csvDefaultDelimiter, $delimiter);
 
             if (empty($result['errors'])) {
                 //execute saving records with transactions
@@ -1686,7 +1690,7 @@ class MelisComContactController extends MelisAbstractActionController
                 $con = $adapter->getDriver()->getConnection();//get db driver connection
                 $con->beginTransaction();//begin transaction
                 try{
-                    $contactService->importContacts($fileContents, $post, $delimiter);
+                    $contactService->importContacts($fileContents, $post, $csvDefaultDelimiter, $delimiter);
                     $con->commit();
                     $success = 1;
                     $message = 'tr_meliscommerce_contact_import_success';
@@ -1708,6 +1712,48 @@ class MelisComContactController extends MelisAbstractActionController
         ];
 
         return new JsonModel($response);
+    }
+
+    /**
+     * Function to check the csv delimiter
+     *
+     * @param string $filePath
+     * @param int $checkLines
+     * @return string
+     */
+    private function getCsvDelimiter(string $filePath, int $checkLines = 3): string
+    {
+        $delimiters =[",", ";", "\t"];
+
+        $default =";";
+
+        if(!empty($filePath)) {
+            $fileObject = new \SplFileObject($filePath);
+            $results = [];
+            $counter = 0;
+            while ($fileObject->valid() && $counter <= $checkLines) {
+                $line = $fileObject->fgets();
+                foreach ($delimiters as $delimiter) {
+                    $fields = explode($delimiter, $line);
+                    $totalFields = count($fields);
+                    if ($totalFields > 1) {
+                        if (!empty($results[$delimiter])) {
+                            $results[$delimiter] += $totalFields;
+                        } else {
+                            $results[$delimiter] = $totalFields;
+                        }
+                    }
+                }
+                $counter++;
+            }
+            if (!empty($results)) {
+                $results = array_keys($results, max($results));
+
+                return $results[0];
+            }
+        }
+
+        return $default;
     }
 
     /**
@@ -1785,5 +1831,26 @@ class MelisComContactController extends MelisAbstractActionController
         }
 
         return $data;
+    }
+
+    /**
+     * @return Response\Stream
+     */
+    public function downloadImportTemplateAction()
+    {
+        $file = $_SERVER['DOCUMENT_ROOT'].'/../vendor/melisplatform/melis-commerce/public/template/sample_import_contact.csv';
+
+        $response = new Response\Stream();
+        $response->setStream(fopen($file, 'r'));
+        $response->setStatusCode(200);
+        $response->setStreamName(basename($file));
+        $headers = new Headers();
+        $headers->addHeaders(array(
+            'Content-Disposition' => 'attachment; filename="' . basename($file) .'"',
+            'Content-Type' => 'application/octet-stream',
+            'Content-Length' => filesize($file),
+        ));
+        $response->setHeaders($headers);
+        return $response;
     }
 }

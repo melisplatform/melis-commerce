@@ -2005,10 +2005,11 @@ class MelisComClientService extends MelisComGeneralService
     /**
      * @param $fileContents
      * @param $postData
+     * @param $csvDefaultDelimiter
      * @param string $delimiter
      * @return mixed
      */
-    public function importAccounts($fileContents, $postData, $delimiter = ';')
+    public function importAccounts($fileContents, $postData, $csvDefaultDelimiter, $delimiter = ';')
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -2016,22 +2017,26 @@ class MelisComClientService extends MelisComGeneralService
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_account_import_accounts_start', $arrayParameters);
 
-        $contacts = explode(PHP_EOL, $fileContents);
+        $accounts = explode(PHP_EOL, $fileContents);
 
         /*
          * remove first line cause it is label for them
          */
-        if (! empty($contacts)) {
-            unset($contacts[0]);
+        if (! empty($accounts)) {
+            unset($accounts[0]);
         }
 
         $civilityTable = $this->getServiceManager()->get('MelisEcomCivilityTransTable');
         $countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
         $group = $this->getServiceManager()->get('MelisEcomClientGroupsTable');
 
-        foreach($contacts as $contact){
+        foreach($accounts as $account){
             if(!empty($contact)) {
-                $accountsData = explode($delimiter, $contact);
+                //check delimiters
+                if($csvDefaultDelimiter != $delimiter)//change delimiters to given one
+                    $account = str_replace($csvDefaultDelimiter, $delimiter, $account);
+
+                $accountsData = explode($delimiter, $account);
 
                 //get country id
                 $countryD = $countryTable->getEntryByField('ctry_name', $accountsData[1])->current();
@@ -2129,10 +2134,11 @@ class MelisComClientService extends MelisComGeneralService
 
     /**
      * @param $fileContents
+     * @param $csvDefaultDelimiter
      * @param string $delimiter
      * @return mixed
      */
-    public function importFileValidator($fileContents, $delimiter = ';')
+    public function importFileValidator($fileContents, $csvDefaultDelimiter, $delimiter = ';')
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -2161,6 +2167,10 @@ class MelisComClientService extends MelisComGeneralService
                 $index++;
                 $tmpErrors = null;
                 if(!empty(trim($account))) {
+                    //check delimiters
+                    if($csvDefaultDelimiter != $delimiter)//change delimiters to given one
+                        $account = str_replace($csvDefaultDelimiter, $delimiter, $account);
+
                     $accountsData = array_filter(explode($delimiter, trim($account)));
                     /**
                      * Check for Mandatory Fields
@@ -2264,6 +2274,7 @@ class MelisComClientService extends MelisComGeneralService
      */
     private function checkContact(&$errors, $accountsData = [], $index = null)
     {
+        print_r($accountsData);exit;
         $translator = $this->getServiceManager()->get('translator');
         $contactService = $this->getServiceManager()->get('MelisComContactService');
         $prefix = $translator->translate('tr_meliscommerce_contact_common_line') .' '. $index . ': ';

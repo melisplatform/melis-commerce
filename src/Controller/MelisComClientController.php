@@ -2029,9 +2029,12 @@ class MelisComClientController extends MelisAbstractActionController
             $delimiter = !empty($post['separator']) ? $post['separator'] : $defaultDelimiter;
 
             $file = $this->params()->fromFiles('account_file');
+
+            $csvDefaultDelimiter = $this->getCsvDelimiter($file['tmp_name']);
+
             $fileContents = $this->readImportedCsv($file);
 
-            $result = $accountService->importFileValidator($fileContents, $delimiter);
+            $result = $accountService->importFileValidator($fileContents, $csvDefaultDelimiter, $delimiter);
 
             if (empty($result['errors'])) {
                 //execute saving records with transactions
@@ -2039,7 +2042,7 @@ class MelisComClientController extends MelisAbstractActionController
                 $con = $adapter->getDriver()->getConnection();//get db driver connection
                 $con->beginTransaction();//begin transaction
                 try{
-                    $accountService->importAccounts($fileContents, $post, $delimiter);
+                    $accountService->importAccounts($fileContents, $post, $csvDefaultDelimiter, $delimiter);
                     $con->commit();
                     $success = 1;
                     $message = 'tr_meliscommerce_accounts_import_success';
@@ -2061,6 +2064,48 @@ class MelisComClientController extends MelisAbstractActionController
         ];
 
         return new JsonModel($response);
+    }
+
+    /**
+     * Function to check the csv delimiter
+     *
+     * @param string $filePath
+     * @param int $checkLines
+     * @return string
+     */
+    private function getCsvDelimiter(string $filePath, int $checkLines = 3): string
+    {
+        $delimiters =[",", ";", "\t"];
+
+        $default =";";
+
+        if(!empty($filePath)) {
+            $fileObject = new \SplFileObject($filePath);
+            $results = [];
+            $counter = 0;
+            while ($fileObject->valid() && $counter <= $checkLines) {
+                $line = $fileObject->fgets();
+                foreach ($delimiters as $delimiter) {
+                    $fields = explode($delimiter, $line);
+                    $totalFields = count($fields);
+                    if ($totalFields > 1) {
+                        if (!empty($results[$delimiter])) {
+                            $results[$delimiter] += $totalFields;
+                        } else {
+                            $results[$delimiter] = $totalFields;
+                        }
+                    }
+                }
+                $counter++;
+            }
+            if (!empty($results)) {
+                $results = array_keys($results, max($results));
+
+                return $results[0];
+            }
+        }
+
+        return $default;
     }
 
     /**
