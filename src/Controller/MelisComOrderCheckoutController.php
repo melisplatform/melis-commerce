@@ -939,72 +939,72 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
             $container = new Container('meliscommerce');
             $contactId = $container['checkout'][self::SITE_ID]['contactId'] ?? null;//$this->getRequest()->getPost('contactId', null);
 
-            $melisTool = $this->getServiceManager()->get('MelisCoreTool');
-            $melisTool->setMelisToolKey(self::PLUGIN_INDEX, 'meliscommerce_order_checkout_contact_account_list');
+            if(!empty($contactId)) {
+                $melisTool = $this->getServiceManager()->get('MelisCoreTool');
+                $melisTool->setMelisToolKey(self::PLUGIN_INDEX, 'meliscommerce_order_checkout_contact_account_list');
 
-            $colId = array_keys($melisTool->getColumns());
+                $colId = array_keys($melisTool->getColumns());
 
-            $sortOrder = $this->getRequest()->getPost('order');
-            $sortOrder = $sortOrder[0]['dir'];
+                $sortOrder = $this->getRequest()->getPost('order');
+                $sortOrder = $sortOrder[0]['dir'];
 
-            $selCol = $this->getRequest()->getPost('order');
-            $selCol = $colId[$selCol[0]['column']];
+                $selCol = $this->getRequest()->getPost('order');
+                $selCol = $colId[$selCol[0]['column']];
 
 //            if($selCol == 'default_contact')
 //                $selCol = null;
-            if($selCol == 'default_account')
-                $selCol = 'cpr_default_client';
+                if ($selCol == 'default_account')
+                    $selCol = 'cpr_default_client';
 
-            $draw = $this->getRequest()->getPost('draw');
+                $draw = $this->getRequest()->getPost('draw');
 
-            $start = $this->getRequest()->getPost('start');
-            $length =  $this->getRequest()->getPost('length');
+                $start = $this->getRequest()->getPost('start');
+                $length = $this->getRequest()->getPost('length');
 
-            $search = $this->getRequest()->getPost('search');
-            $search = $search['value'];
+                $search = $this->getRequest()->getPost('search');
+                $search = $search['value'];
 
-            $contactService = $this->getServiceManager()->get('MelisComContactService');
-            $clientService = $this->getServiceManager()->get('MelisComClientService');
+                $contactService = $this->getServiceManager()->get('MelisComContactService');
+                $clientService = $this->getServiceManager()->get('MelisComClientService');
 
-            $tableData = $contactService->getContactAssocAccountLists($contactId, $search, $melisTool->getSearchableColumns(), $start, $length, $selCol, $sortOrder)->toArray();
-            $dataCount = $contactService->getContactAssocAccountLists($contactId, $search, $melisTool->getSearchableColumns(), null, null, null, 'ASC', true)->current();
+                $tableData = $contactService->getContactAssocAccountLists($contactId, $search, $melisTool->getSearchableColumns(), $start, $length, $selCol, $sortOrder)->toArray();
+                $dataCount = $contactService->getContactAssocAccountLists($contactId, $search, $melisTool->getSearchableColumns(), null, null, null, 'ASC', true)->current();
 
-            $contactStatus = '<i class="fa fa-circle text-danger"></i>';
-            foreach ($tableData as $key => $val)
-            {
-                $isDefault = '';
-                // Generating contact status html form
-                if ($val['cli_status'])
-                {
-                    $contactStatus = '<i class="fa fa-circle text-success"></i>';
+                $contactStatus = '<i class="fa fa-circle text-danger"></i>';
+                foreach ($tableData as $key => $val) {
+                    $isDefault = '';
+                    // Generating contact status html form
+                    if ($val['cli_status']) {
+                        $contactStatus = '<i class="fa fa-circle text-success"></i>';
+                    }
+                    if ($val['cpr_default_client']) {
+                        $isDefault = '<i class="fa fa-star fa-2x"></i>';
+                    }
+
+
+                    $tableData[$key]['cli_status'] = $contactStatus;
+                    //check if this account is the default of this contact
+                    $tableData[$key]['default_account'] = $isDefault;
+                    //check if this contact is the default of this account
+                    $isDefaultAccount = $this->isDefaultContact($val['cli_id'], $contactId);
+                    $tableData[$key]['default_contact'] = $isDefaultAccount;
+
+                    $cliName = $clientService->getAccountName($val['cli_id']);
+                    $tableData[$key]['cli_name'] = !empty($cliName) ? "<span class='d-none td-tooltip'>" . $cliName . "</span>" . mb_strimwidth($cliName, 0, 30, '...') : null;
+
+                    $tableData[$key]['DT_RowAttr'] = [
+                        'data-isdefault' => $val['cpr_default_client'],
+                        'data-isdefaultcontact' => !empty($isDefaultAccount) ? 1 : 0,
+                        'data-cprid' => $val['cpr_id'],
+                        'data-contactid' => $val['cper_id']
+                    ];
                 }
-                if($val['cpr_default_client']){
-                    $isDefault = '<i class="fa fa-star fa-2x"></i>';
-                }
-
-
-                $tableData[$key]['cli_status'] = $contactStatus;
-                //check if this account is the default of this contact
-                $tableData[$key]['default_account'] = $isDefault;
-                //check if this contact is the default of this account
-                $isDefaultAccount = $this->isDefaultContact($val['cli_id'], $contactId);
-                $tableData[$key]['default_contact'] = $isDefaultAccount;
-
-                $cliName = $clientService->getAccountName($val['cli_id']);
-                $tableData[$key]['cli_name'] = !empty($cliName) ? "<span class='d-none td-tooltip'>".$cliName."</span>".mb_strimwidth($cliName, 0, 30, '...') : null;
-
-                $tableData[$key]['DT_RowAttr']    = [
-                    'data-isdefault' => $val['cpr_default_client'],
-                    'data-isdefaultcontact' => !empty($isDefaultAccount) ? 1 : 0,
-                    'data-cprid' => $val['cpr_id'],
-                    'data-contactid' => $val['cper_id']
-                ];
             }
         }
         return new JsonModel(array(
             'draw' => (int) $draw,
             'recordsTotal' => count($tableData),
-            'recordsFiltered' => $dataCount->totalRecords,
+            'recordsFiltered' => $dataCount->totalRecords ?? 0,
             'data' => $tableData,
         ));
     }
