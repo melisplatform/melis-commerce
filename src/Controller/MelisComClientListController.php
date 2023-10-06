@@ -468,8 +468,30 @@ class MelisComClientListController extends MelisAbstractActionController
                 'columns' => $melisTool->getSearchableColumns(),
                 'date_filter' => array(),
                 'groupId' => $groupId,
-                'clientStatus' => $clientStatus
+                'clientStatus' => $clientStatus,
+                'count' => false
             ));
+
+            $totalFiltered = $melisEcomClientPersonTable->getAccountToolList(array(
+                'where' => array(
+                    'key' => 'cli_id',
+                    'value' => $search,
+                ),
+                'order' => array(
+                    'key' => $selCol,
+                    'dir' => $sortOrder,
+                ),
+                'start' => $start,
+                'limit' => $length,
+                'columns' => $melisTool->getSearchableColumns(),
+                'date_filter' => array(),
+                'groupId' => $groupId,
+                'clientStatus' => $clientStatus,
+                'count' => true
+            ))->current();
+
+            if($totalFiltered)
+                $totalFiltered = $totalFiltered->total;
 
             // store fetched data for data modification (if needed)
             $contactData = $getData->toArray();
@@ -528,7 +550,7 @@ class MelisComClientListController extends MelisAbstractActionController
         return new JsonModel(array(
             'draw' => (int) $draw,
             'recordsTotal' => $dataCount,
-            'recordsFiltered' => $melisEcomClientPersonTable->getTotalFiltered(),
+            'recordsFiltered' => $totalFiltered,
             'data' => $tableData,
         ));
     }

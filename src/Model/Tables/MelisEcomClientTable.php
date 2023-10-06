@@ -95,7 +95,14 @@ class MelisEcomClientTable extends MelisEcomGenericTable
 
 //        $cper_contact = new \Laminas\Db\Sql\Predicate\Expression("CONCAT(COALESCE(`cper_firstname`,''),' ',COALESCE(`cper_middle_name`,''),' ',COALESCE(`cper_name`,'')) as cli_person");
         $max_order_date = new \Laminas\Db\Sql\Predicate\Expression('(SELECT ord_date_creation FROM melis_ecom_order WHERE ord_client_id = cli_id ORDER BY ord_date_creation DESC LIMIT 1)');
-        $select->columns(array('*', 'cli_last_order' => $max_order_date));
+
+        $count = $options['count'];
+
+        if($count){
+            $select->columns(['total' => new \Laminas\Db\Sql\Expression('COUNT(*)')]);
+        }else{
+            $select->columns(array('*', 'cli_last_order' => $max_order_date));
+        }
 
         $where = !empty($options['where']['key']) ? $options['where']['key'] : '';
         $whereValue = !empty($options['where']['value']) ? $options['where']['value'] : '';
@@ -188,7 +195,8 @@ class MelisEcomClientTable extends MelisEcomGenericTable
             $select->limit($limit);
         }
 
-        $select->group('cli_id');
+        if(!$count)
+            $select->group('cli_id');
 
         $resultSet = $this->getTableGateway()->selectWith($select);
 
