@@ -118,19 +118,18 @@ window.initProductTextTinyMce = function(productId) {
                     form.attr("id", targetSelector);
 
                     var option = {
-                        mode : "none",
+                        // mode : "none",
                         height : "400px",
                         relative_urls : false,
                         language : 'en',
                         menubar : false,
                         templates : '/melis/MelisCore/MelisTinyMce/getTinyTemplates',
-                        forced_root_block : '',
-                        paste_word_valid_elements : "p,b,strong,i,em,h1,h2,h3,h4",
+                        forced_root_block : 'div',
+                        // paste_word_valid_elements : "p,b,strong,i,em,h1,h2,h3,h4",
                         cleanup : false,
                         verify_html : false,
                         plugins : [
-                            //[contextmenu, textcolor, colorpicker] this plugin is already built in the core editor as of TinyMCE v. 5
-                            'advlist autolink lists link paste image charmap preview anchor emoticons help hr nonbreaking',
+                            'advlist autolink lists link image charmap preview anchor emoticons help nonbreaking',
                             'searchreplace visualblocks code fullscreen',
                             'insertdatetime media table minitemplate'
                         ],
@@ -138,7 +137,7 @@ window.initProductTextTinyMce = function(productId) {
                             minitemplate: '/MelisCore/js/minitemplate/plugin.min.js'
                         },
                         image_advtab: true,
-                        toolbar : 'insertfile undo redo paste | formatselect | forecolor | bold italic strikethrough underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media minitemplate | code',
+                        toolbar : 'insertfile undo redo | formatselect | forecolor | bold italic strikethrough underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media minitemplate | code',
                         init_instance_callback  : productTextTinyMCECallback(form, productId)
                     }
 
