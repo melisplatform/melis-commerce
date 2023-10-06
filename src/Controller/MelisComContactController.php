@@ -1667,18 +1667,16 @@ class MelisComContactController extends MelisAbstractActionController
         $title = 'tr_meliscommerce_contact_import_title';
         $errors = [];
         $request = $this->getRequest();
-        $defaultDelimiter = ';';
         $translator = $this->getServiceManager()->get('translator');
 
         if ($request->isPost()) {
             $post = $request->getPost()->toArray();
             $contactService = $this->getServiceManager()->get('MelisComContactService');
 
-            $delimiter = !empty($post['separator']) ? $post['separator'] : $defaultDelimiter;
-
             $file = $this->params()->fromFiles('contact_file');
-
             $csvDefaultDelimiter = $this->getCsvDelimiter($file['tmp_name']);
+
+            $delimiter = !empty($post['separator']) ? $post['separator'] : $csvDefaultDelimiter;
 
             $fileContents = $this->readImportedCsv($file);
 

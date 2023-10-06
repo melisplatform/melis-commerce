@@ -497,11 +497,10 @@ class MelisComContactService extends MelisComGeneralService
     /**
      * @param $fileContents
      * @param $postData
-     * @param $csvDefaultDelimiter
      * @param string $delimiter
      * @return mixed
      */
-    public function importContacts($fileContents, $postData, $csvDefaultDelimiter, $delimiter = ';')
+    public function importContacts($fileContents, $postData, $delimiter = ';')
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -523,11 +522,7 @@ class MelisComContactService extends MelisComGeneralService
 
         foreach($contacts as $contact){
             if(!empty($contact)) {
-                //check delimiters
-                if($csvDefaultDelimiter != $delimiter)//change delimiters to given one
-                    $contact = str_replace($csvDefaultDelimiter, $delimiter, $contact);
-
-                $contactsData = array_filter(explode($delimiter, trim($contact)));
+                $contactsData = array_filter(str_getcsv(trim($contact), $delimiter));
 
                 //get civility id
                 $civD = (!empty($contactsData[4])) ? $civilityTable->getEntryByField('civt_min_name', ucfirst($contactsData[4]))->current() : null;
@@ -594,11 +589,10 @@ class MelisComContactService extends MelisComGeneralService
 
     /**
      * @param $fileContents
-     * @param $csvDefaultDelimiter
      * @param string $delimiter
      * @return mixed
      */
-    public function importFileValidator($fileContents, $csvDefaultDelimiter, $delimiter = ';')
+    public function importFileValidator($fileContents, $delimiter = ';')
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -628,11 +622,8 @@ class MelisComContactService extends MelisComGeneralService
                 $index++;
                 $tmpErrors = null;
                 if(!empty(trim($contact))) {
-                    //check delimiters
-                    if($csvDefaultDelimiter != $delimiter)//change delimiters to given one
-                        $contact = str_replace($csvDefaultDelimiter, $delimiter, $contact);
 
-                    $contactsData = array_filter(explode($delimiter, trim($contact)));
+                    $contactsData = array_filter(str_getcsv(trim($contact), $delimiter));
                     /**
                      * Check for Mandatory Fields
                      */
