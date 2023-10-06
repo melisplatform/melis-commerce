@@ -37,7 +37,8 @@ return [
                                         'id' => 'id_meliscommerce_contacts_list_add_contact_button',
                                         'melisKey' => 'meliscommerce_contacts_list_add_contact_button',
                                         'name' => 'tr_meliscommerce_contacts_list_add_contact_button',
-                                        'left_menu_display' => false
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
                                     ],
                                 ],
                                 'meliscommerce_contacts_list_export_contact_button' => [
@@ -45,7 +46,8 @@ return [
                                         'id' => 'id_meliscommerce_contacts_list_export_contact_button',
                                         'melisKey' => 'meliscommerce_contacts_list_export_contact_button',
                                         'name' => 'tr_meliscommerce_contacts_list_export_contact_button',
-                                        'left_menu_display' => false
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
                                     ],
                                 ],
                                 'meliscommerce_contacts_list_import_contact_button' => [
@@ -53,7 +55,8 @@ return [
                                         'id' => 'id_meliscommerce_contacts_list_import_contact_button',
                                         'melisKey' => 'meliscommerce_contacts_list_import_contact_button',
                                         'name' => 'tr_meliscommerce_contacts_list_import_contact_button',
-                                        'left_menu_display' => false
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
                                     ],
                                 ],
                                 'meliscommerce_contacts_save_contact_button' => [
@@ -61,7 +64,8 @@ return [
                                         'id' => 'id_meliscommerce_contacts_save_contact_button',
                                         'melisKey' => 'meliscommerce_contacts_save_contact_button',
                                         'name' => 'tr_meliscommerce_contacts_save_contact_button',
-                                        'left_menu_display' => false
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
                                     ],
                                 ],
                                 'meliscommerce_contact_page_content_tab_association_header_add_account' => [
@@ -69,7 +73,8 @@ return [
                                         'id' => 'id_meliscommerce_contact_page_content_tab_association_header_add_account',
                                         'melisKey' => 'meliscommerce_contact_page_content_tab_association_header_add_account',
                                         'name' => 'tr_meliscommerce_contact_page_content_tab_association_header_add_account',
-                                        'left_menu_display' => false
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
                                     ],
                                 ],
                                 'meliscommerce_contact_page_content_tab_address_header_button_ad' => [
@@ -77,7 +82,8 @@ return [
                                         'id' => 'id_meliscommerce_contact_page_content_tab_address_header_button_ad',
                                         'melisKey' => 'meliscommerce_contact_page_content_tab_address_header_button_ad',
                                         'name' => 'tr_meliscommerce_contact_page_content_tab_address_header_button_ad',
-                                        'left_menu_display' => false
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
                                     ],
                                 ],
                                 'meliscommerce_contact_page_content_tab_address_header_button_delete_address' => [
@@ -85,7 +91,8 @@ return [
                                         'id' => 'id_meliscommerce_contact_page_content_tab_address_header_button_delete_address',
                                         'melisKey' => 'meliscommerce_contact_page_content_tab_address_header_button_delete_address',
                                         'name' => 'tr_meliscommerce_contact_page_content_tab_address_header_button_delete_address',
-                                        'left_menu_display' => false
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
                                     ],
                                 ],
                                 'meliscommerce_contacts_set_default_account_button' => [
@@ -93,7 +100,8 @@ return [
                                         'id' => 'id_meliscommerce_contacts_set_default_account_button',
                                         'melisKey' => 'meliscommerce_contacts_set_default_account_button',
                                         'name' => 'tr_meliscommerce_contact_set_default',
-                                        'left_menu_display' => false
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
                                     ],
                                 ],
                                 'meliscommerce_contacts_unlink_account_button' => [
@@ -101,7 +109,8 @@ return [
                                         'id' => 'id_meliscommerce_contacts_unlink_account_button',
                                         'melisKey' => 'meliscommerce_contacts_unlink_account_button',
                                         'name' => 'tr_meliscommerce_contact_unlink_account',
-                                        'left_menu_display' => false
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
                                     ],
                                 ],
                             ]

@@ -56,7 +56,8 @@ return [
                                         'id' => 'id_meliscommerce_clients_list_add_client_button',
                                         'melisKey' => 'meliscommerce_clients_list_add_client_button',
                                         'name' => 'tr_meliscommerce_clients_list_add_client_button',
-                                        'left_menu_display' => false
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
                                     ],
                                 ],
                                 'meliscommerce_clients_list_export_client_button' => [
@@ -64,7 +65,8 @@ return [
                                         'id' => 'id_meliscommerce_clients_list_export_client_button',
                                         'melisKey' => 'meliscommerce_clients_list_export_client_button',
                                         'name' => 'tr_meliscommerce_clients_list_export_client_button',
-                                        'left_menu_display' => false
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
                                     ],
                                 ],
                                 'meliscommerce_clients_list_import_client_button' => [
@@ -72,7 +74,8 @@ return [
                                         'id' => 'id_meliscommerce_clients_list_import_client_button',
                                         'melisKey' => 'meliscommerce_clients_list_import_client_button',
                                         'name' => 'tr_meliscommerce_clients_list_import_client_button',
-                                        'left_menu_display' => false
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
                                     ],
                                 ],
                                 'meliscommerce_clients_list_delete_client_button' => [
@@ -80,7 +83,8 @@ return [
                                         'id' => 'id_meliscommerce_clients_list_delete_client_button',
                                         'melisKey' => 'meliscommerce_clients_list_delete_client_button',
                                         'name' => 'tr_meliscommerce_clients_list_delete_client_button',
-                                        'left_menu_display' => false
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
                                     ],
                                 ],
                                 'meliscommerce_clients_list_save_client_button' => [
@@ -88,7 +92,8 @@ return [
                                         'id' => 'id_meliscommerce_clients_list_save_client_button',
                                         'melisKey' => 'meliscommerce_clients_list_save_client_button',
                                         'name' => 'tr_meliscommerce_clients_list_save_client_button',
-                                        'left_menu_display' => false
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
                                     ],
                                 ],
                                 'meliscommerce_client_add_contact' => [
@@ -96,7 +101,8 @@ return [
                                         'id' => 'id_meliscommerce_client_add_contact',
                                         'melisKey' => 'meliscommerce_client_add_contact',
                                         'name' => 'tr_meliscommerce_client_add_contact',
-                                        'left_menu_display' => false
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
                                     ],
                                 ],
 //                                'meliscommerce_client_edit_contact' => [
@@ -112,7 +118,8 @@ return [
                                         'id' => 'id_meliscommerce_client_set_default_contact',
                                         'melisKey' => 'meliscommerce_client_set_default_contact',
                                         'name' => 'tr_meliscommerce_client_set_default',
-                                        'left_menu_display' => false
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
                                     ],
                                 ],
                                 'meliscommerce_client_unlink_contact' => [
@@ -120,7 +127,8 @@ return [
                                         'id' => 'id_meliscommerce_client_unlink_contact',
                                         'melisKey' => 'meliscommerce_client_unlink_contact',
                                         'name' => 'tr_meliscommerce_client_unlink_contact',
-                                        'left_menu_display' => false
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
                                     ],
                                 ]
                             ]
