@@ -364,7 +364,7 @@
         'tr_client_accounts_export_col_ccomp_add_country' => 'Pays',
         'tr_client_accounts_export_col_ccomp_phone_number' => 'Téléphone',
         'tr_client_accounts_export_col_ccomp_website' => 'Site internet',
-        'tr_client_accounts_export_col_ccomp_date_creation' => 'Compte date de création',
+        'tr_client_accounts_export_col_ccomp_date_creation' => 'Date de création société',
 //        'tr_client_accounts_export_col_ccomp_comp_creation_date' => 'Compte date de création',
 
         'tr_client_accounts_export_col_cadd_address_name' => 'Titre de l\'adresse',
