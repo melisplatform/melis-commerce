@@ -772,7 +772,8 @@ class MelisComClientListController extends MelisAbstractActionController
             'columns' => $melisTool->getSearchableColumns(),
             'date_filter' => array(),
             'groupId' => $groupId,
-            'clientStatus' => $status
+            'clientStatus' => $status,
+            'count' => false
         ))->toArray();
 
         $data = [];

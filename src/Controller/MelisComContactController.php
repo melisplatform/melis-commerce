@@ -93,7 +93,8 @@ class MelisComContactController extends MelisAbstractActionController
             'columns' => [],
             'date_filter' => array(),
             'groupId' => null,
-            'clientStatus' => 1
+            'clientStatus' => 1,
+            'count' => false
         ))->toArray();
 
         foreach($lists as $key => $account){
