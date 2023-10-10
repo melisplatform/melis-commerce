@@ -137,7 +137,7 @@ window.initProductTextTinyMce = function(productId) {
                             minitemplate: '/MelisCore/js/minitemplate/plugin.min.js'
                         }, */
                         image_advtab: true,
-                        toolbar : 'insertfile undo redo | formatselect | forecolor | bold italic strikethrough underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media | code',
+                        toolbar : 'insertfile undo redo | formatselect | forecolor | bold italic strikethrough underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media | code', // minitemplate before code
                         init_instance_callback  : productTextTinyMCECallback(form, productId)
                     }
 
