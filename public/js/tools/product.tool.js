@@ -123,21 +123,21 @@ window.initProductTextTinyMce = function(productId) {
                         relative_urls : false,
                         language : 'en',
                         menubar : false,
-                        templates : '/melis/MelisCore/MelisTinyMce/getTinyTemplates',
+                        // templates : '/melis/MelisCore/MelisTinyMce/getTinyTemplates',
                         forced_root_block : 'div',
                         // paste_word_valid_elements : "p,b,strong,i,em,h1,h2,h3,h4",
                         cleanup : false,
                         verify_html : false,
                         plugins : [
-                            'advlist autolink lists link image charmap preview anchor emoticons help nonbreaking',
-                            'searchreplace visualblocks code fullscreen',
-                            'insertdatetime media table minitemplate'
+                            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview', 'anchor',
+                            'emoticons', 'help', 'nonbreaking', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                            'insertdatetime', 'media', 'table' // 'minitemplate'
                         ],
-                        external_plugins: {
+                        /* external_plugins: {
                             minitemplate: '/MelisCore/js/minitemplate/plugin.min.js'
-                        },
+                        }, */
                         image_advtab: true,
-                        toolbar : 'insertfile undo redo | formatselect | forecolor | bold italic strikethrough underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media minitemplate | code',
+                        toolbar : 'insertfile undo redo | formatselect | forecolor | bold italic strikethrough underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media | code',
                         init_instance_callback  : productTextTinyMCECallback(form, productId)
                     }
 
