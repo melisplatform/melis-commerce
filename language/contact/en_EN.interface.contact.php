@@ -27,6 +27,7 @@ return [
     'tr_meliscommerce_contact_common_empty_file' => 'File is empty',
     'tr_meliscommerce_contact_common_line' => 'Line',
     'tr_meliscommerce_contact_common_all' => 'All',
+    'tr_meliscommerce_contact_common_default' => 'Default',
 
     //interface names
     'tr_meliscommerce_contact_page' => 'Contact Page',

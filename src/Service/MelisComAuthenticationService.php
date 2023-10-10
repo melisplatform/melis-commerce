@@ -125,14 +125,13 @@ class MelisComAuthenticationService extends Session
                             // Client group
                             $groupId = 1;//general
                             $clientId = 0;
-                            foreach($getContactAssociatedAccounts as $key => $val){
-                                $cliData = $clientSrv->getClientById($val['cli_id']);
-                                if(!empty($cliData)) {//first account to find
-                                    $groupId = $cliData->cli_group_id ?? 1;
-                                    $clientId = $cliData->cli_id;
-                                    break;
+                            if(!empty($getContactAssociatedAccounts)){
+                                foreach($getContactAssociatedAccounts as $key => $val){
+                                    $groupId = $val['cli_group_id'] ?? 1;
+                                    $clientId = $val['cli_id'];
                                 }
                             }
+
                             $personIdentity->client_group = $groupId;
                             $personIdentity->client_id = $clientId;
 
@@ -169,6 +168,19 @@ class MelisComAuthenticationService extends Session
             'success' => $success,
             'message' => $message
         );
+    }
+
+    /**
+     * @param $clientId
+     */
+    public function setClientId($clientId)
+    {
+        $storage = $this->getStorage();
+        $identity = $this->getIdentity();
+        if(!empty($identity)){
+            $identity->client_id = $clientId;
+            $storage->write($identity);
+        }
     }
 
     public function getClientId()
@@ -219,8 +231,10 @@ class MelisComAuthenticationService extends Session
     public function getPersonName()
     {
         $sessionData = $this->authenticationService->getIdentity();
-        if ($this->hasIdentity() && !empty($sessionData))
-            return $sessionData->cper_firstname.' '.$sessionData->cper_name;
+        if ($this->hasIdentity() && !empty($sessionData)){
+            $fName = $sessionData->cper_firstname ?? null;
+            return $fName.' '.$sessionData->cper_name;
+        }
         
         return null;
     }
