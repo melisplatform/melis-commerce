@@ -1151,6 +1151,39 @@ $(function() {
 		$("#" + activeTabId + " .client-company-preview img").attr("src", "");
 		$("#" + activeTabId + " .bootstrap-filestyle input").val("");
 	});
+
+    $body.on("click", "#downloadAccountImportTemplate", function(e){
+        e.preventDefault();
+        $.ajax({
+            url: "/melis/download-account-template",
+            data: {},
+            type: "GET",
+            beforeSend: function(){
+
+            }
+        }).done(function(data, status, request){
+            var fileName = request.getResponseHeader("fileName");
+            //decode utf-8
+            fileName = decodeURIComponent(escape(fileName));
+            var mime = request.getResponseHeader("Content-Type");
+            var newContent = "";
+
+            for (var i = 0; i < data.length; i++) {
+                newContent += String.fromCharCode(data.charCodeAt(i) & 0xFF);
+            }
+
+            var bytes = new Uint8Array(newContent.length);
+
+            for (var i = 0; i < newContent.length; i++) {
+                bytes[i] = newContent.charCodeAt(i);
+            }
+
+            var blob = new Blob([bytes], {type: mime});
+            saveAs(blob, fileName);
+        }).fail(function(){
+            alert(translations.tr_meliscore_error_message);
+        });
+    });
 });
 function viewClientOrder(orderId, orderRef) {
 	var navTabsGroup = "id_meliscommerce_order_list_page";

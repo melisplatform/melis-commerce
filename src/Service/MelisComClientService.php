@@ -2054,15 +2054,19 @@ class MelisComClientService extends MelisComGeneralService
                 ];
                 //prepare address data
                 //get civility id
-                $civD = $civilityTable->getEntryByField('civt_min_name', $accountsData[6])->current();
+                $civD = null;
+                if(!empty($accountsData[6]))
+                    $civD = $civilityTable->getEntryByField('civt_min_name', $accountsData[6])->current();
+
                 $type = [
                     'billing' => 1,
                     'delivery' => 2
                 ];
+
                 $addressData = [
                     [
-                        'cadd_address_name' => $accountsData[4],
-                        'cadd_type' => $type[strtolower($accountsData[5])],
+                        'cadd_address_name' => $accountsData[4] ?? null,
+                        'cadd_type' => !empty($accountsData[5]) ? $type[strtolower($accountsData[5])] : null,
                         'cadd_civility' => !empty($civD) ? $civD->civt_civ_id : 0,
                         'cadd_firstname' => $accountsData[7] ?? null,
                         'cadd_middle_name' => $accountsData[8] ?? null,
@@ -2081,13 +2085,24 @@ class MelisComClientService extends MelisComGeneralService
                         'cadd_complementary' => $accountsData[21] ?? null,
                     ]
                 ];
+                //check if all field has data
+                $hasAddData = false;
+                foreach($addressData[0] as $key => $val){
+                    if(!empty($val)) {
+                        $hasAddData = true;
+                        break;
+                    }
+                }
+                if(!$hasAddData)//if no single data, make the address data empty
+                    $addressData = [];
+
+
                 //company data
                 $companyData = [
-                    'ccomp_name' => $accountsData[22],
+                    'ccomp_name' => $accountsData[22] ?? null,
                     'ccomp_number_id' => $accountsData[23] ?? null,
                     'ccomp_vat_number' => $accountsData[24] ?? null,
                     'ccomp_group' => $accountsData[25] ?? null,
-                    'ccomp_comp_creation_date' => date('Ymd'),
                     'ccomp_employee_nb' => $accountsData[26] ?? null,
                     'ccomp_add_number' => $accountsData[27] ?? null,
                     'ccomp_add_street' => $accountsData[28] ?? null,
@@ -2099,6 +2114,20 @@ class MelisComClientService extends MelisComGeneralService
                     'ccomp_phone_number' => $accountsData[34] ?? null,
                     'ccomp_website' => $accountsData[35] ?? null,
                 ];
+                //check if all field has data
+                $hasCompData = false;
+                foreach($companyData as $key => $val){
+                    if(!empty($val)) {
+                        $hasCompData = true;
+                        break;
+                    }
+                }
+                if(!$hasCompData)//if no single data, make the company data empty
+                    $companyData = [];
+                else
+                    $companyData['ccomp_comp_creation_date'] = date('Ymd');
+
+
                 //contact data
                 $contactId = null;
                 $cTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
@@ -2150,7 +2179,6 @@ class MelisComClientService extends MelisComGeneralService
 
         if (!empty(trim($fileContents))) {
             $accounts = explode(PHP_EOL, $fileContents);
-
             // remove first line cause it's label for them
             if (!empty($accounts)){
                 unset($accounts[0]);
@@ -2160,9 +2188,7 @@ class MelisComClientService extends MelisComGeneralService
                 $index++;
                 $tmpErrors = null;
                 if(!empty(trim($account))) {
-
                     $accountsData = array_filter(str_getcsv(trim($account), $delimiter));
-
                     /**
                      * Check for Mandatory Fields
                      */
@@ -2233,6 +2259,33 @@ class MelisComClientService extends MelisComGeneralService
             ]);
         }
 
+        //check address for validation
+        $hasAddressData = false;
+        $keys = [
+            6,7,8,9,10,11,12,13,14,15,16,
+            17,18,19,20,21
+        ];
+
+
+        foreach($keys as $pos){
+            if(!empty($accountsData[$pos])){
+                $hasAddressData = true;
+                break;
+            }
+        }
+        if($hasAddressData){
+            if(empty($accountsData[4])) {//address name
+                $mandatoryFields = array_merge($mandatoryFields, [
+                    $translator->translate('tr_client_accounts_import_template_address_name') => 4,
+                ]);
+            }
+            if(empty($accountsData[5])) {//address type
+                $mandatoryFields = array_merge($mandatoryFields, [
+                    $translator->translate('tr_client_accounts_import_template_address_type') => 5,
+                ]);
+            }
+        }
+
         if(!empty($mandatoryFields)) {
             foreach ($mandatoryFields as $fieldName => $position) {
                 if (empty($accountsData[$position])) {
@@ -2280,6 +2333,7 @@ class MelisComClientService extends MelisComGeneralService
              * we check if contact is exist
              */
             $emails = [];
+
             if(!empty($accountsData[37])){
                 $emails = $contactService->getContactByEmail($accountsData[37]);
             }elseif(!empty($accountsData[36])){

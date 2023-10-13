@@ -1833,23 +1833,21 @@ class MelisComContactController extends MelisAbstractActionController
     }
 
     /**
-     * @return Response\Stream
+     * @return HttpResponse|string
      */
     public function downloadImportTemplateAction()
     {
-        $file = $_SERVER['DOCUMENT_ROOT'].'/../vendor/melisplatform/melis-commerce/public/template/sample_import_contact.csv';
+        $translator = $this->getServiceManager()->get('translator');
+        $config = $this->getServiceManager()->get('config');
+        $dataTemplate = $config['plugins']['meliscommerce']['datas']['import_sample_template'];
+        $data = [];
+        foreach($dataTemplate as $key => $val){
+            foreach($val as $k => $v){
+                $name = utf8_encode($translator->translate($k));
+                $data[$key][$name] = $v;
+            }
+        }
 
-        $response = new Response\Stream();
-        $response->setStream(fopen($file, 'r'));
-        $response->setStatusCode(200);
-        $response->setStreamName(basename($file));
-        $headers = new Headers();
-        $headers->addHeaders(array(
-            'Content-Disposition' => 'attachment; filename="' . basename($file) .'"',
-            'Content-Type' => 'application/octet-stream',
-            'Content-Length' => filesize($file),
-        ));
-        $response->setHeaders($headers);
-        return $response;
+        return $this->executeCompanyContactExport($data, 'sample_contact_import', ';');
     }
 }

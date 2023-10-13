@@ -757,6 +757,7 @@ class MelisComClientListController extends MelisAbstractActionController
 
         $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientTable');
         $countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
+        $clientGroupTable = $this->getServiceManager()->get('MelisEcomClientGroupsTable');
 
         $getData = $melisEcomClientPersonTable->getAccountToolList(array(
             'where' => array(
@@ -793,10 +794,19 @@ class MelisComClientListController extends MelisAbstractActionController
                 $getData[$key]['default_contact_email'] = $defContactEmail;
 
                 //get client country
+                $getData[$key]['cli_country_id'] = null;
                 $countryData = $countryTable->getEntryById($val['cli_country_id'])->current();
                 if(!empty($countryData)){
                     $getData[$key]['cli_country_id'] = $countryData->ctry_name;
                 }
+
+                //get client group
+                $getData[$key]['cli_group_id'] = null;
+                $groupData = $clientGroupTable->getEntryById($val['cli_group_id'])->current();
+                if(!empty($groupData)){
+                    $getData[$key]['cli_group_id'] = $groupData->cgroup_name;
+                }
+
                 //format dates
 //                $lastOrder = !empty($val['cli_last_order'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_last_order'])), 0, 10) : '';
                 $clientCreated = !empty($val['cli_date_creation'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_date_creation'])), 0, 10) : '';
@@ -848,18 +858,18 @@ class MelisComClientListController extends MelisAbstractActionController
             $getData = $this->processKeysToMatch($keys, $getData);
 
             //reposition fields
-            foreach($getData as $key => $val){
-                $getData[$key] = array_slice($val, 0, 5, true) +
-                    array("cgroup_name" => $val['cgroup_name']) +
-                    array_slice($val, 3, count($val) - 1, true) ;
-            }
+//            foreach($getData as $key => $val){
+//                $getData[$key] = array_slice($val, 0, 5, true) +
+//                    array("cgroup_name" => $val['cgroup_name']) +
+//                    array_slice($val, 3, count($val) - 1, true) ;
+//            }
 
             $exportData = [];
             /**
              * Columns to exclude in the export
              */
             $excludeColumns = [
-                'cli_group_id', 'cli_date_edit', 'cli_last_order',
+                'cli_date_edit', 'cli_last_order',
                 'car_id','car_client_id','car_client_person_id','car_default_person',
                 'cper_firstname','cper_name','cper_id','cper_email',
                 'ccomp_name', 'ccomp_logo','ccomp_id','ccomp_client_id', 'ccomp_comp_creation_date','ccomp_date_edit', 'ccomp_add_floor',
@@ -869,6 +879,7 @@ class MelisComClientListController extends MelisAbstractActionController
             /**
              * Translate all fields
              */
+
             foreach($getData as $key => $val){
                 $dt = [];
                 foreach($val as $k => $d){
@@ -877,6 +888,8 @@ class MelisComClientListController extends MelisAbstractActionController
                             $fname = str_replace('translated_', '', $k);
                         else//translate field
                             $fname = $translator->translate('tr_client_accounts_export_col_' . $k);
+
+
                         $dt["$fname"] = $d;
                     }
                 }
@@ -1098,23 +1111,21 @@ class MelisComClientListController extends MelisAbstractActionController
     }
 
     /**
-     * @return Response\Stream
+     * @return HttpResponse|string
      */
     public function downloadImportTemplateAction()
     {
-        $file = $_SERVER['DOCUMENT_ROOT'].'/../vendor/melisplatform/melis-commerce/public/template/sample_import _accounts.csv';
+        $translator = $this->getServiceManager()->get('translator');
+        $config = $this->getServiceManager()->get('config');
+        $dataTemplate = $config['plugins']['meliscommerce']['datas']['import_sample_template_accounts'];
+        $data = [];
+        foreach($dataTemplate as $key => $val){
+            foreach($val as $k => $v){
+                $name = utf8_encode($translator->translate($k));
+                $data[$key][$name] = $v;
+            }
+        }
 
-        $response = new Response\Stream();
-        $response->setStream(fopen($file, 'r'));
-        $response->setStatusCode(200);
-        $response->setStreamName(basename($file));
-        $headers = new Headers();
-        $headers->addHeaders(array(
-            'Content-Disposition' => 'attachment; filename="' . basename($file) .'"',
-            'Content-Type' => 'application/octet-stream',
-            'Content-Length' => filesize($file),
-        ));
-        $response->setHeaders($headers);
-        return $response;
+        return $this->executeCompanyContactExport($data, 'sample_account_import', ';');
     }
 }
