@@ -406,7 +406,7 @@
         'tr_client_accounts_import_col_cli_country_id' => 'Pays',
         'tr_client_accounts_import_col_cli_tags' => 'Tags',
         'tr_client_accounts_import_col_cgroup_name' => 'Nom du groupe',
-        'tr_client_accounts_import_col_company_name' => 'Company name',
+        'tr_client_accounts_import_col_company_name' => 'Nom du société',
         'tr_client_accounts_import_col_account_contact' => 'Contact',
         'tr_client_accounts_import_col_account_contact_not_exist' => ' n\'existe pas',
         'tr_client_accounts_import_col_account_already_exist' => ' existe déjà',
