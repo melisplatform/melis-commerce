@@ -677,6 +677,42 @@ $(function(){
         e.preventDefault();
     });
 
+    //test contact imports
+    $body.on("click", "#testImportContacts, #importContacts", function(e){
+        var form = $("#contact-list-import-contacts");
+        var formData = new FormData(form[0]);
+        var type = $(this).attr("data-action");
+
+        $.ajax({
+            type: 'POST',
+            url: '/melis/MelisCommerce/MelisComContact/validateContactImportsForm',
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            beforeSend: function(){
+                // _this.attr('disabled', true);s
+            }
+        }).done(function (data) {
+            if(data.success){
+                if(type == 'import') {
+                    importContacts(formData, "/melis/MelisCommerce/MelisComContact/importContacts", type);
+                }else{
+                    importContacts(formData, "/melis/MelisCommerce/MelisComContact/testImportContacts", type);
+                }
+            }else{
+                melisHelper.melisKoNotification(data.title, data.message, data.errors);
+                melisHelper.highlightMultiErrors(data.success, data.errors, "#contact-list-import-contacts");
+            }
+
+            // _this.attr('disabled', false);
+        }).fail(function () {
+            alert(translations.tr_meliscore_error_message);
+        });
+
+        e.preventDefault();
+    });
+
     /**
      * Run import
      * @param data
@@ -708,13 +744,18 @@ $(function(){
                 updateProgressValue(100);
                 if(data.success){
                     title.text(data.textMessage);
-                    $('#contactList').DataTable().ajax.reload();
-                    //hide modal
-                    $("#id_meliscommerce_contact_list_import_contacts_form_container").modal("hide");
-                    //show notifications
-                    melisHelper.melisOkNotification(data.textTitle, data.textMessage);
-                    // update flash messenger values
-                    melisCore.flashMessenger();
+                    if(type == 'import') {
+                        $('#contactList').DataTable().ajax.reload();
+                        //hide modal
+                        $("#id_meliscommerce_contact_list_import_contacts_form_container").modal("hide");
+                        //show notifications
+                        melisHelper.melisOkNotification(data.textTitle, data.textMessage);
+                        // update flash messenger values
+                        melisCore.flashMessenger();
+                    }else{
+                        //disable import button
+                        $("#importContacts").attr("disabled", false);
+                    }
                 }else{
                     title.text(data.textMessage);
                     if(data.errors) {
@@ -722,8 +763,6 @@ $(function(){
                             resultsContainer.append("<li>" + msg + "</li>");
                         });
                     }
-                    //disable import button
-                    $("#importContacts").attr("disabled", true);
                 }
             }, 500);
         }).fail(function () {

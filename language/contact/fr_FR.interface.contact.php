@@ -24,6 +24,7 @@ return [
     'tr_meliscommerce_contact_common_choose' => 'Choisissez',
     'tr_meliscommerce_contact_common_export' => 'Exporter',
     'tr_meliscommerce_contact_common_import' => 'Importer',
+    'tr_meliscommerce_contact_common_test_import' => 'Tester Importer',
     'tr_meliscommerce_contact_common_empty_file' => 'Le fichier est vide',
     'tr_meliscommerce_contact_common_line' => 'Ligne',
     'tr_meliscommerce_contact_common_all' => 'Tous',
@@ -108,6 +109,8 @@ return [
     'tr_meliscommerce_contact_import_title' => 'Importer des contacts',
     'tr_meliscommerce_contact_import_failed' => 'Echec de l\'import de contacts',
     'tr_meliscommerce_contact_import_success' => 'Contacts importés avec succès',
+    'tr_meliscommerce_contact_import_test_success' => 'Fichier de contacts testé avec succès',
+    'tr_meliscommerce_contact_import_test_failed' => 'Erreur s\'est produite lors du test du fichier de contact',
 
     'tr_meliscommerce_contact_import_is_mandatory' => ' est un champ obligatoire',
     'tr_meliscommerce_contact_import_invalid_email' => ' est un email invalide',

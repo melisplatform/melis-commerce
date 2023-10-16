@@ -401,6 +401,8 @@
         'tr_meliscommerce_accounts_import' => 'Import accounts',
         'tr_meliscommerce_accounts_import_failed' => 'Importing accounts failed',
         'tr_meliscommerce_accounts_import_success' => 'Accounts successfully imported',
+        'tr_meliscommerce_accounts_test_import_success' => 'Accounts file successfully tested',
+        'tr_meliscommerce_accounts_test_import_failed' => 'Error occur while testing accounts file',
         'tr_client_accounts_import_col_cli_status' => 'Status',
         'tr_client_accounts_import_col_cli_name' => 'Account name',
         'tr_client_accounts_import_col_cli_country_id' => 'Country',

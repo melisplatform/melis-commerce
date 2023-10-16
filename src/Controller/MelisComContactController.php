@@ -1714,6 +1714,51 @@ class MelisComContactController extends MelisAbstractActionController
     }
 
     /**
+     * @return JsonModel
+     */
+    public function testImportContactsAction()
+    {
+        $success = 0;
+        $message = 'tr_meliscommerce_contact_import_failed';
+        $title = 'tr_meliscommerce_contact_import_title';
+        $errors = [];
+        $request = $this->getRequest();
+        $translator = $this->getServiceManager()->get('translator');
+
+        if ($request->isPost()) {
+            $post = $request->getPost()->toArray();
+            $contactService = $this->getServiceManager()->get('MelisComContactService');
+
+            $file = $this->params()->fromFiles('contact_file');
+            $csvDefaultDelimiter = $this->getCsvDelimiter($file['tmp_name']);
+
+            $delimiter = !empty($post['separator']) ? $post['separator'] : $csvDefaultDelimiter;
+
+            $fileContents = $this->readImportedCsv($file);
+
+            $result = $contactService->importFileValidator($fileContents, $csvDefaultDelimiter, $delimiter);
+            if (empty($result['errors'])) {
+                $success = 1;
+                $message = 'tr_meliscommerce_contact_import_test_success';
+            } else {
+                $errors = $result['errors'];
+                $success = 0;
+                $message = 'tr_meliscommerce_contact_import_test_failed';
+            }
+        }
+
+        $response = [
+            'success' => $success,
+            'textTitle' => $translator->translate($title),
+            'textMessage' => $translator->translate($message),
+            'errors' => $errors,
+            'typeCode' => 'IMPORT_CONTACTS'
+        ];
+
+        return new JsonModel($response);
+    }
+
+    /**
      * Function to check the csv delimiter
      *
      * @param string $filePath

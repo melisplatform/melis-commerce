@@ -73,8 +73,13 @@ if (!empty($this->zoneconfig['conf']['id']))
                                     </div>
 
                                  	<div class="footer-modal d-flex flex-row justify-content-between">
-                                 		<button data-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
-                                 		<button class="btn btn-success" id="importContacts" ><i class="fa fa-arrow-circle-down"></i>  <?php echo $this->translate('tr_meliscommerce_contact_common_import') ?></button>
+                                        <div class="btnCloseBlock">
+                                            <button data-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
+                                        </div>
+                                 		<div class="btnImportBlock">
+                                            <button class="btn btn-info" id="testImportContacts" data-action="test"><i class="fa fa-search"></i>  <?php echo $this->translate('tr_meliscommerce_contact_common_test_import') ?></button>
+                                            <button disabled class="btn btn-success" id="importContacts" data-action="import"><i class="fa fa-arrow-circle-down"></i>  <?php echo $this->translate('tr_meliscommerce_contact_common_import') ?></button>
+                                        </div>
                                  	</div>
                             	</div>
                             </div>

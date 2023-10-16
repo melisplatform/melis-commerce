@@ -2036,7 +2036,9 @@ class MelisComClientService extends MelisComGeneralService
                 //get country id
                 $countryD = $countryTable->getEntryByField('ctry_name', $accountsData[1])->current();
                 //get group id
-                $groupId = $group->getEntryByField('cgroup_name', $accountsData[3])->current();
+                $groupId = null;
+                if(!empty($accountsData[3]))
+                    $groupId = $group->getEntryByField('cgroup_name', $accountsData[3])->current();
 
                 $comSettings = $this->getAccountNameSetting();
                 $accountName = $accountsData[0];
@@ -2044,10 +2046,11 @@ class MelisComClientService extends MelisComGeneralService
                     $accountName = null;
                 }
                 //prepare contacts data
+
                 $clientData = [
                     'cli_status' => 1,
                     'cli_name' => str_replace('"','',$accountName),
-                    'cli_tags' => str_replace('"','',$accountsData[2]),
+                    'cli_tags' => str_replace('"','', !empty($accountsData[2]) ? $accountsData[2] : ''),
                     'cli_country_id' => !empty($countryD) ? $countryD->ctry_id : 1,
                     'cli_group_id' => !empty($groupId) ? $groupId->cgroup_id : 1,
                     'cli_date_creation' => date('Ymd'),
@@ -2131,11 +2134,9 @@ class MelisComClientService extends MelisComGeneralService
                 //contact data
                 $contactId = null;
                 $cTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
-                if(!empty($accountsData[37])){
-                    $emails = $cTable->getEntryByField('cper_email', $accountsData[37])->current();
+                if(!empty($accountsData[36])){
+                    $emails = $cTable->getEntryByField('cper_email', $accountsData[36])->current();
                     $contactId = $emails->cper_id;
-                }elseif(!empty($accountsData[36])){
-                    $contactId = $accountsData[36];
                 }
                 $contactData = [
                     [
@@ -2250,6 +2251,7 @@ class MelisComClientService extends MelisComGeneralService
          */
         $comSettings = $this->getAccountNameSetting();
         $mandatoryFields = [
+            $translator->translate('tr_client_accounts_import_col_cli_country_id') => 1,  // client country
             $translator->translate('tr_client_accounts_import_col_company_name') => 22,  // company name
         ];
 
@@ -2288,13 +2290,15 @@ class MelisComClientService extends MelisComGeneralService
 
         if(!empty($mandatoryFields)) {
             foreach ($mandatoryFields as $fieldName => $position) {
-                if (empty($accountsData[$position])) {
+                if (empty($accountsData[$position]) && !in_array($position, [22])) {//exclude company to mandatory fields
                     $errors[] = $prefix . $fieldName . $translator->translate('tr_meliscommerce_contact_import_is_mandatory');
                 }else{//check of company name already exist
                     if($position == 22) {
-                        $compData = $compTable->getEntryByField('ccomp_name', $accountsData[$position])->current();
-                        if (!empty($compData)){
-                            $errors[] = $prefix . $fieldName . $translator->translate('tr_client_accounts_import_col_account_already_exist');
+                        if(!empty($accountsData[$position])) {
+                            $compData = $compTable->getEntryByField('ccomp_name', $accountsData[$position])->current();
+                            if (!empty($compData)) {
+                                $errors[] = $prefix . $fieldName . $translator->translate('tr_client_accounts_import_col_account_already_exist');
+                            }
                         }
                     }
                 }
@@ -2334,10 +2338,8 @@ class MelisComClientService extends MelisComGeneralService
              */
             $emails = [];
 
-            if(!empty($accountsData[37])){
-                $emails = $contactService->getContactByEmail($accountsData[37]);
-            }elseif(!empty($accountsData[36])){
-                $emails = $contactService->getContactById($accountsData[36]);
+            if(!empty($accountsData[36])){
+                $emails = $contactService->getContactByEmail($accountsData[36]);
             }
 
             if(empty($emails)){

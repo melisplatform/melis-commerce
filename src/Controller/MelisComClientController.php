@@ -2064,6 +2064,48 @@ class MelisComClientController extends MelisAbstractActionController
         return new JsonModel($response);
     }
 
+    public function testImportAccountsAction()
+    {
+        $success = 0;
+        $message = 'tr_meliscommerce_accounts_import';
+        $title = 'tr_meliscommerce_contact_import_title';
+        $errors = [];
+        $request = $this->getRequest();
+        $translator = $this->getServiceManager()->get('translator');
+
+        if ($request->isPost()) {
+            $post = $request->getPost()->toArray();
+            $accountService = $this->getServiceManager()->get('MelisComClientService');
+
+            $file = $this->params()->fromFiles('account_file');
+            $csvDefaultDelimiter = $this->getCsvDelimiter($file['tmp_name']);
+
+            $delimiter = !empty($post['separator']) ? $post['separator'] : $csvDefaultDelimiter;
+
+            $fileContents = $this->readImportedCsv($file);
+            $result = $accountService->importFileValidator($fileContents, $delimiter);
+
+            if (empty($result['errors'])) {
+                $success = 1;
+                $message = 'tr_meliscommerce_accounts_test_import_success';
+            } else {
+                $errors = $result['errors'];
+                $success = 0;
+                $message = 'tr_meliscommerce_accounts_test_import_failed';
+            }
+        }
+
+        $response = [
+            'success' => $success,
+            'textTitle' => $translator->translate($title),
+            'textMessage' => $translator->translate($message),
+            'errors' => $errors,
+            'typeCode' => 'IMPORT_ACCOUNTS'
+        ];
+
+        return new JsonModel($response);
+    }
+
     /**
      * Function to check the csv delimiter
      *

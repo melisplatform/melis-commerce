@@ -869,7 +869,7 @@ class MelisComClientListController extends MelisAbstractActionController
              * Columns to exclude in the export
              */
             $excludeColumns = [
-                'cli_date_edit', 'cli_last_order',
+                'cli_date_edit', 'cli_last_order','cgroup_name',
                 'car_id','car_client_id','car_client_person_id','car_default_person',
                 'cper_firstname','cper_name','cper_id','cper_email',
                 'ccomp_name', 'ccomp_logo','ccomp_id','ccomp_client_id', 'ccomp_comp_creation_date','ccomp_date_edit', 'ccomp_add_floor',

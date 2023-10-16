@@ -399,6 +399,8 @@
         'tr_meliscommerce_accounts_import' => 'Import de comptes',
         'tr_meliscommerce_accounts_import_failed' => 'L\'import de comptes a échoué',
         'tr_meliscommerce_accounts_import_success' => 'Comptes importés avec succès',
+        'tr_meliscommerce_accounts_test_import_success' => 'Fichier de comptes testé avec succès',
+        'tr_meliscommerce_accounts_test_import_failed' => 'Erreur s\'est produite lors du test du fichier de comptes',
         'tr_client_accounts_import_col_cli_status' => 'Statut',
         'tr_client_accounts_import_col_cli_name' => 'Nom du compte',
         'tr_client_accounts_import_col_cli_country_id' => 'Pays',

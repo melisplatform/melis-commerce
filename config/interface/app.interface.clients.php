@@ -77,7 +77,6 @@ return [
                         'tr_client_accounts_import_template_company_country' => 'France',
                         'tr_client_accounts_import_template_company_phone_number' => '091234567',
                         'tr_client_accounts_import_template_company_website' => 'www.test.com',
-                        'tr_client_accounts_import_template_company_contact_id' => '1',
                         'tr_client_accounts_import_template_company_contact_email' => 'johndoe@test.com',
                     ],
                     [
@@ -117,7 +116,6 @@ return [
                         'tr_client_accounts_import_template_company_country' => 'France',
                         'tr_client_accounts_import_template_company_phone_number' => '091234567',
                         'tr_client_accounts_import_template_company_website' => 'www.mysite.com',
-                        'tr_client_accounts_import_template_company_contact_id' => '2',
                         'tr_client_accounts_import_template_company_contact_email' => 'janedoe@test.com',
                     ]
                 ]

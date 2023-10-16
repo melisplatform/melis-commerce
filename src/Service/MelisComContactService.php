@@ -547,15 +547,18 @@ class MelisComContactService extends MelisComGeneralService
                 ];
                 //prepare address data
                 //get civility id
-                $civD = $civilityTable->getEntryByField('civt_min_name', ucfirst($contactsData[14]))->current();
+                $civD = null;
+                if(!empty($contactsData[14]))
+                    $civD = $civilityTable->getEntryByField('civt_min_name', ucfirst($contactsData[14]))->current();
+
                 $type = [
                     'billing' => 1,
                     'delivery' => 2
                 ];
                 $addressData = [
                     [
-                        'cadd_address_name' => $contactsData[12],
-                        'cadd_type' => $type[strtolower($contactsData[13])],
+                        'cadd_address_name' => $contactsData[12] ?? null,
+                        'cadd_type' => !empty($contactsData[13]) ? $type[strtolower($contactsData[13])] : null,
                         'cadd_civility' => !empty($civD) ? $civD->civt_civ_id : 0,
                         'cadd_firstname' => $contactsData[15] ?? null,
                         'cadd_middle_name' => $contactsData[16] ?? null,
@@ -574,6 +577,18 @@ class MelisComContactService extends MelisComGeneralService
                         'cadd_complementary' => $contactsData[29] ?? null,
                     ]
                 ];
+
+                //check if all field has data
+                $hasAddData = false;
+                foreach($addressData[0] as $key => $val){
+                    if(!empty($val)) {
+                        $hasAddData = true;
+                        break;
+                    }
+                }
+                if(!$hasAddData)//if no single data, make the address data empty
+                    $addressData = [];
+
                 //insert contact datas
                 $contactId = $this->saveContact($contactData, $addressData);
             }
@@ -683,11 +698,38 @@ class MelisComContactService extends MelisComGeneralService
          */
         $mandatoryFields = [
              $translator->translate('tr_contact_export_col_cper_lang_id') => 0,  // Language
+             $translator->translate('tr_contact_export_col_cper_email') => 3,  // email
              $translator->translate('tr_contact_export_col_cper_firstname') => 7,  // first name
-             $translator->translate('tr_meliscommerce_contact_import_address_name') => 12,  // first name
-             $translator->translate('tr_meliscommerce_contact_import_address_type') => 13,  // first name
         ];
 
+        //check address for validation
+        $hasAddressData = false;
+        $keys = [
+            12,13,14,15,16,17,18,19,20,21,22,
+            23,24,25,26,27,28,29
+        ];
+
+
+        foreach($keys as $pos){
+            if(!empty($contactsData[$pos])){
+                $hasAddressData = true;
+                break;
+            }
+        }
+        if($hasAddressData){
+            if(empty($contactsData[12])) {//address name
+                $mandatoryFields = array_merge($mandatoryFields, [
+                    $translator->translate('tr_meliscommerce_contact_import_address_name') => 12,
+                ]);
+            }
+            if(empty($contactsData[13])) {//address type
+                $mandatoryFields = array_merge($mandatoryFields, [
+                    $translator->translate('tr_meliscommerce_contact_import_address_type') => 13,
+                ]);
+            }
+        }
+
+        $contactsData[1] = $contactsData[1] ?? 'person';
         if($contactsData[1] == 'person')//we include cper name validation only if type is person
             $mandatoryFields[$translator->translate('tr_contact_export_col_cper_name')] = 5;  // last name]
 
