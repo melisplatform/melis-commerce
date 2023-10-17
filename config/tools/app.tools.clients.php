@@ -34,17 +34,17 @@ return [
                                     'controller' => 'MelisComClientList',
                                     'action' => 'render-client-list-table-group-filter',
                                 ],
-                                'meliscommerce-clients-status-filter' => [
-                                    'module' => 'MelisCommerce',
-                                    'controller' => 'MelisComClientList',
-                                    'action' => 'render-client-list-table-status-filter',
-                                ],
                             ],
                             'center' => [
                                 'meliscommerce-clients-list-tbl-search' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComClientList',
                                     'action' => 'render-client-list-table-search',
+                                ],
+                                'meliscommerce-clients-status-filter' => [
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComClientList',
+                                    'action' => 'render-client-list-table-status-filter',
                                 ],
                             ],
                             'right' => [
