@@ -32,6 +32,7 @@
 		'tr_meliscommerce_clients_common_billing' => 'Billing',
 		'tr_meliscommerce_clients_common_delivery' => 'Delivery',
         'tr_meliscommerce_clients_common_does_not_exist' => ' does not exist',
+        'tr_meliscommerce_clients_common_empty_file' => 'No file was uploaded',
 		'tr_meliscommerce_clients_list_col_products' => 'Products',
 		'tr_meliscommerce_clients_list_col_price_title' => 'Amount',
 
@@ -403,7 +404,7 @@
         'tr_meliscommerce_accounts_import_failed' => 'Importing accounts failed',
         'tr_meliscommerce_accounts_import_success' => 'Accounts successfully imported',
         'tr_meliscommerce_accounts_test_import_success' => 'Accounts file successfully tested',
-        'tr_meliscommerce_accounts_test_import_failed' => 'Error occur while testing accounts file',
+        'tr_meliscommerce_accounts_test_import_failed' => 'Test failed, the file contains errors:',
         'tr_client_accounts_import_col_cli_status' => 'Status',
         'tr_client_accounts_import_col_cli_name' => 'Account name',
         'tr_client_accounts_import_col_cli_country_id' => 'Country',

@@ -112,7 +112,7 @@ return [
                                         'name' => 'NotEmpty',
                                         'options' => [
                                             'messages' => [
-                                                \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_address_error_empty',
+                                                \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_clients_common_empty_file',
                                             ],
                                         ],
                                     ]
