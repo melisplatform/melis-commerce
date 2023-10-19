@@ -473,4 +473,7 @@
         'tr_client_accounts_import_template_company_website' => 'Website',
         'tr_client_accounts_import_template_company_contact_id' => 'Main contact id',
         'tr_client_accounts_import_template_company_contact_email' => 'Main contact email',
+
+        'tr_client_accounts_import_country_does_not_exists' => ' does not exist',
+        'tr_client_accounts_import_address_type_does_not_exists' => ' does not exist. (billing, delivery)',
 );

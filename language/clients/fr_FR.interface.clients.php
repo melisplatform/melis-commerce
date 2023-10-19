@@ -471,4 +471,7 @@
         'tr_client_accounts_import_template_company_website' => 'Site Web',
         'tr_client_accounts_import_template_company_contact_id' => 'Identifiant du contact principal',
         'tr_client_accounts_import_template_company_contact_email' => 'E-mail du contact principal',
+
+        'tr_client_accounts_import_country_does_not_exists' => ' n\'existe pas',
+        'tr_client_accounts_import_address_type_does_not_exists' => ' n\'existe pas (billing, delivery)',
     );

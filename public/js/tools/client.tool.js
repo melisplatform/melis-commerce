@@ -1114,6 +1114,10 @@ $(function() {
                         $("#importAccounts").attr("disabled", false);
 					}
                 }else{
+                	if(type == 'test'){
+                        $("#account-list-import-accounts").show();
+					}
+
                     title.text(data.textMessage);
                     if(data.errors) {
                         $.each(data.errors, function (i, msg) {

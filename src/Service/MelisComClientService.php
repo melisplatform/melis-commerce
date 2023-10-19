@@ -21,6 +21,11 @@ use Laminas\Http\Response;
 class MelisComClientService extends MelisComGeneralService
 {
 
+    private $addressType = [
+        'billing' => 1,
+        'delivery' => 2
+    ];
+
     /**
      * Return all associated contact for this account
      *
@@ -2049,7 +2054,7 @@ class MelisComClientService extends MelisComGeneralService
 
                 $clientData = [
                     'cli_status' => 1,
-                    'cli_name' => str_replace('"','',$accountName),
+                    'cli_name' => str_replace('"','', $accountName),
                     'cli_tags' => str_replace('"','', !empty($accountsData[2]) ? $accountsData[2] : ''),
                     'cli_country_id' => !empty($countryD) ? $countryD->ctry_id : 1,
                     'cli_group_id' => !empty($groupId) ? $groupId->cgroup_id : 1,
@@ -2061,10 +2066,7 @@ class MelisComClientService extends MelisComGeneralService
                 if(!empty($accountsData[6]))
                     $civD = $civilityTable->getEntryByField('civt_min_name', $accountsData[6])->current();
 
-                $type = [
-                    'billing' => 1,
-                    'delivery' => 2
-                ];
+                $type = $this->addressType;
 
                 $addressData = [
                     [
@@ -2088,6 +2090,7 @@ class MelisComClientService extends MelisComGeneralService
                         'cadd_complementary' => $accountsData[21] ?? null,
                     ]
                 ];
+
                 //check if all field has data
                 $hasAddData = false;
                 foreach($addressData[0] as $key => $val){
@@ -2243,6 +2246,7 @@ class MelisComClientService extends MelisComGeneralService
     {
         $translator = $this->getServiceManager()->get('translator');
         $clientTable = $this->getServiceManager()->get('MelisEcomClientTable');
+        $countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
         $compTable = $this->getServiceManager()->get('MelisEcomClientCompanyTable');
 
         $prefix = $translator->translate('tr_meliscommerce_contact_common_line') .' '. $index . ': ';
@@ -2252,6 +2256,7 @@ class MelisComClientService extends MelisComGeneralService
         $comSettings = $this->getAccountNameSetting();
         $mandatoryFields = [
             $translator->translate('tr_client_accounts_import_col_cli_country_id') => 1,  // client country
+            $translator->translate('tr_client_accounts_import_template_address_type') => 5,  // address type
             $translator->translate('tr_client_accounts_import_col_company_name') => 22,  // company name
         ];
 
@@ -2267,7 +2272,6 @@ class MelisComClientService extends MelisComGeneralService
             6,7,8,9,10,11,12,13,14,15,16,
             17,18,19,20,21
         ];
-
 
         foreach($keys as $pos){
             if(!empty($accountsData[$pos])){
@@ -2290,14 +2294,26 @@ class MelisComClientService extends MelisComGeneralService
 
         if(!empty($mandatoryFields)) {
             foreach ($mandatoryFields as $fieldName => $position) {
-                if (empty($accountsData[$position]) && !in_array($position, [22])) {//exclude company to mandatory fields
+                if (empty($accountsData[$position]) && !in_array($position, [5,22])) {//exclude company to mandatory fields
                     $errors[] = $prefix . $fieldName . $translator->translate('tr_meliscommerce_contact_import_is_mandatory');
-                }else{//check of company name already exist
-                    if($position == 22) {
+                }else{
+                    if($position == 1) {//check of client country exists
+                        $cliData = $countryTable->getEntryByField('ctry_name', $accountsData[$position])->current();
+                        if(empty($cliData)){
+                            $errors[] = $prefix . $fieldName . $translator->translate('tr_client_accounts_import_country_does_not_exists');
+                        }
+                    }elseif($position == 22) {//check of company name already exist
                         if(!empty($accountsData[$position])) {
                             $compData = $compTable->getEntryByField('ccomp_name', $accountsData[$position])->current();
                             if (!empty($compData)) {
                                 $errors[] = $prefix . $fieldName . $translator->translate('tr_client_accounts_import_col_account_already_exist');
+                            }
+                        }
+                    }elseif($position == 5){//check if address type exist
+                        if(!empty($accountsData[$position])) {
+                            $type = $this->addressType;
+                            if (empty($type[strtolower($accountsData[$position])])) {
+                                $errors[] = $prefix . $fieldName . $translator->translate('tr_client_accounts_import_address_type_does_not_exists');
                             }
                         }
                     }
