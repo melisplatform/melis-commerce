@@ -31,6 +31,7 @@
 		'tr_meliscommerce_clients_common_label_client' => 'Compte',
         'tr_meliscommerce_clients_common_billing' => 'Facturation',
         'tr_meliscommerce_clients_common_delivery' => 'Livraison',
+        'tr_meliscommerce_clients_common_does_not_exist' => ' n\'existe pas',
 		'tr_meliscommerce_clients_list_col_products' => 'Produits',
 		'tr_meliscommerce_clients_list_col_price_title' => 'Montant',
 
@@ -436,7 +437,7 @@
         'tr_client_accounts_import_template_name' => 'Nom',
         'tr_client_accounts_import_template_country' => 'Pays',
         'tr_client_accounts_import_template_tags' => 'Balises',
-        'tr_client_accounts_import_template_group_name' => 'Nom du groupe',
+        'tr_client_accounts_import_template_group_id' => 'ID du groupe',
         'tr_client_accounts_import_template_address_name' => 'Nom de l\'adresse',
         'tr_client_accounts_import_template_address_type' => 'Type d\'adresse',
         'tr_client_accounts_import_template_address_civility' => 'Civilité de l\'adresse',

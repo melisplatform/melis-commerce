@@ -2043,7 +2043,7 @@ class MelisComClientService extends MelisComGeneralService
                 //get group id
                 $groupId = null;
                 if(!empty($accountsData[3]))
-                    $groupId = $group->getEntryByField('cgroup_name', $accountsData[3])->current();
+                    $groupId = $group->getEntryById($accountsData[3])->current();
 
                 $comSettings = $this->getAccountNameSetting();
                 $accountName = $accountsData[0];
@@ -2248,6 +2248,7 @@ class MelisComClientService extends MelisComGeneralService
         $clientTable = $this->getServiceManager()->get('MelisEcomClientTable');
         $countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
         $compTable = $this->getServiceManager()->get('MelisEcomClientCompanyTable');
+        $groupTable = $this->getServiceManager()->get('MelisEcomClientGroupsTable');
 
         $prefix = $translator->translate('tr_meliscommerce_contact_common_line') .' '. $index . ': ';
         /**
@@ -2256,6 +2257,7 @@ class MelisComClientService extends MelisComGeneralService
         $comSettings = $this->getAccountNameSetting();
         $mandatoryFields = [
             $translator->translate('tr_client_accounts_import_col_cli_country_id') => 1,  // client country
+            $translator->translate('tr_client_accounts_import_template_group_id') => 3,  // client group
             $translator->translate('tr_client_accounts_import_template_address_type') => 5,  // address type
             $translator->translate('tr_client_accounts_import_col_company_name') => 22,  // company name
         ];
@@ -2294,7 +2296,7 @@ class MelisComClientService extends MelisComGeneralService
 
         if(!empty($mandatoryFields)) {
             foreach ($mandatoryFields as $fieldName => $position) {
-                if (empty($accountsData[$position]) && !in_array($position, [5,22])) {//exclude company to mandatory fields
+                if (empty($accountsData[$position]) && !in_array($position, [3,5,22])) {//exclude company to mandatory fields
                     $errors[] = $prefix . $fieldName . $translator->translate('tr_meliscommerce_contact_import_is_mandatory');
                 }else{
                     if($position == 1) {//check of client country exists
@@ -2314,6 +2316,13 @@ class MelisComClientService extends MelisComGeneralService
                             $type = $this->addressType;
                             if (empty($type[strtolower($accountsData[$position])])) {
                                 $errors[] = $prefix . $fieldName . $translator->translate('tr_client_accounts_import_address_type_does_not_exists');
+                            }
+                        }
+                    }elseif($position == 3){//check if client group exist
+                        if(!empty($accountsData[$position])) {
+                            $groupData = $groupTable->getEntryById($accountsData[$position])->current();
+                            if (empty($groupData)) {
+                                $errors[] = $prefix . $fieldName . $translator->translate('tr_meliscommerce_clients_common_does_not_exist');
                             }
                         }
                     }

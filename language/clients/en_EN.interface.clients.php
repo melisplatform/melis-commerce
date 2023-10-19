@@ -31,6 +31,7 @@
 		'tr_meliscommerce_clients_common_label_client' => 'Account',
 		'tr_meliscommerce_clients_common_billing' => 'Billing',
 		'tr_meliscommerce_clients_common_delivery' => 'Delivery',
+        'tr_meliscommerce_clients_common_does_not_exist' => ' does not exist',
 		'tr_meliscommerce_clients_list_col_products' => 'Products',
 		'tr_meliscommerce_clients_list_col_price_title' => 'Amount',
 
@@ -438,7 +439,7 @@
         'tr_client_accounts_import_template_name' => 'Name',
         'tr_client_accounts_import_template_country' => 'Country',
         'tr_client_accounts_import_template_tags' => 'Tags',
-        'tr_client_accounts_import_template_group_name' => 'Group name',
+        'tr_client_accounts_import_template_group_id' => 'Group ID',
         'tr_client_accounts_import_template_address_name' => 'Address name',
         'tr_client_accounts_import_template_address_type' => 'Address type',
         'tr_client_accounts_import_template_address_civility' => 'Address civility',
