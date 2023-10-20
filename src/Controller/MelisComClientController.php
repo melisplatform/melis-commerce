@@ -2160,10 +2160,9 @@ class MelisComClientController extends MelisAbstractActionController
 
         if (!empty($fileParameters['tmp_name'])) {
             $data = file_get_contents($fileParameters['tmp_name']);
-            //encode data to utf
-            $data = utf8_encode($data);
             if (!mb_check_encoding($data, 'UTF-8')) {
-                $data = null;   // NOT IN UTF-8
+                //encode data to utf
+                $data = utf8_encode($data);
             }
         }
 
