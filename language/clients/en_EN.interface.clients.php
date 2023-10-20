@@ -33,6 +33,7 @@
 		'tr_meliscommerce_clients_common_delivery' => 'Delivery',
         'tr_meliscommerce_clients_common_does_not_exist' => ' does not exist',
         'tr_meliscommerce_clients_common_empty_file' => 'No file was uploaded',
+        'tr_meliscommerce_clients_common_not_active' => ' is not active',
 		'tr_meliscommerce_clients_list_col_products' => 'Products',
 		'tr_meliscommerce_clients_list_col_price_title' => 'Amount',
 

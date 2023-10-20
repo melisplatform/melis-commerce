@@ -2303,6 +2303,8 @@ class MelisComClientService extends MelisComGeneralService
                         $cliData = $countryTable->getEntryByField('ctry_name', $accountsData[$position])->current();
                         if(empty($cliData)){
                             $errors[] = $prefix . $fieldName . $translator->translate('tr_client_accounts_import_country_does_not_exists');
+                        }elseif(!$cliData->ctry_status){//check for the status
+                            $errors[] = $prefix . $fieldName . $translator->translate('tr_meliscommerce_clients_common_not_active');
                         }
                     }elseif($position == 22) {//check of company name already exist
                         if(!empty($accountsData[$position])) {
@@ -2323,6 +2325,8 @@ class MelisComClientService extends MelisComGeneralService
                             $groupData = $groupTable->getEntryById($accountsData[$position])->current();
                             if (empty($groupData)) {
                                 $errors[] = $prefix . $fieldName . $translator->translate('tr_meliscommerce_clients_common_does_not_exist');
+                            }elseif(!$groupData->cgroup_status){
+                                $errors[] = $prefix . $fieldName . $translator->translate('tr_meliscommerce_clients_common_not_active');
                             }
                         }
                     }
