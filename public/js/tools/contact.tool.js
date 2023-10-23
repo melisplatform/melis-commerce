@@ -647,38 +647,6 @@ $(function(){
     });
 
     //test contact imports
-    $body.on("click", "#importContacts", function(e){
-        var form = $("#contact-list-import-contacts");
-        var formData = new FormData(form[0]);
-        var type = $(this).attr("data-action");
-
-        $.ajax({
-            type: 'POST',
-            url: '/melis/MelisCommerce/MelisComContact/validateContactImportsForm',
-            data: formData,
-            cache: false,
-            contentType: false,
-            processData: false,
-            beforeSend: function(){
-                // _this.attr('disabled', true);s
-            }
-        }).done(function (data) {
-            if(data.success){
-                importContacts(formData, "/melis/MelisCommerce/MelisComContact/importContacts");
-            }else{
-                melisHelper.melisKoNotification(data.title, data.message, data.errors);
-                melisHelper.highlightMultiErrors(data.success, data.errors, "#contact-list-import-contacts");
-            }
-
-            // _this.attr('disabled', false);
-        }).fail(function () {
-            alert(translations.tr_meliscore_error_message);
-        });
-
-        e.preventDefault();
-    });
-
-    //test contact imports
     $body.on("click", "#testImportContacts, #importContacts", function(e){
         var form = $("#contact-list-import-contacts");
         var formData = new FormData(form[0]);

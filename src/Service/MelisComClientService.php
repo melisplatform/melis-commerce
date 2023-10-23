@@ -2130,9 +2130,6 @@ class MelisComClientService extends MelisComGeneralService
                 }
                 if(!$hasCompData)//if no single data, make the company data empty
                     $companyData = [];
-                else
-                    $companyData['ccomp_comp_creation_date'] = date('Ymd');
-
 
                 //contact data
                 $contactId = null;
