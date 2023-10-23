@@ -1988,10 +1988,10 @@ return [
                                 'required' => true,
                                 'validators' => [
                                     [
-                                        'name' => 'NotEmpty',
+                                        'name' => 'Laminas\Validator\File\UploadFile',
                                         'options' => [
                                             'messages' => [
-                                                \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_clients_common_empty_file',
+                                                \Laminas\Validator\File\UploadFile::NO_FILE => 'tr_meliscommerce_clients_common_empty_file',
                                             ],
                                         ],
                                     ],
