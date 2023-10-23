@@ -333,7 +333,7 @@
 		// New order button inside the order tab
 		'tr_meliscommerce_clients_add_new_order' => 'Nouvelle Commande',
 
-        'tr_meliscommerce_client_account_name' => 'Account Name',
+        'tr_meliscommerce_client_account_name' => 'Nom du compte',
         'tr_meliscommerce_client_tags' => 'Tags',
 
         'tr_meliscommerce_client_account_name_tooltip' => 'Saisissez le nom du compte',
