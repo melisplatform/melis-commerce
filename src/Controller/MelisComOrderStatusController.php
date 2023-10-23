@@ -344,12 +344,14 @@ class MelisComOrderStatusController extends MelisAbstractActionController
                 }
                 
                 $status = ($data->osta_status)? '<span class="text-success"><i class="fa fa-fw fa-circle"></i></span>' : '<span class="text-danger"><i class="fa fa-fw fa-circle"></i></span>';
-                
+
+                $statName = "<span class='d-none td-tooltip'>".$statusName."</span>".mb_strimwidth($statusName, 0, 30, '...');
+
                 $tableData[$c]['DT_RowId'] = $data->osta_id;
                 $tableData[$c]['osta_id'] = $data->osta_id;
                 $tableData[$c]['osta_status'] = $status;
                 $tableData[$c]['osta_color_code'] = $data->osta_color_code;
-                $tableData[$c]['ostt_status_name'] = $statusName;
+                $tableData[$c]['ostt_status_name'] = $statName;
                 $tableData[$c]['color_preview'] = sprintf($divSwatch, $data->osta_color_code);
                 $tableData[$c]['DT_RowClass'] = (in_array($data->osta_id, $primeStatus)) ? 'primeStatus' : '';
                 $c++;
