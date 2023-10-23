@@ -34,6 +34,7 @@
         'tr_meliscommerce_clients_common_does_not_exist' => ' n\'existe pas',
         'tr_meliscommerce_clients_common_empty_file' => 'Pas de fichier uploadé',
         'tr_meliscommerce_clients_common_not_active' => ' n\'est pas actif',
+        'tr_meliscommerce_clients_common_file_not_csv' => 'Le fichier n\'est pas un csv',
 		'tr_meliscommerce_clients_list_col_products' => 'Produits',
 		'tr_meliscommerce_clients_list_col_price_title' => 'Montant',
 

@@ -29,6 +29,7 @@ return [
     'tr_meliscommerce_contact_common_line' => 'Line',
     'tr_meliscommerce_contact_common_all' => 'All',
     'tr_meliscommerce_contact_common_default' => 'Default',
+    'tr_meliscommerce_contact_common_file_not_csv' => 'File not csv',
 
     //interface names
     'tr_meliscommerce_contact_page' => 'Contact Page',

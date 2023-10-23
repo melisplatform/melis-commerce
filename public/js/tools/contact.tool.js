@@ -719,7 +719,7 @@ $(function(){
      * @param url
      * @param type
      */
-    function importContacts(data, url) {
+    function importContacts(data, url, type) {
         var resultsContainer = $(".test-results .results ul").empty();
         var title = $(".test-results .results p").empty();
 
@@ -757,6 +757,10 @@ $(function(){
                         $("#importContacts").attr("disabled", false);
                     }
                 }else{
+                    if(type == 'test'){
+                        $("#contact-list-import-contacts").show();
+                    }
+
                     title.text(data.textMessage);
                     if(data.errors) {
                         $.each(data.errors, function (i, msg) {

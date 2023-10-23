@@ -2026,31 +2026,37 @@ class MelisComClientController extends MelisAbstractActionController
             $accountService = $this->getServiceManager()->get('MelisComClientService');
 
             $file = $this->params()->fromFiles('account_file');
-            $csvDefaultDelimiter = $this->getCsvDelimiter($file['tmp_name']);
+            //check if file is csv
+            $filename = $file['name'];
+            $ext = pathinfo($filename, PATHINFO_EXTENSION);
+            if($ext == 'csv') {
+                $csvDefaultDelimiter = $this->getCsvDelimiter($file['tmp_name']);
+                $delimiter = !empty($post['separator']) ? $post['separator'] : $csvDefaultDelimiter;
+                $fileContents = $this->readImportedCsv($file);
+                $result = $accountService->importFileValidator($fileContents, $delimiter);
 
-            $delimiter = !empty($post['separator']) ? $post['separator'] : $csvDefaultDelimiter;
-
-            $fileContents = $this->readImportedCsv($file);
-
-            $result = $accountService->importFileValidator($fileContents, $delimiter);
-
-            if (empty($result['errors'])) {
-                //execute saving records with transactions
-                $adapter = $this->getServiceManager()->get('Laminas\Db\Adapter\Adapter');
-                $con = $adapter->getDriver()->getConnection();//get db driver connection
-                $con->beginTransaction();//begin transaction
-                try{
-                    $accountService->importAccounts($fileContents, $post, $delimiter);
-                    $con->commit();
-                    $success = 1;
-                    $message = 'tr_meliscommerce_accounts_import_success';
-                }catch (\Exception $ex){
-                    $success = 0;
-                    $message = 'tr_meliscommerce_accounts_import_failed';
-                    $con->rollback();
+                if (empty($result['errors'])) {
+                    //execute saving records with transactions
+                    $adapter = $this->getServiceManager()->get('Laminas\Db\Adapter\Adapter');
+                    $con = $adapter->getDriver()->getConnection();//get db driver connection
+                    $con->beginTransaction();//begin transaction
+                    try {
+                        $accountService->importAccounts($fileContents, $post, $delimiter);
+                        $con->commit();
+                        $success = 1;
+                        $message = 'tr_meliscommerce_accounts_import_success';
+                    } catch (\Exception $ex) {
+                        $success = 0;
+                        $message = 'tr_meliscommerce_accounts_import_failed';
+                        $con->rollback();
+                    }
+                } else {
+                    $errors = $result['errors'];
                 }
-            } else
-                $errors = $result['errors'];
+            }else{
+                $success = 0;
+                $message = 'tr_meliscommerce_clients_common_file_not_csv';
+            }
         }
 
         $response = [
@@ -2078,20 +2084,27 @@ class MelisComClientController extends MelisAbstractActionController
             $accountService = $this->getServiceManager()->get('MelisComClientService');
 
             $file = $this->params()->fromFiles('account_file');
-            $csvDefaultDelimiter = $this->getCsvDelimiter($file['tmp_name']);
+            //check if file is csv
+            $filename = $file['name'];
+            $ext = pathinfo($filename, PATHINFO_EXTENSION);
+            if($ext == 'csv') {
+                $csvDefaultDelimiter = $this->getCsvDelimiter($file['tmp_name']);
+                $delimiter = !empty($post['separator']) ? $post['separator'] : $csvDefaultDelimiter;
 
-            $delimiter = !empty($post['separator']) ? $post['separator'] : $csvDefaultDelimiter;
+                $fileContents = $this->readImportedCsv($file);
+                $result = $accountService->importFileValidator($fileContents, $delimiter);
 
-            $fileContents = $this->readImportedCsv($file);
-            $result = $accountService->importFileValidator($fileContents, $delimiter);
-
-            if (empty($result['errors'])) {
-                $success = 1;
-                $message = 'tr_meliscommerce_accounts_test_import_success';
-            } else {
-                $errors = $result['errors'];
+                if (empty($result['errors'])) {
+                    $success = 1;
+                    $message = 'tr_meliscommerce_accounts_test_import_success';
+                } else {
+                    $errors = $result['errors'];
+                    $success = 0;
+                    $message = 'tr_meliscommerce_accounts_test_import_failed';
+                }
+            }else{
                 $success = 0;
-                $message = 'tr_meliscommerce_accounts_test_import_failed';
+                $message = 'tr_meliscommerce_clients_common_file_not_csv';
             }
         }
 

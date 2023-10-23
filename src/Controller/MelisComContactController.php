@@ -1675,31 +1675,37 @@ class MelisComContactController extends MelisAbstractActionController
             $contactService = $this->getServiceManager()->get('MelisComContactService');
 
             $file = $this->params()->fromFiles('contact_file');
-            $csvDefaultDelimiter = $this->getCsvDelimiter($file['tmp_name']);
+            //check if file is csv
+            $filename = $file['name'];
+            $ext = pathinfo($filename, PATHINFO_EXTENSION);
+            if($ext == 'csv') {
+                $csvDefaultDelimiter = $this->getCsvDelimiter($file['tmp_name']);
+                $delimiter = !empty($post['separator']) ? $post['separator'] : $csvDefaultDelimiter;
+                $fileContents = $this->readImportedCsv($file);
+                $result = $contactService->importFileValidator($fileContents, $csvDefaultDelimiter, $delimiter);
 
-            $delimiter = !empty($post['separator']) ? $post['separator'] : $csvDefaultDelimiter;
-
-            $fileContents = $this->readImportedCsv($file);
-
-            $result = $contactService->importFileValidator($fileContents, $csvDefaultDelimiter, $delimiter);
-
-            if (empty($result['errors'])) {
-                //execute saving records with transactions
-                $adapter = $this->getServiceManager()->get('Laminas\Db\Adapter\Adapter');
-                $con = $adapter->getDriver()->getConnection();//get db driver connection
-                $con->beginTransaction();//begin transaction
-                try{
-                    $contactService->importContacts($fileContents, $post, $csvDefaultDelimiter, $delimiter);
-                    $con->commit();
-                    $success = 1;
-                    $message = 'tr_meliscommerce_contact_import_success';
-                }catch (\Exception $ex){
-                    $success = 0;
-                    $message = 'tr_meliscommerce_contact_import_failed';
-                    $con->rollback();
+                if (empty($result['errors'])) {
+                    //execute saving records with transactions
+                    $adapter = $this->getServiceManager()->get('Laminas\Db\Adapter\Adapter');
+                    $con = $adapter->getDriver()->getConnection();//get db driver connection
+                    $con->beginTransaction();//begin transaction
+                    try {
+                        $contactService->importContacts($fileContents, $post, $csvDefaultDelimiter, $delimiter);
+                        $con->commit();
+                        $success = 1;
+                        $message = 'tr_meliscommerce_contact_import_success';
+                    } catch (\Exception $ex) {
+                        $success = 0;
+                        $message = 'tr_meliscommerce_contact_import_failed';
+                        $con->rollback();
+                    }
+                } else {
+                    $errors = $result['errors'];
                 }
-            } else
-                $errors = $result['errors'];
+            }else{
+                $success = 0;
+                $message = 'tr_meliscommerce_contact_common_file_not_csv';
+            }
         }
 
         $response = [
@@ -1730,20 +1736,27 @@ class MelisComContactController extends MelisAbstractActionController
             $contactService = $this->getServiceManager()->get('MelisComContactService');
 
             $file = $this->params()->fromFiles('contact_file');
-            $csvDefaultDelimiter = $this->getCsvDelimiter($file['tmp_name']);
+            //check if file is csv
+            $filename = $file['name'];
+            $ext = pathinfo($filename, PATHINFO_EXTENSION);
+            if($ext == 'csv') {
+                $csvDefaultDelimiter = $this->getCsvDelimiter($file['tmp_name']);
+                $delimiter = !empty($post['separator']) ? $post['separator'] : $csvDefaultDelimiter;
 
-            $delimiter = !empty($post['separator']) ? $post['separator'] : $csvDefaultDelimiter;
+                $fileContents = $this->readImportedCsv($file);
 
-            $fileContents = $this->readImportedCsv($file);
-
-            $result = $contactService->importFileValidator($fileContents, $csvDefaultDelimiter, $delimiter);
-            if (empty($result['errors'])) {
-                $success = 1;
-                $message = 'tr_meliscommerce_contact_import_test_success';
-            } else {
-                $errors = $result['errors'];
+                $result = $contactService->importFileValidator($fileContents, $csvDefaultDelimiter, $delimiter);
+                if (empty($result['errors'])) {
+                    $success = 1;
+                    $message = 'tr_meliscommerce_contact_import_test_success';
+                } else {
+                    $errors = $result['errors'];
+                    $success = 0;
+                    $message = 'tr_meliscommerce_contact_import_test_failed';
+                }
+            }else{
                 $success = 0;
-                $message = 'tr_meliscommerce_contact_import_test_failed';
+                $message = 'tr_meliscommerce_contact_common_file_not_csv';
             }
         }
 
