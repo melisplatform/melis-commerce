@@ -102,8 +102,8 @@ return [
     'tr_contact_export_col_country' => 'Country',
     'tr_contact_export_col_postal_code' => 'Zip code',
     'tr_contact_export_col_add_company_name' => 'Address company name',
-    'tr_contact_export_col_add_mobile' => 'Mobile',
-    'tr_contact_export_col_add_landline' => 'Landline',
+    'tr_contact_export_col_add_mobile' => 'Adderss Mobile',
+    'tr_contact_export_col_add_landline' => 'Address Landline',
     'tr_contact_export_col_add_additional' => 'Additional',
 
     'tr_meliscommerce_contact_import_csv_file' => 'Upload CSV file',

@@ -102,8 +102,8 @@ return [
     'tr_contact_export_col_country' => 'Pays',
     'tr_contact_export_col_postal_code' => 'Code postal',
     'tr_contact_export_col_add_company_name' => 'Société',
-    'tr_contact_export_col_add_mobile' => 'Téléphone mobile',
-    'tr_contact_export_col_add_landline' => 'Téléphone fixe',
+    'tr_contact_export_col_add_mobile' => 'Adresse Téléphone mobile',
+    'tr_contact_export_col_add_landline' => 'Adresse Téléphone fixe',
     'tr_contact_export_col_add_additional' => 'Complément',
 
     'tr_meliscommerce_contact_import_csv_file' => 'Uploader le fichier CSV',
