@@ -550,7 +550,7 @@ $(function(){
         $("#contactList").DataTable().ajax.reload();
     });
 
-    $body.on("change", "#contactTypeSelect", function(){
+    $body.on("change", "#contactTypeSelect, #contactStatusSelect", function(){
         $("#contactList").DataTable().ajax.reload();
     });
 
@@ -585,6 +585,7 @@ $(function(){
         var data = $("form#contact-list-export-contacts").serializeArray();
         filters['accountId'] = $("#contactAccountSelect").val();
         filters['type'] = $("#contactTypeSelect").val();
+        filters['status'] = $("#contactStatusSelect").val();
         filters['search'] = $("#contactList_filter input[type='search']").val();
 
         $.each(data, function(key, val){
@@ -902,4 +903,10 @@ window.contactListTableDataFunction = function(d)
 {
     d.accountId = $("#contactAccountSelect").val();
     d.type = $("#contactTypeSelect").val();
+
+    if($("#contactStatusSelect").length){
+        d.status = $("#contactStatusSelect").val();
+    }else{
+        d.status = 1;//display the active clients if no filter
+    }
 };

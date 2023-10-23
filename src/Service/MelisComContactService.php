@@ -23,6 +23,7 @@ class MelisComContactService extends MelisComGeneralService
     /**
      * @param null $accountId
      * @param null $type
+     * @param null $status
      * @param string $searchValue
      * @param array $searchKeys
      * @param null $start
@@ -34,7 +35,7 @@ class MelisComContactService extends MelisComGeneralService
      * @param bool $count
      * @return mixed
      */
-    public function getContactLists($accountId = null, $type = null, $searchValue = '', $searchKeys = [], $start = null, $limit = null, $orderColumn = 'cper_id', $order = 'DESC', $defaultAccountOnly = false, $hasDefaultOnly = false, $count = false)
+    public function getContactLists($accountId = null, $type = null, $status = null, $searchValue = '', $searchKeys = [], $start = null, $limit = null, $orderColumn = 'cper_id', $order = 'DESC', $defaultAccountOnly = false, $hasDefaultOnly = false, $count = false)
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -48,6 +49,7 @@ class MelisComContactService extends MelisComGeneralService
         $result = $personTable->getContactLists(
             $arrayParameters['accountId'],
             $arrayParameters['type'],
+            $arrayParameters['status'],
             $arrayParameters['searchValue'],
             $arrayParameters['searchKeys'],
             $arrayParameters['start'],

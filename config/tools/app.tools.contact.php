@@ -44,6 +44,11 @@ return [
                                 ],
                             ],
                             'right' => [
+                                'meliscommerce-contact-list-tbl-status-select' => [
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComContact',
+                                    'action' => 'render-account-contact-list-table-status-select',
+                                ],
                                 'meliscommerce-contact-list-tbl-import' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComContact',
