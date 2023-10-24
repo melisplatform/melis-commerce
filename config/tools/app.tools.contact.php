@@ -166,11 +166,11 @@ return [
                                 'css' => ['width' => '10%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],
-//                            'default_contact' => [
-//                                'text' => 'tr_meliscommerce_contact_is_default_contact',
-//                                'css' => ['width' => '10%', 'padding-right' => '0'],
-//                                'sortable' => false,
-//                            ],
+                            'default_contact' => [
+                                'text' => 'tr_meliscommerce_contact_is_default_contact',
+                                'css' => ['width' => '10%', 'padding-right' => '0'],
+                                'sortable' => false,
+                            ],
                         ],
                         // define what columns can be used in searching
                         'searchables' => [
