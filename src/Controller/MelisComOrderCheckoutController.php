@@ -808,7 +808,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
             $search = $search['value'];
 
             //get client id if there are any
-            $accountId = $this->getRequest()->getPost('accountId', null);
+            $accountId = $this->getRequest()->getPost('clientId', null);
             $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
             $dataCount = $melisEcomClientPersonTable->getTotalData();
 
@@ -828,10 +828,11 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
 //                'client_id' => $clientId
 //            ), null , 1 , 1);
 
-            $contactService = $this->getServiceManager()->get('MelisComContactService');
+//            $contactService = $this->getServiceManager()->get('MelisComContactService');
+            $personTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
 
-            $contactData = $contactService->getContactLists($accountId, null, $search, $melisTool->getSearchableColumns(), $start, $length, $selCol, $sortOrder, true, true)->toArray();
-            $dataCount = $contactService->getContactLists($accountId, null, $search, $melisTool->getSearchableColumns(), null, null, null, 'ASC', true, true, true)->current();
+            $contactData = $personTable->getContactLists($accountId, null, 1, $search, $melisTool->getSearchableColumns(), $start, $length, $selCol, $sortOrder, true, true)->toArray();
+            $dataCount = $personTable->getContactLists($accountId, null, 1, $search, $melisTool->getSearchableColumns(), null, null, null, 'ASC', true, true, true)->current();
 
             $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
 
