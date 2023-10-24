@@ -1126,6 +1126,7 @@ class MelisComClientListController extends MelisAbstractActionController
             }
         }
 
-        return $this->executeCompanyContactExport($data, 'sample_account_import', ';');
+        $fileName = $translator->translate('tr_client_accounts_import_file_title');
+        return $this->executeCompanyContactExport($data, $fileName, ';');
     }
 }

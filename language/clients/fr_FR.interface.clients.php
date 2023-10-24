@@ -478,4 +478,5 @@
 
         'tr_client_accounts_import_country_does_not_exists' => ' n\'existe pas',
         'tr_client_accounts_import_address_type_does_not_exists' => ' n\'existe pas (billing, delivery)',
+        'tr_client_accounts_import_file_title' => 'Exemple import de comptes',
     );

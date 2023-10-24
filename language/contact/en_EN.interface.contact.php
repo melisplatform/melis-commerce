@@ -142,4 +142,5 @@ return [
     'tr_meliscommerce_contact_is_default_contact' => 'Default contact',
 
     'tr_meliscommerce_contact_add_account_tooltip' => 'Select account to activate',
+    'tr_meliscommerce_contact_import_file_title' => 'Example import contacts',
 ];

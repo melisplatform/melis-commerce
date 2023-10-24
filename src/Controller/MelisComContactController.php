@@ -1930,7 +1930,7 @@ class MelisComContactController extends MelisAbstractActionController
                 $data[$key][$name] = $v;
             }
         }
-
-        return $this->executeCompanyContactExport($data, 'sample_contact_import', ';');
+        $fileName = $translator->translate('tr_meliscommerce_contact_import_file_title');
+        return $this->executeCompanyContactExport($data, $fileName, ';');
     }
 }
