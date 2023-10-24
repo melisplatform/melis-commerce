@@ -49,7 +49,7 @@ return [
                         'tr_contact_export_col_postal_code' => '13100',
                         'tr_contact_export_col_add_company_name' => '',
                         'tr_contact_export_col_add_mobile' => '091234567',
-                        'tr_contact_export_col_add_landline' => '000-111-222',
+                        'tr_contact_export_col_add_landline' => '000111222',
                         'tr_contact_export_col_add_additional' => 'Attention au chien',
                     ],
                     [
@@ -81,7 +81,7 @@ return [
                         'tr_contact_export_col_postal_code' => '75000',
                         'tr_contact_export_col_add_company_name' => 'Société AAA',
                         'tr_contact_export_col_add_mobile' => '091234567',
-                        'tr_contact_export_col_add_landline' => '000-111-222',
+                        'tr_contact_export_col_add_landline' => '000111222',
                         'tr_contact_export_col_add_additional' => 'Utiliser la porte arrière pendant les travaux',
                     ],
                     [
@@ -113,7 +113,7 @@ return [
                         'tr_contact_export_col_postal_code' => '69000',
                         'tr_contact_export_col_add_company_name' => 'Société XYZ',
                         'tr_contact_export_col_add_mobile' => '091234567',
-                        'tr_contact_export_col_add_landline' => '000-111-222',
+                        'tr_contact_export_col_add_landline' => '000111222',
                         'tr_contact_export_col_add_additional' => 'ouvert du lundi au Vendredi',
                     ]
                 ]
