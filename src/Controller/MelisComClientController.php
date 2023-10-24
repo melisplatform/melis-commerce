@@ -9,6 +9,7 @@
 
 namespace MelisCommerce\Controller;
 
+use Laminas\InputFilter\Input;
 use Laminas\View\Model\ViewModel;
 use Laminas\Session\Container;
 use Laminas\View\Model\JsonModel;
@@ -716,12 +717,11 @@ class MelisComClientController extends MelisAbstractActionController
         
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $clientId = $this->params()->fromQuery('clientId', '');
-        
+
+        $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
         if (!empty($clientId))
         {
-            
             // Getting Client Data from Client Service
-            $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
             $clieData = $melisComClientService->getClientByIdAndClientPerson($clientId);
             // Getting Client data form Client Object
             $client = $clieData->getClient();
@@ -730,16 +730,16 @@ class MelisComClientController extends MelisAbstractActionController
                 // Binding Client data to Client Form
                 $propertyForm->bind($client);
             }
+        }
 
-            //check account settings
-            $settings = $melisComClientService->getAccountNameSetting();
-            if(!empty($settings)){
-                if($settings->sa_type == 'company_name' || $settings->sa_type == 'contact_name'){
-                    $propertyForm->get('cli_name')->setAttribute('disabled', true);
-                }
+        //check account settings
+        $settings = $melisComClientService->getAccountNameSetting();
+        if(!empty($settings)){
+            if($settings->sa_type == 'company_name' || $settings->sa_type == 'contact_name'){
+                $propertyForm->get('cli_name')->setAttribute('disabled', true);
             }
         }
-        
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->clientId = $clientId;
@@ -1351,7 +1351,31 @@ class MelisComClientController extends MelisAbstractActionController
             $propertyForm->setData($postValues);
             // Getting Form Elements/fields
             $appConfigFormElements = $appConfigForm['elements'];
-            
+
+            /**
+             * Check account settings for form validation
+             */
+            $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
+            //check account settings
+            $settings = $melisComClientService->getAccountNameSetting();
+            if(!empty($settings)){
+                if($settings->sa_type == 'company_name'){
+                    $input = new Input('ccomp_name');
+                    $inputFilter = $propertyForm->getInputFilter();
+                    $input->getValidatorChain()
+                        ->attachByName(
+                            \Laminas\Validator\NotEmpty::class,
+                            [
+                                'messages' => [
+                                    \Laminas\Validator\NotEmpty::IS_EMPTY => $translator->translate('tr_meliscommerce_client_Contact_input_empty'),
+                                ]
+                            ]
+                        );
+                    $inputFilter->add($input);
+                }
+            }
+
+
             if ($propertyForm->isvalid()) {
                 // Getting Validated datas from From
                 $clientCompanyData = $propertyForm->getData();
