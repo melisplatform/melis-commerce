@@ -296,126 +296,50 @@ class MelisComSettingsController extends MelisAbstractActionController
         $success = 0;
         $errors  = array();
         $data = array();
+        $accountsData = [];
         $result = false;
         $logTypeCode = '';
         $textMessage = 'tr_meliscommerce_settings_save_failed';
         $textTitle = 'tr_meliscommerce_settings';
-        
-        $stockEmailAlertSvc = $this->getServiceManager()->get('MelisComStockEmailAlertService');
-        $stockEmailTable = $this->getServiceManager()->get('MelisEcomStockEmailAlertTable');
-        
-        $generalForm = 'meliscommerce_settings_alert_form';
-        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
-        $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_settings/'.$generalForm,$generalForm);
-        
-        $factory = new \Laminas\Form\Factory();
-        $formElements = $this->getServiceManager()->get('FormElementManager');
-        $factory->setFormElementManager($formElements);
-        $alertForm = $factory->createForm($appConfigForm);
-        
-        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
-        $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_coupon');
-        $translator = $this->getServiceManager()->get('translator');
-        
+
         $logTypeCode = 'ECOM_SAVE_SETTINGS';
-        
+
+        $stockEmailAlertSvc = $this->getServiceManager()->get('MelisComStockEmailAlertService');
+        $settingsAccountTbl = $this->getServiceManager()->get('MelisEcomSettingsAccountTable');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
+
         if($this->getRequest()->isPost()){
-            
-            $postValues = $this->getRequest()->getPost()->toArray();
-            $postValues = $melisTool->sanitizeRecursive($postValues);
-            
-            $alertForm->setData($postValues);
-            
-            if($alertForm->isValid()){
-                
-                $formData = $alertForm->getData();
-                $formData['sea_stock_level_alert'] = !empty($formData['sea_stock_level_alert'])? $formData['sea_stock_level_alert'] : null;
-                $sea_stock_level_alert = $formData['sea_stock_level_alert'];
-                $ids = array();
-                
-                $productId = $formData['sea_prd_id'];
-                
-                if($formData['sea_prd_id'] == -1){
-                    // update default data
-                    $stockEmailTable->setDefaultValues($formData);
-                }
-                
-                // remove deleted recipients
-                $stockAlerts = $stockEmailAlertSvc->getStockEmailRecipients($productId);
-                
-                if(!empty($postValues['recipients'])){
-                    
-                    foreach($postValues['recipients'] as $recipient){
-                    
-                        if(!empty($recipient['sea_id'])){
-                            
-                            $ids[] = $recipient['sea_id'];
-                        }
-                        
-                        if(!filter_var($recipient['sea_email'], FILTER_VALIDATE_EMAIL)){
-                            if(empty($errors['sea_email'])){
-                                $errors['sea_email'] = array(
-                                    'inValidEmail' => $translator->translate('tr_meliscommerce_settings_save_add_recipients_failed'). ': '. $recipient['sea_email'],
-                                    'label' =>  $translator->translate('tr_meliscommerce_settings_label_recipients')
-                                );
-                            }else{
-                                $errors['sea_email']['inValidEmail'] = $errors['sea_email']['inValidEmail']. ', '. $recipient['sea_email'];
-                            }
-                        }
-                    
-                        $data[] = array(
-                    
-                            'sea_id' => $recipient['sea_id'],
-                            'sea_stock_level_alert' => $sea_stock_level_alert,
-                            'sea_email' => $recipient['sea_email'],
-                            'sea_user_id' => $recipient['sea_user_id'],
-                            'sea_prd_id' => $productId,
+
+            //validate recipients
+            $this->validateRecipient($data, $errors);
+            //validate accounts
+            $this->validateAccounts($accountsData, $errors);
+
+            if(empty($errors)){
+                // insert data to db
+                foreach($data as $entry){
+
+                    $id = $entry['sea_id'];
+                    unset($entry['sea_id']);
+                    $result = $stockEmailAlertSvc->SaveStockEmailAlert($entry, $id);
+
+                    if(empty($result)){
+
+                        $errors['failedInsert'] = array(
+                            'label' => $melisTool->getTranslation('tr_meliscommerce_settings_label_recipients'),
+                            'failedInsert' => $melisTool->getTranslation('tr_meliscommerce_settings_save_add_recipients_failed'),
                         );
-                    }
-                    
-                    // delete removed recipients
-                    foreach($stockAlerts as $recipient){
-                
-                        if(!in_array($recipient['sea_id'], $ids) && $recipient['sea_id'] != -1){
-                
-                            $stockEmailAlertSvc->deleteStockEmailAlertById($recipient['sea_id']);
-                        }
-                    }
-                }else{
-                    // if recipients are emptied delete recipients
-                    foreach($stockAlerts as $recipient){
-                        
-                        if($recipient['sea_id'] != -1){
-                            
-                            $stockEmailAlertSvc->deleteStockEmailAlertById($recipient['sea_id']);
-                        }
+
+                        $textMessage = 'tr_meliscommerce_settings_save_failed';
+                        break;
                     }
                 }
-                
-                if(empty($errors)){
-                    // insert data to db
-                    foreach($data as $entry){
-                    
-                        $id = $entry['sea_id'];
-                        unset($entry['sea_id']);
-                        $result = $stockEmailAlertSvc->SaveStockEmailAlert($entry, $id);
-                    
-                        if(empty($result)){
-                    
-                            $errors['failedInsert'] = array(
-                                'label' => $melisTool->getTranslation('tr_meliscommerce_settings_label_recipients'),
-                                'failedInsert' => $melisTool->getTranslation('tr_meliscommerce_settings_save_add_recipients_failed'),
-                            );
-                    
-                            $textMessage = 'tr_meliscommerce_settings_save_failed';
-                            break;
-                        }
-                    }
+                //insert settings account
+                if(!empty($accountsData)){
+                    $id = $accountsData['sa_id'] ?? null;
+                    unset($accountsData['sa_id']);
+                    $settingsAccountTbl->save($accountsData, $id);
                 }
-                
-            }else{
-                
-                $errors = array_merge($errors, $this->getFormErrors($alertForm, $appConfigForm));
             }
         }
         
@@ -442,6 +366,128 @@ class MelisComSettingsController extends MelisAbstractActionController
     {
         
     }
+
+    /**
+     * @param $data
+     * @param $errors
+     */
+    private function validateRecipient(&$data, &$errors)
+    {
+        $stockEmailAlertSvc = $this->getServiceManager()->get('MelisComStockEmailAlertService');
+        $stockEmailTable = $this->getServiceManager()->get('MelisEcomStockEmailAlertTable');
+
+        $generalForm = 'meliscommerce_settings_alert_form';
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
+        $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_settings/'.$generalForm,$generalForm);
+
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+        $alertForm = $factory->createForm($appConfigForm);
+
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
+        $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_coupon');
+        $translator = $this->getServiceManager()->get('translator');
+
+        $postValues = $this->getRequest()->getPost()->toArray();
+        $postValues = $melisTool->sanitizeRecursive($postValues);
+
+        $alertForm->setData($postValues);
+
+        if($alertForm->isValid()){
+
+            $formData = $alertForm->getData();
+            $formData['sea_stock_level_alert'] = !empty($formData['sea_stock_level_alert'])? $formData['sea_stock_level_alert'] : null;
+            $sea_stock_level_alert = $formData['sea_stock_level_alert'];
+            $ids = array();
+
+            $productId = $formData['sea_prd_id'];
+
+            if($formData['sea_prd_id'] == -1){
+                // update default data
+                $stockEmailTable->setDefaultValues($formData);
+            }
+
+            // remove deleted recipients
+            $stockAlerts = $stockEmailAlertSvc->getStockEmailRecipients($productId);
+
+            if(!empty($postValues['recipients'])){
+
+                foreach($postValues['recipients'] as $recipient){
+
+                    if(!empty($recipient['sea_id'])){
+
+                        $ids[] = $recipient['sea_id'];
+                    }
+
+                    if(!filter_var($recipient['sea_email'], FILTER_VALIDATE_EMAIL)){
+                        if(empty($errors['sea_email'])){
+                            $errors['sea_email'] = array(
+                                'inValidEmail' => $translator->translate('tr_meliscommerce_settings_save_add_recipients_failed'). ': '. $recipient['sea_email'],
+                                'label' =>  $translator->translate('tr_meliscommerce_settings_label_recipients')
+                            );
+                        }else{
+                            $errors['sea_email']['inValidEmail'] = $errors['sea_email']['inValidEmail']. ', '. $recipient['sea_email'];
+                        }
+                    }
+
+                    $data[] = array(
+                        'sea_id' => $recipient['sea_id'],
+                        'sea_stock_level_alert' => $sea_stock_level_alert,
+                        'sea_email' => $recipient['sea_email'],
+                        'sea_user_id' => $recipient['sea_user_id'],
+                        'sea_prd_id' => $productId,
+                    );
+                }
+
+                // delete removed recipients
+                foreach($stockAlerts as $recipient){
+                    if(!in_array($recipient['sea_id'], $ids) && $recipient['sea_id'] != -1){
+
+                        $stockEmailAlertSvc->deleteStockEmailAlertById($recipient['sea_id']);
+                    }
+                }
+            }else{
+                // if recipients are emptied delete recipients
+                foreach($stockAlerts as $recipient){
+
+                    if($recipient['sea_id'] != -1){
+
+                        $stockEmailAlertSvc->deleteStockEmailAlertById($recipient['sea_id']);
+                    }
+                }
+            }
+        }else{
+            $errors = array_merge($errors, $this->getFormErrors($alertForm, $appConfigForm));
+        }
+    }
+
+    /**
+     * @param $accountsData
+     * @param $errors
+     */
+    private function validateAccounts(&$accountsData, &$errors)
+    {
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
+        $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_settings/meliscommerce_settings_accounts_form','meliscommerce_settings_accounts_form');
+
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+        $accountForm = $factory->createForm($appConfigForm);
+
+        $postValues = $this->getRequest()->getPost()->toArray();
+        foreach($postValues as $key => $val){
+            if (strpos($key, 'sa_') !== false) {
+                $accountsData[$key] = $val;
+            }
+        }
+
+        $accountForm->setData($accountsData);
+        if(!$accountForm->isValid()){
+            $errors = array_merge($errors, $this->getFormErrors($accountForm, $appConfigForm));
+        }
+    }
     
     /**
      * Retrieves  form errors
@@ -467,5 +513,53 @@ class MelisComSettingsController extends MelisAbstractActionController
         return $errors;
     }
 
+    /**
+     * renders the page tabs
+     * @return \Laminas\View\Model\ViewModel render-coupon-page-tab-main
+     */
+    public function renderSettingsPageTabsAccountsAction()
+    {
+        $view = new ViewModel();
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view->melisKey = $melisKey;
+        return $view;
+    }
 
+    /**
+     * renders the page tabs
+     * @return \Laminas\View\Model\ViewModel render-coupon-page-tab-main
+     */
+    public function renderSettingsPageTabsAccountsHeaderAction()
+    {
+        $view = new ViewModel();
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view->melisKey = $melisKey;
+        return $view;
+    }
+
+    /**
+     * renders the page tabs
+     * @return \Laminas\View\Model\ViewModel render-coupon-page-tab-main
+     */
+    public function renderSettingsPageTabsAccountsContentAction()
+    {
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
+        $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_settings/meliscommerce_settings_accounts_form','meliscommerce_settings_accounts_form');
+
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+        $accountForm = $factory->createForm($appConfigForm);
+
+        //get account settings
+        $settingsAccountTbl = $this->getServiceManager()->get('MelisEcomSettingsAccountTable');
+        $data = $settingsAccountTbl->fetchAll()->current();
+        $accountForm->setData((array)$data);
+
+        $view = new ViewModel();
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view->melisKey = $melisKey;
+        $view->accountForm = $accountForm;
+        return $view;
+    }
 }

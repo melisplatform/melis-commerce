@@ -9,6 +9,8 @@
 
 namespace MelisCommerce\Controller;
 
+use Laminas\Http\Headers;
+use Laminas\Stdlib\ArrayUtils;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
 use Laminas\Session\Container;
@@ -18,7 +20,7 @@ use MelisCore\Controller\MelisAbstractActionController;
 class MelisComClientListController extends MelisAbstractActionController
 {
     const PLUGIN_INDEX = 'meliscommerce';
-    
+
     /**
      * Render Client List Page
      * 
@@ -53,8 +55,16 @@ class MelisComClientListController extends MelisAbstractActionController
     public function renderClientListAddClientAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
+
+        //get user rights
+        $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
+        $xmlRights = $melisCoreAuth->getAuthRights();
+        $rights = $this->getServiceManager()->get('MelisCoreRights');
+        $canAccess = $rights->isAccessible($xmlRights, 'meliscore_interface', 'meliscommerce_clients_list_add_client_button');
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
+        $view->canAccess = $canAccess;
         return $view;
     }
     
@@ -106,15 +116,17 @@ class MelisComClientListController extends MelisAbstractActionController
      * renders the client list page average client count
      * @return \Laminas\View\Model\ViewModel
      */
-    public function renderClientListWidgetsAvgClientsAction()
+    public function renderClientListWidgetsActiveInactiveAction()
     {
         $clientSvc = $this->getServiceManager()->get('MelisComClientService');
-        $clientCount = $clientSvc->getWidgetClients('avgMonth');
-    
+        $clientActive = $clientSvc->getWidgetClients('activeInactive', 'active');
+        $clientInactive = $clientSvc->getWidgetClients('activeInactive', 'inactive');
+
         $view = new ViewModel();
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view->melisKey = $melisKey;
-        $view->num = (float) $clientCount['average'];
+        $view->clientActive = $clientActive->total ?? 0;
+        $view->clientInActive = $clientInactive->total ?? 0;
         return $view;
     }
     
@@ -181,7 +193,7 @@ class MelisComClientListController extends MelisAbstractActionController
     }
     
     /**
-     * Render Client custom page refresh button, this button attach to table plugin
+     * Render Client custom page export button, this button attach to table plugin
      * 
      * @return \Laminas\View\Model\ViewModel
      */
@@ -192,7 +204,45 @@ class MelisComClientListController extends MelisAbstractActionController
         $view->melisKey = $melisKey;
         return $view;
     }
-    
+
+    /**
+     * @return \Laminas\View\Model\ViewModel
+     */
+    public function renderClientListTableExportAccountsAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+
+        //get user rights
+        $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
+        $xmlRights = $melisCoreAuth->getAuthRights();
+        $rights = $this->getServiceManager()->get('MelisCoreRights');
+        $canAccess = $rights->isAccessible($xmlRights, 'meliscore_interface', 'meliscommerce_clients_list_export_client_button');
+
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        $view->canAccess = $canAccess;
+        return $view;
+    }
+
+    /**
+     * @return \Laminas\View\Model\ViewModel
+     */
+    public function renderClientListTableImportAccountsAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+
+        //get user rights
+        $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
+        $xmlRights = $melisCoreAuth->getAuthRights();
+        $rights = $this->getServiceManager()->get('MelisCoreRights');
+        $canAccess = $rights->isAccessible($xmlRights, 'meliscore_interface', 'meliscommerce_clients_list_import_client_button');
+
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        $view->canAccess = $canAccess;
+        return $view;
+    }
+
     /**
      * Render Client custom page refresh button, this button attach to table plugin
      * 
@@ -260,6 +310,25 @@ class MelisComClientListController extends MelisAbstractActionController
         $view->melisKey = $melisKey;
         return $view;
     }
+
+    /**
+     * @return ViewModel
+     */
+    public function renderClientListTableDeleteAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+
+        //get user rights
+        $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
+        $xmlRights = $melisCoreAuth->getAuthRights();
+        $rights = $this->getServiceManager()->get('MelisCoreRights');
+        $canAccess = $rights->isAccessible($xmlRights, 'meliscore_interface', 'meliscommerce_clients_list_delete_client_button');
+
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        $view->canAccess = $canAccess;
+        return $view;
+    }
     
     /**
      * renders the client list modal container
@@ -296,7 +365,45 @@ class MelisComClientListController extends MelisAbstractActionController
         $view->setVariable('meliscommerce_client_list_export_form', $clientExportForm);
         return $view;
     }
-    
+
+    /**
+     * @return ViewModel
+     */
+    public function renderClientListContentExportAccountsFormAction()
+    {
+        $view = new ViewModel();
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
+        $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_client_list_export_accounts_form','meliscommerce_client_list_export_accounts_form');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+        $clientExportForm = $factory->createForm($appConfigForm);
+
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view->melisKey = $melisKey;
+        $view->setVariable('meliscommerce_client_list_export_accounts_form', $clientExportForm);
+        return $view;
+    }
+
+    /**
+     * @return ViewModel
+     */
+    public function renderClientListContentImportAccountsFormAction()
+    {
+        $view = new ViewModel();
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
+        $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_client_list_import_accounts_form','meliscommerce_client_list_import_accounts_form');
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+        $clientExportForm = $factory->createForm($appConfigForm);
+
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view->melisKey = $melisKey;
+        $view->setVariable('meliscommerce_client_list_import_accounts_form', $clientExportForm);
+        return $view;
+    }
+
     /**
      * This method will return the List of Clients
      * 
@@ -319,7 +426,6 @@ class MelisComClientListController extends MelisAbstractActionController
             $melisTranslation = $this->getServiceManager()->get('MelisCoreTranslation');
             // Client Service Managers
             $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
-            $melisEcomClientTable = $this->getServiceManager()->get('MelisEcomClientTable');
             
             $melisTool = $this->getServiceManager()->get('MelisCoreTool');
             $melisTool->setMelisToolKey(self::PLUGIN_INDEX, 'meliscommerce_clients_list');
@@ -331,7 +437,9 @@ class MelisComClientListController extends MelisAbstractActionController
             
             $selCol = $this->getRequest()->getPost('order');
             $selCol = $colId[$selCol[0]['column']];
-            
+            if($selCol == 'default_contact')
+                $selCol = 'car_default_person';
+
             $draw = $this->getRequest()->getPost('draw');
             
             $start = $this->getRequest()->getPost('start');
@@ -343,10 +451,10 @@ class MelisComClientListController extends MelisAbstractActionController
             $groupId = $this->getRequest()->getPost('cgroup_id', null);
             $clientStatus = $this->getRequest()->getPost('cli_status', null);
             
-           $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
+            $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientTable');
             $dataCount = $melisEcomClientPersonTable->getTotalData();
         
-            $getData = $melisEcomClientPersonTable->getClientList(array(
+            $getData = $melisEcomClientPersonTable->getAccountToolList(array(
                 'where' => array(
                     'key' => 'cli_id',
                     'value' => $search,
@@ -360,21 +468,35 @@ class MelisComClientListController extends MelisAbstractActionController
                 'columns' => $melisTool->getSearchableColumns(),
                 'date_filter' => array(),
                 'groupId' => $groupId,
-                'clientStatus' => $clientStatus
+                'clientStatus' => $clientStatus,
+                'count' => false
             ));
-            
-//             if(!empty($search)){
-//                 $getData['where'] = array(
-//                     'key' => 'cli_id',
-//                     'value' => $search,
-//                 );
-//             }
-        
+
+            $totalFiltered = $melisEcomClientPersonTable->getAccountToolList(array(
+                'where' => array(
+                    'key' => 'cli_id',
+                    'value' => $search,
+                ),
+                'order' => array(
+                    'key' => $selCol,
+                    'dir' => $sortOrder,
+                ),
+                'start' => null,
+                'limit' => null,
+                'columns' => $melisTool->getSearchableColumns(),
+                'date_filter' => array(),
+                'groupId' => $groupId,
+                'clientStatus' => $clientStatus,
+                'count' => true
+            ))->current();
+
+            if($totalFiltered)
+                $totalFiltered = $totalFiltered->total;
+
             // store fetched data for data modification (if needed)
             $contactData = $getData->toArray();
-             
-            $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
 
+            $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
             foreach ($contactData As $val)
             {
                 $contactStatus = '<i class="fa fa-circle text-danger"></i>';
@@ -385,32 +507,50 @@ class MelisComClientListController extends MelisAbstractActionController
                 }
                 
                 // Getting the Contact number of Order(s)
-                $contactOrderData = $melisEcomOrderTable->getEntryByField('ord_client_person_id', $val['cper_id']);
+                $contactOrderData = $melisEcomOrderTable->getEntryByField('ord_client_id', $val['cli_id']);
                 $contactOrder = $contactOrderData->toArray();
                 $contactNumOrders = count($contactOrder);
                 $lastOrder = !empty($val['cli_last_order'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_last_order'])), 0, 10) : '';
                 $clientCreated = !empty($val['cli_date_creation'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_date_creation'])), 0, 10) : '';
-                
+
+                $defaultContact = '';
+                $accountContactList = $melisComClientService->getAccountAssocContactLists($val['cli_id'])->toArray();
+                if(!empty($accountContactList)){
+                    foreach($accountContactList as $key => $v){
+                        if($v['car_default_person']) {
+                            $defaultContact = $v['cper_firstname'] . ' ' . $v['cper_name'];
+                            $defaultContact = "<span class='d-none td-tooltip'>".$defaultContact."</span>".mb_strimwidth($defaultContact, 0, 30, '...');
+                            break;
+                        }
+                    }
+                }
+
+                $cliname = $melisComClientService->getAccountName($val['cli_id']);
+
                 $rowdata = array(
                     'DT_RowId' => $val['cli_id'],
                     'cli_id' => $val['cli_id'],
-                    'cgroup_name' => $val['cgroup_name'],
+                    'cgroup_name' => !empty($val['cgroup_name']) ? "<span class='d-none td-tooltip'>".$val['cgroup_name']."</span>".mb_strimwidth($val['cgroup_name'], 0, 30, '...') : null,
                     'cli_status' => $contactStatus,
-                    'cli_company' => $val['cli_company'],
+                    'cli_company' => !empty($val['cli_company']) ? "<span class='d-none td-tooltip'>".$val['cli_company']."</span>".mb_strimwidth($val['cli_company'], 0, 30, '...') : null,
                     'cli_date_creation' => $clientCreated,
-                    'cli_person' => $val['cli_person'],
-                    'cper_email' => $melisTool->sanitize($val['cper_email']),
+                    'cli_name' => !empty($cliname) ? "<span class='d-none td-tooltip'>".$cliname."</span>".mb_strimwidth($cliname, 0, 30, '...') : null,
                     'cli_num_orders' => $contactNumOrders,
                     'cli_last_order' => $lastOrder,
+                    'default_contact' => $defaultContact,
+                    'DT_RowAttr' => [
+                        'data-hasorder' => !empty($contactNumOrders) ? 1 : 0
+                    ]
                 );
                 
                 array_push($tableData, $rowdata);
             }
         }
+
         return new JsonModel(array(
             'draw' => (int) $draw,
             'recordsTotal' => $dataCount,
-            'recordsFiltered' => $melisEcomClientPersonTable->getTotalFiltered(),
+            'recordsFiltered' => $totalFiltered,
             'data' => $tableData,
         ));
     }
@@ -582,5 +722,411 @@ class MelisComClientListController extends MelisAbstractActionController
         
         return $response;
 
+    }
+
+    /**
+     * Function to export accounts
+     *
+     * @return HttpResponse|string
+     */
+    public function exportAccountsAction()
+    {
+        ini_set('max_execution_time', -1);
+        // set memory limit to infinte
+        ini_set('memory_limit', '-1');
+        $queryData = $this->request->getQuery()->toArray();
+
+        $translator = $this->getServiceManager()->get('translator');
+        // Client Service Managers
+        $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
+        $melisTranslation = $this->getServiceManager()->get('MelisCoreTranslation');
+
+        // Get the locale used from meliscore session
+        $container = new Container('meliscore');
+        $locale = $container['melis-lang-locale'];
+
+        $delimiter = $queryData['separator'] ?? ';';
+        $status = $queryData['status'] ?? null;
+        $groupId = $queryData['groupId'] ?? null;
+        $search = $queryData['search'] ?? null;
+
+        $fileName = date('Ymd').'_'.strtolower($translator->translate('tr_meliscommerce_clients_Clients')).'.csv';
+
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
+        $melisTool->setMelisToolKey(self::PLUGIN_INDEX, 'meliscommerce_clients_list');
+
+        $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientTable');
+        $countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
+        $clientGroupTable = $this->getServiceManager()->get('MelisEcomClientGroupsTable');
+
+        $getData = $melisEcomClientPersonTable->getAccountToolList(array(
+            'where' => array(
+                'key' => 'cli_id',
+                'value' => $search,
+            ),
+            'order' => array(
+                'key' => 'cli_id',
+                'dir' => 'ASC',
+            ),
+            'start' => null,
+            'limit' => null,
+            'columns' => $melisTool->getSearchableColumns(),
+            'date_filter' => array(),
+            'groupId' => $groupId,
+            'clientStatus' => $status,
+            'count' => false
+        ))->toArray();
+
+        $data = [];
+        //loop through each to modify or add new data
+        if(!empty($getData)){
+            foreach($getData as $key => $val){
+
+                //check first the commerce account settings if we use contact name or company or the default client name
+                $getData[$key]['cli_name'] = $melisComClientService->getAccountName($val['cli_id']);
+                //get client default contact
+                $defContact = $melisComClientService->getClientDefaultContactByClientId($val['cli_id'])->current();
+                $defContactId = (!empty($defContact)) ? $defContact->cper_id : null;
+                $defContactName = (!empty($defContact)) ? $defContact->cper_firstname.' '.$defContact->cper_name : null;
+                $defContactEmail = (!empty($defContact)) ? $defContact->cper_email : null;
+                $getData[$key]['default_contact_id'] = $defContactId;
+                $getData[$key]['default_contact_name'] = $defContactName;
+                $getData[$key]['default_contact_email'] = $defContactEmail;
+
+                //get client country
+                $getData[$key]['cli_country_id'] = null;
+                $countryData = $countryTable->getEntryById($val['cli_country_id'])->current();
+                if(!empty($countryData)){
+                    $getData[$key]['cli_country_id'] = $countryData->ctry_name;
+                }
+
+                //get client group
+                $getData[$key]['cli_group_id'] = null;
+                $groupData = $clientGroupTable->getEntryById($val['cli_group_id'])->current();
+                if(!empty($groupData)){
+                    $getData[$key]['cli_group_id'] = $groupData->cgroup_name;
+                }
+
+                //format dates
+//                $lastOrder = !empty($val['cli_last_order'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_last_order'])), 0, 10) : '';
+                $clientCreated = !empty($val['cli_date_creation'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_date_creation'])), 0, 10) : '';
+                $getData[$key]['cli_date_creation'] = $clientCreated;
+//                $getData[$key]['cli_last_order'] = $lastOrder;
+                //we use ccomp_comp_creation_date as company creation date
+                $companyCreated = !empty($val['ccomp_comp_creation_date'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['ccomp_comp_creation_date'])), 0, 10) : '';
+                $getData[$key]['ccomp_date_creation'] = $companyCreated;
+            }
+
+            //now we include billing address
+            $accountBill = [];
+            foreach($getData as $key => $val){
+                //lets include billing address
+                $this->processAccountAddress($accountBill, $key, $val['cli_id']);
+            }
+
+            //now we include delivery address
+            $accountDel = [];
+            foreach($getData as $key => $val){
+                //lets include billing address
+                $this->processAccountAddress($accountDel, $key, $val['cli_id'], 2);
+            }
+
+            //now we include orders
+            $accountOrders = [];
+            foreach($getData as $key => $val){
+                //lets include billing address
+                $this->processAccountOrders($accountOrders, $key, $val['cli_id']);
+            }
+
+            /**
+             * This will match keys for every data
+             * For example if field 1 doesn't exist in array 1, it will put field 1 in array 1 to match all the keys
+             */
+            $keys = [];
+            $this->matchKeys($keys, $data);
+            $this->matchKeys($keys, $accountBill);
+            $this->matchKeys($keys, $accountDel);
+            $this->matchKeys($keys, $accountOrders);
+
+            $getData = ArrayUtils::merge($getData, $accountBill, true);
+            $getData = $this->processKeysToMatch($keys, $getData);
+
+            $getData = ArrayUtils::merge($getData, $accountDel, true);
+            $getData = $this->processKeysToMatch($keys, $getData);
+
+            $getData = ArrayUtils::merge($getData, $accountOrders, true);
+            $getData = $this->processKeysToMatch($keys, $getData);
+
+            //reposition fields
+//            foreach($getData as $key => $val){
+//                $getData[$key] = array_slice($val, 0, 5, true) +
+//                    array("cgroup_name" => $val['cgroup_name']) +
+//                    array_slice($val, 3, count($val) - 1, true) ;
+//            }
+
+            $exportData = [];
+            /**
+             * Columns to exclude in the export
+             */
+            $excludeColumns = [
+                'cli_date_edit', 'cli_last_order','cgroup_name',
+                'car_id','car_client_id','car_client_person_id','car_default_person',
+                'cper_firstname','cper_name','cper_id','cper_email',
+                'ccomp_name', 'ccomp_logo','ccomp_id','ccomp_client_id', 'ccomp_comp_creation_date','ccomp_date_edit', 'ccomp_add_floor',
+                'cadd_id', 'cadd_client_id', 'cadd_client_person', 'cadd_type',
+                'catype_id', 'catype_code','civ_id'
+            ];
+            /**
+             * Translate all fields
+             */
+
+            foreach($getData as $key => $val){
+                $dt = [];
+                foreach($val as $k => $d){
+                    if(!in_array($k, $excludeColumns)) {
+                        if(strpos($k, 'translated_') !== false)//check if field already translated
+                            $fname = str_replace('translated_', '', $k);
+                        else//translate field
+                            $fname = $translator->translate('tr_client_accounts_export_col_' . $k);
+
+
+                        $dt["$fname"] = $d;
+                    }
+                }
+                $exportData[$key] = $dt;
+            }
+            $data = $exportData;
+        }
+
+        $data = $this->mbEncode($data);
+
+        return $this->executeCompanyContactExport($data, $fileName, $delimiter);
+    }
+
+    private function matchKeys(&$keys, $data)
+    {
+        foreach($data as $i => $val){
+            foreach($val as $k => $v){
+                if(!array_key_exists($k, $keys)){
+                    $keys[$k] = null;
+                }
+            }
+        }
+        return $keys;
+    }
+
+    private function processKeysToMatch($keys, $data)
+    {
+        foreach($data as $i => $val){
+            foreach($keys as $k => $b){
+                if(!array_key_exists($k, $val)){
+                    $data[$i][$k] = null;
+                }
+            }
+        }
+        return $data;
+    }
+
+    private function processAccountOrders(&$orderDatas, $key, $accountId)
+    {
+        $langId = $this->getOrderTool()->getCurrentLocaleID();
+
+        $melisComOrderService = $this->getServiceManager()->get('MelisComOrderService');
+        $translator = $this->getServiceManager()->get('translator');
+        $orders = $melisComOrderService->getOrderList(null, true, null, $accountId);
+        if(!empty($orders)){
+            $orderCount = 1;
+            foreach($orders as $order){
+                $price = 0;
+                $products = 0;
+                $cper_firstname = '';
+                $cper_name = '';
+
+                $orderStatus = null;
+                $statusTrans = $melisComOrderService->getOrderStatusByOrderId($order->getId());
+                foreach($statusTrans as $trans){
+                    if($trans->ostt_lang_id == $langId){
+                        $orderStatus = $trans;
+                    }
+                }
+                $orderStatus = empty($orderStatus)? $statusTrans[0] : $orderStatus;
+                foreach($order->getBasket() as $basket){
+                    $products = $products + $basket->obas_quantity;
+                }
+
+                foreach($order->getPayment() as $payment){
+                    $price = $price + $payment->opay_price_total;
+                }
+
+                $client = $order->getPerson();
+
+                if(!empty($client)){
+                    $cper_firstname = $client->cper_firstname;
+                    $cper_name = $client->cper_name;
+                }
+
+                $orderDatas[$key]['translated_'.$translator->translate('tr_client_accounts_export_col_ord_id').' '.$orderCount] = $order->getId();
+                $orderDatas[$key]['translated_'.$translator->translate('tr_client_accounts_export_col_ord_reference').' '.$orderCount] = $order->getOrder()->ord_reference;
+                $orderDatas[$key]['translated_'.$translator->translate('tr_client_accounts_export_col_ord_status').' '.$orderCount] = $orderStatus->ostt_status_name;
+                $orderDatas[$key]['translated_'.$translator->translate('tr_client_accounts_export_col_products').' '.$orderCount] = number_format($products, 0);
+                $orderDatas[$key]['translated_'.$translator->translate('tr_client_accounts_export_col_price').' '.$orderCount] = number_format($price, 2) . "€";
+                $orderDatas[$key]['translated_'.$translator->translate('tr_client_accounts_export_col_cper_firstname').' '.$orderCount] = $this->getOrderTool()->escapeHtml($cper_firstname);
+                $orderDatas[$key]['translated_'.$translator->translate('tr_client_accounts_export_col_cper_name').' '.$orderCount] = $this->getOrderTool()->escapeHtml($cper_name);
+                $orderDatas[$key]['translated_'.$translator->translate('tr_client_accounts_export_col_ord_date_creation').' '.$orderCount] = $this->getOrderTool()->dateFormatLocale($order->getOrder()->ord_date_creation);
+
+                $orderCount++;
+            }
+        }
+    }
+
+    /**
+     * Returns the Tool Service Class
+     * @return MelisCoreTool
+     */
+    private function getOrderTool()
+    {
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
+        $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_order_list');
+
+        return $melisTool;
+    }
+
+    private function processAccountAddress(&$getData, $key, $accountId, $type = 1)
+    {
+        $translator = $this->getServiceManager()->get('translator');
+        $melisEcomClientAddressTable = $this->getServiceManager()->get('MelisEcomClientAddressTable');
+        $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
+        $clientAddressData = $melisEcomClientAddressTable->getClientAddressByClientId($accountId, $type);
+        $clientAddress = array();
+        foreach ($clientAddressData As $aVal)
+        {
+//            $aVal->civility_trans = $melisComClientService->getCivilityTransByCivilityIdAndLangId($aVal->civ_id);
+//            $aVal->address_trans = $melisComClientService->getAddressTransByAddressTypeIdAndLangId($aVal->catype_id);
+            array_push($clientAddress, $aVal);
+        }
+
+        $addressCount = 1;
+        $type = $type == 1 ? $translator->translate('tr_meliscommerce_clients_common_billing') : $translator->translate('tr_meliscommerce_clients_common_delivery');
+        foreach($clientAddress as $i => $val){
+            foreach($val as $k => $v){
+                if(!in_array($k, ['cadd_id', 'cadd_client_id', 'cadd_client_person', 'cadd_type','catype_id', 'catype_code','civ_id', 'cadd_creation_date'])) {
+                    $fname = $translator->translate('tr_client_accounts_export_col_' . $k);
+                    $getData[$key]['translated_' . $type . ' - ' . $fname . ' ' . $addressCount] = $v;
+                }
+            }
+            $addressCount++;
+        }
+    }
+
+    /**
+     * applied utf8_encode
+     */
+    public function mbEncode($data)
+    {
+        $newData = [];
+        if (! empty($data)) {
+            foreach ($data as $idx => $val) {
+                foreach (array_keys($val) as $key) {
+                    $tmp = $val[$key];
+                    // encode utf8_encode
+                    $newData[$idx][utf8_encode($key)] = html_entity_decode($tmp);
+                }
+            }
+        }
+
+        return $newData;
+    }
+
+    /**
+     * @param $data
+     * @param $fileName
+     * @param null $customSeparator
+     * @param null $customIsEnclosed
+     * @return HttpResponse|string
+     */
+    public function executeCompanyContactExport($data, $fileName, $customSeparator = null, $customIsEnclosed = null)
+    {
+        $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
+
+        $csvConfig = $melisCoreConfig->getItem('meliscore/datas/default/export/csv');
+        $separator = empty($customSeparator) ? $csvConfig['separator'] : $customSeparator;
+
+        if($customIsEnclosed != null)
+            $enclosed = $customIsEnclosed == 0 ? '' : '"';
+        else
+            $enclosed = $csvConfig['enclosed'];
+
+        $striptags = (int) $csvConfig['striptags'] == 1 ? true : false;
+        $response = '';
+
+        if ($data) {
+            $csvColumn = $data[0];
+
+            $content = '';
+
+            // for columns
+            foreach ($csvColumn as $key => $colText) {
+                $content .= $key . $separator;
+            }
+            $content .= "\r\n";
+
+            // for contents
+            foreach ($data as $dataKey => $dataValue) {
+
+                foreach ($dataValue as $key => $value) {
+
+                    if ($striptags) {
+                        $value = utf8_encode($value);
+                    } else {
+                        if (is_int($value)) {
+                            $value = (string) $value;
+                            $value = utf8_encode($value);
+                        }
+                    }
+
+                    /**
+                     * to solve the issue of 1 double quoute is to replace it with 2 double quote
+                     * so that it will not break the csv file
+                     */
+                    $value = str_replace('"', '""', $value);
+                    $value = str_replace(array("\r", "\n"), '', $value);
+                    // content
+                    $content .= $enclosed . $value . $enclosed . $separator;
+
+                }
+                $content .= "\r\n";
+            }
+
+            $response = new Response();
+            $headers = $response->getHeaders();
+            $headers->addHeaderLine('Content-Type', 'text/csv; charset=utf-8');
+            $headers->addHeaderLine('Content-Disposition', "attachment; filename=\"" . $fileName . "\"");
+            $headers->addHeaderLine('Accept-Ranges', 'bytes');
+            $headers->addHeaderLine('Content-Length', strlen($content));
+            $headers->addHeaderLine('fileName', $fileName);
+            $response->setContent($content);
+        }
+
+        return $response;
+    }
+
+    /**
+     * @return HttpResponse|string
+     */
+    public function downloadImportTemplateAction()
+    {
+        $translator = $this->getServiceManager()->get('translator');
+        $config = $this->getServiceManager()->get('config');
+        $dataTemplate = $config['plugins']['meliscommerce']['datas']['import_sample_template_accounts'];
+        $data = [];
+        foreach($dataTemplate as $key => $val){
+            foreach($val as $k => $v){
+                $name = utf8_encode($translator->translate($k));
+                $data[$key][$name] = $v;
+            }
+        }
+
+        $fileName = $translator->translate('tr_client_accounts_import_file_title');
+        return $this->executeCompanyContactExport($data, $fileName, ';');
     }
 }

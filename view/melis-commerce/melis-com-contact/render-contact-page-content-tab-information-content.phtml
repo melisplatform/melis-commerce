@@ -1,0 +1,58 @@
+<?php
+$id = '';
+if (!empty($this->zoneconfig['conf']['id'])){
+    $id = 'id="'.$this->contactId.'_'.$this->zoneconfig['conf']['id'] .'"';
+}
+$data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<div <?php echo $id. ' '.$data_melisKey?>>
+    <?php
+        $form = $this->contactForm;
+        $form->prepare();
+        echo $this->form()->openTag($form);
+        foreach($form->getElements() as $key => $val)  {
+
+            $type = $form->get('cper_type')->getValue();
+            $hide = '';
+            if($type == 'company') {
+                if (in_array($key, ['cper_name','cper_middle_name', 'cper_civility', 'cper_job_service', 'cper_job_title'])){
+                    $hide = 'd-none';
+                }
+            }
+
+            echo '<div class="form-group '.$hide.'">';
+            if ($val->getLabel())
+            {
+                $required = '';
+                if(!empty($val->getAttribute('required'))){
+                    $required = ' <sup>*</sup>';
+                }
+                echo $this->formLabel()->openTag($val);
+                echo $val->getLabel();
+                echo $required;
+                echo $this->formLabel()->closeTag();
+            }
+
+            if($key == 'cper_type'){
+                foreach($val->getValueOptions() as $k => $v) {
+                    $selected = "";
+                    if(empty($val->getValue())){
+                        if($k == "person") {
+                            $selected = "checked";
+                        }
+                    }else {
+                        $selected = ($k == $val->getValue()) ? "checked" : "";
+                    }
+                    echo '<div class="form-check form-check-inline"><input class="form-check-input '.$key.'" data-cat-type="'.strtoupper($v).'" type="radio" id="'.$key.'_' . $k . '" name="'.$key.'" value="' . $k . '" '.$selected.'>
+                                                <label class="form-check-label" for="'.$key.'_' . $k . '">' . $v . '</label>
+                                                </input></div>';
+                }
+            }else {
+                echo $this->formElement($val, array('class' => 'form-control'));
+            }
+            echo '</div>';
+        }
+    echo $this->form()->closeTag($form);
+    ?>
+</div>
+

@@ -30,6 +30,11 @@ return [
                                         'type' => 'meliscommerce/interface/meliscommerce_clients_list/interface/meliscommerce_clients_list_leftmenu'
                                     ],
                                 ],
+                                'meliscommerce_contact_list' => [
+                                    'conf' => [
+                                        'type' => 'meliscommerce/interface/meliscommerce_contact_list/interface/meliscommerce_contact_list_leftmenu'
+                                    ],
+                                ],
                                 'meliscommerce_order_list' => [
                                     'conf' => [
                                         'type' => 'meliscommerce/interface/meliscommerce_order_list/interface/meliscommerce_order_list_leftmenu'
@@ -93,14 +98,17 @@ return [
                     '/MelisCommerce/js/ecommerce-common.js',
                     '/MelisCommerce/assets/common/fuelux-checkbox.js',
                     '/MelisCommerce/assets/common/jquery.qtip.min.js',
+                    '/MelisCommerce/assets/auto-complete/jquery.easy-autocomplete.min.js',
                     // '/MelisCommerce/assets/common/bootstrap-datetimepicker.min.js',
                     //'/MelisCommerce/assets/common/bootstrap3-typeahead.min.js',
                     '/MelisCommerce/assets/common/awesomplete.min.js',
                     '/MelisCommerce/plugins/js/common/category-jstree.js',
                     '/MelisCommerce/js/widget-collapsible.init.js',
+                    '/MelisCommerce/js/tools/ecom.globals.js',
                 ],
                 'css' => [
                     '/MelisCommerce/assets/jstree/dist/themes/proton/style.min.css',
+                    '/MelisCommerce/css/easy-autocomplete.min.css',
                     '/MelisCommerce/css/commerce-style.css',
                 ],
                 /**

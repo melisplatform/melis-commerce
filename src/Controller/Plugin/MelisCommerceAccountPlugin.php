@@ -97,7 +97,31 @@ class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
         $clientOrderPlugin = $pluginManager->get('MelisCommerceOrderHistoryPlugin');
         $clientOrderParameter = ArrayUtils::merge($clientOrderParameter, array('id' => 'cartPlugin_'.$data['id'].uniqid(), 'pageId' => $data['pageId']));
         $clientOrderHistory = $clientOrderPlugin->render($clientOrderParameter);
-        
+
+        /**
+         * We get all associated accounts for this contact
+         */
+        $contactAssociatedAccounts = [];
+        $selectedAccountId = null;
+        $melisComAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
+        $translator = $this->getServiceManager()->get('translator');
+        if ($melisComAuthSrv->hasIdentity())
+        {
+            $personId = $melisComAuthSrv->getPersonId();
+            $selectedAccountId = $melisComAuthSrv->getClientId();
+
+            $contactService = $this->getServiceManager()->get('MelisComContactService');
+            $contactAssociatedAccounts = $contactService->getContactAssocAccountLists($personId, null, [], null, null, $orderColumn = 'cli_name', $order = 'ASC')->toArray();
+
+            if(!empty($contactAssociatedAccounts)){
+                foreach($contactAssociatedAccounts as $key => $val){
+                    if($val['cpr_default_client']){
+                        $contactAssociatedAccounts[$key]['cli_name'] = $val['cli_name'].' ('.$translator->translate('tr_meliscommerce_contact_common_default').')';
+                    }
+                }
+            }
+        }
+
         // Create an array with the variables that will be available in the view
         $viewVariables = array(
             'profile' => $clientProfile,
@@ -105,6 +129,8 @@ class MelisCommerceAccountPlugin extends MelisTemplatingPlugin
             'billingAddress' => $clientBillingAddress,
             'cart' => $clientCart,
             'orderHistory' => $clientOrderHistory,
+            'contactAssociatedAccounts' => $contactAssociatedAccounts,
+            'selectedAccountId' => $selectedAccountId,
         );
         
         // return the variable array and let the view be created

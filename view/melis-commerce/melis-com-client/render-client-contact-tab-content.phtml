@@ -10,7 +10,7 @@
         <div class="make-switch clientContactStatus <?php echo $this->tabId.'-client-contact-status'?>" data-clientid="<?php echo $this->clientId ?>" data-tabid="<?php echo $this->tabId ?>" data-text-label="<?php echo $this->translate('tr_meliscommerce_client_Contact_status')?>" data-on-label="<?php echo $this->translate('tr_meliscommerce_client_Contact_status_active')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_client_Contact_status_inactive')?>">
             <input type="checkbox" name="cper_status" <?php echo ($form->get('cper_status')->getValue()) ? 'checked' : ''?>>
         </div>
-		<?php 
+		<?php
     		$form->setAttribute('id', $this->tabId.'_contact_form');
     		$form->setAttribute('data-tabid', $this->tabId);
     		$form->get('cper_password')->setLabel($form->get('cper_password')->getLabel().' <i class="fa fa-info-circle fa-lg" title="'.$this->translate('tr_meliscommerce_client_tooltip_password').'"></i>');
@@ -33,7 +33,7 @@
 		</div>
 	</div>
 	<div class="group-card accordion client-contact-address" id="<?php echo  $this->tabId.'_contact_address' ?>">
-		
+
     </div>
 </div>
 <script>

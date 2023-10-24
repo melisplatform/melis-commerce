@@ -3145,9 +3145,9 @@ tr.last-tr td {
 .client-contact-address .card-title .accordion-toggle {
 	color: #fff;
 }
-.client-contact-address .card-title .accordion-toggle:hover {
-	text-decoration: underline;
-}
+/*.client-contact-address .card-title .accordion-toggle:hover {*/
+	/*text-decoration: underline;*/
+/*}*/
 /* accordion-toggle heading */
 .content-cont .card-title > a,
 .content-cont .panel-title > a {
@@ -3407,4 +3407,34 @@ i.fa.fa-download {
 .order-info-page .content-cont .widget.widget-tabs-double-2 > .widget-head {	
 	border:1px solid #e5e5e5 !important; 	
  	height:70px
+}
+
+/*#clientListTbl tbody td span.td-tooltip{*/
+tbody td span.td-tooltip{
+	background: #000;
+	position: absolute;
+	padding: 5px 10px;
+	border-radius: 5px;
+	color: #fff;
+}
+
+span.remove-company-image{
+	position: absolute;
+	left: 19%;
+	font-size: 13pt;
+	color: #fff;
+	background: red;
+	border-radius: 50%;
+	width: 25px;
+	height: 26px;
+	cursor: pointer;
+}
+
+span.remove-company-image i{
+	margin-left: 5px;
+}
+
+.clientOrderTable thead tr th:nth-child(4).sorting_asc i.icon-shippment,
+.clientOrderTable thead tr th:nth-child(4).sorting_desc i.icon-shippment{
+	margin-left: 1rem;
 }

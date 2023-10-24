@@ -23,9 +23,26 @@ return [
                         'elements' => [
                             [
                                 'spec' => [
+                                    'name' => 'cli_name',
+                                    'type' => 'MelisText',
+                                    'options' => [
+                                        'tooltip' => 'tr_meliscommerce_client_account_name_tooltip',
+                                        'label' => 'tr_meliscommerce_client_account_name',
+                                        'disable_inarray_validator' => true,
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'cli_name',
+                                        'class' => 'form-control',
+                                        'required' => true,
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'cli_group_id',
                                     'type' => 'EcomOrderClientsGroupSelect',
                                     'options' => [
+                                        'tooltip' => 'tr_meliscommerce_clients_group_common_group_tooltip',
                                         'label' => 'tr_meliscommerce_clients_group_common_group',
                                         'disable_inarray_validator' => true,
                                     ],
@@ -42,6 +59,7 @@ return [
                                     'name' => 'cli_country_id',
                                     'type' => 'EcomCountriesNoAllCountriesSelect',
                                     'options' => [
+                                        'tooltip' => 'tr_meliscommerce_client_Client_country_tooltip',
                                         'label' => 'tr_meliscommerce_client_Client_country',
                                         'empty_option' => 'tr_meliscommerce_clients_common_label_choose',
                                         'disable_inarray_validator' => true,
@@ -49,6 +67,23 @@ return [
                                     'attributes' => [
                                         'id' => 'cli_country_id',
                                         'class' => 'form-control',
+                                        'required' => true
+                                    ]
+                                ]
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'cli_tags',
+                                    'type' => 'MelisText',
+                                    'options' => [
+                                        'tooltip' => 'tr_meliscommerce_client_tags_tooltip',
+                                        'label' => 'tr_meliscommerce_client_tags',
+                                        'disable_inarray_validator' => true,
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'cli_tags',
+                                        'class' => 'form-control',
+                                        'required' => false,
                                     ]
                                 ]
                             ],
@@ -58,8 +93,30 @@ return [
                                 'name'     => 'cli_group_id',
                                 'required' => false,
                             ],
+                            'cli_tags' => [
+                                'name'     => 'cli_tags',
+                                'required' => false,
+                            ],
                             'cli_country_id' => [
                                 'name'     => 'cli_country_id',
+                                'required' => true,
+                                'validators' => [
+                                    [
+                                        'name' => 'NotEmpty',
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_client_Contact_input_empty',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                            'cli_name' => [
+                                'name'     => 'cli_name',
                                 'required' => true,
                                 'validators' => [
                                     [
@@ -212,6 +269,24 @@ return [
                             ],
                             [
                                 'spec' => [
+                                    'name' => 'cper_type',
+                                    'type' => 'Select',
+                                    'options' => [
+                                        'label' => 'tr_meliscommerce_contact_common_Type',
+                                        'disable_inarray_validator' => true,
+                                        'value_options' => [
+                                            'person' => 'tr_meliscommerce_contact_common_person',
+                                            'company' => 'tr_meliscommerce_contact_common_company',
+                                        ],
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'cper_type',
+                                        'class' => 'form-control',
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
                                     'name' => 'cper_civility',
                                     'type' => 'EcomCivilitySelect',
                                     'options' => [
@@ -222,6 +297,7 @@ return [
                                     ],
                                     'attributes' => [
                                         'id' => 'cper_civility',
+                                        'class' => 'form-control'
                                     ]
                                 ]
                             ],
@@ -279,6 +355,7 @@ return [
                                     'attributes' => [
                                         'id' => 'cper_lang_id',
                                         'required' => 'required',
+                                        'class' => 'form-control'
                                     ]
                                 ]
                             ],
@@ -311,6 +388,7 @@ return [
                                         'Type' => 'password',
                                         'autocomplete' => 'off',
                                         'required' => 'required',
+                                        'placeholder' => 'tr_meliscore_login_pass_placeholder'
                                     ]
                                 ]
                             ],
@@ -329,6 +407,7 @@ return [
                                         'Type' => 'password',
                                         'autocomplete' => 'off',
                                         'required' => 'required',
+                                        'placeholder' => 'tr_meliscore_login_pass_placeholder'
                                     ]
                                 ]
                             ],
@@ -746,7 +825,7 @@ return [
                                     ],
                                     'attributes' => [
                                         'id' => 'cadd_firstname',
-                                        'required' => 'required',
+//                                        'required' => 'required',
                                     ]
                                 ]
                             ],
@@ -760,7 +839,7 @@ return [
                                     ],
                                     'attributes' => [
                                         'id' => 'cadd_name',
-                                        'required' => 'required',
+//                                        'required' => 'required',
                                     ]
                                 ]
                             ],
@@ -1001,7 +1080,7 @@ return [
                             ],
                             'cadd_name' => [
                                 'name'     => 'cadd_name',
-                                'required' => true,
+                                'required' => false,
                                 'validators' => [
                                     [
                                         'name'    => 'StringLength',
@@ -1013,14 +1092,14 @@ return [
                                             ],
                                         ],
                                     ],
-                                    [
-                                        'name' => 'NotEmpty',
-                                        'options' => [
-                                            'messages' => [
-                                                \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_client_Contact_input_empty',
-                                            ],
-                                        ],
-                                    ],
+//                                    [
+//                                        'name' => 'NotEmpty',
+//                                        'options' => [
+//                                            'messages' => [
+//                                                \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_client_Contact_input_empty',
+//                                            ],
+//                                        ],
+//                                    ],
                                 ],
                                 'filters'  => [
                                     ['name' => 'StripTags'],
@@ -1029,7 +1108,7 @@ return [
                             ],
                             'cadd_firstname' => [
                                 'name'     => 'cadd_firstname',
-                                'required' => true,
+                                'required' => false,
                                 'validators' => [
                                     [
                                         'name'    => 'StringLength',
@@ -1041,14 +1120,14 @@ return [
                                             ],
                                         ],
                                     ],
-                                    [
-                                        'name' => 'NotEmpty',
-                                        'options' => [
-                                            'messages' => [
-                                                \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_client_Contact_input_empty',
-                                            ],
-                                        ],
-                                    ],
+//                                    [
+//                                        'name' => 'NotEmpty',
+//                                        'options' => [
+//                                            'messages' => [
+//                                                \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_client_Contact_input_empty',
+//                                            ],
+//                                        ],
+//                                    ],
                                 ],
                                 'filters'  => [
                                     ['name' => 'StripTags'],
@@ -1811,6 +1890,118 @@ return [
                                 ],
                             ],
                         ]
+                    ],
+                    'meliscommerce_client_list_export_accounts_form' => [
+                        'attributes' => [
+                            'name' => 'client-list-export-accounts',
+                            'id' => 'client-list-export-accounts',
+                            'method' => 'POST',
+                            'action' => '',
+                        ],
+                        'hydrator'  => 'Laminas\Hydrator\ArraySerializableHydrator',
+                        'elements' => [
+                            [
+                                'spec' => [
+                                    'name' => 'separator',
+                                    'type' => 'MelisText',
+                                    'options' => [
+                                        'label' => 'tr_meliscommerce_orders_sperator',
+                                    ],
+                                    'attributes' => [
+                                        'id' => '',
+                                        'value' => ';',
+                                        'maxlength' => '1'
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'input_filter' => [
+                            'separator' => [
+                                'name' => 'separator',
+                                'require' => true,
+                                'validators' => [
+                                    [
+                                        'name' => 'NotEmpty',
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\Validator\NotEmpty::IS_EMPTY => 'tr_meliscommerce_address_error_empty',
+                                            ],
+                                        ],
+                                    ]
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                        ],
+                    ],
+                    'meliscommerce_client_list_import_accounts_form' => [
+                        'attributes' => [
+                            'name' => 'account-list-import-accounts',
+                            'id' => 'account-list-import-accounts',
+                            'method' => 'POST',
+                            'action' => '',
+                        ],
+                        'hydrator'  => 'Laminas\Hydrator\ArraySerializableHydrator',
+                        'elements' => [
+//                            [
+//                                'spec' => [
+//                                    'name' => 'separator',
+//                                    'type' => 'MelisText',
+//                                    'options' => [
+//                                        'label' => 'tr_meliscommerce_orders_sperator',
+//                                    ],
+//                                    'attributes' => [
+//                                        'id' => '',
+//                                        'value' => ';',
+//                                        'maxlength' => '1'
+//                                    ],
+//                                ],
+//                            ],
+                            [
+                                'spec' => [
+                                    'type' => 'File',
+                                    'name' => 'account_file',
+                                    'options' => [
+                                        'label' => 'tr_meliscommerce_contact_import_csv_file',
+                                        'tooltip' => '',
+                                        'label_options' => [
+                                            'disable_html_escape' => true,
+                                        ],
+                                        'filestyle_options' => [
+                                            'buttonBefore' => true,
+                                            'buttonText' => 'tr_meliscommerce_contact_import_choose_file',
+                                        ]
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'account_file',
+                                        'required' => true,
+                                        'class' => 'form-control'
+                                    ],
+                                ]
+                            ],
+                        ],
+                        'input_filter' => [
+                            'account_file' => [
+                                'name' => 'account_file',
+                                'required' => true,
+                                'validators' => [
+                                    [
+                                        'name' => 'Laminas\Validator\File\UploadFile',
+                                        'options' => [
+                                            'messages' => [
+                                                \Laminas\Validator\File\UploadFile::NO_FILE => 'tr_meliscommerce_clients_common_empty_file',
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                                'filters'  => [
+                                    ['name' => 'StripTags'],
+                                    ['name' => 'StringTrim'],
+                                ],
+                            ],
+                        ],
                     ],
                 ]
             ]

@@ -96,7 +96,7 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
             // Getting the current use Client Id and Person Id from session
             $clientId = $melisComAuthSrv->getClientId();
             $personId = $melisComAuthSrv->getPersonId();
-            
+
             /**
              * Pre-data to fill the form
              * If page requested the form, data will loaded are from database using service
@@ -106,6 +106,7 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
              */
             $preData = array();
             $clientSrv = $this->getServiceManager()->get('MelisComClientService');
+            $contactSrv = $this->getServiceManager()->get('MelisComContactService');
             $clientPersonEntity = $clientSrv->getClientByIdAndClientPerson($clientId, $personId);
             
             if(!empty($clientPersonEntity))
@@ -159,7 +160,6 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
             
             // Adding the Confirm password to Form data so this will include to the form validation
             $data['cper_confirm_password'] = (!empty($formData['cper_confirm_password'])) ? $formData['cper_confirm_password'] : '';
-            
             // Setting the Datas to Profile Form
             $profile->setData($data);
             
@@ -201,7 +201,6 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
                     );
                     
                     $personData = $profile->getData();
-                    
                     // Removing field not belong to person table columns
                     unset($personData['profile_is_submit']);
                     unset($personData['cli_country_id']);
@@ -209,43 +208,46 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
                     
                     // Adding the Current user Client Id and Person Id from session
                     $personData['cper_id'] = $personId;
-                    $personData['cper_client_id'] = $clientId;
-                    
-                    // Adding the Person to array as parameter in saving a client details
-                    $persons[] = $personData;
-                    
-                    // Saving Client credintial using Client Service
-                    $clientIdRes = $clientSrv->saveClient($clientData, $persons, array(), array(), $clientId);
-                    
-                    if (!is_null($clientIdRes))
-                    {
-                        $success = 1;
-                        $message = $translator->translate('tr_meliscommerce_plugin_profile_save_success');
-                        
-                        // Retrieving updated info of Client Person using Client Service
-                        $clientPersonEntity = $clientSrv->getClientPersonById($personId);
-                        $personData = $clientPersonEntity->getPerson();
-                        // Unsetting password to avoid storing to session
-                        unset($personData->cper_password);
-                        // Unsetting civlity info
-                        unset($personData->civ_id);
-                        unset($personData->civility_trans);
-                        // Adding back the client key from old session ideitity and update a new Person details
-                        $personData->clientKey = $melisComAuthSrv->getIdentity()->clientKey;
-                        // Updating Data stored in Session
-                        $storage = $melisComAuthSrv->getStorage();
-                        $storage->write($personData);
-                    }
-                    else
-                    {
-                        $message = $translator->translate('tr_meliscommerce_client_common_error');
+                    $personData['cper_client_id'] = 0;//$clientId;
+
+                    $this->validateEmail($personData, $errors);
+                    if(empty($errors)) {
+                        //execute saving records with transactions
+                        $adapter = $this->getServiceManager()->get('Laminas\Db\Adapter\Adapter');
+                        $con = $adapter->getDriver()->getConnection();//get db driver connection
+                        $con->beginTransaction();//begin transaction
+                        try {
+                            $clientSrv->saveClient($clientData, [], array(), array(), $clientId);
+                            $contactSrv->saveContact($personData, [], $personId);
+
+                            $success = 1;
+                            $message = $translator->translate('tr_meliscommerce_plugin_profile_save_success');
+
+                            // Retrieving updated info of Client Person using Client Service
+                            $clientPersonEntity = $clientSrv->getClientPersonById($personId);
+                            $personData = $clientPersonEntity->getPerson();
+                            // Unsetting password to avoid storing to session
+                            unset($personData->cper_password);
+                            // Unsetting civlity info
+                            unset($personData->civ_id);
+                            unset($personData->civility_trans);
+                            // Adding back the client key from old session ideitity and update a new Person details
+                            $personData->clientKey = $melisComAuthSrv->getIdentity()->clientKey;
+                            // Updating Data stored in Session
+                            $storage = $melisComAuthSrv->getStorage();
+                            $storage->write($personData);
+
+                            $con->commit();
+                        } catch (\Exception $ex) {
+                            $message = $translator->translate('tr_meliscommerce_client_common_error');
+                            $con->rollback();
+                        }
                     }
                 }
                 else 
                 {
                     // Getting the form error messages
                     $errors = $profile->getMessages();
-                    
                     $message = $translator->translate('tr_meliscommerce_client_pass_errors');
                 }
             }
@@ -284,7 +286,42 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
         // return the variable array and let the view be created
         return $viewVariables;
     }
-    
+
+    /**
+     * @param $personData
+     * @param $errors
+     */
+    private function validateEmail(&$personData, &$errors)
+    {
+        $clientSrv = $this->getServiceManager()->get('MelisComClientService');
+        $translator = $this->getServiceManager()->get('translator');
+        if (! empty($personData['cper_email'])) {
+            $personEmail = [];
+            // check if email is not used twice
+            $personWithSameEmail = $clientSrv->getPersonsByEmail($personData['cper_email']);
+            if(!empty($personWithSameEmail)) {
+                foreach ($personWithSameEmail as $mail) {
+                    if ($mail['cpmail_cper_id'] != $personData['cper_id']) {
+                        $errors['cper_email'] = [
+                            'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
+                            'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
+                        ];
+                        break;
+                    } else {
+                        $personEmail[$mail['cpmail_id']] = [
+                            'cpmail_email' => $personData['cper_email']
+                        ];
+                    }
+                }
+            }else{
+                $personEmail[0] = [
+                    'cpmail_email' => $personData['cper_email']
+                ];
+            }
+            $personData['emails'] = $personEmail;
+        }
+    }
+
     /**
      * This function generates the form displayed when editing the parameters of the plugin
      */

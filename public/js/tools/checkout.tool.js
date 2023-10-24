@@ -290,7 +290,7 @@ $(function() {
 		btn.attr("disabled", true);
 		dataString.push({
 			name: "contactId",
-			value: contactId,
+			value: contactId
 		});
 		$.ajax({
 			type: "POST",
@@ -303,22 +303,27 @@ $(function() {
 				if (data.success) {
 					melisCommerce.switchOrderTab(nxtTabid);
 					setTimeout(function() {
-						melisHelper.zoneReload(
-							"id_meliscommerce_order_checkout_product_list",
-							"meliscommerce_order_checkout_product_list"
-						);
-						melisHelper.zoneReload(
-							"id_meliscommerce_order_checkout_product_bakset",
-							"meliscommerce_order_checkout_product_bakset"
-						);
-						melisHelper.zoneReload(
-							"id_meliscommerce_order_checkout_billing_address",
-							"meliscommerce_order_checkout_billing_address"
-						);
-						melisHelper.zoneReload(
-							"id_meliscommerce_order_checkout_delivery_address",
-							"meliscommerce_order_checkout_delivery_address"
-						);
+                        melisHelper.zoneReload(
+                            "id_meliscommerce_order_checkout_choose_contact_account_step_content",
+                            "meliscommerce_order_checkout_choose_contact_account_step_content",
+							{contactId:contactId}
+                        );
+						// melisHelper.zoneReload(
+						// 	"id_meliscommerce_order_checkout_product_list",
+						// 	"meliscommerce_order_checkout_product_list"
+						// );
+						// melisHelper.zoneReload(
+						// 	"id_meliscommerce_order_checkout_product_bakset",
+						// 	"meliscommerce_order_checkout_product_bakset"
+						// );
+						// melisHelper.zoneReload(
+						// 	"id_meliscommerce_order_checkout_billing_address",
+						// 	"meliscommerce_order_checkout_billing_address"
+						// );
+						// melisHelper.zoneReload(
+						// 	"id_meliscommerce_order_checkout_delivery_address",
+						// 	"meliscommerce_order_checkout_delivery_address"
+						// );
 					}, 300);
 				} else {
 					melisHelper.melisKoNotification(
@@ -335,6 +340,61 @@ $(function() {
 			});		
 	});
 
+    // Selecting Contact on Checkout Second Step
+    $body.on("click", ".orderCheckoutSelectContactAccount", function() {
+        var btn = $(this),
+            tr = btn.closest("tr"),
+            accountId = tr.attr("id"),
+            nxtTabid = btn.data("tabid"),
+            dataString = new Array();
+        btn.attr("disabled", true);
+        dataString.push({
+            name: "accountId",
+            value: accountId
+        });
+        $.ajax({
+            type: "POST",
+            url: "/melis/MelisCommerce/MelisComOrderCheckout/selectContactAccount",
+            data: dataString,
+            dataType: "json",
+            encode: true,
+        })
+            .done(function(data) {
+                if (data.success) {
+                    melisCommerce.switchOrderTab(nxtTabid);
+                    setTimeout(function() {
+                        melisHelper.zoneReload(
+                            "id_meliscommerce_order_checkout_product_list",
+                            "meliscommerce_order_checkout_product_list"
+                        );
+                        melisHelper.zoneReload(
+                            "id_meliscommerce_order_checkout_product_bakset",
+                            "meliscommerce_order_checkout_product_bakset"
+                        );
+                        melisHelper.zoneReload(
+                            "id_meliscommerce_order_checkout_billing_address",
+                            "meliscommerce_order_checkout_billing_address"
+                        );
+                        melisHelper.zoneReload(
+                            "id_meliscommerce_order_checkout_delivery_address",
+                            "meliscommerce_order_checkout_delivery_address"
+                        );
+                    }, 300);
+                } else {
+                    melisHelper.melisKoNotification(
+                        data.textTitle,
+                        data.textMessage,
+                        data.errors
+                    );
+                }
+                btn.attr("disabled", false);
+            })
+            .fail(function() {
+                btn.attr("disabled", false);
+                alert(translations.tr_meliscore_error_message);
+            });
+    });
+
 	// Refresh button for Contact List table
 	$body.on("click", ".orderCheckoutContactListRefresh", function() {
 		melisHelper.zoneReload(
@@ -342,6 +402,16 @@ $(function() {
 			"meliscommerce_order_checkout_choose_contact_step_content"			
 		);
 	});
+
+    // Refresh button for Contact Account List table
+    $body.on("click", ".orderCheckoutContactAccountListRefresh", function() {
+    	var contactId = $(this).closest("#id_meliscommerce_order_checkout_choose_contact_account_step_content").data("contactid");
+        melisHelper.zoneReload(
+            "id_meliscommerce_order_checkout_choose_contact_account_step_content",
+            "meliscommerce_order_checkout_choose_contact_account_step_content",
+			{contactId: contactId}
+        );
+    });
 
 	// Selecting Checkout Billing Address
 	$body.on("change", "#orderCheckoutBillingSelect", function() {

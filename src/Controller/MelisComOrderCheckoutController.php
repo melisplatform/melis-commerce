@@ -716,6 +716,58 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
+     * Render Order Checkout Choose Contact Step
+     *
+     * @return \Laminas\View\Model\ViewModel
+     */
+    public function renderOrderCheckoutChooseContactAccountAction(){
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        return $view;
+    }
+
+    /**
+     * Render Order Checkout Choose contact header
+     *
+     * @return \Laminas\View\Model\ViewModel
+     */
+    public function renderOrderCheckoutChooseContactAccountHeaderAction(){
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        return $view;
+    }
+
+    /**
+     * Render Order Checkout Choose contact content
+     * This content will provide Contact list in a table form
+     *
+     * @return \Laminas\View\Model\ViewModel
+     */
+    public function renderOrderCheckoutChooseContactAccountContentAction(){
+
+        $translator = $this->getServiceManager()->get('translator');
+
+        // Getting Contact list table configuration from config
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
+        $melisTool->setMelisToolKey(self::PLUGIN_INDEX, 'meliscommerce_order_checkout_contact_account_list');
+        $columns = $melisTool->getColumns();
+        $columns['actions'] = array('text' => $translator->translate('tr_meliscommerce_order_checkout_common_action'));
+
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $container = new Container('meliscommerce');
+        $contactId = $container['checkout'][self::SITE_ID]['contactId'] ?? null;
+
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        $view->tableColumns = $columns;
+        $view->getToolDataTableConfig = $melisTool->getDataTableConfiguration();
+        $view->contactId = $contactId;
+        return $view;
+    }
+
+    /**
      * This method will return the list of Active Contact
      *
      * @return \Laminas\View\Model\JsonModel
@@ -756,31 +808,32 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
             $search = $search['value'];
 
             //get client id if there are any
-            $clientId = $this->getRequest()->getPost('clientId', null);
+            $accountId = $this->getRequest()->getPost('accountId', null);
             $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
             $dataCount = $melisEcomClientPersonTable->getTotalData();
 
-            $getData = $melisEcomClientPersonTable->getContacts(array(
-                'where' => array(
-                    'key' => 'usr_id',
-                    'value' => $search,
-                ),
-                'order' => array(
-                    'key' => $selCol,
-                    'dir' => $sortOrder,
-                ),
-                'start' => $start,
-                'limit' => $length,
-                'columns' => $melisTool->getSearchableColumns(),
-                'date_filter' => array(),
-                'client_id' => $clientId
-            ), null , 1 , 1);
+//            $getData = $melisEcomClientPersonTable->getContacts(array(
+//                'where' => array(
+//                    'key' => 'usr_id',
+//                    'value' => $search,
+//                ),
+//                'order' => array(
+//                    'key' => $selCol,
+//                    'dir' => $sortOrder,
+//                ),
+//                'start' => $start,
+//                'limit' => $length,
+//                'columns' => $melisTool->getSearchableColumns(),
+//                'date_filter' => array(),
+//                'client_id' => $clientId
+//            ), null , 1 , 1);
 
-            // store fetched data for data modification (if needed)
-            $contactData = $getData->toArray();
+            $contactService = $this->getServiceManager()->get('MelisComContactService');
+
+            $contactData = $contactService->getContactLists($accountId, null, $search, $melisTool->getSearchableColumns(), $start, $length, $selCol, $sortOrder, true, true)->toArray();
+            $dataCount = $contactService->getContactLists($accountId, null, $search, $melisTool->getSearchableColumns(), null, null, null, 'ASC', true, true, true)->current();
 
             $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
-            $melisComClientSrv = $this->getServiceManager()->get('MelisComClientService');
 
             foreach ($contactData As $val)
             {
@@ -819,8 +872,8 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
 
         return new JsonModel(array(
             'draw' => (int) $draw,
-            'recordsTotal' => $dataCount,
-            'recordsFiltered' => $melisEcomClientPersonTable->getTotalFiltered(),
+            'recordsTotal' => count($tableData),
+            'recordsFiltered' => $dataCount->totalRecords,
             'data' => $tableData,
         ));
     }
@@ -871,6 +924,148 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
     }
 
     /**
+     * This method will return the list of Active Contact
+     *
+     * @return \Laminas\View\Model\JsonModel
+     */
+    public function getContactAccountListAction()
+    {
+        $dataCount = 0;
+        $draw = 0;
+        $tableData = array();
+
+        if($this->getRequest()->isPost())
+        {
+            $container = new Container('meliscommerce');
+            $contactId = $container['checkout'][self::SITE_ID]['contactId'] ?? null;//$this->getRequest()->getPost('contactId', null);
+
+            if(!empty($contactId)) {
+                $melisTool = $this->getServiceManager()->get('MelisCoreTool');
+                $melisTool->setMelisToolKey(self::PLUGIN_INDEX, 'meliscommerce_order_checkout_contact_account_list');
+
+                $colId = array_keys($melisTool->getColumns());
+
+                $sortOrder = $this->getRequest()->getPost('order');
+                $sortOrder = $sortOrder[0]['dir'];
+
+                $selCol = $this->getRequest()->getPost('order');
+                $selCol = $colId[$selCol[0]['column']];
+
+//            if($selCol == 'default_contact')
+//                $selCol = null;
+                if ($selCol == 'default_account')
+                    $selCol = 'cpr_default_client';
+
+                $draw = $this->getRequest()->getPost('draw');
+
+                $start = $this->getRequest()->getPost('start');
+                $length = $this->getRequest()->getPost('length');
+
+                $search = $this->getRequest()->getPost('search');
+                $search = $search['value'];
+
+                $contactService = $this->getServiceManager()->get('MelisComContactService');
+                $clientService = $this->getServiceManager()->get('MelisComClientService');
+
+                $tableData = $contactService->getContactAssocAccountLists($contactId, $search, $melisTool->getSearchableColumns(), $start, $length, $selCol, $sortOrder)->toArray();
+                $dataCount = $contactService->getContactAssocAccountLists($contactId, $search, $melisTool->getSearchableColumns(), null, null, null, 'ASC', true)->current();
+
+                $contactStatus = '<i class="fa fa-circle text-danger"></i>';
+                foreach ($tableData as $key => $val) {
+                    $isDefault = '';
+                    // Generating contact status html form
+                    if ($val['cli_status']) {
+                        $contactStatus = '<i class="fa fa-circle text-success"></i>';
+                    }
+                    if ($val['cpr_default_client']) {
+                        $isDefault = '<i class="fa fa-star fa-2x"></i>';
+                    }
+
+
+                    $tableData[$key]['cli_status'] = $contactStatus;
+                    //check if this account is the default of this contact
+                    $tableData[$key]['default_account'] = $isDefault;
+                    //check if this contact is the default of this account
+                    $isDefaultAccount = $this->isDefaultContact($val['cli_id'], $contactId);
+                    $tableData[$key]['default_contact'] = $isDefaultAccount;
+
+                    $cliName = $clientService->getAccountName($val['cli_id']);
+                    $tableData[$key]['cli_name'] = !empty($cliName) ? "<span class='d-none td-tooltip'>" . $cliName . "</span>" . mb_strimwidth($cliName, 0, 30, '...') : null;
+
+                    $tableData[$key]['DT_RowAttr'] = [
+                        'data-isdefault' => $val['cpr_default_client'],
+                        'data-isdefaultcontact' => !empty($isDefaultAccount) ? 1 : 0,
+                        'data-cprid' => $val['cpr_id'],
+                        'data-contactid' => $val['cper_id']
+                    ];
+                }
+            }
+        }
+        return new JsonModel(array(
+            'draw' => (int) $draw,
+            'recordsTotal' => count($tableData),
+            'recordsFiltered' => $dataCount->totalRecords ?? 0,
+            'data' => $tableData,
+        ));
+    }
+
+    private function isDefaultContact($accountId, $contactId)
+    {
+        $accountTable = $this->getServiceManager()->get('MelisEcomClientAccountRelTable');
+        $data = $accountTable->getDataByAccountAndContactId($accountId, $contactId)->current();
+        if(!empty($data)){
+            if($data->car_default_person)
+                return '<i class="fa fa-star fa-2x"></i>';
+        }
+        return '';
+    }
+
+    /**
+     * Render Order Checkout Contact Account list limit
+     *
+     * @return \Laminas\View\Model\ViewModel
+     */
+    public function renderOrderCheckoutContactAccountListLimitAction()
+    {
+        return new ViewModel();
+    }
+
+    /**
+     * Render Order checkout Contact account list search input
+     *
+     * @return \Laminas\View\Model\ViewModel
+     */
+    public function renderOrderCheckoutContactAccountListSearchAction()
+    {
+        return new ViewModel();
+    }
+
+    /**
+     * Render Order Checkout Account list Refresh button
+     *
+     * @return \Laminas\View\Model\ViewModel
+     */
+    public function renderOrderCheckoutContactAccountListRefreshAction()
+    {
+        $clientId = $this->params()->fromQuery('clientId', '');
+        $view = new ViewModel();
+        $view->clientId = $clientId;
+        return $view;
+    }
+
+    /**
+     * Render Order Checkout Contact Account list Select button
+     * This action is attach to contact account row, this will select the contact account
+     * as part of the checkout process
+     *
+     * @return \Laminas\View\Model\ViewModel
+     */
+    public function renderOrderCheckoutContactAccountListSelectAction()
+    {
+        return new ViewModel();
+    }
+
+    /**
         * This method will select a contact for checkout process
         * and store to checkout session
         *
@@ -895,15 +1090,62 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
             $postValues = $request->getPost()->toArray();
 
             // Getting the contact details from database
-            $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
-            $contactData = $melisEcomClientPersonTable->getEntryById($postValues['contactId']);
-            $contact = $contactData->current();
-
-            // Checkout session initialization for contact details
+            $contactSrv = $this->getServiceManager()->get('MelisComContactService');
+            $contact = $contactSrv->getContactById($postValues['contactId']);
+//            $contact = $contactSrv->getContactDefaultAccount($postValues['contactId'])->toArray();
             $container = new Container('meliscommerce');
-            $container['checkout'][self::SITE_ID]['contactId'] = $contact->cper_id;
-            $container['checkout'][self::SITE_ID]['clientId'] = $contact->cper_client_id;
-            $container['checkout'][self::SITE_ID]['clientEmail'] = $contact->cper_email;
+            if(!empty($contact)) {
+                // Checkout session initialization for contact details
+                $container['checkout'][self::SITE_ID]['contactId'] = $contact->cper_id;
+                $container['checkout'][self::SITE_ID]['clientEmail'] = $contact->cper_email;
+            }
+
+//            $clientId = $container['checkout'][self::SITE_ID]['clientId'];
+//            $clientKey = (!empty($container['checkout'][self::SITE_ID]['clientKey'])) ? $container['checkout'][self::SITE_ID]['clientKey'] : null;
+//
+//            $melisComBasketService = $this->getServiceManager()->get('MelisComBasketService');
+//            // After selecting contact this will clear the current Basket and create new entry for client basket
+//            // This process will avoid merging the old basket to the current basket
+//            $melisComBasketService->emptyPersistentBasket($clientId);
+//            // Preparing the client Basket, which is added to Persistent basket
+//            $melisComBasketService->getBasket($clientId, $clientKey);
+
+            $success = 1;
+            $textMessage = '';
+        }
+
+        $response = array(
+            'success' => $success,
+            'textTitle' => $textTitle,
+            'textMessage' => $textMessage,
+            'errors' => $errors,
+        );
+
+        return new JsonModel($response);
+    }
+
+    /**
+     * This method will select a contact account for checkout process
+     * and store to checkout session
+     * @return JsonModel
+     */
+    public function selectContactAccountAction()
+    {
+        $translator = $this->getServiceManager()->get('translator');
+
+        $request = $this->getRequest();
+
+        // Default Values
+        $success = 0;
+        $errors  = array();
+        $textTitle = $translator->translate('tr_meliscommerce_order_checkout_Choose_contact_account');
+        $textMessage = $translator->translate('tr_meliscore_error_message');
+
+        if($request->isPost())
+        {
+            $container = new Container('meliscommerce');
+            $postValues = $request->getPost()->toArray();
+            $container['checkout'][self::SITE_ID]['clientId'] = $postValues['accountId'];
 
             $clientId = $container['checkout'][self::SITE_ID]['clientId'];
             $clientKey = (!empty($container['checkout'][self::SITE_ID]['clientKey'])) ? $container['checkout'][self::SITE_ID]['clientKey'] : null;

@@ -38,6 +38,26 @@ return [
                             ],
                         ],
                     ],
+                    'download_contact_import_template' => [
+                        'type' => 'Segment',
+                        'options' => [
+                            'route' => 'download-contact-template',
+                            'defaults' => [
+                                'controller' => 'MelisCommerce\Controller\MelisComContactController',
+                                'action' => 'downloadImportTemplate',
+                            ],
+                        ],
+                    ],
+                    'download_accounts_import_template' => [
+                        'type' => 'Segment',
+                        'options' => [
+                            'route' => 'download-account-template',
+                            'defaults' => [
+                                'controller' => 'MelisCommerce\Controller\MelisComClientListController',
+                                'action' => 'downloadImportTemplate',
+                            ],
+                        ],
+                    ],
                 ],
             ],
             'melis-front' => [
@@ -115,6 +135,7 @@ return [
             'MelisComPriceService'                          => \MelisCommerce\Service\MelisComPriceService::class,
             'MelisComOrderProductReturnService'             => \MelisCommerce\Service\MelisComOrderProductReturnService::class,
             'MelisComCacheService'                          => \MelisCommerce\Service\MelisComCacheService::class,
+            'MelisComContactService'                          => \MelisCommerce\Service\MelisComContactService::class,
 
             // Tables
             'MelisEcomAttributeTable'                       => \MelisCommerce\Model\Tables\MelisEcomAttributeTable::class,
@@ -172,6 +193,9 @@ return [
             'MelisEcomOrderProductReturnTable'              => \MelisCommerce\Model\Tables\MelisEcomOrderProductReturnTable::class,
             'MelisEcomOrderProductReturnDetailsTable'       => \MelisCommerce\Model\Tables\MelisEcomOrderProductReturnDetailsTable::class,
             'MelisEcomProductLinksTable'                    => \MelisCommerce\Model\Tables\MelisEcomProductLinksTable::class,
+            'MelisEcomClientPersonRelTable'                 => \MelisCommerce\Model\Tables\MelisEcomClientPersonRelTable::class,
+            'MelisEcomClientAccountRelTable'                 => \MelisCommerce\Model\Tables\MelisEcomClientAccountRelTable::class,
+            'MelisEcomSettingsAccountTable'                 => \MelisCommerce\Model\Tables\MelisEcomSettingsAccountTable::class,
         ],
         'abstract_factories' => [
             'Laminas\Cache\Service\StorageCacheAbstractServiceFactory',
@@ -208,6 +232,7 @@ return [
             'MelisCommerce\Controller\MelisComSettings'             => \MelisCommerce\Controller\MelisComSettingsController::class,
             'MelisCommerce\Controller\MelisComClientsGroup'         => \MelisCommerce\Controller\MelisComClientsGroupController::class,
             'MelisCommerce\Controller\MelisComOrderProductReturn'   => \MelisCommerce\Controller\MelisComOrderProductReturnController::class,
+            'MelisCommerce\Controller\MelisComContact'              => \MelisCommerce\Controller\MelisComContactController::class,
         ],
     ],
     'controller_plugins' => [
