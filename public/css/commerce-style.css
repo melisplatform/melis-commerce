@@ -3438,3 +3438,8 @@ span.remove-company-image i{
 .clientOrderTable thead tr th:nth-child(4).sorting_desc i.icon-shippment{
 	margin-left: 1rem;
 }
+
+.lock-settings-label{
+	font-weight: 700;
+	margin-bottom: -1px;
+}

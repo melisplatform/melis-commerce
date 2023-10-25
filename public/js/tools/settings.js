@@ -60,6 +60,15 @@ $(function() {
 			
 				melisCommerceSettings.submitStockAlertSettings(pageContainer);
 		});
+
+		//locking/unlocking accounts options
+		$body.on("click", "#lock_settings", function(){
+			if($(this).is(":checked")){
+				$("#settingsAccountForm").find("input[name='sa_type']").attr("disabled", false);
+			}else{
+                $("#settingsAccountForm").find("input[name='sa_type']").attr("disabled", true);
+			}
+		});
 })
 
 var melisCommerceSettings = (function(window) {
