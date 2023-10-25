@@ -1218,6 +1218,20 @@ class MelisComContactController extends MelisAbstractActionController
                 //fetch first all linked contact
                 $personRelTable = $this->getServiceManager()->get('MelisEcomClientAccountRelTable');
                 $linkContacts = $personRelTable->getEntryByField('car_client_id', $accountId)->toArray();
+
+                $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
+                $accountSettings = $melisComClientService->getAccountNameSetting();
+                if(!empty($accountSettings)){
+                    /**
+                     * If commerce account settings is set to contact name,
+                     * we limit the selecting of contact
+                     * 1 account = 1 contact
+                     */
+                    if($accountSettings->sa_type == 'contact_name'){
+                        $linkContacts = $personRelTable->fetchAll()->toArray();
+                    }
+                }
+
                 if (!empty($linkContacts)) {
                     $ids = [];
                     foreach ($linkContacts as $k => $v) {
@@ -1278,6 +1292,20 @@ class MelisComContactController extends MelisAbstractActionController
                 //fetch first all linked contact
                 $personRelTable = $this->getServiceManager()->get('MelisEcomClientPersonRelTable');
                 $linkAccounts = $personRelTable->getEntryByField('cpr_client_person_id', $contactId)->toArray();
+
+                $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
+                $accountSettings = $melisComClientService->getAccountNameSetting();
+                if(!empty($accountSettings)){
+                    /**
+                     * If commerce account settings is set to contact name,
+                     * we limit the selecting of account
+                     * 1 account = 1 contact
+                     */
+                    if($accountSettings->sa_type == 'contact_name'){
+                        $linkAccounts = $personRelTable->fetchAll()->toArray();
+                    }
+                }
+
                 if (!empty($linkAccounts)) {
                     $ids = [];
                     foreach ($linkAccounts as $k => $v) {
