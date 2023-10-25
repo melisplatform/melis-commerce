@@ -84,6 +84,9 @@ var melisCommerceSettings = (function(window) {
 			sea_email 		= '',
 			sea_user_id 	= '';
 
+			//remove disabled in accounts radio button so the data will be included
+        	$("#settingsAccountForm").find("input[name='sa_type']").attr("disabled", false);
+
 			Array.prototype.push.apply(dataString,$(stockAlertForm).serializeArray());
 			//include account forms
 			Array.prototype.push.apply(dataString,$(accountForm).serializeArray());
