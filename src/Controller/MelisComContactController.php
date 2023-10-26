@@ -1214,28 +1214,51 @@ class MelisComContactController extends MelisAbstractActionController
             $contactService = $this->getServiceManager()->get('MelisComContactService');
             $data = $contactService->getContactLists(null, null, 1, $searchPhrase, ['cper_name', 'cper_firstname'], null, null, 'cper_firstname', 'ASC', true)->toArray();
 
+            $personRelTable = $this->getServiceManager()->get('MelisEcomClientAccountRelTable');
+            $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
+            $accountSettings = $melisComClientService->getAccountNameSetting();
+
+            $linkContacts = [];
+            $ids = [];
             if(!empty($accountId)) {
                 //fetch first all linked contact
-                $personRelTable = $this->getServiceManager()->get('MelisEcomClientAccountRelTable');
                 $linkContacts = $personRelTable->getEntryByField('car_client_id', $accountId)->toArray();
-                if (!empty($linkContacts)) {
-                    $ids = [];
-                    foreach ($linkContacts as $k => $v) {
-                        $ids[] = $v['car_client_person_id'];
-                    }
-                    /**
-                     * Exclude contact in the list if it is already selected
-                     */
-                    foreach ($data as $key => $val) {
-                        if (!in_array($val['cper_id'], $ids)) {
-                            $lists[] = $val;
-                        }
-                    }
-                }else{
-                    $lists = $data;
-                }
             }else{
-                $lists = $data;
+                //remove already those selected contact(for creation of account)
+                $container = new Container('meliscommerce');
+                $selectedContacts = $container['temp-linked-contacts'];
+
+                if (!empty($selectedContacts)) {
+                    foreach ($selectedContacts as $k => $v) {
+                        $ids[] = $v['cper_id'];
+                    }
+                }
+            }
+
+            if(!empty($accountSettings)){
+                /**
+                 * If commerce account settings is set to contact name,
+                 * we limit the selecting of contact
+                 * 1 account = 1 contact
+                 */
+                if($accountSettings->sa_type == 'contact_name'){
+                    $linkContacts = $personRelTable->fetchAll()->toArray();
+                }
+            }
+
+            if (!empty($linkContacts)) {
+                foreach ($linkContacts as $k => $v) {
+                    $ids[] = $v['car_client_person_id'];
+                }
+            }
+
+            /**
+             * Exclude contact in the list if it is already selected
+             */
+            foreach ($data as $key => $val) {
+                if (!in_array($val['cper_id'], $ids)) {
+                    $lists[] = $val;
+                }
             }
         }
 
@@ -1278,6 +1301,20 @@ class MelisComContactController extends MelisAbstractActionController
                 //fetch first all linked contact
                 $personRelTable = $this->getServiceManager()->get('MelisEcomClientPersonRelTable');
                 $linkAccounts = $personRelTable->getEntryByField('cpr_client_person_id', $contactId)->toArray();
+
+                $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
+                $accountSettings = $melisComClientService->getAccountNameSetting();
+                if(!empty($accountSettings)){
+                    /**
+                     * If commerce account settings is set to contact name,
+                     * we limit the selecting of account
+                     * 1 account = 1 contact
+                     */
+                    if($accountSettings->sa_type == 'contact_name'){
+                        $linkAccounts = $personRelTable->fetchAll()->toArray();
+                    }
+                }
+
                 if (!empty($linkAccounts)) {
                     $ids = [];
                     foreach ($linkAccounts as $k => $v) {

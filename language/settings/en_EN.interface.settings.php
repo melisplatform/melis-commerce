@@ -18,4 +18,7 @@ return array(
     'tr_meliscommerce_settings_type_company_name' => 'Company name',
     'tr_meliscommerce_settings_type_contact_name' => 'Contact name',
     'tr_meliscommerce_settings_type_account_name' => 'Account name',
+
+    'tr_meliscommerce_settings_type_account_lock_checkbox' => 'Check to edit',
+    'tr_meliscommerce_settings_type_account_lock_checkbox_warning' => 'Warning, editing these options can have irreversible critical consequences on the accounts of the commerce module.',
 );

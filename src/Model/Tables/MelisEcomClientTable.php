@@ -181,7 +181,7 @@ class MelisEcomClientTable extends MelisEcomGenericTable
         }
 
         // used when column ordering is clicked
-        if(!empty($order))
+        if(!empty($order) && !$count)
             $select->order($order . ' ' . $orderDir);
 
         $getCount = $this->getTableGateway()->selectWith($select);

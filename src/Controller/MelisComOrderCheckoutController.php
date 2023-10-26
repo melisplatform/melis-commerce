@@ -828,46 +828,47 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
 //                'client_id' => $clientId
 //            ), null , 1 , 1);
 
-//            $contactService = $this->getServiceManager()->get('MelisComContactService');
+            $contactService = $this->getServiceManager()->get('MelisComContactService');
             $personTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
 
-            $contactData = $personTable->getContactLists($accountId, null, 1, $search, $melisTool->getSearchableColumns(), $start, $length, $selCol, $sortOrder, true, true)->toArray();
-            $dataCount = $personTable->getContactLists($accountId, null, 1, $search, $melisTool->getSearchableColumns(), null, null, null, 'ASC', true, true, true)->current();
+            $contactData = $personTable->getContactLists($accountId, null, 1, $search, $melisTool->getSearchableColumns(), $start, $length, $selCol, $sortOrder, true, false)->toArray();
+            $dataCount = $personTable->getContactLists($accountId, null, 1, $search, $melisTool->getSearchableColumns(), null, null, null, 'ASC', true, false, true)->current();
 
             $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
 
             foreach ($contactData As $val)
             {
-                // Generating contact status html form
-                if ($val['cper_status']==1)
-                {
-                    $contactStatus = '<i class="fa fa-circle text-success"></i>';
+                //check if contact has assigned accounts
+                $contactAccountAssoc = $contactService->getContactAssocAccountLists($val['cper_id'])->toArray();
+                if(!empty($contactAccountAssoc)) {
+                    // Generating contact status html form
+                    if ($val['cper_status'] == 1) {
+                        $contactStatus = '<i class="fa fa-circle text-success"></i>';
+                    } else {
+                        $contactStatus = '<i class="fa fa-circle text-danger"></i>';
+                    }
+
+                    $contactName = $this->getTool()->sanitize($val['cper_firstname'] . ' ' . $val['cper_name']);
+
+                    // Getting the Contact number of Order(s)
+                    $contactOrderData = $melisEcomOrderTable->getEntryByField('ord_client_person_id', $val['cper_id']);
+                    $contactOrder = $contactOrderData->toArray();
+                    $contactNumOrders = count($contactOrder);
+                    $lastOrder = !empty($val['cper_last_order']) ? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cper_last_order'])), 0, 10) : '';
+
+                    $rowdata = array(
+                        'DT_RowId' => $val['cper_id'],
+                        'cper_id' => $val['cper_id'],
+                        'cper_status' => $contactStatus,
+                        'cper_contact' => $contactName,
+                        'cgroup_name' => $val['cgroup_name'],
+                        'cper_email' => $this->getTool()->sanitize($val['cper_email']),
+                        'cper_num_orders' => $contactNumOrders,
+                        'cper_last_order' => $lastOrder,
+                    );
+
+                    array_push($tableData, $rowdata);
                 }
-                else
-                {
-                    $contactStatus = '<i class="fa fa-circle text-danger"></i>';
-                }
-
-                $contactName = $this->getTool()->sanitize($val['cper_firstname'].' '.$val['cper_name']);
-
-                // Getting the Contact number of Order(s)
-                $contactOrderData = $melisEcomOrderTable->getEntryByField('ord_client_person_id', $val['cper_id']);
-                $contactOrder = $contactOrderData->toArray();
-                $contactNumOrders = count($contactOrder);
-                $lastOrder = !empty($val['cper_last_order'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cper_last_order'])), 0, 10) : '';
-
-                $rowdata = array(
-                    'DT_RowId' => $val['cper_id'],
-                    'cper_id' => $val['cper_id'],
-                    'cper_status' => $contactStatus,
-                    'cper_contact' => $contactName,
-                    'cgroup_name' => $val['cgroup_name'],
-                    'cper_email' => $this->getTool()->sanitize($val['cper_email']),
-                    'cper_num_orders' => $contactNumOrders,
-                    'cper_last_order' => $lastOrder,
-                );
-
-                array_push($tableData, $rowdata);
             }
         }
 
