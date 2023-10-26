@@ -874,6 +874,7 @@ $(function() {
 					}else{
                         melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.error);
 					}
+                    melisCore.flashMessenger();
 				});
             }
         );

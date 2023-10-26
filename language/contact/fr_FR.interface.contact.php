@@ -19,6 +19,7 @@ return [
     'tr_meliscommerce_contact_table_type_filter' => 'Type de contact',
     'tr_meliscommerce_contact_table_status_filter' => 'Statut',
 
+    'tr_meliscommerce_contact_common_contact' => 'Contact',
     'tr_meliscommerce_contact_common_Type' => 'Type',
     'tr_meliscommerce_contact_common_person' => 'Personne',
     'tr_meliscommerce_contact_common_company' => 'Société',

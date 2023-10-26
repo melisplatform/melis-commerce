@@ -1123,11 +1123,11 @@ class MelisComClientController extends MelisAbstractActionController
             
             if (!empty($postValues['clientId']))
             {
-                $logTypeCode = 'ECOM_CLIENT_UPDATE';
+                $logTypeCode = 'ECOM_ACCOUNT_UPDATE';
             }
             else
             {
-                $logTypeCode = 'ECOM_CLIENT_ADD';
+                $logTypeCode = 'ECOM_ACCOUNT_ADD';
             }
             
             // Cehcking if error occured during validation of submitted datas
@@ -1728,12 +1728,17 @@ class MelisComClientController extends MelisAbstractActionController
             }
         }
 
-        return new JsonModel([
+        $response = [
             'success' => $success,
             'error' => $error,
             'textTitle' => $translator->translate($title),
             'textMessage' => $translator->translate($message)
-        ]);
+        ];
+
+        $this->getEventManager()->trigger('meliscommerce_clients_delete_end',
+            $this, array_merge($response, array('typeCode' => 'ECOM_ACCOUNT_DELETE', 'itemId' => $accountId)));
+
+        return new JsonModel($response);
     }
 
     /**

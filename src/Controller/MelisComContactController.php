@@ -296,9 +296,10 @@ class MelisComContactController extends MelisAbstractActionController
         $personId = null;
         $clientContactName = null;
         $success = 0;
-        $textTitle = $translator->translate('tr_meliscommerce_contact_save');
+        $textTitle = $translator->translate('tr_meliscommerce_contact_common_contact');
         $textMessage = 'tr_meliscommerce_contact_save_failed';
         $errors = array();
+        $logTypeCode = 'ECOM_CONTACT_ADD';
 
         $request = $this->getRequest();
 
@@ -320,6 +321,7 @@ class MelisComContactController extends MelisAbstractActionController
                     $postValues = $this->getRequest()->getPost()->toArray();
                     if (! empty($postValues['cper_id'])) {
                         $personId = $postValues['cper_id'];
+                        $logTypeCode = 'ECOM_CONTACT_UPDATE';
                     }
 
                     $service = $this->getServiceManager()->get('MelisComContactService');
@@ -350,6 +352,9 @@ class MelisComContactController extends MelisAbstractActionController
             'errors' => $errors,
             'clientContactName' => $clientContactName
         );
+
+        $this->getEventManager()->trigger('meliscommerce_contact_save_end',
+            $this, array_merge($response, array('typeCode' => $logTypeCode, 'itemId' => $personId)));
 
         return new JsonModel($response);
     }
