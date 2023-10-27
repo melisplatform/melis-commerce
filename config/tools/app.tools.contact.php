@@ -77,6 +77,11 @@ return [
                                 'css' => ['width' => '5%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],
+                            'cper_type' => [
+                                'text' => 'Type',
+                                'css' => ['width' => '5%', 'padding-right' => '0'],
+                                'sortable' => false,
+                            ],
                             'cper_firstname' => [
                                 'text' => 'tr_meliscommerce_contact_firstname',
                                 'css' => ['width' => '10%', 'padding-right' => '0'],

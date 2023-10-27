@@ -274,6 +274,7 @@ class MelisComContactController extends MelisAbstractActionController
                 $tableData[$key]['cper_status'] = $contactStatus;
                 $tableData[$key]['cper_firstname'] = (!empty($val['cper_firstname'])) ? "<span class='d-none td-tooltip'>".$val['cper_firstname']."</span>".mb_strimwidth($val['cper_firstname'], 0, 30, '...') : '';
                 $tableData[$key]['cper_name'] = !empty($val['cper_name']) ? "<span class='d-none td-tooltip'>".$val['cper_name']."</span>".mb_strimwidth($val['cper_name'], 0, 30, '...') : '';
+                $tableData[$key]['cper_type'] = ($val['cper_type'] == 'person') ? 'Person' : 'Company';
             }
         }
         return new JsonModel(array(
