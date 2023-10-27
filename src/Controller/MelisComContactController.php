@@ -390,6 +390,11 @@ class MelisComContactController extends MelisAbstractActionController
 
         $propertyForm->setData($postValues);
 
+        //change firstname label to company
+        if($postValues['cper_type'] == 'company'){
+            $propertyForm->get('cper_firstname')->setLabel($translator->translate('tr_meliscommerce_contact_common_company'));
+        }
+
         if (! empty($postValues['cper_id'])) {
             // Checking if the Contact Form has data of the password
             if (empty($postValues['cper_password'])) {
@@ -440,7 +445,16 @@ class MelisComContactController extends MelisAbstractActionController
             {
                 if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
                 {
-                    $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                    $label = $valueForm['spec']['options']['label'];
+
+                    //change firstname label to company
+                    if($postValues['cper_type'] == 'company'){
+                        if($valueForm['spec']['name'] == 'cper_firstname') {
+                            $label = $translator->translate('tr_meliscommerce_contact_common_company');
+                        }
+                    }
+
+                    $errors[$keyError]['label'] = $label;
                 }
             }
         }
