@@ -61,7 +61,7 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
         }
         $select->columns($slct);
 
-        if($defaultAccountOnly)
+        if($defaultAccountOnly && empty($accountId))
             $select->join('melis_ecom_client_person_rel', new Expression('melis_ecom_client_person_rel.cpr_client_person_id = melis_ecom_client_person.cper_id AND melis_ecom_client_person_rel.cpr_default_client = 1'), array(), $select::JOIN_LEFT);
         else
             $select->join('melis_ecom_client_person_rel', 'melis_ecom_client_person_rel.cpr_client_person_id = melis_ecom_client_person.cper_id', array(), $select::JOIN_LEFT);
