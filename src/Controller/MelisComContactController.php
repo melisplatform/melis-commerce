@@ -232,6 +232,7 @@ class MelisComContactController extends MelisAbstractActionController
             $type = $this->getRequest()->getPost('type', null);
             $status = $this->getRequest()->getPost('status', null);
 
+            $translator = $this->getServiceManager()->get('translator');
             $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
             $melisTool = $this->getServiceManager()->get('MelisCoreTool');
             $melisTool->setMelisToolKey(self::PLUGIN_INDEX, 'meliscommerce_contact_list');
@@ -267,14 +268,17 @@ class MelisComContactController extends MelisAbstractActionController
                     $contactStatus = '<i class="fa fa-circle text-success"></i>';
                 }
 
-                $cliName = $melisComClientService->getAccountName($val['cli_id']);
-                if(!empty($cliName))
-                    $cliName = "<span class='d-none td-tooltip'>".$cliName."</span>".mb_strimwidth($cliName, 0, 30, '...');
+                $cliName = '';
+                if($val['cpr_default_client']) {
+                    $cliName = $melisComClientService->getAccountName($val['cli_id']);
+                    if (!empty($cliName))
+                        $cliName = "<span class='d-none td-tooltip'>" . $cliName . "</span>" . mb_strimwidth($cliName, 0, 30, '...');
+                }
                 $tableData[$key]['cli_name'] = $cliName;
                 $tableData[$key]['cper_status'] = $contactStatus;
                 $tableData[$key]['cper_firstname'] = (!empty($val['cper_firstname'])) ? "<span class='d-none td-tooltip'>".$val['cper_firstname']."</span>".mb_strimwidth($val['cper_firstname'], 0, 30, '...') : '';
                 $tableData[$key]['cper_name'] = !empty($val['cper_name']) ? "<span class='d-none td-tooltip'>".$val['cper_name']."</span>".mb_strimwidth($val['cper_name'], 0, 30, '...') : '';
-                $tableData[$key]['cper_type'] = ($val['cper_type'] == 'person') ? 'Person' : 'Company';
+                $tableData[$key]['cper_type'] = ($val['cper_type'] == 'person') ? $translator->translate('tr_meliscommerce_contact_common_person') : $translator->translate('tr_meliscommerce_contact_common_company');
             }
         }
         return new JsonModel(array(

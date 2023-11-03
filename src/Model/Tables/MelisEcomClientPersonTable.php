@@ -62,9 +62,9 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
         $select->columns($slct);
 
         if($defaultAccountOnly && empty($accountId))
-            $select->join('melis_ecom_client_person_rel', new Expression('melis_ecom_client_person_rel.cpr_client_person_id = melis_ecom_client_person.cper_id AND melis_ecom_client_person_rel.cpr_default_client = 1'), array(), $select::JOIN_LEFT);
+            $select->join('melis_ecom_client_person_rel', new Expression('melis_ecom_client_person_rel.cpr_client_person_id = melis_ecom_client_person.cper_id AND melis_ecom_client_person_rel.cpr_default_client = 1'), array('cpr_default_client'), $select::JOIN_LEFT);
         else
-            $select->join('melis_ecom_client_person_rel', 'melis_ecom_client_person_rel.cpr_client_person_id = melis_ecom_client_person.cper_id', array(), $select::JOIN_LEFT);
+            $select->join('melis_ecom_client_person_rel', 'melis_ecom_client_person_rel.cpr_client_person_id = melis_ecom_client_person.cper_id', array('cpr_default_client'), $select::JOIN_LEFT);
 
         $select->join(['client' => 'melis_ecom_client'], 'client.cli_id = melis_ecom_client_person_rel.cpr_client_id', array('cli_id', 'cli_name'), $select::JOIN_LEFT);
         $select->join('melis_ecom_client_groups', 'melis_ecom_client_groups.cgroup_id=client.cli_group_id', array('cgroup_name'), $select::JOIN_LEFT);
