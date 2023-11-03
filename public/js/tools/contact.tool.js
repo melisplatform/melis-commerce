@@ -55,6 +55,7 @@ $(function(){
                         "melisCommerceClientContactFormModal"
                     );
                 }
+                melisCore.flashMessenger();
             })
             .fail(function() {
                 $("#saveClientContact").removeAttr("disabled");
@@ -539,6 +540,7 @@ $(function(){
                 );
                 melisHelper.highlightMultiErrors(data.success, data.errors, "#"+contactId+"_contactForm")
             }
+            melisCore.flashMessenger();
         })
         .fail(function() {
             $("#saveClientContact").removeAttr("disabled");

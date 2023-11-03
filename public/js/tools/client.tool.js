@@ -500,6 +500,20 @@ $(function() {
 						"id_meliscommerce_clients_list_content",
 						"meliscommerce_clients_list_content"
 					);
+
+					//reload widgets
+                    melisHelper.zoneReload(
+                        "id_meliscommerce_clients_list_widgets_num_clients",
+                        "meliscommerce_clients_list_widgets_num_clients"
+                    );
+                    melisHelper.zoneReload(
+                        "id_meliscommerce_clients_list_widgets_month_clients",
+                        "meliscommerce_clients_list_widgets_month_clients"
+                    );
+                    melisHelper.zoneReload(
+                        "id_meliscommerce_clients_list_widgets_avg_clients",
+                        "meliscommerce_clients_list_widgets_avg_clients"
+                    );
 				} else {
 					melisClientKoNotification(
 						data.textTitle,
@@ -871,9 +885,24 @@ $(function() {
                         melisHelper.melisOkNotification(data.textTitle, data.textMessage);
 
                         melisHelper.zoneReload('id_meliscommerce_clients_list_page', 'meliscommerce_clients_list_page');
+
+                        //reload widgets
+                        melisHelper.zoneReload(
+                            "id_meliscommerce_clients_list_widgets_num_clients",
+                            "meliscommerce_clients_list_widgets_num_clients"
+                        );
+                        melisHelper.zoneReload(
+                            "id_meliscommerce_clients_list_widgets_month_clients",
+                            "meliscommerce_clients_list_widgets_month_clients"
+                        );
+                        melisHelper.zoneReload(
+                            "id_meliscommerce_clients_list_widgets_avg_clients",
+                            "meliscommerce_clients_list_widgets_avg_clients"
+                        );
 					}else{
                         melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.error);
 					}
+                    melisCore.flashMessenger();
 				});
             }
         );
@@ -1109,6 +1138,20 @@ $(function() {
                         melisHelper.melisOkNotification(data.textTitle, data.textMessage);
                         // update flash messenger values
                         melisCore.flashMessenger();
+
+                        //reload widgets
+                        melisHelper.zoneReload(
+                            "id_meliscommerce_clients_list_widgets_num_clients",
+                            "meliscommerce_clients_list_widgets_num_clients"
+                        );
+                        melisHelper.zoneReload(
+                            "id_meliscommerce_clients_list_widgets_month_clients",
+                            "meliscommerce_clients_list_widgets_month_clients"
+                        );
+                        melisHelper.zoneReload(
+                            "id_meliscommerce_clients_list_widgets_avg_clients",
+                            "meliscommerce_clients_list_widgets_avg_clients"
+                        );
                     }else{
                         //disable import button
                         $("#importAccounts").attr("disabled", false);

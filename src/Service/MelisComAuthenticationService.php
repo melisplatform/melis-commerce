@@ -92,9 +92,10 @@ class MelisComAuthenticationService extends Session
         //check if email exist
         if(!empty($clientInfo))
         {
-            $getContactAssociatedAccounts = $contactSrv->getContactDefaultAccount($clientInfo->cper_id)->toArray();
+            $getContactAssociatedAccounts = $contactSrv->getContactAssocAccountLists($clientInfo->cper_id, null, [], null, null, $orderColumn = 'cli_name', $order = 'ASC')->toArray();
+//            $getContactAssociatedAccounts = $contactSrv->getContactDefaultAccount($clientInfo->cper_id)->toArray();
             /**
-             * Contact must have a default account
+             * Make sure contact has an associated account
              */
             if(!empty($getContactAssociatedAccounts)) {
                 //check password
@@ -127,8 +128,16 @@ class MelisComAuthenticationService extends Session
                             $clientId = 0;
                             if(!empty($getContactAssociatedAccounts)){
                                 foreach($getContactAssociatedAccounts as $key => $val){
+                                    //we store the ids until we find if there's a default account
                                     $groupId = $val['cli_group_id'] ?? 1;
                                     $clientId = $val['cli_id'];
+
+                                    //if there's a default account then we assign it
+                                    if($val['cpr_default_client']) {
+                                        $groupId = $val['cli_group_id'] ?? 1;
+                                        $clientId = $val['cli_id'];
+                                        break;
+                                    }
                                 }
                             }
 

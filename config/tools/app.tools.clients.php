@@ -89,7 +89,7 @@ return [
                             'default_contact' => [
                                 'text' => 'tr_meliscommerce_clients_default_contact_name',
                                 'css' => ['width' => '20%', 'padding-right' => '0'],
-                                'sortable' => true,
+                                'sortable' => false,
                             ],
                             'cli_company' => [
                                 'text' => 'tr_meliscommerce_clients_table_Client_company',

@@ -792,6 +792,7 @@ class MelisComClientListController extends MelisAbstractActionController
                 $getData[$key]['default_contact_id'] = $defContactId;
                 $getData[$key]['default_contact_name'] = $defContactName;
                 $getData[$key]['default_contact_email'] = $defContactEmail;
+                $getData[$key]['ccomp_employee_nb'] = !empty($val['ccomp_employee_nb']) ? $val['ccomp_employee_nb'] : null;
 
                 //get client country
                 $getData[$key]['cli_country_id'] = null;
