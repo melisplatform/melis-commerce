@@ -904,7 +904,7 @@ class MelisComClientListController extends MelisAbstractActionController
         return $this->executeCompanyContactExport($data, $fileName, $delimiter);
     }
 
-    private function matchKeys(&$keys, $data)
+    public function matchKeys(&$keys, $data)
     {
         foreach($data as $i => $val){
             foreach($val as $k => $v){
@@ -916,7 +916,7 @@ class MelisComClientListController extends MelisAbstractActionController
         return $keys;
     }
 
-    private function processKeysToMatch($keys, $data)
+    public function processKeysToMatch($keys, $data)
     {
         foreach($data as $i => $val){
             foreach($keys as $k => $b){
@@ -928,7 +928,7 @@ class MelisComClientListController extends MelisAbstractActionController
         return $data;
     }
 
-    private function processAccountOrders(&$orderDatas, $key, $accountId)
+    public function processAccountOrders(&$orderDatas, $key, $accountId)
     {
         $langId = $this->getOrderTool()->getCurrentLocaleID();
 
@@ -984,7 +984,7 @@ class MelisComClientListController extends MelisAbstractActionController
      * Returns the Tool Service Class
      * @return MelisCoreTool
      */
-    private function getOrderTool()
+    public function getOrderTool()
     {
         $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_order_list');
@@ -992,7 +992,7 @@ class MelisComClientListController extends MelisAbstractActionController
         return $melisTool;
     }
 
-    private function processAccountAddress(&$getData, $key, $accountId, $type = 1)
+    public function processAccountAddress(&$getData, $key, $accountId, $type = 1)
     {
         $translator = $this->getServiceManager()->get('translator');
         $melisEcomClientAddressTable = $this->getServiceManager()->get('MelisEcomClientAddressTable');
