@@ -77,6 +77,14 @@ class MelisComContactController extends MelisAbstractActionController
         $translator = $this->getServiceManager()->get('translator');
         $melisKey = $this->params()->fromRoute('melisKey', '');
 
+        //check commerce settings for ordering
+        $accountSettings = $melisComClientService->getAccountNameSetting();
+        $type = !(empty($accountSettings)) ? $accountSettings->sa_type : 'manual_input';
+        $orderCol = 'cli_name';
+        if($type == 'company_name'){
+            $orderCol = 'cli_company';
+        }
+
         $options = '<option  value="">'.$translator->translate('tr_meliscommerce_contact_common_choose').'</option>';
 
         $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientTable');
@@ -85,7 +93,7 @@ class MelisComContactController extends MelisAbstractActionController
 
             ),
             'order' => array(
-                'key' => 'cli_name',
+                'key' => $orderCol,
                 'dir' => 'ASC',
             ),
             'start' => null,
