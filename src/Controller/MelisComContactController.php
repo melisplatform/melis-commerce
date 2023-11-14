@@ -1308,6 +1308,15 @@ class MelisComContactController extends MelisAbstractActionController
         $contactId = $this->params()->fromQuery('contactId', '');
 
         $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
+        $accountSettings = $melisComClientService->getAccountNameSetting();
+
+        $searchColumn = 'cli_name';
+        if(!empty($accountSettings)){
+            $type = !(empty($accountSettings)) ? $accountSettings->sa_type : 'manual_input';
+            if($type == 'company_name'){
+                $searchColumn = 'melis_ecom_client_company.ccomp_name';
+            }
+        }
 
         $lists = [];
         if (!empty($searchPhrase)) {
@@ -1323,7 +1332,7 @@ class MelisComContactController extends MelisAbstractActionController
                 ),
                 'start' => null,
                 'limit' => null,
-                'columns' => ['cli_name'],
+                'columns' => [$searchColumn],
                 'date_filter' => array(),
                 'groupId' => null,
                 'clientStatus' => 1
