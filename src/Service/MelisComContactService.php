@@ -812,4 +812,29 @@ class MelisComContactService extends MelisComGeneralService
         return $arrayParameters['results'];
 
     }
+
+    /**
+     * @param $contactId
+     * @return mixed
+     */
+    public function deleteContact($contactId)
+    {
+        // Event parameters prepare
+        $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+        $results = null;
+
+        // Sending service start event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_contact_delete_contact_start', $arrayParameters);
+
+        // Service implementation start
+        $personTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
+        $results = $personTable->deleteById($arrayParameters['contactId']);
+
+        // Adding results to parameters for events treatment if needed
+        $arrayParameters['results'] = $results;
+        // Sending service end event
+        $arrayParameters = $this->sendEvent('meliscommerce_service_contact_delete_contact_end', $arrayParameters);
+
+        return $arrayParameters['results'];
+    }
 }

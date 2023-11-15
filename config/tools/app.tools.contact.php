@@ -17,7 +17,7 @@ return [
                         'target' => '#contactList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComContact/getContactList',
                         'dataFunction' => 'contactListTableDataFunction',
-                        'ajaxCallback' => '',
+                        'ajaxCallback' => 'contactTableCallback()',
                         'filters' => [
                             'left' => [
                                 'meliscommerce-contact-list-tbl-limit' => [
@@ -116,6 +116,11 @@ return [
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComContact',
                                 'action' => 'render-account-contact-list-table-edit',
+                            ],
+                            'delete' => [
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComContact',
+                                'action' => 'render-account-contact-list-table-delete',
                             ],
                         ]
                     ],

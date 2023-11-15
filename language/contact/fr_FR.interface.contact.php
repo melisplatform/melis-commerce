@@ -144,4 +144,9 @@ return [
 
     'tr_meliscommerce_contact_add_account_tooltip' => 'Sélectionnez un compte pour activer',
     'tr_meliscommerce_contact_import_file_title' => 'Exemple import de contacts',
+
+    'tr_meliscommerce_contact_delete_contact_title' => 'Supprimer Contact',
+    'tr_meliscommerce_contact_delete_contact_message' => 'Etes-vous sûr de vouloir supprimer cet contact ?',
+    'tr_meliscommerce_contact_delete_contact_message_success' => 'Contact supprimé avec succès',
+    'tr_meliscommerce_contact_delete_contact_message_failed' => 'Impossible de supprimer contact',
 ];

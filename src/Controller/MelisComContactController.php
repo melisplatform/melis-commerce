@@ -60,6 +60,17 @@ class MelisComContactController extends MelisAbstractActionController
     /**
      * @return ViewModel
      */
+    public function renderAccountContactListTableDeleteAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        return $view;
+    }
+
+    /**
+     * @return ViewModel
+     */
     public function renderAccountContactListTableEditAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -261,7 +272,7 @@ class MelisComContactController extends MelisAbstractActionController
             $search = $this->getRequest()->getPost('search');
             $search = $search['value'];
 
-//            $contactService = $this->getServiceManager()->get('MelisComContactService');
+            $contactService = $this->getServiceManager()->get('MelisComContactService');
             $personTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
 
             $tableData = $personTable->getContactLists($accountId, $type, $status, $search, $melisTool->getSearchableColumns(), $start, $length, $selCol, $sortOrder, $defaultAccountOnly)->toArray();
@@ -287,6 +298,12 @@ class MelisComContactController extends MelisAbstractActionController
                 $tableData[$key]['cper_firstname'] = (!empty($val['cper_firstname'])) ? "<span class='d-none td-tooltip'>".$val['cper_firstname']."</span>".mb_strimwidth($val['cper_firstname'], 0, 30, '...') : '';
                 $tableData[$key]['cper_name'] = !empty($val['cper_name']) ? "<span class='d-none td-tooltip'>".$val['cper_name']."</span>".mb_strimwidth($val['cper_name'], 0, 30, '...') : '';
                 $tableData[$key]['cper_type'] = ($val['cper_type'] == 'person') ? $translator->translate('tr_meliscommerce_contact_common_person') : $translator->translate('tr_meliscommerce_contact_common_company');
+
+                //check if contact has an associated account
+                $assocAccounts = $contactService->getContactAssocAccountLists($val['cper_id'])->toArray();
+                $tableData[$key]['DT_RowAttr'] = [
+                    'data-has_assoc_accounts' => !empty($assocAccounts) ? 1 : 0
+                ];
             }
         }
         return new JsonModel(array(
@@ -980,6 +997,44 @@ class MelisComContactController extends MelisAbstractActionController
                 if($res){
                     $success = 1;
                     $textMessage = 'tr_meliscommerce_contact_page_content_tab_address_delete_success';
+                }
+            }
+        }
+
+        $response = array(
+            'success' => $success,
+            'textTitle' => $textTitle,
+            'textMessage' => $translator->translate($textMessage),
+            'errors' => $errors,
+            'contactId' => $contactId
+        );
+
+        return new JsonModel($response);
+    }
+
+    /**
+     * @return JsonModel
+     */
+    public function deleteContactAction()
+    {
+        $translator = $this->getServiceManager()->get('translator');
+
+        $success = 0;
+        $textTitle = $translator->translate('tr_meliscommerce_contact_delete_contact_title');
+        $textMessage = 'tr_meliscommerce_contact_delete_contact_message_failed';
+        $errors = array();
+
+        $request = $this->getRequest();
+        $contactId = $request->getPost('contactId', null);
+
+        if($request->isPost())
+        {
+            if(!empty($contactId)) {
+                $contactService = $this->getServiceManager()->get('MelisComContactService');
+                $res = $contactService->deleteContact($contactId);
+                if($res){
+                    $success = 1;
+                    $textMessage = 'tr_meliscommerce_contact_delete_contact_message_success';
                 }
             }
         }
