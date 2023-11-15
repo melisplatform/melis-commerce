@@ -1672,6 +1672,7 @@ class MelisComContactController extends MelisAbstractActionController
                 unset($tableData[$key]['DT_RowId']);
                 unset($tableData[$key]['cper_client_id']);
                 unset($tableData[$key]['cgroup_name']);
+                unset($tableData[$key]['cpr_default_client']);
             }
 
             $exportData = [];
