@@ -1478,231 +1478,241 @@ class MelisComClientController extends MelisAbstractActionController
         * 
         * @return \Laminas\View\Model\JsonModel
         */
-    public function validateClientContactsAction()
-    {
-        $translator = $this->getServiceManager()->get('translator');
-        
-        $success = 0;
-        $errors = array();
-        $errors_1 = array();
-        $errors_2 = array();
-        
-        $formErrors = array();
-        $errors_1_temp = array();
-        
-        $request = $this->getRequest();
-        
-        $clientContactsData = array();
-        $clientContactsAddressesData = array();
-        
-        if($request->isPost())
+        public function validateClientContactsAction()
         {
-            $postValues = $this->getRequest()->getPost()->toArray();
-            $postValues = $this->getTool()->sanitizeRecursive($postValues);
-
+            $translator = $this->getServiceManager()->get('translator');
             
-            // Getting Client Conatct Form from Config
-            $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
-            $appConfigForm_1 = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_contact_form','meliscommerce_clients_contact_form');
-            $factory_1 = new \Laminas\Form\Factory();
-            $formElements = $this->getServiceManager()->get('FormElementManager');
-            $factory_1->setFormElementManager($formElements);
+            $success = 0;
+            $errors = array();
+            $errors_1 = array();
+            $errors_2 = array();
             
-            // Getting Client Contact Address Form from Config
-            $appConfigForm_2 = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_addresses_form','meliscommerce_clients_addresses_form');
-            $factory_2 = new \Laminas\Form\Factory();
-            $factory_2->setFormElementManager($formElements);
-
-            $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
+            $formErrors = array();
+            $errors_1_temp = array();
             
-            if (!empty($postValues['clientContacts']))
+            $request = $this->getRequest();
+            
+            $clientContactsData = array();
+            $clientContactsAddressesData = array();
+            
+            if($request->isPost())
             {
-                $clientContacts = $postValues['clientContacts'];
+                $postValues = $this->getRequest()->getPost()->toArray();
+                $postValues = $this->getTool()->sanitizeRecursive($postValues);
+    
                 
-                // Flags for Main Contact
-                $hasMainContact = false;
-                $findMainContact = false;
-
-                foreach ($clientContacts As $key => $val)
+                // Getting Client Conatct Form from Config
+                $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
+                $appConfigForm_1 = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_contact_form','meliscommerce_clients_contact_form');
+                $factory_1 = new \Laminas\Form\Factory();
+                $formElements = $this->getServiceManager()->get('FormElementManager');
+                $factory_1->setFormElementManager($formElements);
+                
+                // Getting Client Contact Address Form from Config
+                $appConfigForm_2 = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_addresses_form','meliscommerce_clients_addresses_form');
+                $factory_2 = new \Laminas\Form\Factory();
+                $factory_2->setFormElementManager($formElements);
+    
+                $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
+                
+                if (!empty($postValues['clientContacts']))
                 {
-                    // To ensure Client contact has only one main contact
-                    if ($hasMainContact)
-                    {
-                        $val['cper_is_main_person'] = 0;
-                    }
+                    $clientContacts = $postValues['clientContacts'];
                     
-                    // Checking if finding new Main contact is activated
-                    if ($findMainContact)
+                    // Flags for Main Contact
+                    $hasMainContact = false;
+                    $findMainContact = false;
+    
+                    foreach ($clientContacts As $key => $val)
                     {
-                        // Checking if Contact is Active Status
-                        if ($val['cper_status'])
+                        // To ensure Client contact has only one main contact
+                        if ($hasMainContact)
                         {
-                            $val['cper_is_main_person'] = 1;
-                            // Deactivate Find Main Contact Flag
-                            $findMainContact = false;
-                        }
-                    }
-                    
-                    // Checking if Contact list has selected the main Contact
-                    if ($val['cper_is_main_person'])
-                    {
-                        if (!$val['cper_status'])
-                        {
-                            // Deselect as Main Contact if the Status is not Active
                             $val['cper_is_main_person'] = 0;
-                            // Activate find Main Contact Flag
-                            $findMainContact = true;
-                        }
-                        else 
-                        {
-                            $hasMainContact = true;
-                        }
-                    }
-                    
-                    // PropertyFrom 1 assign as Client Contact Form
-                    $propertyForm_1 = $factory_1->createForm($appConfigForm_1);
-                    $propertyForm_1->setData($val);
-                    
-                    // Checking if Cleint Contact is existing by checking the Primary Id of the Contact
-                    if (! empty($val['cper_id'])) {
-                        // Checking if the Contact Form has data of the password
-                        if (empty($val['cper_password'])) {
-                            // If the existing Contact password empty, this means contact not updating the current password
-                            // removing Input from Contact form will also remove from the validation
-                            $propertyForm_1->getInputFilter()->remove('cper_password');
-                            $propertyForm_1->getInputFilter()->remove('cper_confirm_password');
                         }
                         
-                        if (! empty($val['cper_email'])) {
-                            $personWithSameEmail = $melisComClientService->getPersonsByEmail($val['cper_email']);
-
-                            foreach ($personWithSameEmail as $mail) {
-                                if ($mail['cpmail_cper_id'] != $val['cper_id']) {
-                                    $errors_1_temp['cper_email'] = array(
-                                        'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
-                                        'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
-                                    );
+                        // Checking if finding new Main contact is activated
+                        if ($findMainContact)
+                        {
+                            // Checking if Contact is Active Status
+                            if ($val['cper_status'])
+                            {
+                                $val['cper_is_main_person'] = 1;
+                                // Deactivate Find Main Contact Flag
+                                $findMainContact = false;
+                            }
+                        }
+                        
+                        // Checking if Contact list has selected the main Contact
+                        if ($val['cper_is_main_person'])
+                        {
+                            if (!$val['cper_status'])
+                            {
+                                // Deselect as Main Contact if the Status is not Active
+                                $val['cper_is_main_person'] = 0;
+                                // Activate find Main Contact Flag
+                                $findMainContact = true;
+                            }
+                            else 
+                            {
+                                $hasMainContact = true;
+                            }
+                        }
+                        // if the contact is inactive, assign cper_email to temp variable then unset it to $val to remove validation
+                        $tempEmailHolder = null;
+                        if((int)$val['cper_status'] != 1) {
+                            $tempEmailHolder = $val['cper_email'];
+                            unset($val['cper_email']);
+                        }
+    
+                        // PropertyFrom 1 assign as Client Contact Form
+                        $propertyForm_1 = $factory_1->createForm($appConfigForm_1);
+                        $propertyForm_1->setData($val);
+                        // Checking if Cleint Contact is existing by checking the Primary Id of the Contact
+                        if (! empty($val['cper_id'])) {
+                            // Checking if the Contact Form has data of the password
+                            if (empty($val['cper_password'])) {
+                                // If the existing Contact password empty, this means contact not updating the current password
+                                // removing Input from Contact form will also remove from the validation
+                                $propertyForm_1->getInputFilter()->remove('cper_password');
+                                $propertyForm_1->getInputFilter()->remove('cper_confirm_password');
+                            }
+                            
+                            if((int)$val['cper_status'] != 0) {
+                                if (! empty($val['cper_email'])) {
+                                    $personWithSameEmail = $melisComClientService->getPersonsByEmail($val['cper_email']);
+                                    // foreach ($personWithSameEmail as $mail) {
+                                        if(count($personWithSameEmail) >= 1) {
+                                            if ($personWithSameEmail[0]['cpmail_cper_id'] != $val['cper_id']) {
+                                                $errors_1_temp['cper_email'] = array(
+                                                    'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
+                                                    'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
+                                                );
+                                            }
+                                        }
+                                    // }
                                 }
                             }
                         }
-                    }
-                    
-                    // Checking if Contact Form is valid
-                    if ($propertyForm_1->isValid()) {
-                        if (empty($errors_1_temp)) {
-                            $clientContactsDataTemp = $propertyForm_1->getData();
-                            // After validation confirm password would remove from final and validated data for contact datas
-                            unset($clientContactsDataTemp['cper_confirm_password']);
-                            
-                            // Client Contact Addresses validations
-                            if (!empty($val['contact_address'])) {
-                                $clientContactAddresses = $val['contact_address'];
-                            
-                                foreach ($clientContactAddresses As $akey => $aVal) {
-                                    // PropertyFrom 2 assign as Client Contact Address Form
-                                    $propertyForm_2 = $factory_2->createForm($appConfigForm_2);
-                                    $propertyForm_2->setData($aVal);
-                            
-                                    // Checking if datas are valid
-                                    if ($propertyForm_2->isValid()) {
-                                        // Client Contact Validated data added to static index "contact_address" array
-                                        $clientContactsDataTemp['contact_address'][] = $propertyForm_2->getData();
-                                    } else {
-                                        // Getting Client Contact Address Form errors if errors is occured
-                                        $errors_2_temp = $propertyForm_2->getMessages();
-                                        foreach ($errors_2_temp as $keyError => $valueError) {
-                                            $errors_2_temp[$keyError]['form'][] = $akey.'_contact_address_form';
+                        
+                        // Checking if Contact Form is valid
+                        if ($propertyForm_1->isValid()) {
+                            if (empty($errors_1_temp)) {
+                                $clientContactsDataTemp = $propertyForm_1->getData();
+                                // After validation confirm password would remove from final and validated data for contact datas
+                                unset($clientContactsDataTemp['cper_confirm_password']);
+                                if((int)$val['cper_status'] != 1) {
+                                    $clientContactsDataTemp['cper_email'] = $tempEmailHolder;
+                                }
+                                // Client Contact Addresses validations
+                                if (!empty($val['contact_address'])) {
+                                    $clientContactAddresses = $val['contact_address'];
+                                
+                                    foreach ($clientContactAddresses As $akey => $aVal) {
+                                        // PropertyFrom 2 assign as Client Contact Address Form
+                                        $propertyForm_2 = $factory_2->createForm($appConfigForm_2);
+                                        $propertyForm_2->setData($aVal);
+                                
+                                        // Checking if datas are valid
+                                        if ($propertyForm_2->isValid()) {
+                                            // Client Contact Validated data added to static index "contact_address" array
+                                            $clientContactsDataTemp['contact_address'][] = $propertyForm_2->getData();
+                                        } else {
+                                            // Getting Client Contact Address Form errors if errors is occured
+                                            $errors_2_temp = $propertyForm_2->getMessages();
+                                            foreach ($errors_2_temp as $keyError => $valueError) {
+                                                $errors_2_temp[$keyError]['form'][] = $akey.'_contact_address_form';
+                                            }
+                                            $errors_2 = array_merge_recursive($errors_2, $errors_2_temp);
                                         }
-                                        $errors_2 = array_merge_recursive($errors_2, $errors_2_temp);
-                                    }
-                            
-                                    // Getting From Elements/fields
-                                    $appConfigFormElements_2 = $appConfigForm_2['elements'];
-                                    // Preparing Error messages for Client Contact Address
-                                    foreach ($errors_2 as $keyError => $valueError) {
-                                        foreach ($appConfigFormElements_2 as $keyForm => $valueForm) {
-                                            if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label'])) {
-                                                $errors_2[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                                
+                                        // Getting From Elements/fields
+                                        $appConfigFormElements_2 = $appConfigForm_2['elements'];
+                                        // Preparing Error messages for Client Contact Address
+                                        foreach ($errors_2 as $keyError => $valueError) {
+                                            foreach ($appConfigFormElements_2 as $keyForm => $valueForm) {
+                                                if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label'])) {
+                                                    $errors_2[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                                                }
                                             }
                                         }
                                     }
                                 }
+    
+                                // Client Contact Details validated datas added to final Array Container
+                                array_push($clientContactsData, $clientContactsDataTemp);
                             }
-
-                            // Client Contact Details validated datas added to final Array Container
-                            array_push($clientContactsData, $clientContactsDataTemp);
-                        }
-                    } else {
-                        // Getting Client Contact Form errors if errors is occured
-                        $errors_1_temp = ArrayUtils::merge($errors_1_temp, $propertyForm_1->getMessages());
-                        foreach ($errors_1_temp as $keyError => $valueError) {
-                            $errors_1_temp[$keyError]['form'][] = $key.'_contact_form';
-                        }
-                        $errors_1 = array_merge_recursive($errors_1, $errors_1_temp);
-                        
-                    }
-                    
-                    if (!empty($errors_1_temp) && empty($errors_1)) {
-                        $errors_1 = $errors_1_temp;
-                    }
-                    
-                    // Getting From Elements/fields
-                    $appConfigFormElements_1 = $appConfigForm_1['elements'];
-                    // Preparing Error messages for Client Contact
-                    foreach ($errors_1 as $keyError => $valueError) {
-                        foreach ($appConfigFormElements_1 as $keyForm => $valueForm) {
-                            if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label'])) {
-                                $errors_1[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                        } else {
+                            // Getting Client Contact Form errors if errors is occured
+                            $errors_1_temp = ArrayUtils::merge($errors_1_temp, $propertyForm_1->getMessages());
+                            foreach ($errors_1_temp as $keyError => $valueError) {
+                                $errors_1_temp[$keyError]['form'][] = $key.'_contact_form';
                             }
-                        }
-                    }
-                }
-                
-                if (! $hasMainContact) {
-                    if (!empty($clientContactsData)) {
-                        // Client with no main contact will set the first contact to main contact
-                        $hasNewRandomMainContact = false;
-                        foreach ($clientContactsData As $key => $val) {
-                            // Checking if Contact is Active status
-                            if ($val['cper_status']) {
-                                // Set main contact
-                                $clientContactsData[$key]['cper_is_main_person'] = 1;
-                                $hasNewRandomMainContact = true;
-                            }
+                            $errors_1 = array_merge_recursive($errors_1, $errors_1_temp);
+                            
                         }
                         
-                        if (! $hasNewRandomMainContact) {
-                            // This error will occured if no entry of Contact
-                            $errors['clientNoMaincontact'] = array(
-                                'label' => $translator->translate('tr_meliscommerce_clients_common_label_contact'),
-                                'isEmpty' => $translator->translate('tr_meliscommerce_client_Contact_active_must_atleast_one')
-                            );
+                        if (!empty($errors_1_temp) && empty($errors_1)) {
+                            $errors_1 = $errors_1_temp;
+                        }
+                        
+                        // Getting From Elements/fields
+                        $appConfigFormElements_1 = $appConfigForm_1['elements'];
+                        // Preparing Error messages for Client Contact
+                        foreach ($errors_1 as $keyError => $valueError) {
+                            foreach ($appConfigFormElements_1 as $keyForm => $valueForm) {
+                                if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label'])) {
+                                    $errors_1[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                                }
+                            }
                         }
                     }
+                    
+                    if (! $hasMainContact) {
+                        if (!empty($clientContactsData)) {
+                            // Client with no main contact will set the first contact to main contact
+                            $hasNewRandomMainContact = false;
+                            foreach ($clientContactsData As $key => $val) {
+                                // Checking if Contact is Active status
+                                if ($val['cper_status']) {
+                                    // Set main contact
+                                    $clientContactsData[$key]['cper_is_main_person'] = 1;
+                                    $hasNewRandomMainContact = true;
+                                }
+                            }
+                            
+                            if (! $hasNewRandomMainContact) {
+                                // This error will occured if no entry of Contact
+                                $errors['clientNoMaincontact'] = array(
+                                    'label' => $translator->translate('tr_meliscommerce_clients_common_label_contact'),
+                                    'isEmpty' => $translator->translate('tr_meliscommerce_client_Contact_active_must_atleast_one')
+                                );
+                            }
+                        }
+                    }
+                } else {
+                    // This error will occured if no entry of Contact
+                    $errors['clientContactEmpty'] = array(
+                        'label' => $translator->translate('tr_meliscommerce_clients_common_label_contact'),
+                        'isEmpty' => $translator->translate('tr_meliscommerce_client_Contact_must_atleast_one')
+                    );
                 }
-            } else {
-                // This error will occured if no entry of Contact
-                $errors['clientContactEmpty'] = array(
-                    'label' => $translator->translate('tr_meliscommerce_clients_common_label_contact'),
-                    'isEmpty' => $translator->translate('tr_meliscommerce_client_Contact_must_atleast_one')
-                );
             }
+            // Merging all error messages
+            $errors = array_merge_recursive($errors, $errors_1, $errors_2);
+            
+            if (empty($errors)) {
+                $success = 1;
+            }
+            
+            $result = array(
+                'success' => $success,
+                'errors' => array('clientContacts_err' => $errors),
+                'datas' => array('clientContacts' => $clientContactsData),
+            );
+            
+            return new JsonModel($result);
         }
-        // Merging all error messages
-        $errors = array_merge_recursive($errors, $errors_1, $errors_2);
-        
-        if (empty($errors)) {
-            $success = 1;
-        }
-        
-        $result = array(
-            'success' => $success,
-            'errors' => array('clientContacts_err' => $errors),
-            'datas' => array('clientContacts' => $clientContactsData),
-        );
-        
-        return new JsonModel($result);
-    }
     
     /**
         * Validating Client Company Data from post and return as Validated Datas

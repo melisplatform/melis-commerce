@@ -452,7 +452,7 @@ $(function() {
 	});
 
 	$body.on("switch-change", ".clientContactStatus", function() {
-		var $this = $this,
+		var $this = $(this),
 			clientId = $this.data("clientid"),
 			tabId = $this.data("tabid");
 
@@ -624,7 +624,6 @@ $(function() {
 		});
 
 		$this.attr("disabled", "disabled");
-
 		$.ajax({
 			type: "POST",
 			url: "/melis/MelisCommerce/MelisComClient/saveClient",
