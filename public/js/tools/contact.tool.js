@@ -895,7 +895,8 @@ window.contactAssociatedAccountCallback = function () {
     $("#" + contactId + "_contactAssocAccountList tbody tr").each(function () {
         var $this = $(this),
             isDefault = $this.data("isdefault"),
-            isDefaultContact = $this.data("isdefaultcontact");
+            isDefaultContact = $this.data("isdefaultcontact"),
+            showUnlinkBtn = $this.data("showunlink");
 
         if (isDefault == 1) {
             //change button style
@@ -910,7 +911,8 @@ window.contactAssociatedAccountCallback = function () {
             $this.find("button.updateDefaultAccount ").addClass("d-none");
         }
 
-        if(isDefault == 1 || isDefaultContact == 1){
+        // if(isDefault == 1 || isDefaultContact == 1){
+        if(showUnlinkBtn == 0){
             $this.find("button.contactAccountUnlink").addClass("d-none");
         }
     });

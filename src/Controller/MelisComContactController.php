@@ -1259,11 +1259,26 @@ class MelisComContactController extends MelisAbstractActionController
                 $cliName = $clientService->getAccountName($val['cli_id']);
                 $tableData[$key]['cli_name'] = !empty($cliName) ? "<span class='d-none td-tooltip'>".$cliName."</span>".mb_strimwidth($cliName, 0, 30, '...') : null;
 
+                $showUnlinkBtn = 1;
+                $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
+                $accountSettings = $melisComClientService->getAccountNameSetting();
+                if(!empty($accountSettings)){
+                    /**
+                     * If commerce account settings is set to contact_name,
+                     * we show unlink button EXCEPT for the default contact
+                     */
+                    if($accountSettings->sa_type == 'contact_name'){
+                        if($val['cpr_default_client'])
+                            $showUnlinkBtn = 0;
+                    }
+                }
+
                 $tableData[$key]['DT_RowAttr']    = [
                     'data-isdefault' => $val['cpr_default_client'],
                     'data-isdefaultcontact' => !empty($isDefaultAccount) ? 1 : 0,
                     'data-cprid' => $val['cpr_id'],
-                    'data-contactid' => $val['cper_id']
+                    'data-contactid' => $val['cper_id'],
+                    'data-showunlink' => $showUnlinkBtn
                 ];
             }
         }
