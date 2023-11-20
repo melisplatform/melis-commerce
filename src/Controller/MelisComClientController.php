@@ -1291,11 +1291,22 @@ class MelisComClientController extends MelisAbstractActionController
                 if (!empty($container['temp-linked-contacts'])) {
                     $clientContactsData = $container['temp-linked-contacts'];
                 } else {
-                    // This error will occured if no entry of Contact
-                    $errors['clientContactEmpty'] = array(
-                        'label' => $translator->translate('tr_meliscommerce_clients_common_label_contact'),
-                        'isEmpty' => $translator->translate('tr_meliscommerce_client_Contact_must_atleast_one')
-                    );
+                    /**
+                     * We made the contact required ONLY if the account settings is
+                     * set to contact_name
+                     */
+                    $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
+                    //check account settings
+                    $settings = $melisComClientService->getAccountNameSetting();
+                    if(!empty($settings)){
+                        if($settings->sa_type == 'contact_name'){
+                            // This error will occured if no entry of Contact
+                            $errors['clientContactEmpty'] = array(
+                                'label' => $translator->translate('tr_meliscommerce_clients_common_label_contact'),
+                                'isEmpty' => $translator->translate('tr_meliscommerce_client_Contact_must_atleast_one')
+                            );
+                        }
+                    }
                 }
             }
         }
