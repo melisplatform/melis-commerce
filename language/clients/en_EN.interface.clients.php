@@ -351,6 +351,7 @@
         'tr_client_accounts_export_col_cli_group_id' => 'Client Group',
         'tr_client_accounts_export_col_cli_tags' => 'Tags',
         'tr_client_accounts_export_col_cli_date_creation' => 'Creation date',
+        'tr_client_accounts_export_col_cli_date_edit' => 'Date of last modification',
         'tr_client_accounts_export_col_cli_last_order' => 'Last order',
         'tr_client_accounts_export_col_cli_company' => 'Company',
         'tr_client_accounts_export_col_cgroup_name' => 'Group',
