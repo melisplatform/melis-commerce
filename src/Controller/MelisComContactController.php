@@ -1674,9 +1674,13 @@ class MelisComContactController extends MelisAbstractActionController
                 }
                 //get civility
                 //get contact civility
+                $cvName = null;
                 $civility = $civilityTable->getCivilityTransByCivilityId($val['cper_civility'], $langId)->current();
                 if(!empty($civility))
-                    $tableData[$key]['cper_civility'] = $civility->civt_min_name;
+                    $cvName = $civility->civt_min_name;
+
+                $tableData[$key]['cper_civility'] = $cvName;
+                $tableData[$key]['cper_status'] = ($tableData[$key]['cper_status']) ? $translator->translate('tr_meliscommerce_client_status_active') : $translator->translate('tr_meliscommerce_client_status_inactive');
 
                 //remove confidential fields
                 unset($tableData[$key]['cper_password']);
