@@ -414,6 +414,15 @@ class MelisComContactService extends MelisComGeneralService
 
         // Service implementation start
         $personRelTable = $this->getServiceManager()->get('MelisEcomClientPersonRelTable');
+
+        /**
+         * Check if this is the first account associated to this contact,
+         * if first, we set it to default
+         */
+        if(empty($personRelTable->getEntryByField('cpr_client_id', $arrayParameters['data']['cpr_client_id'])->current())){
+            $arrayParameters['data']['cpr_default_person'] = 1;
+        }
+
         $results = $personRelTable->save($arrayParameters['data'], $arrayParameters['id']);
         if(!empty($results)){
             //insert also data to melis_ecom_client_person_rel table so the association will appear on both tool(contact/account)

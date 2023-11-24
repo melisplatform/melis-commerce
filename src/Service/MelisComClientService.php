@@ -2390,17 +2390,26 @@ class MelisComClientService extends MelisComGeneralService
 
         // Service implementation start
         $accountRelTable = $this->getServiceManager()->get('MelisEcomClientAccountRelTable');
+
+        /**
+         * Check if this is the first contact associated to this account,
+         * if first contact, we set it to default
+         */
+        if(empty($accountRelTable->getEntryByField('car_client_id', $arrayParameters['data']['car_client_id'])->current())){
+            $arrayParameters['data']['car_default_person'] = 1;
+        }
+
         $results = $accountRelTable->save($arrayParameters['data'], $arrayParameters['id']);
         if(!empty($results)){
             //insert also data to melis_ecom_client_person_rel table so the association will appear on both tool(contact/account)
             if(!empty($arrayParameters['data']['car_client_id']) && !empty($arrayParameters['data']['car_client_person_id'])) {
                 $personRelTable = $this->getServiceManager()->get('MelisEcomClientPersonRelTable');
-                $results = $personRelTable->save(
-                    [
-                        'cpr_client_id' => $arrayParameters['data']['car_client_id'],
-                        'cpr_client_person_id' => $arrayParameters['data']['car_client_person_id'],
-                    ]
-                );
+                $data = [
+                    'cpr_client_id' => $arrayParameters['data']['car_client_id'],
+                    'cpr_client_person_id' => $arrayParameters['data']['car_client_person_id'],
+                ];
+                //save
+                $results = $personRelTable->save($data);
             }
         }
         // Service implementation end
