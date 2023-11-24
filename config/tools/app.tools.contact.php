@@ -102,6 +102,11 @@ return [
                                 'css' => ['width' => '20%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],
+                            'cper_tags' => [
+                                'text' => 'tr_meliscommerce_client_tags',
+                                'css' => ['width' => '20%', 'padding-right' => '0'],
+                                'sortable' => false,
+                            ],
                         ],
                         // define what columns can be used in searching
                         'searchables' => [
@@ -109,7 +114,8 @@ return [
                             'cper_name',
                             'cper_firstname',
                             'cper_email',
-                            'client.cli_name'
+                            'client.cli_name',
+                            'cper_tags'
                         ],
                         'actionButtons' => [
                             'edit' => [

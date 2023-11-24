@@ -55,4 +55,18 @@ $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
     echo $this->form()->closeTag($form);
     ?>
 </div>
+<script>
+    $(document).ready(function(){
+        $(".clientContactForm #cper_tags").tagsinput({
+            allowDuplicates: false
+        });
+
+        //remove extra comma when typing word with comma in the end
+        $("body").on("keyup", '.clientContactForm .bootstrap-tagsinput input', function (e) {
+            if(e.keyCode == 188){//comma
+                $(this).val($(this).val().replace(",",""));
+            }
+        });
+    });
+</script>
 

@@ -293,6 +293,15 @@ class MelisComContactController extends MelisAbstractActionController
                     if (!empty($cliName))
                         $cliName = "<span class='d-none td-tooltip'>" . $cliName . "</span>" . mb_strimwidth($cliName, 0, 30, '...');
                 }
+                if(!empty($val['cper_tags'])){
+                    $str = '';
+                    $tags = explode(',',$val['cper_tags']);
+                    foreach($tags as $t){
+                        $str .= ' '.'<label class="badge badge-secondary">'.$t.'</label>';
+                    }
+                    $tableData[$key]['cper_tags'] = $str;
+                }
+
                 $tableData[$key]['cli_name'] = $cliName;
                 $tableData[$key]['cper_status'] = $contactStatus;
                 $tableData[$key]['cper_firstname'] = (!empty($val['cper_firstname'])) ? "<span class='d-none td-tooltip'>".$val['cper_firstname']."</span>".mb_strimwidth($val['cper_firstname'], 0, 30, '...') : '';
@@ -345,7 +354,7 @@ class MelisComContactController extends MelisAbstractActionController
                 /**
                  * Validate contact address data
                  */
-                $this->validateContactAddress($errors, $addressData);
+//                $this->validateContactAddress($errors, $addressData);
 
                 if(empty($errors)){
                     $postValues = $this->getRequest()->getPost()->toArray();

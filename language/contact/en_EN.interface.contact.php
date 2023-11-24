@@ -106,6 +106,7 @@ return [
     'tr_contact_export_col_add_mobile' => 'Adderss Mobile',
     'tr_contact_export_col_add_landline' => 'Address Landline',
     'tr_contact_export_col_add_additional' => 'Additional',
+    'tr_contact_export_col_cper_tags' => 'Tags',
 
     'tr_meliscommerce_contact_import_csv_file' => 'Upload CSV file',
     'tr_meliscommerce_contact_import_choose_file' => 'Choose file',

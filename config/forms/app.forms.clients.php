@@ -463,8 +463,26 @@ return [
                                     ]
                                 ]
                             ],
+                            [
+                                'spec' => [
+                                    'name' => 'cper_tags',
+                                    'type' => 'MelisText',
+                                    'options' => [
+                                        'label' => 'tr_meliscommerce_client_tags',
+                                        'disable_inarray_validator' => true,
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'cper_tags',
+                                        'require' => false
+                                    ]
+                                ]
+                            ],
                         ],
                         'input_filter' => [
+                            'cper_tags' => [
+                                'name'     => 'cper_tags',
+                                'required' => false,
+                            ],
                             'cper_civility' => [
                                 'name'     => 'cper_civility',
                                 'required' => false,

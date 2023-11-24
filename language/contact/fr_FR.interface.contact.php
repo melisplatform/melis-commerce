@@ -106,6 +106,7 @@ return [
     'tr_contact_export_col_add_mobile' => 'Adresse Téléphone mobile',
     'tr_contact_export_col_add_landline' => 'Adresse Téléphone fixe',
     'tr_contact_export_col_add_additional' => 'Complément',
+    'tr_contact_export_col_cper_tags' => 'Tags',
 
     'tr_meliscommerce_contact_import_csv_file' => 'Uploader le fichier CSV',
     'tr_meliscommerce_contact_import_choose_file' => 'Choisir le fichier',
