@@ -55,7 +55,7 @@ class MelisEcomClientTable extends MelisEcomGenericTable
         $select->columns($slct);
 
         $select->join('melis_ecom_client_account_rel', 'melis_ecom_client_account_rel.car_client_id = melis_ecom_client.cli_id', array('car_id','car_default_person'), $select::JOIN_LEFT);
-        $select->join(['person' => 'melis_ecom_client_person'], 'person.cper_id = melis_ecom_client_account_rel.car_client_person_id', array('cper_id','cper_firstname','cper_name','cper_status','cper_email'), $select::JOIN_LEFT);
+        $select->join(['person' => 'melis_ecom_client_person'], 'person.cper_id = melis_ecom_client_account_rel.car_client_person_id', array('cper_id','cper_firstname','cper_name','cper_status','cper_email', 'cper_job_title'), $select::JOIN_LEFT);
 
         if (!empty($searchValue)){
             $search = [];
