@@ -420,7 +420,7 @@ class MelisComContactService extends MelisComGeneralService
          * if first, we set it to default
          */
         if(empty($personRelTable->getEntryByField('cpr_client_id', $arrayParameters['data']['cpr_client_id'])->current())){
-            $arrayParameters['data']['cpr_default_person'] = 1;
+            $arrayParameters['data']['cpr_default_client'] = 1;
         }
 
         $results = $personRelTable->save($arrayParameters['data'], $arrayParameters['id']);
