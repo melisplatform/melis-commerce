@@ -1703,11 +1703,33 @@ class MelisComContactController extends MelisAbstractActionController
                 unset($tableData[$key]['cpr_default_client']);
             }
 
+            //now we include contact accounts
+            $contactAccounts = [];
+            foreach($tableData as $key => $val){
+                //lets include billing address
+                $this->processContactAccounts($contactAccounts, $key, $val['cper_id']);
+            }
+
+            /**
+             * This will match keys for every data
+             * For example if field 1 doesn't exist in array 1, it will put field 1 in array 1 to match all the keys
+             */
+            $keys = [];
+            $this->matchKeys($keys, $contactAccounts);
+
+            $tableData = ArrayUtils::merge($tableData, $contactAccounts, true);
+            $tableData = $this->processKeysToMatch($keys, $tableData);
+
             $exportData = [];
             foreach($tableData as $key => $val){
                 $dt = [];
                 foreach($val as $k => $d){
-                    $fname = $translator->translate('tr_contact_export_col_'.$k);
+                    if(strpos($k, 'translated_') !== false)
+                        $fname = str_replace('translated_', '', $k);
+                    else
+                        $fname = $translator->translate('tr_contact_export_col_'.$k);
+
+
                     $dt["$fname"] = $d;
                 }
                 $exportData[$key] = $dt;
@@ -1717,6 +1739,58 @@ class MelisComContactController extends MelisAbstractActionController
         $data = $this->mbEncode($data);
 
         return $this->executeCompanyContactExport($data, $fileName, $delimiter);
+    }
+
+    private function processContactAccounts(&$contactData, $key, $contactId)
+    {
+        $translator = $this->getServiceManager()->get('translator');
+        $contactService = $this->getServiceManager()->get('MelisComContactService');
+        $clientService = $this->getServiceManager()->get('MelisComClientService');
+
+        $contactDatas = $contactService->getContactAssocAccountLists($contactId)->toArray();
+
+        $datas = [];
+        foreach ($contactDatas As $aVal)
+        {
+            array_push($datas, $aVal);
+        }
+
+        $contactCount = 1;
+        $type = $translator->translate('tr_meliscommerce_clients_common_label_client');
+        foreach($datas as $i => $val){
+            foreach($val as $k => $v){
+                if(!in_array($k, ['cli_id'])) {
+                    $cliName = $clientService->getAccountName($val['cli_id']);
+
+                    $contactData[$key]['translated_'.$type . ' ' . $contactCount] = $cliName;
+                }
+            }
+            $contactCount++;
+        }
+    }
+
+    public function matchKeys(&$keys, $data)
+    {
+        foreach($data as $i => $val){
+            foreach($val as $k => $v){
+                if(!array_key_exists($k, $keys)){
+                    $keys[$k] = null;
+                }
+            }
+        }
+        return $keys;
+    }
+
+    public function processKeysToMatch($keys, $data)
+    {
+        foreach($data as $i => $val){
+            foreach($keys as $k => $b){
+                if(!array_key_exists($k, $val)){
+                    $data[$i][$k] = null;
+                }
+            }
+        }
+        return $data;
     }
 
     /**
