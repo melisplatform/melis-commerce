@@ -1525,9 +1525,9 @@ window.accountAssocContactListTblCallback = function ()
     var tbody = $("#"+accountId+"_accountContactList tbody");
     var tr = tbody.find("tr");
     //if only one contact remain, remove the unlink button
-    if($(tr).length == 1){
-        $(tr).find("td").find(".accountContactUnlink").addClass("d-none");
-	}
+    // if($(tr).length == 1){
+    //     $(tr).find("td").find(".accountContactUnlink").addClass("d-none");
+    // }
 
     var tr = tbody.find("tr[data-accountid='0']");
     //hide all unlink/set default button if creation of account
@@ -1556,10 +1556,10 @@ window.accountAssocContactListTblCallback = function ()
 			//hide remove default
             $this.find("button.updateDefaultContact").addClass("d-none");
         }
-        if(isDefault == 1 || isDefaultAccount == 1){
-            //hide unlink for default contact
-            $this.find("button.accountContactUnlink").addClass("d-none");
-		}
+        // if(isDefault == 1 || isDefaultAccount == 1){
+         //    //hide unlink for default contact
+         //    $this.find("button.accountContactUnlink").addClass("d-none");
+		// }
     });
     contactToolSelectedAccount = '';
     contactToolInitAccountAutoSuggest = false;
