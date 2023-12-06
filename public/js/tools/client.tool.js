@@ -1239,6 +1239,49 @@ $(function() {
             alert(translations.tr_meliscore_error_message);
         });
     });
+
+    $(document).on("click", "#addContactAccount", function(){
+        // initialation of local variable
+        var zoneId = "id_meliscommerce_client_modal_contact_form",
+            melisKey = "meliscommerce_client_modal_contact_form",
+            modalUrl = "/melis/MelisCommerce/MelisComClient/renderClientModal";
+
+        if($("#id_meliscommerce_contact_list_page").length > 0){
+            melisHelper.tabSwitch("id_meliscommerce_contact_list_page");
+            melisHelper.createModal(
+                zoneId,
+                melisKey,
+                false,
+                {},
+                modalUrl,
+                function() {
+                    $(".addNewContact").removeAttr("disabled");
+                }
+            );
+        }else{
+            melisHelper.tabOpen(
+                translations.tr_meliscommerce_contact,
+                "fa fa-user fa-2x",
+                "id_meliscommerce_contact_list_page",
+                "meliscommerce_contact_list_page",
+                {},
+                null,
+                function(){
+                    // requesitng to create modal and display after
+                    melisHelper.createModal(
+                        zoneId,
+                        melisKey,
+                        false,
+                        {},
+                        modalUrl,
+                        function() {
+                            $(".addNewContact").removeAttr("disabled");
+                        }
+                    );
+                }
+            );
+        }
+    });
 });
 function viewClientOrder(orderId, orderRef) {
 	var navTabsGroup = "id_meliscommerce_order_list_page";

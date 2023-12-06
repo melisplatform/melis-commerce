@@ -480,4 +480,7 @@
         'tr_client_accounts_import_country_does_not_exists' => ' n\'existe pas',
         'tr_client_accounts_import_address_type_does_not_exists' => ' n\'existe pas (billing, delivery)',
         'tr_client_accounts_import_file_title' => 'Exemple import de comptes',
+
+        'tr_client_accounts_contact_lists_add_contact' => 'Créer un contact',
+        'tr_meliscommerce_client_contact_list_add_contact_button' => 'Créer un contact',
     );

@@ -249,6 +249,15 @@ return [
                                         'left_menu_display' => false,
                                         'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
                                     ],
+                                ],
+                                'meliscommerce_client_contact_list_add_contact_button' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_client_contact_list_add_contact_button',
+                                        'melisKey' => 'meliscommerce_client_contact_list_add_contact_button',
+                                        'name' => 'tr_meliscommerce_client_contact_list_add_contact_button',
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
+                                    ],
                                 ]
                             ]
                         ],

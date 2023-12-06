@@ -262,6 +262,11 @@ return [
                                 ],
                             ],
                             'right' => [
+                                'meliscommerce-account-contact-list-add-contact' => [
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComClient',
+                                    'action' => 'render-account-contact-list-add-contact',
+                                ],
                                 'meliscommerce-account-contact-list-tbl-refresh' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComClient',

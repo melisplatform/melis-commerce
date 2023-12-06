@@ -635,6 +635,26 @@ class MelisComClientController extends MelisAbstractActionController
         $view->accountId = $accountId;
         return $view;
     }
+
+    /**
+     * @return ViewModel
+     */
+    public function renderAccountContactListAddContactAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $accountId = $this->params()->fromQuery('clientId', '');
+
+        $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
+        $xmlRights = $melisCoreAuth->getAuthRights();
+        $rights = $this->getServiceManager()->get('MelisCoreRights');
+        $canAccess = $rights->isAccessible($xmlRights, 'meliscore_interface', 'meliscommerce_client_contact_list_add_contact_button');
+
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        $view->accountId = $accountId;
+        $view->canAccess = $canAccess;
+        return $view;
+    }
     
     /**
      * Render Client Status 
