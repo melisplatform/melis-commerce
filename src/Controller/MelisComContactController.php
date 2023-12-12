@@ -1930,11 +1930,15 @@ class MelisComContactController extends MelisAbstractActionController
         $message = 'tr_meliscommerce_contact_import_failed';
         $title = 'tr_meliscommerce_contact_import_title';
         $errors = [];
+        $overrideExistingRecord = false;
         $request = $this->getRequest();
         $translator = $this->getServiceManager()->get('translator');
 
         if ($request->isPost()) {
             $post = $request->getPost()->toArray();
+
+            $overrideExistingRecord = $post['overrideExistingRecord'] ?? false;
+
             $contactService = $this->getServiceManager()->get('MelisComContactService');
 
             $file = $this->params()->fromFiles('contact_file');
@@ -1945,15 +1949,16 @@ class MelisComContactController extends MelisAbstractActionController
                 $csvDefaultDelimiter = $this->getCsvDelimiter($file['tmp_name']);
                 $delimiter = !empty($post['separator']) ? $post['separator'] : $csvDefaultDelimiter;
                 $fileContents = $this->readImportedCsv($file);
-                $result = $contactService->importFileValidator($fileContents, $csvDefaultDelimiter, $delimiter);
+                $result = $contactService->importFileValidator($fileContents, $delimiter, $overrideExistingRecord);
 
-                if (empty($result['errors'])) {
+//                if (empty($result['errors'])) {
+                if ($result['proceedImporting']) {
                     //execute saving records with transactions
                     $adapter = $this->getServiceManager()->get('Laminas\Db\Adapter\Adapter');
                     $con = $adapter->getDriver()->getConnection();//get db driver connection
                     $con->beginTransaction();//begin transaction
                     try {
-                        $contactService->importContacts($fileContents, $post, $csvDefaultDelimiter, $delimiter);
+                        $contactService->importContacts($fileContents, $post, $delimiter, $result['allowOverride']);
                         $con->commit();
                         $success = 1;
                         $message = 'tr_meliscommerce_contact_import_success';
@@ -1976,6 +1981,7 @@ class MelisComContactController extends MelisAbstractActionController
             'textTitle' => $translator->translate($title),
             'textMessage' => $translator->translate($message),
             'errors' => $errors,
+            'overrideExistingRecord' => $overrideExistingRecord,
             'typeCode' => 'IMPORT_CONTACTS'
         ];
 
@@ -1991,11 +1997,17 @@ class MelisComContactController extends MelisAbstractActionController
         $message = 'tr_meliscommerce_contact_import_failed';
         $title = 'tr_meliscommerce_contact_import_title';
         $errors = [];
+        $overrideExistingRecord = false;
+        $allowOverride = false;
+        $proceedImporting = false;
         $request = $this->getRequest();
         $translator = $this->getServiceManager()->get('translator');
 
         if ($request->isPost()) {
             $post = $request->getPost()->toArray();
+
+            $overrideExistingRecord = $post['overrideExistingRecord'] ?? false;
+
             $contactService = $this->getServiceManager()->get('MelisComContactService');
 
             $file = $this->params()->fromFiles('contact_file');
@@ -2008,7 +2020,7 @@ class MelisComContactController extends MelisAbstractActionController
 
                 $fileContents = $this->readImportedCsv($file);
 
-                $result = $contactService->importFileValidator($fileContents, $csvDefaultDelimiter, $delimiter);
+                $result = $contactService->importFileValidator($fileContents, $delimiter, $overrideExistingRecord);
                 if (empty($result['errors'])) {
                     $success = 1;
                     $message = 'tr_meliscommerce_contact_import_test_success';
@@ -2017,6 +2029,9 @@ class MelisComContactController extends MelisAbstractActionController
                     $success = 0;
                     $message = 'tr_meliscommerce_contact_import_test_failed';
                 }
+
+                $allowOverride = $result['allowOverride'];
+                $proceedImporting = $result['proceedImporting'];
             }else{
                 $success = 0;
                 $message = 'tr_meliscommerce_contact_common_file_not_csv';
@@ -2028,6 +2043,9 @@ class MelisComContactController extends MelisAbstractActionController
             'textTitle' => $translator->translate($title),
             'textMessage' => $translator->translate($message),
             'errors' => $errors,
+            'overrideExistingRecord' => $overrideExistingRecord,
+            'allowOverride' => $allowOverride,
+            'proceedImporting' => $proceedImporting,
             'typeCode' => 'IMPORT_CONTACTS'
         ];
 

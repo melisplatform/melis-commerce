@@ -509,9 +509,10 @@ class MelisComContactService extends MelisComGeneralService
      * @param $fileContents
      * @param $postData
      * @param string $delimiter
+     * @param bool $overrideExistingRecord
      * @return mixed
      */
-    public function importContacts($fileContents, $postData, $delimiter = ';')
+    public function importContacts($fileContents, $postData, $delimiter = ';', $overrideExistingRecord = false)
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -519,7 +520,7 @@ class MelisComContactService extends MelisComGeneralService
         // Sending service start event
         $arrayParameters = $this->sendEvent('meliscommerce_service_contact_import_contacts_start', $arrayParameters);
 
-        $contacts = explode(PHP_EOL, $fileContents);
+        $contacts = explode(PHP_EOL, $arrayParameters['fileContents']);
 
         /*
          * remove first line cause it is label for them
@@ -533,7 +534,7 @@ class MelisComContactService extends MelisComGeneralService
 
         foreach($contacts as $contact){
             if(!empty($contact)) {
-                $contactsData = array_filter(str_getcsv(trim($contact), $delimiter));
+                $contactsData = array_filter(str_getcsv(trim($contact), $arrayParameters['delimiter']));
 
                 //get civility id
                 $civD = (!empty($contactsData[4])) ? $civilityTable->getEntryByField('civt_min_name', ucfirst($contactsData[4]))->current() : null;
@@ -600,8 +601,21 @@ class MelisComContactService extends MelisComGeneralService
                 if(!$hasAddData)//if no single data, make the address data empty
                     $addressData = [];
 
+                /**
+                 * Check if we need to override the existing record
+                 */
+                $existingContactId = null;
+                if($arrayParameters['overrideExistingRecord']){
+                    if(!empty($contactData['cper_email'])) {
+                        $melisEcomClientPersonTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
+                        $contactExistingRec = $melisEcomClientPersonTable->getEntryByField('cper_email', $contactData['cper_email'])->current();
+                        if (!empty($contactExistingRec)) {
+                            $existingContactId = $contactExistingRec->cper_id;
+                        }
+                    }
+                }
                 //insert contact datas
-                $contactId = $this->saveContact($contactData, $addressData);
+                $contactId = $this->saveContact($contactData, $addressData, $existingContactId);
             }
         }
 
@@ -616,9 +630,10 @@ class MelisComContactService extends MelisComGeneralService
     /**
      * @param $fileContents
      * @param string $delimiter
+     * @param bool $overrideExistingRecord
      * @return mixed
      */
-    public function importFileValidator($fileContents, $delimiter = ';')
+    public function importFileValidator($fileContents, $delimiter = ';', $overrideExistingRecord = false)
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -630,6 +645,11 @@ class MelisComContactService extends MelisComGeneralService
         $translator = $this->getServiceManager()->get('translator');
 
         $errors = [];
+        $allowOverride = 0;
+        $hasMandatoryFieldsError = 0;
+        $hasEmailError = 0;
+        $isEmailExist = 0;
+        $proceedImporting = 0;
 
         // Transferring parameters to their original variables for readability
         $fileContents = $arrayParameters['fileContents'];
@@ -655,7 +675,7 @@ class MelisComContactService extends MelisComGeneralService
                      */
                     $tmperrors = [];
                     if (! empty($contactsData)) {
-                        $tmpErrors = $this->checkMandatoryFields($errors, $contactsData, $index);
+                        $tmpErrors = $this->checkMandatoryFields($errors, $hasMandatoryFieldsError, $contactsData, $index);
                     }
                     if ($tmpErrors) {
                         // Report empty mandatory fields
@@ -668,7 +688,7 @@ class MelisComContactService extends MelisComGeneralService
                     /**
                      * Check email format
                      */
-                    $tmpErrors = $this->checkEmailFormat($errors, $contactsData, $index);
+                    $tmpErrors = $this->checkEmailFormat($errors, $isEmailExist, $hasEmailError, $contactsData, $index, $overrideExistingRecord);
                     if ($tmpErrors) {
                         // Report empty mandatory fields
                         foreach ($tmpErrors as $error) {
@@ -680,7 +700,19 @@ class MelisComContactService extends MelisComGeneralService
             }
         } else $errors[] = $translator->translate('tr_meliscommerce_contact_common_empty_file');
 
+        /**
+         * Check if we allow to override the data
+         */
+        if(!$hasEmailError && !$hasMandatoryFieldsError && $isEmailExist && $overrideExistingRecord)
+            $allowOverride = 1;
+
+        //check if we proceed importing data
+        if(!$hasMandatoryFieldsError && !$hasEmailError)
+            $proceedImporting = 1;
+
         $results['errors'] = $errors;
+        $results['allowOverride'] = $allowOverride;
+        $results['proceedImporting'] = $proceedImporting;
 
         // END BUSINESS LOGIC
 
@@ -696,11 +728,12 @@ class MelisComContactService extends MelisComGeneralService
      * Returns an empty array when all mandatory fields are filled
      * otherwise, returns an array of errors
      *
+     * @param $errors
+     * @param $hasMandatoryFieldsError
      * @param array $contactsData
      * @param null $index
-     * @param $errors
      */
-    private function checkMandatoryFields(&$errors, $contactsData = [], $index = null)
+    private function checkMandatoryFields(&$errors, &$hasMandatoryFieldsError, $contactsData = [], $index = null)
     {
         $translator = $this->getServiceManager()->get('translator');
         $prefix = $translator->translate('tr_meliscommerce_contact_common_line') .' '. $index . ': ';
@@ -747,6 +780,8 @@ class MelisComContactService extends MelisComGeneralService
         foreach ($mandatoryFields as $fieldName => $position) {
             if (empty($contactsData[$position])) {
                 $errors[] = $prefix . $fieldName . $translator->translate('tr_meliscommerce_contact_import_is_mandatory');
+
+                $hasMandatoryFieldsError = 1;
             }
         }
 
@@ -760,10 +795,13 @@ class MelisComContactService extends MelisComGeneralService
 
     /**
      * @param $errors
+     * @param $isEmailExist
+     * @param $hasEmailError
      * @param array $contactsData
      * @param null $index
+     * @param bool $overrideExistingRecord
      */
-    private function checkEmailFormat(&$errors, $contactsData = [], $index = null)
+    private function checkEmailFormat(&$errors, &$isEmailExist, &$hasEmailError, $contactsData = [], $index = null, $overrideExistingRecord = false)
     {
         $translator = $this->getServiceManager()->get('translator');
         $prefix = $translator->translate('tr_meliscommerce_contact_common_line') .' '. $index . ': ';
@@ -778,6 +816,7 @@ class MelisComContactService extends MelisComGeneralService
                 $regex = "/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i";
                 if (!preg_match($regex, $contactsData[$position])) {
                     $isValid = false;
+                    $hasEmailError = 1;
                     $errors[] = $prefix . $fieldName . ' "' . $contactsData[$position] . '"' . $translator->translate('tr_meliscommerce_contact_import_invalid_email');
                 }
 
@@ -787,6 +826,11 @@ class MelisComContactService extends MelisComGeneralService
                 if($isValid){
                     $emails = $this->getContactByEmail($contactsData[$position]);
                     if(!empty($emails)){
+                        $isEmailExist = 1;
+
+                        if(!$overrideExistingRecord)
+                            $hasEmailError = 1;
+
                         $errors[] = $prefix . $fieldName . ' "' . $contactsData[$position] . '"' . $translator->translate('tr_meliscommerce_contact_import_email_already_exist');
                     }
                 }
