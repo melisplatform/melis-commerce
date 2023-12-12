@@ -150,4 +150,6 @@ return [
     'tr_meliscommerce_contact_delete_contact_message' => 'Are you sure you want to delete this contact?',
     'tr_meliscommerce_contact_delete_contact_message_success' => 'Contact deleted successfully',
     'tr_meliscommerce_contact_delete_contact_message_failed' => 'Unable to delete contact',
+
+    'tr_meliscommerce_contacts_delete_button' => 'Delete contact',
 ];

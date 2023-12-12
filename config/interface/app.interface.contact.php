@@ -210,6 +210,15 @@ return [
                                         'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
                                     ],
                                 ],
+                                'meliscommerce_contacts_delete_button' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_contacts_delete_button',
+                                        'melisKey' => 'meliscommerce_contacts_delete_button',
+                                        'name' => 'tr_meliscommerce_contacts_delete_button',
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
+                                    ],
+                                ],
                             ]
                         ],
                         'meliscommerce_contact_list_page' => [

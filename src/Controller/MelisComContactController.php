@@ -63,8 +63,16 @@ class MelisComContactController extends MelisAbstractActionController
     public function renderAccountContactListTableDeleteAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
+
+        //get user rights
+        $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
+        $xmlRights = $melisCoreAuth->getAuthRights();
+        $rights = $this->getServiceManager()->get('MelisCoreRights');
+        $canAccess = $rights->isAccessible($xmlRights, 'meliscore_interface', 'meliscommerce_contacts_delete_button');
+
         $view = new ViewModel();
         $view->melisKey = $melisKey;
+        $view->canAccess = $canAccess;
         return $view;
     }
 

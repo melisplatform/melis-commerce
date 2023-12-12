@@ -1,1 +1,1 @@
-<button class="btn btn-danger contactDelete" title="<?php echo $this->translate('tr_meliscommerce_general_common_delete')?>"><i class="fa fa-close"></i></button>
+<button class="btn btn-danger contactDelete <?= ($this->canAccess) ? "" : "d-none";?>" title="<?php echo $this->translate('tr_meliscommerce_general_common_delete')?>"><i class="fa fa-close"></i></button>
