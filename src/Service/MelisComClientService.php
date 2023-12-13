@@ -2135,18 +2135,22 @@ class MelisComClientService extends MelisComGeneralService
                 if(!$hasCompData)//if no single data, make the company data empty
                     $companyData = [];
 
+                /**
+                 * Contact is no longer required when importing account
+                 */
                 //contact data
-                $contactId = null;
-                $cTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
-                if(!empty($accountsData[36])){
-                    $emails = $cTable->getEntryByField('cper_email', $accountsData[36])->current();
-                    $contactId = $emails->cper_id;
-                }
-                $contactData = [
-                    [
-                        'cper_id' => $contactId
-                    ]
-                ];
+//                $contactId = null;
+//                $cTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
+//                if(!empty($accountsData[36])){
+//                    $emails = $cTable->getEntryByField('cper_email', $accountsData[36])->current();
+//                    $contactId = $emails->cper_id;
+//                }
+//                $contactData = [
+//                    [
+//                        'cper_id' => $contactId
+//                    ]
+//                ];
+                $contactData = [];
 
                 /**
                  * Check if we need to override the existing record
@@ -2247,13 +2251,14 @@ class MelisComClientService extends MelisComGeneralService
                     /**
                      * Check contact format
                      */
-                    $tmpErrors = $this->checkContact($errors, $hasContactError, $accountsData, $index);
-                    if ($tmpErrors) {
-                        foreach ($tmpErrors as $error) {
-                            $errors[] = $error;
-                        }
-                        continue;
-                    }
+                    //contact is no longer required when importing account
+//                    $tmpErrors = $this->checkContact($errors, $hasContactError, $accountsData, $index);
+//                    if ($tmpErrors) {
+//                        foreach ($tmpErrors as $error) {
+//                            $errors[] = $error;
+//                        }
+//                        continue;
+//                    }
                 }
             }
         } else $errors[] = $translator->translate('tr_meliscommerce_contact_common_empty_file');

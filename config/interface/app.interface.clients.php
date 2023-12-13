@@ -76,8 +76,7 @@ return [
                         'tr_client_accounts_import_template_company_state' => '',
                         'tr_client_accounts_import_template_company_country' => '',
                         'tr_client_accounts_import_template_company_phone_number' => '',
-                        'tr_client_accounts_import_template_company_website' => '',
-                        'tr_client_accounts_import_template_company_contact_email' => 'johndoe@test.com',
+                        'tr_client_accounts_import_template_company_website' => ''
                     ],
                     [
                         'tr_client_accounts_import_template_name' => 'Nom du compte 2',
@@ -115,8 +114,7 @@ return [
                         'tr_client_accounts_import_template_company_state' => '',
                         'tr_client_accounts_import_template_company_country' => 'France',
                         'tr_client_accounts_import_template_company_phone_number' => '444555666',
-                        'tr_client_accounts_import_template_company_website' => 'www.societexyz.com',
-                        'tr_client_accounts_import_template_company_contact_email' => 'janedoe@test.com',
+                        'tr_client_accounts_import_template_company_website' => 'www.societexyz.com'
                     ],
                     [
                         'tr_client_accounts_import_template_name' => 'Nom du compte 3',
@@ -154,8 +152,7 @@ return [
                         'tr_client_accounts_import_template_company_state' => '',
                         'tr_client_accounts_import_template_company_country' => '',
                         'tr_client_accounts_import_template_company_phone_number' => '',
-                        'tr_client_accounts_import_template_company_website' => '',
-                        'tr_client_accounts_import_template_company_contact_email' => 'Johndoe@test.com',
+                        'tr_client_accounts_import_template_company_website' => ''
                     ]
                 ]
             ],
