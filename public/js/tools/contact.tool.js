@@ -912,9 +912,9 @@ window.contactAssociatedAccountCallback = function () {
         }
 
         // if(isDefault == 1 || isDefaultContact == 1){
-        if(showUnlinkBtn == 0){
-            $this.find("button.contactAccountUnlink").addClass("d-none");
-        }
+        // if(showUnlinkBtn == 0){
+        //     $this.find("button.contactAccountUnlink").addClass("d-none");
+        // }
     });
     accountToolSelectedContact = '';
     accountToolInitContactAutoSuggest = false;
