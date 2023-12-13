@@ -419,7 +419,7 @@ class MelisComContactService extends MelisComGeneralService
          * Check if this is the first account associated to this contact,
          * if first, we set it to default
          */
-        if(empty($personRelTable->getEntryByField('cpr_client_id', $arrayParameters['data']['cpr_client_id'])->current())){
+        if(empty($personRelTable->getEntryByField('cpr_client_person_id', $arrayParameters['data']['cpr_client_person_id'])->current())){
             $arrayParameters['data']['cpr_default_client'] = 1;
         }
 
