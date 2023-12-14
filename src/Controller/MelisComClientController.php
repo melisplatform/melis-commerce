@@ -2206,7 +2206,7 @@ class MelisComClientController extends MelisAbstractActionController
      * @param int $checkLines
      * @return string
      */
-    private function getCsvDelimiter(string $filePath, int $checkLines = 3): string
+    public function getCsvDelimiter(string $filePath, int $checkLines = 3): string
     {
         $delimiters =[",", ";", "\t"];
 
@@ -2247,7 +2247,7 @@ class MelisComClientController extends MelisAbstractActionController
      * @param null $fileParameters
      * @return array|bool|null|string
      */
-    private function readImportedCsv($fileParameters = null)
+    public function readImportedCsv($fileParameters = null)
     {
         $data = array();
 
