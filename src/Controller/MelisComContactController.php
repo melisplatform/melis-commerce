@@ -1064,6 +1064,9 @@ class MelisComContactController extends MelisAbstractActionController
             'contactId' => $contactId
         );
 
+        $this->getEventManager()->trigger('meliscommerce_contact_delete_end',
+            $this, array_merge($response, array('typeCode' => 'ECOM_CONTACT_DELETE', 'itemId' => $contactId)));
+
         return new JsonModel($response);
     }
 
