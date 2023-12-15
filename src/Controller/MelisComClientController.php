@@ -2131,8 +2131,10 @@ class MelisComClientController extends MelisAbstractActionController
             'textMessage' => $translator->translate($message),
             'errors' => $errors,
             'overrideExistingRecord' => $overrideExistingRecord,
-            'typeCode' => 'IMPORT_ACCOUNTS'
+            'typeCode' => 'ECOM_CLIENTS_IMPORT'
         ];
+
+        $this->getEventManager()->trigger('meliscommerce_clients_import_end', $this, $response);
 
         return new JsonModel($response);
     }
@@ -2193,7 +2195,7 @@ class MelisComClientController extends MelisAbstractActionController
             'overrideExistingRecord' => $overrideExistingRecord,
             'allowOverride' => $allowOverride,
             'proceedImporting' => $proceedImporting,
-            'typeCode' => 'IMPORT_ACCOUNTS'
+            'typeCode' => 'ECOM_CLIENTS_IMPORT'
         ];
 
         return new JsonModel($response);
