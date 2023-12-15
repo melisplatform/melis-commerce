@@ -221,6 +221,7 @@ class MelisComContactService extends MelisComGeneralService
                     ];
                 }
             }
+            $arrayParameters['person']['cper_client_id'] = !empty($arrayParameters['person']['cper_client_id']) ? $arrayParameters['person']['cper_client_id'] : 0;
             $perId = $melisEcomClientPersonTable->save($arrayParameters['person'], $arrayParameters['personId']);
             //insert person email
             if(!empty($perEmails)) {
