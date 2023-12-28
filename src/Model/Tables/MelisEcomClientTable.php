@@ -184,8 +184,10 @@ class MelisEcomClientTable extends MelisEcomGenericTable
         if(!empty($order) && !$count)
             $select->order($order . ' ' . $orderDir);
 
-        $getCount = $this->getTableGateway()->selectWith($select);
-        $this->setCurrentDataCount((int) $getCount->count());
+        if($count) {
+            $getCount = $this->getTableGateway()->selectWith($select);
+            $this->setCurrentDataCount((int) $getCount->count());
+        }
 
         if (!empty($start))
         {

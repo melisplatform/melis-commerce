@@ -124,9 +124,12 @@ class MelisComContactController extends MelisAbstractActionController
             'count' => false
         ))->toArray();
 
-        foreach($lists as $key => $account){
-            $cliName = $melisComClientService->getAccountName($account['cli_id']);
-            $options .= '<option value="'.$account['cli_id'].'">'.$cliName.'</option>';
+        $clientIds = array_map(function ($account) {
+            return $account['cli_id'];
+        }, $lists);
+        $optionsList = $melisComClientService->getAccountNamesByClientIdArray($clientIds);
+        foreach($optionsList as $key => $account){
+            $options .= '<option value="'.$account['ccomp_client_id'].'">'.$account['ccomp_name'].'</option>';
         }
 
         $view =  new ViewModel();
