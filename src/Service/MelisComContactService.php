@@ -734,7 +734,7 @@ class MelisComContactService extends MelisComGeneralService
      * @param array $contactsData
      * @param null $index
      */
-    private function checkMandatoryFields(&$errors, &$hasMandatoryFieldsError, $contactsData = [], $index = null)
+    public function checkMandatoryFields(&$errors, &$hasMandatoryFieldsError, $contactsData = [], $index = null)
     {
         $translator = $this->getServiceManager()->get('translator');
         $prefix = $translator->translate('tr_meliscommerce_contact_common_line') .' '. $index . ': ';
@@ -802,7 +802,7 @@ class MelisComContactService extends MelisComGeneralService
      * @param null $index
      * @param bool $overrideExistingRecord
      */
-    private function checkEmailFormat(&$errors, &$isEmailExist, &$hasEmailError, $contactsData = [], $index = null, $overrideExistingRecord = false)
+    public function checkEmailFormat(&$errors, &$isEmailExist, &$hasEmailError, $contactsData = [], $index = null, $overrideExistingRecord = false)
     {
         $translator = $this->getServiceManager()->get('translator');
         $prefix = $translator->translate('tr_meliscommerce_contact_common_line') .' '. $index . ': ';
