@@ -245,6 +245,44 @@ class MelisComClientService extends MelisComGeneralService
 	}
 
 	/**
+   	* @param $clientIds
+   	* @return mixed
+   	*/
+  	public function getClientsByIdArray(array $clientIds = [])
+  	{
+		// Event parameters prepare
+		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+		$results = array();
+			  
+		// Sending service start event
+		$arrayParameters = $this->sendEvent('meliscommerce_service_get_clients_by_idarray_start', $arrayParameters);
+		
+		// Service implementation start
+		/**
+		 * Change client name depending on account settings
+		 */
+		$settings = $this->getAccountNameSetting();
+		if(!empty($settings)){
+			  if($settings->sa_type == 'company_name'){
+					  $companiesData = $this->getCompaniesByClientIdArray($clientIds);
+					  $results = $companiesData;
+			  } elseif($settings->sa_type == 'contact_name') {
+				  // logic for getting contact names by client id array
+			  }
+		}
+	
+		// Service implementation end
+		
+		// Adding results to parameters for events treatment if needed
+		$arrayParameters['results'] = $results;	    
+		// Sending service end event
+		$arrayParameters = $this->sendEvent('meliscommerce_service_get_clients_by_idarray_end', $arrayParameters);
+		
+		return $arrayParameters['results'];
+  	}
+
+
+	/**
 	 *
 	 * This method gets a specific client account.
 	 * Client datas will have: client account, persons, addresses, company
@@ -807,6 +845,28 @@ class MelisComClientService extends MelisComGeneralService
 		$arrayParameters['results'] = $results;
 		// Sending service end event
 		$arrayParameters = $this->sendEvent('meliscommerce_service_client_company_byclientid_end', $arrayParameters);
+		
+		return $arrayParameters['results'];
+	}
+
+	public function getCompaniesByClientIdArray(array $clientIds = [])
+	{
+		// Event parameters prepare
+		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+		$results = array();
+	
+		// Sending service start event
+		$arrayParameters = $this->sendEvent('meliscommerce_service_client_companies_byclientidarray_start', $arrayParameters);
+		
+		// Service implementation start
+		$melisEcomClientCompanyTable = $this->getServiceManager()->get('MelisEcomClientCompanyTable');
+		$clientCompanies = $melisEcomClientCompanyTable->getClientCompaniesByClientIdArray($clientIds)->toArray();
+		// Service implementation end
+	
+		// Adding results to parameters for events treatment if needed
+		$arrayParameters['results'] = $clientCompanies;
+		// Sending service end event
+		$arrayParameters = $this->sendEvent('meliscommerce_service_client_companies_byclientidarray_end', $arrayParameters);
 		
 		return $arrayParameters['results'];
 	}
@@ -2006,6 +2066,35 @@ class MelisComClientService extends MelisComGeneralService
 
         return $arrayParameters['results'];
     }
+
+	public function getAccountNamesByClientIdArray(array $clientIds = [])
+	{
+		// Event parameters prepare
+		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+
+		// Sending service start event
+		$arrayParameters = $this->sendEvent('meliscommerce_service_client_get_account_names_by_idarray_start', $arrayParameters);
+		$result = null;
+
+		// Service implementation start
+		$clientCompanies = $this->getClientsByIdArray($clientIds);
+		
+		$result = array_map(function ($company) {
+			return [
+				'ccomp_client_id' => $company['ccomp_client_id'],
+				'ccomp_name' => $company['ccomp_name'],
+				'ccomp_id' => $company['ccomp_id'],
+			];
+		}, $clientCompanies);
+
+		$arrayParameters['results'] = $result;
+
+		// Sending service end event
+		$arrayParameters = $this->sendEvent('meliscommerce_service_client_get_account_names_by_idarray_end', $arrayParameters);
+
+		return $arrayParameters['results'];
+	}
+
 
     /**
      * @param $fileContents
