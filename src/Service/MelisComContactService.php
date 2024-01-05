@@ -883,6 +883,10 @@ class MelisComContactService extends MelisComGeneralService
         // Service implementation start
         $personTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
         $results = $personTable->deleteById($arrayParameters['contactId']);
+        if($results){//delete contact email
+            $emails = $this->getServiceManager()->get('MelisEcomClientPersonEmailsTable');
+            $emails->deleteByField('cpmail_cper_id', $arrayParameters['contactId']);
+        }
 
         // Adding results to parameters for events treatment if needed
         $arrayParameters['results'] = $results;

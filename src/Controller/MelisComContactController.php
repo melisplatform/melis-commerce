@@ -413,7 +413,7 @@ class MelisComContactController extends MelisAbstractActionController
      * @param $errors
      * @param $contactData
      */
-    private function validateContact(&$errors, &$contactData)
+    public function validateContact(&$errors, &$contactData)
     {
         $personEmail = [];
         $translator = $this->getServiceManager()->get('translator');
@@ -513,7 +513,7 @@ class MelisComContactController extends MelisAbstractActionController
      * @param $errors
      * @param $addressData
      */
-    private function validateContactAddress(&$errors, &$addressData)
+    public function validateContactAddress(&$errors, &$addressData)
     {
         $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_clients/meliscommerce_clients_addresses_form','meliscommerce_clients_addresses_form');
