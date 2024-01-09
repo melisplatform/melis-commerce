@@ -421,7 +421,9 @@ class MelisComClientListController extends MelisAbstractActionController
             // Get the locale used from meliscore session
             $container = new Container('meliscore');
             $locale = $container['melis-lang-locale'];
-            
+
+            $formatter = new \IntlDateFormatter($locale, \IntlDateFormatter::LONG, \IntlDateFormatter::NONE);
+
             // Melis Translation Service Manager
             $melisTranslation = $this->getServiceManager()->get('MelisCoreTranslation');
             // Client Service Managers
@@ -510,8 +512,8 @@ class MelisComClientListController extends MelisAbstractActionController
                 $contactOrderData = $melisEcomOrderTable->getEntryByField('ord_client_id', $val['cli_id']);
                 $contactOrder = $contactOrderData->toArray();
                 $contactNumOrders = count($contactOrder);
-                $lastOrder = !empty($val['cli_last_order'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_last_order'])), 0, 10) : '';
-                $clientCreated = !empty($val['cli_date_creation'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_date_creation'])), 0, 10) : '';
+                $lastOrder = !empty($val['cli_last_order']) ? $formatter->format(strtotime($val['cli_last_order'])) : '';
+                $clientCreated = !empty($val['cli_date_creation']) ? $formatter->format(strtotime($val['cli_date_creation'])) : '';
 
                 $defaultContact = '';
                 $accountContactList = $melisComClientService->getAccountAssocContactLists($val['cli_id'])->toArray();
@@ -745,6 +747,8 @@ class MelisComClientListController extends MelisAbstractActionController
         $container = new Container('meliscore');
         $locale = $container['melis-lang-locale'];
 
+        $formatter = new \IntlDateFormatter($locale, \IntlDateFormatter::LONG, \IntlDateFormatter::NONE);
+
         $delimiter = $queryData['separator'] ?? ';';
         $status = $queryData['status'] ?? null;
         $groupId = $queryData['groupId'] ?? null;
@@ -811,13 +815,13 @@ class MelisComClientListController extends MelisAbstractActionController
 
                 //format dates
 //                $lastOrder = !empty($val['cli_last_order'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_last_order'])), 0, 10) : '';
-                $clientCreated = !empty($val['cli_date_creation'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_date_creation'])), 0, 10) : '';
+                $clientCreated = !empty($val['cli_date_creation']) ? $formatter->format(strtotime($val['cli_date_creation'])) : '';
                 $getData[$key]['cli_date_creation'] = $clientCreated;
-                $clientEdited = !empty($val['cli_date_edit'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_date_edit'])), 0, 10) : '';
+                $clientEdited = !empty($val['cli_date_edit']) ? $formatter->format(strtotime($val['cli_date_edit'])) : '';
                 $getData[$key]['cli_date_edit'] = $clientEdited;
 //                $getData[$key]['cli_last_order'] = $lastOrder;
                 //we use ccomp_comp_creation_date as company creation date
-                $companyCreated = !empty($val['ccomp_comp_creation_date'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['ccomp_comp_creation_date'])), 0, 10) : '';
+                $companyCreated = !empty($val['ccomp_comp_creation_date']) ? $formatter->format(strtotime($val['ccomp_comp_creation_date'])) : '';
                 $getData[$key]['ccomp_date_creation'] = $companyCreated;
             }
 
@@ -1020,13 +1024,14 @@ class MelisComClientListController extends MelisAbstractActionController
      */
     public function mbEncode($data)
     {
+        $coreTool = $this->getServiceManager()->get('MelisCoreTool');
         $newData = [];
         if (! empty($data)) {
             foreach ($data as $idx => $val) {
                 foreach (array_keys($val) as $key) {
                     $tmp = $val[$key];
                     // encode utf8_encode
-                    $newData[$idx][utf8_encode($key)] = html_entity_decode($tmp);
+                    $newData[$idx][$coreTool->iso8859_1ToUtf8($key)] = !empty($tmp) ? html_entity_decode($tmp) : '';
                 }
             }
         }
@@ -1044,6 +1049,7 @@ class MelisComClientListController extends MelisAbstractActionController
     public function executeCompanyContactExport($data, $fileName, $customSeparator = null, $customIsEnclosed = null)
     {
         $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
+        $coreTool = $this->getServiceManager()->get('MelisCoreTool');
 
         $csvConfig = $melisCoreConfig->getItem('meliscore/datas/default/export/csv');
         $separator = empty($customSeparator) ? $csvConfig['separator'] : $customSeparator;
@@ -1073,11 +1079,11 @@ class MelisComClientListController extends MelisAbstractActionController
                 foreach ($dataValue as $key => $value) {
 
                     if ($striptags) {
-                        $value = utf8_encode($value);
+                        $value = $coreTool->iso8859_1ToUtf8($value);
                     } else {
                         if (is_int($value)) {
                             $value = (string) $value;
-                            $value = utf8_encode($value);
+                            $value = $coreTool->iso8859_1ToUtf8($value);
                         }
                     }
 
@@ -1114,11 +1120,12 @@ class MelisComClientListController extends MelisAbstractActionController
     {
         $translator = $this->getServiceManager()->get('translator');
         $config = $this->getServiceManager()->get('config');
+        $coreTool = $this->getServiceManager()->get('MelisCoreTool');
         $dataTemplate = $config['plugins']['meliscommerce']['datas']['import_sample_template_accounts'];
         $data = [];
         foreach($dataTemplate as $key => $val){
             foreach($val as $k => $v){
-                $name = utf8_encode($translator->translate($k));
+                $name = $coreTool->iso8859_1ToUtf8($translator->translate($k));
                 $data[$key][$name] = $v;
             }
         }

@@ -1812,13 +1812,14 @@ class MelisComContactController extends MelisAbstractActionController
      */
     public function mbEncode($data)
     {
+        $coreTool = $this->getServiceManager()->get('MelisCoreTool');
         $newData = [];
         if (! empty($data)) {
             foreach ($data as $idx => $val) {
                 foreach (array_keys($val) as $key) {
                     $tmp = $val[$key];
                     // encode utf8_encode
-                    $newData[$idx][utf8_encode($key)] = $tmp;
+                    $newData[$idx][$coreTool->iso8859_1ToUtf8($key)] = !empty($tmp) ? $tmp : '';
 
                 }
             }
@@ -1837,6 +1838,7 @@ class MelisComContactController extends MelisAbstractActionController
     public function executeCompanyContactExport($data, $fileName, $customSeparator = null, $customIsEnclosed = null)
     {
         $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
+        $coreTool = $this->getServiceManager()->get('MelisCoreTool');
 
         $csvConfig = $melisCoreConfig->getItem('meliscore/datas/default/export/csv');
         $separator = empty($customSeparator) ? $csvConfig['separator'] : $customSeparator;
@@ -1866,11 +1868,11 @@ class MelisComContactController extends MelisAbstractActionController
                 foreach ($dataValue as $key => $value) {
 
                     if ($striptags) {
-                        $value = utf8_encode($value);
+                        $value = $coreTool->iso8859_1ToUtf8($value);
                     } else {
                         if (is_int($value)) {
                             $value = (string) $value;
-                            $value = utf8_encode($value);
+                            $value = $coreTool->iso8859_1ToUtf8($value);
                         }
                     }
 
@@ -2174,12 +2176,12 @@ class MelisComContactController extends MelisAbstractActionController
     public function readImportedCsv($fileParameters = null)
     {
         $data = array();
-
+        $coreTool = $this->getServiceManager()->get('MelisCoreTool');
         if (!empty($fileParameters['tmp_name'])) {
             $data = file_get_contents($fileParameters['tmp_name']);
             if (!mb_check_encoding($data, 'UTF-8')) {
                 //encode data to utf
-                $data = utf8_encode($data);
+                $data = $coreTool->iso8859_1ToUtf8($data);
             }
         }
 
@@ -2193,11 +2195,12 @@ class MelisComContactController extends MelisAbstractActionController
     {
         $translator = $this->getServiceManager()->get('translator');
         $config = $this->getServiceManager()->get('config');
+        $coreTool = $this->getServiceManager()->get('MelisCoreTool');
         $dataTemplate = $config['plugins']['meliscommerce']['datas']['import_sample_template'];
         $data = [];
         foreach($dataTemplate as $key => $val){
             foreach($val as $k => $v){
-                $name = utf8_encode($translator->translate($k));
+                $name = $coreTool->iso8859_1ToUtf8($translator->translate($k));
                 $data[$key][$name] = $v;
             }
         }
