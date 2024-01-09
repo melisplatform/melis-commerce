@@ -252,6 +252,9 @@ class MelisComCategoryController extends MelisAbstractActionController
             // Get the locale used from meliscore session
             $container = new Container('meliscore');
             $locale = $container['melis-lang-locale'];
+
+            $formatter = new \IntlDateFormatter($locale, \IntlDateFormatter::LONG, \IntlDateFormatter::NONE);
+
             $melisTranslation = $this->getServiceManager()->get('MelisCoreTranslation');
 
             $melisComCategoryService = $this->getServiceManager()->get('MelisComCategoryService');
@@ -259,9 +262,9 @@ class MelisComCategoryController extends MelisAbstractActionController
             $category = $categoryData->getCategory();
 
             $validFrom = empty($category->cat_date_valid_start) ? null : (((string) $category->cat_date_valid_start != '0000-00-00 00:00:00') ?
-                strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($category->cat_date_valid_start)) : null);
+                $formatter->format(strtotime($category->cat_date_valid_start)) : null);
             $validTo = empty($category->cat_date_valid_end) ? null : (((string) $category->cat_date_valid_end  != '0000-00-00 00:00:00') ?
-                strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($category->cat_date_valid_end)) : null);
+                $formatter->format(strtotime($category->cat_date_valid_end)) : null);
 
             if (!is_null($validFrom))
             {
@@ -1141,6 +1144,7 @@ class MelisComCategoryController extends MelisAbstractActionController
             // Get the locale used from meliscore session
             $container = new Container('meliscore');
             $locale = $container['melis-lang-locale'];
+            $formatter = new \IntlDateFormatter($locale, \IntlDateFormatter::LONG, \IntlDateFormatter::NONE);
 
             $melisTranslation = $this->getServiceManager()->get('MelisCoreTranslation');
 
@@ -1210,7 +1214,7 @@ class MelisComCategoryController extends MelisAbstractActionController
                     // GET PRODUCT IMAGE
                     $categoryProduct['prd_img'] = sprintf($prodImage, $docSvc->getDocDefaultImageFilePath('product', $productId));
 
-                    $categoryProduct['prd_date_creation'] = strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($categoryProduct['prd_date_creation']));
+                    $categoryProduct['prd_date_creation'] = $formatter->format(strtotime($categoryProduct['prd_date_creation']));
 
                     // Setting the tooltip of the product name
                     $toolTipTable->setTable('catProductTable' . $productId, 'table-row-' . ($ctr + 1), '');
