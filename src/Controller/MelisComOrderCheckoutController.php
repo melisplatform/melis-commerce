@@ -835,6 +835,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
             $dataCount = $personTable->getContactLists($accountId, null, 1, $search, $melisTool->getSearchableColumns(), null, null, null, 'ASC', true, false, true)->current();
 
             $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
+            $melisTool = $this->getServiceManager()->get('MelisCoreTool');
 
             foreach ($contactData As $val)
             {
@@ -854,7 +855,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                     $contactOrderData = $melisEcomOrderTable->getEntryByField('ord_client_person_id', $val['cper_id']);
                     $contactOrder = $contactOrderData->toArray();
                     $contactNumOrders = count($contactOrder);
-                    $lastOrder = !empty($val['cper_last_order']) ? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cper_last_order'])), 0, 10) : '';
+                    $lastOrder = !empty($val['cper_last_order']) ? mb_substr($melisTool->formatDate(strtotime($val['cper_last_order'])), 0, 10) : '';
 
                     $rowdata = array(
                         'DT_RowId' => $val['cper_id'],

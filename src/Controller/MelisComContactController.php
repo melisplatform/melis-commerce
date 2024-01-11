@@ -1688,7 +1688,7 @@ class MelisComContactController extends MelisAbstractActionController
                 //get client name
                 $tableData[$key]['cli_name'] = $melisComClientService->getAccountName($val['cli_id']);
                 //format date
-                $accountCreated = !empty($val['cper_date_creation'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cper_date_creation'])), 0, 10) : '';
+                $accountCreated = !empty($val['cper_date_creation'])? mb_substr($melisTool->formatDate(strtotime($val['cper_date_creation'])), 0, 10) : '';
                 $tableData[$key]['cper_date_creation'] = $accountCreated;
                 //get language name
                 if(!empty($val['cper_lang_id'])){

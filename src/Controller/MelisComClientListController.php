@@ -743,12 +743,6 @@ class MelisComClientListController extends MelisAbstractActionController
         $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
         $melisTranslation = $this->getServiceManager()->get('MelisCoreTranslation');
 
-        // Get the locale used from meliscore session
-        $container = new Container('meliscore');
-        $locale = $container['melis-lang-locale'];
-
-        $formatter = new \IntlDateFormatter($locale, \IntlDateFormatter::LONG, \IntlDateFormatter::NONE);
-
         $delimiter = $queryData['separator'] ?? ';';
         $status = $queryData['status'] ?? null;
         $groupId = $queryData['groupId'] ?? null;
@@ -815,13 +809,13 @@ class MelisComClientListController extends MelisAbstractActionController
 
                 //format dates
 //                $lastOrder = !empty($val['cli_last_order'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_last_order'])), 0, 10) : '';
-                $clientCreated = !empty($val['cli_date_creation']) ? $formatter->format(strtotime($val['cli_date_creation'])) : '';
+                $clientCreated = !empty($val['cli_date_creation']) ? $melisTool->formatDate(strtotime($val['cli_date_creation'])) : '';
                 $getData[$key]['cli_date_creation'] = $clientCreated;
-                $clientEdited = !empty($val['cli_date_edit']) ? $formatter->format(strtotime($val['cli_date_edit'])) : '';
+                $clientEdited = !empty($val['cli_date_edit']) ? $melisTool->formatDate(strtotime($val['cli_date_edit'])) : '';
                 $getData[$key]['cli_date_edit'] = $clientEdited;
 //                $getData[$key]['cli_last_order'] = $lastOrder;
                 //we use ccomp_comp_creation_date as company creation date
-                $companyCreated = !empty($val['ccomp_comp_creation_date']) ? $formatter->format(strtotime($val['ccomp_comp_creation_date'])) : '';
+                $companyCreated = !empty($val['ccomp_comp_creation_date']) ? $melisTool->formatDate(strtotime($val['ccomp_comp_creation_date'])) : '';
                 $getData[$key]['ccomp_date_creation'] = $companyCreated;
             }
 
