@@ -253,8 +253,6 @@ class MelisComCategoryController extends MelisAbstractActionController
             $container = new Container('meliscore');
             $locale = $container['melis-lang-locale'];
 
-            $formatter = new \IntlDateFormatter($locale, \IntlDateFormatter::LONG, \IntlDateFormatter::NONE);
-
             $melisTranslation = $this->getServiceManager()->get('MelisCoreTranslation');
 
             $melisComCategoryService = $this->getServiceManager()->get('MelisComCategoryService');
@@ -262,9 +260,9 @@ class MelisComCategoryController extends MelisAbstractActionController
             $category = $categoryData->getCategory();
 
             $validFrom = empty($category->cat_date_valid_start) ? null : (((string) $category->cat_date_valid_start != '0000-00-00 00:00:00') ?
-                $formatter->format(strtotime($category->cat_date_valid_start)) : null);
+                date($melisTranslation->getDateFormatByLocate($locale), strtotime($category->cat_date_valid_start)) : null);
             $validTo = empty($category->cat_date_valid_end) ? null : (((string) $category->cat_date_valid_end  != '0000-00-00 00:00:00') ?
-                $formatter->format(strtotime($category->cat_date_valid_end)) : null);
+                date($melisTranslation->getDateFormatByLocate($locale), strtotime($category->cat_date_valid_end)) : null);
 
             if (!is_null($validFrom))
             {
