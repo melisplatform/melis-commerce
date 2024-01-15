@@ -259,16 +259,18 @@ class MelisComSeoService extends MelisComGeneralService
         
         try
         {
-            $seo['eseo_url'] = $enginePage->cleanString(mb_strtolower($seo['eseo_url']));
-            $seo['eseo_url'] = $enginePage->cleanLink(mb_strtolower($seo['eseo_url']));
-            
-            if (preg_match('/\s/', $seo['eseo_url']))
-            {
-                $seo['eseo_url'] = str_replace(" ", "", $seo['eseo_url']);
+            if(!is_null($seo['eseo_url'])) {
+                $seo['eseo_url'] = $enginePage->cleanString(mb_strtolower($seo['eseo_url']));
+                $seo['eseo_url'] = $enginePage->cleanLink(mb_strtolower($seo['eseo_url']));
+
+                if (preg_match('/\s/', $seo['eseo_url']))
+                {
+                    $seo['eseo_url'] = str_replace(" ", "", $seo['eseo_url']);
+                }
             }
             
-            $seo['eseo_url_redirect'] = mb_strtolower($seo['eseo_url_redirect']);
-            $seo['eseo_url_301'] = mb_strtolower($seo['eseo_url_301']);
+            $seo['eseo_url_redirect'] = mb_strtolower($seo['eseo_url_redirect'] ?? '');
+            $seo['eseo_url_301'] = mb_strtolower($seo['eseo_url_301'] ?? '');
 
             $ecomSeotable->save($seo, $seoId);
             $successFlag = true;
