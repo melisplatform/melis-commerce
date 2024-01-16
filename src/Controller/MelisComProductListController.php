@@ -468,7 +468,7 @@ class MelisComProductListController extends MelisAbstractActionController
                             }
                             
                             $isAllOk = false;
-                            $priceNetValidator = strpos($priceNet, ',') !== false ? explode(',', $priceNet)[0] : null;
+                            $priceNetValidator = strpos($priceNet ?? '', ',') !== false ? explode(',', $priceNet)[0] : null;
                             // if both price and stock is not 0, then display
                                 
                             if(is_null($stockQty) || is_numeric($stockQty)) {
