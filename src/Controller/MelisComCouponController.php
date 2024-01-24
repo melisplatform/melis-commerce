@@ -656,7 +656,7 @@ class MelisComCouponController extends MelisAbstractActionController
         return new JsonModel(array (
             'draw' => (int) $draw,
             'recordsTotal' => count($tableData),
-            'recordsFiltered' =>  $dataCount->total,
+            'recordsFiltered' =>  $dataCount?->total,
             'data' => $tableData,
         ));
     }
