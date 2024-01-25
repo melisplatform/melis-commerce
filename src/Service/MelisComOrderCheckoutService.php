@@ -826,7 +826,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
 
                     $totalCost = $order['costs']['total'];
 
-                    if (bccomp($totalCost, $arrayParameters['results']['payment_details']['transactionPricePaid'], 3) == 0)
+                    if ($this->compareFloats($totalCost, $arrayParameters['results']['payment_details']['transactionPricePaid'], 3))
                     {
                         $orderData = array(
                             'ord_status' => 1 // Status new Order
@@ -940,6 +940,17 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_checkout_step2_postpayment_proccess_end', $arrayParameters);
         
         return $arrayParameters['results'];
+    }
+
+    private function compareFloats($val1, $val2, int $scale = null)
+    {
+        $epsilon = 0.000000000001;
+        if(!is_null($scale) && $scale > 0) {
+            $val1 = round($val1, $scale);
+            $val2 = round($val2, $scale);
+        }
+        // Use absolute difference and compare values
+        return abs($val1 - $val2) < $epsilon;
     }
     
     /**
