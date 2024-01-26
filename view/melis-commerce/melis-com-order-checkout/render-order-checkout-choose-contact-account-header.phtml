@@ -1,0 +1,24 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = 'id="'.$this->zoneconfig['conf']['id'] .'"';
+    }
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<div class="me-heading bg-white border-bottom" <?php echo $id.' '.$data_melisKey; ?> style="margin-bottom: 20px">      		
+	<div class="row">
+		<div class="me-hl col-xs-12 col-md-9">
+			<h1 class="content-heading"><?php echo $this->translate($this->zoneconfig['conf']['name'])?></h1>
+			<p><?php echo $this->translate('tr_meliscommerce_order_checkout_contact_account_description')?></p>
+		</div>
+		<div class="me-hl col-xs-12 col-md-3" align="right">
+    		<?php 
+        	    if(!empty($this->zoneconfig['interface'])) {
+        	        foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+        	            echo $this->$keyConfig;
+        	        }
+        	    }
+        	?>
+  		</div>
+	</div>       		
+</div>

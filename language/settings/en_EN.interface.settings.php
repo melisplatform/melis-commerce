@@ -12,4 +12,13 @@ return array(
     'tr_meliscommerce_settings_save_success' => 'Settings has been successfully saved',
     'tr_meliscommerce_settings_save_add_recipients_failed' => 'Failed to add recipients',
     'tr_meliscommerce_settings_label_recipients' => 'Recipients',
+
+    'tr_meliscommerce_settings_page_tabs_accounts' => 'Accounts',
+    'tr_meliscommerce_settings_type_manual_input' => 'Manual input',
+    'tr_meliscommerce_settings_type_company_name' => 'Company name',
+    'tr_meliscommerce_settings_type_contact_name' => 'Contact name',
+    'tr_meliscommerce_settings_type_account_name' => 'Account name',
+
+    'tr_meliscommerce_settings_type_account_lock_checkbox' => 'Check to edit',
+    'tr_meliscommerce_settings_type_account_lock_checkbox_warning' => 'Warning, editing these options can have irreversible critical consequences on the accounts of the commerce module.',
 );

@@ -82,7 +82,14 @@ class MelisCommerceFlashMessengerListener extends MelisGeneralListener implement
             'meliscommerce_settings_save_end',
             'meliscommerce_clients_group_flash_messenger',
             'meliscommerce_clients_delete_client_person_email_end',
-            'meliscommerce_clients_save_end'
+            'meliscommerce_clients_save_end',
+            'meliscommerce_clients_delete_end',
+            'meliscommerce_clients_import_end',
+            'meliscommerce_contact_save_end',
+            'meliscommerce_contact_delete_end',
+            'meliscommerce_contacts_import_end',
+            'meliscommerce_order_status_type_save_end',
+            'meliscommerce_order_status_delete_end',
         ];
 
         $priority = -1000;

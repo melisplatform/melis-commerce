@@ -25,15 +25,16 @@
 		echo $this->melisFieldCollection($form);
     ?>
         <div class="client-company-preview" style="<?= (! empty($this->ccomp_logo)) ? '' : 'display:none;' ?>">
-            <span class="thumbnail">
+            <span style="width:350px;">
                 <img
-                    class="client-company-thumbnail"
+                    class="client-company-thumbnail img-thumbnail"
                     width="300"
                     src="<?= (! empty($this->ccomp_logo)) ? $this->ccomp_logo : '' ?>"
                     style="margin-right: auto; margin-left: auto; display:block;"
                     data-img="<?= (! empty($this->ccomp_logo)) ? $this->ccomp_logo : '' ?>"
                 >
             </span>
+            <span class="remove-company-image"><i class="fa fa-close"></i></span>
         </div>
     <?php
 		echo $this->form()->closeTag();

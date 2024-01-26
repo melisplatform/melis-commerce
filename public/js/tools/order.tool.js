@@ -1009,7 +1009,6 @@ $(function() {
 								"id_meliscommerce_order_status_content_table",
 								"meliscommerce_order_status_content_table"
 							);
-							melisHelper.tabClose(couponId + "_id_meliscommerce_coupon_page");
 						} else {
 							melisHelper.melisKoNotification(
 								data.textTitle,

@@ -38,6 +38,26 @@ return [
                             ],
                         ],
                     ],
+                    'download_contact_import_template' => [
+                        'type' => 'Segment',
+                        'options' => [
+                            'route' => 'download-contact-template',
+                            'defaults' => [
+                                'controller' => 'MelisCommerce\Controller\MelisComContactController',
+                                'action' => 'downloadImportTemplate',
+                            ],
+                        ],
+                    ],
+                    'download_accounts_import_template' => [
+                        'type' => 'Segment',
+                        'options' => [
+                            'route' => 'download-account-template',
+                            'defaults' => [
+                                'controller' => 'MelisCommerce\Controller\MelisComClientListController',
+                                'action' => 'downloadImportTemplate',
+                            ],
+                        ],
+                    ],
                 ],
             ],
             'melis-front' => [
@@ -115,6 +135,7 @@ return [
             'MelisComPriceService'                          => \MelisCommerce\Service\MelisComPriceService::class,
             'MelisComOrderProductReturnService'             => \MelisCommerce\Service\MelisComOrderProductReturnService::class,
             'MelisComCacheService'                          => \MelisCommerce\Service\MelisComCacheService::class,
+            'MelisComContactService'                          => \MelisCommerce\Service\MelisComContactService::class,
 
             // Tables
             'MelisEcomAttributeTable'                       => \MelisCommerce\Model\Tables\MelisEcomAttributeTable::class,
@@ -172,6 +193,9 @@ return [
             'MelisEcomOrderProductReturnTable'              => \MelisCommerce\Model\Tables\MelisEcomOrderProductReturnTable::class,
             'MelisEcomOrderProductReturnDetailsTable'       => \MelisCommerce\Model\Tables\MelisEcomOrderProductReturnDetailsTable::class,
             'MelisEcomProductLinksTable'                    => \MelisCommerce\Model\Tables\MelisEcomProductLinksTable::class,
+            'MelisEcomClientPersonRelTable'                 => \MelisCommerce\Model\Tables\MelisEcomClientPersonRelTable::class,
+            'MelisEcomClientAccountRelTable'                 => \MelisCommerce\Model\Tables\MelisEcomClientAccountRelTable::class,
+            'MelisEcomSettingsAccountTable'                 => \MelisCommerce\Model\Tables\MelisEcomSettingsAccountTable::class,
         ],
         'abstract_factories' => [
             'Laminas\Cache\Service\StorageCacheAbstractServiceFactory',
@@ -208,6 +232,7 @@ return [
             'MelisCommerce\Controller\MelisComSettings'             => \MelisCommerce\Controller\MelisComSettingsController::class,
             'MelisCommerce\Controller\MelisComClientsGroup'         => \MelisCommerce\Controller\MelisComClientsGroupController::class,
             'MelisCommerce\Controller\MelisComOrderProductReturn'   => \MelisCommerce\Controller\MelisComOrderProductReturnController::class,
+            'MelisCommerce\Controller\MelisComContact'              => \MelisCommerce\Controller\MelisComContactController::class,
         ],
     ],
     'controller_plugins' => [
@@ -378,12 +403,18 @@ return [
     'caches' => [
         'commerce_memory_services' => [ 
             'active' => true, // activate or deactivate Melis Cache for this conf
-            'adapter' => [
-                'name'    => 'Memory',
-                'options' => ['ttl' => 0, 'namespace' => 'meliscommerce'],
+            'adapter' => \Laminas\Cache\Storage\Adapter\Memory::class,
+            'options' => [
+                'ttl' => 0,
+                'namespace' => 'meliscommerce'
             ],
             'plugins' => [
-                'exception_handler' => ['throw_exceptions' => false],
+                [
+                    'name' => 'exception_handler',
+                    'options' => [
+                        'throw_exceptions' => false
+                    ],
+                ]
             ],
             'ttls' => [
                 // add a specific ttl for a specific cache key (found via regexp]
@@ -392,17 +423,22 @@ return [
         ],
         'commerce_big_services' => [
             'active' => true, // activate or deactivate Melis Cache for this conf
-            'adapter' => [
-                'name'    => 'Filesystem',
-                'options' => [
-                    'ttl' => 60 * 60 * 24, // 24hrs
-                    'namespace' => 'meliscommerce',
-                    'cache_dir' => $_SERVER['DOCUMENT_ROOT'] . '/../cache'
-                ],
+            'adapter' => \Laminas\Cache\Storage\Adapter\Filesystem::class,
+            'options' => [
+                'ttl' => 60 * 60 * 24, // 24hrs
+                'namespace' => 'meliscommerce',
+                'cache_dir' => $_SERVER['DOCUMENT_ROOT'] . '/../cache'
             ],
             'plugins' => [
-                'exception_handler' => ['throw_exceptions' => false],
-                'Serializer'
+                [
+                    'name' => 'exception_handler',
+                    'options' => [
+                        'throw_exceptions' => false
+                    ],
+                ],
+                [
+                    'name' => 'Serializer'
+                ]
             ],
             'ttls' => [
                 // add a specific ttl for a specific cache key (found via regexp]

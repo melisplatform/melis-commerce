@@ -595,12 +595,12 @@ class MelisComCouponController extends MelisAbstractActionController
         $draw = 0;
         $tableData = array();
         $couponId = null;
-        $dataFiltered = 0;
         
         $langId = $this->getTool()->getCurrentLocaleID();
         $clientTable = $this->getServiceManager()->get('MelisEcomClientTable');
         $clientSvc = $this->getServiceManager()->get('MelisComClientService');
         $couponClientTable = $this->getServiceManager()->get('MelisEcomCouponClientTable');
+
         if($this->getRequest()->isPost()) {
             $colId = array_keys($this->getTool()->getColumns());
             $couponId = $this->getRequest()->getPost('couponId');
@@ -622,13 +622,11 @@ class MelisComCouponController extends MelisAbstractActionController
             
             $search = $this->getRequest()->getPost('search');
             $search = $search['value'];
-            $isMain = 1;
-            
-            $tmp = $clientTable->getCouponClientList(null, null, $isMain, null, null, null, $colOrder, $search);
-            $dataFiltered = count($tmp);
-            
-            $clients = $clientTable->getCouponClientList($langId, null, $isMain, null, $start, $length, $colOrder, $search);
-            
+            $isMain = 0;
+
+            $clients = $clientTable->getCouponClientList(true, $isMain, null, $start, $length, $colOrder, $search, $this->getTool()->getSearchableColumns());
+            $dataCount = $clientTable->getCouponClientList(true, $isMain, null, null, null, $colOrder, $search, $this->getTool()->getSearchableColumns(), true)->current();
+
             $c = 0;
             foreach($clients as $client){
                 
@@ -648,20 +646,17 @@ class MelisComCouponController extends MelisAbstractActionController
                 
                 $tableData[$c]['DT_RowId']      = $client->getClient()->cli_id;
                 $tableData[$c]['cli_id']        = $client->getClient()->cli_id;
-                $tableData[$c]['cper_firstname']= $this->getTool()->escapeHtml($client->getPersons()[0]->cper_firstname);
-                $tableData[$c]['cper_name']     = $this->getTool()->escapeHtml($client->getPersons()[0]->cper_name);
-                $tableData[$c]['cper_email']    = $this->getTool()->escapeHtml($client->getPersons()[0]->cper_email);
+                $tableData[$c]['cli_name']        = $client->getClient()->cli_name;
                 $tableData[$c]['ccomp_name']    = $this->getTool()->escapeHtml($companyName);
                 $tableData[$c]['assign']        = $assign;
                 $tableData[$c]['DT_RowClass']   = (!empty($assign)) ? 'couponNoAddButton' : '';
                 $c++;
             }
-            $dataCount = $c;
         }
         return new JsonModel(array (
             'draw' => (int) $draw,
-            'recordsTotal' => $dataCount,
-            'recordsFiltered' =>  $dataFiltered,
+            'recordsTotal' => count($tableData),
+            'recordsFiltered' =>  $dataCount?->total,
             'data' => $tableData,
         ));
     }
@@ -715,25 +710,28 @@ class MelisComCouponController extends MelisAbstractActionController
     
             $search = $this->getRequest()->getPost('search');
             $search = $search['value'];
-            $isMain = 1;
-    
-            $tmp = $clientTable->getCouponClientList(null, null, $isMain, $couponId, null, null, $colOrder, $search);
-            $dataFiltered = count($tmp);
-    
-            $clients = $clientTable->getCouponClientList($langId, null, $isMain, $couponId, $start, $length, $colOrder, $search);
-    
+            $isMain = 0;
+
+//            $tmp = $clientTable->getCouponClientList(null, null, $isMain, $couponId, null, null, $colOrder, $search);
+//            $dataFiltered = count($tmp);
+//
+//            $clients = $clientTable->getCouponClientList($langId, null, $isMain, $couponId, $start, $length, $colOrder, $search);
+
+            $clients = $clientTable->getCouponClientList(true, $isMain, $couponId, $start, $length, $colOrder, $search, $this->getTool()->getSearchableColumns());
+            $dataCount = $clientTable->getCouponClientList(true, $isMain, $couponId, null, null, $colOrder, $search, $this->getTool()->getSearchableColumns(), true)->current();
+
             $c = 0;
             foreach($clients as $client){
                 $assign = '';
                 $companyName = '';
                 $client = $clientSvc->getClientByIdAndClientPerson($client->cli_id);
-    
-                
+
+
                 $usedCoupon = $couponOrderTable->checkUsedClientCoupon($couponId, $client->getClient()->cli_id)->toArray();
                 if(count($usedCoupon) > 0){
                     $tableData[$c]['DT_RowClass'] = "couponAssigned";
                 }
-                
+
     
                 foreach($client->getCompany() as $company){
                     $companyName = $company->ccomp_name;
@@ -742,19 +740,16 @@ class MelisComCouponController extends MelisAbstractActionController
                 $tableData[$c]['DT_RowId']      = $client->getClient()->cli_id;
                 $tableData[$c]['DT_RowAttr']    = array('data-couponid' => $couponId);
                 $tableData[$c]['cli_id']        = $client->getClient()->cli_id;
-                $tableData[$c]['cper_firstname']= $this->getTool()->escapeHtml($client->getPersons()[0]->cper_firstname);
-                $tableData[$c]['cper_name']     = $this->getTool()->escapeHtml($client->getPersons()[0]->cper_name);
-                $tableData[$c]['cper_email']    = $this->getTool()->escapeHtml($client->getPersons()[0]->cper_email);
+                $tableData[$c]['cli_name']      = $this->getTool()->escapeHtml($client->getClient()->cli_name);
                 $tableData[$c]['ccomp_name']    = $this->getTool()->escapeHtml($companyName);
                 $tableData[$c]['assign']        = $assign;
                 $c++;
             }
-            $dataCount = $c;
         }
         return new JsonModel(array (
             'draw' => (int) $draw,
-            'recordsTotal' => $dataCount,
-            'recordsFiltered' =>  $dataFiltered,
+            'recordsTotal' => count($tableData),
+            'recordsFiltered' =>  $dataCount->total ?? 0,
             'data' => $tableData,
         ));
     }

@@ -1,0 +1,58 @@
+<?php
+$id = '';
+if (!empty($this->zoneconfig['conf']['id'])){
+    $id = 'id="'.$this->zoneconfig['conf']['id'] .'"';
+}
+$data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<div <?php echo $id. ' '.$data_melisKey?>>
+    <div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" id="lock_settings" type="checkbox">
+                <label class="form-check-label lock-settings-label" for="lock_settings"><?= $this->translate('tr_meliscommerce_settings_type_account_lock_checkbox');?></label>
+            </input>
+        </div>
+        <p>
+            <?= $this->translate('tr_meliscommerce_settings_type_account_lock_checkbox_warning');?>
+        </p>
+    </div>
+    <?php
+    $form = $this->accountForm;
+    $form->prepare();
+    echo $this->form()->openTag($form);
+    foreach($form->getElements() as $key => $val)  {
+        echo '<div class="form-group">';
+        if ($val->getLabel())
+        {
+            $required = '';
+            if(!empty($val->getAttribute('required'))){
+                $required = ' <sup>*</sup>';
+            }
+            echo $this->formLabel()->openTag($val);
+            echo $val->getLabel();
+            echo $required;
+            echo $this->formLabel()->closeTag();
+        }
+
+        if($key == 'sa_type'){
+            foreach($val->getValueOptions() as $k => $v) {
+                $selected = "";
+                if(empty($val->getValue())){
+                    if($k == "manual_input") {
+                        $selected = "checked";
+                    }
+                }else {
+                    $selected = ($k == $val->getValue()) ? "checked" : "";
+                }
+                echo '<div class="form-check form-check-inline"><input disabled class="form-check-input '.$key.'" data-cat-type="'.strtoupper($v).'" type="radio" id="'.$key.'_' . $k . '" name="'.$key.'" value="' . $k . '" '.$selected.'>
+                                                <label class="form-check-label" for="'.$key.'_' . $k . '">' . $v . '</label>
+                                                </input></div>';
+            }
+        }else {
+            echo $this->formElement($val, array('class' => 'form-control'));
+        }
+        echo '</div>';
+    }
+    echo $this->form()->closeTag($form);
+    ?>
+</div>

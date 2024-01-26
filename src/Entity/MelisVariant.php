@@ -9,6 +9,7 @@
 
 namespace MelisCommerce\Entity;
 
+#[\AllowDynamicProperties]
 class MelisVariant
 {
 	protected $id;
