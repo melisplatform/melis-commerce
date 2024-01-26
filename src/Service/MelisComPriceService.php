@@ -101,6 +101,7 @@ class MelisComPriceService extends MelisComGeneralService
             $results = $this->getItemPrice($variant->var_prd_id, $arrayParameters['countryId'], 
                     $arrayParameters['groupId'], 'product', $arrayParameters['data']);
         }
+        $results['initial_price'] = $results['price'];
 		// Service implementation end
 
         // Adding results to parameters for events treatment if needed

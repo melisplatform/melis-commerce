@@ -428,9 +428,10 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                                     'discount' => $prdVarPrice['total_discount'],
                                     // 'sub_total_amount' => $prdVarPrice['sub_total_amount'],
                                     'total_price' => $prdVarPrice['total_amount'],
-                                    'price_details' => $prdVarPrice
+                                    'price_details' => $prdVarPrice,
+                                    'initial_price' => $prdVarPrice['initial_price']
                                 ];
-                                // $subTotalCost += $prdVarPrice['sub_total_amount'];
+                                $subTotalCost += $prdVarPrice['initial_price'];
                                 $totalCost += $prdVarPrice['total_amount'];
 
                                 // dump($prdVarPrice['total_amount']);
@@ -458,7 +459,10 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             $results['costs']['order']['details'] = $variantDetails;
 
             // as default value subTotal is equal to the total of order cost
-            $results['costs']['order']['subTotal'] = $totalCost;
+            // $results['costs']['order']['subTotal'] = $totalCost;
+
+            // changed subtotal: total of initial (undiscounted) price
+            $results['costs']['order']['subTotal'] = $subTotalCost;
             $results['costs']['order']['total'] = $totalCost;
             
             if (!empty($errors))

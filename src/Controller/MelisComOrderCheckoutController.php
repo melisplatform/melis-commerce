@@ -1755,6 +1755,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                             'var_sku' => $varSku,
                             'var_quantity' => $val['quantity'],
                             'var_price' => $currencySymbol.number_format($val['unit_price'], 2),
+                            'initial_price' => $currencySymbol.number_format($val['initial_price'], 2),
                             'product_name' => $melisComProductService->getProductName($productId, $langId),
                             'discount' => $currencySymbol.number_format($val['discount'], 2),
                             'var_total' => $currencySymbol.number_format($val['price_details']['total_amount'], 2),
@@ -1769,7 +1770,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
 
             $productDiscount = $clientOrder['totalProductDiscount'] ?? 0;
             
-            $totalDiscount = $clientOrder['totalGeneralDiscount'] ?? 0;;
+            $totalDiscount = $clientOrder['totalGeneralDiscount'] ?? 0;
 
             $subTotal = $clientOrder['subTotal'];
 
