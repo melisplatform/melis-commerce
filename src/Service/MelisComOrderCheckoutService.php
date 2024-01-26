@@ -431,7 +431,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                                     'price_details' => $prdVarPrice,
                                     'initial_price' => $prdVarPrice['initial_price']
                                 ];
-                                $subTotalCost += $prdVarPrice['initial_price'];
+                                $subTotalCost += ($prdVarPrice['initial_price'] * $variantQty);
                                 $totalCost += $prdVarPrice['total_amount'];
 
                                 // dump($prdVarPrice['total_amount']);
