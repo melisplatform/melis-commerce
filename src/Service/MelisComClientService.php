@@ -245,6 +245,44 @@ class MelisComClientService extends MelisComGeneralService
 	}
 
 	/**
+   	* @param $clientIds
+   	* @return mixed
+   	*/
+  	public function getClientsByIdArray(array $clientIds = [])
+  	{
+		// Event parameters prepare
+		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+		$results = array();
+			  
+		// Sending service start event
+		$arrayParameters = $this->sendEvent('meliscommerce_service_get_clients_by_idarray_start', $arrayParameters);
+		
+		// Service implementation start
+		/**
+		 * Change client name depending on account settings
+		 */
+		$settings = $this->getAccountNameSetting();
+		if(!empty($settings)){
+			  if($settings->sa_type == 'company_name'){
+					  $companiesData = $this->getCompaniesByClientIdArray($clientIds);
+					  $results = $companiesData;
+			  } elseif($settings->sa_type == 'contact_name') {
+				  // logic for getting contact names by client id array
+			  }
+		}
+	
+		// Service implementation end
+		
+		// Adding results to parameters for events treatment if needed
+		$arrayParameters['results'] = $results;	    
+		// Sending service end event
+		$arrayParameters = $this->sendEvent('meliscommerce_service_get_clients_by_idarray_end', $arrayParameters);
+		
+		return $arrayParameters['results'];
+  	}
+
+
+	/**
 	 *
 	 * This method gets a specific client account.
 	 * Client datas will have: client account, persons, addresses, company
@@ -807,6 +845,28 @@ class MelisComClientService extends MelisComGeneralService
 		$arrayParameters['results'] = $results;
 		// Sending service end event
 		$arrayParameters = $this->sendEvent('meliscommerce_service_client_company_byclientid_end', $arrayParameters);
+		
+		return $arrayParameters['results'];
+	}
+
+	public function getCompaniesByClientIdArray(array $clientIds = [])
+	{
+		// Event parameters prepare
+		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+		$results = array();
+	
+		// Sending service start event
+		$arrayParameters = $this->sendEvent('meliscommerce_service_client_companies_byclientidarray_start', $arrayParameters);
+		
+		// Service implementation start
+		$melisEcomClientCompanyTable = $this->getServiceManager()->get('MelisEcomClientCompanyTable');
+		$clientCompanies = $melisEcomClientCompanyTable->getClientCompaniesByClientIdArray($clientIds)->toArray();
+		// Service implementation end
+	
+		// Adding results to parameters for events treatment if needed
+		$arrayParameters['results'] = $clientCompanies;
+		// Sending service end event
+		$arrayParameters = $this->sendEvent('meliscommerce_service_client_companies_byclientidarray_end', $arrayParameters);
 		
 		return $arrayParameters['results'];
 	}
@@ -2007,13 +2067,44 @@ class MelisComClientService extends MelisComGeneralService
         return $arrayParameters['results'];
     }
 
+	public function getAccountNamesByClientIdArray(array $clientIds = [])
+	{
+		// Event parameters prepare
+		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
+
+		// Sending service start event
+		$arrayParameters = $this->sendEvent('meliscommerce_service_client_get_account_names_by_idarray_start', $arrayParameters);
+		$result = null;
+
+		// Service implementation start
+		$clientCompanies = $this->getClientsByIdArray($clientIds);
+		
+		$result = array_map(function ($company) {
+			return [
+				'ccomp_client_id' => $company['ccomp_client_id'],
+				'ccomp_name' => $company['ccomp_name'],
+				'ccomp_id' => $company['ccomp_id'],
+			];
+		}, $clientCompanies);
+
+		$arrayParameters['results'] = $result;
+
+		// Sending service end event
+		$arrayParameters = $this->sendEvent('meliscommerce_service_client_get_account_names_by_idarray_end', $arrayParameters);
+
+		return $arrayParameters['results'];
+	}
+
+
     /**
      * @param $fileContents
      * @param $postData
      * @param string $delimiter
+     * @param bool $overrideExistingRecord
+     * @param string $typeToCheck
      * @return mixed
      */
-    public function importAccounts($fileContents, $postData, $delimiter = ';')
+    public function importAccounts($fileContents, $postData, $delimiter = ';', $overrideExistingRecord = false, $typeToCheck = 'account_name')
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -2039,7 +2130,9 @@ class MelisComClientService extends MelisComGeneralService
                 $accountsData = array_filter(str_getcsv(trim($account), $delimiter));
 
                 //get country id
-                $countryD = $countryTable->getEntryByField('ctry_name', $accountsData[1])->current();
+                $countryD = null;
+                if(!empty($accountsData[1]))
+                    $countryD = $countryTable->getEntryByField('ctry_name', $accountsData[1])->current();
                 //get group id
                 $groupId = null;
                 if(!empty($accountsData[3]))
@@ -2131,20 +2224,52 @@ class MelisComClientService extends MelisComGeneralService
                 if(!$hasCompData)//if no single data, make the company data empty
                     $companyData = [];
 
+                /**
+                 * Contact is no longer required when importing account
+                 */
                 //contact data
-                $contactId = null;
-                $cTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
-                if(!empty($accountsData[36])){
-                    $emails = $cTable->getEntryByField('cper_email', $accountsData[36])->current();
-                    $contactId = $emails->cper_id;
+//                $contactId = null;
+//                $cTable = $this->getServiceManager()->get('MelisEcomClientPersonTable');
+//                if(!empty($accountsData[36])){
+//                    $emails = $cTable->getEntryByField('cper_email', $accountsData[36])->current();
+//                    $contactId = $emails->cper_id;
+//                }
+//                $contactData = [
+//                    [
+//                        'cper_id' => $contactId
+//                    ]
+//                ];
+                $contactData = [];
+
+                /**
+                 * Check if we need to override the existing record
+                 */
+                $existingClientId = null;
+                if($overrideExistingRecord){
+                    if($typeToCheck == 'account_name') {
+                        if (!empty($clientData['cli_name'])) {
+                            $clientTable = $this->getServiceManager()->get('MelisEcomClientTable');
+                            $clientExistingRec = $clientTable->getEntryByField('cli_name', $clientData['cli_name'])->current();
+                            if (!empty($clientExistingRec)) {
+                                $existingClientId = $clientExistingRec->cli_id;
+                            }
+                        }
+                    }elseif($typeToCheck == 'company_name'){
+                        if(!empty($companyData)){
+                            if(!empty($companyData['ccomp_name'])) {
+                                $clientCompanyTable = $this->getServiceManager()->get('MelisEcomClientCompanyTable');
+                                $companyExistingRec = $clientCompanyTable->getEntryByField('ccomp_name', $companyData['ccomp_name'])->current();
+                                if (!empty($companyExistingRec)) {
+                                    $existingClientId = $companyExistingRec->ccomp_client_id;
+                                    $companyData['ccomp_id'] = $companyExistingRec->ccomp_id;
+                                }
+                            }
+                        }
+                    }
                 }
-                $contactData = [
-                    [
-                        'cper_id' => $contactId
-                    ]
-                ];
+
                 //insert client datas
-                $accountId = $this->saveClient($clientData, $contactData, $addressData, $companyData);
+                $accountId = $this->saveClient($clientData, $contactData, $addressData, $companyData, $existingClientId);
             }
         }
 
@@ -2159,9 +2284,11 @@ class MelisComClientService extends MelisComGeneralService
     /**
      * @param $fileContents
      * @param string $delimiter
+     * @param bool $overrideExistingRecord
+     * @param string $typeToCheck - type check the existing record (account_name or company_name)
      * @return mixed
      */
-    public function importFileValidator($fileContents, $delimiter = ';')
+    public function importFileValidator($fileContents, $delimiter = ';', $overrideExistingRecord = false, $typeToCheck = 'account_name')
     {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -2173,6 +2300,11 @@ class MelisComClientService extends MelisComGeneralService
         $translator = $this->getServiceManager()->get('translator');
 
         $errors = [];
+        $allowOverride = 0;
+        $hasMandatoryFieldsError = 0;
+        $hasContactError = 0;
+        $isClientExist = 0;
+        $proceedImporting = 0;
 
         // Transferring parameters to their original variables for readability
         $fileContents = $arrayParameters['fileContents'];
@@ -2195,7 +2327,7 @@ class MelisComClientService extends MelisComGeneralService
                      */
                     $tmperrors = [];
                     if (! empty($accountsData)) {
-                        $tmpErrors = $this->checkMandatoryFields($errors, $accountsData, $index);
+                        $tmpErrors = $this->checkMandatoryFields($errors, $isClientExist, $hasMandatoryFieldsError, $accountsData, $index);
                     }
                     if ($tmpErrors) {
                         // Report empty mandatory fields
@@ -2208,18 +2340,31 @@ class MelisComClientService extends MelisComGeneralService
                     /**
                      * Check contact format
                      */
-                    $tmpErrors = $this->checkContact($errors, $accountsData, $index);
-                    if ($tmpErrors) {
-                        foreach ($tmpErrors as $error) {
-                            $errors[] = $error;
-                        }
-                        continue;
-                    }
+                    //contact is no longer required when importing account
+//                    $tmpErrors = $this->checkContact($errors, $hasContactError, $accountsData, $index);
+//                    if ($tmpErrors) {
+//                        foreach ($tmpErrors as $error) {
+//                            $errors[] = $error;
+//                        }
+//                        continue;
+//                    }
                 }
             }
         } else $errors[] = $translator->translate('tr_meliscommerce_contact_common_empty_file');
 
+        /**
+         * Check if we allow to override the data
+         */
+        if(!$hasContactError && !$hasMandatoryFieldsError && $isClientExist && $overrideExistingRecord)
+            $allowOverride = 1;
+
+        //check if we proceed importing data
+        if(!$hasMandatoryFieldsError && !$hasContactError)
+            $proceedImporting = 1;
+
         $results['errors'] = $errors;
+        $results['allowOverride'] = $allowOverride;
+        $results['proceedImporting'] = $proceedImporting;
 
         // END BUSINESS LOGIC
 
@@ -2235,11 +2380,15 @@ class MelisComClientService extends MelisComGeneralService
      * Returns an empty array when all mandatory fields are filled
      * otherwise, returns an array of errors
      *
+     * @param $errors
      * @param array $accountsData
      * @param null $index
-     * @param $errors
+     * @param $isClientExist
+     * @param $hasMandatoryFieldsError
+     * @param $overrideExistingRecord
+     * @param $typeToCheck - type check the existing record (account_name or company_name)
      */
-    private function checkMandatoryFields(&$errors, $accountsData = [], $index = null)
+    private function checkMandatoryFields(&$errors, &$isClientExist, &$hasMandatoryFieldsError, $accountsData = [], $index = null, $overrideExistingRecord = false, $typeToCheck = 'account_name')
     {
         $translator = $this->getServiceManager()->get('translator');
         $clientTable = $this->getServiceManager()->get('MelisEcomClientTable');
@@ -2295,19 +2444,33 @@ class MelisComClientService extends MelisComGeneralService
             foreach ($mandatoryFields as $fieldName => $position) {
                 if (empty($accountsData[$position]) && !in_array($position, [3,5,22])) {//exclude company to mandatory fields
                     $errors[] = $prefix . $fieldName . $translator->translate('tr_meliscommerce_contact_import_is_mandatory');
+                    $hasMandatoryFieldsError = 1;
                 }else{
                     if($position == 1) {//check of client country exists
                         $cliData = $countryTable->getEntryByField('ctry_name', $accountsData[$position])->current();
                         if(empty($cliData)){
                             $errors[] = $prefix . $fieldName . $translator->translate('tr_client_accounts_import_country_does_not_exists');
+                            $hasMandatoryFieldsError = 1;
                         }elseif(!$cliData->ctry_status){//check for the status
                             $errors[] = $prefix . $fieldName . $translator->translate('tr_meliscommerce_clients_common_not_active');
+                            $hasMandatoryFieldsError = 1;
                         }
                     }elseif($position == 22) {//check of company name already exist
                         if(!empty($accountsData[$position])) {
                             $compData = $compTable->getEntryByField('ccomp_name', $accountsData[$position])->current();
                             if (!empty($compData)) {
+                                if($typeToCheck == 'company_name')
+                                    $isClientExist = 1;
+
+                                if(!$overrideExistingRecord)
+                                    $hasMandatoryFieldsError = 1;
+
                                 $errors[] = $prefix . $fieldName . $translator->translate('tr_client_accounts_import_col_account_already_exist');
+                            }
+                        }else{
+                            if($comSettings->sa_type == 'company_name'){
+                                $hasMandatoryFieldsError = 1;
+                                $errors[] = $prefix . $fieldName . $translator->translate('tr_meliscommerce_contact_import_is_mandatory');
                             }
                         }
                     }elseif($position == 5){//check if address type exist
@@ -2315,6 +2478,7 @@ class MelisComClientService extends MelisComGeneralService
                             $type = $this->addressType;
                             if (empty($type[strtolower($accountsData[$position])])) {
                                 $errors[] = $prefix . $fieldName . $translator->translate('tr_client_accounts_import_address_type_does_not_exists');
+                                $hasMandatoryFieldsError = 1;
                             }
                         }
                     }elseif($position == 3){//check if client group exist
@@ -2322,8 +2486,10 @@ class MelisComClientService extends MelisComGeneralService
                             $groupData = $groupTable->getEntryById($accountsData[$position])->current();
                             if (empty($groupData)) {
                                 $errors[] = $prefix . $fieldName . $translator->translate('tr_meliscommerce_clients_common_does_not_exist');
+                                $hasMandatoryFieldsError = 1;
                             }elseif(!$groupData->cgroup_status){
                                 $errors[] = $prefix . $fieldName . $translator->translate('tr_meliscommerce_clients_common_not_active');
+                                $hasMandatoryFieldsError = 1;
                             }
                         }
                     }
@@ -2334,6 +2500,12 @@ class MelisComClientService extends MelisComGeneralService
                     $name = str_replace('"', '', $accountsData[$position]);
                     $cliData = $clientTable->getEntryByField('cli_name', $name)->current();
                     if(!empty($cliData)){
+                        if($typeToCheck == 'account_name')
+                            $isClientExist = 1;
+
+                        if(!$overrideExistingRecord)
+                            $hasMandatoryFieldsError = 1;
+
                         $errors[] = $prefix . $fieldName . $translator->translate('tr_client_accounts_import_col_account_already_exist');
                     }
                 }
@@ -2343,10 +2515,11 @@ class MelisComClientService extends MelisComGeneralService
 
     /**
      * @param $errors
+     * @param $hasContactError
      * @param array $accountsData
      * @param null $index
      */
-    private function checkContact(&$errors, $accountsData = [], $index = null)
+    private function checkContact(&$errors, &$hasContactError,$accountsData = [], $index = null)
     {
         $translator = $this->getServiceManager()->get('translator');
         $contactService = $this->getServiceManager()->get('MelisComContactService');
@@ -2369,6 +2542,7 @@ class MelisComClientService extends MelisComGeneralService
             }
 
             if(empty($emails)){
+                $hasContactError = 1;
                 $errors[] = $prefix . $fieldName . $translator->translate('tr_client_accounts_import_col_account_contact_not_exist');
             }
         }
@@ -2390,17 +2564,26 @@ class MelisComClientService extends MelisComGeneralService
 
         // Service implementation start
         $accountRelTable = $this->getServiceManager()->get('MelisEcomClientAccountRelTable');
+
+        /**
+         * Check if this is the first contact associated to this account,
+         * if first contact, we set it to default
+         */
+        if(empty($accountRelTable->getEntryByField('car_client_id', $arrayParameters['data']['car_client_id'])->current())){
+            $arrayParameters['data']['car_default_person'] = 1;
+        }
+
         $results = $accountRelTable->save($arrayParameters['data'], $arrayParameters['id']);
         if(!empty($results)){
             //insert also data to melis_ecom_client_person_rel table so the association will appear on both tool(contact/account)
             if(!empty($arrayParameters['data']['car_client_id']) && !empty($arrayParameters['data']['car_client_person_id'])) {
                 $personRelTable = $this->getServiceManager()->get('MelisEcomClientPersonRelTable');
-                $results = $personRelTable->save(
-                    [
-                        'cpr_client_id' => $arrayParameters['data']['car_client_id'],
-                        'cpr_client_person_id' => $arrayParameters['data']['car_client_person_id'],
-                    ]
-                );
+                $data = [
+                    'cpr_client_id' => $arrayParameters['data']['car_client_id'],
+                    'cpr_client_person_id' => $arrayParameters['data']['car_client_person_id'],
+                ];
+                //save
+                $results = $personRelTable->save($data);
             }
         }
         // Service implementation end

@@ -351,6 +351,7 @@
         'tr_client_accounts_export_col_cli_group_id' => 'Client Group',
         'tr_client_accounts_export_col_cli_tags' => 'Tags',
         'tr_client_accounts_export_col_cli_date_creation' => 'Creation date',
+        'tr_client_accounts_export_col_cli_date_edit' => 'Date of last modification',
         'tr_client_accounts_export_col_cli_last_order' => 'Last order',
         'tr_client_accounts_export_col_cli_company' => 'Company',
         'tr_client_accounts_export_col_cgroup_name' => 'Group',
@@ -481,4 +482,7 @@
         'tr_client_accounts_import_country_does_not_exists' => ' does not exist',
         'tr_client_accounts_import_address_type_does_not_exists' => ' does not exist. (billing, delivery)',
         'tr_client_accounts_import_file_title' => 'Example import accounts',
+
+        'tr_client_accounts_contact_lists_add_contact' => 'Create contact',
+        'tr_meliscommerce_client_contact_list_add_contact_button' => 'Create contact',
 );

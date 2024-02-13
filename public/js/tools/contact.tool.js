@@ -801,6 +801,42 @@ $(function(){
             alert(translations.tr_meliscore_error_message);
         });
     });
+
+    $body.on("click", ".contactDelete", function(){
+        var $this   = $(this),
+            contactId = $this.parents("tr").attr("id");
+
+        melisCoreTool.confirm(
+            translations.tr_meliscore_common_yes,
+            translations.tr_meliscore_common_no,
+            translations.tr_meliscommerce_contact_delete_contact_title,
+            translations.tr_meliscommerce_contact_delete_contact_message,
+            function() {
+                $.ajax({
+                    type: "POST",
+                    url: "/melis/MelisCommerce/MelisComContact/deleteContact",
+                    data: {contactId: contactId},
+                    dataType: "json",
+                    encode: true,
+                    cache: false
+                }).done(function(data){
+                    if(data.success){
+                        melisHelper.melisOkNotification(
+                            data.textTitle,
+                            data.textMessage
+                        );
+                        $("#contactList").DataTable().ajax.reload();
+                    }else{
+                        melisHelper.melisKoNotification(
+                            data.textTitle,
+                            data.textMessage,
+                            data.errors
+                        );
+                    }
+                });
+            }
+        );
+    });
 });
 
 window.setContactId = function(d){
@@ -841,12 +877,26 @@ window.initAccountAutoSuggest = function($element)
     $($element).easyAutocomplete(options);
 };
 
+window.contactTableCallback = function()
+{
+    $("#contactList tbody tr").each(function () {
+        var $this = $(this),
+            hasAssocAccount = $this.data("has_assoc_accounts")
+
+        if (hasAssocAccount == 1) {
+            //hide delete button
+            $this.find("button.contactDelete").addClass("d-none");
+        }
+    });
+};
+
 window.contactAssociatedAccountCallback = function () {
     var contactId = activeTabId.replace('_id_meliscommerce_contact_page','');
     $("#" + contactId + "_contactAssocAccountList tbody tr").each(function () {
         var $this = $(this),
             isDefault = $this.data("isdefault"),
-            isDefaultContact = $this.data("isdefaultcontact");
+            isDefaultContact = $this.data("isdefaultcontact"),
+            showUnlinkBtn = $this.data("showunlink");
 
         if (isDefault == 1) {
             //change button style
@@ -861,9 +911,10 @@ window.contactAssociatedAccountCallback = function () {
             $this.find("button.updateDefaultAccount ").addClass("d-none");
         }
 
-        if(isDefault == 1 || isDefaultContact == 1){
-            $this.find("button.contactAccountUnlink").addClass("d-none");
-        }
+        // if(isDefault == 1 || isDefaultContact == 1){
+        // if(showUnlinkBtn == 0){
+        //     $this.find("button.contactAccountUnlink").addClass("d-none");
+        // }
     });
     accountToolSelectedContact = '';
     accountToolInitContactAutoSuggest = false;

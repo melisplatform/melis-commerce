@@ -84,4 +84,17 @@
 </div>
 <script>
 	$('.modalClientContactStatus').bootstrapSwitch();
+    $(document).ready(function(){
+        $("#melisCommerceClientContactFormModal #cper_tags").tagsinput({
+            allowDuplicates: false
+        });
+
+        //remove extra comma when typing word with comma in the end
+        $("body").on("keyup", '#melisCommerceClientContactFormModal .bootstrap-tagsinput input', function (e) {
+            if(e.keyCode == 188){//comma
+                $(this).val($(this).val().replace(",",""));
+            }
+        });
+    });
+
 </script>

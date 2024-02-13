@@ -1239,6 +1239,49 @@ $(function() {
             alert(translations.tr_meliscore_error_message);
         });
     });
+
+    $(document).on("click", "#addContactAccount", function(){
+        // initialation of local variable
+        var zoneId = "id_meliscommerce_client_modal_contact_form",
+            melisKey = "meliscommerce_client_modal_contact_form",
+            modalUrl = "/melis/MelisCommerce/MelisComClient/renderClientModal";
+
+        if($("#id_meliscommerce_contact_list_page").length > 0){
+            melisHelper.tabSwitch("id_meliscommerce_contact_list_page");
+            melisHelper.createModal(
+                zoneId,
+                melisKey,
+                false,
+                {},
+                modalUrl,
+                function() {
+                    $(".addNewContact").removeAttr("disabled");
+                }
+            );
+        }else{
+            melisHelper.tabOpen(
+                translations.tr_meliscommerce_contact,
+                "fa fa-user fa-2x",
+                "id_meliscommerce_contact_list_page",
+                "meliscommerce_contact_list_page",
+                {},
+                null,
+                function(){
+                    // requesitng to create modal and display after
+                    melisHelper.createModal(
+                        zoneId,
+                        melisKey,
+                        false,
+                        {},
+                        modalUrl,
+                        function() {
+                            $(".addNewContact").removeAttr("disabled");
+                        }
+                    );
+                }
+            );
+        }
+    });
 });
 function viewClientOrder(orderId, orderRef) {
 	var navTabsGroup = "id_meliscommerce_order_list_page";
@@ -1525,9 +1568,9 @@ window.accountAssocContactListTblCallback = function ()
     var tbody = $("#"+accountId+"_accountContactList tbody");
     var tr = tbody.find("tr");
     //if only one contact remain, remove the unlink button
-    if($(tr).length == 1){
-        $(tr).find("td").find(".accountContactUnlink").addClass("d-none");
-	}
+    // if($(tr).length == 1){
+    //     $(tr).find("td").find(".accountContactUnlink").addClass("d-none");
+    // }
 
     var tr = tbody.find("tr[data-accountid='0']");
     //hide all unlink/set default button if creation of account
@@ -1556,10 +1599,10 @@ window.accountAssocContactListTblCallback = function ()
 			//hide remove default
             $this.find("button.updateDefaultContact").addClass("d-none");
         }
-        if(isDefault == 1 || isDefaultAccount == 1){
-            //hide unlink for default contact
-            $this.find("button.accountContactUnlink").addClass("d-none");
-		}
+        // if(isDefault == 1 || isDefaultAccount == 1){
+         //    //hide unlink for default contact
+         //    $this.find("button.accountContactUnlink").addClass("d-none");
+		// }
     });
     contactToolSelectedAccount = '';
     contactToolInitAccountAutoSuggest = false;

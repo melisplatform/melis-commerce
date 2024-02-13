@@ -106,6 +106,7 @@ return [
     'tr_contact_export_col_add_mobile' => 'Adresse Téléphone mobile',
     'tr_contact_export_col_add_landline' => 'Adresse Téléphone fixe',
     'tr_contact_export_col_add_additional' => 'Complément',
+    'tr_contact_export_col_cper_tags' => 'Tags',
 
     'tr_meliscommerce_contact_import_csv_file' => 'Uploader le fichier CSV',
     'tr_meliscommerce_contact_import_choose_file' => 'Choisir le fichier',
@@ -144,4 +145,11 @@ return [
 
     'tr_meliscommerce_contact_add_account_tooltip' => 'Sélectionnez un compte pour activer',
     'tr_meliscommerce_contact_import_file_title' => 'Exemple import de contacts',
+
+    'tr_meliscommerce_contact_delete_contact_title' => 'Supprimer Contact',
+    'tr_meliscommerce_contact_delete_contact_message' => 'Etes-vous sûr de vouloir supprimer cet contact ?',
+    'tr_meliscommerce_contact_delete_contact_message_success' => 'Contact supprimé avec succès',
+    'tr_meliscommerce_contact_delete_contact_message_failed' => 'Impossible de supprimer contact',
+
+    'tr_meliscommerce_contacts_delete_button' => 'Supprimer contact',
 ];

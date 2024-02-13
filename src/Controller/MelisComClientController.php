@@ -635,6 +635,26 @@ class MelisComClientController extends MelisAbstractActionController
         $view->accountId = $accountId;
         return $view;
     }
+
+    /**
+     * @return ViewModel
+     */
+    public function renderAccountContactListAddContactAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $accountId = $this->params()->fromQuery('clientId', '');
+
+        $melisCoreAuth = $this->getServiceManager()->get('MelisCoreAuth');
+        $xmlRights = $melisCoreAuth->getAuthRights();
+        $rights = $this->getServiceManager()->get('MelisCoreRights');
+        $canAccess = $rights->isAccessible($xmlRights, 'meliscore_interface', 'meliscommerce_client_contact_list_add_contact_button');
+
+        $view = new ViewModel();
+        $view->melisKey = $melisKey;
+        $view->accountId = $accountId;
+        $view->canAccess = $canAccess;
+        return $view;
+    }
     
     /**
      * Render Client Status 
@@ -1291,11 +1311,22 @@ class MelisComClientController extends MelisAbstractActionController
                 if (!empty($container['temp-linked-contacts'])) {
                     $clientContactsData = $container['temp-linked-contacts'];
                 } else {
-                    // This error will occured if no entry of Contact
-                    $errors['clientContactEmpty'] = array(
-                        'label' => $translator->translate('tr_meliscommerce_clients_common_label_contact'),
-                        'isEmpty' => $translator->translate('tr_meliscommerce_client_Contact_must_atleast_one')
-                    );
+                    /**
+                     * We made the contact required ONLY if the account settings is
+                     * set to contact_name
+                     */
+                    $melisComClientService = $this->getServiceManager()->get('MelisComClientService');
+                    //check account settings
+                    $settings = $melisComClientService->getAccountNameSetting();
+                    if(!empty($settings)){
+                        if($settings->sa_type == 'contact_name'){
+                            // This error will occured if no entry of Contact
+                            $errors['clientContactEmpty'] = array(
+                                'label' => $translator->translate('tr_meliscommerce_clients_common_label_contact'),
+                                'isEmpty' => $translator->translate('tr_meliscommerce_client_Contact_must_atleast_one')
+                            );
+                        }
+                    }
                 }
             }
         }
@@ -2047,11 +2078,16 @@ class MelisComClientController extends MelisAbstractActionController
         $message = 'tr_meliscommerce_accounts_import';
         $title = 'tr_meliscommerce_contact_import_title';
         $errors = [];
+        $overrideExistingRecord = false;
         $request = $this->getRequest();
         $translator = $this->getServiceManager()->get('translator');
 
         if ($request->isPost()) {
             $post = $request->getPost()->toArray();
+
+            $overrideExistingRecord = $post['overrideExistingRecord'] ?? false;
+            $typeToCheck = $post['typeToCheck'] ?? 'account_name';
+
             $accountService = $this->getServiceManager()->get('MelisComClientService');
 
             $file = $this->params()->fromFiles('account_file');
@@ -2062,15 +2098,16 @@ class MelisComClientController extends MelisAbstractActionController
                 $csvDefaultDelimiter = $this->getCsvDelimiter($file['tmp_name']);
                 $delimiter = !empty($post['separator']) ? $post['separator'] : $csvDefaultDelimiter;
                 $fileContents = $this->readImportedCsv($file);
-                $result = $accountService->importFileValidator($fileContents, $delimiter);
+                $result = $accountService->importFileValidator($fileContents, $delimiter, $overrideExistingRecord, $typeToCheck);
 
-                if (empty($result['errors'])) {
+//                if (empty($result['errors'])) {
+                if ($result['proceedImporting']) {
                     //execute saving records with transactions
                     $adapter = $this->getServiceManager()->get('Laminas\Db\Adapter\Adapter');
                     $con = $adapter->getDriver()->getConnection();//get db driver connection
                     $con->beginTransaction();//begin transaction
                     try {
-                        $accountService->importAccounts($fileContents, $post, $delimiter);
+                        $accountService->importAccounts($fileContents, $post, $delimiter, $result['allowOverride'], $typeToCheck);
                         $con->commit();
                         $success = 1;
                         $message = 'tr_meliscommerce_accounts_import_success';
@@ -2093,8 +2130,11 @@ class MelisComClientController extends MelisAbstractActionController
             'textTitle' => $translator->translate($title),
             'textMessage' => $translator->translate($message),
             'errors' => $errors,
-            'typeCode' => 'IMPORT_ACCOUNTS'
+            'overrideExistingRecord' => $overrideExistingRecord,
+            'typeCode' => 'ECOM_CLIENTS_IMPORT'
         ];
+
+        $this->getEventManager()->trigger('meliscommerce_clients_import_end', $this, $response);
 
         return new JsonModel($response);
     }
@@ -2105,11 +2145,18 @@ class MelisComClientController extends MelisAbstractActionController
         $message = 'tr_meliscommerce_accounts_import';
         $title = 'tr_meliscommerce_contact_import_title';
         $errors = [];
+        $overrideExistingRecord = false;
+        $allowOverride = false;
+        $proceedImporting = false;
         $request = $this->getRequest();
         $translator = $this->getServiceManager()->get('translator');
 
         if ($request->isPost()) {
             $post = $request->getPost()->toArray();
+
+            $overrideExistingRecord = $post['overrideExistingRecord'] ?? false;
+            $typeToCheck = $post['typeToCheck'] ?? 'account_name';
+
             $accountService = $this->getServiceManager()->get('MelisComClientService');
 
             $file = $this->params()->fromFiles('account_file');
@@ -2121,7 +2168,7 @@ class MelisComClientController extends MelisAbstractActionController
                 $delimiter = !empty($post['separator']) ? $post['separator'] : $csvDefaultDelimiter;
 
                 $fileContents = $this->readImportedCsv($file);
-                $result = $accountService->importFileValidator($fileContents, $delimiter);
+                $result = $accountService->importFileValidator($fileContents, $delimiter, $overrideExistingRecord, $typeToCheck);
 
                 if (empty($result['errors'])) {
                     $success = 1;
@@ -2131,6 +2178,9 @@ class MelisComClientController extends MelisAbstractActionController
                     $success = 0;
                     $message = 'tr_meliscommerce_accounts_test_import_failed';
                 }
+
+                $allowOverride = $result['allowOverride'];
+                $proceedImporting = $result['proceedImporting'];
             }else{
                 $success = 0;
                 $message = 'tr_meliscommerce_clients_common_file_not_csv';
@@ -2142,7 +2192,10 @@ class MelisComClientController extends MelisAbstractActionController
             'textTitle' => $translator->translate($title),
             'textMessage' => $translator->translate($message),
             'errors' => $errors,
-            'typeCode' => 'IMPORT_ACCOUNTS'
+            'overrideExistingRecord' => $overrideExistingRecord,
+            'allowOverride' => $allowOverride,
+            'proceedImporting' => $proceedImporting,
+            'typeCode' => 'ECOM_CLIENTS_IMPORT'
         ];
 
         return new JsonModel($response);
@@ -2155,7 +2208,7 @@ class MelisComClientController extends MelisAbstractActionController
      * @param int $checkLines
      * @return string
      */
-    private function getCsvDelimiter(string $filePath, int $checkLines = 3): string
+    public function getCsvDelimiter(string $filePath, int $checkLines = 3): string
     {
         $delimiters =[",", ";", "\t"];
 
@@ -2196,7 +2249,7 @@ class MelisComClientController extends MelisAbstractActionController
      * @param null $fileParameters
      * @return array|bool|null|string
      */
-    private function readImportedCsv($fileParameters = null)
+    public function readImportedCsv($fileParameters = null)
     {
         $data = array();
 

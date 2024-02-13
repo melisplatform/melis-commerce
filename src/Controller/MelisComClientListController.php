@@ -793,6 +793,7 @@ class MelisComClientListController extends MelisAbstractActionController
                 $getData[$key]['default_contact_name'] = $defContactName;
                 $getData[$key]['default_contact_email'] = $defContactEmail;
                 $getData[$key]['ccomp_employee_nb'] = !empty($val['ccomp_employee_nb']) ? $val['ccomp_employee_nb'] : null;
+                $getData[$key]['cli_status'] = ($getData[$key]['cli_status']) ? $translator->translate('tr_meliscommerce_client_status_active') : $translator->translate('tr_meliscommerce_client_status_inactive');
 
                 //get client country
                 $getData[$key]['cli_country_id'] = null;
@@ -812,6 +813,8 @@ class MelisComClientListController extends MelisAbstractActionController
 //                $lastOrder = !empty($val['cli_last_order'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_last_order'])), 0, 10) : '';
                 $clientCreated = !empty($val['cli_date_creation'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_date_creation'])), 0, 10) : '';
                 $getData[$key]['cli_date_creation'] = $clientCreated;
+                $clientEdited = !empty($val['cli_date_edit'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cli_date_edit'])), 0, 10) : '';
+                $getData[$key]['cli_date_edit'] = $clientEdited;
 //                $getData[$key]['cli_last_order'] = $lastOrder;
                 //we use ccomp_comp_creation_date as company creation date
                 $companyCreated = !empty($val['ccomp_comp_creation_date'])? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['ccomp_comp_creation_date'])), 0, 10) : '';
@@ -858,19 +861,12 @@ class MelisComClientListController extends MelisAbstractActionController
             $getData = ArrayUtils::merge($getData, $accountOrders, true);
             $getData = $this->processKeysToMatch($keys, $getData);
 
-            //reposition fields
-//            foreach($getData as $key => $val){
-//                $getData[$key] = array_slice($val, 0, 5, true) +
-//                    array("cgroup_name" => $val['cgroup_name']) +
-//                    array_slice($val, 3, count($val) - 1, true) ;
-//            }
-
             $exportData = [];
             /**
              * Columns to exclude in the export
              */
             $excludeColumns = [
-                'cli_date_edit', 'cli_last_order','cgroup_name',
+                'cli_last_order','cgroup_name',
                 'car_id','car_client_id','car_client_person_id','car_default_person',
                 'cper_firstname','cper_name','cper_id','cper_email',
                 'ccomp_name', 'ccomp_logo','ccomp_id','ccomp_client_id', 'ccomp_comp_creation_date','ccomp_date_edit', 'ccomp_add_floor',
@@ -904,7 +900,7 @@ class MelisComClientListController extends MelisAbstractActionController
         return $this->executeCompanyContactExport($data, $fileName, $delimiter);
     }
 
-    private function matchKeys(&$keys, $data)
+    public function matchKeys(&$keys, $data)
     {
         foreach($data as $i => $val){
             foreach($val as $k => $v){
@@ -916,7 +912,7 @@ class MelisComClientListController extends MelisAbstractActionController
         return $keys;
     }
 
-    private function processKeysToMatch($keys, $data)
+    public function processKeysToMatch($keys, $data)
     {
         foreach($data as $i => $val){
             foreach($keys as $k => $b){
@@ -928,7 +924,7 @@ class MelisComClientListController extends MelisAbstractActionController
         return $data;
     }
 
-    private function processAccountOrders(&$orderDatas, $key, $accountId)
+    public function processAccountOrders(&$orderDatas, $key, $accountId)
     {
         $langId = $this->getOrderTool()->getCurrentLocaleID();
 
@@ -984,7 +980,7 @@ class MelisComClientListController extends MelisAbstractActionController
      * Returns the Tool Service Class
      * @return MelisCoreTool
      */
-    private function getOrderTool()
+    public function getOrderTool()
     {
         $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_order_list');
@@ -992,7 +988,7 @@ class MelisComClientListController extends MelisAbstractActionController
         return $melisTool;
     }
 
-    private function processAccountAddress(&$getData, $key, $accountId, $type = 1)
+    public function processAccountAddress(&$getData, $key, $accountId, $type = 1)
     {
         $translator = $this->getServiceManager()->get('translator');
         $melisEcomClientAddressTable = $this->getServiceManager()->get('MelisEcomClientAddressTable');
