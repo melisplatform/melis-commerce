@@ -170,9 +170,8 @@ class MelisCommerceDashboardPluginOrderMessages extends MelisCoreDashboardTempla
      */
     public function formatDateByLangLocale($date)
     {
-        $melisTranslation = $this->getServiceManager()->get('MelisCoreTranslation');
-        $langLocale = $this->getLangLocale();
-        $formattedDate = strftime($melisTranslation->getDateFormatByLocate($langLocale), strtotime($date));
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
+        $formattedDate = $melisTool->formatDate(strtotime($date));
 
         return $formattedDate;
     }

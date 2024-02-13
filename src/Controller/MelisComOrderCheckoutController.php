@@ -835,6 +835,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
             $dataCount = $personTable->getContactLists($accountId, null, 1, $search, $melisTool->getSearchableColumns(), null, null, null, 'ASC', true, false, true)->current();
 
             $melisEcomOrderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
+            $melisTool = $this->getServiceManager()->get('MelisCoreTool');
 
             foreach ($contactData As $val)
             {
@@ -854,7 +855,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                     $contactOrderData = $melisEcomOrderTable->getEntryByField('ord_client_person_id', $val['cper_id']);
                     $contactOrder = $contactOrderData->toArray();
                     $contactNumOrders = count($contactOrder);
-                    $lastOrder = !empty($val['cper_last_order']) ? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($val['cper_last_order'])), 0, 10) : '';
+                    $lastOrder = !empty($val['cper_last_order']) ? mb_substr($melisTool->formatDate(strtotime($val['cper_last_order'])), 0, 10) : '';
 
                     $rowdata = array(
                         'DT_RowId' => $val['cper_id'],
@@ -1754,6 +1755,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
                             'var_sku' => $varSku,
                             'var_quantity' => $val['quantity'],
                             'var_price' => $currencySymbol.number_format($val['unit_price'], 2),
+                            'initial_price' => $currencySymbol.number_format($val['initial_price'], 2),
                             'product_name' => $melisComProductService->getProductName($productId, $langId),
                             'discount' => $currencySymbol.number_format($val['discount'], 2),
                             'var_total' => $currencySymbol.number_format($val['price_details']['total_amount'], 2),
@@ -1768,7 +1770,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
 
             $productDiscount = $clientOrder['totalProductDiscount'] ?? 0;
             
-            $totalDiscount = $clientOrder['totalGeneralDiscount'] ?? 0;;
+            $totalDiscount = $clientOrder['totalGeneralDiscount'] ?? 0;
 
             $subTotal = $clientOrder['subTotal'];
 

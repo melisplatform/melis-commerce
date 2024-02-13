@@ -13,29 +13,32 @@
                 <div class="order-basket-list">
                     <div class="form-group">                                                
                         <h4><?php echo $val['product_name'] ?></h4>
-                        <span><?php echo $val['var_sku'] ?> - </span>
-                        <?php $qtipId = uniqId() ?>
-                        <a id="row-<?= $qtipId ?>" 
-                            class="price-log-data-tooltip" 
-                            data-hasqtip="1" 
-                            aria-describedby="qtip-<?= $qtipId ?>">
-                                <span class="hidden price-log-data">
-                                    <?php 
-                                        $logs = [];
-                                        if (!empty($val['price_details']['logs'])) 
-                                            $logs = $val['price_details']['logs'];
-
-                                        echo json_encode($logs);
-                                    ?>
-                                </span>
-                                <?= $val['var_price'] ?>
-                        </a>
+                        <span><?= "{$val['var_sku']} - {$val['initial_price']}"; ?></span>
                     </div>
                     <div class="form-group">
                         <i class="fa fa-minus order-basket-variant-qty-btn summary-qty-minus text-primary" data-variantid="<?php echo $val['var_id']?>"></i>
                         <input type="text" class="form-control qty-val orderSummaryBasketVariantQty" id="<?php echo $val['var_id']?>_orderSummaryBasketVariantQty" data-variantid="<?php echo $val['var_id']?>" data-quantity="<?php echo $val['var_quantity']?>" style="width: 74px;" name="" id="" placeholder="" value="<?php echo $val['var_quantity']?>">
                         <i class="fa fa-plus order-basket-variant-qty-btn summary-qty-plus text-primary" data-variantid="<?php echo $val['var_id']?>"></i>
-                        <strong class="order-price float-right"><?php echo $val['var_total']?></strong>
+                        <div class="float-right">
+                            <?php $qtipId = uniqId() ?>
+                            <strong>
+                                <a id="row-<?= $qtipId ?>" 
+                                    class="price-log-data-tooltip" 
+                                    data-hasqtip="1" 
+                                    aria-describedby="qtip-<?= $qtipId ?>">
+                                        <span class="hidden price-log-data">
+                                            <?php 
+                                                $logs = [];
+                                                if (!empty($val['price_details']['logs'])) 
+                                                    $logs = $val['price_details']['logs'];
+                
+                                                echo json_encode($logs);
+                                            ?>
+                                        </span>
+                                        <?= $val['var_price'] ?>
+                                </a>
+                            </strong>
+                        </div>
                     </div>
                     <?php 
                         $title = $this->translate('tr_meliscommerce_order_checkout_variant_discount');

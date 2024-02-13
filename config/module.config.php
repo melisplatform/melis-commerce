@@ -403,12 +403,18 @@ return [
     'caches' => [
         'commerce_memory_services' => [ 
             'active' => true, // activate or deactivate Melis Cache for this conf
-            'adapter' => [
-                'name'    => 'Memory',
-                'options' => ['ttl' => 0, 'namespace' => 'meliscommerce'],
+            'adapter' => \Laminas\Cache\Storage\Adapter\Memory::class,
+            'options' => [
+                'ttl' => 0,
+                'namespace' => 'meliscommerce'
             ],
             'plugins' => [
-                'exception_handler' => ['throw_exceptions' => false],
+                [
+                    'name' => 'exception_handler',
+                    'options' => [
+                        'throw_exceptions' => false
+                    ],
+                ]
             ],
             'ttls' => [
                 // add a specific ttl for a specific cache key (found via regexp]
@@ -417,17 +423,22 @@ return [
         ],
         'commerce_big_services' => [
             'active' => true, // activate or deactivate Melis Cache for this conf
-            'adapter' => [
-                'name'    => 'Filesystem',
-                'options' => [
-                    'ttl' => 60 * 60 * 24, // 24hrs
-                    'namespace' => 'meliscommerce',
-                    'cache_dir' => $_SERVER['DOCUMENT_ROOT'] . '/../cache'
-                ],
+            'adapter' => \Laminas\Cache\Storage\Adapter\Filesystem::class,
+            'options' => [
+                'ttl' => 60 * 60 * 24, // 24hrs
+                'namespace' => 'meliscommerce',
+                'cache_dir' => $_SERVER['DOCUMENT_ROOT'] . '/../cache'
             ],
             'plugins' => [
-                'exception_handler' => ['throw_exceptions' => false],
-                'Serializer'
+                [
+                    'name' => 'exception_handler',
+                    'options' => [
+                        'throw_exceptions' => false
+                    ],
+                ],
+                [
+                    'name' => 'Serializer'
+                ]
             ],
             'ttls' => [
                 // add a specific ttl for a specific cache key (found via regexp]

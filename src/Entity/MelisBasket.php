@@ -9,6 +9,7 @@
 
 namespace MelisCommerce\Entity;
 
+#[\AllowDynamicProperties]
 class MelisBasket
 {
 	protected $id;         // id in anonymous or persistent table

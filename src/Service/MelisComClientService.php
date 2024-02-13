@@ -1124,7 +1124,11 @@ class MelisComClientService extends MelisComGeneralService
 			if(!empty($personsData)) {
 			    $hasDefault = false;
                 foreach ($personsData As $key => $val) {
-                    $data = ['car_client_id' => $clntId, 'car_client_person_id' => $val['cper_id']];
+					if(!isset($val['cper_id'])) {
+						$personService = $this->getServiceManager()->get('MelisComContactService');
+						$val['cper_id'] = $personService->saveContact($val);
+					}
+					$data = ['car_client_id' => $clntId, 'car_client_person_id' => $val['cper_id']];
                     //for new account, the first contact will set to default
                     if(empty($arrayParameters['clientId'])){
                         if(!$hasDefault){

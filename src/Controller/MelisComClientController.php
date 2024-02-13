@@ -414,7 +414,7 @@ class MelisComClientController extends MelisAbstractActionController
                         // Get the locale used from meliscore session
                         $container = new Container('meliscore');
                         $locale = $container['melis-lang-locale'];
-                        $date = !empty($clientCompany[0]->ccomp_comp_creation_date)? mb_substr(strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($clientCompany[0]->ccomp_comp_creation_date)), 0, 10) : '';
+                        $date = !empty($clientCompany[0]->ccomp_comp_creation_date)? mb_substr(date($melisTranslation->getDateFormatByLocate($locale), strtotime($clientCompany[0]->ccomp_comp_creation_date)), 0, 10) : '';
                         // format the company creation date
 //                        $companyCreationDate = \DateTime::createFromFormat('Y-m-d', $clientCompany[0]->ccomp_comp_creation_date);
 //                        $date = $companyCreationDate->format('m/d/Y');

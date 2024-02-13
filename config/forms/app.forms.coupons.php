@@ -47,6 +47,7 @@ return [
                                     'attributes' => [
                                         'dateId' => 'couponStart',
                                         'dateLabel' => 'tr_meliscommerce_coupon_date_start',
+                                        'class' => 'form-control melis-date couponStart'
                                     ],
                                 ],
                             ],
@@ -73,6 +74,7 @@ return [
                                     'attributes' => [
                                         'dateId' => 'couponEnd',
                                         'dateLabel' => 'tr_meliscommerce_coupon_date_end',
+                                        'class' => 'form-control melis-date couponEnd'
                                     ],
                                 ],
                             ],

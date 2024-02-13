@@ -411,7 +411,7 @@ class MelisComOrderService extends MelisComGeneralService
 						}
 					}
 					else{
-					$basket[] = addslashes($val);
+					    $basket[] = !empty($val) ? addslashes($val) : '';
 					}
 				}
 				$baskets[] = $e.implode($e.$s.$e, $basket).$e.$s;

@@ -428,9 +428,10 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                                     'discount' => $prdVarPrice['total_discount'],
                                     // 'sub_total_amount' => $prdVarPrice['sub_total_amount'],
                                     'total_price' => $prdVarPrice['total_amount'],
-                                    'price_details' => $prdVarPrice
+                                    'price_details' => $prdVarPrice,
+                                    'initial_price' => $prdVarPrice['initial_price']
                                 ];
-                                // $subTotalCost += $prdVarPrice['sub_total_amount'];
+                                $subTotalCost += ($prdVarPrice['initial_price'] * $variantQty);
                                 $totalCost += $prdVarPrice['total_amount'];
 
                                 // dump($prdVarPrice['total_amount']);
@@ -458,7 +459,10 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             $results['costs']['order']['details'] = $variantDetails;
 
             // as default value subTotal is equal to the total of order cost
-            $results['costs']['order']['subTotal'] = $totalCost;
+            // $results['costs']['order']['subTotal'] = $totalCost;
+
+            // changed subtotal: total of initial (undiscounted) price
+            $results['costs']['order']['subTotal'] = $subTotalCost;
             $results['costs']['order']['total'] = $totalCost;
             
             if (!empty($errors))
@@ -826,7 +830,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
 
                     $totalCost = $order['costs']['total'];
 
-                    if (bccomp($totalCost, $arrayParameters['results']['payment_details']['transactionPricePaid'], 3) == 0)
+                    if ($this->compareFloats($totalCost, $arrayParameters['results']['payment_details']['transactionPricePaid'], 3))
                     {
                         $orderData = array(
                             'ord_status' => 1 // Status new Order
@@ -940,6 +944,17 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         $arrayParameters = $this->sendEvent('meliscommerce_service_checkout_step2_postpayment_proccess_end', $arrayParameters);
         
         return $arrayParameters['results'];
+    }
+
+    private function compareFloats($val1, $val2, int $scale = null)
+    {
+        $epsilon = 0.000000000001;
+        if(!is_null($scale) && $scale > 0) {
+            $val1 = round($val1, $scale);
+            $val2 = round($val2, $scale);
+        }
+        // Use absolute difference and compare values
+        return abs($val1 - $val2) < $epsilon;
     }
     
     /**

@@ -379,7 +379,7 @@ class MelisComOrderStatusController extends MelisAbstractActionController
         $textMessage = 'tr_meliscommerce_order_status_save_failed';
         $textTitle = 'tr_meliscommerce_order_status_tool_leftmenu';
         
-        $this->getEventManager()->trigger('meliscommerce_order_status_save_start', $this, array());
+        $this->getEventManager()->trigger('meliscommerce_order_status_type_save_start', $this, array());
         
         $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_order_status/meliscommerce_order_status_form','meliscommerce_order_status_form');
@@ -531,8 +531,15 @@ class MelisComOrderStatusController extends MelisAbstractActionController
             'errors' => $errors,
             'chunk' => $data,
         );
+
+        $logCode = empty($postValues['statusId']) ? 'ECOM_ORDER_STATUS_TYPE_ADD' : 'ECOM_ORDER_STATUS_TYPE_EDIT';
+        $itemId =  empty($postValues['statusId']) ? ($id ?? null) : $postValues['statusId'];
         
-        $this->getEventManager()->trigger('meliscommerce_order_status_save_end', $this, $response);
+        $this->getEventManager()->trigger(
+            'meliscommerce_order_status_type_save_end', 
+            $this, 
+            [...$response, 'typeCode' => $logCode, 'itemId' => $itemId]
+        );
         return new JsonModel($response);
     }
     

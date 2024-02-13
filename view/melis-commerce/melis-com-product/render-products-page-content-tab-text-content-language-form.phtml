@@ -80,7 +80,8 @@ foreach($this->lang as $lang) {
                                         ->setAttribute('style', 'display:block')
                                         ->setLabel($txt['ptt_name'] . ' (' . $txt['ptt_code'] . ')</label>'.sprintf($del, $txt['ptt_name']));
                                     $currentValue = $form->get('ptxt_field_short')->getValue();
-                                    $currentValue = str_replace(array('&lt;', '&gt;'), array('<', '>'), $currentValue);
+                                    if(!empty($currentValue))
+                                        $currentValue = str_replace(array('&lt;', '&gt;'), array('<', '>'), $currentValue);
                                     $form->get('ptxt_field_short')->setValue($currentValue);
     
                                 }
@@ -94,7 +95,8 @@ foreach($this->lang as $lang) {
                                     $form->get('ptxt_field_short')->setAttribute('style', 'display:none')->setLabel('');
     
                                     $currentValue = $form->get('ptxt_field_long')->getValue();
-                                    $currentValue = str_replace(array('&lt;', '&gt;'), array('<', '>'), $currentValue);
+                                    if(!empty($currentValue))
+                                        $currentValue = str_replace(array('&lt;', '&gt;'), array('<', '>'), $currentValue);
                                     $form->get('ptxt_field_long')->setValue($currentValue);
                                 }
                             
