@@ -123,7 +123,7 @@ window.initProductTextTinyMce = function(productId) {
                         relative_urls : false,
                         language : 'en',
                         menubar : false,
-                        // templates : '/melis/MelisCore/MelisTinyMce/getTinyTemplates',
+                        mini_templates_url : '/melis/MelisCore/MelisTinyMce/getTinyTemplates',
                         forced_root_block : 'div',
                         // paste_word_valid_elements : "p,b,strong,i,em,h1,h2,h3,h4",
                         cleanup : false,
