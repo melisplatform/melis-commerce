@@ -143,20 +143,10 @@ window.initProductTextTinyMce = function(productId) {
                         init_instance_callback  : productTextTinyMCECallback(form, productId)
                     }
 
-                    /*
-                        For reference before fixed: http://mantis.melistechnology.fr/view.php?id=3675
-                        plugins : [
-                            'advlist autolink lists link image charmap print preview anchor',
-                            'searchreplace visualblocks code fullscreen',
-                            'insertdatetime media table contextmenu paste template',
-                            'textcolor',
-                        ],
-                        toolbar : 'undo redo | styleselect | bold italic | link image |  alignleft aligncenter alignright alignjustify | forecolor backcolor | code',
-                    */
-
                     //Initialize TinyMCE editor
-                    melisTinyMCE.createTinyMCE("tool", "#"+targetSelector, option);
-                    console.log("product.tool.js initProductTextTinyMce() #targetSelector: ", +"#"+targetSelector);
+                    melisTinyMCE.createTinyMCE("tool", '[id="'+targetSelector+'"]', option);
+                    
+                    console.log(`product.tool.js initProductTextTinyMce() '[id="'+targetSelector+'"] #targetSelector: `, "#"+targetSelector);
             });
         }
         else {
