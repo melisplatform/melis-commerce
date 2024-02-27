@@ -106,7 +106,8 @@ window.populateAttribList = function(data) {
     }
 }
 
-window.initProductTextTinyMce = function(productId) {  
+window.initProductTextTinyMce = function(productId) {
+    console.log("product.tool.js initProductTextTinyMce() productId: ", productId);
     var targetEditor = "#"+productId+"_id_meliscommerce_products_page textarea.product-text-mce[data-display='true']"; //:not([id])
 
         if ( $(targetEditor).length ) {
@@ -155,6 +156,7 @@ window.initProductTextTinyMce = function(productId) {
 
                     //Initialize TinyMCE editor
                     melisTinyMCE.createTinyMCE("tool", "#"+targetSelector, option);
+                    console.log("product.tool.js initProductTextTinyMce() #targetSelector: ", +"#"+targetSelector);
             });
         }
         else {
