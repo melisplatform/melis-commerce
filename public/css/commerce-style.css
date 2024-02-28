@@ -3443,3 +3443,15 @@ span.remove-company-image i{
 	font-weight: 700;
 	margin-bottom: -1px;
 }
+
+.commerce-toggle .card-header,
+.commerce-toggle .panel-heading {
+	background-color: #e61c23;
+}
+
+#idAddProductText .card-header .product-text-accordion-toggle:before{
+	background-color: transparent !important;
+}
+#idAddProductText .card-header .product-text-accordion-toggle.collapsed:before{
+	background-color: transparent !important;
+}
