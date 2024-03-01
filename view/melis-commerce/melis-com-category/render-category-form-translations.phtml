@@ -80,15 +80,16 @@
 	</div>
     <script type="text/javascript">
         var option = {
-            // mode : "none",
-            height : "300px",
-            plugins : [
+            // mode: "none",
+			forced_root_block: 'p',
+            height: "300px",
+            plugins: [
                 'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview', 'anchor',
                 'searchreplace', 'visualblocks', 'code', 'fullscreen',
                 'insertdatetime', 'media', 'table'
             ],
 			// styleselect = styles
-            toolbar : 'undo redo | styles | bold italic | link image |  alignleft aligncenter alignright alignjustify | forecolor backcolor | code',
+            toolbar: 'undo redo | styles | bold italic | link image |  alignleft aligncenter alignright alignjustify | forecolor backcolor | code',
         }
         melisTinyMCE.createTinyMCE("tool", ".editme", option);
     </script>
