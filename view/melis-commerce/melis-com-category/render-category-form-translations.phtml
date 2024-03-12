@@ -92,10 +92,13 @@
 					// styleselect = styles
 					toolbar: 'undo redo | styles | bold italic | link image | alignleft aligncenter alignright alignjustify | forecolor backcolor | code',
 				},
+				/* Fixes issue: https://mantis2.uat.melistechnology.fr/view.php?id=4906
+				 * Added back the default toolbar option on createTinyMCE .editme on .close-tab #close-all-tab
+				 */
 				defaultOption = {
 					toolbar: 'insertfile undo redo | blocks | forecolor | bold italic strikethrough underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media | minitemplate code',
 				};
-			
+				
 				melisTinyMCE.createTinyMCE("tool", ".editme", option);
 
 				$body.on("click", ".close-tab", function() {
