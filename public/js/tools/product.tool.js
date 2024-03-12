@@ -138,6 +138,7 @@ window.initProductTextTinyMce = function(productId) {
                             minitemplate: '/MelisCore/js/minitemplate/plugin.min.js'
                         },
                         image_advtab: true,
+                        promotion: false,
                         // formatselect = blocks
                         toolbar : 'insertfile undo redo | blocks | forecolor | bold italic strikethrough underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media | minitemplate code',
                         init_instance_callback  : productTextTinyMCECallback(form, productId)
