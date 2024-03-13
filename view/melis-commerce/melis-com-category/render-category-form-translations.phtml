@@ -80,36 +80,12 @@
 	</div>
     <script type="text/javascript">
 		$(function() {
-			var $body = $("body"),
-				option = {
+			var option = {
 					// mode: "none",
-					height: "300px",
-					plugins: [
-						'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview', 'anchor',
-						'searchreplace', 'visualblocks', 'code', 'fullscreen',
-						'insertdatetime', 'media', 'table'
-					],
-					// styleselect = styles
-					toolbar: 'undo redo | styles | bold italic | link image | alignleft aligncenter alignright alignjustify | forecolor backcolor | code',
-				},
-				/* Fixes issue: https://mantis2.uat.melistechnology.fr/view.php?id=4906
-				 * Added back the default toolbar option on createTinyMCE .editme on .close-tab #close-all-tab
-				 */
-				defaultOption = {
-					toolbar: 'insertfile undo redo | blocks | forecolor | bold italic strikethrough underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media | minitemplate code',
+					height: 300
 				};
-				
+
 				melisTinyMCE.createTinyMCE("tool", ".editme", option);
-
-				$body.on("click", ".close-tab", function() {
-					if ( $(this).attr("data-id") === "id_meliscommerce_categories_page" ) {
-						melisTinyMCE.createTinyMCE("tool", ".editme", defaultOption);
-					}
-				});
-
-				$body.on("click", "#close-all-tab", function() {
-					melisTinyMCE.createTinyMCE("tool", ".editme", defaultOption);
-				});
 		});
     </script>
 </div>

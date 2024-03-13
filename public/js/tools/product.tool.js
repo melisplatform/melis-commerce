@@ -119,7 +119,7 @@ window.initProductTextTinyMce = function(productId) {
 
                     var option = {
                         // mode : "none",
-                        height : "400px",
+                        height : 400,
                         relative_urls : false,
                         language : 'en',
                         menubar : false,
