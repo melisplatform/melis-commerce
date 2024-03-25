@@ -2872,7 +2872,8 @@ span .fa-globe {
 	color: #fff;
 }
 .tabsbar ul.order-checkout-steps li a i:before {
-	color: #90312e;
+	/* color: #90312e; */
+	color: #e61c23;
 }
 
 /* Default Styles */
