@@ -145,6 +145,7 @@ var melisCommerce = (function(window) {
 				menubar: false,
 				toolbar:
 					"undo redo | styleselect | bold italic | link image |  alignleft aligncenter alignright alignjustify | code",
+				toolbar_mode: 'sliding'
 			});
 		}, 1000);
 	}
