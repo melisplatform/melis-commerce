@@ -135,13 +135,17 @@ var melisCommerce = (function(window) {
 				height: 200,
 				plugins: [
 					//[contextmenu, textcolor, colorpicker] this plugin is already built in the core editor as of TinyMCE v. 5
-					"advlist autolink lists link image charmap print preview anchor",
+					"advlist autolink lists link image charmap preview anchor",
 					"searchreplace visualblocks code fullscreen",
-					"insertdatetime media table paste template",
+					"insertdatetime media table minitemplate",
 				],
+				external_plugins: {
+					minitemplate: '/MelisCore/js/minitemplate/plugin.min.js'
+				},
 				menubar: false,
 				toolbar:
 					"undo redo | styleselect | bold italic | link image |  alignleft aligncenter alignright alignjustify | code",
+				toolbar_mode: 'sliding'
 			});
 		}, 1000);
 	}

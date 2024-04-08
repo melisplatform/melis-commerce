@@ -106,7 +106,7 @@ window.populateAttribList = function(data) {
     }
 }
 
-window.initProductTextTinyMce = function(productId) {  
+window.initProductTextTinyMce = function(productId) {
     var targetEditor = "#"+productId+"_id_meliscommerce_products_page textarea.product-text-mce[data-display='true']"; //:not([id])
 
         if ( $(targetEditor).length ) {
@@ -118,43 +118,35 @@ window.initProductTextTinyMce = function(productId) {
                     form.attr("id", targetSelector);
 
                     var option = {
-                        mode : "none",
-                        height : "400px",
+                        // mode : "none",
+                        height : 400,
                         relative_urls : false,
                         language : 'en',
                         menubar : false,
-                        templates : '/melis/MelisCore/MelisTinyMce/getTinyTemplates',
-                        forced_root_block : '',
-                        paste_word_valid_elements : "p,b,strong,i,em,h1,h2,h3,h4",
+                        mini_templates_url : '/melis/MelisCore/MelisTinyMce/getTinyTemplates',
+                        forced_root_block : 'p',
+                        image_uploadtab: false,
+                        // paste_word_valid_elements : "p,b,strong,i,em,h1,h2,h3,h4",
                         cleanup : false,
                         verify_html : false,
                         plugins : [
-                            //[contextmenu, textcolor, colorpicker] this plugin is already built in the core editor as of TinyMCE v. 5
-                            'advlist autolink lists link paste image charmap preview anchor emoticons help hr nonbreaking',
-                            'searchreplace visualblocks code fullscreen',
-                            'insertdatetime media table minitemplate'
+                            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview', 'anchor',
+                            'emoticons', 'help', 'nonbreaking', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                            'insertdatetime', 'media', 'table', 'minitemplate'
                         ],
                         external_plugins: {
                             minitemplate: '/MelisCore/js/minitemplate/plugin.min.js'
                         },
                         image_advtab: true,
-                        toolbar : 'insertfile undo redo paste | formatselect | forecolor | bold italic strikethrough underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media minitemplate | code',
+                        promotion: false,
+                        // formatselect = blocks
+                        toolbar : 'insertfile undo redo | blocks | forecolor | bold italic strikethrough underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media | minitemplate code',
+                        toolbar_mode: 'sliding',
                         init_instance_callback  : productTextTinyMCECallback(form, productId)
                     }
 
-                    /*
-                        For reference before fixed: http://mantis.melistechnology.fr/view.php?id=3675
-                        plugins : [
-                            'advlist autolink lists link image charmap print preview anchor',
-                            'searchreplace visualblocks code fullscreen',
-                            'insertdatetime media table contextmenu paste template',
-                            'textcolor',
-                        ],
-                        toolbar : 'undo redo | styleselect | bold italic | link image |  alignleft aligncenter alignright alignjustify | forecolor backcolor | code',
-                    */
-
                     //Initialize TinyMCE editor
-                    melisTinyMCE.createTinyMCE("tool", "#"+targetSelector, option);
+                    melisTinyMCE.createTinyMCE("tool", '[id="'+targetSelector+'"]', option);
             });
         }
         else {
