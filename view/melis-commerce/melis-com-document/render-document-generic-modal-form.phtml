@@ -15,7 +15,7 @@
 			<div class="widget widget-tabs widget-tabs-double widget-tabs-responsive margin-none border-none">
                 <div class="widget-head">
                 	<ul class="nav nav-tabs">
-                		<li class="active"><a href="#<?php echo $this->zoneconfig['conf']['id'] ?>" class="glyphicons <?= $icon; ?>" data-toggle="tab" aria-expanded="true"><i></i> <?php echo $this->translate($this->title) ?></a></li>
+                		<li class="active"><a href="#<?php echo $this->zoneconfig['conf']['id'] ?>" class="glyphicons <?= $icon; ?>" data-bs-toggle="tab" aria-expanded="true"><i></i> <?php echo $this->translate($this->title) ?></a></li>
             		</ul>
         		</div>
         		<div class="widget-body innerAll inner-2x">
@@ -73,7 +73,7 @@
                             <br>
                             <div class="card default-card commerce-toggle">
                                 <div class="card-header">
-                                    <h4 class="card-title"><a class="accordion-toggle collapsed" id="" data-toggle="collapse" href="#toggleAddImageType"><?php echo $this->translate('tr_meliscommerce_documents_add_image_type_text') ?></a></h4>
+                                    <h4 class="card-title"><a class="accordion-toggle collapsed" id="" data-bs-toggle="collapse" href="#toggleAddImageType"><?php echo $this->translate('tr_meliscommerce_documents_add_image_type_text') ?></a></h4>
                                 </div>
                                 <div id="toggleAddImageType" class="card-collapse collapse">
                                     <div class="card-body">
@@ -101,7 +101,7 @@
                             <?php } else { ?>
                             <div class="card default-card commerce-toggle">
                                 <div class="card-header">
-                                    <h4 class="card-title"><a class="accordion-toggle collapsed" id="" data-toggle="collapse" href="#toggleAddFileType"><?php echo $this->translate('tr_meliscommerce_documents_file_type_add') ?></a></h4>
+                                    <h4 class="card-title"><a class="accordion-toggle collapsed" id="" data-bs-toggle="collapse" href="#toggleAddFileType"><?php echo $this->translate('tr_meliscommerce_documents_file_type_add') ?></a></h4>
                                 </div>
                                 <div id="toggleAddFileType" class="card-collapse collapse">
                                     <div class="card-body">
@@ -130,7 +130,7 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="footer-modal d-flex flex-row justify-content-between">
-                                        <a data-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_documents_common_btn_close')?></a>
+                                        <a data-bs-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_documents_common_btn_close')?></a>
                                         <button type="submit" form="<?php echo $this->relationId.'_'.$this->relationType.'_frmDocUpload'?>" class="btn btn-success float-right" id="btnDocFileAdd"><i class="fa fa-save"></i> <?php echo $this->translate('tr_meliscommerce_documents_common_btn_save'); ?></button>
                                     </div>
                                 </div>

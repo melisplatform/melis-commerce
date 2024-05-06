@@ -207,12 +207,12 @@ class MelisComPriceController extends MelisAbstractActionController
             $hrefCountry = $variantId.'_variant_price_';
         }
         $ctyGeneral =   '<li class="">
-                    		<a data-toggle="tab" href="#'.$hrefGeneral.'" data-country="General" data-symbol="" aria-expanded="true"><span>General</span>
+                    		<a data-bs-toggle="tab" href="#'.$hrefGeneral.'" data-country="General" data-symbol="" aria-expanded="true"><span>General</span>
                     			<i class="fa fa-globe"></i>
                     		</a>
                     	</li>';
         $ctyFormat =    '<li class="">
-                    		<a data-toggle="tab" href="#%s" data-country="%s" data-symbol="%s" aria-expanded="true"><span>%s</span>
+                    		<a data-bs-toggle="tab" href="#%s" data-country="%s" data-symbol="%s" aria-expanded="true"><span>%s</span>
                                 %s
                     		</a>
                     	</li>';

@@ -747,12 +747,12 @@ class MelisComVariantController extends MelisAbstractActionController
     {
         
         $ctyGeneral =   '<li class="">
-                    		<a data-toggle="tab" href="#'.$this->getVariantId().'_stock-General" data-country="General" aria-expanded="true"><span>General</span>
+                    		<a data-bs-toggle="tab" href="#'.$this->getVariantId().'_stock-General" data-country="General" aria-expanded="true"><span>General</span>
                     			<i class="fa fa-globe"></i>
                     		</a>
                     	</li>';
         $ctyFormat =    '<li class="">
-                    		<a data-toggle="tab" href="#%s_stock-%s" data-country="%s" aria-expanded="true"><span>%s</span>
+                    		<a data-bs-toggle="tab" href="#%s_stock-%s" data-country="%s" aria-expanded="true"><span>%s</span>
                      			%s
                     		</a>
                     	</li>';

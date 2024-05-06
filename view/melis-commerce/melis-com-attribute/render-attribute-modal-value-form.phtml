@@ -12,7 +12,7 @@
 			<div class="widget widget-tabs widget-tabs-double widget-tabs-responsive margin-none border-none">
                 <div class="widget-head">
                 	<ul class="nav nav-tabs">
-                		<li class="active"><a href="#<?php echo $this->zoneconfig['conf']['id'] ?>" class="glyphicons <?php echo ($this->attributeValueId) ? 'pencil' : 'plus'?>" data-toggle="tab" aria-expanded="true"><i></i> 
+                		<li class="active"><a href="#<?php echo $this->zoneconfig['conf']['id'] ?>" class="glyphicons <?php echo ($this->attributeValueId) ? 'pencil' : 'plus'?>" data-bs-toggle="tab" aria-expanded="true"><i></i> 
                 		<?= $this->zoneconfig['conf']['name'] ?></a></li>
             		</ul>
         		</div>
@@ -32,7 +32,7 @@
                                     <div class="card default-card commerce-toggle product-create-text">
                                     	<div class="card-header" >
                                     		<h4 class="card-title">
-                                    			<a class="accordion-toggle collapsed" id="" data-toggle="collapse" href="#fill_<?= $this->zoneconfig['conf']['id']?>"><?= $this->translate('tr_meliscommerce_attribute_value_modal_each_language')?></a>
+                                    			<a class="accordion-toggle collapsed" id="" data-bs-toggle="collapse" href="#fill_<?= $this->zoneconfig['conf']['id']?>"><?= $this->translate('tr_meliscommerce_attribute_value_modal_each_language')?></a>
                                 			</h4>
 										</div>
 										<div class="card-collapse collapse" id="fill_<?= $this->zoneconfig['conf']['id']?>">   
@@ -60,7 +60,7 @@
                                     </style>
                                     <br>
 									<div class="footer-modal d-flex flex-row justify-content-between">
-                                 		<button data-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
+                                 		<button data-bs-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
                                  		<button class="btn btn-success" id="saveAttributeValue"><i class="fa fa-save"></i>  <?php echo $this->translate('tr_meliscommerce_orders_common_btn_save') ?></button>
                                  	</div>                                 	
                             	</div>

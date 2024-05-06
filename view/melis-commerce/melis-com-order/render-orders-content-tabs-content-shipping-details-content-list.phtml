@@ -13,7 +13,7 @@
 	$shippings = $this->shippings;
 	for($c = 0; $c < count($forms); $c++):
 	?>
-	<a class="btn btn-primary form-control a-accordion <?= $collapsed?>" data-toggle="collapse" href="#<?= $shippings[$c]->oship_id.'_'.$this->melisKey?>" aria-expanded="false" aria-controls="shipping1">
+	<a class="btn btn-primary form-control a-accordion <?= $collapsed?>" data-bs-toggle="collapse" href="#<?= $shippings[$c]->oship_id.'_'.$this->melisKey?>" aria-expanded="false" aria-controls="shipping1">
 		<span><?= $shippings[$c]->oship_tracking_code ?></span>
 		<span style="float:right"><?=$shippings[$c]->oship_date_sent;?></span>
 		

@@ -15,7 +15,7 @@ $(function() {
         });
 
         //opening the message in orders
-        $body.on("click", ".commerce-dashboard-plugin-order-messages", function () {
+        $body.on("click", ".commerce-dashboard-plugin-order-messages", function (e) {
             orderMessages.openOrderMessages(this);
         });
 
@@ -110,7 +110,7 @@ $(function() {
                         var checkOrders = setInterval(function () {
                             if (ordersTab.length) {
                                 if (specificOrderTab.length) {
-                                    specificOrderTab[0].click();
+                                    specificOrderTab[0].trigger("click");
                                     melisHelper.zoneReload(
                                         orderId + '_id_meliscommerce_orders_content_tabs_content_messages_details',
                                         'meliscommerce_orders_content_tabs_content_messages_details',
@@ -118,7 +118,7 @@ $(function() {
                                         function() {
                                             var parent = orderId + '_id_meliscommerce_orders_content_tabs';
                                             
-                                                $('#' + parent).find("a[href='#" + orderId + "_id_meliscommerce_orders_content_tabs_content_messages']")[0].click();
+                                                $('#' + parent).find("a[href='#" + orderId + "_id_meliscommerce_orders_content_tabs_content_messages']")[0].trigger("click");
                                         }
                                     ); 
                                 }
@@ -137,7 +137,7 @@ $(function() {
                                                 //TO OPEN THE MESSAGE TAB OF A SPECIFIC ORDER
                                                 var parent = orderId + '_id_meliscommerce_orders_content_tabs';
                                                 
-                                                $('#' + parent).find("a[href='#" + orderId + "_id_meliscommerce_orders_content_tabs_content_messages']")[0].click();
+                                                $('#' + parent).find("a[href='#" + orderId + "_id_meliscommerce_orders_content_tabs_content_messages']")[0].trigger("click");
                                             }
                                         );
                                 }

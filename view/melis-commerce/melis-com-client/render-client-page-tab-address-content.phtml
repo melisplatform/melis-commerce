@@ -14,7 +14,7 @@
             		<?php foreach ($this->clientAddresses As $val):?>
             			<?php $addressId = md5($val->cadd_id)?>
             			<li class="<?php echo $addressId.'_address'?>">
-                			<a class="clearfix" data-toggle="tab" id="<?php echo 'nav_add_'.$addressId ?>" href="#<?php echo $addressId.'_address'?>" aria-expanded="false">
+                			<a class="clearfix" data-bs-toggle="tab" id="<?php echo 'nav_add_'.$addressId ?>" href="#<?php echo $addressId.'_address'?>" aria-expanded="false">
                 				<span>
                 			        <?php echo $this->escapeHtml($val->cadd_address_name) ?>
             				    </span>
