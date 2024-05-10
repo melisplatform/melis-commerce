@@ -210,7 +210,9 @@ $(function() {
         //when a filter is selected
         $body.on("change", '.commerce-dashboard-plugin-sales-revenue', function() {
             var pluginId = $(this).closest('.tab-pane.active').find('.flotchart-holder').attr('id');
+
             $(this).closest('.tab-pane.active').find('.flotchart-holder').attr('data-activefilter', $(this).val());
+            
             commerceDashboardPluginSalesRevenue.commerceDashboardPluginSalesRevenueChartStackedBarsInit('#' + pluginId);
 
             // //get the hidden plugin config

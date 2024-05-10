@@ -29,8 +29,8 @@
                                     	$form = $this->meliscommerce_clients_contact_form;
                                     	$form->setAttribute('id', 'melisCommerceClientContactFormModal');
                                     	$form->get('cper_client_id')->setValue($this->clientId);
-                                    	$form->get('cper_password')->setLabel($form->get('cper_password')->getLabel().' <i class="fa fa-info-circle fa-lg" data-toggle="tooltip" data-placement="left" data-original-title="'.$this->translate('tr_meliscommerce_client_tooltip_password').'"></i>');
-                                    	$form->get('cper_confirm_password')->setLabel($form->get('cper_confirm_password')->getLabel().' <i class="fa fa-info-circle fa-lg" data-toggle="tooltip" data-placement="left" data-original-title="'.$this->translate('tr_meliscommerce_client_tooltip_password_2').'"></i>');
+                                    	$form->get('cper_password')->setLabel($form->get('cper_password')->getLabel().' <i class="fa fa-info-circle fa-lg" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="'.$this->translate('tr_meliscommerce_client_tooltip_password').'"></i>');
+                                    	$form->get('cper_confirm_password')->setLabel($form->get('cper_confirm_password')->getLabel().' <i class="fa fa-info-circle fa-lg" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="'.$this->translate('tr_meliscommerce_client_tooltip_password_2').'"></i>');
                                     	$form->prepare();
                                     	echo $this->form()->openTag($form);
 //                                    	echo $this->melisFieldCollection($form);

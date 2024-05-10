@@ -18,10 +18,10 @@
 	<div class="row">
 		<div class="col-xs-12 col-md-5 col-lg-4">
     		<div class="product-text-tab-container">
-            	<ul class="nav-tabs product-text-tab">
+            	<ul class="nav nav-tabs product-text-tab">
             		<?php foreach ($this->ecomLang as $key => $val){?>
-                		<li class="">
-                			<a class="clearfix" data-bs-toggle="tab" href="#<?php echo $val['elang_locale'].'_categoryInfo' ?>" aria-expanded="false">
+                		<li class="nav-item">
+                			<a class="nav-link clearfix" data-bs-toggle="tab" data-bs-target="#<?php echo $val['elang_locale'].'_categoryInfo' ?>" href="#<?php echo $val['elang_locale'].'_categoryInfo' ?>" aria-expanded="false">
 								<?php
 								    $imageData = $val['elang_flag'];
                                     if(!empty($imageData))

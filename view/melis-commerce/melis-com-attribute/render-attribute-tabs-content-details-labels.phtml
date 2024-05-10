@@ -7,13 +7,13 @@
 <div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="row">
 		<div class="col-xs-12 col-md-3 col-lg-2">
     		<div class="product-text-tab-container">
-            	<ul class="nav-tabs product-text-tab">
+            	<ul class="nav nav-tabs product-text-tab">
             		<?php 
             		$active = 'active';
             		foreach($this->langs as $lang):
             		?>
-                		<li class="<?= $active ?>">
-                			<a class="clearfix" data-bs-toggle="tab" href="#<?= $lang->elang_locale.$id ?>" aria-expanded="true">
+                		<li class="nav-item <?= $active ?>">
+                			<a class="nav-link clearfix" data-bs-toggle="tab" data-bs-target="#<?= $lang->elang_locale.$id ?>" href="#<?= $lang->elang_locale.$id ?>" aria-expanded="true">
 								<?php
 								$imageData = $lang->elang_flag;
                                 if(!empty($imageData)){
