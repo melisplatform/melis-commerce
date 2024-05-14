@@ -338,7 +338,7 @@ class MelisEcomCategoryTable extends MelisEcomGenericTable
         
         if ($addSeo)
         {
-            $join = new Expression('melis_ecom_seo.eseo_category_id = melis_ecom_category.'.$this->idField.' AND eseo_category_id='.$catId);
+            $join = new Expression('melis_ecom_seo.eseo_category_id = melis_ecom_category.'.$this->idField.' AND eseo_category_id='.$catId .' AND eseo_lang_id ='.$langId);
             $select->join('melis_ecom_seo', $join,
                 array('*'), $select::JOIN_LEFT);
         }

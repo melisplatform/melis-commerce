@@ -37,14 +37,4 @@ class MelisEcomClientCompanyTable extends MelisEcomGenericTable
         $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
-
-    public function getClientCompaniesByClientIdArray($clientIds = [])
-    {
-        $select = $this->getTableGateway()->getSql()->select();
-        
-        $select->where->in('ccomp_client_id', $clientIds);
-        
-        $resultData = $this->getTableGateway()->selectWith($select);
-        return $resultData;
-    }
 }

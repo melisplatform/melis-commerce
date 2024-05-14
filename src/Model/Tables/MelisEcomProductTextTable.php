@@ -52,15 +52,15 @@ class MelisEcomProductTextTable extends MelisEcomGenericTable
         $nest->isNotNull('melis_ecom_product_text.ptxt_field_short');
         $nest->OR->isNotNull('melis_ecom_product_text.ptxt_field_long');
 
-        if (!is_null($langId)) {
-            $nest = $where->OR->nest();
-                    $nest->OR->equalTo('ptxt_prd_id', $productId);
-                    $nest->isNotNull('melis_ecom_product_text.ptxt_lang_id');
+        // if (!is_null($langId)) {
+        //     $nest = $where->OR->nest();
+        //             $nest->OR->equalTo('ptxt_prd_id', $productId);
+        //             $nest->isNotNull('melis_ecom_product_text.ptxt_lang_id');
 
-            $nest = $nest->where->nest();
-                    $nest->isNotNull('melis_ecom_product_text.ptxt_field_short');
-                    $nest->OR->isNotNull('melis_ecom_product_text.ptxt_field_long');
-        }
+        //     $nest = $nest->where->nest();
+        //             $nest->isNotNull('melis_ecom_product_text.ptxt_field_short');
+        //             $nest->OR->isNotNull('melis_ecom_product_text.ptxt_field_long');
+        // }
 
         $select->where($where);
         $select->order('ptt_id ASC');

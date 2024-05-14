@@ -13,7 +13,8 @@ use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
 use Laminas\Session\Container;
 use MelisCore\Controller\MelisAbstractActionController;
-
+use MelisCommerce\Model\Category;
+use MelisCommerce\Model\Language;
 
 class MelisComCategoryListController extends MelisAbstractActionController
 {
@@ -163,30 +164,34 @@ class MelisComCategoryListController extends MelisAbstractActionController
      * 
      * @return \Laminas\View\Model\JsonModel
      */
-    public function getCategoryTreeViewAction(){
-        
+    public function getCategoryTreeViewAction()
+    {
         $langLocale = $this->params()->fromQuery('langlocale');
-        $selected = $this->params()->fromQuery('selected');
+        $selected = -1; //$this->params()->fromQuery('selected', -1);
         $openStateParent = $this->params()->fromQuery('openStateParent');
-        
+
         $idAndNameOnly = $this->params()->fromQuery('idAndNameOnly');
         $categoriesChecked = $this->params()->fromQuery('categoriesChecked');
 
-        if (!empty($openStateParent)){
+        $language = Language::select(['elang_id'])->where('elang_locale', $langLocale)->first();
+        $categories = Category::setLocale($langLocale)->getTree($selected, $language->elang_id)->get();
+        return new JsonModel($categories);
+
+        if (!empty($openStateParent)) {
             $openStateParent = explode(',', $openStateParent);
         }
-        
+
         // Getting the Current language
         $melisComCategoryService = $this->getServiceManager()->get('MelisComCategoryService');
         $currentLang = $melisComCategoryService->getEcomLang($langLocale);
-        
+
         // Getting Category Tree View form the Category Service
         $melisComCategoryService = $this->getServiceManager()->get('MelisComCategoryService');
         $categoryListData = $melisComCategoryService->getCategoryTreeview(null, $currentLang->elang_id);
 
         // Category Tree View Preparation
         $categoryList = $this->prepareCategoryDataForTreeView($categoryListData, $selected, $openStateParent, $idAndNameOnly, $categoriesChecked, $currentLang->elang_id);
-        
+
         return new JsonModel($categoryList);
     }
     

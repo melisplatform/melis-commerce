@@ -55,7 +55,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         if($clause) { 
             $select->where($clause);
         }
-             
+            
         if(!is_null($limit) && $limit != -1) {
             $select->limit($limit);
         }
@@ -67,19 +67,22 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         if (!empty($categoriId)){
             $select->where->in('melis_ecom_product_category.pcat_cat_id', $categoriId);
         }
-       
+    
         $select->order($column .' '. $order);
         
         $select->group($this->idField);
         
         $resultSet = $this->getTableGateway()->selectwith($select);
-        
+
         return $resultSet;
     }
     
-    public function getProductList($categoryIds = array(), $countryId = null, $onlyValid = null,  $start = null, $limit = null, $orderColumn = 'prd_id', $order = 'ASC', $search = '')
+    public function getProductList($categoryIds = array(), $countryId = null, $onlyValid = null,  $start = null, $limit = null, $orderColumn = 'prd_id', $order = 'ASC', $search = '', $count = false)
     {
         $select = $this->getTableGateway()->getSql()->select();
+
+        if ($count)
+            $select->columns(array('count'=> new Expression('COUNT(DISTINCT prd_id)')));
         
         $select->quantifier('DISTINCT');
         $select->join('melis_ecom_product_text', 'melis_ecom_product_text.ptxt_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT);
@@ -89,7 +92,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         $select->join('melis_ecom_price', 'melis_ecom_price.price_prd_id = melis_ecom_product.prd_id', array(), $select::JOIN_LEFT);
         //include product variant
         $select->join(array("var_price" => "melis_ecom_price"), 'var_price.price_var_id = melis_ecom_variant.var_id', array(), $select::JOIN_LEFT);
-       
+    
         if(is_array($categoryIds) && !empty($categoryIds)) {
             $select->where->and->in('melis_ecom_product_category.pcat_cat_id', $categoryIds);
         }
@@ -122,9 +125,13 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         {
             $select->limit((int) $limit);
         }
-        
-        $select->order($orderColumn .' '. $order);
+
+        if (!$count)
+            $select->order($orderColumn .' '. $order);
+
         $resultData = $this->getTableGateway()->selectWith($select);
+        // get the sql string version of the resultData in laminas
+
         return $resultData;
     }
     
@@ -213,7 +220,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         if(!is_null($langId)) {
             $clause['melis_ecom_attribute_trans.atrans_lang_id'] = (int) $langId;
         }
-         
+        
         $select->where($clause);
         
         if(!is_null($limit)) {
@@ -237,9 +244,9 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         $select->join(array('product_text' => 'melis_ecom_product_text'), 'product_text.ptxt_prd_id = melis_ecom_product.prd_id', array('*'), $select::JOIN_LEFT);
         $select->join(array('product_text_type' => 'melis_ecom_product_text_type'), 'product_text_type.ptt_id = product_text.ptxt_type', array('*'), $select::JOIN_LEFT);
         $select->where->NEST->like('melis_ecom_product.prd_reference', $productName)
-               ->or->like('product_text.ptxt_field_short', $productName)->UNNEST
-                   ->and->equalTo('product_text.ptxt_lang_id', $langId)
-                   ->and->equalTo('product_text_type.ptt_code', 'TITLE');
+            ->or->like('product_text.ptxt_field_short', $productName)->UNNEST
+                ->and->equalTo('product_text.ptxt_lang_id', $langId)
+                ->and->equalTo('product_text_type.ptt_code', 'TITLE');
         
         $select->where($clause);
 
@@ -384,42 +391,42 @@ class MelisEcomProductTable extends MelisEcomGenericTable
     }
 
     /**
-     * Function to get the product variants lists
-     * by attribute value id
-     *
-     * This function is expecting to receive an array
-     * of attributes with the ff example array format:
-     * array(
-     *      array(1,2,3),   ---->   Let's say this array is came from "COLOR" attribute
-     *      array(4,5,6),           and the ID's inside it is came from selected attribute values
-     *      array(7),               which is let's say "RED" => 1, "BLUE" => 2 and "GREEN" => 3.
-     *      array(8,9,10,11,12),    It's the same with the other array. So basically every array
-     *      etc,                    is came from ONE attribute that consists of selected attribute
-     * )                            value ids.
-     *
-     * @param array $attrValIds
-     * @return array
-     */
+        * Function to get the product variants lists
+        * by attribute value id
+        *
+        * This function is expecting to receive an array
+        * of attributes with the ff example array format:
+        * array(
+        *      array(1,2,3),   ---->   Let's say this array is came from "COLOR" attribute
+        *      array(4,5,6),           and the ID's inside it is came from selected attribute values
+        *      array(7),               which is let's say "RED" => 1, "BLUE" => 2 and "GREEN" => 3.
+        *      array(8,9,10,11,12),    It's the same with the other array. So basically every array
+        *      etc,                    is came from ONE attribute that consists of selected attribute
+        * )                            value ids.
+        *
+        * @param array $attrValIds
+        * @return array
+        */
     public function getProductVariantByAttributesId($attrValIds = array())
     {
         $variants = array();
         $attrSelect = new \Laminas\Db\Sql\Select;
-        $attrSelect->columns(array(new Expression('DISTINCT(melis_ecom_variant_attribute_value.vatv_variant_id) AS variants')));
+
         $attrSelect->from('melis_ecom_variant_attribute_value');
-        foreach($attrValIds as $key => $val){
-            $attrSelect->join(array($key.'_var_attr'=>'melis_ecom_variant_attribute_value'), $key.'_var_attr.'.'vatv_variant_id = melis_ecom_variant_attribute_value.vatv_variant_id', array());
-            $attrSelect->where->in($key.'_var_attr.'.'vatv_attribute_value_id', $val);
-        }
+        $attrSelect->columns(['vatv_variant_id', 'ctr' => new Expression('Count(vatv_variant_id)')]);
+        $attrSelect->where->in('vatv_attribute_value_id', $attrValIds);
+        $attrSelect->group('vatv_variant_id');
+        $attrSelect->having('ctr ='. count($attrValIds));
 
         $attrResult = $this->getTableGateway()->selectwith($attrSelect);
 
-        foreach ($attrResult As $val){
-            array_push($variants, $val->variants);
-        }
+        foreach ($attrResult As $val)
+            array_push($variants, $val->vatv_variant_id);
+
         return $variants;
     }
     
-    public function getProductByNameTextTypeAttrIdsAndPrice($productSearchKey, $textTypeCode , $selectedVariants, $categoryIds, $minPrice, $maxPrice, $langId = null, $countryId = null, $status = 1, $start = 0, $limit = null, $order = null, $priceColumn = null)
+    public function getProductByNameTextTypeAttrIdsAndPrice($productSearchKey = null, $textTypeCode = array(), $selectedVariants = array(), $categoryIds = array(), $minPrice, $maxPrice, $langId = null, $countryId = null, $status = 1, $start = 0, $limit = null, $order = null, $priceColumn = null)
     {
         if(empty($priceColumn)){
             $priceColumn = 'price_net';
@@ -495,11 +502,20 @@ class MelisEcomProductTable extends MelisEcomGenericTable
             $select->where->and->in('melis_ecom_product_category.pcat_cat_id', $categoryIds);
         }
         
-        if($maxPrice) {
-            $select->where->NEST->and
-            ->between('prod_price.'.$priceColumn, (float) $minPrice, (float) $maxPrice)
-            ->or->between('var_price.'.$priceColumn, (float) $minPrice, (float) $maxPrice);
-        }
+        if (is_numeric($minPrice))
+            if ($minPrice <= 0)
+                $select->where->greaterThan('prod_price.'.$priceColumn, $minPrice);
+            else    
+                $select->where->greaterThanOrEqualTo('prod_price.'.$priceColumn, $minPrice);
+
+        if (is_numeric($maxPrice))
+            $select->where->lessThanOrEqualTo('prod_price.'.$priceColumn, $maxPrice);
+        
+        // if($maxPrice) {
+        //     $select->where->NEST->and
+        //     ->between('prod_price.'.$priceColumn, (float) $minPrice, (float) $maxPrice)
+        //     ->or->between('var_price.'.$priceColumn, (float) $minPrice, (float) $maxPrice);
+        // }
         
         if(!is_null($order)){
             $select->order($order);
@@ -554,7 +570,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
     public function getProductVariantPriceById($productId, $order = 'ASC', $priceColumn = 'price_net')
     {
         $select = $this->getTableGateway()->getSql()->select();
-       
+    
         $select->join('melis_ecom_variant', 'melis_ecom_variant.var_prd_id = melis_ecom_product.prd_id', array('*'), $select::JOIN_LEFT)
                 ->join('melis_ecom_price', 'melis_ecom_price.price_var_id = melis_ecom_variant.var_id', array('*'), $select::JOIN_LEFT)
                 ->join('melis_ecom_currency', 'melis_ecom_currency.cur_id = melis_ecom_price.price_currency', array('*'), $select::JOIN_LEFT);
@@ -624,7 +640,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
         return $resultSet;
     }
     
-    public function getProductCategoryPriceByProductId($productId, $categoryIds, $langId, $countryId = null, $fieldsTypeCodes = array('TITLE'), $documents = array('mainImage' => 'DEFAULT'))
+    public function getProductCategoryPriceByProductId($productId = null, $categoryIds = array(), $langId, $countryId = null, $fieldsTypeCodes = array('TITLE'), $documents = array('mainImage' => 'DEFAULT'))
     {
         $select = $this->getTableGateway()->getSql()->select();
         
@@ -640,7 +656,7 @@ class MelisEcomProductTable extends MelisEcomGenericTable
             foreach($documents as $key => $value){
                 $docTypeSelect = new \Laminas\Db\Sql\Select;
                 $docTypeSelect->columns(array('rdoc_product_id'));
-                 
+                
                 $docTypeSelect->from('melis_ecom_doc_relations');
             
                 $docTypeSelect->join(array($key.'_melis_ecom_document' => 'melis_ecom_document'), $key.'_melis_ecom_document.doc_id = melis_ecom_doc_relations.rdoc_doc_id', array($key=>'doc_path'), $select::JOIN_LEFT)

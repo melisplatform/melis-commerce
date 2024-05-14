@@ -30,17 +30,13 @@ class MelisEcomOrderTable extends MelisEcomGenericTable
         $this->idField = self::PRIMARY_KEY;
     }
 
-    public function getOrderList($orderStatusId, $onlyValid, $clientId = null, $clientPersonId = null,
+    public function getOrderList($orderStatusId = null, $onlyValid, $clientId = null, $clientPersonId = null,
                                  $couponId = null, $reference = null, $start = 0, $limit = null, $order = 'ord_id', 
-                                 $search = null, $startDate = null, $endDate = null, $count = false)
+                                 $search = null, $startDate = null, $endDate = null)
     {
         $select = $this->getTableGateway()->getSql()->select();
-        if($count){
-            $select->columns(['total' => new \Laminas\Db\Sql\Expression('COUNT(*)')]);
-        }else {
-            $select->quantifier('DISTINCT');
-            $select->columns(array('ord_id'));
-        }
+        $select->quantifier('DISTINCT');
+        $select->columns(array('ord_id'));
         
         //nested select for left join baskets
         $basketQuery = new \Laminas\Db\Sql\Select ('melis_ecom_order_basket');
@@ -104,25 +100,25 @@ class MelisEcomOrderTable extends MelisEcomGenericTable
             ->or->like('melis_ecom_order.ord_reference', $search)
             ->or->like('melis_ecom_order.ord_status', $search)
             ->or->like('melis_ecom_client_person.cper_name', $search)
-            ->or->like('melis_ecom_client_person.cper_email', $search)
             ->or->like('melis_ecom_client_person.cper_firstname', $search)
             ->or->like('melis_ecom_client_company.ccomp_name', $search);
         }
 
-        if(!$count) {
-            if (!is_null($start)) {
-                $select->offset($start);
-            }
-
-            if (!is_null($limit) && $limit != -1) {
-                $select->limit($limit);
-            }
-
-            if (!is_null($order)) {
-                $select->order($order);
-            }
-            $select->group('melis_ecom_order.ord_id');
+        if (!is_null($start))
+        {
+            $select->offset($start);
         }
+
+        if (!is_null($limit)&&$limit!=-1)
+        {
+            $select->limit($limit);
+        }
+
+        if (!is_null($order))
+        {
+            $select->order($order);
+        }
+        $select->group('melis_ecom_order.ord_id');
 
 
 

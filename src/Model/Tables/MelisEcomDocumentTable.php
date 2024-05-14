@@ -42,7 +42,7 @@ class MelisEcomDocumentTable extends MelisEcomGenericTable
         return $resultSet;
     }
     
-    public function getDocumentsRelationAndDocType($docRelation, $relationId, $typeCode = null)
+    public function getDocumentsRelationAndDocType($docRelation = 'product', $relationId, $typeCode = null)
     {
         $select = $this->getTableGateway()->getSql()->select();
         $select->columns(array('*'));
@@ -63,7 +63,7 @@ class MelisEcomDocumentTable extends MelisEcomGenericTable
         return $resultSet;
     }
     
-    public function getDocumentRelationsAndDocSubType($docRelation, $relationId, $typeId = null, $subTypeId = null)
+    public function getDocumentRelationsAndDocSubType($docRelation = 'product', $relationId, $typeId = null, $subTypeId = null)
     {
         $select = $this->getTableGateway()->getSql()->select();
         $select->columns(array('*'));
