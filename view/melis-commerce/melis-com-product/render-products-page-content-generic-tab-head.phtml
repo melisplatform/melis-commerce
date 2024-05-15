@@ -21,8 +21,8 @@
         $icon = $this->zoneconfig['conf']['icon'];
 
 ?>
-<li class="<?= $active;?>" <?php echo $id. ' '. $data_melisKey;?>>
-	<a data-bs-toggle="tab" href="<?= $href;?>" aria-expanded="true" class="<?= $icon;?>">
+<li class="nav-item <?= $active;?>" <?php echo $id. ' '. $data_melisKey;?>>
+	<a data-bs-toggle="tab" data-bs-target="<?= $href;?>" href="<?= $href;?>" aria-expanded="true" class="nav-link <?= $icon;?>">
 		<i class=""></i>
 		<span><?= $this->translate($name); ?></span>
 	</a>

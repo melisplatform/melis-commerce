@@ -33,7 +33,7 @@
                                     	$form->get('cper_confirm_password')->setLabel($form->get('cper_confirm_password')->getLabel().' <i class="fa fa-info-circle fa-lg" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="'.$this->translate('tr_meliscommerce_client_tooltip_password_2').'"></i>');
                                     	$form->prepare();
                                     	echo $this->form()->openTag($form);
-//                                    	echo $this->melisFieldCollection($form);
+                                    	//echo $this->melisFieldCollection($form);
                                         foreach($form->getElements() as $key => $val)  {
                                             echo '<div class="form-group">';
                                             if ($val->getLabel())
@@ -84,7 +84,7 @@
 </div>
 <script>
 	$('.modalClientContactStatus').bootstrapSwitch();
-    $(document).ready(function(){
+    $(function(){
         $("#melisCommerceClientContactFormModal #cper_tags").tagsinput({
             allowDuplicates: false
         });

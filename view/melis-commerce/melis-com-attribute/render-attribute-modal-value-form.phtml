@@ -12,8 +12,11 @@
 			<div class="widget widget-tabs widget-tabs-double widget-tabs-responsive margin-none border-none">
                 <div class="widget-head">
                 	<ul class="nav nav-tabs">
-                		<li class="active"><a href="#<?php echo $this->zoneconfig['conf']['id'] ?>" class="glyphicons <?php echo ($this->attributeValueId) ? 'pencil' : 'plus'?>" data-bs-toggle="tab" aria-expanded="true"><i></i> 
-                		<?= $this->zoneconfig['conf']['name'] ?></a></li>
+                		<li class="nav-item active">
+							<a data-bs-target="#<?php echo $this->zoneconfig['conf']['id'] ?>" href="#<?php echo $this->zoneconfig['conf']['id'] ?>" class="nav-link glyphicons <?php echo ($this->attributeValueId) ? 'pencil' : 'plus'?>" data-bs-toggle="tab" aria-expanded="true"><i></i> 
+                			<?= $this->zoneconfig['conf']['name'] ?>
+							</a>
+						</li>
             		</ul>
         		</div>
         		<div class="widget-body innerAll inner-2x">

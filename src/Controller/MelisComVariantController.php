@@ -746,13 +746,13 @@ class MelisComVariantController extends MelisAbstractActionController
     public function renderVariantTabStocksCountryListAction()
     {
         
-        $ctyGeneral =   '<li class="">
-                    		<a data-bs-toggle="tab" href="#'.$this->getVariantId().'_stock-General" data-country="General" aria-expanded="true"><span>General</span>
+        $ctyGeneral =   '<li class="nav-item">
+                    		<a class="nav-link" data-bs-toggle="tab" data-bs-target="#'.$this->getVariantId().'_stock-General" href="#'.$this->getVariantId().'_stock-General" data-country="General" aria-expanded="true"><span>General</span>
                     			<i class="fa fa-globe"></i>
                     		</a>
                     	</li>';
-        $ctyFormat =    '<li class="">
-                    		<a data-bs-toggle="tab" href="#%s_stock-%s" data-country="%s" aria-expanded="true"><span>%s</span>
+        $ctyFormat =    '<li class="nav-item">
+                    		<a class="nav-link" data-bs-toggle="tab" data-bs-target="#%s_stock-%s" href="#%s_stock-%s" data-country="%s" aria-expanded="true"><span>%s</span>
                      			%s
                     		</a>
                     	</li>';

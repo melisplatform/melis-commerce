@@ -26,8 +26,8 @@ if (!empty($this->prefixId)){
 $id .= $this->zoneconfig['conf']['id'].'"';
 $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
 ?>
-<li <?= $id. ' '. $data_melisKey?> class="<?= $active;?>">
-    <a data-bs-toggle="tab" href="#<?= $href;?>" aria-expanded="true" class="<?= $icon;?>">
+<li class="nav-item" <?= $id. ' '. $data_melisKey?> class="<?= $active;?>">
+    <a class="nav-link" data-bs-toggle="tab" data-bs-target="#<?= $href;?>" href="#<?= $href;?>" aria-expanded="true" class="<?= $icon;?>">
         <i ></i>
         <span><?= $name;?></span>
     </a>
