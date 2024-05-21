@@ -1,329 +1,329 @@
 $(function () {
-	var $body = $("body");
+  var $body = $("body");
 
-	$body.on("click", ".editvariant", function () {
-		var $this = $(this),
-			variantId = $this.closest("tr").attr("id"),
-			variantName = $this.closest("tr").find("td a").data("variantname"),
-			productId = $this
-				.closest(".container-level-a")
-				.attr("id")
-				.replace(/[^0-9]/g, ""),
-			prodTabId = productId + "_id_meliscommerce_products_page";
+  $body.on("click", ".editvariant", function () {
+    var $this = $(this),
+      variantId = $this.closest("tr").attr("id"),
+      variantName = $this.closest("tr").find("td a").data("variantname"),
+      productId = $this
+        .closest(".container-level-a")
+        .attr("id")
+        .replace(/[^0-9]/g, ""),
+      prodTabId = productId + "_id_meliscommerce_products_page";
 
-		melisCommerce.disableAllTabs();
-		melisHelper.tabOpen(
-			variantName.toString(),
-			"icon-tag-2",
-			variantId + "_id_meliscommerce_variants_page",
-			"meliscommerce_variants_page",
-			{ variantId: variantId, productId: productId },
-			prodTabId
-		);
-		melisCommerce.setUniqueId(variantId);
-		melisCommerce.enableAllTabs();
-	});
+    melisCommerce.disableAllTabs();
+    melisHelper.tabOpen(
+      variantName.toString(),
+      "icon-tag-2",
+      variantId + "_id_meliscommerce_variants_page",
+      "meliscommerce_variants_page",
+      { variantId: variantId, productId: productId },
+      prodTabId,
+    );
+    melisCommerce.setUniqueId(variantId);
+    melisCommerce.enableAllTabs();
+  });
 
-	$body.on("click", ".add-variant", function () {
-		var $this = $(this),
-			productId = $this
-				.closest(".container-level-a")
-				.attr("id")
-				.replace(/[^0-9]/g, ""),
-			prodTabId = productId + "_id_meliscommerce_products_page";
+  $body.on("click", ".add-variant", function () {
+    var $this = $(this),
+      productId = $this
+        .closest(".container-level-a")
+        .attr("id")
+        .replace(/[^0-9]/g, ""),
+      prodTabId = productId + "_id_meliscommerce_products_page";
 
-		melisCoreTool.processing();
-		melisHelper.tabOpen(
-			translations.tr_meliscommerce_variant_main_information_sku_new,
-			"icon-tag-2",
-			"id_meliscommerce_variants_page",
-			"meliscommerce_variants_page",
-			{ productId: productId, page: "newvar" },
-			prodTabId
-		);
-		melisCommerce.setUniqueId(0);
-		melisCoreTool.processDone();
-	});
+    melisCoreTool.processing();
+    melisHelper.tabOpen(
+      translations.tr_meliscommerce_variant_main_information_sku_new,
+      "icon-tag-2",
+      "id_meliscommerce_variants_page",
+      "meliscommerce_variants_page",
+      { productId: productId, page: "newvar" },
+      prodTabId,
+    );
+    melisCommerce.setUniqueId(0);
+    melisCoreTool.processDone();
+  });
 
-	$body.on("click", ".save-add-variant", function () {
-		var $this = $(this),
-			variantPageId = $this.closest(".container-level-a").attr("id");
-	});
+  $body.on("click", ".save-add-variant", function () {
+    var $this = $(this),
+      variantPageId = $this.closest(".container-level-a").attr("id");
+  });
 
-	$body.on("click", ".country-price-tab li a", function () {
-		var $this = $(this),
-			textCountry = $this.data("country"),
-			textSymbol = $this.data("symbol"),
-			$curSymbol = $(
-				"[data-meliskey='meliscommerce_prices_tab_country_header'] .cur-symbol"
-			);
+  $body.on("click", ".country-price-tab li a", function () {
+    var $this = $(this),
+      textCountry = $this.data("country"),
+      textSymbol = $this.data("symbol"),
+      $curSymbol = $(
+        "[data-meliskey='meliscommerce_prices_tab_country_header'] .cur-symbol",
+      );
 
-		if (textSymbol != "") {
-			$curSymbol
-				.removeClass("fa fa-dollar")
-				.text(textSymbol)
-				.css("font-weight", "600");
-		} else {
-			if (!$curSymbol.hasClass("fa")) {
-				$curSymbol.empty().addClass("fa fa-dollar").removeAttr("style");
-			}
-		}
+    if (textSymbol != "") {
+      $curSymbol
+        .removeClass("fa fa-dollar")
+        .text(textSymbol)
+        .css("font-weight", "600");
+    } else {
+      if (!$curSymbol.hasClass("fa")) {
+        $curSymbol.empty().addClass("fa fa-dollar").removeAttr("style");
+      }
+    }
 
-		$(".country-price-label").text(
-			textCountry +
-				" " +
-				translations.tr_meliscommerce_variant_tab_prices_pricing
-		);
-	});
+    $(".country-price-label").text(
+      textCountry +
+        " " +
+        translations.tr_meliscommerce_variant_tab_prices_pricing,
+    );
+  });
 
-	$body.on("click", ".country-stock-tab li a", function () {
-		var $this = $(this),
-			textCountry = $this.data("country");
+  $body.on("click", ".country-stock-tab li a", function () {
+    var $this = $(this),
+      textCountry = $this.data("country");
 
-		if (melisLangId == "fr_FR") {
-			$(".country-stock-label").text(
-				translations.tr_meliscommerce_variant_tab_stocks_header +
-					" " +
-					textCountry
-			);
-		} else {
-			$(".country-stock-label").text(
-				textCountry +
-					" " +
-					translations.tr_meliscommerce_variant_tab_stocks_header
-			);
-		}
-	});
+    if (melisLangId == "fr_FR") {
+      $(".country-stock-label").text(
+        translations.tr_meliscommerce_variant_tab_stocks_header +
+          " " +
+          textCountry,
+      );
+    } else {
+      $(".country-stock-label").text(
+        textCountry +
+          " " +
+          translations.tr_meliscommerce_variant_tab_stocks_header,
+      );
+    }
+  });
 
-	$body.on("click", ".productvariant-refresh", function () {
-		var prodId = melisCommerce.getCurrentProductId();
+  $body.on("click", ".productvariant-refresh", function () {
+    var prodId = melisCommerce.getCurrentProductId();
 
-		melisHelper.zoneReload(
-			prodId +
-				"_id_meliscommerce_products_page_content_tab_variant_content_container",
-			"meliscommerce_products_page_content_tab_variant_content_container",
-			{ productId: prodId }
-		);
-	});
+    melisHelper.zoneReload(
+      prodId +
+        "_id_meliscommerce_products_page_content_tab_variant_content_container",
+      "meliscommerce_products_page_content_tab_variant_content_container",
+      { productId: prodId },
+    );
+  });
 
-	$body.on("click", ".deletevariant", function () {
-		var del = this,
-			variantId = $(del).closest("tr").attr("id"),
-			url = "melis/MelisCommerce/MelisComVariant/deleteVariant",
-			dataString = [];
+  $body.on("click", ".deletevariant", function () {
+    var del = this,
+      variantId = $(del).closest("tr").attr("id"),
+      url = "melis/MelisCommerce/MelisComVariant/deleteVariant",
+      dataString = [];
 
-		dataString.push({
-			name: "var_id",
-			value: variantId,
-		});
+    dataString.push({
+      name: "var_id",
+      value: variantId,
+    });
 
-		melisCoreTool.pending(del);
+    melisCoreTool.pending(del);
 
-		melisCoreTool.confirm(
-			translations.tr_meliscommerce_documents_common_label_yes,
-			translations.tr_meliscommerce_documents_common_label_no,
-			translations.tr_meliscommerce_variants_delete_title,
-			translations.tr_meliscommerce_variants_delete_confirm,
-			function () {
-				melisCommerce.postSave(
-					url,
-					dataString,
-					function (data) {
-						if (data.success) {
-							melisHelper.melisOkNotification(data.textTitle, data.textMessage);
-							melisHelper.zoneReload(
-								melisCommerce.getCurrentProductId() +
-									"_id_meliscommerce_products_page_content_tab_variant_content_container",
-								"meliscommerce_products_page_content_tab_variant_content_container",
-								{ productId: melisCommerce.getCurrentProductId() }
-							);
-							melisHelper.tabClose(
-								variantId + "_id_meliscommerce_variants_page"
-							);
-						} else {
-							melisHelper.melisKoNotification(
-								data.textTitle,
-								data.textMessage,
-								data.errors
-							);
-						}
-						melisCore.flashMessenger();
-					},
-					function (data) {
-						console.log(data);
-					}
-				);
-			}
-		);
+    melisCoreTool.confirm(
+      translations.tr_meliscommerce_documents_common_label_yes,
+      translations.tr_meliscommerce_documents_common_label_no,
+      translations.tr_meliscommerce_variants_delete_title,
+      translations.tr_meliscommerce_variants_delete_confirm,
+      function () {
+        melisCommerce.postSave(
+          url,
+          dataString,
+          function (data) {
+            if (data.success) {
+              melisHelper.melisOkNotification(data.textTitle, data.textMessage);
+              melisHelper.zoneReload(
+                melisCommerce.getCurrentProductId() +
+                  "_id_meliscommerce_products_page_content_tab_variant_content_container",
+                "meliscommerce_products_page_content_tab_variant_content_container",
+                { productId: melisCommerce.getCurrentProductId() },
+              );
+              melisHelper.tabClose(
+                variantId + "_id_meliscommerce_variants_page",
+              );
+            } else {
+              melisHelper.melisKoNotification(
+                data.textTitle,
+                data.textMessage,
+                data.errors,
+              );
+            }
+            melisCore.flashMessenger();
+          },
+          function (data) {
+            console.log(data);
+          },
+        );
+      },
+    );
 
-		melisCoreTool.done(del);
-	});
+    melisCoreTool.done(del);
+  });
 
-	$body.on("click", ".save-variant", function () {
-		melisCoreTool.pending(".save-variant");
+  $body.on("click", ".save-variant", function () {
+    melisCoreTool.pending(".save-variant");
 
-		var $this = $(this),
-			url = "/melis/MelisCommerce/MelisComVariant/saveVariant",
-			prodId = $this.closest(".container-level-a").data("prodid"),
-			prodTabId = prodId + "_id_meliscommerce_products_page",
-			id = $this.closest(".container-level-a").attr("id"),
-			varId = isNaN(parseInt(id, 10)) ? "" : parseInt(id, 10),
-			fixVarId = isNaN(parseInt(id, 10)) ? "" : parseInt(id, 10) + "_",
-			forms = $this.closest(".container-level-a").find("form"),
-			dataString = [],
-			len,
-			ctr;
+    var $this = $(this),
+      url = "/melis/MelisCommerce/MelisComVariant/saveVariant",
+      prodId = $this.closest(".container-level-a").data("prodid"),
+      prodTabId = prodId + "_id_meliscommerce_products_page",
+      id = $this.closest(".container-level-a").attr("id"),
+      varId = isNaN(parseInt(id, 10)) ? "" : parseInt(id, 10),
+      fixVarId = isNaN(parseInt(id, 10)) ? "" : parseInt(id, 10) + "_",
+      forms = $this.closest(".container-level-a").find("form"),
+      dataString = [],
+      len,
+      ctr;
 
-		ctr = 0;
+    ctr = 0;
 
-		forms.each(function () {
-			var $this = $(this),
-				pre = $this.attr("name"),
-				data = $this.serializeArray();
+    forms.each(function () {
+      var $this = $(this),
+        pre = $this.attr("name"),
+        data = $this.serializeArray();
 
-			len = data.length;
+      len = data.length;
 
-			for (j = 0; j < len; j++) {
-				dataString.push({
-					name: pre + "[" + ctr + "][" + data[j].name + "]",
-					value: data[j].value,
-				});
-			}
+      for (j = 0; j < len; j++) {
+        dataString.push({
+          name: pre + "[" + ctr + "][" + data[j].name + "]",
+          value: data[j].value,
+        });
+      }
 
-			ctr++;
-		});
+      ctr++;
+    });
 
-		dataString.push({
-			name: "variantId",
-			value: varId,
-		});
+    dataString.push({
+      name: "variantId",
+      value: varId,
+    });
 
-		dataString = melisCommerceSeo.serializeSeo("variant", varId, dataString);
+    dataString = melisCommerceSeo.serializeSeo("variant", varId, dataString);
 
-		dataString.push(
-			{ name: "variant[0][var_id]", value: varId },
-			{ name: "variant[0][var_prd_id]", value: prodId }
-		);
+    dataString.push(
+      { name: "variant[0][var_id]", value: varId },
+      { name: "variant[0][var_prd_id]", value: prodId },
+    );
 
-		$("#" + id)
-			.find(".make-switch div")
-			.each(function () {
-				var $this = $(this),
-					field = "variant[0][" + $this.find("input").attr("name") + "]",
-					status = $this.hasClass("switch-on"),
-					saveStatus = 0;
+    $("#" + id)
+      .find(".make-switch div")
+      .each(function () {
+        var $this = $(this),
+          field = "variant[0][" + $this.find("input").attr("name") + "]",
+          status = $this.hasClass("switch-on"),
+          saveStatus = 0;
 
-				if (status) {
-					saveStatus = 1;
-				}
+        if (status) {
+          saveStatus = 1;
+        }
 
-				dataString.push({
-					name: field,
-					value: saveStatus,
-				});
-			});
+        dataString.push({
+          name: field,
+          value: saveStatus,
+        });
+      });
 
-		melisCommerce.postSave(
-			url,
-			dataString,
-			function (data) {
-				if (data.success) {
-					melisHelper.tabClose(fixVarId + "id_meliscommerce_variants_page");
-					melisHelper.tabOpen(
-						data.chunk.varSku,
-						"icon-tag-2",
-						data.chunk.variantId + "_id_meliscommerce_variants_page",
-						"meliscommerce_variants_page",
-						{ variantId: data.chunk.variantId, productId: prodId },
-						prodTabId
-					);
-					melisHelper.melisOkNotification(data.textTitle, data.textMessage);
-					melisHelper.zoneReload(
-						prodId +
-							"_id_meliscommerce_products_page_content_tab_variant_content_container",
-						"meliscommerce_products_page_content_tab_variant_content_container",
-						{ productId: prodId }
-					);
-					melisCommerce.setUniqueId(data.chunk.variantId);
-					melisCore.flashMessenger();
-				} else {
-					melisHelper.melisKoNotification(
-						data.textTitle,
-						data.textMessage,
-						data.errors
-					);
-					var target = "id_meliscommerce_variant_content";
+    melisCommerce.postSave(
+      url,
+      dataString,
+      function (data) {
+        if (data.success) {
+          melisHelper.tabClose(fixVarId + "id_meliscommerce_variants_page");
+          melisHelper.tabOpen(
+            data.chunk.varSku,
+            "icon-tag-2",
+            data.chunk.variantId + "_id_meliscommerce_variants_page",
+            "meliscommerce_variants_page",
+            { variantId: data.chunk.variantId, productId: prodId },
+            prodTabId,
+          );
+          melisHelper.melisOkNotification(data.textTitle, data.textMessage);
+          melisHelper.zoneReload(
+            prodId +
+              "_id_meliscommerce_products_page_content_tab_variant_content_container",
+            "meliscommerce_products_page_content_tab_variant_content_container",
+            { productId: prodId },
+          );
+          melisCommerce.setUniqueId(data.chunk.variantId);
+          melisCore.flashMessenger();
+        } else {
+          melisHelper.melisKoNotification(
+            data.textTitle,
+            data.textMessage,
+            data.errors,
+          );
+          var target = "id_meliscommerce_variant_content";
 
-					if (data.chunk.variantId) {
-						target = data.chunk.variantId + "id_meliscommerce_variant_content";
-					}
+          if (data.chunk.variantId) {
+            target = data.chunk.variantId + "id_meliscommerce_variant_content";
+          }
 
-					melisCoreTool.highlightErrors(0, data.errors, target);
-				}
-				melisCoreTool.done(".save-variant");
-				melisCore.flashMessenger();
-			},
-			function (data) {
-				console.log(data);
-				alert(translations.tr_meliscore_error_message);
-			}
-		);
-	});
+          melisCoreTool.highlightErrors(0, data.errors, target);
+        }
+        melisCoreTool.done(".save-variant");
+        melisCore.flashMessenger();
+      },
+      function (data) {
+        console.log(data);
+        alert(translations.tr_meliscore_error_message);
+      },
+    );
+  });
 
-	$body.on("mouseenter mouseleave", ".toolTipVarHoverEvent", function (e) {
-		var $this = $(this),
-			variantId = $this.data("variantid"),
-			productId = $this
-				.closest(".container-level-a")
-				.attr("id")
-				.replace(/[^0-9]/g, ""),
-			loaderText =
-				'<div class="qtipLoader"><hr/><span class="text-center col-lg-12">Loading...</span><br/></div>';
+  $body.on("mouseenter mouseleave", ".toolTipVarHoverEvent", function (e) {
+    var $this = $(this),
+      variantId = $this.data("variantid"),
+      productId = $this
+        .closest(".container-level-a")
+        .attr("id")
+        .replace(/[^0-9]/g, ""),
+      loaderText =
+        '<div class="qtipLoader"><hr/><span class="text-center col-lg-12">Loading...</span><br/></div>';
 
-		$.each(
-			$("table#variantTable" + variantId + " thead").nextAll(),
-			function (i, v) {
-				$(v).remove();
-			}
-		);
+    $.each(
+      $("table#variantTable" + variantId + " thead").nextAll(),
+      function (i, v) {
+        $(v).remove();
+      },
+    );
 
-		$(loaderText).insertAfter("table#variantTable" + variantId + " thead");
+    $(loaderText).insertAfter("table#variantTable" + variantId + " thead");
 
-		$.ajax({
-			type: "POST",
-			url: "/melis/MelisCommerce/MelisComProductList/getToolTip",
-			data: { variantId: variantId, productId: productId },
-			dataType: "json",
-			encode: true,
-		})
-			.done(function (data) {
-				$("div.qtipLoader").remove();
+    $.ajax({
+      type: "POST",
+      url: "/melis/MelisCommerce/MelisComProductList/getToolTip",
+      data: { variantId: variantId, productId: productId },
+      dataType: "json",
+      encode: true,
+    })
+      .done(function (data) {
+        $("div.qtipLoader").remove();
 
-				if (data.content.length === 0) {
-					$(
-						'<div class="qtipLoader"><hr/><span class="text-center col-lg-12">' +
-							translations.tr_meliscommerce_product_tooltip_no_variants +
-							"</span><br/></div>"
-					).insertAfter("table.qtipTable thead");
-				} else {
-					// make sure tbody is clear
-					$.each(
-						$("table#variantTable" + variantId + " thead").nextAll(),
-						function (i, v) {
-							$(v).remove();
-						}
-					);
-					$.each(data.content.reverse(), function (i, v) {
-						$(v).insertAfter("table#variantTable" + variantId + " thead");
-					});
-				}
-			})
-			.fail(function () {
-				alert(translations.tr_meliscore_error_message);
-			});
-	});
+        if (data.content.length === 0) {
+          $(
+            '<div class="qtipLoader"><hr/><span class="text-center col-lg-12">' +
+              translations.tr_meliscommerce_product_tooltip_no_variants +
+              "</span><br/></div>",
+          ).insertAfter("table.qtipTable thead");
+        } else {
+          // make sure tbody is clear
+          $.each(
+            $("table#variantTable" + variantId + " thead").nextAll(),
+            function (i, v) {
+              $(v).remove();
+            },
+          );
+          $.each(data.content.reverse(), function (i, v) {
+            $(v).insertAfter("table#variantTable" + variantId + " thead");
+          });
+        }
+      })
+      .fail(function () {
+        alert(translations.tr_meliscore_error_message);
+      });
+  });
 
-	$body.on("click", ".updateVariantStatus", function() {
+  $body.on("click", ".updateVariantStatus", function() {
 	  var _this = $(this),
 		obj = {},
 		variantId = _this.closest("tr").attr("id"),
@@ -408,63 +408,73 @@ $(function () {
 		});
 	});
 
-	$body.on("click", ".tabs-label li a", function () {
-		var $this = $(this),
-			href = $this.attr("href"),
-			tabVariants = $this.closest("li").data("meliskey");
+  $body.on("click", ".tabs-label li a", function () {
+    var $this = $(this),
+      href = $this.attr("href"),
+      tabVariants = $this.closest("li").data("meliskey");
 
-		if (tabVariants === "meliscommerce_products_page_content_tab_variants") {
-			$(href).find(".refresh-attribute-lists").trigger("click");
-		}
-	});
+    if (tabVariants === "meliscommerce_products_page_content_tab_variants") {
+      $(href).find(".refresh-attribute-lists").trigger("click");
+    }
+  });
 });
 
 //variant list table in product page
 window.initProductVariant = function (data, tblSettings) {
-	var prodId = $("#" + tblSettings.sTableId).data("prodid");
+  var prodId = $("#" + tblSettings.sTableId).data("prodid");
 
-	data.prodId = prodId;
+  data.prodId = prodId;
 };
 
 window.variantLoaded = function () {
-	var $this = $(this),
-		productId = $(".tab-pane#" + activeTabId).data("prodid"),
-		prodTabId = productId + "_id_meliscommerce_products_page";
+  var $this = $(this),
+    productId = $(".tab-pane#" + activeTabId).data("prodid"),
+    prodTabId = productId + "_id_meliscommerce_products_page";
 
-	melisCommerce.enableTab(prodTabId);
+  melisCommerce.enableTab(prodTabId);
 };
 
-window.checkVarStatus = function() {
-	var productId = "",
-	  btnTitle = "";
-  
-	if (
-	  $(".updateVariantStatus").closest(".container-level-a.active").attr("id") !=
-	  undefined
-	) {
-	  productId = $(".updateVariantStatus")
-		.closest(".container-level-a.active")
-		.attr("id")
-		.replace(/[^0-9]/g, "");
-	} else {
-	  productId = $(".save-variant")
-		.closest(".container-level-a.active")
-		.data("prodid");
-	}
-  
-	$('.updateVariantStatus').each(function() {
-	  var $this = $(this);
-	  var status = $this.parents('td').siblings('td').children('.var-status-indicator').data('status') || false;
-	  var icon = $this.children('i.variant-update-icon-rotate');
-	  var title = translations['tr_meliscommerce_variants_' + (status ? 'activate' : 'deactivate') + '_status_title'];
-	  $this.attr('title', title);
-  
-	  if (status) {
-		$this.removeClass("btn-success").addClass("btn-danger");
-		icon.addClass('down');
-	  } else {
-		$this.removeClass("btn-danger").addClass("btn-success");
-		icon.removeClass('down');
-	  }
-	});
-  };
+window.checkVarStatus = function () {
+  var productId = "",
+    btnTitle = "";
+
+  if (
+    $(".updateVariantStatus").closest(".container-level-a.active").attr("id") !=
+    undefined
+  ) {
+    productId = $(".updateVariantStatus")
+      .closest(".container-level-a.active")
+      .attr("id")
+      .replace(/[^0-9]/g, "");
+  } else {
+    productId = $(".save-variant")
+      .closest(".container-level-a.active")
+      .data("prodid");
+  }
+
+  $(".updateVariantStatus").each(function () {
+    var $this = $(this);
+    var status =
+      $this
+        .parents("td")
+        .siblings("td")
+        .children(".var-status-indicator")
+        .data("status") || false;
+    var icon = $this.children("i.variant-update-icon-rotate");
+    var title =
+      translations[
+        "tr_meliscommerce_variants_" +
+          (status ? "activate" : "deactivate") +
+          "_status_title"
+      ];
+    $this.attr("title", title);
+
+    if (status) {
+      $this.removeClass("btn-success").addClass("btn-danger");
+      icon.addClass("down");
+    } else {
+      $this.removeClass("btn-danger").addClass("btn-success");
+      icon.removeClass("down");
+    }
+  });
+};
