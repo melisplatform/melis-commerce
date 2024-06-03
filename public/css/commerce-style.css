@@ -3456,3 +3456,7 @@ span.remove-company-image i{
 #idAddProductText .card-header .product-text-accordion-toggle.collapsed:before{
 	background-color: transparent !important;
 }
+/* jQuery migration */
+#clientListTbl .deleteClient {
+	margin-left: 0.2rem;
+}
