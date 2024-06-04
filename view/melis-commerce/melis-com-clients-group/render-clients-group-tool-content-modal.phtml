@@ -13,7 +13,7 @@
                             $tabId = $menuConfig['conf']['id'];
                             $tabIcon = empty($this->icon) ? !empty($menuConfig['conf']['icon']) ? $menuConfig['conf']['icon'] : 'pencil' : $this->icon;
                             $tabName = $menuConfig['conf']['name'];
-                            echo '<li class="nav-item '.$active.'"><a data-bs-target="#'.$tabId.'" href="#'.$tabId.'" class="nav-link glyphicons '.$tabIcon.'" data-bs-toggle="tab" aria-expanded="true"><i></i> '.(empty($this->title) ? $this->translate($tabName) : $this->title).'</a></li>';
+                            echo '<li class="nav-item '.$active.'"><a href="#'.$tabId.'" class="nav-link glyphicons '.$tabIcon.'" data-bs-toggle="tab" aria-expanded="true"><i></i> '.(empty($this->title) ? $this->translate($tabName) : $this->title).'</a></li>';
                         }
                         ?>
                     </ul>

@@ -909,7 +909,7 @@ class MelisComClientController extends MelisAbstractActionController
                 
                 // Generating tabulation navigation for to new Added Client Contact
                 $tabNav = '<li class="nav-item '.$addressId.'_address">
-                                <a class="nav-link clearfix" data-bs-toggle="tab" id="nav_add_'.$addressId.'" data-bs-target="#'.$addressId.'_address" href="#'.$addressId.'_address" aria-expanded="false">
+                                <a class="nav-link clearfix" data-bs-toggle="tab" id="nav_add_'.$addressId.'" href="#'.$addressId.'_address" aria-expanded="false">
                                     <span>
                                         '.$addressName.'
                                         <label class="label label-success">'.$translator->translate('tr_meliscommerce_clients_common_label_new').'</label>

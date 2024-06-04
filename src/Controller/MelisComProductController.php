@@ -796,12 +796,12 @@ class MelisComProductController extends MelisAbstractActionController
         $productId = (int) $this->params()->fromQuery('productId', '');
 
         $ctyGeneral =   '<li class="nav-tem">
-                    		<a class="nav-link clearfix" data-bs-toggle="tab" data-bs-target="#'.$productId.'_productprice-General" href="#'.$productId.'_productprice-General" data-country="General" aria-expanded="true"><span>General</span>
+                    		<a class="nav-link clearfix" data-bs-toggle="tab" href="#'.$productId.'_productprice-General" data-country="General" aria-expanded="true"><span>General</span>
                     			<i class="fa fa-globe"></i>
                     		</a>
                     	</li>';
         $ctyFormat =    '<li class="nav-item">
-                    		<a class="nav-link clearfix" data-bs-toggle="tab" data-bs-target="#%s_productprice-%s" href="#%s_productprice-%s" data-country="%s" aria-expanded="true"><span>%s</span>
+                    		<a class="nav-link clearfix" data-bs-toggle="tab" href="#%s_productprice-%s" data-country="%s" aria-expanded="true"><span>%s</span>
                     			<i class="fa fa-times"></i>
                     		</a>
                     	</li>';

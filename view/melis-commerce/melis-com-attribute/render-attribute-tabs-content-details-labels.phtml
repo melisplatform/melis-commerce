@@ -13,7 +13,7 @@
             		foreach($this->langs as $lang):
             		?>
                 		<li class="nav-item <?= $active ?>">
-                			<a class="nav-link clearfix" data-bs-toggle="tab" data-bs-target="#<?= $lang->elang_locale.$id ?>" href="#<?= $lang->elang_locale.$id ?>" aria-expanded="true">
+                			<a class="nav-link clearfix" data-bs-toggle="tab" href="#<?= $lang->elang_locale.$id ?>" aria-expanded="true">
 								<?php
 								$imageData = $lang->elang_flag;
                                 if(!empty($imageData)){

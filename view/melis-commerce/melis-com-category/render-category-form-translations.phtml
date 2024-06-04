@@ -21,7 +21,7 @@
             	<ul class="nav nav-tabs product-text-tab">
             		<?php foreach ($this->ecomLang as $key => $val){?>
                 		<li class="nav-item">
-                			<a class="nav-link clearfix" data-bs-toggle="tab" data-bs-target="#<?php echo $val['elang_locale'].'_categoryInfo' ?>" href="#<?php echo $val['elang_locale'].'_categoryInfo' ?>" aria-expanded="false">
+                			<a class="nav-link clearfix" data-bs-toggle="tab" href="#<?php echo $val['elang_locale'].'_categoryInfo' ?>" aria-expanded="false">
 								<?php
 								    $imageData = $val['elang_flag'];
                                     if(!empty($imageData))
