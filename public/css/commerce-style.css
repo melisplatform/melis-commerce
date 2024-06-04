@@ -3460,3 +3460,6 @@ span.remove-company-image i{
 #clientListTbl .deleteClient {
 	margin-left: 0.2rem;
 }
+.melis-filter-image a {
+	text-decoration: none;
+}
