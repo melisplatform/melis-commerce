@@ -3463,3 +3463,6 @@ span.remove-company-image i{
 .melis-filter-image a {
 	text-decoration: none;
 }
+.melis-product-heading .btn {
+	font-size: 0.875rem;
+}
