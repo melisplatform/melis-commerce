@@ -27,8 +27,8 @@ $id .= $this->zoneconfig['conf']['id'].'"';
 $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
 ?>
 <li class="nav-item" <?= $id. ' '. $data_melisKey?> class="<?= $active;?>">
-    <a class="nav-link" data-bs-toggle="tab" href="#<?= $href;?>" aria-expanded="true" class="<?= $icon;?>">
-        <i ></i>
+    <a class="nav-link <?= $icon;?>" data-bs-toggle="tab" href="#<?= $href;?>" aria-expanded="true">
+        <i></i>
         <span><?= $name;?></span>
     </a>
 </li>
