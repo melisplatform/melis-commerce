@@ -3460,9 +3460,15 @@ span.remove-company-image i{
 #clientListTbl .deleteClient {
 	margin-left: 0.2rem;
 }
+.me-file-cont p a,
 .melis-filter-image a {
 	text-decoration: none;
 }
+.me-file-cont p a:hover {
+	text-decoration: underline;
+}
+.btn,
+.productCategoryFilter,
 .melis-product-heading .btn {
 	font-size: 0.875rem;
 }
