@@ -3460,6 +3460,7 @@ span.remove-company-image i{
 #clientListTbl .deleteClient {
 	margin-left: 0.2rem;
 }
+.category-list-lang-dropdown,
 .me-file-cont p a,
 .melis-filter-image a {
 	text-decoration: none;
@@ -3475,4 +3476,15 @@ span.remove-company-image i{
 #tableProductList .toolTipHoverEvent {
 	text-decoration: none;
 	color: #7c7c7c;
+}
+.orderFilterStatus {
+	width: auto;
+}
+.linkAccountBtn {
+	float: right;
+	clear: right;
+}
+.nav-tabs > li.active > a,
+.order-checkout-steps {
+	border: 0;
 }

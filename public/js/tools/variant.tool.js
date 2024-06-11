@@ -54,26 +54,17 @@ $(function () {
 		var $this = $(this),
 			textCountry = $this.data("country"),
 			textSymbol = $this.data("symbol"),
-			$curSymbol = $(
-				"[data-meliskey='meliscommerce_prices_tab_country_header'] .cur-symbol"
-			);
+			$curSymbol = $("[data-meliskey='meliscommerce_prices_tab_country_header'] .cur-symbol");
 
-		if (textSymbol != "") {
-			$curSymbol
-				.removeClass("fa fa-dollar")
-				.text(textSymbol)
-				.css("font-weight", "600");
-		} else {
-			if (!$curSymbol.hasClass("fa")) {
-				$curSymbol.empty().addClass("fa fa-dollar").removeAttr("style");
+			if (textSymbol != "") {
+				$curSymbol.removeClass("fa fa-dollar").text(textSymbol).css("font-weight", "600");
+			} else {
+				if (!$curSymbol.hasClass("fa")) {
+					$curSymbol.empty().addClass("fa fa-dollar").prop("style", null);
+				}
 			}
-		}
 
-		$(".country-price-label").text(
-			textCountry +
-				" " +
-				translations.tr_meliscommerce_variant_tab_prices_pricing
-		);
+			$(".country-price-label").text(textCountry +" " +translations.tr_meliscommerce_variant_tab_prices_pricing);
 	});
 
 	$body.on("click", ".country-stock-tab li a", function () {

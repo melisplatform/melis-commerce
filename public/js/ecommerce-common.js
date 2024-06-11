@@ -134,7 +134,6 @@ var melisCommerce = (function(window) {
 				language: locale,
 				height: 200,
 				plugins: [
-					//[contextmenu, textcolor, colorpicker] this plugin is already built in the core editor as of TinyMCE v. 5
 					"advlist autolink lists link image charmap preview anchor",
 					"searchreplace visualblocks code fullscreen",
 					"insertdatetime media table minitemplate",
@@ -184,7 +183,6 @@ var melisCommerce = (function(window) {
 				{ responsivePriority: 2, targets: -1 },
 			],
 			language: melisDataTable.tableLanguage[tableLangTrans],
-			/* "responsive": true, */
 			dom: '<"bulk-action"><"filter-bar fl">rtip',
 			drawCallback: function(settings) {
 				$(this).css("width", "100%");
@@ -202,12 +200,12 @@ var melisCommerce = (function(window) {
 			dataType: "json",
 			encode: true,
 		})
-			.done(function(data) {
-				successCallBack(data);
-			})
-			.fail(function() {
-				errorCallBack();
-			});
+		.done(function(data) {
+			successCallBack(data);
+		})
+		.fail(function() {
+			errorCallBack();
+		});
 	}
 
 	function getDocFormType() {
@@ -229,12 +227,12 @@ var melisCommerce = (function(window) {
 				dataType: "json",
 				encode: true,
 			})
-				.done(function(data) {
-					pUniqueId[activeTabId] = data.id;
-				})
-				.fail(function() {
-					alert(translations.tr_meliscore_error_message);
-				});
+			.done(function(data) {
+				pUniqueId[activeTabId] = data.id;
+			})
+			.fail(function() {
+				alert(translations.tr_meliscore_error_message);
+			});
 		} else {
 			pUniqueId[activeTabId] = id;
 		}
@@ -300,22 +298,24 @@ var melisCommerce = (function(window) {
 	//order-checkout-steps
 	function switchOrderTab(tabId) {
 		var $tabId = $(tabId),
-			$navTab = $(tabId + "[data-toggle='tab']"),
+			$navTab = $(tabId + "[data-bs-toggle='tab']"),
 			$navTabLi = $navTab.closest("li"),
 			hrefId = $navTab.attr("href"),
-			$tabPane = $(
-				"#id_meliscommerce_order_checkout_content .tab-content"
-			).find(".tab-pane");
+			$tabPane = $("#id_meliscommerce_order_checkout_content .tab-content").find(".tab-pane");
 
-		// to show active tab content
-		$tabPane.siblings().removeClass("active");
-		$tabId.removeClass("active");
-		$(hrefId).tab("show");
+			// to show active tab content
+			$tabPane.siblings().removeClass("active");
+			$tabId.removeClass("active");
+			//$(hrefId).tab("show");
 
-		// to show active tabsbar/link
-		//$navTab.removeClass("hidden");
-		$navTabLi.siblings().removeClass("active");
-		$navTabLi.addClass("active");
+			$(hrefId).show();
+			$(hrefId).siblings().hide();
+			$(hrefId).addClass("active");
+			
+			// to show active tabsbar/link
+			//$navTab.removeClass("hidden");
+			$navTabLi.siblings().removeClass("active");
+			$navTabLi.addClass("active");
 	}
 
 	function priceLogTooltip() {
@@ -391,7 +391,7 @@ var melisCommerce = (function(window) {
 		enableAllTabs: enableAllTabs,
 		accordionToggle: accordionToggle,
 		switchOrderTab: switchOrderTab,
-		priceLogTooltip: priceLogTooltip,
+		priceLogTooltip: priceLogTooltip
 	};
 })(window);
 
@@ -401,25 +401,24 @@ setInterval(function() {
 
 $(function() {
 	var $body = $("body");
-	/*
-	 * Triggers accordion toggle manually data-target="#1_accordion" not triggering
-	 * same goes to modal
-	 * https://github.com/twbs/bootstrap/issues/29129
-	 */
+		/*
+		* Triggers accordion toggle manually data-target="#1_accordion" not triggering
+		* same goes to modal
+		* https://github.com/twbs/bootstrap/issues/29129
+		*/
+		$body.on("click", ".accordion-toggle", melisCommerce.accordionToggle);
 
-	$body.on("click", ".accordion-toggle", melisCommerce.accordionToggle);
-
-	/**
-	 * Export modal checkbox
-	 */
-	$body.on(
-		"click",
-		".melis-commerce-checkbox input[type=checkbox]",
-		function() {
-			$(this)
-				.parent()
-				.find(".cbmask-inner")
-				.toggleClass("cb-active");
-		}
-	);
+		/**
+		 * Export modal checkbox
+		 */
+		$body.on(
+			"click",
+			".melis-commerce-checkbox input[type=checkbox]",
+			function() {
+				$(this)
+					.parent()
+					.find(".cbmask-inner")
+					.toggleClass("cb-active");
+			}
+		);
 });

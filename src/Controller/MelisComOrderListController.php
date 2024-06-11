@@ -380,7 +380,7 @@ class MelisComOrderListController extends MelisAbstractActionController
                         </label>
                     </div>';
         
-        $status = '<a data-bs-toggle="modal" href="#id_meliscommerce_order_list_modal_container" %s data-orderid="%s">
+        $status = '<a href="#id_meliscommerce_order_list_modal_container" %s data-orderid="%s">
                         <span %s class="btn order-status-%s">%s</span>
                 </a>';
         

@@ -281,12 +281,12 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
      */
     public function getProductListAction()
     {
-        $draw = 0;
+        $draw = $this->getRequest()->getPost('draw');
         $dataCount = array();
         $tableData = array();
         $productFilter = array();
         $productList = array();
-
+        
         if($this->getRequest()->isPost()) {
 
             $productTable = $this->getServiceManager()->get('MelisEcomProductTable');
