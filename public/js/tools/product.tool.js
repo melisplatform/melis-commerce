@@ -112,13 +112,12 @@ window.initProductTextTinyMce = function(productId) {
         if ( $(targetEditor).length ) {
             $(targetEditor).each(function(index, value) {
                 var form            = $(this),
-                    random          = Math.random().toString(36).substr(2, 9),
+                    random          = Math.random().toString(36).substring(2, 9),
                     targetSelector  = random+"_"+productId+"_"+value.name;
 
                     form.attr("id", targetSelector);
-
+                    
                     var option = {
-                        // mode : "none",
                         height : 400,
                         relative_urls : false,
                         language : 'en',
@@ -126,7 +125,6 @@ window.initProductTextTinyMce = function(productId) {
                         mini_templates_url : '/melis/MelisCore/MelisTinyMce/getTinyTemplates',
                         forced_root_block : 'p',
                         image_uploadtab: false,
-                        // paste_word_valid_elements : "p,b,strong,i,em,h1,h2,h3,h4",
                         cleanup : false,
                         verify_html : false,
                         plugins : [
@@ -203,7 +201,6 @@ $(function() {
                     btn.attr("disabled", false);
                 });
         });
-
 
         $body.on("click", ".addProductCategory", function() {
             var btn                 = $(this),
@@ -432,17 +429,22 @@ $(function() {
                             var langId =  $(v).data("lang-id"),
                                 totalLangLength = $("#" + productId + "_id_meliscommerce_products_page .product-text-tab li#languageList").length;
 
-                            if ( $("#" + productId + "_id_meliscommerce_products_page .productTextForm a[data-text='"+typeText+"']").length < totalLangLength ) {
-                                $(v).find(".custom-field-type-area").append(data.content).data("text-lang-id", langId);
-                                $(v).find("form[name='productTextForm']").attr("data-text-lang-id", langId);
-                                $(v).find("form[name='productTextForm'] input#ptxt_lang_id").val(langId);
-                                initProductTextTinyMce(productId);
-                                $("div[data-modalname='genericProductTextModal']").modal('hide');
-                                $("div[data-class='addTextFieldNotif']").html("").attr("class", "");
-                            }
-                            else {
-                                melisCoreTool.alertDanger("div[data-class='addTextFieldNotif']", "", translations.tr_meliscommerce_product_text_add_exists);
-                            }
+                                if ( $("#" + productId + "_id_meliscommerce_products_page .productTextForm a[data-text='"+typeText+"']").length < totalLangLength ) {
+                                    $(v).find(".custom-field-type-area").append(data.content).data("text-lang-id", langId);
+                                    $(v).find("form[name='productTextForm']").attr("data-text-lang-id", langId);
+                                    $(v).find("form[name='productTextForm'] input#ptxt_lang_id").val(langId);
+
+                                    initProductTextTinyMce(productId);
+
+                                    //$("div[data-modalname='genericProductTextModal']").modal('hide');
+                                    var $genericProductTextModal = bootstrap.Modal.getOrCreateInstance("div[data-modalname='genericProductTextModal']");
+                                        $genericProductTextModal.hide();
+
+                                        $("div[data-class='addTextFieldNotif']").html("").attr("class", "");
+                                } 
+                                else {
+                                    melisCoreTool.alertDanger("div[data-class='addTextFieldNotif']", "", translations.tr_meliscommerce_product_text_add_exists);
+                                }
                         });
                         melisCoreTool.done(".btnAddText");
                 }).fail(function() {
@@ -843,7 +845,7 @@ $(function() {
 
         $body.on("click", ".add-product-text", function() {
             var $this       = $(this),
-                $idSelector = $this.data("target");
+                $idSelector = $this.data("bs-target");
 
                 $("div[data-class='addTextFieldNotif']").html("").attr("class", "addTextFieldNotif");
 
@@ -851,7 +853,14 @@ $(function() {
 
                 reInitProductTextTypeSelect(melisCommerce.getCurrentProductId());
 
-                $($idSelector).modal("show");
+                //$($idSelector).modal("show");
+                const $productModal = bootstrap.Modal.getOrCreateInstance($idSelector, {
+                    show: true,
+                    keyboard: false,
+                    backdrop: true
+                });
+
+                $productModal.show();
         });
 
         $body.on("click", ".openVariant", function() {
@@ -896,36 +905,39 @@ $(function() {
                 return strInt;
         }
 
-    $body.on("click", "#prod_page_assoc1_btn span", function() {
-        var $this   = $(this),
-            formId  = $this.closest('form').attr('id');
+        $body.on("click", "#prod_page_assoc1_btn span", function() {
+            var $this   = $(this),
+                formId  = $this.closest('form').attr('id');
 
-        melisLinkTree.createInputTreeModal('#' + formId + ' ' + '#prod_page_assoc_1');
-    });
+            melisLinkTree.createInputTreeModal('#' + formId + ' ' + '#prod_page_assoc_1');
+        });
 
-    $body.on("click", "#prod_page_assoc2_btn span", function() {
-        var $this   = $(this),
-            formId  = $this.closest('form').attr('id');
+        $body.on("click", "#prod_page_assoc2_btn span", function() {
+            var $this   = $(this),
+                formId  = $this.closest('form').attr('id');
 
-        melisLinkTree.createInputTreeModal('#' + formId + ' ' + '#prod_page_assoc_2');
-    });
+            melisLinkTree.createInputTreeModal('#' + formId + ' ' + '#prod_page_assoc_2');
+        });
 
-    $body.on("click", "#prod_page_assoc3_btn span", function() {
-        var $this   = $(this),
-            formId  = $this.closest('form').attr('id');
+        $body.on("click", "#prod_page_assoc3_btn span", function() {
+            var $this   = $(this),
+                formId  = $this.closest('form').attr('id');
 
-        melisLinkTree.createInputTreeModal('#' + formId + ' ' + '#prod_page_assoc_3');
-    });
-    $body.on("click", ".product-text-accordion-toggle", function(event) {
-       var target = event.target,
-            id = $(target).attr("href");
-        $(id).collapse("toggle");
-        if ($('[href$="'+id+'"]').hasClass('collapsed')) {          
-            $('[href$="'+id+'"]').removeClass('collapsed');
-        } else{         
-            $('[href$="'+id+'"]').addClass('collapsed');
-        }
-    });  
+            melisLinkTree.createInputTreeModal('#' + formId + ' ' + '#prod_page_assoc_3');
+        });
+
+        $body.on("click", ".product-text-accordion-toggle", function(event) {
+        var target = event.target,
+                id = $(target).attr("href");
+
+                $(id).collapse("toggle");
+                
+                if ($('[href$="'+id+'"]').hasClass('collapsed')) {          
+                    $('[href$="'+id+'"]').removeClass('collapsed');
+                } else{         
+                    $('[href$="'+id+'"]').addClass('collapsed');
+                }
+        });  
 });
 
 window.initProductsTableData = function (tableData) {
