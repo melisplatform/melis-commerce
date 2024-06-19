@@ -1129,7 +1129,7 @@ window.initClientIdForNewOrder = function (data) {
 };
 
 // .orderInfo then Returns tab, 3_tableOrderProductReturnList_wrapper
-window.orderProductReturnListCallback = function() {
+/* window.orderProductReturnListCallback = function() {
 	var orderId = activeTabId.split("_")[0],
 		$tableWrapper = $("#"+orderId+"_tableOrderProductReturnList_wrapper"),
 		$dtLength = $tableWrapper.find(".dt-length"),
@@ -1158,5 +1158,4 @@ window.orderProductReturnListCallback = function() {
 				$dtPaging.show();
 			}
 		}
-};
-
+}; */
