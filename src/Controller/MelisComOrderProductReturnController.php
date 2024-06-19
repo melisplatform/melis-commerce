@@ -164,7 +164,7 @@ class MelisComOrderProductReturnController extends MelisAbstractActionController
 
         $colId = [];
         $dataCount = 0;
-        $draw = 0;
+        $draw = $this->getRequest()->getPost('draw');
         $tableData = [];
         $recordsFiltered = 0;
         $image      = '<img src="%s" width="60" height="60" class="rounded-circle img-fluid"/>';

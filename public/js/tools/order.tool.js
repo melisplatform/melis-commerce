@@ -402,28 +402,30 @@ $(function() {
 		});
 
 		// order list - toggles the status form modal
-		$body.on("click", ".updateListStatus", function() {
+		$body.on("click", ".updateListStatus", function(e) {
 			var $this = $(this),
 				orderId = $this.data("orderid");
 
-			melisCoreTool.pending(this);
+				e.preventDefault();
 
-			// initialization of local variable
-			zoneId = "id_meliscommerce_order_list_content_status_form";
-			melisKey = "meliscommerce_order_list_content_status_form";
-			modalUrl = "/melis/MelisCommerce/MelisComOrderList/renderOrderListModal";
+				melisCoreTool.pending(this);
 
-			// requesting to create modal and display after
-			melisHelper.createModal(
-				zoneId,
-				melisKey,
-				false,
-				{ orderId: orderId },
-				modalUrl,
-				function() {
-					melisCoreTool.done(this);
-				}
-			);
+				// initialization of local variable
+				zoneId = "id_meliscommerce_order_list_content_status_form";
+				melisKey = "meliscommerce_order_list_content_status_form";
+				modalUrl = "/melis/MelisCommerce/MelisComOrderList/renderOrderListModal";
+
+				// requesting to create modal and display after
+				melisHelper.createModal(
+					zoneId,
+					melisKey,
+					false,
+					{ orderId: orderId },
+					modalUrl,
+					function() {
+						melisCoreTool.done(this);
+					}
+				);
 		});
 
 		// order page - toggles the shipping form modal
@@ -1057,7 +1059,7 @@ $(function() {
 window.initOrderBasket = function(data, tblSettings) {
 	var orderId = $("#" + tblSettings.sTableId).data("orderid");
 
-	data.orderId = orderId;
+		data.orderId = orderId;
 };
 
 window.hideBasketButton = function(data, tblSettings) {
@@ -1124,5 +1126,37 @@ window.initClientIdForNewOrder = function (data) {
 	if (typeof clientId != undefined) {
 		data.clientId = clientId;
 	}
+};
+
+// .orderInfo then Returns tab, 3_tableOrderProductReturnList_wrapper
+window.orderProductReturnListCallback = function() {
+	var orderId = activeTabId.split("_")[0],
+		$tableWrapper = $("#"+orderId+"_tableOrderProductReturnList_wrapper"),
+		$dtLength = $tableWrapper.find(".dt-length"),
+		$dtSearch = $tableWrapper.find(".dt-search"),
+		$dtInfo = $tableWrapper.find(".dt-info"),
+		$dtPaging = $tableWrapper.find(".dt-paging"),
+		$formTable = $("#"+orderId+"_tableOrderProductReturnList"),
+		$formTableLength = $formTable.length,
+		dtReturnTable = null;
+
+		//retrieve DataTable
+		if ( $formTableLength > 0 ) {
+			dtReturnTable = $formTable.DataTable();
+
+			// count return data
+			if ( dtReturnTable.data().count() === 0 ) {
+				$dtLength.hide();
+				$dtInfo.hide();
+				$dtSearch.hide();
+				$dtPaging.hide();
+			}
+			else {
+				$dtLength.show();
+				$dtInfo.show();
+				$dtSearch.show();
+				$dtPaging.show();
+			}
+		}
 };
 
