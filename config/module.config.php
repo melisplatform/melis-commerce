@@ -401,7 +401,7 @@ return [
         ],
     ],
     'caches' => [
-        'commerce_memory_services' => [ 
+        'commerce_memory_services' => [
             'active' => true, // activate or deactivate Melis Cache for this conf
             'adapter' => \Laminas\Cache\Storage\Adapter\Memory::class,
             'options' => [

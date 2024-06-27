@@ -182,8 +182,8 @@ class MelisComCategoryListController extends MelisAbstractActionController
         $idAndNameOnly = $this->params()->fromQuery('idAndNameOnly');
         $categoriesChecked = $this->params()->fromQuery('categoriesChecked');
 
-        $language = Language::select(['elang_id'])->where('elang_locale', $langLocale)->first();
-        $categories = Category::setLocale($langLocale)->getTree($selected, $language->elang_id)->get();
+        $language = Language::select(['elang_id', 'elang_locale'])->where('elang_locale', $langLocale)->first();
+        $categories = Category::setLanguageModel($language)->getTree($selected, $language->elang_id)->get();
         return new JsonModel($categories);
     }
 

@@ -13,6 +13,8 @@ class CategoryTranslation extends Model
      */
     protected $table = 'melis_ecom_category_trans';
 
+    protected $appends = ['locale'];
+
     public function language()
     {
         return $this->belongsTo(Language::class, 'catt_lang_id', 'elang_id');

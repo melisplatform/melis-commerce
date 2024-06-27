@@ -2,7 +2,7 @@
 
 namespace MelisCommerce\Model;
 
-use Illuminate\Database\Eloquent\Model;
+use MelisCommerce\Model\Model;
 use MelisCommerce\Model\CategoryTranslation;
 use MelisCommerce\Model\ProductCategory;
 
@@ -40,24 +40,60 @@ class Category extends Model
         'a_attr',
     ];
 
-    protected static $textLang = '';
+    protected static $languageModel = null;
+    protected static $hasTranslation = true;
+    protected static $languageLocale = 'en_EN';
 
-    public static function setLocale($locale = 'en_US')
+    public static function setLanguageModel($languageModel)
     {
-        self::$textLang = $locale;
+        self::$languageModel = $languageModel;
 
         return new static;
     }
 
-    public function scopeGetTree($query, $parent = -1, $languageId)
+    private function getLanguageModel()
     {
-        return $query->with([
+        return self::$languageModel;
+    }
+
+    public static function setHasTranslation($hasTranslation)
+    {
+        self::$hasTranslation = $hasTranslation;
+
+        return new static;
+    }
+
+    public static function setLanguageLocale($languageLocale)
+    {
+        self::$languageLocale = $languageLocale;
+
+        return new static;
+    }
+
+    public static function getLanguageLocale()
+    {
+        return self::$languageLocale;
+    }
+
+
+    private function hasTranslation()
+    {
+        return self::$hasTranslation;
+    }
+
+    public function scopeGetTree($query, $parent = -1, $languageId = null)
+    {
+        $query =  $query->with([
             'children',
-            'translations' => function ($query) use ($languageId) {
-                return $query->where('catt_lang_id', $languageId);
-            }
-        ])
-        ->where('cat_father_cat_id', $parent);
+            'translations'
+        ]);
+
+        if (!is_null($languageId)) {
+            $query->whereHas('translations', function ($query) use ($languageId) {
+                $query->where('catt_lang_id', $languageId);
+            });
+        }
+        return $query->where('cat_father_cat_id', $parent);
     }
 
     /**
@@ -99,7 +135,25 @@ class Category extends Model
 
     public function getTextAttribute()
     {
-        return $this->cat_id . ' - ' . optional($this->translations->first())->catt_name;
+        $languageId = $this->getLanguageModel()->elang_id;
+
+        $label = array_filter($this->translations->where('catt_lang_id', $languageId)->toArray(), function ($text) {
+            return strlen($text['catt_name']);
+        });
+
+        if (!current($label)) {
+            $this->setHasTranslation(false);
+            $label = array_filter($this->translations->toArray(), function ($text) {
+                return strlen($text['catt_name']);
+            });
+        }
+
+        $label = current($label);
+        $this->setLanguageLocale($label['language']['elang_locale'] ?? 'en_EN');
+
+        $text = $label['catt_name'] ?? $this->cat_reference;
+
+        return strlen($text) ? $this->cat_id . ' - ' . $text : $this->cat_id;
     }
 
     public function getTypeAttribute()
@@ -109,7 +163,7 @@ class Category extends Model
 
     public function getTextLangAttribute()
     {
-        return self::$textLang;
+        return $this->getLanguageModel()->elang_locale ?? 'en_EN';
     }
 
     public function products()
@@ -119,11 +173,19 @@ class Category extends Model
 
     public function getA_AttrAttribute()
     {
+        $languageModel = $this->getLanguageModel();
+        $locale = $languageModel->elang_locale === $this->getLanguageLocale() ? null : $this->getLanguageLocale();
+
+        if (! is_null($locale)) {
+            $locale = explode('_', $this->getLanguageLocale());
+            $locale = '<strong>' . strtoupper($locale[1]) . '</strong>';
+        }
+
         return $this->attributes['a_attr'] = [
             "data-seopage" => "",
             // @INFO: This causes a second delay (without this it should execute below 1 second)
-            "data-numprods" =>  0, //$this->products->count(),
-            "data-textlang" => self::$textLang,
+            "data-numprods" =>  $this->products->count(),
+            "data-textlang" => $locale,
             "data-fathericon" => "<i class=\"fa fa-book\"></i>",
             "data-fathercateid" => $this->cat_father_cat_id,
         ];
