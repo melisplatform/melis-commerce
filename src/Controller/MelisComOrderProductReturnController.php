@@ -217,6 +217,8 @@ class MelisComOrderProductReturnController extends MelisAbstractActionController
         return new JsonModel(array(
             'draw' => (int) $draw,
             'data' => $tableData,
+            'recordsFiltered' => count($tableData),
+            'recordsTotal' => count($tableData),
         ));
     }
 
