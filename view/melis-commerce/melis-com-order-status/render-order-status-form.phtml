@@ -42,7 +42,34 @@
                                     ?>
                                     <script>
                                         $(function() {
-                                            $(".osta_color_code").colorpicker({color : "<?=$this->color ?>", format: "hex"});
+                                            //$(".osta_color_code").colorpicker({color : "<?php //$this->color ?>", format: "hex" });
+                                            $(".osta_color_code.minicolor").each(function() {
+                                                var $this = $(this);
+                                                    $this.val('<?= $this->color; ?>');
+                                                    $this.minicolors({
+                                                        inline: true,
+                                                        control: $this.attr("data-control") || 'hue',
+                                                        defaultValue: $this.attr("data-defaultValue") || '',
+                                                        format: $this.attr('data-format') || 'hex',
+                                                        keywords: $this.attr('data-keywords') || '',
+                                                        inline: $this.attr('data-inline') === 'true',
+                                                        letterCase: $this.attr('data-letterCase') || 'lowercase',
+                                                        opacity: $this.attr('data-opacity'),
+                                                        position: $this.attr('data-position') || 'bottom',
+                                                        swatches: $this.attr('data-swatches') ? $this.attr('data-swatches').split('|') : [],
+                                                        change: function(hex, opacity) {
+                                                            var log;
+                                                                try {
+                                                                    log = hex ? hex : 'transparent';
+
+                                                                    if( opacity ) 
+                                                                        log += ', ' + opacity;
+                                                                } catch(e) {}
+                                                        },
+                                                        theme: 'default'
+                                                    });
+                                            });
+
                                             $("body").find(".form-group label[for='osta_color_code']").addClass("d-flex flex-row justify-content-between");
                                         });
                                     </script>
