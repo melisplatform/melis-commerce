@@ -3488,3 +3488,9 @@ span.remove-company-image i{
 .order-checkout-steps {
 	border: 0;
 }
+@media (max-width: 767px) {
+	/* melis-commerce status */
+	#id_meliscommerce_order_status_form_container .minicolors-position-bottom .minicolors-panel {
+		left: auto;
+	}
+}
