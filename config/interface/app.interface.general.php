@@ -72,7 +72,7 @@ return [
                                 ],
                                 'meliscommerce_clients_group_list' => [
                                     'conf' => [
-                                        'type' => 'meliscommerce/interface/meliscommerce_clients_group_tool/interface/meliscommerce_clients_group_tool_leftmenu'
+                                        'type' => 'meliscommerce/interface/meliscommerce_clients_group_tool/interface/meliscommerce_clients_group_tool_container'
                                     ],
                                 ],
 
