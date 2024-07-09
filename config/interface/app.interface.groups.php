@@ -25,17 +25,15 @@ return [
             'interface' => [
                 'meliscommerce_clients_group_tool' => [
                     'interface' => [
-                        // 'meliscommerce_clients_group_tool_leftmenu' => [
-                        //     'conf' => [
-                        //         // 'id' => 'id_meliscommerce_clients_group_tool_container',
-                        //         // 'name' => 'Client Groups',
-                        //         // 'melisKey' => 'meliscommerce_clients_group_tool_leftmenu',
-                        //         'rightsDisplay' => 'referencesonly',
-                        //     ],
-                        //     'interface' => [
-                                
-                        //     ]
-                        // ],
+                        'meliscommerce_clients_group_tool_leftmenu' => [
+                            'conf' => [
+                                'id' => 'id_meliscommerce_clients_group_tool_container',
+                                'name' => 'tr_meliscommerce_clients_group',
+                                'melisKey' => 'meliscommerce_clients_group_tool_container',
+                                'icon' => 'fa fa-user-times',
+                                // 'rightsDisplay' => 'referencesonly',
+                            ]
+                        ],
                         'meliscommerce_clients_group_tool_container' => [
                             'conf' => [
                                 'id' => 'id_meliscommerce_clients_group_tool_container',
