@@ -1889,7 +1889,7 @@ class MelisComClientController extends MelisAbstractActionController
     public function getAccountContactListAction()
     {
         $dataCount = 0;
-        $draw = 0;
+        $draw = 1;
         $tableData = array();
 
         if($this->getRequest()->isPost())
