@@ -515,14 +515,23 @@ $(function() {
 			.trigger("click");
 	});
 
-	$body.on("click", ".more_items", function() {
+	$body.on("click", ".more_items, .shopping_cart", function(e) {
 		var $this = $(this),
 			href = $this.attr("href");
 
-		$(href)
-			.find(".couponClientListRefresh")
-			.trigger("click");
+			$(href)
+				.find(".couponClientListRefresh")
+				.trigger("click");
 	});
+
+	$body.on("click", ".shopping_cart", function(e) {
+		var $this = $(this),
+			href = $this.attr("href");
+
+			$(href)
+				.find(".orderListRefresh")
+				.trigger("click");
+	});	
 });
 
 window.initCouponClient = function(data, tblSettings) {
