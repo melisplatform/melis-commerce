@@ -3493,4 +3493,14 @@ span.remove-company-image i{
 	#id_meliscommerce_order_status_form_container .minicolors-position-bottom .minicolors-panel {
 		left: auto;
 	}
+	.order-info-page .content-cont .widget.widget-tabs-double-2 > .widget-head {
+		border: 0 !important;
+		height: auto;
+	}
+	.order-info-page .content-cont .widget.widget-tabs-double-2 > .widget-head ul li.active {
+		height: 70px;
+	}
+	table.dataTable>tbody>tr.child span.dtr-data {
+		float: left;
+	}
 }
