@@ -760,12 +760,12 @@ $(function(){
     }
 
     //to show td tooltip
-    $("body").on("mouseover", "#contactList tbody td", function(){
+    $body.on("mouseover", "#contactList tbody td", function(){
         if($(this).find("span.td-tooltip") != undefined){
             $(this).find("span.td-tooltip").removeClass("d-none").css("left", $(this).position().left + 87);
         }
     });
-    $("body").on("mouseout", "#contactList tbody td", function(){
+    $body.on("mouseout", "#contactList tbody td", function(){
         $(this).find("span.td-tooltip").addClass("d-none");
     });
 
@@ -837,14 +837,22 @@ $(function(){
             }
         );
     });
+
+    $body.on("click", ".link", function() {
+        var $this = $(this),
+            href = $this.attr("href");
+
+            $(href)
+                .find(".refreshAsocc")
+                .trigger("click");
+    });
 });
 
 window.setContactId = function(d){
     d.contactId = (accountToolSelectedContact != '') ? accountToolSelectedContact : activeTabId.replace('_id_meliscommerce_contact_page','');
 };
 
-window.initAccountAutoSuggest = function($element)
-{
+window.initAccountAutoSuggest = function($element) {
     let options = {
         url: function(searchPhrase) {
             var contactId = $($element).attr("data-contactid");
@@ -920,8 +928,7 @@ window.contactAssociatedAccountCallback = function () {
     accountToolInitContactAutoSuggest = false;
 };
 
-window.contactListTableDataFunction = function(d)
-{
+window.contactListTableDataFunction = function(d) {
     d.accountId = $("#contactAccountSelect").val();
     d.type = $("#contactTypeSelect").val();
 

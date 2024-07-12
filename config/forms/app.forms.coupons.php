@@ -15,7 +15,7 @@ return [
                     'meliscommerce_coupon_general_data' => [
                         'attributes' => [
                             'name' => 'coupon',
-                            'id' => '',
+                            'id' => 'formCoupon',
                             'method' => 'POST',
                             'action' => '',
                         ],
@@ -103,7 +103,7 @@ return [
                     'meliscommerce_coupon_values' => [
                         'attributes' => [
                             'name' => 'couponValues',
-                            'id' => '',
+                            'id' => 'formCouponValues',
                             'method' => 'POST',
                             'action' => '',
                         ],
