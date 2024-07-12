@@ -3504,3 +3504,16 @@ span.remove-company-image i{
 		float: left;
 	}
 }
+@media (max-width: 375px) {
+	#id_meliscommerce_client_list_import_accounts_form .footer-modal,
+	#id_meliscommerce_contact_list_import_contacts_form .footer-modal  {
+		display: block !important;
+	}
+	#id_meliscommerce_client_list_import_accounts_form .footer-modal button,
+	#id_meliscommerce_contact_list_import_contacts_form .footer-modal button {
+		display: block;
+		float: none !important;
+		margin-top: 0.5rem !important;
+		width: 100%;
+	}
+}
