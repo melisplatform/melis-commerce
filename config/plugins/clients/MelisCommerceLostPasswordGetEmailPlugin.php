@@ -175,7 +175,7 @@ return [
                                                 'data-button-icon' => 'fa fa-sitemap',
                                                 'data-button-id' => 'meliscms-site-selector',
                                                 'data-callback' => 'generatePageLink',
-                                                'data-absolute' => true,
+                                                'data-absolute' => false,
                                                 'required' => 'required'
                                             ],
                                         ],
