@@ -65,6 +65,7 @@ $(function() {
 				.find(".add-message")
 				.slideToggle();
 		});
+
 		//return product  message form toggle
 		$body.on("click", ".addReturnMessage", function() {
 			var $this = $(this);
@@ -1047,11 +1048,18 @@ $(function() {
 			var $this = $(this),
 				href = $this.attr("href");
 
-			if ($this.hasClass("shopping_bag") && melisCore.screenSize < 768) {
-				$(href)
-					.find(".orderBasketRefresh")
-					.trigger("click");
-			}
+				if ( melisCore.screenSize < 768 ) {
+					if ( $this.hasClass("shopping_bag") ) {
+						$(href)
+							.find(".orderBasketRefresh")
+							.trigger("click");
+					}
+					else if ( $this.hasClass("cart_out") ) {
+						var orderId = activeTabId.match(/\d+/g);
+							// .columns.adjust().responsive.recalc();
+							$("#"+orderId+"_tableOrderProductReturnList").DataTable().ajax.reload();
+					}
+				}
 		});
 });
 

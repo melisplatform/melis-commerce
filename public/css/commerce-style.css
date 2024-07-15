@@ -3504,6 +3504,16 @@ span.remove-company-image i{
 		float: left;
 	}
 }
+@media (max-width: 436px) {
+	.checkout-product-variant-list .order-variant .cell-val-table {
+		display: block;
+		margin: 0;
+	}
+	.checkout-product-variant-list .orderCheckoutVariantAddBasket {
+		float: right;
+		margin-top: 0.5rem !important;
+	}
+}
 @media (max-width: 375px) {
 	#id_meliscommerce_client_list_import_accounts_form .footer-modal,
 	#id_meliscommerce_contact_list_import_contacts_form .footer-modal  {
