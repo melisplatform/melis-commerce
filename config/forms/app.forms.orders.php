@@ -1098,7 +1098,7 @@ return [
                                     'attributes' => [
                                         'id' => '',
                                         'required' => 'required',
-                                        'class' => 'form-control osta_color_code minicolor'
+                                        'class' => 'form-control osta_color_code'
                                     ],
                                 ],
                             ],
