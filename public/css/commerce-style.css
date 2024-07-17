@@ -3500,8 +3500,15 @@ span.remove-company-image i{
 	.order-info-page .content-cont .widget.widget-tabs-double-2 > .widget-head ul li.active {
 		height: 70px;
 	}
-	table.dataTable>tbody>tr.child span.dtr-data {
+	#tableOrderStatus.dataTable>tbody>tr.child span.dtr-data {
 		float: left;
+	}
+	#tableOrderStatus.dataTable>tbody>tr.child span.dtr-title {
+		float: left;
+		padding: 0 10px 0 0;
+	}
+	#tableOrderStatus.dataTable>tbody>tr.child ul li {
+		padding: 15px 0 30px;
 	}
 }
 @media (max-width: 436px) {
