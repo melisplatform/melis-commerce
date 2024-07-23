@@ -165,7 +165,7 @@ window.allLoaded = function() {
 
 window.reInitProductTextTypeSelect = function(productId) {
     // Remove items that are already existing in the product text
-    var productTexts     = [],
+    var productTexts    = [],
         formTextForms   = $("#" + productId + "_id_meliscommerce_products_page .product-text-forms > .custom-field-type");
 
         $.each(formTextForms, function(i, v){
@@ -306,7 +306,7 @@ $(function() {
                 initProductCategoryList(productId, langLocale);
         });
 
-        $body.on("click",".productTextForm .deleteTextInput", function(){
+        $body.on("click", ".productTextForm .deleteTextInput", function(){
             var $this   = $(this),
                 text    = $this.parent().attr("data-text-identifier"),
                 form    = $this.parents("form"),
@@ -383,7 +383,7 @@ $(function() {
                     dataType    : "json",
                     encode		: true
                 }).done(function(data) {
-                    if(data.success) {
+                    if ( data.success ) {
                         melisCoreTool.clearForm("productTextTypeForm");
                         //collapse the pannel
                         $panel.addClass('collapsed');
@@ -391,7 +391,11 @@ $(function() {
                         $panelBody.removeClass('in');
                         $panelBody.attr('aria-expanded', false);
 
-                        melisHelper.zoneReload(melisCommerce.getCurrentProductId()+"_id_meliscommerce_products_page_content_tab_product_text_modal_form", "meliscommerce_products_page_content_tab_product_text_modal_form",  {productId : melisCommerce.getCurrentProductId()});
+                        melisHelper.zoneReload( melisCommerce.getCurrentProductId()+"_id_meliscommerce_products_page_content_tab_product_text_modal_form", "meliscommerce_products_page_content_tab_product_text_modal_form", {productId : melisCommerce.getCurrentProductId()}, function() {
+                            setTimeout(function() {
+                                reInitProductTextTypeSelect(melisCommerce.getCurrentProductId());
+                            }, 500);
+                        });
                     }
                     else {
                         melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
@@ -404,7 +408,7 @@ $(function() {
                 });
         });
 
-        $body.on('click', '.btnAddText', function(){
+        $body.on('click', '.btnAddText', function() {
             var $this       = $(this),
                 productId   = $this.data("productid"),
                 textSelect  = $("#" + productId + "_id_meliscommerce_products_page_content_tab_product_text_modal_form").find("select#ptxt_type"),
