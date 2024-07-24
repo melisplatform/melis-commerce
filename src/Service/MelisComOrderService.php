@@ -10,6 +10,7 @@
 namespace MelisCommerce\Service;
 use DateTime;
 use Laminas\Http\Response;
+use MelisCommerce\Model\Order;
 
 /**
  *
@@ -1347,7 +1348,14 @@ class MelisComOrderService extends MelisComGeneralService
 		$orderTable = $this->getServiceManager()->get('MelisEcomOrderTable');
 		switch($arrayParameters['identifier']){
 			case 'curMonth':
-				$results = $orderTable->getCurrentMonth($arrayParameters['onlyValid'])->count(); break;
+				// $results = $orderTable->getCurrentMonth($arrayParameters['onlyValid'])->count(); 
+				$results = Order::selectRaw('COUNT(ord_id) as count')
+					->whereYear('ord_date_creation', '=', date('Y'))
+					->whereMonth('ord_date_creation', '=', date('m'))
+					->where('ord_status', '!=', -1)
+					->get()
+					->first();
+				break;
 			case 'avgMonth':
 				$results = $orderTable->getAvgMonth($arrayParameters['onlyValid'])->current(); break;
 			default:

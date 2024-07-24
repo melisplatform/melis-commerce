@@ -16,7 +16,7 @@ return [
                         'target' => '#tableOrderList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComOrderList/getOrderListData',
                         'dataFunction' => 'initOrderList',
-                        'ajaxCallback' => 'initOrderListTitle();',
+                        'ajaxCallback' => 'initOrderListTitle(); initOrderToolTip();',
                         'filters' => [
                             'left' => [
                                 'order-list-table-filter-limit' => [
@@ -69,7 +69,7 @@ return [
                         ],
                         
                         'columns' => [
-                          'ord_id' => [
+                            'ord_id' => [
                                 'text' => 'tr_meliscommerce_order_list_col_id',
                                 'css' => ['width' => '5%', 'padding-right' => '0'],
                                 'sortable' => true,
@@ -211,7 +211,7 @@ return [
                             ]
                         ],
                         'searchables' => [
-                             
+                            
                         ],
                         'actionButtons' => [
                             'info' => [
