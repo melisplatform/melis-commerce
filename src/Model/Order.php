@@ -270,7 +270,7 @@ class Order extends Model
 
     public function getArrayableAppends()
     {
-        if (!self::getCountFiltered())
+        if (!isset($this->count))
             $this->append([
                 'DT_RowId',
                 'order_table_checkbox'
