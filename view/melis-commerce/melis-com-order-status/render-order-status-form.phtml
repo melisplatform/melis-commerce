@@ -49,6 +49,7 @@
 
                                             var $osta = $(".osta_color_code");
 
+                                                $osta.val('<?= $this->color; ?>');
                                                 $osta.parent().append( $picker );
 
                                                 $(".osta_color_code, .input-group-addon").wrapAll('<div class="input-group"></div>');
@@ -56,7 +57,7 @@
                                             var $miniColor      = $(".minicolor"),
                                                 $miniColorInput = $(".minicolors-input");
                                                 
-                                                $miniColorInput.val( $osta.val() );
+                                                $miniColorInput.val($osta.val());
 
                                                 $miniColor.each(function() {
                                                     var $this = $(this);
@@ -80,6 +81,7 @@
                                                                             log += ', ' + opacity;
 
                                                                             if ( $this.closest(".input-group").find(".osta_color_code").length ) {
+                                                                                // val(hex)
                                                                                 $this.closest(".input-group").find(".osta_color_code").val(hex);
                                                                             }
                                                                     } catch(e) {}

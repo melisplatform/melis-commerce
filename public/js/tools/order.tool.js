@@ -953,7 +953,8 @@ $(function() {
 							"id_meliscommerce_order_status_content_table",
 							"meliscommerce_order_status_content_table"
 						);
-						$("#id_meliscommerce_order_status_form_container").modal("hide");
+						//$("#id_meliscommerce_order_status_form_container").modal("hide");
+						melisCoreTool.hideModal("id_meliscommerce_order_status_form_container");
 					} else {
 						melisCoreTool.highlightErrors(
 							data.success,
