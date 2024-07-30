@@ -464,6 +464,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $attributes = $this->updatedFetchAttributes($productId, $langId) ?: [];
 
         $view = new ViewModel();
+        $view->setTerminal(true);
         $view->variantAttributes = $varAttrVals;
         $view->attributes = $attributes;
         $view->melisKey = $melisKey;
@@ -1232,4 +1233,3 @@ class MelisComVariantController extends MelisAbstractActionController
         return $errors;
     }
 }
-
