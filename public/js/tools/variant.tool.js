@@ -324,87 +324,101 @@ $(function () {
   });
 
   $body.on("click", ".updateVariantStatus", function() {
-	  var _this = $(this),
+	var _this = $(this),
+		btnTitle = "",
 		obj = {},
+		val = "",
+		varIndicator = "",
+		linkClass = "",
 		variantId = _this.closest("tr").attr("id"),
+		varStatus = _this.closest("tr").attr("var_status"),
 		prodId = _this
-		  .closest(".container-level-a")
-		  .attr("id")
-		  .replace(/[^0-9]/g, "");
-	  var varStatus = $('#variant-' + variantId + '-status');
-  
-	  obj.id = variantId;
-	  obj.var_status = varStatus.data('status');
-  
-	  $.ajax({
-		type: "POST",
-		url: "/melis/MelisCommerce/MelisComVariantList/updateVariantStatus",
-		data: $.param(obj),
-		beforeSend: function() {
-		  //disable the button
-		  _this.addClass("disabled").attr("disabled", true);
-		  //change icon to loader
-		  _this
-			.find(".variant-update-icon-rotate")
-			.removeClass(function(index, className) {
-			  return (className.match(/(^|\s)fa-\S+/g) || []).join(" ");
-			})
-			.addClass("fa-spinner fa-pulse fa-fw");
-		},
-	  })
-		.done(function(data) {
-		  if (data.success) {
-			var statusIndicator = data.variant_status ? 'danger' : 'success';
-			var btnTitle = translations['tr_meliscommerce_variants_' + (data.variant_status ? 'activate' : 'deactivate') + '_status_title'];
-			var statusButtonUpdater = _this.find(".variant-update-icon-rotate");
-  
-			//update var_status on tr
-			_this.closest("tr").attr("var_status", data.variant_status);
-  
-			//change the original icon
-			statusButtonUpdater
-			  .removeClass(function(index, className) {
-				return (className.match(/(^|\s)fa-\S+/g) || []).join(" ");
-			  })
-			  .addClass("fa-arrow-circle-up");
-			//update style of the button
-			_this
-			  .removeClass(function(index, className) {
-				return (className.match(/(^|\s)btn-\S+/g) || []).join(" ");
-			  })
-			  .addClass("btn-" + statusIndicator);
-  
-			//rotate the icon to indicate the status
-			if (data.variant_status) {
-			  statusButtonUpdater.addClass("down");
-			  varStatus.removeClass().addClass('text-success');
-			} else {
-			  statusButtonUpdater.removeClass("down");
-			  varStatus.removeClass().addClass('text-danger');
-			}
-  
-			//check if variant is open to update it's status
-			if (
-			  $(
-				"#" +
-				variantId +
-				"_id_meliscommerce_variant_tab_main_header_container"
-			  ).length
-			) {
-			  melisHelper.zoneReload(
-				variantId + "_id_meliscommerce_variant_tab_main_header_container",
-				"meliscommerce_variant_tab_main_header_container",
-				{ productId: prodId, variantId: variantId }
-			  );
-			}
-  
-			//change btn title
-			_this.attr("title", btnTitle);
-		  }
-		  _this.removeClass("disabled").attr("disabled", false);
+			.closest(".container-level-a")
+			.attr("id")
+			.replace(/[^0-9]/g, "");
+
+		if (varStatus == 0) {
+			val = 1;
+			varIndicator = "text-success";
+			linkClass = "btn-danger";
+			btnTitle = translations.tr_meliscommerce_variants_deactivate_status_title;
+		} else {
+			val = 0;
+			varIndicator = "text-danger";
+			linkClass = "btn-success";
+			btnTitle = translations.tr_meliscommerce_variants_activate_status_title;
+		}
+
+		obj.id = variantId;
+		obj.var_status = val;
+
+		$.ajax({
+			type: "POST",
+			url: "/melis/MelisCommerce/MelisComVariantList/updateVariantStatus",
+			data: $.param(obj),
+			beforeSend: function () {
+				//disable the button
+				_this.addClass("disabled").attr("disabled", true);
+				//change icon to loader
+				_this
+					.find(".variant-update-icon-rotate")
+					.removeClass(function (index, className) {
+						return (className.match(/(^|\s)fa-\S+/g) || []).join(" ");
+					})
+					.addClass("fa-spinner fa-pulse fa-fw");
+			},
 		})
-		.fail(function() {
-		  alert(translations.tr_meliscore_error_message);
+		.done(function (data) {
+			if (data.success) {
+				//update var_status on tr
+				_this.closest("tr").attr("var_status", val);
+				//change the original icon
+				_this
+					.find(".variant-update-icon-rotate")
+					.removeClass(function (index, className) {
+						return (className.match(/(^|\s)fa-\S+/g) || []).join(" ");
+					})
+					.addClass("fa-arrow-circle-up");
+				//update style of the button
+				_this
+					.removeClass(function (index, className) {
+						return (className.match(/(^|\s)btn-\S+/g) || []).join(" ");
+					})
+					.addClass(linkClass);
+				//update the status indicator inside the row
+				_this
+					.closest("tr")
+					.find(".var-status-indicator")
+					.removeClass(function (index, className) {
+						return (className.match(/(^|\s)text-\S+/g) || []).join(" ");
+					})
+					.addClass(varIndicator);
+
+				//rotate the icon to indicate the status
+				_this.find(".variant-update-icon-rotate").toggleClass("down");
+
+				//check if variant is open to update it's status
+				if (
+					$(
+						"#" +
+							variantId +
+							"_id_meliscommerce_variant_tab_main_header_container"
+					).length
+				) {
+					melisHelper.zoneReload(
+						variantId + "_id_meliscommerce_variant_tab_main_header_container",
+						"meliscommerce_variant_tab_main_header_container",
+						{ productId: prodId, variantId: variantId }
+					);
+				}
+
+				//change btn title
+				_this.attr("title", btnTitle);
+			}
+			_this.removeClass("disabled").attr("disabled", false);
+		})
+		.fail(function () {
+			alert(translations.tr_meliscore_error_message);
 		});
 	});
 
