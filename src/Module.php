@@ -151,13 +151,15 @@ class Module
 
         // @INFO: Load database
         $capsule = new Capsule;
+        $charset = 'utf8mb4';
 
         $capsule->addConnection(array_merge(
             $config['db'],
             [
                 'driver' => 'mysql',
                 'host' => $config['db']['hostname'],
-                'collation' => 'utf8mb4_general_ci',
+                'charset' => $charset,
+                'collation' => $charset . '_general_ci',
             ]
         ));
 
@@ -345,7 +347,7 @@ class Module
 
         if (!empty($locale)) {
             // Commerce sub modules langauge config
-            // used to identify the folder and file name: 
+            // used to identify the folder and file name:
             // Translation path:            module/MelisModuleConfig/languages/MelisCommerce/[locale].interface.[module].php'
             // Default translation path :   __DIR__ . '/../language/[module]/en_EN.interface.[module].php';
             $commerceSubModules = [
