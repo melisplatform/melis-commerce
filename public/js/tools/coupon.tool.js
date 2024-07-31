@@ -513,20 +513,15 @@ $(function() {
 
 				$(href).find(".couponClientListRefresh").trigger("click");
 
-			/* var clientListTimeout = setTimeout(function() {
-				console.log(`$("#"+couponId+"_clientList").length: `, $("#"+couponId+"_clientList").length );
-				if ( melisCore.screenSize <= 767 && $("#"+couponId+"_clientList").length ) {
-					console.log(`! $("#"+couponId+"_clientList tbody tr:not(:first-child) td:first-child").hasClass("dtr-control"): `, ! $("#"+couponId+"_clientList tbody tr:not(:first-child) td:first-child").hasClass("dtr-control"));
-
-					if ( ! $("#"+couponId+"_clientList tbody tr:not(:first-child) td:first-child").hasClass("dtr-control") ) {
-						$("#"+couponId+"_clientList tbody tr:not(:first-child) td:first-child").addClass("dtr-control");
+			var clientListTimeout = setTimeout(function() {
+				if ( $("#"+couponId+"_clientList").length ) {				
+					if ( $("#"+couponId+"_clientList tbody tr").length > 1 ) {
+						$("#"+couponId+"_clientList tbody tr td:first-child").addClass("dtr-control");
 					}
-
-					console.log("#"+couponId+"_clientList edited");
 
 					clearTimeout( clientListTimeout );
 				}
-			}, 1000); */
+			}, 1000);
 		});
 
 		$body.on("click", ".more_items", function(e) {
