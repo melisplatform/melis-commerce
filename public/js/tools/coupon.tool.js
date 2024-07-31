@@ -514,15 +514,14 @@ $(function() {
 				$(href).find(".couponClientListRefresh").trigger("click");
 
 			var clientListTimeout = setTimeout(function() {
-
-				console.log(`$("#"+couponId+"_clientList").length: `, $("#"+couponId+"_clientList").length );
-				console.log(`$("#"+couponId+"_clientList tbody tr").length > 1: `, $("#"+couponId+"_clientList tbody tr").length > 1 );
+				console.log(`setTimeout 2000 $("#"+couponId+"_clientList").length: `, $("#"+couponId+"_clientList").length );
+				console.log(`setTimeout 2000 $("#"+couponId+"_clientList tbody tr").length > 1: `, $("#"+couponId+"_clientList tbody tr").length > 1 );
 				if ( $("#"+couponId+"_clientList").length && $("#"+couponId+"_clientList tbody tr").length > 1 ) {				
 					$("#"+couponId+"_clientList tbody tr td:first-child").addClass("dtr-control");
 					console.log(`dtr-control supposedly added!!!`);
 					clearTimeout( clientListTimeout );
 				}
-			}, 1000);
+			}, 2000);
 		});
 
 		$body.on("click", ".more_items", function(e) {
