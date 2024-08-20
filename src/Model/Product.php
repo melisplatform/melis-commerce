@@ -2,7 +2,7 @@
 
 namespace MelisCommerce\Model;
 
-use Illuminate\Database\Eloquent\Model;
+use MelisCommerce\Model\Model;
 use MelisCommerce\Model\ProductCategory;
 use MelisCommerce\Model\ProductText;
 use MelisCommerce\Model\Variant;
@@ -124,7 +124,8 @@ class Product extends Model
     public function scopeGetProducts(
         $query,
         $langId = null,
-        $categoryIds = [], $countryId = null,
+        $categoryIds = [],
+        $countryId = null,
         $onlyValid = null,
         $start = 0,
         $limit = null,
