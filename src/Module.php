@@ -13,8 +13,6 @@ use MelisEngine\Service\MelisPageService;
 use Laminas\Mvc\ModuleRouteListener;
 use Laminas\Mvc\MvcEvent;
 use Laminas\ModuleManager\ModuleManager;
-use Laminas\Db\TableGateway\TableGateway;
-use Laminas\Db\ResultSet\HydratingResultSet;
 use Laminas\Stdlib\ArrayUtils;
 use Laminas\Session\Container;
 use Laminas\ModuleManager\ModuleEvent;
@@ -436,4 +434,3 @@ class Module
         return $pageLocale;
     }
 }
-
