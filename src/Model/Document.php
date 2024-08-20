@@ -2,7 +2,7 @@
 
 namespace MelisCommerce\Model;
 
-use Illuminate\Database\Eloquent\Model;
+use MelisCommerce\Model\Model;
 
 class Document extends Model
 {

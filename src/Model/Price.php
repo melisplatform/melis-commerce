@@ -2,7 +2,7 @@
 
 namespace MelisCommerce\Model;
 
-use Illuminate\Database\Eloquent\Model;
+use MelisCommerce\Model\Model;
 use MelisCommerce\Model\Product;
 use MelisCommerce\Model\Variant;
 
@@ -35,7 +35,7 @@ class Price extends Model
     public function scopeGetPricesByVariantId(
         $query,
         $variantId,
-        $groupId = 1 
+        $groupId = 1
     ) {
         $query->where('price_var_id', '=', $variantId);
 
@@ -58,6 +58,4 @@ class Price extends Model
             $query->where('price_group_id', '=', $groupId);
         }
     }
-
-
 }

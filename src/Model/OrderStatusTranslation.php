@@ -2,7 +2,7 @@
 
 namespace MelisCommerce\Model;
 
-use Illuminate\Database\Eloquent\Model;
+use MelisCommerce\Model\Model;
 use MelisCommerce\Model\Category;
 
 class OrderStatusTranslation extends Model
@@ -24,15 +24,15 @@ class OrderStatusTranslation extends Model
     public static function getOrderTranslation($statusId, $langId)
     {
         $trans = static::query()->where('ostt_status_id', $statusId)
-                        ->where('ostt_lang_id', $langId)
-                        ->limit(1)
-                        ->get();
+            ->where('ostt_lang_id', $langId)
+            ->limit(1)
+            ->get();
 
         if (!$trans->count()) {
             $trans = static::query()->where('ostt_status_id', $statusId)
-                        ->orderBy('ostt_lang_id')
-                        ->limit(1)
-                        ->get();
+                ->orderBy('ostt_lang_id')
+                ->limit(1)
+                ->get();
         }
 
         return ($trans->count()) ? $trans->first() : null;

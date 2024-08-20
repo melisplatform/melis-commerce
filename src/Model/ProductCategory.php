@@ -2,7 +2,7 @@
 
 namespace MelisCommerce\Model;
 
-use Illuminate\Database\Eloquent\Model;
+use MelisCommerce\Model\Model;
 use MelisCommerce\Model\Category;
 use MelisCommerce\Model\Product;
 
