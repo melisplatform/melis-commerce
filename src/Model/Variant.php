@@ -38,12 +38,17 @@ class Variant extends Model
     ];
 
     protected $fillable = [
-        'var_id', 'var_prd_id', 'var_sku', 'var_status', 'var_main_variant'
+        'var_id',
+        'var_prd_id',
+        'var_sku',
+        'var_status',
+        'var_main_variant'
     ];
 
     public $timestamps = false;
 
-    public static function setDataTable($dataTable = false) {
+    public static function setDataTable($dataTable = false)
+    {
         self::$dataTable = $dataTable;
 
         return new static;
@@ -104,17 +109,36 @@ class Variant extends Model
         $orderBy = 'var_main_variant',
         $order = 'ASC',
         $search = '',
-        $forPagination = false
     ) {
         self::setLanguageId($langId);
-        $query = $query->select('melis_ecom_variant.*')->where('var_prd_id', $productId);
+        $query = $query->select([
+            'melis_ecom_variant.*',
+        ])->where('var_prd_id', $productId);
         $query->with([
-            'variantAttributes' => function ($query) {
-                $query->select(['melis_ecom_variant_attribute_value.*', 'melis_ecom_attribute_value.*', 'melis_ecom_attribute_trans.*'])
+            'variantAttributes' => function ($query) use ($langId) {
+                $query->select([
+                    'melis_ecom_variant_attribute_value.*',
+                    'melis_ecom_attribute_value.*',
+                    'melis_ecom_attribute_trans.*',
+                    'melis_ecom_attribute_value_trans.avt_lang_id',
+                    'melis_ecom_attribute_value_trans.avt_v_int',
+                    'melis_ecom_attribute_value_trans.avt_v_float',
+                    'melis_ecom_attribute_value_trans.avt_v_bool',
+                    'melis_ecom_attribute_value_trans.avt_v_varchar',
+                    'melis_ecom_attribute_value_trans.avt_v_text',
+                    'melis_ecom_attribute_value_trans.avt_v_datetime',
+                    'melis_ecom_attribute_value_trans.avt_v_binary',
+                    'melis_ecom_attribute_type.*'
+                ])
                     ->leftJoin('melis_ecom_attribute_value', 'atval_id', '=', 'vatv_attribute_value_id')
-                    ->leftJoin('melis_ecom_attribute_trans', 'atrans_attribute_id', '=', 'atval_attribute_id');
+                    ->leftJoin('melis_ecom_attribute_trans', 'atrans_attribute_id', '=', 'atval_attribute_id')
+                    ->leftJoin('melis_ecom_attribute_type', 'atype_id', '=', 'atval_type_id')
+                    ->leftJoin('melis_ecom_attribute_value_trans', function ($join) use ($langId) {
+                        $join->on('av_attribute_value_id', '=', 'vatv_attribute_value_id')
+                            ->where('melis_ecom_attribute_value_trans.avt_lang_id', '=', $langId);
+                    });
             }
-        ])->distinct();
+        ]);
 
         if (!is_null($onlyValid)) {
             $query->where('var_status', $onlyValid);
@@ -125,11 +149,11 @@ class Variant extends Model
                 ->orWhere('var_id', 'like', "%$search%");
         }
 
-        if ((!empty($limit) && $limit > 0) && !$forPagination) {
+        if ((!empty($limit) && $limit > 0)) {
             $query->limit($limit);
         }
 
-        if ((!empty($start) && $start > 0) && !$forPagination) {
+        if ((!empty($start) && $start > 0)) {
             $query->offset($start);
         }
 
@@ -157,14 +181,21 @@ class Variant extends Model
 
     public function getvar_attributesAttribute()
     {
-        $attributes = array_filter($this->variantAttributes->pluck('atrans_name')->toArray(), function ($attribute) {
-            return $attribute !== '';
-        });
+        return $this->variantAttributes
+            ->map(function ($attribute) {
+                $value = $attribute['avt_v_' . $attribute['atype_column_value']] ?? null;
+                if ($value === '' || $value === null) {
+                    return null;
+                }
 
-        return array_map(function ($attr) {
-            $template = '<span class="btn btn-default cell-val-table" title="%s" style="border-radius: 4px;color: #7D7B7B;">%s</span>';
-            return sprintf($template, $attr, $attr);
-        }, $attributes);
+                return sprintf(
+                    '<span class="btn btn-default cell-val-table" title="%1$s: %2$s" style="border-radius: 4px;color: #7D7B7B;">%1$s: %2$s</span>',
+                    $attribute['atrans_name'],
+                    $value
+                );
+            })
+            ->filter()
+            ->values();
     }
 
     public function getvar_statusAttribute()
@@ -175,16 +206,31 @@ class Variant extends Model
 
     public function getvar_skuAttribute()
     {
-        $format = '<a id="row-%s" class="toolTipVarHoverEvent tooltipTableVar" data-variantId="%s" data-variantname="%s" data-hasqtip="1" aria-describedby="qtip-%s">%s</a>';
+        $format = '<a id="row-%1$s" class="toolTipVarHoverEvent tooltipTableVar" data-variantId="%2$s" data-variantname="%3$s" data-hasqtip="1" aria-describedby="qtip-%4$s">%5$s</a>';
 
         if ($this->isMobile() || is_null(self::$tooltipTable)) {
-            return sprintf($format, $this->var_id, $this->var_id, $this->var_sku, $this->var_id, $this->var_sku);
+            return sprintf(
+                $format,
+                $this->var_id,
+                $this->var_id,
+                $this->var_sku,
+                $this->var_id,
+                $this->var_sku,
+            );
         }
 
         // add tooltip code here
         self::$tooltipTable->setTable(self::$type . 'Table' . $this->var_id, 'table-row-' . $this->var_id . ' ' . self::$type . 'Table' . $this->var_id, 'border:1px solid;');
         self::$tooltipTable->setColumns(self::$tooltipColumns);
-        return sprintf($format, $this->var_id, $this->var_id, $this->var_sku, $this->var_id, $this->var_sku) . self::$tooltipTable->render();
+
+        return sprintf(
+            $format,
+            $this->var_id,
+            $this->var_id,
+            $this->var_sku,
+            $this->var_id,
+            $this->var_sku,
+        );
     }
 
     public function getvar_imageAttribute()
