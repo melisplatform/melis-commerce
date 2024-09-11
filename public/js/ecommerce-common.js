@@ -319,55 +319,59 @@ var melisCommerce = (function(window) {
 	}
 
 	function priceLogTooltip() {
-		$(".price-log-data-tooltip").each(function() {
-			var $this = $(this);
+		var $qtip = $(".price-log-data-tooltip");
+			
+			if ( $qtip.length ) {
+				$qtip.each(function() {
+					var $this = $(this);
 
-			var priceLog = $(this)
-				.find(".price-log-data")
-				.text();
+					var priceLog = $(this)
+						.find(".price-log-data")
+						.text();
 
-			var qtipContent = "";
-			if (priceLog != "") {
-				logs = JSON.parse(priceLog);
+					var qtipContent = "";
+					if (priceLog != "") {
+						logs = JSON.parse(priceLog);
 
-				for (i = 0; i < logs.length; i++) {
-					qtipContent += "<li>" + logs[i] + "</li>";
-				}
+						for (i = 0; i < logs.length; i++) {
+							qtipContent += "<li>" + logs[i] + "</li>";
+						}
+					}
+
+					qtipContent = qtipContent == "" ? "N/A" : qtipContent;
+					
+					$this.qtip({
+						content: {
+							text:
+								"<div class='price-log-data-container'>" +
+								"<p>Price Log</p>" +
+								"<ul>" +
+								qtipContent +
+								"</ul>" +
+								"</div>",
+						},
+						overwrite: false,
+						style: {
+							classes: "qtip-tipsy qtip-shadow",
+							width: "auto",
+						},
+						hide: {
+							fixed: true,
+							delay: 300,
+							event: "mouseleave",
+						},
+						position: {
+							target: "mouse",
+							adjust: {
+								mouse: false,
+							},
+							my: "center center",
+							at: "center center",
+							//container : false,
+						},
+					});
+				});
 			}
-
-			qtipContent = qtipContent == "" ? "N/A" : qtipContent;
-
-			$this.qtip({
-				content: {
-					text:
-						"<div class='price-log-data-container'>" +
-						"<p>Price Log</p>" +
-						"<ul>" +
-						qtipContent +
-						"</ul>" +
-						"</div>",
-				},
-				overwrite: false,
-				style: {
-					classes: "qtip-tipsy qtip-shadow",
-					width: "auto",
-				},
-				hide: {
-					fixed: true,
-					delay: 300,
-					event: "mouseleave",
-				},
-				position: {
-					target: "mouse",
-					adjust: {
-						mouse: false,
-					},
-					my: "center center",
-					at: "center center",
-					//container : false,
-				},
-			});
-		});
 	}
 
 	return {
