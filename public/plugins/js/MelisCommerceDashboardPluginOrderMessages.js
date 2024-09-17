@@ -37,6 +37,8 @@ $(function() {
 
                 commDashPluginOrderMessagesWithUnansweredFilterInstance = $(".melis-commerce-dashboard-plugin-order-messages-parent").find('label.active input[value="unseen"]').length;
                 commerceDashPluginorderMessagesInstanceCount = $(".melis-commerce-dashboard-plugin-order-messages-parent").find('label.active input[value="all"]').length;
+                
+                // console.log(`commerceDashboardPluginOrderMessagesInit() filter: `, filter);
                 appendMessages(filter);
 
                 if ( commDashPluginOrderMessagesWithUnansweredFilterInstance === 0 ) {
@@ -62,7 +64,7 @@ $(function() {
         }
 
         //initialize the order messages that are already in the dashboard
-        if ( $('.commerce-dashboard-plugin-order-messages-list').length > 0 ) {
+        if ( $('#'+activeTabId+'[data-meliskey="meliscore_dashboard"]').find(".commerce-dashboard-plugin-order-messages-list").length > 0 ) {
             commerceDashboardPluginOrderMessagesInit();
         }
 
@@ -74,17 +76,20 @@ $(function() {
                 dataType: 'json',
                 encode: true
             }).done(function (data) {
-                //empty divs first
-                $(".melis-commerce-dashboard-plugin-order-messages-parent").find('label.active input[value=' + '"' + filter + '"' + ']').each(function (index, element) {
-                    orderMessages.clear(element);
-                    orderMessages.setUnansweredMessages(data.unansweredMessages, element);
-                });
+                // console.log(`appendMessages() data:`, data);
+                if ( data ) {
+                    //empty divs first
+                    $(".melis-commerce-dashboard-plugin-order-messages-parent").find('label.active input[value=' + '"' + filter + '"' + ']').each(function (index, element) {
+                        orderMessages.clear(element);
+                        orderMessages.setUnansweredMessages(data.unansweredMessages, element);
+                    });
 
-                $.each(data.messages, function (index, message) {
-                    orderMessages.setMessages(placeholder, message, filter);
-                });
+                    $.each(data.messages, function (index, message) {
+                        orderMessages.setMessages(placeholder, message, filter);
+                    });
+                }
             }).fail(function (xhr, textStatus, errorThrown) {
-                console.log("ERROR !! Status = " + textStatus + "\n Error = " + errorThrown + "\n xhr = " + xhr.statusText);
+                console.log("ERROR !! Status = " + textStatus + "\n Error = " + errorThrown + "\n xhr = " + xhr + "\n xhr.statusText = " + xhr.statusText);
                 alert( translations.tr_meliscore_error_message );
             });
         }

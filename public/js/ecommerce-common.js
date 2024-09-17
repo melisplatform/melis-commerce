@@ -16,66 +16,74 @@ var melisCommerce = (function(window) {
 	}
 
 	function initTooltipTable() {
-		$(".tooltipTable").each(function() {
-			var $this = $(this);
-			$this.qtip({
-				content: {
-					text: $(this).next(".tooltiptext"),
-				},
-				overwrite: false,
-				style: {
-					classes: "qtip-tipsy qtip-shadow",
-					width: "auto",
-				},
-				hide: {
-					fixed: true,
-					delay: 300,
-					event: "mouseleave",
-				},
-				position: {
-					target: "mouse",
-					adjust: {
-						mouse: false,
-					},
-					my: "center center",
-					at: "center center",
-					//container : false,
-				},
-				/* adjust:{
-					screen: true,
-					}, */
-			});
-		});
+		var $tooltipTable = $(".tooltipTable");
+
+			if ( $tooltipTable.length ) {
+				$tooltipTable.each(function() {
+					var $this = $(this);
+					$this.qtip({
+						content: {
+							text: $(this).next(".tooltiptext"),
+						},
+						overwrite: false,
+						style: {
+							classes: "qtip-tipsy qtip-shadow",
+							width: "auto",
+						},
+						hide: {
+							fixed: true,
+							delay: 300,
+							event: "mouseleave",
+						},
+						position: {
+							target: "mouse",
+							adjust: {
+								mouse: false,
+							},
+							my: "center center",
+							at: "center center",
+							//container : false,
+						},
+						/* adjust:{
+							screen: true,
+							}, */
+					});
+				});
+			}
 	}
 
 	function initTooltipVarTable() {
-		$(".tooltipTableVar").each(function() {
-			var $this = $(this);
+		var $tooltipTableVar = $(".tooltipTableVar");
+		
+			if ( $tooltipTableVar.length ) {
+				$tooltipTableVar.each(function() {
+					var $this = $(this);
 
-			$this.qtip({
-				content: {
-					text: $(this).next(".tooltiptext"),
-				},
-				overwrite: false,
-				style: {
-					classes: "qtip-tipsy qtip-shadow",
-					width: "auto",
-				},
-				hide: {
-					fixed: true,
-					delay: 300,
-					event: "mouseleave",
-				},
-				position: {
-					target: "mouse",
-					adjust: {
-						mouse: false,
-					},
-					my: "center center",
-					at: "center center",
-				},
-			});
-		});
+					$this.qtip({
+						content: {
+							text: $(this).next(".tooltiptext"),
+						},
+						overwrite: false,
+						style: {
+							classes: "qtip-tipsy qtip-shadow",
+							width: "auto",
+						},
+						hide: {
+							fixed: true,
+							delay: 300,
+							event: "mouseleave",
+						},
+						position: {
+							target: "mouse",
+							adjust: {
+								mouse: false,
+							},
+							my: "center center",
+							at: "center center",
+						},
+					});
+				});
+			}
 	}
 
 	function openProductPage(productId, productName, navTabsGroup, callback) {
