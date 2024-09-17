@@ -42,7 +42,6 @@ $(function () {
 
 			setTimeout(function() {
 				melisCoreTool.processDone();
-				console.log(`.add-variant setTimeout 500 melisCoreTool.processDone()`);
 			}, 500);
 	});
 
