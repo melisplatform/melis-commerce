@@ -42,7 +42,7 @@ $(function () {
 
 			setTimeout(function() {
 				melisCoreTool.processDone();
-			}, 1000);
+			}, 500);
 	});
 
 	$body.on("click", ".save-add-variant", function () {
