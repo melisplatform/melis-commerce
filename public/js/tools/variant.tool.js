@@ -26,23 +26,23 @@ $(function () {
 
 	$body.on("click", ".add-variant", function () {
 		var $this = $(this),
-			productId = $this
-				.closest(".container-level-a")
-				.attr("id")
-				.replace(/[^0-9]/g, ""),
+			productId = $this.closest(".container-level-a").attr("id").replace(/[^0-9]/g, ""),
 			prodTabId = productId + "_id_meliscommerce_products_page";
 
-		melisCoreTool.processing();
-		melisHelper.tabOpen(
-			translations.tr_meliscommerce_variant_main_information_sku_new,
-			"icon-tag-2",
-			"id_meliscommerce_variants_page",
-			"meliscommerce_variants_page",
-			{ productId: productId, page: "newvar" },
-			prodTabId
-		);
-		melisCommerce.setUniqueId(0);
-		melisCoreTool.processDone();
+			melisCoreTool.processingActiveTabId();
+			melisHelper.tabOpen(
+				translations.tr_meliscommerce_variant_main_information_sku_new,
+				"icon-tag-2",
+				"id_meliscommerce_variants_page",
+				"meliscommerce_variants_page",
+				{ productId: productId, page: "newvar" },
+				prodTabId
+			);
+			melisCommerce.setUniqueId(0);
+
+			setTimeout(function() {
+				melisCoreTool.processDone();
+			}, 1000);
 	});
 
 	$body.on("click", ".save-add-variant", function () {
