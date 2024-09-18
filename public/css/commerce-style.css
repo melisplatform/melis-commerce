@@ -3534,3 +3534,9 @@ span.remove-company-image i{
 		width: 100%;
 	}
 }
+.jstree-proton .jstree-hovered, 
+.jstree-proton .jstree-anchor:hover, 
+.jstree-proton .jstree-clicked {
+	background: #3392e3 !important;
+	color: #fff !important; 
+}
