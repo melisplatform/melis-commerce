@@ -18,14 +18,12 @@ $(function() {
 		// close modal clicking outside
 		$body.on("click", "#id_meliscommerce_client_modal_address_form_container", function(e) {
 			if ( e.target != this ) return;
-			console.log(`$(this)[0].id: `, $(this)[0].id);
 			melisCoreTool.hideModal($(this)[0].id);
 		});
 
 		// close modal clicking outside
 		$body.on("click", "#id_meliscommerce_client_modal_contact_address_form_container", function(e) {
 			if ( e.target != this ) return;
-			console.log(`$(this)[0].id: `, $(this)[0].id);
 			melisCoreTool.hideModal($(this)[0].id);
 		});
 
