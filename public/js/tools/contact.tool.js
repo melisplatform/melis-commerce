@@ -26,7 +26,7 @@ $(function(){
 
             dataString = $.param(dataString);
 
-            $("#saveClientContact").attr("disabled", "disabled");
+            $("#saveClientContact").prop("disabled", true);
 
             $.ajax({
                 type: "POST",
@@ -37,9 +37,11 @@ $(function(){
                 cache: false,
             })
                 .done(function(data) {
-                    $("#saveClientContact").removeAttr("disabled");
+                    $("#saveClientContact").prop("disabled", false);
                     if (data.success) {
-                        $("#id_meliscommerce_client_modal_contact_form_container").modal("hide");
+                        // $("#id_meliscommerce_client_modal_contact_form_container").modal("hide");
+                        melisCoreTool.hideModal("id_meliscommerce_client_modal_contact_form_container");
+
                         $("#contactList").DataTable().ajax.reload();
 
                         melisHelper.melisOkNotification(data.textTitle, data.textMessage);
@@ -58,7 +60,7 @@ $(function(){
                     melisCore.flashMessenger();
                 })
                 .fail(function() {
-                    $("#saveClientContact").removeAttr("disabled");
+                    $("#saveClientContact").prop("disabled", false);
                     alert(translations.tr_meliscore_error_message);
                 });
         });
@@ -82,7 +84,7 @@ $(function(){
                 cache: false,
             })
                 .done(function(data) {
-                    $("#saveClientContact").removeAttr("disabled");
+                    $("#saveClientContact").prop("disabled", false);
 
                     if (data.success) {
                         var navTabsGroup = "id_meliscommerce_contact_list_page";
@@ -125,7 +127,7 @@ $(function(){
                     }
                 })
                 .fail(function() {
-                    $("#saveClientContact").removeAttr("disabled");
+                    $("#saveClientContact").prop("disabled", false);
                     alert(translations.tr_meliscore_error_message);
                 });
         });
@@ -189,7 +191,7 @@ $(function(){
                 contactId = $this.data("contactid"),
                 tabId = $this.data("tabid");
 
-            $(".addNewContactAddress").attr("disabled", "disabled");
+            $(".addNewContactAddress").prop("disabled", true);
 
             // initialation of local variable
             zoneId = "id_meliscommerce_client_modal_contact_address_form";
@@ -204,7 +206,7 @@ $(function(){
                 { contactId: contactId, tabId: tabId },
                 modalUrl,
                 function() {
-                    $(".addNewContactAddress").removeAttr("disabled");
+                    $(".addNewContactAddress").prop("disabled", false);
                 }
             );
         });
@@ -231,7 +233,7 @@ $(function(){
 
             dataString = $.param(dataString);
 
-            $("#saveClientContactAddress").attr("disabled", "disabled");
+            $("#saveClientContactAddress").prop("disabled", true);
 
             $.ajax({
                 type: "POST",
@@ -242,16 +244,16 @@ $(function(){
                 cache: false
             })
                 .done(function(data) {
-                    $("#saveClientContactAddress").removeAttr("disabled");
+                    $("#saveClientContactAddress").prop("disabled", false);
 
                     if (data.success) {
                         melisHelper.melisOkNotification(
                             data.textTitle,
                             data.textMessage
                         );
-                        $(
-                            "#id_meliscommerce_client_modal_contact_address_form_container"
-                        ).modal("hide");
+
+                        // $("#id_meliscommerce_client_modal_contact_address_form_container").modal("hide");
+                        melisCoreTool.hideModal("id_meliscommerce_client_modal_contact_address_form_container");
 
                         melisHelper.zoneReload(contactId+'_id_meliscommerce_contact_page_content_tab_address', 'meliscommerce_contact_page_content_tab_address', {contactId:contactId, reload: true});
                     } else {
@@ -268,7 +270,7 @@ $(function(){
                     }
                 })
                 .fail(function() {
-                    $("#saveClientContactAddress").removeAttr("disabled");
+                    $("#saveClientContactAddress").prop("disabled", false);
                     alert(translations.tr_meliscore_error_message);
                 });
         });
@@ -326,7 +328,7 @@ $(function(){
             var contactId = input.data("contactid");
             var accountId = input.data("accountid");
 
-            $(this).attr("disabled", true);
+            $(this).prop("disabled", true);
 
             $.ajax({
                 'url': '/melis/MelisCommerce/MelisComContact/linkContactAccount',
@@ -357,7 +359,7 @@ $(function(){
                 }else{
                     melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.error);
                 }
-                $(this).attr("disabled", false);
+                $(this).prop("disabled", false);
             });
         });
 
@@ -517,7 +519,7 @@ $(function(){
                 encode: true,
                 cache: false
             }).done(function(data) {
-                $(".saveContactPage").removeAttr("disabled");
+                $(".saveContactPage").prop("disabled", false);
                 if (data.success) {
                     $("#contactList").DataTable().ajax.reload();
                     melisHelper.melisOkNotification(data.textTitle, data.textMessage);
@@ -542,7 +544,7 @@ $(function(){
                 melisCore.flashMessenger();
             })
             .fail(function() {
-                $("#saveClientContact").removeAttr("disabled");
+                $("#saveClientContact").prop("disabled", false);
                 alert(translations.tr_meliscore_error_message);
             });
         });
@@ -598,7 +600,7 @@ $(function(){
                 data: $.param(filters),
                 type: "GET",
                 beforeSend: function(){
-                    _this.attr("disabled", true);
+                    _this.prop("disabled", true);
                 }
             }).done(function(data, status, request){
                 var fileName = request.getResponseHeader("fileName");
@@ -620,8 +622,10 @@ $(function(){
                 var blob = new Blob([bytes], {type: mime});
                 saveAs(blob, fileName);
 
-                _this.attr("disabled", false);
-                $("#id_meliscommerce_contact_list_export_contacts_form_container").modal('hide');
+                _this.prop("disabled", false);
+
+                // $("#id_meliscommerce_contact_list_export_contacts_form_container").modal('hide');
+                melisCoreTool.hideModal("id_meliscommerce_contact_list_export_contacts_form_container");
             }).fail(function(){
                 alert(translations.tr_meliscore_error_message);
             });
@@ -706,7 +710,7 @@ $(function(){
                 processData: false,
                 beforeSend: function(){
                     updateProgressValue(20);
-                    $("#importContacts").attr("disabled", true);
+                    $("#importContacts").prop("disabled", true);
                 }
             }).done(function (data) {
                 updateProgressValue(90);
@@ -716,15 +720,18 @@ $(function(){
                         title.text(data.textMessage);
                         if(type == 'import') {
                             $('#contactList').DataTable().ajax.reload();
+
                             //hide modal
-                            $("#id_meliscommerce_contact_list_import_contacts_form_container").modal("hide");
+                            // $("#id_meliscommerce_contact_list_import_contacts_form_container").modal("hide");
+                            melisCoreTool.hideModal("id_meliscommerce_contact_list_import_contacts_form_container");
+
                             //show notifications
                             melisHelper.melisOkNotification(data.textTitle, data.textMessage);
                             // update flash messenger values
                             melisCore.flashMessenger();
                         }else{
                             //disable import button
-                            $("#importContacts").attr("disabled", false);
+                            $("#importContacts").prop("disabled", false);
                         }
                     }else{
                         if(type == 'test'){
@@ -886,7 +893,7 @@ window.initAccountAutoSuggest = function($element) {
                 $($element).attr("data-accountid", data.cli_id);
 
                 //remove disable on select
-                $("#"+activeTabId+" button.contactAccountLink").attr("disabled", false);
+                $("#"+activeTabId+" button.contactAccountLink").prop("disabled", false);
             }
         }
     };

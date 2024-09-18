@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(function() {
 	var $body = $("body");
 
 	$body.on("click", ".addNewOrder", function() {
@@ -229,10 +229,10 @@ $(document).ready(function() {
 						data.errors
 					);
 				}
-				$this.removeAttr("disabled");
+				$this.prop("disabled", false);
 			})
 			.fail(function() {
-				$this.removeAttr("disabled");
+				$this.prop("disabled", false);
 				alert(translations.tr_meliscore_error_message);
 			});
 	});
@@ -287,7 +287,7 @@ $(document).ready(function() {
 			contactId = tr.attr("id"),
 			nxtTabid = btn.data("tabid"),
 			dataString = new Array();
-		btn.attr("disabled", true);
+		btn.prop("disabled", true);
 		dataString.push({
 			name: "contactId",
 			value: contactId
@@ -332,10 +332,10 @@ $(document).ready(function() {
 						data.errors
 					);
 				}
-				btn.attr("disabled", false);
+				btn.prop("disabled", false);
 			})
 			.fail(function() {
-				btn.attr("disabled", false);
+				btn.prop("disabled", false);
 				alert(translations.tr_meliscore_error_message);
 			});		
 	});
@@ -348,7 +348,7 @@ $(document).ready(function() {
             nxtTabid 	= btn.data("tabid"),
             dataString 	= new Array();
 
-			btn.attr("disabled", true);
+			btn.prop("disabled", true);
 
 			dataString.push({
 				name: "accountId",
@@ -391,10 +391,10 @@ $(document).ready(function() {
 						data.errors
 					);
 				}
-				btn.attr("disabled", false);
+				btn.prop("disabled", false);
 			})
 			.fail(function() {
-				btn.attr("disabled", false);
+				btn.prop("disabled", false);
 				alert(translations.tr_meliscore_error_message);
 			});
     });
@@ -529,7 +529,7 @@ $(document).ready(function() {
 			value: sameAddress,
 		});
 
-		btn.attr("disabled", true);
+		btn.prop("disabled", true);
 
 		$.ajax({
 			type: "POST",
@@ -567,10 +567,10 @@ $(document).ready(function() {
 						activeTabId + " form"
 					);
 				}
-				btn.attr("disabled", false);
+				btn.prop("disabled", false);
 			})
 			.fail(function() {
-				btn.attr("disabled", false);
+				btn.prop("disabled", false);
 				alert(translations.tr_meliscore_error_message);
 			});
 	});
@@ -708,10 +708,10 @@ $(document).ready(function() {
 						data.errors
 					);
 				}
-				btn.attr("disabled", false);
+				btn.prop("disabled", false);
 			})
 			.fail(function() {
-				btn.attr("disabled", false);
+				btn.prop("disabled", false);
 				alert(translations.tr_meliscore_error_message);
 			});
 	});
@@ -761,10 +761,10 @@ window.productNextButtonState = function() {
 	})
 		.done(function(data) {
 			if (data.success) {
-				nextButton.attr("disabled", false);
+				nextButton.prop("disabled", false);
 				nextButton.attr("title", "");
 			} else {
-				nextButton.attr("disabled", true);
+				nextButton.prop("disabled", true);
 				nextButton.attr(
 					"title",
 					translations.tr_meliscommerce_order_checkout_product_basket_empty
