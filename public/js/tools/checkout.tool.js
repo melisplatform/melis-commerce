@@ -722,14 +722,30 @@ $(function() {
 			zoneId = "id_meliscommerce_order_checkout_confirmation_step",
 			melisKey = "meliscommerce_order_checkout_confirmation_step";
 
-		// switch tab
-		melisCommerce.switchOrderTab(nxtTabid);
+			// switch tab
+			melisCommerce.switchOrderTab(nxtTabid);
 
-		melisHelper.zoneReload(zoneId, melisKey, { activateTab: true });
-		melisHelper.zoneReload(
-			"id_meliscommerce_order_list_content_table",
-			"meliscommerce_order_list_content_table"
-		);
+			melisHelper.zoneReload(
+				zoneId,
+				melisKey,
+				{ activateTab: true },
+				() => {
+					var alertTimeout = setTimeout(function() {
+						var $alert = $("#"+zoneId).find(".alert");
+							if ( $alert.length ) {
+								$alert.removeClass("d-none");
+
+								clearTimeout( alertTimeout );
+							}
+					}, 2000);
+
+					melisHelper.zoneReload(
+						"id_meliscommerce_order_list_content_table",
+						"meliscommerce_order_list_content_table"
+					);
+				}
+			);
+			
 	});
 
 	$body.on("change", "#orderCheckoutCouponCode", function() {
