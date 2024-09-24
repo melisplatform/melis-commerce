@@ -29,20 +29,21 @@ $(function () {
 			productId = $this.closest(".container-level-a").attr("id").replace(/[^0-9]/g, ""),
 			prodTabId = productId + "_id_meliscommerce_products_page";
 
-			melisCoreTool.processingActiveTabId();
+			// melisCoreTool.processing();
+
 			melisHelper.tabOpen(
 				translations.tr_meliscommerce_variant_main_information_sku_new,
 				"icon-tag-2",
 				"id_meliscommerce_variants_page",
 				"meliscommerce_variants_page",
 				{ productId: productId, page: "newvar" },
-				prodTabId
-			);
-			melisCommerce.setUniqueId(0);
+				prodTabId,
+				() => {
+					melisCommerce.setUniqueId(0);
 
-			setTimeout(function() {
-				melisCoreTool.processDone();
-			}, 500);
+					melisCoreTool.processDone();	
+				}
+			);
 	});
 
 	$body.on("click", ".save-add-variant", function () {
