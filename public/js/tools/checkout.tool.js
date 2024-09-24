@@ -731,13 +731,13 @@ $(function() {
 				{ activateTab: true },
 				() => {
 					var alertTimeout = setTimeout(function() {
-						var $alert = $("#"+zoneId).find(".alert");
+						var $alert = $("#id_meliscommerce_order_checkout_confirmation_step").find(".alert");
 							if ( $alert.length ) {
 								$alert.removeClass("d-none");
 
 								clearTimeout( alertTimeout );
 							}
-					}, 2000);
+					}, 1000);
 
 					melisHelper.zoneReload(
 						"id_meliscommerce_order_list_content_table",
