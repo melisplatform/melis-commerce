@@ -1720,23 +1720,24 @@ class MelisComProductController extends MelisAbstractActionController
             ->first();
 
 
-        $layoutVar['product'] = $product->toArray();
-        $layoutVar['prodText'] = $product->productTexts->toArray();
-        $layoutVar['prodCategories'] = $product->categories->toArray();
+        $layoutVar['product'] = $product ? $product->toArray() : null;
+        $layoutVar['prodText'] = $product ? $product->productTexts->toArray(): [];
+        $layoutVar['prodCategories'] = $product ? $product->categories->toArray() : [];
         $attributes = [];
 
-        foreach ($product->attributes->toArray() as $attribute) {
-            $attributes[] = $this->flatten($attribute);
-        }
+        if ($product)
+            foreach ($product->attributes->toArray() as $attribute) {
+                $attributes[] = $this->flatten($attribute);
+            }
 
         if ($attributes) {
             $layoutVar['prodAttributes'] = $attributes;
         }
 
         $this->layout()->setVariables(array_merge(array(
-            'productId' => $product->prd_id,
-            'prodText' => $product->label,
-            'prodName' => $product->label,
+            'productId' => $product ? $product->prd_id : $productId,
+            'prodText' => $product ? $product->label : [],
+            'prodName' => $product ? $product->label: '',
         ), $layoutVar));
     }
 
