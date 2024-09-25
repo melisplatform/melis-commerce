@@ -11,8 +11,10 @@ if (!empty($this->zoneconfig['conf']['id']))
 			<div class="widget widget-tabs widget-tabs-double widget-tabs-responsive margin-none border-none">
                 <div class="widget-head">
                 	<ul class="nav nav-tabs">
-                		<li class="active"><a href="#<?php echo $this->zoneconfig['conf']['id'] ?>" class="glyphicons notes" data-toggle="tab" aria-expanded="true"><i></i> 
-                		<?= $this->translate('tr_meliscommerce_contact_common_import')?></a></li>
+                		<li class="nav-item active">
+                            <a href="#<?php echo $this->zoneconfig['conf']['id'] ?>" class="nav-link glyphicons notes" data-bs-toggle="tab" aria-expanded="true"><i></i> 
+                		    <?= $this->translate('tr_meliscommerce_contact_common_import')?></a>
+                        </li>
             		</ul>
         		</div>
         		<div class="widget-body innerAll inner-2x">
@@ -74,7 +76,7 @@ if (!empty($this->zoneconfig['conf']['id']))
 
                                  	<div class="footer-modal d-flex flex-row justify-content-between">
                                         <div class="btnCloseBlock">
-                                            <button data-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
+                                            <button data-bs-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
                                         </div>
                                  		<div class="btnImportBlock">
                                             <button class="btn btn-info" id="testImportContacts" data-action="test"><i class="fa fa-search"></i>  <?php echo $this->translate('tr_meliscommerce_contact_common_test_import') ?></button>

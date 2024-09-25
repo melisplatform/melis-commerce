@@ -1,22 +1,16 @@
 (function (factory) {
 	"use strict";
 	if (typeof define === 'function' && define.amd) {
-		define('jstree.checkbox', ['jquery','jstree'], factory);
+		define('jstree.checkbox', ['jquery','./jstree.js'], factory);
 	}
 	else if(typeof exports === 'object') {
-		factory(require('jquery'), require('jstree'));
+		factory(require('jquery'), require('./jstree.js'));
 	}
 	else {
 		factory(jQuery);
 	}
 }(function ($, undefined) {
 	"use strict";
-	/*
-	* document.registerElement("vakata-jstree", { prototype: proto });
-	* [Deprecation] document.registerElement is deprecated and will be removed in M80, around February 2020. 
-	* Please use window.customElements.define instead. 
-	* See https://www.chromestatus.com/features/4642138092470272 and https://developers.google.com/web/updates/2019/07/web-components-time-to-upgrade for more details.
-	*/
 	if(window.customElements && Object && Object.create) {
 		var proto = Object.create(HTMLElement.prototype);
 		proto.createdCallback = function () {
@@ -38,13 +32,7 @@
 		};
 		// proto.attributeChangedCallback = function (name, previous, value) { };
 		try {
-			/*
-			 * document.registerElement("vakata-jstree", { prototype: proto });
-			 * [Deprecation] document.registerElement is deprecated and will be removed in M80, around February 2020. 
-			 * Please use window.customElements.define instead. 
-			 * See https://www.chromestatus.com/features/4642138092470272 and https://developers.google.com/web/updates/2019/07/web-components-time-to-upgrade for more details.
-			 */
-			window.customElements.define("vakata-jstree", { prototype: proto });
-		} catch(ignore) { }
+			window.customElements.define("vakata-jstree", function() {}, { prototype: proto });
+		} catch (ignore) { }
 	}
 }));

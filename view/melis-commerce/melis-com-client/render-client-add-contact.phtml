@@ -21,7 +21,7 @@ $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
                 </div>
             </div>
             <script type="application/javascript">
-                $(document).ready(function(){
+                $(function(){
                     var element = "#"+activeTabId+" input.link-contact-data";
                     if(contactToolSelectedAccount != "")
                         element = "#"+contactToolSelectedAccount+"_id_meliscommerce_client_page_tab_contact input.link-contact-data";
@@ -30,10 +30,9 @@ $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
                     $(element).closest(".easy-autocomplete").width("120");
 
                     //check if field is cleared
-                    $(element).blur(function()
-                    {
+                    $(element).on("blur", function() {
                         if( $(this).val().length === 0 ) {
-                            $("#"+activeTabId+" button.accountContactLink").attr("disabled", true);
+                            $("#"+activeTabId+" button.accountContactLink").prop("disabled", true);
                         }
                     });
                 });

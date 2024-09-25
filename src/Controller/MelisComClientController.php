@@ -908,8 +908,8 @@ class MelisComClientController extends MelisAbstractActionController
                 $addressName = $postValues['cadd_address_name'];
                 
                 // Generating tabulation navigation for to new Added Client Contact
-                $tabNav = '<li class="'.$addressId.'_address">
-                                <a class="clearfix" data-toggle="tab" id="nav_add_'.$addressId.'" href="#'.$addressId.'_address" aria-expanded="false">
+                $tabNav = '<li class="nav-item '.$addressId.'_address">
+                                <a class="nav-link clearfix" data-bs-toggle="tab" id="nav_add_'.$addressId.'" href="#'.$addressId.'_address" aria-expanded="false">
                                     <span>
                                         '.$addressName.'
                                         <label class="label label-success">'.$translator->translate('tr_meliscommerce_clients_common_label_new').'</label>
@@ -1889,7 +1889,7 @@ class MelisComClientController extends MelisAbstractActionController
     public function getAccountContactListAction()
     {
         $dataCount = 0;
-        $draw = 0;
+        $draw = 1;
         $tableData = array();
 
         if($this->getRequest()->isPost())

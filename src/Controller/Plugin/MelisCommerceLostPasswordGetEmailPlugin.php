@@ -120,8 +120,12 @@ class MelisCommerceLostPasswordGetEmailPlugin extends MelisTemplatingPlugin
                         $recoveryKey = $clientSrv->generatePsswordRecoveryKey($personId);
                         $clientSrv->savePasswordRecoveryKey($personId, $recoveryKey);
                         
+                        // get internal page link
+                        $melisTree = $this->getServiceManager()->get('MelisEngineTree');
+                        $link = $melisTree->getPageLink($data['lost_password_reset_page_link'], true);
+
                         $changePassConfig = array(
-                            'lostPasswordLink' => $data['lost_password_reset_page_link'],
+                            'lostPasswordLink' => $link,
                             'recoveryKey' => $recoveryKey
                         );
                         

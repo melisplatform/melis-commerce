@@ -52,7 +52,7 @@
     	echo $this->melisGenericTable()->renderTable();
 	?>
 	<script>
-    	$(document).ready(function() {
+    	$(function() {
     		<?php echo $this->getToolDataTableConfig; ?>			
 			$(document).on('column-sizing.dt','#<?php echo $this->clientId?>_tableClientOrderList', function(e, settings) {
 				$("#<?php echo $this->clientId?>_tableClientOrderList thead tr").find("th:nth-child(1)").css({"width" : "1px","padding-left" : "10px","padding-right" : "10px"});

@@ -11,8 +11,10 @@ if (!empty($this->zoneconfig['conf']['id']))
 			<div class="widget widget-tabs widget-tabs-double widget-tabs-responsive margin-none border-none">
                 <div class="widget-head">
                 	<ul class="nav nav-tabs">
-                		<li class="active"><a href="#<?php echo $this->zoneconfig['conf']['id'] ?>" class="glyphicons notes" data-toggle="tab" aria-expanded="true"><i></i> 
-                		<?= $this->translate('tr_meliscommerce_order_export_label')?></a></li>
+                		<li class="nav-item active">
+                            <a href="#<?php echo $this->zoneconfig['conf']['id'] ?>" class="nav-link glyphicons notes" data-bs-toggle="tab" aria-expanded="true"><i></i> 
+                		    <?= $this->translate('tr_meliscommerce_order_export_label')?></a>
+                        </li>
             		</ul>
         		</div>
         		<div class="widget-body innerAll inner-2x">
@@ -44,7 +46,7 @@ if (!empty($this->zoneconfig['conf']['id']))
                                     ?>
 
                                  	<div class="footer-modal d-flex flex-row justify-content-between">
-                                 		<button data-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
+                                 		<button type="button" data-bs-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
                                  		<button class="btn btn-success" id="exportContacts" ><i class="fa fa-arrow-circle-up"></i>  <?php echo $this->translate('tr_meliscommerce_order_export_label') ?></button>
                                  	</div>
                             	</div>

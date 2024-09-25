@@ -2,13 +2,13 @@
     <div class="melis-commerce-dashboard-plugin-order-messages-parent">
         <!-- <div class="row"> -->
             <div class="innerAll border-bottom commerce-dashboard-plugin-messages-head clearfix">
-                <div id="melis-commerce-dashboard-plugin-order-messages-placeholder-" class="btn-group" data-toggle="buttons" class="pull-left">
-                    <label class="btn btn-default btn-sm active">
-                        <input type="radio" class="commerce-dashboard-plugin-order-messages" name="commerce-dashboard-plugin-order-messages" value="all"><?php echo $this->translate('tr_melis_commerce_dashboard_plugin_order_messages_all')?>
-                    </label>
-                    <label class="btn btn-default btn-sm">
-                        <input type="radio" class="commerce-dashboard-plugin-order-messages" name="commerce-dashboard-plugin-order-messages" value="unseen"><?php echo $this->translate('tr_melis_commerce_dashboard_plugin_order_messages_unanswered')?>
-                    </label>
+                <div id="melis-commerce-dashboard-plugin-order-messages-placeholder-" class="btn-group" data-bs-toggle="buttons" class="pull-left" role="group">
+                    <!-- active -->
+                    <input type="radio" class="commerce-dashboard-plugin-order-messages btn-check" id="commerce-dashboard-plugin-order-messages-all" name="commerce-dashboard-plugin-order-messages" value="all" autocomplete="off" checked>
+                    <label class="btn btn-default btn-sm" for="commerce-dashboard-plugin-order-messages-all"><?php echo $this->translate('tr_melis_commerce_dashboard_plugin_order_messages_all')?></label>
+                    
+                    <input type="radio" class="commerce-dashboard-plugin-order-messages btn-check" id="commerce-dashboard-plugin-order-messages-unseen" name="commerce-dashboard-plugin-order-messages" value="unseen" autocomplete="off">
+                    <label class="btn btn-default btn-sm" for="commerce-dashboard-plugin-order-messages-unseen"><?php echo $this->translate('tr_melis_commerce_dashboard_plugin_order_messages_unanswered')?></label>
                 </div>
                 <div class="message-count float-right" id="message-count-<?php echo $this->pluginConfig['plugin_id']?>"></div>
             </div>

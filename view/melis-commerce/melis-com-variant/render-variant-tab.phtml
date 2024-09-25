@@ -25,8 +25,8 @@ if (!empty($this->zoneconfig['conf']['href'])){
     $id .= $this->zoneconfig['conf']['id'].'"';
     $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
 ?>
-<li <?= $id. ' '. $data_melisKey?> class="<?= $active;?>">
-	<a data-toggle="tab" href="#<?= $href;?>" aria-expanded="true" class="<?= $icon;?>">
+<li <?= $id. ' '. $data_melisKey?> class="nav-item <?= $active;?>">
+	<a data-bs-toggle="tab" href="#<?= $href;?>" aria-expanded="true" class="nav-link <?= $icon;?>">
 		<i ></i>
 		<span><?= $name;?></span>
 	</a>
