@@ -47,12 +47,14 @@
                                                             <input type="hidden" class="minicolor minicolors-input" value="" />
                                                            </span>`;
 
-                                            var $osta = $(".osta_color_code");
+                                            var $osta = $("#id_meliscommerce_order_status_form_container .osta_color_code");
 
                                                 $osta.val('<?= $this->color; ?>');
                                                 $osta.parent().append( $picker );
 
-                                                $(".osta_color_code, .input-group-addon").wrapAll('<div class="input-group"></div>');
+                                                // console.log(`$osta.parent(): `, $osta.parent());
+
+                                                $("#id_meliscommerce_order_status_form_container .osta_color_code, .input-group-addon").wrapAll('<div class="input-group"></div>');
 
                                             var $miniColor      = $(".minicolor"),
                                                 $miniColorInput = $(".minicolors-input");
@@ -90,7 +92,7 @@
                                                         });
                                                 });
 
-                                            $("body").find(".form-group label[for='osta_color_code']").addClass("d-flex flex-row justify-content-between");
+                                            $("#id_meliscommerce_order_status_form_container").find(".form-group label[for='osta_color_code']").addClass("d-flex flex-row justify-content-between");
                                         });
                                     </script>
                                     <br>
