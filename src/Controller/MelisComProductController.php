@@ -1719,9 +1719,27 @@ class MelisComProductController extends MelisAbstractActionController
             ])
             ->first();
 
+        $prodTextTypeTable = $this->getServiceManager()->get('MelisEcomProductTextTypeTable');
+        $prodTexts = $product ? $product->productTexts->toArray() : [];
+        $ecomLangTable = $this->getServiceManager()->get('MelisEcomLangTable');
+
+        if (empty($prodTexts)) {
+            // set default title prodtext field
+            foreach($prodTextTypeTable->fetchAll()->toArray() as $textType)
+            {
+                if($textType['ptt_name'] == 'Title')
+                {
+                    foreach($ecomLangTable->fetchAll()->toArray() as $lang)
+                    {
+                        $textType['ptxt_lang_id'] = $lang['elang_id'];
+                        $prodTexts[] = (object) $textType;
+                    }
+                }
+            }
+        }
 
         $layoutVar['product'] = $product ? $product->toArray() : null;
-        $layoutVar['prodText'] = $product ? $product->productTexts->toArray(): [];
+        $layoutVar['prodText'] = $prodTexts;
         $layoutVar['prodCategories'] = $product ? $product->categories->toArray() : [];
         $attributes = [];
 
