@@ -176,7 +176,7 @@ class MelisComCategoryListController extends MelisAbstractActionController
     public function getCategoryTreeViewAction()
     {
         $langLocale = $this->params()->fromQuery('langlocale');
-        $selected = -1; //$this->params()->fromQuery('selected', -1);
+        $selected = $this->params()->fromQuery('selected', -1);
         $openStateParent = $this->params()->fromQuery('openStateParent');
 
         /** @INFO: Not applicable at the moment
@@ -187,7 +187,11 @@ class MelisComCategoryListController extends MelisAbstractActionController
         $categoriesChecked = $this->params()->fromQuery('categoriesChecked');
 
         $language = Language::select(['elang_id', 'elang_locale'])->where('elang_locale', $langLocale)->first();
-        $categories = Category::setLanguageModel($language)->getTree($selected, $language->elang_id)->get();
+        $categories = Category::setLanguageModel($language)->getTree($selected, $language->elang_id)->get()
+            ->toArray();
+
+        $this->sortCategoriesByOrder($categories);
+
         return new JsonModel($categories);
     }
 
@@ -314,35 +318,24 @@ class MelisComCategoryListController extends MelisAbstractActionController
      */
     public function saveCategoryTreeViewAction()
     {
-        $translator = $this->getServiceManager()->get('translator');
-
-        // Initialize Response Variable into Default Values
-        $status  = 0;
-        $textMessage = '';
+        $status = 1;
         $textMessage = '';
         $textTitle = '';
 
         $request = $this->getRequest();
 
         if ($request->isPost()) {
-
-            $datas = $request->getPost()->toArray();
+            $datas = array_map('intval', $request->getPost()->toArray());
+            $prevParent = $datas['old_parent'];
+            unset($datas['old_parent']);
 
             if (!empty($datas)) {
-
-                $fatherId = $datas['cat_father_cat_id'];
-                $old_fatherId = $datas['old_parent'];
-                unset($datas['old_parent']);
-
-                // Updating the current Parent Category with new Children
-                $this->udpateCategoryTreeViewAction($datas, $fatherId, true);
-
-                if ($old_fatherId != $fatherId) {
-                    // updating Old Parent Category
-                    $this->udpateCategoryTreeViewAction($datas, $old_fatherId, false);
+                if (! $this->isFromCategoryToCatalog($datas, $prevParent)) {
+                    $this->updateCategoryTreeViewAction(
+                        $datas,
+                        $prevParent
+                    );
                 }
-
-                $status = 1;
             }
         }
 
@@ -355,50 +348,85 @@ class MelisComCategoryListController extends MelisAbstractActionController
         return new JsonModel($response);
     }
 
+
     /**
      * Saving Parent Category Children
      * @param int $categoryData, category Data form Post Data
      * @param int $fatherId, the Parent ID of the Category
      * @param boolean $newParent, if true this will update to a new Parent category, otherwise stay on current Parent Id
      */
-    public function udpateCategoryTreeViewAction($categoryData, $fatherId, $newParent)
+    public function updateCategoryTreeViewAction($categoryData, $prevParent)
     {
-        $datas = $categoryData;
         $melisEcomCategoryTable = $this->getServiceManager()->get('MelisEcomCategoryTable');
-        $catData = $melisEcomCategoryTable->getChildrenCategoriesOrderedByOrder($fatherId);
-        $catDatas = $catData->toArray();
+        $fatherId = (int) $categoryData['cat_father_cat_id'];
 
-        if (empty($catDatas)) {
-            // Parent Category doesn't have yet Children
-            $melisEcomCategoryTable->save($datas, $datas['cat_id']);
-        } else {
-            // Parent Category has already Children
+        // Always fetch all items at the same level
+        $catDatas = Category::query()->getChildrenCategoriesOrderedByOrder($fatherId)->toArray();
 
-            // If Category has a new Parent
-            if ($newParent) {
-                foreach ($catDatas as $key => $val) {
-                    if ($catDatas[$key]['cat_id'] == $datas['cat_id']) {
-                        // removing duplication of Category ID
-                        unset($catDatas[$key]);
-                    }
+        // Remove the current category from the list if it exists
+        $catDatas = array_filter($catDatas, function($cat) use ($categoryData) {
+            return $cat['cat_id'] != $categoryData['cat_id'];
+        });
+
+        // Insert the category at the new position
+        array_splice($catDatas, ((int) $categoryData['cat_order'] - 1), 0, [$categoryData]);
+
+        // Reorder all items
+        foreach ($catDatas as $key => $val) {
+            $catDatas[$key]['cat_order'] = $key + 1;
+        }
+
+        foreach ($catDatas as $category) {
+            Category::updateOrCreate(
+                ['cat_id' => $category['cat_id']], // The unique identifier
+                [
+                    'cat_father_cat_id' => $category['cat_father_cat_id'],
+                    'cat_order' => $category['cat_order']
+                ]
+            );
+        }
+    }
+
+
+    /**
+     * Checker if we're updating the category to a catalog
+     *
+     * @param array $data
+     * @param array $prevParent
+     *
+     * @return bool
+     */
+    private function isFromCategoryToCatalog($data, $prevParent): bool
+    {
+        return (int)$data['cat_father_cat_id'] === -1 && (int)$prevParent !== -1;
+    }
+
+    /**
+     * Sort categories based on their order
+     *
+     * @param array $categories
+     *
+     * @return void
+     */
+    private function sortCategoriesByOrder(array &$categories): void
+    {
+        $sortByOrder = function($a, $b) {
+            return $a['cat_order'] - $b['cat_order'];
+        };
+
+        $sortChildrenRecursively = function(&$category) use (&$sortChildrenRecursively, $sortByOrder) {
+            if (isset($category['children']) && is_array($category['children'])) {
+                usort($category['children'], $sortByOrder);
+                foreach ($category['children'] as &$child) {
+                    $sortChildrenRecursively($child);
                 }
-                // Adding to specific index of the result array
-                array_splice($catDatas, ($categoryData['cat_order'] - 1), 0, array($categoryData));
             }
+        };
 
-            // Re-ordering the Children of the Parent Category
-            $ctr = 1;
-            foreach ($catDatas as $key => $val) {
-                $catDatas[$key]['cat_order'] = $ctr++;
-            }
+        usort($categories, $sortByOrder);
 
-            // Updating  Children of the Parent Category one by one
-            foreach ($catDatas as $key => $val) {
-                // delete  parent cache
-                $this->getServiceManager()->get('MelisComCacheService')->deleteCache('category', $val['cat_father_cat_id']);
-                // save
-                $melisEcomCategoryTable->save($catDatas[$key], $catDatas[$key]['cat_id']);
-            }
+        foreach ($categories as &$category) {
+            $sortChildrenRecursively($category);
         }
     }
 }

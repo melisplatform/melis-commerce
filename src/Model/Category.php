@@ -31,6 +31,19 @@ class Category extends Model
         'cat_date_edit' => 'datetime',
     ];
 
+    protected $fillable = [
+        'cat_id',
+        'cat_father_cat_id',
+        'cat_order',
+        'cat_status',
+        'cat_reference',
+        'cat_date_valid_start',
+        'cat_date_valid_end',
+        'cat_date_creation',
+        'cat_user_id_creation',
+        'cat_date_edit',
+        'cat_user_id_edit'
+    ];
     protected $appends = [
         'icon',
         'id',
@@ -135,7 +148,7 @@ class Category extends Model
 
     public function getTextAttribute()
     {
-        $languageId = $this->getLanguageModel()->elang_id;
+        $languageId = $this->getLanguageModel()->elang_id ?? 1;
 
         $label = array_filter($this->translations->where('catt_lang_id', $languageId)->toArray(), function ($text) {
             return strlen($text['catt_name']);
@@ -174,7 +187,7 @@ class Category extends Model
     public function getA_AttrAttribute()
     {
         $languageModel = $this->getLanguageModel();
-        $locale = $languageModel->elang_locale === $this->getLanguageLocale() ? null : $this->getLanguageLocale();
+        $locale = $languageModel?->elang_locale === $this->getLanguageLocale() ? null : $this->getLanguageLocale();
 
         if (! is_null($locale)) {
             $locale = explode('_', $this->getLanguageLocale());
@@ -189,5 +202,19 @@ class Category extends Model
             "data-fathericon" => "<i class=\"fa fa-book\"></i>",
             "data-fathercateid" => $this->cat_father_cat_id,
         ];
+    }
+
+
+    /**
+    * Get Category Children By Parent Id
+    * @param int $fatherId
+    * @return Collection
+    */
+    public function scopeGetChildrenCategoriesOrderedByOrder($query, $fatherId)
+    {
+        return $query->where('cat_father_cat_id', $fatherId)
+            ->select('cat_id', 'cat_father_cat_id', 'cat_order')
+            ->orderBy('cat_order', 'asc')
+            ->get()->makeHidden($this->getArrayableAppends());
     }
 }
