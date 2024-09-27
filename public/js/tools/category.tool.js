@@ -866,6 +866,24 @@ window.initCategoryTreeView = function() {
 								parseInt(newParentId, 10)
 							);
 						}
+
+						var temp = $("ul.jstree-container-ul > li > a");
+
+						temp.each(function() {
+							var father = $(this),
+								fatherIcon = father.data("fathericon"),
+								temp = father.find("i");
+
+							father.html(
+								temp.get(0).outerHTML +
+									"<strong>" +
+									fatherIcon +
+									" " +
+									father.text() +
+									"</strong>"
+							);
+							
+						});
 					} else {
 						alert(translations.tr_meliscore_error_message);
 					}
@@ -1001,7 +1019,7 @@ window.initCategoryTreeView = function() {
 				check_callback: true,
 				animation: 500,
 				themes: {
-					name: "proton",
+					name: "default",
 					responsive: false,
 				},
 				dblclick_toggle: false,
