@@ -382,64 +382,6 @@ var melisCommerce = (function(window) {
 			}
 	}
 
-	function initColorPicker() {
-		//var colorTimeout = setInterval(function() {
-				var $picker = `<span class="input-group-addon">
-							<input type="hidden" class="minicolor minicolors-input" value="" />
-							</span>`;
-				var $osta = $("#id_meliscommerce_order_status_form_container .osta_color_code");
-					// console.log("$osta.length: ", $osta.length);
-					if ( $osta.length ) {
-						
-						$osta.parent().append( $picker );
-
-						// console.log(`$osta.parent(): `, $osta.parent());
-
-						$("#id_meliscommerce_order_status_form_container .osta_color_code, .input-group-addon").wrapAll('<div class="input-group"></div>');
-
-						var $miniColor      = $(".minicolor"),
-							$miniColorInput = $(".minicolors-input");
-							
-							$miniColorInput.val($osta.val());
-
-							$miniColor.each(function() {
-								var $this = $(this);
-									$this.minicolors({
-										inline: true,
-										control: $this.attr("data-control") || 'hue',
-										defaultValue: $this.attr("data-defaultValue") || '',
-										format: $this.attr('data-format') || 'hex',
-										keywords: $this.attr('data-keywords') || '',
-										inline: $this.attr('data-inline') === 'true',
-										letterCase: $this.attr('data-letterCase') || 'lowercase',
-										opacity: $this.attr('data-opacity'),
-										position: $this.attr('data-position') || 'bottom',
-										swatches: $this.attr('data-swatches') ? $this.attr('data-swatches').split('|') : [],
-										change: function(hex, opacity) {
-											var log;
-												try {
-													log = hex ? hex : 'transparent';
-
-													if( opacity ) 
-														log += ', ' + opacity;
-
-														if ( $this.closest(".input-group").find(".osta_color_code").length ) {
-															// val(hex)
-															$this.closest(".input-group").find(".osta_color_code").val(hex);
-														}
-												} catch(e) {}
-										},
-										theme: 'default'
-									});
-							});
-
-							$("#id_meliscommerce_order_status_form_container").find(".form-group label[for='osta_color_code']").addClass("d-flex flex-row justify-content-between");
-
-						//clearInterval(colorTimeout);
-					}
-			//}, 4000);
-	}
-
 	return {
 		pendingZoneStart: pendingZoneStart,
 		pendingZoneDone: pendingZoneDone,
@@ -461,8 +403,7 @@ var melisCommerce = (function(window) {
 		enableAllTabs: enableAllTabs,
 		accordionToggle: accordionToggle,
 		switchOrderTab: switchOrderTab,
-		priceLogTooltip: priceLogTooltip,
-		initColorPicker: initColorPicker
+		priceLogTooltip: priceLogTooltip
 	};
 })(window);
 
@@ -492,9 +433,4 @@ $(function() {
 					.toggleClass("cb-active");
 			}
 		);
-
-		/* const $colorPickerModal = document.getElementById("id_meliscommerce_order_status_form_container");
-			$colorPickerModal.addEventListener("shown.bs.modal", e => {
-				melisCommerce.initColorPicker();
-			}); */
 });

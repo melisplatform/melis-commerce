@@ -252,6 +252,8 @@ $(function() {
 					$("#categoryTreeView #" + selectedNode + " div")
 						.first()
 						.addClass("jstree-wholerow-clicked");
+					
+					$("#refreshCategoryTreeView").trigger("click");
 				} else {
 					melisHelper.melisKoNotification(
 						data.textTitle,
