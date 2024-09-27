@@ -13,6 +13,7 @@ use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
 use Laminas\Session\Container;
 use MelisCommerce\Model\Product;
+use MelisCommerce\Model\ProductAttribute;
 use MelisCore\Controller\MelisAbstractActionController;
 
 class MelisComProductController extends MelisAbstractActionController
@@ -1704,22 +1705,16 @@ class MelisComProductController extends MelisAbstractActionController
                     $query->select(['melis_ecom_product_text.*', 'melis_ecom_product_text_type.*'])
                         ->leftJoin('melis_ecom_product_text_type', 'ptt_id', '=', 'ptxt_type');
                 },
-                'categories' => function ($query) use ($langId) {
+                'categories' => function ($query) {
                     $query->select(['melis_ecom_product_category.*', 'melis_ecom_category_trans.*'])
-                        ->leftJoin('melis_ecom_category_trans', 'catt_category_id', '=', 'pcat_cat_id')
-                        ->where('catt_lang_id', $langId);
-                },
-                'attributes' => function ($query) use ($langId) {
-                    $query->with(['attribute' => function ($query) use ($langId) {
-                        $query->with(['translations' => function ($query) use ($langId) {
-                            $query->where('atrans_lang_id', $langId);
-                        }]);
-                    }]);
+                        ->leftJoin('melis_ecom_category_trans', 'catt_category_id', '=', 'pcat_cat_id');
                 }
             ])
             ->first();
 
-
+        $productAttributes = ProductAttribute::query()
+            ->getProductAttributesSimplifiedThroughRawQuery($productId, $langId)
+            ->get();
 
         $prodTextTypeTable = $this->getServiceManager()->get('MelisEcomProductTextTypeTable');
         $prodTexts = $product ? $product->productTexts->toArray() : [];
@@ -1743,16 +1738,7 @@ class MelisComProductController extends MelisAbstractActionController
         $layoutVar['product'] = $product ? $product->toArray() : null;
         $layoutVar['prodText'] = $prodTexts;
         $layoutVar['prodCategories'] = $product ? $product->categories->toArray() : [];
-        $attributes = [];
-
-        if ($product)
-            foreach ($product->attributes->toArray() as $attribute) {
-                $attributes[] = $this->flatten($attribute);
-            }
-
-        if ($attributes) {
-            $layoutVar['prodAttributes'] = $attributes;
-        }
+        $layoutVar['prodAttributes'] = $productAttributes->toArray() ?? [];
 
         $this->layout()->setVariables(array_merge(array(
             'productId' => $product ? $product->prd_id : $productId,

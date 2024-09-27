@@ -74,7 +74,9 @@ class ProductAttribute extends Model
                 DB::raw('COALESCE(att.atrans_name, default_att.atrans_name) AS atrans_name'),
                 'av.*',
                 'avt.*',
-                'attt.atype_column_value'
+                'attt.atype_column_value',
+                'pa.patt_attribute_id',
+                'pa.patt_id',
             ])
                 ->from('melis_ecom_product_attribute as pa') // Alias the main table as 'pa'
                 ->join('melis_ecom_attribute as a', 'pa.patt_attribute_id', '=', 'a.attr_id')
@@ -89,6 +91,35 @@ class ProductAttribute extends Model
                 ->leftJoin('melis_ecom_attribute_value as av', 'a.attr_id', '=', 'av.atval_attribute_id')
                 ->leftJoin('melis_ecom_attribute_type as attt', 'av.atval_type_id', '=', 'attt.atype_id')
                 ->leftJoin('melis_ecom_attribute_value_trans as avt', 'av.atval_id', '=', 'avt.av_attribute_value_id')
+                ->where('pa.patt_product_id', $productId);
+            return $query;
+        } catch (\Exception $e) {
+            return $e->getTraceAsString();
+        }
+    }
+
+    public function scopeGetProductAttributesSimplifiedThroughRawQuery(
+        $query,
+        $productId,
+        $langId
+    ) {
+        try {
+            $query->select([
+                'a.*',
+                DB::raw('COALESCE(att.atrans_name, default_att.atrans_name) AS atrans_name'),
+                'pa.patt_attribute_id',
+                'pa.patt_id',
+            ])
+                ->from('melis_ecom_product_attribute as pa') // Alias the main table as 'pa'
+                ->join('melis_ecom_attribute as a', 'pa.patt_attribute_id', '=', 'a.attr_id')
+                ->leftJoin('melis_ecom_attribute_trans as att', function ($join) use ($langId) {
+                    $join->on('a.attr_id', '=', 'att.atrans_attribute_id')
+                        ->where('att.atrans_lang_id', '=', $langId);
+                })
+                ->leftJoin('melis_ecom_attribute_trans as default_att', function ($join) {
+                    $join->on('a.attr_id', '=', 'default_att.atrans_attribute_id')
+                        ->whereRaw('default_att.atrans_lang_id = (SELECT MIN(atrans_lang_id) FROM melis_ecom_attribute_trans WHERE atrans_attribute_id = a.attr_id)');
+                })
                 ->where('pa.patt_product_id', $productId);
             return $query;
         } catch (\Exception $e) {

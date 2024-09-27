@@ -21,11 +21,11 @@ return [
                     '/MelisCommerce/js/tools/seo.tool.js',
                 ],
                 'css' => [
-            
+
                 ],
             ],
             'datas' => [
-            
+
             ],
             'interface' => [
                 'meliscommerce_variants' => [
@@ -462,17 +462,18 @@ return [
                                                                                     'interface' => [
                                                                                         'meliscommerce_variant_main_attributes_content' => [
                                                                                             'conf' => [
-                                                                                                'id' => 'id_meliscommerce_variant_main_attributes_content',
-                                                                                                'melisKey' => 'meliscommerce_variant_main_attributes_content',
-                                                                                                'name' => 'tr_meliscommerce_variant_main_attributes_content',
+                                                                                                'id' => 'id_meliscommerce_variant_main_attributes_content_placeholder',
+                                                                                                'melisKey' => 'meliscommerce_variant_main_attributes_content_placeholder',
+                                                                                                'name' => 'tr_meliscommerce_variant_main_attributes_content_placeholder',
                                                                                             ],
                                                                                             'forward' => [
                                                                                                 'module' => 'MelisCommerce',
                                                                                                 'controller' => 'MelisComVariant',
-                                                                                                'action' => 'render-variant-tab-main-attributes-content',
+                                                                                                // 'action' => 'render-variant-tab-main-attributes-content',
+                                                                                                'action' => 'render-variant-tab-main-attributes-content-placeholder',
                                                                                             ],
                                                                                         ],
-                                                                                    ],
+                                                                                   ],
                                                                                 ],
                                                                             ],
                                                                         ],
