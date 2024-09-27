@@ -1701,7 +1701,8 @@ class MelisComProductController extends MelisAbstractActionController
             ->where('prd_id', '=', $productId)
             ->with([
                 'productTexts' => function ($query) use ($langId) {
-                    $query->select('melis_ecom_product_text.*')
+                    $query->select(['melis_ecom_product_text.*', 'melis_ecom_product_text_type.*'])
+                        ->leftJoin('melis_ecom_product_text_type', 'ptt_id', '=', 'ptxt_type')
                         ->where('ptxt_lang_id', $langId);
                 },
                 'categories' => function ($query) use ($langId) {
@@ -1719,6 +1720,8 @@ class MelisComProductController extends MelisAbstractActionController
             ])
             ->first();
 
+
+
         $prodTextTypeTable = $this->getServiceManager()->get('MelisEcomProductTextTypeTable');
         $prodTexts = $product ? $product->productTexts->toArray() : [];
         $ecomLangTable = $this->getServiceManager()->get('MelisEcomLangTable');
@@ -1732,7 +1735,7 @@ class MelisComProductController extends MelisAbstractActionController
                     foreach($ecomLangTable->fetchAll()->toArray() as $lang)
                     {
                         $textType['ptxt_lang_id'] = $lang['elang_id'];
-                        $prodTexts[] = (object) $textType;
+                        $prodTexts[] = $textType;
                     }
                 }
             }
@@ -1754,7 +1757,6 @@ class MelisComProductController extends MelisAbstractActionController
 
         $this->layout()->setVariables(array_merge(array(
             'productId' => $product ? $product->prd_id : $productId,
-            'prodText' => $product ? $product->label : [],
             'prodName' => $product ? $product->label: '',
         ), $layoutVar));
     }
