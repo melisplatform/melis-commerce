@@ -107,7 +107,7 @@ return [
                     '/MelisCommerce/js/tools/ecom.globals.js',
                 ],
                 'css' => [
-                    '/MelisCommerce/assets/jstree/dist/themes/proton/style.min.css',
+                    '/MelisCommerce/assets/jstree/dist/themes/default/style.min.css',
                     '/MelisCommerce/css/easy-autocomplete.min.css',
                     '/MelisCommerce/css/commerce-style.css',
                 ],
