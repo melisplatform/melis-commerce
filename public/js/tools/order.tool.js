@@ -122,8 +122,6 @@ $(function() {
 					modalUrl,
 					function() {
 						//melisCoreTool.done(this);
-
-						// melisCommerce.initColorPicker();
 					}
 				);
 		});

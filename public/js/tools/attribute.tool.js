@@ -9,8 +9,7 @@ $(function() {
         //removes modal elements when clicking outside
         $body.on("click", function (e) {
             if ( $(e.target).hasClass('modal') ) {
-                // $('#id_meliscommerce_attribute_value_modal_value_form_container').modal('hide');
-                melisCoreTool.hideModal("id_meliscommerce_attribute_value_modal_value_form_container");
+                $('#id_meliscommerce_attribute_value_modal_value_form_container').modal('hide');
             }
         });
 
@@ -148,9 +147,7 @@ $(function() {
                     if(data.success){;
                         melisHelper.melisOkNotification( data.textTitle, data.textMessage );
                         melisHelper.zoneReload(attributeId+"_id_meliscommerce_attributes_tabs_content_values_details_table", "meliscommerce_attributes_tabs_content_values_details_table", {attributeId: attributeId});
-
-                        //$("#id_meliscommerce_attribute_value_modal_value_form_container").modal("hide");
-                        melisCoreTool.hideModal("id_meliscommerce_attribute_value_modal_value_form_container");
+                        $("#id_meliscommerce_attribute_value_modal_value_form_container").modal("hide");
                     }else{
                         melisCoreTool.highlightErrors(data.success, data.errors, attributeId+"_id_meliscommerce_attribute_value_modal_value_form");
                         melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
@@ -177,7 +174,7 @@ $(function() {
                 forms.each(function(){
                     //serialize disabled array, temporary remove disable
                     var $this       = $(this),
-                        disabled    = $this.find(':input:disabled').prop('disabled', false),
+                        disabled    = $this.find(':input:disabled').removeAttr('disabled'),
                         pre         = $this.attr('name'),
                         data        = $this.serializeArray();
 
