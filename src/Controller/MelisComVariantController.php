@@ -16,27 +16,27 @@ use MelisCore\Controller\MelisAbstractActionController;
 
 class MelisComVariantController extends MelisAbstractActionController
 {
-    
+
     protected $variantId;
     protected $productId;
-    
-    
+
+
     protected function setVariantId($variantId){
         $this->variantId = $variantId;
     }
-    
+
     protected function getVariantId(){
         return $this->variantId;
     }
-    
+
     protected function setProductId($productId){
         $this->productId = $productId;
     }
-    
+
     protected function getProductId(){
         return $this->productId;
     }
-    
+
     /**
      * Returns the Tool Service Class
      * @return MelisCoreTool
@@ -45,11 +45,11 @@ class MelisComVariantController extends MelisAbstractActionController
     {
         $melisTool = $this->getServiceManager()->get('MelisCoreTool');
         $melisTool->setMelisToolKey('meliscommerce', 'meliscommerce_variants');
-    
+
         return $melisTool;
-    
+
     }
-    
+
     private function setProductVariables($productId)
     {
         $prodSvc = $this->getServiceManager()->get('MelisComProductService');
@@ -58,7 +58,7 @@ class MelisComVariantController extends MelisAbstractActionController
             'product' =>  $prodData->getProduct(),
         ));
     }
-    
+
     private function setVariantVariables($variantId)
     {
         $varService = $this->getServiceManager()->get('MelisComVariantService');
@@ -67,50 +67,50 @@ class MelisComVariantController extends MelisAbstractActionController
             'variantObj' =>  $varObj,
         ));
     }
-    
+
     /**
      * renders the page container
-     * @return \Laminas\View\Model\ViewModel 
+     * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantPageAction()
-    {   
+    {
         $view = new ViewModel();
         $variantId = (int) $this->params()->fromQuery('variantId', '');
-        
+
         if(is_numeric($this->params()->fromQuery('variantId', ''))){
             $this->setVariantId($variantId);
             $view->variantId = $this->getVariantId();
             $this->setVariantVariables($variantId);
         }
-        
+
         if(is_numeric($this->params()->fromQuery('productId', ''))){
             $productId = (int) $this->params()->fromQuery('productId', '');
             $this->setProductId($productId);
             $this->setProductVariables($productId);
             $view->productId = $this->getProductId();
         }
-        
+
     	$container = new Container('meliscommerce');
     	$container['documents'] = array('docRelationType' => 'variant', 'docRelationId' => $variantId);
-        
+
     	$melisKey = $this->params()->fromRoute('melisKey', '');
     	$view->melisKey = $melisKey;
     	return $view;
     }
-    
+
     /**
      * renders the page header container
      * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantHeaderAction()
-    {   
+    {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
         $view->melisKey = $melisKey;
-        $view->variantId = $this->getVariantId();        
+        $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the header title container
      * @return \Laminas\View\Model\ViewModel
@@ -123,7 +123,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the header's heading
      * @return \Laminas\View\Model\ViewModel
@@ -142,7 +142,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the header button container
      * @return \Laminas\View\Model\ViewModel
@@ -155,7 +155,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the header button save
      * @return \Laminas\View\Model\ViewModel
@@ -168,7 +168,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the header button cancel
      * @return \Laminas\View\Model\ViewModel
@@ -181,7 +181,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     public function renderVariantContentAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -190,7 +190,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the tab head container
      * @return \Laminas\View\Model\ViewModel
@@ -203,7 +203,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the tab head main tab
      * @return \Laminas\View\Model\ViewModel
@@ -216,7 +216,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the tab contents container
      * @return \Laminas\View\Model\ViewModel
@@ -229,7 +229,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the tab individual contents container
      * @return \Laminas\View\Model\ViewModel
@@ -242,7 +242,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the tab individual content header container
      * @return \Laminas\View\Model\ViewModel
@@ -262,7 +262,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the tab individual content header left container
      * @return \Laminas\View\Model\ViewModel
@@ -275,7 +275,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the tab individual content header right container
      * @return \Laminas\View\Model\ViewModel
@@ -288,7 +288,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the tab individual content header
      * @return \Laminas\View\Model\ViewModel
@@ -301,7 +301,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
    /**
     * renders the tab individual general container, for main,price,stocks
     * @return \Laminas\View\Model\ViewModel
@@ -314,11 +314,11 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
    /**
     * renders the variant status switch
     * @return \Laminas\View\Model\ViewModel
-    */ 
+    */
     public function renderVariantTabMainHeaderSwitchAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -327,7 +327,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the tab main sub content container , <div class="col-xs-12 col-lg-6">
      * @return \Laminas\View\Model\ViewModel
@@ -340,11 +340,11 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the sub content sub container
      * @return \Laminas\View\Model\ViewModel
-     */   
+     */
     public function renderVariantTabSubContainerAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -353,7 +353,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the sub content heading container
      * @return \Laminas\View\Model\ViewModel
@@ -366,7 +366,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the sub content header text
      * @return \Laminas\View\Model\ViewModel
@@ -379,11 +379,11 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the sub content container
      * @return \Laminas\View\Model\ViewModel
-     */  
+     */
     public function renderVariantTabSubContentAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -392,7 +392,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the information tab content
      * @return \Laminas\View\Model\ViewModel
@@ -400,7 +400,7 @@ class MelisComVariantController extends MelisAbstractActionController
     public function renderVariantTabMainInformationContentAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
-        
+
         $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_variants/meliscommerce_variants_information_form','meliscommerce_variants_information_form');
         $factory = new \Laminas\Form\Factory();
@@ -416,7 +416,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->setVariable('meliscommerce_variants_information_form', $informationForm);
         return $view;
     }
-     
+
    /**
     * renders the file attachement button
     * @return \Laminas\View\Model\ViewModel
@@ -429,7 +429,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the files contents
      * @return \Laminas\View\Model\ViewModel
@@ -442,108 +442,47 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the attributes contents
      * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabMainAttributesContentAction()
-    {   
-        $attr = array();
-        $varAttrVals = array();
-        $variantId = (!empty($this->layout()->variantObj)) ? $this->layout()->variantObj->getId() : 0;
-        $variantId = !empty($this->params()->fromQuery('variantId', ''))? (int) $this->params()->fromQuery('variantId', ''): $variantId;
-        $productId = !empty($this->params()->fromQuery('productId', ''))? (int) $this->params()->fromQuery('productId', ''): $this->layout()->product->prd_id;
+    {
+        // render-variant-tab-main-attributes-content
+        $varAttrVals = [];
+        $variantId = $this->params()->fromQuery('variantId', null);
+        $productId = $this->params()->fromQuery('productId', null);
+        $melisKey = $this->params()->fromRoute('melisKey', '');
         $varSvc = $this->getServiceManager()->get('MelisComVariantService');
-        $prodSvc = $this->getServiceManager()->get('MelisComProductService');
-        $attrService = $this->getServiceManager()->get('MelisComAttributeService');
         $varAttrVals = $varSvc->getVariantAttributesValuesById($variantId);
         $langId = $this->getTool()->getCurrentLocaleID();
-        $attributes = array();
-        foreach($prodSvc->getProductAttributesById($productId) as $prodAttr){
-            $tmp = $attrService->getAttributeById($prodAttr->patt_attribute_id);
-            $attribute = array();
-            $attrValues = array();
-           
-            //check for attribute translations
-            $foundTrans = false;
-            foreach($tmp->getAttribute()->attr_trans as $attrTrans){
-                if($attrTrans->atrans_lang_id == $langId){
-                    $foundTrans = true;
-                    $attribute['name'] = $attrTrans->atrans_name;                    
-                }
-            }
-            
-            //if no corresponding translatiion get the first available trans
-            if(!$foundTrans){
-                foreach($tmp->getAttribute()->attr_trans as $attrTrans){
-                    $foundTrans = true;
-                    $attribute['name'] = $attrTrans->atrans_name;
-                    break;
-                }
-            }
-            
-            //If no translation use the attribute reference as name
-            if(!$foundTrans){
-                $attribute['name'] = $tmp->getAttribute()->attr_reference;
-            }
-            
-            //set the attribute values
-            $attrVals = array();
-            foreach($tmp->getAttributeValues() as $attrVal){
-                // check for attribute translations
-                $value = '';
-                $id = $attrVal->atval_id;
-                $valCol = 'avt_v_'.$attrVal->atype_column_value;
-                
-                //check for attribute value translations
-                $foundTrans = false;
-                foreach($attrVal->atval_trans as $valTrans){
-                    if($valTrans->avt_lang_id == $langId){
-                        $foundTrans = true;
-                        $value = $valTrans->$valCol;
-                    }
-                }
-                
-                //if no corresponding tranlsation get the first available trans
-                if(!$foundTrans){
-                    foreach($attrVal->atval_trans as $valTrans){
-                        $foundTrans = true;
-                        $value = $valTrans->$valCol;
-                        break;
-                    }
-                }
-                
-                //use the attribute value reference as name if no translation
-                if(!$foundTrans){
-                    $value = $attrVal->atval_reference;
-                } 
-                
-                // edit value before rendering if necessary
-                switch($valCol){
-                    case 'avt_v_datetime': $value = $this->getTool()->dateFormatLocale($value); break;
-                    case 'avt_v_text':
-                    case 'avt_v_varchar' : $value = $this->getTool()->limitedText($value,50); break;
-                }                
-                
-                $attrVals[] = array('id' => $id, 'value' => $value);
-                
-            }
-            $attribute['values'] = $attrVals;
-            $attributes[] = $attribute;
-        }
-        
-//         echo '<pre>'; print_r($varAttrVals); echo '</pre>'; die();
-        
-        $melisKey = $this->params()->fromRoute('melisKey', '');
+        $attributes = $this->updatedFetchAttributes($productId, $langId) ?: [];
+
         $view = new ViewModel();
         $view->variantAttributes = $varAttrVals;
         $view->attributes = $attributes;
         $view->melisKey = $melisKey;
-        $view->variantId = $this->getVariantId();
+        $view->variantId = $variantId;
+        $view->uniqid = $variantId . "_id_meliscommerce_variant_main_attributes_content";
+
         return $view;
     }
-    
+
+
+    public function renderVariantTabMainAttributesContentPlaceholderAction()
+    {
+        $melisKey = $this->params()->fromRoute('melisKey', '');
+
+        $view = new ViewModel();
+        $view->variantId = $this->getVariantId();
+        $view->productId = $this->getProductId();
+        $view->melisKey = $melisKey;
+        $view->uniqid = $this->getVariantId() . "_id_meliscommerce_variant_main_attributes_content_placeholder";
+
+        return $view;
+    }
+
     /**
      * renders the images filters container
      * @return \Laminas\View\Model\ViewModel
@@ -556,7 +495,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the images filter type
      * @return \Laminas\View\Model\ViewModel
@@ -569,7 +508,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the images filter country
      * @return \Laminas\View\Model\ViewModel
@@ -582,7 +521,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the images portfolio
      * @return \Laminas\View\Model\ViewModel
@@ -595,7 +534,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the images add image button
      * @return \Laminas\View\Model\ViewModel
@@ -608,11 +547,11 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the text tab add language button
      * @return \Laminas\View\Model\ViewModel
-     */ 
+     */
     public function renderVariantTabContentHeaderAddLanguageAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
@@ -621,7 +560,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the text tab select field button
      * @return \Laminas\View\Model\ViewModel
@@ -634,7 +573,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the text tab left container
      * @return \Laminas\View\Model\ViewModel
@@ -647,7 +586,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the tex tab language text list
      * @return \Laminas\View\Model\ViewModel
@@ -660,7 +599,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
    /**
     * renders the text tab right container
     * @return \Laminas\View\Model\ViewModel
@@ -673,20 +612,20 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the text tab text fields
      * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabTextFieldsAction()
-    { 
+    {
         $melisKey = $this->params()->fromRoute('melisKey', '');
         $view = new ViewModel();
         $view->melisKey = $melisKey;
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the tab prices header add acountry action
      * @return \Laminas\View\Model\ViewModel
@@ -699,7 +638,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the tab prices left content container
      * @return \Laminas\View\Model\ViewModel
@@ -712,7 +651,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the tab prices right content container
      * @return \Laminas\View\Model\ViewModel
@@ -725,7 +664,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the tab sotcks head add country
      * @return \Laminas\View\Model\ViewModel
@@ -738,14 +677,14 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the prices country list
      * @return \Laminas\View\Model\ViewModel
      */
     public function renderVariantTabStocksCountryListAction()
     {
-        
+
         $ctyGeneral =   '<li class="nav-item">
                     		<a class="nav-link" data-bs-toggle="tab" href="#'.$this->getVariantId().'_stock-General" data-country="General" aria-expanded="true"><span>General</span>
                     			<i class="fa fa-globe"></i>
@@ -756,7 +695,7 @@ class MelisComVariantController extends MelisAbstractActionController
                      			%s
                     		</a>
                     	</li>';
-        
+
         $countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
         $countries = $countryTable->getCountries();
         $ctyData[] = $ctyGeneral;
@@ -773,7 +712,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $view->variantId = $this->getVariantId();
         return $view;
     }
-    
+
     /**
      * renders the tab prices country form for prices
      * @return \Laminas\View\Model\ViewModel
@@ -781,7 +720,7 @@ class MelisComVariantController extends MelisAbstractActionController
     public function renderVariantTabStocksCountryFormAction()
     {
         $melisKey = $this->params()->fromRoute('melisKey', '');
-       
+
         $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_variants/meliscommerce_variants_stocks_form','meliscommerce_variants_stocks_form');
         $factory = new \Laminas\Form\Factory();
@@ -811,7 +750,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $data[0]['name'] = 'General';
         $data[0]['stock_country_id'] = '-1';
         //set country stocks
-        foreach($countries as $country){            
+        foreach($countries as $country){
             foreach($stockList as $stock){
                 if($stock->stock_country_id == $country->ctry_id){
                     $checkDate = (string) $stock->stock_next_fill_up;
@@ -822,7 +761,7 @@ class MelisComVariantController extends MelisAbstractActionController
                         $stock->stock_next_fill_up = null;
                     }
 
-                    $data[$c] = (array)$stock;                    
+                    $data[$c] = (array)$stock;
                 }
             }
             $data[$c]['name'] = $country->ctry_name;
@@ -873,10 +812,10 @@ class MelisComVariantController extends MelisAbstractActionController
         unset($container['variant-tmp-data']);
         //get services
         $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
-        
+
         if($this->getRequest()->isPost()){
             $this->getEventManager()->trigger('meliscommerce_variant_save_start', $this, array());
-            
+
             if (!empty($container['variant-tmp-data']))
             {
                 if (!empty($container['variant-tmp-data']['success'])){
@@ -890,14 +829,14 @@ class MelisComVariantController extends MelisAbstractActionController
 
             $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
-            
+
             if (!empty($postValues['variantId'])){
                 $logTypeCode = 'ECOM_VARIANT_UPDATE';
                 $variantId= $postValues['variantId'];
             }else{
                 $logTypeCode = 'ECOM_VARIANT_ADD';
             }
-            
+
             unset($container['variant-tmp-data']);
             if($success){
                 $variantId = $data['var_id'];
@@ -906,9 +845,9 @@ class MelisComVariantController extends MelisAbstractActionController
                     $varSku = $variant->var_sku;
                 }
                 $textMessage = 'tr_meliscommerce_variants_page_save_success';
-            }                     
+            }
         }
-        
+
         $response = array(
             'success' => $success,
             'textTitle' => $textTitle,
@@ -916,20 +855,20 @@ class MelisComVariantController extends MelisAbstractActionController
             'errors' => $errors,
             'chunk' => array('variantId' => $variantId,'varSku' => $varSku),
         );
-        
-        $this->getEventManager()->trigger('meliscommerce_variant_save_end', 
+
+        $this->getEventManager()->trigger('meliscommerce_variant_save_end',
             $this, array_merge($response, array('typeCode' => $logTypeCode, 'itemId' => $variantId)));
-        
+
         return new JsonModel($response);
     }
-    
+
     /**
      * triggered by event, saves the processed data from the variant form
      * @return \Laminas\View\Model\JsonModel
      */
     public function saveVariantDataAction()
     {
-        
+
         $success = false;
         $errors = array();
         $data = array();
@@ -945,12 +884,12 @@ class MelisComVariantController extends MelisAbstractActionController
             if (!empty($container['variant-tmp-data']['datas']))
                 $data = $container['variant-tmp-data']['datas'];
         }
-        
+
         unset($container['variant-tmp-data']);
-        
+
         $variantId = isset($data['variant']['var_id']) ? $data['variant']['var_id'] : null;
         unset($data['variant']['var_id']);
-        
+
         $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
         $stockTable = $this->getServiceManager()->get('MelisEcomVariantStockTable');
         if($success){
@@ -961,7 +900,7 @@ class MelisComVariantController extends MelisAbstractActionController
             for($i = 0; $i < count($stockCount); $i++){
                 $stock = $data['stocks'][$i];
                 $stock_id = $stock['stock_id'];
-                
+
                 if(!is_numeric($stock['stock_quantity'])){
                     unset($data['stocks'][$i]);
                     $stockTable->deleteById($stock_id);
@@ -972,7 +911,7 @@ class MelisComVariantController extends MelisAbstractActionController
             if($var_id){
                 $success = true;
                 if($data['variant']['var_main_variant']){
-            
+
                     // un assigned main variant
                     foreach($variantSvc->getVariantListByProductId($data['variant']['var_prd_id']) as $prodVar){
                         if($prodVar->getId() != $var_id){
@@ -982,20 +921,20 @@ class MelisComVariantController extends MelisAbstractActionController
                     }
                 }
                 $data['var_id'] = $var_id;
-            }             
+            }
         }
-        
+
         $results = array(
             'success' => $success,
             'errors' => $errors,
             'datas' => $data,
         );
-        
+
         return new JsonModel($results);
     }
-    
+
     public function validateVariantFormAction()
-    {   
+    {
         $data = array(
             'variant' => array()
         );
@@ -1007,16 +946,16 @@ class MelisComVariantController extends MelisAbstractActionController
         $melisMelisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigInformationForm = $melisMelisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_variants/meliscommerce_variants_information_form','meliscommerce_variants_information_form');
         $informationForm = $factory->createForm($appConfigInformationForm);
-        
+
         $variantTable = $this->getServiceManager()->get('MelisEcomVariantTable');
 
         $postValues = $this->getRequest()->getPost()->toArray();
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
-        
+
         if(!empty($postValues['variant'])){
             $informationForm->setData($postValues['variant'][0]);
             if(!$informationForm->isValid()){
-                
+
                 $varError = $informationForm->getMessages();
                 foreach ($varError as $keyError => $valueError)
                 {
@@ -1031,7 +970,7 @@ class MelisComVariantController extends MelisAbstractActionController
             }else{
                 $success = true;
             }
-            
+
             //check if sku is unique
             $exist = $variantTable->getEntryByField('var_sku', $postValues['variant'][0]['var_sku'])->current();
             if($exist){
@@ -1042,19 +981,19 @@ class MelisComVariantController extends MelisAbstractActionController
                     $errors[] = array( $errorTitle => $errorMessage);
                 }
             }
-            
+
             $data['variant'] = $informationForm->getData();
             $data['variant']['var_id'] = $postValues['variant'][0]['var_id'];
             $data['variant']['var_prd_id'] = (int)$postValues['variant'][0]['var_prd_id'];
             $data['variant']['var_main_variant'] = $postValues['variant'][0]['var_main_variant'];
             $data['variant']['var_status'] = $postValues['variant'][0]['var_status'];
-            if(empty($data['variant']['var_id'])){                
+            if(empty($data['variant']['var_id'])){
                 $data['variant']['var_date_creation'] = date("Y-m-d H:i:s");
                 $data['variant']['var_user_id_creation'] = $this->getTool()->getCurrentUserId();
             }else{
                 $data['variant']['var_date_edit'] = date("Y-m-d H:i:s");
                 $data['variant']['var_user_id_edit'] = $this->getTool()->getCurrentUserId();
-            }           
+            }
         }
         $results = array(
             'success' => $success,
@@ -1063,7 +1002,7 @@ class MelisComVariantController extends MelisAbstractActionController
         );
         return new JsonModel($results);
     }
-    
+
     public function validateStockFormAction()
     {
         $data = array(
@@ -1082,14 +1021,14 @@ class MelisComVariantController extends MelisAbstractActionController
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
         if(!empty($postValues['stockForm'])){
             foreach($postValues['stockForm'] as $stock){
-        
+
                 $countryId = (int) $stock['stock_country_id'];
-                unset($stock['stock_country_id']);                 
+                unset($stock['stock_country_id']);
                 if (!empty($stock)) {
-                    
+
                     $stock['stock_country_id'] = $countryId;
                     $stockForm->setData($stock);
-        
+
                     if(!$stockForm->isValid()){
                         $stockError = $stockForm->getMessages();
                         foreach ($stockError as $keyError => $valueError)
@@ -1110,7 +1049,7 @@ class MelisComVariantController extends MelisAbstractActionController
                     $tmp['stock_quantity'] = ($tmp['stock_quantity']=='')?  null:$tmp['stock_quantity'];
                     $tmp['stock_next_fill_up'] = $this->getTool()->localeDateToSql($tmp['stock_next_fill_up']);
                     $data['stocks'][] = $tmp;
-                }               
+                }
             }
         }
         $results = array(
@@ -1120,7 +1059,7 @@ class MelisComVariantController extends MelisAbstractActionController
         );
         return new JsonModel($results);
     }
-    
+
     public function validateVariantAttributeAction()
     {
         $data = array(
@@ -1131,16 +1070,16 @@ class MelisComVariantController extends MelisAbstractActionController
         $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
         $postValues = $this->getRequest()->getPost()->toArray();
         $postValues = $this->getTool()->sanitizeRecursive($postValues);
-        
-        if(!empty($postValues['attrVal'])){            
+
+        if(!empty($postValues['attrVal'])){
             foreach($postValues['attrVal'] as $attrVal){
                 if(!empty($attrVal['vatv_attribute_value_id'])){
                     $data['varAttr'][] = [
-        
+
                         'vatv_variant_id' => '',
                         'vatv_attribute_value_id' => $attrVal['vatv_attribute_value_id'],
                     ];
-                }               
+                }
             }
         }
         $results = array(
@@ -1150,7 +1089,7 @@ class MelisComVariantController extends MelisAbstractActionController
         );
         return new JsonModel($results);
     }
-    
+
     public function validateVariantSeoAction()
     {
         $seoResult = array(
@@ -1169,43 +1108,43 @@ class MelisComVariantController extends MelisAbstractActionController
         }
         return new JsonModel($seoResult);
     }
-    
+
     public function deleteVariantAction()
-    {   
+    {
         $variantId = null;
         $response = array();
         $success = 0;
         $errors  = array();
         $textMessage = 'tr_meliscommerce_variants_delete_fail';
         $textTitle = 'tr_meliscommerce_variants_page';
-        
+
         $varSvc = $this->getServiceManager()->get('MelisComVariantService');
         if($this->getRequest()->isPost()){
             $postValues = $this->getRequest()->getPost()->toArray();
-            
+
             $variantId = $postValues['var_id'];
-            
+
             $this->getEventManager()->trigger('meliscommerce_variant_delete_start', $this, array());
-            $success = $varSvc->deleteVariantById($variantId);           
+            $success = $varSvc->deleteVariantById($variantId);
             if($success){
                 $textMessage = 'tr_meliscommerce_variants_delete_success';
                 $success = 1;
-            }          
-        } 
-        
+            }
+        }
+
         $response = array(
             'success' => $success,
             'textTitle' => $textTitle,
             'textMessage' => $textMessage,
             'errors' => $errors,
         );
-        
-        $this->getEventManager()->trigger('meliscommerce_variant_delete_end', 
+
+        $this->getEventManager()->trigger('meliscommerce_variant_delete_end',
             $this, array_merge($response, array('typeCode' => 'ECOM_VARIANT_DELETE', 'itemId' => $variantId)));
-        
+
         return new JsonModel($response);
     }
-    
+
     /**
      * This method deletes a stock entry if the country its affected to is deleted
      * @return \Laminas\View\Model\JsonModel
@@ -1216,12 +1155,12 @@ class MelisComVariantController extends MelisAbstractActionController
         $errors = array();
         $data = array();
         $countryId = -1;
-         
+
         $stockTable = $this->getServiceManager()->get('MelisEcomVariantStockTable');
         $countryTable = $this->getServiceManager()->get('MelisEcomCountryTable');
-    
+
         $countryId = $this->getRequest()->getPost('id');
-    
+
         //check if country is already deleted
         $country = $countryTable->getEntryById($countryId);
         if($country->count() === 0){
@@ -1237,7 +1176,7 @@ class MelisComVariantController extends MelisAbstractActionController
         );
         return new JsonModel($results);
     }
-    
+
     /**
      * Retrieves  form errors
      * @param object $form the form object
@@ -1259,5 +1198,5 @@ class MelisComVariantController extends MelisAbstractActionController
     }
 
 
-    
+
 }

@@ -1,0 +1,22 @@
+<?php
+$id = 'id="' . $this->uniqid;
+$data_melisKey = 'data-melisKey="' . $this->melisKey . '"';
+?>
+<div <?= $id . ' ' . $data_melisKey ?> class="me-action-button-cont attribute-area">
+  <div id="<?= $this->uniqid; ?>_content">
+    <i class="fa fa-spinner fa-spin"></i>
+  </div>
+</div>
+
+<script type="text/javascript">
+  $(function() {
+    $.get('/melis/MelisCommerce/MelisComVariant/renderVariantTabMainAttributesContent', {
+      melisKey: '<?= $this->melisKey; ?>',
+      variantId: '<?= $this->variantId; ?>',
+      productId: '<?= $this->productId; ?>',
+    }, function(data) {
+      $('#<?= $this->uniqid; ?>_content').html(data)
+    });
+  });
+</script>
+

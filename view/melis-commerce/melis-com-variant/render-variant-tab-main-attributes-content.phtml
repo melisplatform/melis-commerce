@@ -1,54 +1,49 @@
-<?php 
-    $id = 'id="';
-    if (!empty($this->variantId)){
-        $id .= $this->variantId;
-    }
-    
-    $id .= '_'.$this->zoneconfig['conf']['id'].'"';
-    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
-    $c = 0;
+<?php
+$id = 'id="' . $this->uniqid;
+$data_melisKey = 'data-melisKey="' . $this->melisKey . '"';
+$c = 0;
 ?>
 <div class="form-group">
-	<label>
-		<i class="fa fa-info-circle fa-lg" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-title="<?= $this->translate('tr_meliscommerce_variant_main_attributes_input tooltip')?>"></i>
-	</label>
+  <label>
+    <i class="fa fa-info-circle fa-lg" data-toggle="tooltip" data-placement="left" title="" data-original-title="<?= $this->translate('tr_meliscommerce_variant_main_attributes_input tooltip') ?>"></i>
+  </label>
 </div>
-<div <?= $id. ' '. $data_melisKey?> class="me-action-button-cont attribute-area">
-    		<table>    		
-    		<?php foreach($this->attributes as $attr){?>		
-    			
-    			<tr>
-        			<td>
-        				<label><?= $this->escapeHtml($attr['name']) ?>:&nbsp;</label>
-        			</td>
-        			<td>
-        				<form name ="attrVal"> 
-        				<fieldset>       				
-        				<div class="form-group" style="margin-bottom: 0;">
-        					<select class="form-control" name="vatv_attribute_value_id">
-        						<option value ="0" >
-        							<?= $this->translate('tr_meliscommerce_variant_main_information_attribute_select');?>
-        						</option>
-        						<?php 
-        						foreach ($attr['values'] as $val):
-        						    $selected = '';
-            						foreach($this->variantAttributes as $varAttr){
-            						  if($val['id'] == $varAttr->atval_id){
-            						      $selected = 'selected';
-            						  }            						      
-            						}
-        						?>
-        						<option value ="<?= $val['id']?>" <?= $selected?>> <?= $this->escapeHtml($val['value']) ?></option>
-        						<?php endforeach;?>
-        					</select>        					
-        				</div>
-        				</fieldset>
-        				</form>
-        			</td>
-        		</tr>
-    		<?php
-    		    
-                $c++;
-            }?>
-    	</table>
+<div <?= $id . ' ' . $data_melisKey ?> class="me-action-button-cont attribute-area">
+  <table>
+    <?php foreach ($this->attributes as $attr) { ?>
+
+      <tr>
+        <td>
+          <label><?= $this->escapeHtml($attr['name']) ?>:&nbsp;</label>
+        </td>
+        <td>
+          <form name="attrVal">
+            <fieldset>
+              <div class="form-group" style="margin-bottom: 0;">
+                <select class="form-control" name="vatv_attribute_value_id">
+                  <option value="0">
+                    <?= $this->translate('tr_meliscommerce_variant_main_information_attribute_select'); ?>
+                  </option>
+                  <?php
+                  foreach ($attr['values'] as $val):
+                    $selected = '';
+                    foreach ($this->variantAttributes as $varAttr) {
+                      if ($val['id'] == $varAttr->atval_id) {
+                        $selected = 'selected';
+                      }
+                    }
+                  ?>
+                    <option value="<?= $val['id'] ?>" <?= $selected ?>> <?= $this->escapeHtml($val['value']) ?></option>
+                  <?php endforeach; ?>
+                </select>
+              </div>
+            </fieldset>
+          </form>
+        </td>
+      </tr>
+    <?php
+
+      $c++;
+    } ?>
+  </table>
 </div>
