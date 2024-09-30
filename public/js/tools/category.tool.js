@@ -812,7 +812,6 @@ window.initCategoryTreeView = function() {
 			});
 		})
 		.on("move_node.jstree", function(e, data) {
-			console.log(`melis-commerce category.tool.js  move_node.jstree data: `, data);
 			// Category Id
 			var categoryId = data.node.id,
 				// New category Parent ID
@@ -827,9 +826,6 @@ window.initCategoryTreeView = function() {
 				categoryNewPosition = data.position + 1,
 
 				dataString = new Array();
-
-			console.log(`newParentId: `, newParentId);
-			console.log(`oldParent: `, oldParent);
 
 			// get data from input
 			dataString.push({
@@ -1054,12 +1050,6 @@ window.initCategoryTreeView = function() {
 				"search", // Plugins for Search of the Node(s) of the Tree View
 				"types", // Plugins for Customizing the Nodes
 			],
-			/* dnd: {
-				is_draggable: function(nodes) {
-					console.log(`is_draggable nodes[0].type: `, nodes[0].type);
-					return true;
-				}
-			} */
 		});
 
 	$body.on("click", ".categoryProductsExport", function() {
