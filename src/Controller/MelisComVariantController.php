@@ -13,6 +13,7 @@ use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
 use Laminas\Session\Container;
 use MelisCore\Controller\MelisAbstractActionController;
+use MelisCommerce\Model\ProductAttribute;
 
 class MelisComVariantController extends MelisAbstractActionController
 {
@@ -460,6 +461,7 @@ class MelisComVariantController extends MelisAbstractActionController
         $attributes = $this->updatedFetchAttributes($productId, $langId) ?: [];
 
         $view = new ViewModel();
+        $view->setTerminal(true);
         $view->variantAttributes = $varAttrVals;
         $view->attributes = $attributes;
         $view->melisKey = $melisKey;
@@ -1197,6 +1199,35 @@ class MelisComVariantController extends MelisAbstractActionController
         return $errors;
     }
 
+    private function updatedFetchAttributes($productId, $langId)
+    {
+        $attributes = [];
+        $productAttributes = ProductAttribute::getProductAttributesThroughRawQuery($productId, $langId)->get();
 
+        foreach ($productAttributes as $prodAttr) {
+            $key = $prodAttr->atrans_name ?: $prodAttr->attr_reference;
+            $columnType = "avt_v_$prodAttr->atype_column_value";
+            $value = $prodAttr->$columnType;
 
+            if ($columnType === 'avt_v_datetime') {
+                $value = $this->getTool()->dateFormatLocale($value);
+            }
+
+            if (in_array($columnType, ['avt_v_text', 'avt_v_varchar'])) {
+                $value = $this->getTool()->limitedText($value, 50);
+            }
+
+            $attributes[$key][] = ['id' => $prodAttr->atval_id, 'value' => $value];
+        }
+
+        $formattedAttributes = [];
+        foreach ($attributes as $attributes => $values) {
+            $formattedAttributes[] = [
+                'name' => $attributes,
+                'values' => $values
+            ];
+        }
+
+        return $formattedAttributes;
+    }
 }
