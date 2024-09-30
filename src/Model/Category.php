@@ -51,6 +51,7 @@ class Category extends Model
         'type',
         'textLang',
         'a_attr',
+        'state'
     ];
 
     protected static $languageModel = null;
@@ -199,11 +200,19 @@ class Category extends Model
             // @INFO: This causes a second delay (without this it should execute below 1 second)
             "data-numprods" =>  $this->products->count(),
             "data-textlang" => $locale,
-            "data-fathericon" => "<i class=\"fa fa-book\"></i>",
+            "data-fathericon" => $this->isCatalog() ? "<i class=\"fa fa-book\"></i>" : '',
             "data-fathercateid" => $this->cat_father_cat_id,
         ];
     }
 
+    public function getStateAttribute()
+    {
+        return [
+            'opened' => false,
+            'selected' => false,
+            'checked' => false,
+        ];
+    }
 
     /**
     * Get Category Children By Parent Id
@@ -216,5 +225,11 @@ class Category extends Model
             ->select('cat_id', 'cat_father_cat_id', 'cat_order')
             ->orderBy('cat_order', 'asc')
             ->get()->makeHidden($this->getArrayableAppends());
+    }
+
+    private function isCatalog(): bool
+    {
+        return $this->type === 'catalog';
+
     }
 }
