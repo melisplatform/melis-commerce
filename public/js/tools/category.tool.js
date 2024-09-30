@@ -812,6 +812,7 @@ window.initCategoryTreeView = function() {
 			});
 		})
 		.on("move_node.jstree", function(e, data) {
+			console.log(`melis-commerce category.tool.js  move_node.jstree data: `, data);
 			// Category Id
 			var categoryId = data.node.id,
 				// New category Parent ID
@@ -824,7 +825,11 @@ window.initCategoryTreeView = function() {
 				// Position is the index on the data
 				// Adding One(1) to make to avaoid Zero(0) index of position
 				categoryNewPosition = data.position + 1,
+
 				dataString = new Array();
+
+			console.log(`newParentId: `, newParentId);
+			console.log(`oldParent: `, oldParent);
 
 			// get data from input
 			dataString.push({
@@ -859,7 +864,7 @@ window.initCategoryTreeView = function() {
 				.done(function(data) {
 					if (data.success) {
 						$currentCategoryId = $("body #saveCategory").data("catid");
-
+						
 						if ($currentCategoryId == parseInt(categoryId, 10)) {
 							$("body #saveCategory").data(
 								"catfatherid",
@@ -867,6 +872,7 @@ window.initCategoryTreeView = function() {
 							);
 						}
 
+						// added by: Junry
 						var temp = $("ul.jstree-container-ul > li > a");
 
 						temp.each(function() {
@@ -1048,6 +1054,12 @@ window.initCategoryTreeView = function() {
 				"search", // Plugins for Search of the Node(s) of the Tree View
 				"types", // Plugins for Customizing the Nodes
 			],
+			dnd: {
+				is_draggable: function(nodes) {
+					console.log(`is_draggable nodes[0].type: `, nodes[0].type);
+					return true;
+				}
+			}
 		});
 
 	$body.on("click", ".categoryProductsExport", function() {
