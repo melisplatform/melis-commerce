@@ -172,7 +172,7 @@ class Category extends Model
 
     public function getTypeAttribute()
     {
-        return 'catalog';
+        return $this->cat_father_cat_id === -1 ? 'catalog' : 'category';
     }
 
     public function getTextLangAttribute()
