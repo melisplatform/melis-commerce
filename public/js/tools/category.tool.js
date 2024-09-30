@@ -1054,12 +1054,12 @@ window.initCategoryTreeView = function() {
 				"search", // Plugins for Search of the Node(s) of the Tree View
 				"types", // Plugins for Customizing the Nodes
 			],
-			dnd: {
+			/* dnd: {
 				is_draggable: function(nodes) {
 					console.log(`is_draggable nodes[0].type: `, nodes[0].type);
 					return true;
 				}
-			}
+			} */
 		});
 
 	$body.on("click", ".categoryProductsExport", function() {
