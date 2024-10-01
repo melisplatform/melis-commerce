@@ -3540,3 +3540,33 @@ span.remove-company-image i{
 	background: #3392e3 !important;
 	color: #fff !important; 
 }
+/* jquery migration - order status */
+#id_meliscommerce_order_status_form_container .osta_color_code {
+    width: 92%;
+    float: left;
+}
+#id_meliscommerce_order_status_form_container .input-group-addon {
+    width: 40px;
+    display: block;
+    float: left;
+    height: 35px;
+    background: #fff;
+    border-left: 0;
+    border-color: #e5e5e5;
+	padding-top: 8px;
+	padding-bottom: 8px;
+}
+#id_meliscommerce_order_status_form_container .minicolors-theme-default .minicolors-swatch {
+	width: 15px;
+	height: 15px;
+}
+#id_meliscommerce_order_status_form_container [name="order_trans"],
+#id_meliscommerce_order_status_form_container [name="order_status"] {
+	position: relative;
+}
+#id_meliscommerce_order_status_form_container [name="order_status"] {
+	z-index: 1;
+}
+#id_meliscommerce_order_status_form_container [name="order_trans"] {
+	z-index: 0;
+}

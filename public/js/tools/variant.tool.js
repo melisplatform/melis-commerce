@@ -350,7 +350,7 @@ $(function () {
 			data: $.param(obj),
 			beforeSend: function () {
 				//disable the button
-				_this.addClass("disabled").attr("disabled", true);
+				_this.addClass("disabled").prop("disabled", true);
 				//change icon to loader
 				_this
 					.find(".variant-update-icon-rotate")
@@ -407,7 +407,7 @@ $(function () {
 					//change btn title
 					_this.attr("title", btnTitle);
 				}
-				_this.removeClass("disabled").attr("disabled", false);
+				_this.removeClass("disabled").prop("disabled", false);
 			})
 			.fail(function () {
 				alert(translations.tr_meliscore_error_message);
