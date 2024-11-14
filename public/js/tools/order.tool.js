@@ -2,15 +2,26 @@ $(function() {
 	var $body = $("body"),
 		$payAccordion = $(".a-accordion");
 
+		// Close modal when clicking outside of modal content
+		/* $(document).on('click', function(e) {
+			var modal 		= $('.modal'),
+				modalDialog = modal.find('.modal-dialog');
+
+				// Check if modal is visible and click is outside the modal-dialog
+				if (modal.is(':visible') && !$(e.target).closest(modalDialog).length) {
+					modal.modal('hide');
+				}
+		  }); */
+
 		//removes modal elements when clicking outside
 		$body.on("click", function(e) {
-			if ($(e.target).hasClass("modal")) {
-				$("#id_meliscommerce_order_list_content_status_form_container").modal(
-					"hide"
-				);
-				$("#id_meliscommerce_order_modal_content_shipping_form_container").modal(
-					"hide"
-				);
+			if (
+				$(e.target).hasClass("modal") && 
+				$("#id_meliscommerce_order_list_content_status_form_container").length || 
+				$("#id_meliscommerce_order_modal_content_shipping_form_container").length
+			) {
+				melisCoreTool.hideModal("id_meliscommerce_order_list_content_status_form_container");
+				melisCoreTool.hideModal("id_meliscommerce_order_modal_content_shipping_form_container");
 			}
 		});
 
@@ -589,9 +600,9 @@ $(function() {
 			}
 
 			melisCoreTool.done(this);
-			$("#id_meliscommerce_order_list_content_status_form_container").modal(
-				"hide"
-			);
+			
+			// $("#id_meliscommerce_order_list_content_status_form_container").modal("hide");
+			melisCoreTool.hideModal("id_meliscommerce_order_list_content_status_form_container");
 		});
 
 		// order page - saves the new shipping
@@ -647,9 +658,10 @@ $(function() {
 								{ clientId: data.clientId, activateTab: true }
 							);
 						}
-						$(
-							"#id_meliscommerce_order_modal_content_shipping_form_container"
-						).modal("hide");
+
+						// $("#id_meliscommerce_order_modal_content_shipping_form_container").modal("hide");
+						melisCoreTool.hideModal("id_meliscommerce_order_modal_content_shipping_form_container");
+
 						melisHelper.zoneReload(
 							orderId +
 								"_id_meliscommerce_orders_content_tabs_content_shipping_details",

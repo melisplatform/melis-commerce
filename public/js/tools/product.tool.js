@@ -251,7 +251,8 @@ $(function() {
                     $("p#"+productId+"_no_categories").show();
                 }
 
-                $("#id_meliscommerce_products_main_tab_categories_modal_container").modal("hide");
+                // $("#id_meliscommerce_products_main_tab_categories_modal_container").modal("hide");
+                melisCoreTool.hideModal("id_meliscommerce_products_main_tab_categories_modal_container");
         });
 
         $body.on("click", ".productCategoryFilter", function(){
@@ -276,7 +277,9 @@ $(function() {
 
             filterTooltipText += productTableFilterSelectedCategories.join(', ');
 
-            $('#id_meliscommerce_products_main_tab_categories_modal_container').modal('hide');
+            // $('#id_meliscommerce_products_main_tab_categories_modal_container').modal('hide');
+            melisCoreTool.hideModal("id_meliscommerce_products_main_tab_categories_modal_container");
+
             $('#tableProductList').DataTable().ajax.reload();
 
             if (productTableFilterSelectedCategoryIds.length > 0) {

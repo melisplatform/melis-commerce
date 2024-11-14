@@ -148,6 +148,7 @@ $(function() {
                     if(data.success){;
                         melisHelper.melisOkNotification( data.textTitle, data.textMessage );
                         melisHelper.zoneReload(attributeId+"_id_meliscommerce_attributes_tabs_content_values_details_table", "meliscommerce_attributes_tabs_content_values_details_table", {attributeId: attributeId});
+                        
                         // $("#id_meliscommerce_attribute_value_modal_value_form_container").modal("hide");
                         melisCoreTool.hideModal("id_meliscommerce_attribute_value_modal_value_form_container");
                     }else{

@@ -12,11 +12,12 @@ $(function() {
 		});
 
 		//removes modal elements when clicking outside
-		$body.on("click", function(e) {
+		/* $body.on("click", function(e) {
 			if ( $(e.target).hasClass('modal') ) {
-				$('#id_meliscommerce_country_list_page_content_modal_form_container').modal('hide');
+				// $('#id_meliscommerce_country_list_page_content_modal_form_container').modal('hide');
+				melisCoreTool.hideModal("id_meliscommerce_country_list_page_content_modal_form_container");
 			}
-		});
+		}); */
 		
 		$body.on("click", ".btnEditComCountry", function() {
 			var $this 	= $(this),
@@ -55,7 +56,12 @@ $(function() {
 					dataType    : 'json'
 				}).done(function(data) {
 					if ( data.success ) {
-						$("div.modal").modal("hide");
+						// $("div.modal").modal("hide");
+						var modalId = $("div.modal").attr("id");
+							if (modalId != "" && modalId != "undefined") {
+								melisCoreTool.hideModal(modalId);
+							}
+
 						$("#" + activeTabId + " .melis-refreshTable").trigger("click");
 						melisHelper.melisOkNotification(data.textTitle, data.textMessage);
 					}

@@ -35,7 +35,9 @@ $(function(){
             if(data.success){
                 melisHelper.melisOkNotification(data.textTitle, data.textMessage);
                 $("#tableClientsGroupsList").DataTable().ajax.reload();
-                $("#id_meliscommerce_clients_group_tool_content_modal_container").modal("hide");
+
+                // $("#id_meliscommerce_clients_group_tool_content_modal_container").modal("hide");
+                melisCoreTool.hideModal("id_meliscommerce_clients_group_tool_content_modal_container");
             }else{
                 melisHelper.melisKoNotification(data.textTitle, data.textMessage, data.errors);
                 melisHelper.highlightMultiErrors(data.success, data.errors, "#clientsGroupForm");
