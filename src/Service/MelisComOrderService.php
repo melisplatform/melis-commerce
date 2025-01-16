@@ -32,12 +32,13 @@ class MelisComOrderService extends MelisComGeneralService
 	 * @param int $status if true, returns only orders with specific status
 	 * @param int $start If not specified, it will start at the begining of the list
 	 * @param int $limit If not specified, it will bring all categories of the list
+     * @param bool $count
 	 * 
 	 * @return MelisOrder[] Array of Order objects
 	 */
 	public function getOrderList($orderStatusId = null, $onlyValid = null, $langId = null, $clientId = null, 
 								$clientPersonId = null, $couponId = null, $reference = null,  $start = null, 
-								$limit = null, $colOrder = null, $search = '', $startDate = null, $endDate = null)
+								$limit = null, $colOrder = null, $search = '', $startDate = null, $endDate = null, $count = false)
 	{
 		// Event parameters prepare
 		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -54,12 +55,16 @@ class MelisComOrderService extends MelisComGeneralService
 													$arrayParameters['couponId'], $arrayParameters['reference'],
 													$arrayParameters['start'], $arrayParameters['limit'], 
 													$arrayParameters['colOrder'], $arrayParameters['search'], 
-													$arrayParameters['startDate'], $arrayParameters['endDate'] )->toArray();
-		foreach ($orderData As $key => $val)
-		{
-			$melisOrder = $this->getOrderById($val['ord_id'], $arrayParameters['langId']);
-			array_push($results, $melisOrder);
-		}
+													$arrayParameters['startDate'], $arrayParameters['endDate'],$arrayParameters['count']);
+        if($arrayParameters['count']){
+            $results = $orderData->current();
+        }else {
+            $orderData = $orderData->toArray();
+            foreach ($orderData As $key => $val) {
+                $melisOrder = $this->getOrderById($val['ord_id'], $arrayParameters['langId']);
+                array_push($results, $melisOrder);
+            }
+        }
 		// Service implementation end
 		
 		// Adding results to parameters for events treatment if needed
@@ -167,7 +172,7 @@ class MelisComOrderService extends MelisComGeneralService
 	 * @param int $langId language id
 	 * @return array()
 	 */
-	public function exportOrderList($orderStatus = null, $dateStart = null, $dateEnd = null, $separator, $encapseulate = '', $langId = null)
+	public function exportOrderList($orderStatus, $dateStart, $dateEnd, $separator, $encapseulate = '', $langId = null)
 	{
 		// Event parameters prepare
 		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -292,7 +297,7 @@ class MelisComOrderService extends MelisComGeneralService
 		$line1[] = addslashes($order->ord_status);
 		$line1[] = addslashes($order->status_name);
 		$line1[] = addslashes($order->ord_client_person_id);
-		$line1[] = addslashes($person->civility_trans[0]->civt_min_name);
+		$line1[] = addslashes($person->civility_trans[0]->civt_min_name ?? '');
 		$line1[] = addslashes($person->cper_name);
 		$line1[] = addslashes($person->cper_firstname);
 		$line1[] = addslashes($client->client_company_name);
@@ -406,7 +411,7 @@ class MelisComOrderService extends MelisComGeneralService
 						}
 					}
 					else{
-					$basket[] = addslashes($val);
+					    $basket[] = !empty($val) ? addslashes($val) : '';
 					}
 				}
 				$baskets[] = $e.implode($e.$s.$e, $basket).$e.$s;
@@ -1361,7 +1366,7 @@ class MelisComOrderService extends MelisComGeneralService
 		return $arrayParameters['results'];
 	}
 
-	public function getOrdersDataByDate($type = 'daily', $date)
+	public function getOrdersDataByDate($type, $date)
 	{
 		$count = 0;
 
@@ -1501,7 +1506,7 @@ class MelisComOrderService extends MelisComGeneralService
 		return $count;
 	}
 
-	public function getSalesRevenueDataByDate($type = 'hourly', $date)
+	public function getSalesRevenueDataByDate($type, $date)
 	{
 		$value = [];
 		$value['totalOrderPrice'] = 0;

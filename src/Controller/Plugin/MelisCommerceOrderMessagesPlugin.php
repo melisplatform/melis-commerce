@@ -100,7 +100,7 @@ class MelisCommerceOrderMessagesPlugin extends MelisTemplatingPlugin
                     $data = $addMessageForm->getData();
                     $messageData = array(
                         'omsg_order_id' => $data['m_om_order_id'],
-                        'omsg_pret_id' => $data['m_om_pret_id'],
+                        'omsg_pret_id' => $data['m_om_pret_id'] ?? null,
                         'omsg_client_id' => $ecomAuthSrv->getClientId(),
                         'omsg_client_person_id' => $ecomAuthSrv->getPersonId(),
                         'omsg_message' => $data['m_om_message'],

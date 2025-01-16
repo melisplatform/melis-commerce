@@ -16,6 +16,7 @@ use Laminas\Mvc\Controller\Plugin\Redirect;
 use Laminas\View\Model\JsonModel;
 use Laminas\Stdlib\ArrayUtils;
 use Laminas\View\Model\ViewModel;
+
 /**
  * This plugin implements the business logic of the
  * "profile" plugin.
@@ -59,7 +60,7 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
         $this->pluginXmlDbKey = 'MelisCommerceProfilePlugin';
         parent::__construct($updatesPluginConfig);
     }
-    
+
     /**
      * This function gets the datas and create an array of variables
      * that will be associated with the child view generated.
@@ -69,34 +70,33 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
         $success = 0;
         $errors = array();
         $message = '';
-        
+
         $translator = $this->getServiceManager()->get('translator');
-        
+
         // Getting the Profile form from config
         $appConfigForm = (!empty($this->pluginFrontConfig['forms']['meliscommerce_profile'])) ? $this->pluginFrontConfig['forms']['meliscommerce_profile'] : array();
-        
+
         $factory = new \Laminas\Form\Factory();
         $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $profile = $factory->createForm($appConfigForm);
-        
+
         $melisComAuthSrv = $this->getServiceManager()->get('MelisComAuthenticationService');
         /**
          * If the Authentication doesn't have identity
          * this will redirect to the $redirection_link_not_loggedin
          */
-        if ($melisComAuthSrv->hasIdentity())
-        {
-            
+        if ($melisComAuthSrv->hasIdentity()) {
+
             $formData = $this->getFormData();
-            
+
             // Value that trigger if the form is submitted or requested
             $is_submit = (!empty($formData['profile_is_submit'])) ? $formData['profile_is_submit'] : false;
-            
+
             // Getting the current use Client Id and Person Id from session
             $clientId = $melisComAuthSrv->getClientId();
             $personId = $melisComAuthSrv->getPersonId();
-            
+
             /**
              * Pre-data to fill the form
              * If page requested the form, data will loaded are from database using service
@@ -106,173 +106,157 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
              */
             $preData = array();
             $clientSrv = $this->getServiceManager()->get('MelisComClientService');
+            $contactSrv = $this->getServiceManager()->get('MelisComContactService');
             $clientPersonEntity = $clientSrv->getClientByIdAndClientPerson($clientId, $personId);
-            
-            if(!empty($clientPersonEntity))
-            {
+
+            if (!empty($clientPersonEntity)) {
                 $client = $clientPersonEntity->getClient();
                 $person = $clientPersonEntity->getPersons()[0];
             }
-            
+
             // Retrieves the table columns for data looping
             $tableClientColumns = $clientSrv->getTableColumns('MelisEcomClientTable');
             $tablePersonColumns = $clientSrv->getTableColumns('MelisEcomClientPersonTable');
-            
-            foreach($tableClientColumns as $column)
-            {
+
+            foreach ($tableClientColumns as $column) {
                 /**
                  * if the form was submitted,input fields will use the submitted values
                  * else this will use values of the current person
                  */
-                if (!empty($formData[$column]) || $is_submit) 
-                {
-                    $data[$column] = isset($formData[$column])? $formData[$column] : '';
-                } 
-                else 
-                {
-                    if (!empty($client))
-                    {
-                        $data[$column] = isset($client->$column)? $client->$column : '';
+                if (!empty($formData[$column]) || $is_submit) {
+                    $data[$column] = isset($formData[$column]) ? $formData[$column] : '';
+                } else {
+                    if (!empty($client)) {
+                        $data[$column] = isset($client->$column) ? $client->$column : '';
                     }
                 }
             }
-            
-            foreach($tablePersonColumns as $column)
-            {
+
+            foreach ($tablePersonColumns as $column) {
                 /**
                  * if the form was submitted,input fields will use the submitted values
                  * else this will use values of the current person
                  */
-                if (!empty($formData[$column]) || $is_submit) 
-                {
-                    $data[$column] = !empty($formData[$column])? $formData[$column] : '';
-                } 
-                else 
-                {
-                    if (!empty($person))
-                    {
-                        $data[$column] = !empty($person->$column)? $person->$column : '';
+                if (!empty($formData[$column]) || $is_submit) {
+                    $data[$column] = !empty($formData[$column]) ? $formData[$column] : '';
+                } else {
+                    if (!empty($person)) {
+                        $data[$column] = !empty($person->$column) ? $person->$column : '';
                     }
                 }
-                $personData[$column] = $data[$column];
+                $personData[$column] = $data[$column] ?? '';
             }
-            
+
             // Adding the Confirm password to Form data so this will include to the form validation
             $data['cper_confirm_password'] = (!empty($formData['cper_confirm_password'])) ? $formData['cper_confirm_password'] : '';
-            
             // Setting the Datas to Profile Form
             $profile->setData($data);
-            
-            if ($is_submit)
-            {
+
+            if ($is_submit) {
                 // Checking if the Contact Form has data of the password
-                if (empty($data['cper_password']))
-                {
+                if (empty($data['cper_password'])) {
                     // If the existing password empty, this means contact not updating the current password
                     // removing Input from form will also remove from the validation
                     $profile->getInputFilter()->remove('cper_password');
                     $profile->getInputFilter()->remove('cper_confirm_password');
-                    
+
                     // Removing password to avoid password update
                     unset($personData['cper_password']);
                 }
-                
+
                 // Checking if the email value is not same with the current email of the person
-                if ($data['cper_email'] != $melisComAuthSrv->getClientPersonSessDataByField('cper_email'))
-                {
+                if ($data['cper_email'] != $melisComAuthSrv->getClientPersonSessDataByField('cper_email')) {
                     // Checking email availability
-                    if ($clientSrv->checkEmailExist($data['cper_email'], $personId))
-                    {
+                    if ($clientSrv->checkEmailExist($data['cper_email'], $personId)) {
                         $errors['cper_email'] = array(
                             'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
                             'emailExist' => $translator->translate('Email address is not available'),
                         );
-                        
+
                         // Adding error to profile form factory
                         $profile->setMessages($errors);
                     }
                 }
-                
-                if ($profile->isValid() && empty($errors))
-                {
+
+                if ($profile->isValid() && empty($errors)) {
                     // Preparing the Client Data
                     $clientData = array(
                         'cli_country_id' => $data['cli_country_id']
                     );
-                    
+
                     $personData = $profile->getData();
-                    
                     // Removing field not belong to person table columns
                     unset($personData['profile_is_submit']);
                     unset($personData['cli_country_id']);
                     unset($personData['cper_confirm_password']);
-                    
+
                     // Adding the Current user Client Id and Person Id from session
                     $personData['cper_id'] = $personId;
-                    $personData['cper_client_id'] = $clientId;
-                    
-                    // Adding the Person to array as parameter in saving a client details
-                    $persons[] = $personData;
-                    
-                    // Saving Client credintial using Client Service
-                    $clientIdRes = $clientSrv->saveClient($clientData, $persons, array(), array(), $clientId);
-                    
-                    if (!is_null($clientIdRes))
-                    {
-                        $success = 1;
-                        $message = $translator->translate('tr_meliscommerce_plugin_profile_save_success');
-                        
-                        // Retrieving updated info of Client Person using Client Service
-                        $clientPersonEntity = $clientSrv->getClientPersonById($personId);
-                        $personData = $clientPersonEntity->getPerson();
-                        // Unsetting password to avoid storing to session
-                        unset($personData->cper_password);
-                        // Unsetting civlity info
-                        unset($personData->civ_id);
-                        unset($personData->civility_trans);
-                        // Adding back the client key from old session ideitity and update a new Person details
-                        $personData->clientKey = $melisComAuthSrv->getIdentity()->clientKey;
-                        // Updating Data stored in Session
-                        $storage = $melisComAuthSrv->getStorage();
-                        $storage->write($personData);
+                    $personData['cper_client_id'] = 0; //$clientId;
+
+                    $this->validateEmail($personData, $errors);
+                    if (empty($errors)) {
+                        //execute saving records with transactions
+                        $adapter = $this->getServiceManager()->get('Laminas\Db\Adapter\Adapter');
+                        $con = $adapter->getDriver()->getConnection(); //get db driver connection
+                        $con->beginTransaction(); //begin transaction
+                        try {
+                            $clientSrv->saveClient($clientData, [], array(), array(), $clientId);
+                            $contactSrv->saveContact($personData, [], $personId);
+
+                            $success = 1;
+                            $message = $translator->translate('tr_meliscommerce_plugin_profile_save_success');
+
+                            // Retrieving updated info of Client Person using Client Service
+                            $clientPersonEntity = $clientSrv->getClientPersonById($personId);
+                            $personData = $clientPersonEntity->getPerson();
+                            // Unsetting password to avoid storing to session
+                            unset($personData->cper_password);
+                            // Unsetting civlity info
+                            unset($personData->civ_id);
+                            unset($personData->civility_trans);
+                            // Adding back the client key from old session ideitity and update a new Person details
+                            $personData->clientKey = $melisComAuthSrv->getIdentity()->clientKey;
+                            // Updating Data stored in Session
+                            $storage = $melisComAuthSrv->getStorage();
+                            $storage->write($personData);
+
+                            $con->commit();
+                        } catch (\Exception $ex) {
+                            $message = $translator->translate('tr_meliscommerce_client_common_error');
+                            $con->rollback();
+                        }
                     }
-                    else
-                    {
-                        $message = $translator->translate('tr_meliscommerce_client_common_error');
-                    }
-                }
-                else 
-                {
+                } else {
                     // Getting the form error messages
                     $errors = $profile->getMessages();
-                    
                     $message = $translator->translate('tr_meliscommerce_client_pass_errors');
                 }
             }
-            
+
             /**
              * This input field set value in order to validate 
              * after submission of the form proivided of this plugin
              */
             $profile->get('profile_is_submit')->setValue(true);
         }
-        
+
         /**
          * Removing the Password value to avoid dislying in form input and
          * adding custom label for password and confirm password as guide in creating password
          */
         $translator = $this->getServiceManager()->get('translator');
         $profile->get('cper_password')->setValue('');
-        $profile->get('cper_password')->setLabel($profile->get('cper_password')->getLabel().' <i class="fa fa-info-circle fa-lg" title="'.$translator->translate('tr_meliscommerce_client_tooltip_password').'"></i>');
+        $profile->get('cper_password')->setLabel($profile->get('cper_password')->getLabel() . ' <i class="fa fa-info-circle fa-lg" title="' . $translator->translate('tr_meliscommerce_client_tooltip_password') . '"></i>');
         $profile->get('cper_confirm_password')->setValue('');
-        $profile->get('cper_confirm_password')->setLabel($profile->get('cper_confirm_password')->getLabel().' <i class="fa fa-info-circle fa-lg" title="'.$translator->translate('tr_meliscommerce_client_tooltip_password_2').'"></i>');
-        
+        $profile->get('cper_confirm_password')->setLabel($profile->get('cper_confirm_password')->getLabel() . ' <i class="fa fa-info-circle fa-lg" title="' . $translator->translate('tr_meliscommerce_client_tooltip_password_2') . '"></i>');
+
         /**
          * This input field set value in order to validate
          * after submission of the form proivided of this plugin
          */
         $profile->get('profile_is_submit')->setValue('1');
-        
+
         // Create an array with the variables that will be available in the view
         $viewVariables = array(
             'profile' => $profile,
@@ -280,11 +264,46 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
             'success' => $success,
             'errors' => $errors
         );
-        
+
         // return the variable array and let the view be created
         return $viewVariables;
     }
-    
+
+    /**
+     * @param $personData
+     * @param $errors
+     */
+    private function validateEmail(&$personData, &$errors)
+    {
+        $clientSrv = $this->getServiceManager()->get('MelisComClientService');
+        $translator = $this->getServiceManager()->get('translator');
+        if (! empty($personData['cper_email'])) {
+            $personEmail = [];
+            // check if email is not used twice
+            $personWithSameEmail = $clientSrv->getPersonsByEmail($personData['cper_email']);
+            if (!empty($personWithSameEmail)) {
+                foreach ($personWithSameEmail as $mail) {
+                    if ($mail['cpmail_cper_id'] != $personData['cper_id']) {
+                        $errors['cper_email'] = [
+                            'label' => $translator->translate('tr_meliscommerce_client_Contact_email_address'),
+                            'emailExist' => $translator->translate('tr_meliscommerce_client_email_not_available'),
+                        ];
+                        break;
+                    } else {
+                        $personEmail[$mail['cpmail_id']] = [
+                            'cpmail_email' => $personData['cper_email']
+                        ];
+                    }
+                }
+            } else {
+                $personEmail[0] = [
+                    'cpmail_email' => $personData['cper_email']
+                ];
+            }
+            $personData['emails'] = $personEmail;
+        }
+    }
+
     /**
      * This function generates the form displayed when editing the parameters of the plugin
      */
@@ -295,25 +314,22 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
         $formElements = $this->getServiceManager()->get('FormElementManager');
         $factory->setFormElementManager($formElements);
         $formConfig = $this->pluginBackConfig['modal_form'];
-        
+
         $response = [];
         $render   = [];
-        if (!empty($formConfig))
-        {
-            foreach ($formConfig as $formKey => $config)
-            {
+        if (!empty($formConfig)) {
+            foreach ($formConfig as $formKey => $config) {
                 $form = $factory->createForm($config);
                 $request = $this->getServiceManager()->get('request');
                 $parameters = $request->getQuery()->toArray();
-                
-                if (!isset($parameters['validate']))
-                {
+
+                if (!isset($parameters['validate'])) {
                     $form->setData($this->getFormData());
                     $viewModelTab = new ViewModel();
                     $viewModelTab->setTemplate($config['tab_form_layout']);
                     $viewModelTab->modalForm = $form;
                     $viewModelTab->formData   = $this->getFormData();
-                    
+
                     $viewRender = $this->getServiceManager()->get('ViewRenderer');
                     $html = $viewRender->render($viewModelTab);
                     array_push($render, array(
@@ -321,48 +337,37 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
                         'icon' => $config['tab_icon'],
                         'html' => $html
                     ));
-                }
-                else
-                {
+                } else {
                     // validate the forms and send back an array with errors by tabs
                     $success = false;
                     $errors = array();
-                    
+
                     $post = $request->getPost()->toArray();
-                    
+
                     $form->setData($post);
-                    
-                    if (!$form->isValid())
-                    {
-                        if (empty($errors))
-                        {
+
+                    if (!$form->isValid()) {
+                        if (empty($errors)) {
                             $errors = $form->getMessages();
-                        }
-                        else
-                        {
+                        } else {
                             $errors = ArrayUtil::merge($errors, $form->getMessages());
                         }
                     }
-                    
-                    if (empty($errors))
-                    {
+
+                    if (empty($errors)) {
                         $success = true;
                     }
-                    
-                    if (!empty($errors))
-                    {
-                        foreach ($errors as $keyError => $valueError)
-                        {
-                            foreach ($config['elements'] as $keyForm => $valueForm)
-                            {
-                                if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label']))
-                                {
+
+                    if (!empty($errors)) {
+                        foreach ($errors as $keyError => $valueError) {
+                            foreach ($config['elements'] as $keyForm => $valueForm) {
+                                if ($valueForm['spec']['name'] == $keyError && !empty($valueForm['spec']['options']['label'])) {
                                     $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
                                 }
                             }
                         }
                     }
-                    
+
                     array_push($response, array(
                         'name' => $this->pluginBackConfig['modal_form'][$formKey]['tab_title'],
                         'success' => $success,
@@ -372,17 +377,14 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
                 }
             }
         }
-        
-        if (!isset($parameters['validate']))
-        {
+
+        if (!isset($parameters['validate'])) {
             return $render;
-        }
-        else
-        {
+        } else {
             return $response;
         }
     }
-    
+
     /**
      * Returns the data to populate the form inside the modals when invoked
      * @return array
@@ -392,7 +394,7 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
         $data = parent::getFormData();
         return $data;
     }
-    
+
     /**
      * This method will decode the XML in DB to make it in the form of the plugin config file
      * so it can overide it. Only front key is needed to update.
@@ -401,20 +403,18 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
     public function loadDbXmlToPluginConfig()
     {
         $configValues = array();
-        
+
         $xml = simplexml_load_string($this->pluginXmlDbValue);
-        
-        if ($xml)
-        {
-            if (!empty($xml->template_path))
-            {
+
+        if ($xml) {
+            if (!empty($xml->template_path)) {
                 $configValues['template_path'] = (string)$xml->template_path;
             }
         }
-        
+
         return $configValues;
     }
-    
+
     /**
      * This method saves the XML version of this plugin in DB, for this pageId
      * Automatically called from savePageSession listenner in PageEdition
@@ -422,19 +422,17 @@ class MelisCommerceProfilePlugin extends MelisTemplatingPlugin
     public function savePluginConfigToXml($parameters)
     {
         $xmlValueFormatted = '';
-        
+
         // template_path is mendatory for all plugins
-        if (!empty($parameters['template_path']))
-        {
+        if (!empty($parameters['template_path'])) {
             $xmlValueFormatted .= "\t\t" . '<template_path><![CDATA[' . $parameters['template_path'] . ']]></template_path>';
         }
-        
+
         // Something has been saved, let's generate an XML for DB
-        if (!empty($xmlValueFormatted))
-        {
-            $xmlValueFormatted = "\t".'<'.$this->pluginXmlDbKey.' id="'.$parameters['melisPluginId'].'">'.$xmlValueFormatted."\t".'</'.$this->pluginXmlDbKey.'>'."\n";
+        if (!empty($xmlValueFormatted)) {
+            $xmlValueFormatted = "\t" . '<' . $this->pluginXmlDbKey . ' id="' . $parameters['melisPluginId'] . '">' . $xmlValueFormatted . "\t" . '</' . $this->pluginXmlDbKey . '>' . "\n";
         }
-        
+
         return $xmlValueFormatted;
     }
 }

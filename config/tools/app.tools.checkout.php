@@ -78,7 +78,8 @@ return [
                     'table' => [
                         'target' => '#orderCheckoutContactListTbl',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComOrderCheckout/getContactList',
-                        'dataFunction' => '',
+//                        'dataFunction' => 'initClientIdForNewOrder',
+                        'dataFunction' => 'initClientIdForNewOrder',
                         'ajaxCallback' => 'initCheckoutSelectContactTable();',
                         'filters' => [
                             'left' => [
@@ -140,6 +141,76 @@ return [
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComOrderCheckout',
                                 'action' => 'render-order-checkout-contact-list-select',
+                            ],
+                        ]
+                    ],
+                ],
+                'meliscommerce_order_checkout_contact_account_list' => [
+                    'table' => [
+                        'target' => '#orderCheckoutContactAccountListTbl',
+                        'ajaxUrl' => '/melis/MelisCommerce/MelisComOrderCheckout/getContactAccountList',
+                        'dataFunction' => '',
+                        'ajaxCallback' => '',
+                        'filters' => [
+                            'left' => [
+                                'meliscommerce-order-checkout-contact-account-list-limit' => [
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComOrderCheckout',
+                                    'action' => 'render-order-checkout-contact-account-list-limit',
+                                ],
+                            ],
+                            'center' => [
+                                'meliscommerce-order-checkout-contact-account-list-search' => [
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComOrderCheckout',
+                                    'action' => 'render-order-checkout-contact-account-list-search',
+                                ],
+                            ],
+                            'right' => [
+                                'meliscommerce-order-checkout-contact-account-list-refresh' => [
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComOrderCheckout',
+                                    'action' => 'render-order-checkout-contact-account-list-refresh',
+                                ],
+                            ],
+                        ],
+                        'columns' => [
+                            'cli_id' => [
+                                'text' => 'tr_meliscommerce_clients_table_Client_id',
+                                'css' => ['width' => '10%', 'padding-right' => '0'],
+                                'sortable' => true,
+                            ],
+                            'cli_status' => [
+                                'text' => 'tr_meliscommerce_clients_table_Client_status',
+                                'css' => ['width' => '10%', 'padding-right' => '0'],
+                                'sortable' => true,
+                            ],
+                            'cli_name' => [
+                                'text' => 'tr_meliscommerce_contact_account_name',
+                                'css' => ['width' => '40%', 'padding-right' => '0'],
+                                'sortable' => true,
+                            ],
+                            'default_account' => [
+                                'text' => 'tr_meliscommerce_contact_is_default',
+                                'css' => ['width' => '10%', 'padding-right' => '0'],
+                                'sortable' => true,
+                            ],
+                            'default_contact' => [
+                                'text' => 'tr_meliscommerce_contact_is_default_contact',
+                                'css' => ['width' => '10%', 'padding-right' => '0'],
+                                'sortable' => false,
+                            ],
+                        ],
+                        // define what columns can be used in searching
+                        'searchables' => [
+                            'cli_id',
+                            'cli_name'
+                        ],
+                        'actionButtons' => [
+                            'action' => [
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComOrderCheckout',
+                                'action' => 'render-order-checkout-contact-account-list-select',
                             ],
                         ]
                     ],

@@ -22,7 +22,7 @@ return [
                             'data-upload-type' => 'file',
                             'action' => '',
                         ],
-                        'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                        'hydrator'  => 'Laminas\Hydrator\ArraySerializableHydrator',
                         'elements' => [
                             [
                                 'spec' => [
@@ -180,7 +180,7 @@ return [
                             'data-upload-type' => 'image',
                             'action' => '',
                         ],
-                        'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                        'hydrator'  => 'Laminas\Hydrator\ArraySerializableHydrator',
                         'elements' => [
                             [
                                 'spec' => [
@@ -345,7 +345,7 @@ return [
                             'method' => 'POST',
                             'action' => '',
                         ],
-                        'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                        'hydrator'  => 'Laminas\Hydrator\ArraySerializableHydrator',
                         'elements' => [
                             [
                                 'spec' => [

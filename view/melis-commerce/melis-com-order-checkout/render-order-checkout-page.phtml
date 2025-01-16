@@ -4,7 +4,7 @@
         $id = $this->zoneconfig['conf']['id'];
     } 
 ?>
-<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="tab-pane container-level-a">
+<div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="tab-pane container-level-a" data-clientid="<?=$this->clientId?>">
 	<?php 
 	    if(!empty($this->zoneconfig['interface'])) {
 	        foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {

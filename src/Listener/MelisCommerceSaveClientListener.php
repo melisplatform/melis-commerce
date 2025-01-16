@@ -33,7 +33,6 @@ class MelisCommerceSaveClientListener extends MelisGeneralListener implements Li
         		    'MelisCommerce\Controller\MelisComClient',
         		    ['action' => 'validateClient']
                 );
-        		
         		list($success, $errors, $datas) = $melisCoreDispatchService->dispatchPluginAction(
         		    $e,
         		    'meliscommerce',

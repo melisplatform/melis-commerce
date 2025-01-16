@@ -47,7 +47,7 @@ return [
                                     'action' => '',
                                     'class' => '',
                                 ],
-                                'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                                'hydrator'  => 'Laminas\Hydrator\ArraySerializableHydrator',
                                 'elements' => [
                                     [
                                         'spec' => [
@@ -175,7 +175,7 @@ return [
                                                 'data-button-icon' => 'fa fa-sitemap',
                                                 'data-button-id' => 'meliscms-site-selector',
                                                 'data-callback' => 'generatePageLink',
-                                                'data-absolute' => true,
+                                                'data-absolute' => false,
                                                 'required' => 'required'
                                             ],
                                         ],

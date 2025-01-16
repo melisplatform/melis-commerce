@@ -14,7 +14,7 @@
 			<div class="widget widget-tabs widget-tabs-double widget-tabs-responsive margin-none border-none">
                 <div class="widget-head">
                 	<ul class="nav nav-tabs">
-                		<li class="active"><a href="#<?php echo $this->zoneconfig['conf']['id'] ?>" class="glyphicons plus" data-toggle="tab" aria-expanded="true"><i></i> <?php echo $this->translate('tr_meliscommerce_clients_add_contact') ?></a></li>
+                		<li class="active"><a href="#<?php echo $this->zoneconfig['conf']['id'] ?>" class="glyphicons plus" data-bs-toggle="tab" aria-expanded="true"><i></i> <?php echo $this->translate('tr_meliscommerce_clients_add_contact') ?></a></li>
             		</ul>
         		</div>
         		<div class="widget-body innerAll inner-2x">
@@ -29,15 +29,48 @@
                                     	$form = $this->meliscommerce_clients_contact_form;
                                     	$form->setAttribute('id', 'melisCommerceClientContactFormModal');
                                     	$form->get('cper_client_id')->setValue($this->clientId);
-                                    	$form->get('cper_password')->setLabel($form->get('cper_password')->getLabel().' <i class="fa fa-info-circle fa-lg" data-toggle="tooltip" data-placement="left" data-original-title="'.$this->translate('tr_meliscommerce_client_tooltip_password').'"></i>');
-                                    	$form->get('cper_confirm_password')->setLabel($form->get('cper_confirm_password')->getLabel().' <i class="fa fa-info-circle fa-lg" data-toggle="tooltip" data-placement="left" data-original-title="'.$this->translate('tr_meliscommerce_client_tooltip_password_2').'"></i>');
+                                    	$form->get('cper_password')->setLabel($form->get('cper_password')->getLabel().' <i class="fa fa-info-circle fa-lg" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="'.$this->translate('tr_meliscommerce_client_tooltip_password').'"></i>');
+                                    	$form->get('cper_confirm_password')->setLabel($form->get('cper_confirm_password')->getLabel().' <i class="fa fa-info-circle fa-lg" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="'.$this->translate('tr_meliscommerce_client_tooltip_password_2').'"></i>');
                                     	$form->prepare();
                                     	echo $this->form()->openTag($form);
-                                    	echo $this->melisFieldCollection($form);
+                                    	//echo $this->melisFieldCollection($form);
+                                        foreach($form->getElements() as $key => $val)  {
+                                            echo '<div class="form-group">';
+                                            if ($val->getLabel())
+                                            {
+                                                $required = '';
+                                                if(!empty($val->getAttribute('required'))){
+                                                    $required = ' <sup>*</sup>';
+                                                }
+                                                echo $this->formLabel()->openTag($val);
+                                                echo $val->getLabel();
+                                                echo $required;
+                                                echo $this->formLabel()->closeTag();
+                                            }
+
+                                            if($key == 'cper_type'){
+                                                foreach($val->getValueOptions() as $k => $v) {
+                                                    $selected = "";
+                                                    if(empty($val->getValue())){
+                                                        if($k == "person") {
+                                                            $selected = "checked";
+                                                        }
+                                                    }else {
+                                                        $selected = ($k == $val->getValue()) ? "checked" : "";
+                                                    }
+                                                    echo '<div class="form-check form-check-inline"><input class="form-check-input '.$key.'" data-cat-type="'.strtoupper($v).'" type="radio" id="'.$key.'_' . $k . '" name="'.$key.'" value="' . $k . '" '.$selected.'>
+                                                    <label class="form-check-label" for="'.$key.'_' . $k . '">' . $v . '</label>
+                                                    </input></div>';
+                                                }
+                                            }else {
+                                                echo $this->formElement($val, array('class' => 'form-control'));
+                                            }
+                                            echo '</div>';
+                                        }
                                     	echo $this->form()->closeTag(); 
                                     ?>
                                  	<div class="footer-modal d-flex flex-row justify-content-between">
-                                 		<button data-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
+                                 		<button data-bs-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_clients_common_btn_close')?></button>
                                  		<button class="btn btn-success" id="saveClientContact" data-clientid="<?php echo $this->clientId ?>" data-loading-text="<?php echo $this->translate('tr_meliscommerce_clients_common_label_loading') ?>"><i class="fa fa-plus"></i>  <?php echo $this->translate('tr_meliscommerce_clients_add_contact') ?></button>
                                  	</div>
                             	</div>
@@ -51,4 +84,17 @@
 </div>
 <script>
 	$('.modalClientContactStatus').bootstrapSwitch();
+    $(function(){
+        $("#melisCommerceClientContactFormModal #cper_tags").tagsinput({
+            allowDuplicates: false
+        });
+
+        //remove extra comma when typing word with comma in the end
+        $("body").on("keyup", '#melisCommerceClientContactFormModal .bootstrap-tagsinput input', function (e) {
+            if(e.keyCode == 188){//comma
+                $(this).val($(this).val().replace(",",""));
+            }
+        });
+    });
+
 </script>

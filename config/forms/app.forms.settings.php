@@ -19,7 +19,7 @@ return [
                             'method' => '',
                             'action' => '',
                         ],
-                        'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                        'hydrator'  => 'Laminas\Hydrator\ArraySerializableHydrator',
                         'elements' => [
                             [
                                 'spec' => [
@@ -85,6 +85,48 @@ return [
 
                                 ],
                             ],
+                        ],
+                    ],
+                    'meliscommerce_settings_accounts_form' => [
+                        'attributes' => [
+                            'name' => 'settingsAccountForm',
+                            'id' => 'settingsAccountForm',
+                            'method' => '',
+                            'action' => '',
+                        ],
+                        'hydrator'  => 'Laminas\Hydrator\ArraySerializableHydrator',
+                        'elements' => [
+                            [
+                                'spec' => [
+                                    'name' => 'sa_id',
+                                    'type' => 'hidden',
+                                    'options' => [
+                                    ],
+                                    'attributes' => [
+                                        'value' => '',
+                                    ],
+                                ],
+                            ],
+                            [
+                                'spec' => [
+                                    'name' => 'sa_type',
+                                    'type' => 'Select',
+                                    'options' => [
+                                        'label' => 'tr_meliscommerce_settings_type_account_name',
+                                        'value_options' => [
+                                            'manual_input' => 'tr_meliscommerce_settings_type_manual_input',
+                                            'company_name' => 'tr_meliscommerce_settings_type_company_name',
+                                            'contact_name' => 'tr_meliscommerce_settings_type_contact_name',
+                                        ],
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'sa_type',
+                                    ]
+                                ]
+                            ],
+                        ],
+                        'input_filter' => [
+
                         ],
                     ],
                 ],

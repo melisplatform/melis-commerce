@@ -21,7 +21,7 @@ return [
                         'target' => '#clientListTbl',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComClientList/getClientList',
                         'dataFunction' => 'initClientsFilters',
-                        'ajaxCallback' => '',
+                        'ajaxCallback' => 'accountsTableCallback(); ',
                         'filters' => [
                             'left' => [
                                 'meliscommerce-clients-list-tbl-limit' => [
@@ -41,12 +41,22 @@ return [
                                     'controller' => 'MelisComClientList',
                                     'action' => 'render-client-list-table-search',
                                 ],
-                            ],
-                            'right' => [
-                                'meliscommerce-clients-list-tbl-export' => [
+                                'meliscommerce-clients-status-filter' => [
                                     'module' => 'MelisCommerce',
                                     'controller' => 'MelisComClientList',
-                                    'action' => 'render-client-list-table-export',
+                                    'action' => 'render-client-list-table-status-filter',
+                                ],
+                            ],
+                            'right' => [
+                                'meliscommerce-clients-list-tbl-import-accounts' => [
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComClientList',
+                                    'action' => 'render-client-list-table-import-accounts',
+                                ],
+                                'meliscommerce-clients-list-tbl-export-accounts' => [
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComClientList',
+                                    'action' => 'render-client-list-table-export-accounts',
                                 ],
                                 'meliscommerce-clients-list-tbl-refresh' => [
                                     'module' => 'MelisCommerce',
@@ -76,7 +86,17 @@ return [
                                 'css' => ['width' => '20%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],
-                            'client_company' => [
+                            'cli_name' => [
+                                'text' => 'tr_meliscommerce_clients_table_account_name',
+                                'css' => ['width' => '20%', 'padding-right' => '0'],
+                                'sortable' => true,
+                            ],
+                            'default_contact' => [
+                                'text' => 'tr_meliscommerce_clients_default_contact_name',
+                                'css' => ['width' => '20%', 'padding-right' => '0'],
+                                'sortable' => false,
+                            ],
+                            'cli_company' => [
                                 'text' => 'tr_meliscommerce_clients_table_Client_company',
                                 'css' => ['width' => '20%', 'padding-right' => '0'],
                                 'sortable' => true,
@@ -100,12 +120,17 @@ return [
                         // define what columns can be used in searching
                         'searchables' => [
                             'cli_id',
-                            'cper_name',
-                            'cper_firstname',
+                            'cli_name',
                             'ccomp_name',
                             'cli_date_creation',
+                            'cli_tags'
                         ],
                         'actionButtons' => [
+                            'delete' => [
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComClientList',
+                                'action' => 'render-client-list-table-delete',
+                            ],
                             'edit' => [
                                 'module' => 'MelisCommerce',
                                 'controller' => 'MelisComClientList',
@@ -192,7 +217,7 @@ return [
                             'cper_firstname' => [
                                 'text' => 'tr_meliscommerce_order_list_col_firstname',
                                 'css' => ['width' => '15%', 'padding-right' => '0'],
-                                'sortable' => false,
+                                'sortable' => true,
                             ],
                             'cper_name' => [
                                 'text' => 'tr_meliscommerce_order_list_col_name',
@@ -213,6 +238,108 @@ return [
                                 'action' => 'render-client-table-view'
                             ],
                         ],
+                    ],
+                ],
+                'meliscommerce_clients_contact_list' => [
+                    'conf' => [
+                        'title' => 'tr_meliscommerce_clients_contact_list',
+                        'id' => 'id_meliscommerce_clients_contact_list',
+                    ],
+                    'table' => [
+                        // table ID
+                        'target' => '#accountContactList',
+                        'ajaxUrl' => '/melis/MelisCommerce/MelisComClient/getAccountContactList',
+                        'dataFunction' => 'setClientId',
+                        'ajaxCallback' => 'accountAssocContactListTblCallback(); ',
+                        'filters' => [
+                            'left' => [
+                                'meliscommerce-account-contact-list-tbl-limit' => [
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComContact',
+                                    'action' => 'render-account-contact-list-table-limit',
+                                ],
+                            ],
+                            'center' => [
+                                'meliscommerce-account-contact-list-tbl-search' => [
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComContact',
+                                    'action' => 'render-account-contact-list-table-search',
+                                ],
+                            ],
+                            'right' => [
+                                'meliscommerce-account-contact-list-add-contact' => [
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComClient',
+                                    'action' => 'render-account-contact-list-add-contact',
+                                ],
+                                'meliscommerce-account-contact-list-tbl-refresh' => [
+                                    'module' => 'MelisCommerce',
+                                    'controller' => 'MelisComClient',
+                                    'action' => 'render-account-contact-list-table-refresh',
+                                ],
+                            ],
+                        ],
+                        'columns' => [
+                            'cper_id' => [
+                                'text' => 'tr_meliscommerce_clients_table_Client_id',
+                                'css' => ['width' => '5%', 'padding-right' => '0'],
+                                'sortable' => true,
+                            ],
+                            'cper_status' => [
+                                'text' => 'tr_meliscommerce_clients_table_Client_status',
+                                'css' => ['width' => '5%', 'padding-right' => '0'],
+                                'sortable' => true,
+                            ],
+                            'cper_firstname' => [
+                                'text' => 'tr_meliscommerce_contact_firstname',
+                                'css' => ['width' => '10%', 'padding-right' => '0'],
+                                'sortable' => true,
+                            ],
+                            'cper_name' => [
+                                'text' => 'tr_meliscommerce_contact_name',
+                                'css' => ['width' => '10%', 'padding-right' => '0'],
+                                'sortable' => true,
+                            ],
+                            'cper_email' => [
+                                'text' => 'tr_meliscommerce_contact_email',
+                                'css' => ['width' => '20%', 'padding-right' => '0'],
+                                'sortable' => true,
+                            ],
+                            'is_default' => [
+                                'text' => 'tr_meliscommerce_clients_is_default',
+                                'css' => ['width' => '10%', 'padding-right' => '0'],
+                                'sortable' => true,
+                            ],
+                            'default_account' => [
+                                'text' => 'tr_meliscommerce_clients_is_default_account',
+                                'css' => ['width' => '10%', 'padding-right' => '0'],
+                                'sortable' => false,
+                            ],
+                        ],
+                        // define what columns can be used in searching
+                        'searchables' => [
+                            'cper_id',
+                            'cper_name',
+                            'cper_firstname',
+                            'cper_email'
+                        ],
+                        'actionButtons' => [
+                            'edit' => [
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComContact',
+                                'action' => 'render-account-contact-list-table-edit',
+                            ],
+                            'set_default' => [
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComClient',
+                                'action' => 'render-account-contact-list-table-set-default',
+                            ],
+                            'unlink' => [
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComClient',
+                                'action' => 'render-account-contact-list-table-unlink',
+                            ],
+                        ]
                     ],
                 ],
             ]

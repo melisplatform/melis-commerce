@@ -1,0 +1,39 @@
+<?php 
+    $id = '';
+    if (!empty($this->zoneconfig['conf']['id'])){
+        $id = 'id="'.$this->zoneconfig['conf']['id'] .'"';
+    }
+    $data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<div class="widget widget-tabs widget-tabs-double-2 widget-tabs-responsive" <?php echo $id. ' '.$data_melisKey?>>
+	<div class="widget-head nav">
+		<ul class="tabs-label nav-tabs nav">
+			<?php 
+            	if(!empty($this->zoneconfig['interface'])) {
+            	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+            	        
+            	        $tabId = $this->contactId.'_'.$menuConfig['conf']['id'];
+            	        $tabIcon = $menuConfig['conf']['icon'];
+            	        $tabName = $menuConfig['conf']['name'];
+            	        
+            	        echo '<li class="nav-item">
+                	            <a class="nav-link '.$tabIcon.'" data-bs-toggle="tab" href="#'.$tabId.'" aria-expanded="true">
+                            		<i></i>
+                            		<span>'.$this->translate($this->escapeHtml($tabName)).'</span>
+                            	</a>
+                            </li>';
+            	    }
+            	}
+            ?>
+		</ul>
+	</div>
+</div>
+<div class="tab-content innerAll spacing-x2">
+	<?php 
+    	if(!empty($this->zoneconfig['interface'])) {
+    	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
+    	        echo $this->$keyConfig.' ';
+    	    }
+    	}
+    ?>
+</div>

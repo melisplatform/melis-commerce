@@ -19,6 +19,7 @@ use Laminas\EventManager\EventManagerAwareInterface;
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\Session\Config\SessionConfig;
 use Laminas\Stdlib\ArrayUtils;
+
 /**
  * 
  * This service handles the Authentication system of MelisCommerce.
@@ -34,8 +35,8 @@ class MelisComAuthenticationService extends Session implements EventManagerAware
     protected $authenticationService;
     protected $sessionManager;
     protected $session;
-	protected $eventManager;
-    
+    protected $eventManager;
+
     public function __construct()
     {
         $this->authenticationService = new AuthenticationService();
@@ -51,7 +52,7 @@ class MelisComAuthenticationService extends Session implements EventManagerAware
             // TODO Temporary 
             if (empty($moduleName))
                 $moduleName = 'meliscommerce';
-            
+
             // Session storage name using module name of the site
             $this->session = new Session($moduleName);
             // Site session name will set to authentication Service
@@ -75,22 +76,22 @@ class MelisComAuthenticationService extends Session implements EventManagerAware
         return $this->serviceManager;
     }
 
-	/**
-	 * @param EventManagerInterface $eventManager
-	 */
-	public function setEventManager(EventManagerInterface $eventManager)
-	{
-		$this->eventManager = $eventManager;
-	}
+    /**
+     * @param EventManagerInterface $eventManager
+     */
+    public function setEventManager(EventManagerInterface $eventManager)
+    {
+        $this->eventManager = $eventManager;
+    }
 
-	/**
-	 * @return EventManagerInterface
-	 */
-	public function getEventManager()
-	{
-		return $this->eventManager;
-	}
-    
+    /**
+     * @return EventManagerInterface
+     */
+    public function getEventManager()
+    {
+        return $this->eventManager;
+    }
+
     public function getStorage()
     {
         return $this->authenticationService->getStorage();
@@ -117,63 +118,89 @@ class MelisComAuthenticationService extends Session implements EventManagerAware
 
         $translator = $this->getServiceManager()->get('translator');
         $clientSrv = $this->getServiceManager()->get('MelisComClientService');
+        $contactSrv = $this->getServiceManager()->get('MelisComContactService');
         $clientInfo = $clientSrv->getClientPersonByEmail($arrayParameters['email']);
 
         //check if email exist
-        if(!empty($clientInfo))
-        {
-            //check password
-            $isCorrect = $this->isPasswordCorrect($arrayParameters['password'], $clientInfo->cper_password);
-            if ($isCorrect)
-            {
-                $dbAdapter = $this->getServiceManager()->get('Laminas\Db\Adapter\Adapter');
-                $authAdapter = new AuthAdapter(
-                    $dbAdapter,
-                    'melis_ecom_client_person', // there is a method setTableName to do the same
-                    'cper_email', // there is a method setIdentityColumn to do the same
-                    'cper_password' // there is a method setCredentialColumn to do the same
-                );
+        if (!empty($clientInfo)) {
+            $getContactAssociatedAccounts = $contactSrv->getContactAssocAccountLists($clientInfo->cper_id, null, [], null, null, $orderColumn = 'cli_name', $order = 'ASC')->toArray();
+            //            $getContactAssociatedAccounts = $contactSrv->getContactDefaultAccount($clientInfo->cper_id)->toArray();
+            /**
+             * Make sure contact has an associated account
+             */
+            if (!empty($getContactAssociatedAccounts)) {
+                //check password
+                $isCorrect = $this->isPasswordCorrect($arrayParameters['password'], $clientInfo->cper_password);
+                if ($isCorrect) {
+                    $dbAdapter = $this->getServiceManager()->get('Laminas\Db\Adapter\Adapter');
+                    $authAdapter = new AuthAdapter(
+                        $dbAdapter,
+                        'melis_ecom_client_person', // there is a method setTableName to do the same
+                        'cper_email', // there is a method setIdentityColumn to do the same
+                        'cper_password' // there is a method setCredentialColumn to do the same
+                    );
 
-                $authAdapter->setIdentity($arrayParameters['email'])->setCredential($clientInfo->cper_password);
+                    $authAdapter->setIdentity($arrayParameters['email'])->setCredential($clientInfo->cper_password);
 
-                $result = $this->authenticationService->authenticate($authAdapter);
-                switch ($result->getCode()) {
-                    case Result::SUCCESS:
-                        $storage = $this->getStorage();
+                    $result = $this->authenticationService->authenticate($authAdapter);
+                    switch ($result->getCode()) {
+                        case Result::SUCCESS:
+                            $storage = $this->getStorage();
 
-                        $personIdentity = $authAdapter->getResultRowObject(
-                            null,
-                            ['cper_password'] // removing the password from the result object
-                        );
+                            $personIdentity = $authAdapter->getResultRowObject(
+                                null,
+                                ['cper_password'] // removing the password from the result object
+                            );
 
-                        $personIdentity->clientKey = $this->getId();
+                            $personIdentity->clientKey = $this->getId();
 
-                        // Client group
-                        $personIdentity->client_group = $clientSrv->getClientById($clientInfo->cper_client_id)->cli_group_id;
+                            // Client group
+                            $groupId = 1; //general
+                            $clientId = 0;
+                            if (!empty($getContactAssociatedAccounts)) {
+                                foreach ($getContactAssociatedAccounts as $key => $val) {
+                                    //we store the ids until we find if there's a default account
+                                    $groupId = $val['cli_group_id'] ?? 1;
+                                    $clientId = $val['cli_id'];
 
-                        $storage->write($personIdentity);
+                                    //if there's a default account then we assign it
+                                    if ($val['cpr_default_client']) {
+                                        $groupId = $val['cli_group_id'] ?? 1;
+                                        $clientId = $val['cli_id'];
+                                        break;
+                                    }
+                                }
+                            }
 
-                        $config = $this->getServiceManager()->get('config');
-                        $ecomClientConfig = $config['plugins']['meliscommerce']['datas']['default']['session'];
+                            $personIdentity->client_group = $groupId;
+                            $personIdentity->client_id = $clientId;
 
-                        /**
-                         * Getting the ttl for Session expiry from config
-                         * Ttl of session will depend on login option "remember me"
-                         */
-                        $ecomDefaultTtl = ($arrayParameters['rememberMe']) ? $ecomClientConfig['remember_me_ttl'] : $ecomClientConfig['default_ttl'];
-                        $this->sessionManager->rememberMe($ecomDefaultTtl);
+                            $storage->write($personIdentity);
 
-                        $message = $translator->translate('tr_meliscommerce_plugin_login_success');
-                        $success = 1;
-                        break;
-                    default:
-                        $message = $translator->translate('tr_meliscommerce_plugin_login_invalid_email_or_password');
-                        break;
+                            $config = $this->getServiceManager()->get('config');
+                            $ecomClientConfig = $config['plugins']['meliscommerce']['datas']['default']['session'];
+
+                            /**
+                             * Getting the ttl for Session expiry from config
+                             * Ttl of session will depend on login option "remember me"
+                             */
+                            $ecomDefaultTtl = ($rememberMe) ? $ecomClientConfig['remember_me_ttl'] : $ecomClientConfig['default_ttl'];
+                            $this->sessionManager->rememberMe($ecomDefaultTtl);
+
+                            $message = $translator->translate('tr_meliscommerce_plugin_login_success');
+                            $success = 1;
+                            break;
+                        default:
+                            $message = $translator->translate('tr_meliscommerce_plugin_login_invalid_email_or_password');
+                            break;
+                    }
+                } else {
+                    $message = $translator->translate('tr_meliscommerce_plugin_login_invalid_email_or_password');
                 }
-            }else{
+            } else {
                 $message = $translator->translate('tr_meliscommerce_plugin_login_invalid_email_or_password');
             }
-        }else{
+        } else {
             $message = $translator->translate('tr_meliscommerce_plugin_login_invalid_email_or_password');
         }
 
@@ -188,12 +215,25 @@ class MelisComAuthenticationService extends Session implements EventManagerAware
         return $arrayParameters['results'];
     }
 
+    /**
+     * @param $clientId
+     */
+    public function setClientId($clientId)
+    {
+        $storage = $this->getStorage();
+        $identity = $this->getIdentity();
+        if (!empty($identity)) {
+            $identity->client_id = $clientId;
+            $storage->write($identity);
+        }
+    }
+
     public function getClientId()
     {
         $sessionData = $this->authenticationService->getIdentity();
         if ($this->hasIdentity() && !empty($sessionData))
-            return $sessionData->cper_client_id;
-        
+            return $sessionData->client_id;
+
         return null;
     }
 
@@ -202,71 +242,73 @@ class MelisComAuthenticationService extends Session implements EventManagerAware
         $sessionData = $this->authenticationService->getIdentity();
         if ($this->hasIdentity() && !empty($sessionData))
             return $sessionData->client_group;
-        
+
         return null;
     }
-    
+
     public function getPersonId()
     {
         $sessionData = $this->authenticationService->getIdentity();
         if ($this->hasIdentity() && !empty($sessionData))
             return $sessionData->cper_id;
-        
+
         return null;
     }
-    
+
     public function getClientKey()
     {
         $sessionData = $this->authenticationService->getIdentity();
         if ($this->hasIdentity() && !empty($sessionData))
             return $sessionData->clientKey;
-        
+
         return null;
     }
-    
+
     public function getClientPersonSessDataByField($field)
     {
         $sessionData = $this->authenticationService->getIdentity();
         if ($this->hasIdentity() && !empty($sessionData) && !is_null($field))
             return $sessionData->$field;
-        
+
         return null;
     }
-    
+
     public function getPersonName()
     {
         $sessionData = $this->authenticationService->getIdentity();
-        if ($this->hasIdentity() && !empty($sessionData))
-            return $sessionData->cper_firstname.' '.$sessionData->cper_name;
-        
+        if ($this->hasIdentity() && !empty($sessionData)) {
+            $fName = $sessionData->cper_firstname ?? null;
+            return $fName . ' ' . $sessionData->cper_name;
+        }
+
         return null;
     }
-    
+
     public function hasIdentity()
     {
         return $this->authenticationService->hasIdentity();
     }
-    
+
     public function getIdentity()
     {
         return $this->authenticationService->getIdentity();
     }
-    
+
     public function setId($id)
     {
         $this->sessionManager->setId($id);
     }
-    
+
     public function getId()
     {
         return $this->sessionManager->getId();
     }
-    
+
     public function destroy()
     {
         $this->sessionManager->destroy();
     }
-    
+
     public function logout()
     {
         $this->authenticationService->clearIdentity();
@@ -284,78 +326,74 @@ class MelisComAuthenticationService extends Session implements EventManagerAware
     }
 
     /**
-	 * This method creates an array from the parameters, using parameters' name as keys
-	 * and taking values or default values.
-	 * It is used to prepare args for events listening.
-	 * 
-	 * @param string $class_method
-	 * @param mixed[] $parameterValues
-	 */
-	public function makeArrayFromParameters($class_method, $parameterValues)
-	{
-		if (empty($class_method))
-			return array();
-		
-		// Get the class name and the method name
-		list($className, $methodName) = explode('::', $class_method);
-		if (empty($className) || empty($methodName))
-			return array();
-		
-		/**
-		 * Build an array from the parameters
-		 * Parameters' name will become keys
-		 * Values will be parameters' values or default values
-		 */ 
-		$parametersArray = array();
-		try 
-		{
-			// Gets the data of class/method from Reflection object
-			$reflectionMethod = new \ReflectionMethod($className, $methodName);
-			$parameters = $reflectionMethod->getParameters();
-			
-			// Loop on parameters
-			foreach ($parameters as $keyParameter => $parameter)
-			{
-				// Check if we have a value given
-				if (!empty($parameterValues[$keyParameter]))
-					$parametersArray[$parameter->getName()] = $parameterValues[$keyParameter];
-					else
-						// No value given, check if parameter has an optional value
-						if ($parameter->isOptional())
-							$parametersArray[$parameter->getName()] = $parameter->getDefaultValue();
-							else
-								// Else
-								$parametersArray[$parameter->getName()] = null;
-			}
-		}
-		catch (\Exception $e)
-		{
-			// Class or method were not found
-			return array();
-		}
-		
-		return $parametersArray;
-	}
+     * This method creates an array from the parameters, using parameters' name as keys
+     * and taking values or default values.
+     * It is used to prepare args for events listening.
+     * 
+     * @param string $class_method
+     * @param mixed[] $parameterValues
+     */
+    public function makeArrayFromParameters($class_method, $parameterValues)
+    {
+        if (empty($class_method))
+            return array();
 
-	/**
-	 * Send event using eventManager
-	 * @param $eventName
-	 * @param $parameters
-	 * @param null $target
-	 * @return array
-	 */
-	public function sendEvent($eventName, $parameters, $target = null)
-	{
-		if($this->eventManager) {
+        // Get the class name and the method name
+        list($className, $methodName) = explode('::', $class_method);
+        if (empty($className) || empty($methodName))
+            return array();
 
-			if (is_null($target))
-				$target = $this;
+        /**
+         * Build an array from the parameters
+         * Parameters' name will become keys
+         * Values will be parameters' values or default values
+         */
+        $parametersArray = array();
+        try {
+            // Gets the data of class/method from Reflection object
+            $reflectionMethod = new \ReflectionMethod($className, $methodName);
+            $parameters = $reflectionMethod->getParameters();
 
-			$parameters = $this->eventManager->prepareArgs($parameters);
-			$this->eventManager->trigger($eventName, $target, $parameters);
-			$parameters = $parameters->getArrayCopy();
-		}
+            // Loop on parameters
+            foreach ($parameters as $keyParameter => $parameter) {
+                // Check if we have a value given
+                if (!empty($parameterValues[$keyParameter]))
+                    $parametersArray[$parameter->getName()] = $parameterValues[$keyParameter];
+                else
+                    // No value given, check if parameter has an optional value
+                    if ($parameter->isOptional())
+                        $parametersArray[$parameter->getName()] = $parameter->getDefaultValue();
+                    else
+                        // Else
+                        $parametersArray[$parameter->getName()] = null;
+            }
+        } catch (\Exception $e) {
+            // Class or method were not found
+            return array();
+        }
 
-		return $parameters;
-	}
+        return $parametersArray;
+    }
+
+    /**
+     * Send event using eventManager
+     * @param $eventName
+     * @param $parameters
+     * @param null $target
+     * @return array
+     */
+    public function sendEvent($eventName, $parameters, $target = null)
+    {
+        if ($this->eventManager) {
+
+            if (is_null($target))
+                $target = $this;
+
+            $parameters = $this->eventManager->prepareArgs($parameters);
+            $this->eventManager->trigger($eventName, $target, $parameters);
+            $parameters = $parameters->getArrayCopy();
+        }
+
+        return $parameters;
+    }
 }

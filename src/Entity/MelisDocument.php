@@ -2,6 +2,7 @@
 
 namespace MelisCommerce\Entity;
 
+#[\AllowDynamicProperties]
 class MelisDocument
 {
     protected $docId;

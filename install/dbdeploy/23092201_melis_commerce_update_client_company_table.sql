@@ -1,0 +1,1 @@
+ALTER TABLE `melis_ecom_client_company` CHANGE `ccomp_name` `ccomp_name` VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT 'Company name';

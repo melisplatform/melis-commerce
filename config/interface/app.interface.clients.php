@@ -38,6 +38,122 @@ return [
                             'dir' => $_SERVER['DOCUMENT_ROOT'] . '/csv/'
                         ],
                     ],
+                ],
+                'import_sample_template_accounts' => [
+                    [
+                        'tr_client_accounts_import_template_name' => 'Nom du compte 1',
+                        'tr_client_accounts_import_template_country' => 'France',
+                        'tr_client_accounts_import_template_tags' => 'tag1,tag2',
+                        'tr_client_accounts_import_template_group_id' => '1',
+                        'tr_client_accounts_import_template_address_name' => 'Adresse de facturation',
+                        'tr_client_accounts_import_template_address_type' => 'Billing',
+                        'tr_client_accounts_import_template_address_civility' => 'Mr',
+                        'tr_client_accounts_import_template_address_firstname' => 'Jean',
+                        'tr_client_accounts_import_template_address_middlename' => 'François',
+                        'tr_client_accounts_import_template_address_lastname' => 'Doe',
+                        'tr_client_accounts_import_template_address_street_number' => '12',
+                        'tr_client_accounts_import_template_address_street_name' => 'Avenue Montaigne',
+                        'tr_client_accounts_import_template_address_building' => 'Bat A',
+                        'tr_client_accounts_import_template_address_floor' => '4eme',
+                        'tr_client_accounts_import_template_address_city' => 'Paris',
+                        'tr_client_accounts_import_template_address_state' => '',
+                        'tr_client_accounts_import_template_address_country' => 'France',
+                        'tr_client_accounts_import_template_address_zipcode' => '75000',
+                        'tr_client_accounts_import_template_address_company_name' => '',
+                        'tr_client_accounts_import_template_address_mobile' => '123456789',
+                        'tr_client_accounts_import_template_address_landline' => '987654321',
+                        'tr_client_accounts_import_template_address_additional' => 'Portail noir',
+                        'tr_client_accounts_import_template_company_name' => '',
+                        'tr_client_accounts_import_template_company_registration_num' => '',
+                        'tr_client_accounts_import_template_company_vat_num' => '',
+                        'tr_client_accounts_import_template_company_group' => '',
+                        'tr_client_accounts_import_template_company_employee_number' => '',
+                        'tr_client_accounts_import_template_company_street_number' => '',
+                        'tr_client_accounts_import_template_company_street_name' => '',
+                        'tr_client_accounts_import_template_company_building' => '',
+                        'tr_client_accounts_import_template_company_zipcode' => '',
+                        'tr_client_accounts_import_template_company_city' => '',
+                        'tr_client_accounts_import_template_company_state' => '',
+                        'tr_client_accounts_import_template_company_country' => '',
+                        'tr_client_accounts_import_template_company_phone_number' => '',
+                        'tr_client_accounts_import_template_company_website' => ''
+                    ],
+                    [
+                        'tr_client_accounts_import_template_name' => 'Nom du compte 2',
+                        'tr_client_accounts_import_template_country' => 'France',
+                        'tr_client_accounts_import_template_tags' => '',
+                        'tr_client_accounts_import_template_group_id' => '1',
+                        'tr_client_accounts_import_template_address_name' => 'Adresse de livraison',
+                        'tr_client_accounts_import_template_address_type' => 'Delivery',
+                        'tr_client_accounts_import_template_address_civility' => 'Mme',
+                        'tr_client_accounts_import_template_address_firstname' => 'Jane',
+                        'tr_client_accounts_import_template_address_middlename' => 'Isabelle',
+                        'tr_client_accounts_import_template_address_lastname' => 'Doe',
+                        'tr_client_accounts_import_template_address_street_number' => '36',
+                        'tr_client_accounts_import_template_address_street_name' => 'Rue de la paix',
+                        'tr_client_accounts_import_template_address_building' => '',
+                        'tr_client_accounts_import_template_address_floor' => '',
+                        'tr_client_accounts_import_template_address_city' => 'Lyon',
+                        'tr_client_accounts_import_template_address_state' => '',
+                        'tr_client_accounts_import_template_address_country' => 'France',
+                        'tr_client_accounts_import_template_address_zipcode' => '69000',
+                        'tr_client_accounts_import_template_address_company_name' => 'Société XYZ',
+                        'tr_client_accounts_import_template_address_mobile' => '111222333',
+                        'tr_client_accounts_import_template_address_landline' => '',
+                        'tr_client_accounts_import_template_address_additional' => 'Maison jaune',
+                        'tr_client_accounts_import_template_company_name' => 'Société XYZ',
+                        'tr_client_accounts_import_template_company_registration_num' => '55555555555',
+                        'tr_client_accounts_import_template_company_vat_num' => '555555',
+                        'tr_client_accounts_import_template_company_group' => 'Groupe XYZ',
+                        'tr_client_accounts_import_template_company_employee_number' => '200',
+                        'tr_client_accounts_import_template_company_street_number' => '12',
+                        'tr_client_accounts_import_template_company_street_name' => 'rue de la fontaine',
+                        'tr_client_accounts_import_template_company_building' => 'Bat A',
+                        'tr_client_accounts_import_template_company_zipcode' => '69000',
+                        'tr_client_accounts_import_template_company_city' => 'Lyon',
+                        'tr_client_accounts_import_template_company_state' => '',
+                        'tr_client_accounts_import_template_company_country' => 'France',
+                        'tr_client_accounts_import_template_company_phone_number' => '444555666',
+                        'tr_client_accounts_import_template_company_website' => 'www.societexyz.com'
+                    ],
+                    [
+                        'tr_client_accounts_import_template_name' => 'Nom du compte 3',
+                        'tr_client_accounts_import_template_country' => 'France',
+                        'tr_client_accounts_import_template_tags' => '',
+                        'tr_client_accounts_import_template_group_id' => '1',
+                        'tr_client_accounts_import_template_address_name' => '',
+                        'tr_client_accounts_import_template_address_type' => '',
+                        'tr_client_accounts_import_template_address_civility' => '',
+                        'tr_client_accounts_import_template_address_firstname' => '',
+                        'tr_client_accounts_import_template_address_middlename' => '',
+                        'tr_client_accounts_import_template_address_lastname' => '',
+                        'tr_client_accounts_import_template_address_street_number' => '',
+                        'tr_client_accounts_import_template_address_street_name' => '',
+                        'tr_client_accounts_import_template_address_building' => '',
+                        'tr_client_accounts_import_template_address_floor' => '',
+                        'tr_client_accounts_import_template_address_city' => '',
+                        'tr_client_accounts_import_template_address_state' => '',
+                        'tr_client_accounts_import_template_address_country' => '',
+                        'tr_client_accounts_import_template_address_zipcode' => '',
+                        'tr_client_accounts_import_template_address_company_name' => '',
+                        'tr_client_accounts_import_template_address_mobile' => '',
+                        'tr_client_accounts_import_template_address_landline' => '',
+                        'tr_client_accounts_import_template_address_additional' => '',
+                        'tr_client_accounts_import_template_company_name' => '',
+                        'tr_client_accounts_import_template_company_registration_num' => '',
+                        'tr_client_accounts_import_template_company_vat_num' => '',
+                        'tr_client_accounts_import_template_company_group' => '',
+                        'tr_client_accounts_import_template_company_employee_number' => '',
+                        'tr_client_accounts_import_template_company_street_number' => '',
+                        'tr_client_accounts_import_template_company_street_name' => '',
+                        'tr_client_accounts_import_template_company_building' => '',
+                        'tr_client_accounts_import_template_company_zipcode' => '',
+                        'tr_client_accounts_import_template_company_city' => '',
+                        'tr_client_accounts_import_template_company_state' => '',
+                        'tr_client_accounts_import_template_company_country' => '',
+                        'tr_client_accounts_import_template_company_phone_number' => '',
+                        'tr_client_accounts_import_template_company_website' => ''
+                    ]
                 ]
             ],
             'interface' => [
@@ -50,6 +166,97 @@ return [
                                 'name' => 'tr_meliscommerce_clients_Clients',
                                 'icon' => 'fa fa-users',
                             ],
+                            'interface' => [
+                                'meliscommerce_clients_list_add_client_button' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_clients_list_add_client_button',
+                                        'melisKey' => 'meliscommerce_clients_list_add_client_button',
+                                        'name' => 'tr_meliscommerce_clients_list_add_client_button',
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
+                                    ],
+                                ],
+                                'meliscommerce_clients_list_export_client_button' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_clients_list_export_client_button',
+                                        'melisKey' => 'meliscommerce_clients_list_export_client_button',
+                                        'name' => 'tr_meliscommerce_clients_list_export_client_button',
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
+                                    ],
+                                ],
+                                'meliscommerce_clients_list_import_client_button' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_clients_list_import_client_button',
+                                        'melisKey' => 'meliscommerce_clients_list_import_client_button',
+                                        'name' => 'tr_meliscommerce_clients_list_import_client_button',
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
+                                    ],
+                                ],
+                                'meliscommerce_clients_list_delete_client_button' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_clients_list_delete_client_button',
+                                        'melisKey' => 'meliscommerce_clients_list_delete_client_button',
+                                        'name' => 'tr_meliscommerce_clients_list_delete_client_button',
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
+                                    ],
+                                ],
+                                'meliscommerce_clients_list_save_client_button' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_clients_list_save_client_button',
+                                        'melisKey' => 'meliscommerce_clients_list_save_client_button',
+                                        'name' => 'tr_meliscommerce_clients_list_save_client_button',
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
+                                    ],
+                                ],
+                                'meliscommerce_client_add_contact' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_client_add_contact',
+                                        'melisKey' => 'meliscommerce_client_add_contact',
+                                        'name' => 'tr_meliscommerce_client_add_contact',
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
+                                    ],
+                                ],
+//                                'meliscommerce_client_edit_contact' => [
+//                                    'conf' => [
+//                                        'id' => 'id_meliscommerce_client_edit_contact',
+//                                        'melisKey' => 'meliscommerce_client_edit_contact',
+//                                        'name' => 'tr_meliscommerce_client_edit_contact',
+//                                        'left_menu_display' => false
+//                                    ],
+//                                ],
+                                'meliscommerce_client_set_default_contact' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_client_set_default_contact',
+                                        'melisKey' => 'meliscommerce_client_set_default_contact',
+                                        'name' => 'tr_meliscommerce_client_set_default',
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
+                                    ],
+                                ],
+                                'meliscommerce_client_unlink_contact' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_client_unlink_contact',
+                                        'melisKey' => 'meliscommerce_client_unlink_contact',
+                                        'name' => 'tr_meliscommerce_client_unlink_contact',
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
+                                    ],
+                                ],
+                                'meliscommerce_client_contact_list_add_contact_button' => [
+                                    'conf' => [
+                                        'id' => 'id_meliscommerce_client_contact_list_add_contact_button',
+                                        'melisKey' => 'meliscommerce_client_contact_list_add_contact_button',
+                                        'name' => 'tr_meliscommerce_client_contact_list_add_contact_button',
+                                        'left_menu_display' => false,
+                                        'user_rights_interface_group' => \MelisCore\Service\MelisCoreRightsService::MELISCORE_PREFIX_INTERFACE_GROUP_NAME_EXCLUSION,
+                                    ],
+                                ]
+                            ]
                         ],
                         'meliscommerce_clients_list_page' => [
                             'conf' => [
@@ -127,7 +334,7 @@ return [
                                                 'action' => 'render-client-list-widgets-month-clients',
                                             ],
                                         ],
-                                        'meliscommerce_clients_list_widgets_avg_clients' => [
+                                        'meliscommerce_clients_list_widgets_active_inactive' => [
                                             'conf' => [
                                                 'id' => 'id_meliscommerce_clients_list_widgets_avg_clients',
                                                 'melisKey' => 'meliscommerce_clients_list_widgets_avg_clients',
@@ -137,7 +344,7 @@ return [
                                             'forward' => [
                                                 'module' => 'MelisCommerce',
                                                 'controller' => 'MelisComClientList',
-                                                'action' => 'render-client-list-widgets-avg-clients',
+                                                'action' => 'render-client-list-widgets-active-inactive',
                                             ],
                                         ],
                                     ],
@@ -496,6 +703,7 @@ return [
                         'id' => 'id_meliscommerce_client_list_modal',
                         'name' => 'tr_meliscommerce_client_list_modal',
                         'melisKey' => 'meliscommerce_client_list_modal',
+                        'rightsDisplay' => 'none',
                     ],
                     'forward' => [
                         'module' => 'MelisCommerce',
@@ -515,6 +723,30 @@ return [
                                 'action' => 'render-client-list-content-export-form',
                             ],
                         ],
+                        'meliscommerce_client_list_export_accounts_form' => [
+                            'conf' => [
+                                'id' => 'id_meliscommerce_client_list_export_accounts_form',
+                                'name' => 'tr_meliscommerce_client_list_export_accounts_form',
+                                'melisKey' => 'meliscommerce_client_list_export_accounts_form',
+                            ],
+                            'forward' => [
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComClientList',
+                                'action' => 'render-client-list-content-export-accounts-form',
+                            ],
+                        ],
+                        'meliscommerce_client_list_import_accounts_form' => [
+                            'conf' => [
+                                'id' => 'id_meliscommerce_client_list_import_accounts_form',
+                                'name' => 'tr_meliscommerce_client_list_import_accounts_form',
+                                'melisKey' => 'meliscommerce_client_list_import_accounts_form',
+                            ],
+                            'forward' => [
+                                'module' => 'MelisCommerce',
+                                'controller' => 'MelisComClientList',
+                                'action' => 'render-client-list-content-import-accounts-form',
+                            ],
+                        ],
                     ],
                 ],
                 'meliscommerce_client_modal' => [
@@ -522,6 +754,7 @@ return [
                         'id' => 'id_meliscommerce_client_modal',
                         'melisKey' => 'meliscommerce_client_modal',
                         'name' => 'tr_meliscommerce_client_modal',
+                        'rightsDisplay' => 'none',
                     ],
                     'forward' => [
                         'module' => 'MelisCommerce',
@@ -549,8 +782,8 @@ return [
                             ],
                             'forward' => [
                                 'module' => 'MelisCommerce',
-                                'controller' => 'MelisComClient',
-                                'action' => 'render-client-modal-contact-address-form',
+                                'controller' => 'MelisComContact',
+                                'action' => 'render-contact-modal-contact-address-form',
                                 'jscallback' => 'initClientContactAddressForm();'
                             ],
                         ],

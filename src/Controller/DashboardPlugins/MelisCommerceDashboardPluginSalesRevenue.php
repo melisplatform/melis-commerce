@@ -34,7 +34,6 @@ class MelisCommerceDashboardPluginSalesRevenue extends MelisCoreDashboardTemplat
 
         $view = new ViewModel();
         $view->setTemplate('MelisCommerceDashboardPluginSalesRevenue/dashboard/commerce-sales-revenue');
-        $view->activeFilter = $this->pluginConfig['datas']['activeFilter'];
         $view->isAccessable = $isAccessable;
 
         return $view;
@@ -48,7 +47,7 @@ class MelisCommerceDashboardPluginSalesRevenue extends MelisCoreDashboardTemplat
 
         if($this->getController()->getRequest()->isPost()) {
             $chartFor = $this->getController()->getRequest()->getPost()->toArray();
-            $chartFor = ($chartFor['chartFor'] == "") ? $this->pluginConfig['datas']['activeFilter'] : $chartFor['chartFor'];
+            $chartFor = (! array_key_exists('chartFor', $chartFor)) ? 'hourly' : $chartFor['chartFor'];
 
             //$pluginConfig['activeFilter'] = $chartFor;
 
@@ -105,7 +104,117 @@ class MelisCommerceDashboardPluginSalesRevenue extends MelisCoreDashboardTemplat
         ));
     }
 
-    public function savePluginConfigToXml($config){
-        return "\t".'<activeFilter><![CDATA['.$config['activeFilter'].']]></activeFilter>'."\n";
+     /**
+     * This function generates the form displayed when editing the parameters of the plugin
+     * @return array
+     */
+    public function createOptionsForms()
+    {
+        // construct form
+        $factory = new \Laminas\Form\Factory();
+        $formElements = $this->getServiceManager()->get('FormElementManager');
+        $factory->setFormElementManager($formElements);
+        $formConfig = $this->pluginConfig['modal_form'];
+
+        $response = [];
+        $render   = [];
+        if (!empty($formConfig)) {
+            foreach ($formConfig as $formKey => $config) {
+                $form = $factory->createForm($config);
+                $request = $this->getServiceManager()->get('request');
+                $parameters = $request->getQuery()->toArray();
+
+                if (!isset($parameters['validate'])) {
+
+                    $form->setData($this->getFormData());
+                    $viewModelTab = new ViewModel();
+                    $viewModelTab->setTemplate($config['tab_form_layout']);
+                    $viewModelTab->modalForm = $form;
+                    $viewModelTab->formData   = $this->getFormData();
+                    $viewRender = $this->getServiceManager()->get('ViewRenderer');
+                    $html = $viewRender->render($viewModelTab);
+                    array_push($render, [
+                            'name' => $config['tab_title'],
+                            'icon' => $config['tab_icon'],
+                            'html' => $html
+                        ]
+                    );
+                }
+                else {
+
+                    // validate the forms and send back an array with errors by tabs
+                    $post = $request->getPost()->toArray();
+                    $success = false;
+                    $form->setData($post);
+
+                    $errors = array();
+                    if ($form->isValid()) {
+                        $data = $form->getData();
+                        $success = true;
+                        array_push($response, [
+                            'name' => $formConfig[$formKey]['tab_title'],
+                            'success' => $success,
+                        ]);
+                    } else {
+                        $errors = $form->getMessages();
+
+                        foreach ($errors as $keyError => $valueError) {
+                            foreach ($config['elements'] as $keyForm => $valueForm) {
+                                if ($valueForm['spec']['name'] == $keyError &&
+                                    !empty($valueForm['spec']['options']['label'])
+                                )
+                                    $errors[$keyError]['label'] = $valueForm['spec']['options']['label'];
+                            }
+                        }
+
+
+                        array_push($response, [
+                            'name' => $formConfig[$formKey]['tab_title'],
+                            'success' => $success,
+                            'errors' => $errors,
+                            'message' => '',
+                        ]);
+                    }
+
+                }
+            }
+        }
+
+        if (!isset($parameters['validate'])) {
+            return $render;
+        }
+        else {
+            return $response;
+        }
+    }
+
+    /**
+     * This method will decode the XML in DB to make it in the form of the plugin config file
+     * so it can overide it. Only front key is needed to update.
+     * The part of the XML corresponding to this plugin can be found in $this->pluginXmlDbValue
+     */
+    public function loadDbXmlToPluginConfig()
+    {
+        $configValues = array();
+
+        $xml = simplexml_load_string($this->pluginXmlDbValue);
+
+        if ($xml)
+        {
+            if (!empty($xml->activeFilter)) {
+                $configValues['activeFilter'] = (string)$xml->activeFilter;
+            }
+        }
+
+        return $configValues;
+    }
+
+    public function savePluginConfigToXml($parameters){
+        $xmlValueFormatted = '';
+
+        if (!empty($parameters['activeFilter']))
+            $xmlValueFormatted .= "\t\t" . '<activeFilter><![CDATA[' . $parameters['activeFilter'] . ']]></activeFilter>';
+
+        return $xmlValueFormatted;
     }
 }

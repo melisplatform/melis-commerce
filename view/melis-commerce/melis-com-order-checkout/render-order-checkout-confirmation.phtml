@@ -14,7 +14,7 @@
     </div>
     <div class="row">
         <div class="me-hl col-xs-12 col-md-12">
-            <div class="alert alert-<?php echo $this->result['alert']?>" role="alert">
+            <div class="alert alert-<?php echo $this->result['alert']?> d-none" role="alert">
             	<?php echo $this->result['message']?>
             	<?php if ($this->result['alert'] == 'success'):?>
             		<p><?php echo $this->result['refernce'] ?> </p>

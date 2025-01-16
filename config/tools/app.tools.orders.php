@@ -302,7 +302,7 @@ return [
                         'target' => '#tableOrderProductReturnList',
                         'ajaxUrl' => '/melis/MelisCommerce/MelisComOrderProductReturn/getOrderProductReturnList',
                         'dataFunction' => 'initOrderBasket',
-                        'ajaxCallback' => '',
+                        'ajaxCallback' => '', //orderProductReturnListCallback();
                         'filters' => [
                             'left' => [
 

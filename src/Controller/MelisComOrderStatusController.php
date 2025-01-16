@@ -344,12 +344,14 @@ class MelisComOrderStatusController extends MelisAbstractActionController
                 }
                 
                 $status = ($data->osta_status)? '<span class="text-success"><i class="fa fa-fw fa-circle"></i></span>' : '<span class="text-danger"><i class="fa fa-fw fa-circle"></i></span>';
-                
+
+                $statName = "<span class='d-none td-tooltip'>".$statusName."</span>".mb_strimwidth($statusName, 0, 30, '...');
+
                 $tableData[$c]['DT_RowId'] = $data->osta_id;
                 $tableData[$c]['osta_id'] = $data->osta_id;
                 $tableData[$c]['osta_status'] = $status;
                 $tableData[$c]['osta_color_code'] = $data->osta_color_code;
-                $tableData[$c]['ostt_status_name'] = $statusName;
+                $tableData[$c]['ostt_status_name'] = $statName;
                 $tableData[$c]['color_preview'] = sprintf($divSwatch, $data->osta_color_code);
                 $tableData[$c]['DT_RowClass'] = (in_array($data->osta_id, $primeStatus)) ? 'primeStatus' : '';
                 $c++;
@@ -377,7 +379,7 @@ class MelisComOrderStatusController extends MelisAbstractActionController
         $textMessage = 'tr_meliscommerce_order_status_save_failed';
         $textTitle = 'tr_meliscommerce_order_status_tool_leftmenu';
         
-        $this->getEventManager()->trigger('meliscommerce_order_status_save_start', $this, array());
+        $this->getEventManager()->trigger('meliscommerce_order_status_type_save_start', $this, array());
         
         $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
         $appConfigForm = $melisCoreConfig->getFormMergedAndOrdered('meliscommerce/forms/meliscommerce_order_status/meliscommerce_order_status_form','meliscommerce_order_status_form');
@@ -529,8 +531,15 @@ class MelisComOrderStatusController extends MelisAbstractActionController
             'errors' => $errors,
             'chunk' => $data,
         );
+
+        $logCode = empty($postValues['statusId']) ? 'ECOM_ORDER_STATUS_TYPE_ADD' : 'ECOM_ORDER_STATUS_TYPE_EDIT';
+        $itemId =  empty($postValues['statusId']) ? ($id ?? null) : $postValues['statusId'];
         
-        $this->getEventManager()->trigger('meliscommerce_order_status_save_end', $this, $response);
+        $this->getEventManager()->trigger(
+            'meliscommerce_order_status_type_save_end', 
+            $this, 
+            [...$response, 'typeCode' => $logCode, 'itemId' => $itemId]
+        );
         return new JsonModel($response);
     }
     

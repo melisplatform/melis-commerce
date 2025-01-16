@@ -19,7 +19,7 @@ return [
                             'method' => 'POST',
                             'action' => 'melis/MelisCommerce/MelisComVariant/savePricesForm',
                         ],
-                        'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                        'hydrator'  => 'Laminas\Hydrator\ArraySerializableHydrator',
                         'elements' => [
                             [
                                 'spec' => [

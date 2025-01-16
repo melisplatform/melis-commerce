@@ -452,7 +452,7 @@ class MelisComDocumentService extends MelisComGeneralService
 		*
 		* @return int|null The document id created or updated, null if an error occured
 		*/
-	public function saveDocument($docRelation, $relationId, $docCountry = 0, $document, $documentId = null)
+	public function saveDocument($docRelation, $relationId, $docCountry, $document, $documentId = null)
 	{
 		$savedDocId = null;
 		// Event parameters prepare
@@ -519,7 +519,7 @@ class MelisComDocumentService extends MelisComGeneralService
 		* @param int $uniqueId can be Product Id/VariantId
 		* @return boolean true/false
 		*/
-	public function deleteDocument($documentId, $uniqueId)
+	public function deleteDocument($documentId, $uniqueId = null)
 	{
 		// Event parameters prepare
 		$arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -539,8 +539,10 @@ class MelisComDocumentService extends MelisComGeneralService
 					$results = (bool) $docRelTable->deleteByField('rdoc_doc_id', $id);
 
 					//clear product cache to get the latest product document data
-                    $commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
-                    $commerceCacheService->deleteCache('document', $uniqueId, ['product', 'variant']);
+					if ($uniqueId) {
+						$commerceCacheService = $this->getServiceManager()->get('MelisComCacheService');
+                    	$commerceCacheService->deleteCache('document', $uniqueId, ['product', 'variant']);
+					}                    
 				}
 				
 			}

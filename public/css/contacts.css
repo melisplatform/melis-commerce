@@ -1,0 +1,32 @@
+.test-results .results {
+    max-height: 300px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.test-results .results ul{
+    margin-left: 18px;
+}
+
+.file-content-format .span-8 {
+    font-size: 8pt;
+}
+
+.file-content-format .span-10 {
+    font-size: 10pt;
+}
+
+.sample_import_format{
+    margin-bottom: 20px;
+}
+
+.sample_import_format span.required{
+    color: #ff0016;
+}
+#contactList tbody td span.td-tooltip{
+    background: #000;
+    position: absolute;
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: #fff;
+}

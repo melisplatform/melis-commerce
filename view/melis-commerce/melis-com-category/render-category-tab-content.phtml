@@ -7,7 +7,7 @@
 ?>
 <div class="widget widget-tabs widget-tabs-double-2 widget-tabs-responsive" <?php echo $id. ' '.$data_melisKey?>>
 	<div class="widget-head nav">
-		<ul class="tabs-label nav-tabs">
+		<ul class="tabs-label nav-tabs nav">
 			<?php 
             	if(!empty($this->zoneconfig['interface'])) {
             	    foreach($this->zoneconfig['interface'] as $keyConfig => $menuConfig) {
@@ -16,8 +16,8 @@
             	        $tabIcon = $menuConfig['conf']['icon'];
             	        $tabName = $menuConfig['conf']['name'];
             	        
-            	        echo '<li>
-                	            <a class="'.$tabIcon.'" data-toggle="tab" href="#'.$tabId.'" aria-expanded="true">
+            	        echo '<li class="nav-item">
+                	            <a class="nav-link '.$tabIcon.'" data-bs-toggle="tab" href="#'.$tabId.'" aria-expanded="true">
                             		<i></i>
                             		<span>'.$this->translate($tabName).'</span>
                             	</a>

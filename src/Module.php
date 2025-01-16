@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /**
  * Melis Technology (http://www.melistechnology.com)
@@ -13,8 +13,6 @@ use MelisEngine\Service\MelisPageService;
 use Laminas\Mvc\ModuleRouteListener;
 use Laminas\Mvc\MvcEvent;
 use Laminas\ModuleManager\ModuleManager;
-use Laminas\Db\TableGateway\TableGateway;
-use Laminas\Db\ResultSet\HydratingResultSet;
 use Laminas\Stdlib\ArrayUtils;
 use Laminas\Session\Container;
 use Laminas\ModuleManager\ModuleEvent;
@@ -27,6 +25,8 @@ use MelisCommerce\Listener\GDPR\MelisCommerceGdprAutoDeleteWarningListUsersListe
 use MelisCommerce\Listener\GDPR\MelisCommerceGdprLoginListener;
 use MelisCommerce\Listener\GDPR\MelisCommerceGdprUserExtractListener;
 use MelisCommerce\Listener\GDPR\MelisCommerceGdprUserInfoListener;
+use Illuminate\Database\Capsule\Manager as Capsule;
+
 use MelisCommerce\Listener\MelisCommerceCategoryListener;
 use MelisCommerce\Listener\MelisCommerceFlashMessengerListener;
 use MelisCommerce\Listener\MelisCommerceSaveProductListener;
@@ -73,27 +73,27 @@ class Module
         $eventManager        = $e->getApplication()->getEventManager();
         $moduleRouteListener = new ModuleRouteListener();
         $moduleRouteListener->attach($eventManager);
-        
+
         $container = new Container('meliscommerce');
         $container['documents'] = ['docRelationType' => '', 'docRelationId' => 0];
         // Determines if Melis is loaded or Front is loaded
         $melisRoute = false;
         $sm = $e->getApplication()->getServiceManager();
         $routeMatch = $sm->get('router')->match($sm->get('request'));
-        
+
         if (!empty($routeMatch)) {
             $routeName = $routeMatch->getMatchedRouteName();
-            
+
             $module = explode('/', $routeName);
-            
+
             $this->createTranslations($e, $routeMatch);
-            
+
             if (!empty($module[0])) {
                 if ($module[0] == 'melis-backoffice')
                     $melisRoute = true;
             }
         }
-        
+
         if ($melisRoute) {
             // attach listeners for Melis
             (new MelisCommerceCategoryListener())->attach($eventManager);
@@ -115,7 +115,6 @@ class Module
             (new MelisCommercePrdVarDuplicationListener())->attach($eventManager);
             (new MelisCommerceSaveProductStockEmailAlertListener())->attach($eventManager);
             (new MelisCommerceDataTableTranslationsListener())->attach($eventManager);
-            
         } else {
             // attach listeners for Front
             (new MelisCommerceSEOReformatToRoutePageUrlListener())->attach($eventManager);
@@ -124,11 +123,11 @@ class Module
 
             // Adding Commerce SEO meta datas to page
             (new MelisCommerceSEOMetaPageListener())->attach($eventManager);
-            
+
             // Init session for services that uses session (checkout)
             $container = new Container('meliscommerce');
         }
-        
+
         (new MelisCommerceShipmentCostListener())->attach($eventManager);
         (new MelisCommerceCheckoutCouponListener())->attach($eventManager);
         (new MelisCommercePostCheckoutCouponListener())->attach($eventManager);
@@ -152,34 +151,60 @@ class Module
         (new MelisCommerceGdprUserInfoListener())->attach($eventManager);
         (new MelisCommerceGdprLoginListener())->attach($eventManager);
     }
-    
+
     public function init(ModuleManager $manager)
     {
         $events = $manager->getEventManager();
         $events->attach(ModuleEvent::EVENT_MERGE_CONFIG, array($this, 'updateRoutesFrontBack'));
+        $events->attach(ModuleEvent::EVENT_MERGE_CONFIG, array($this, 'illuminateBootLoader'));
     }
-    
+
+    public function illuminateBootLoader(ModuleEvent $e)
+    {
+        $config = $e->getConfigListener()->getMergedConfig(false);
+
+        if (!isset($config['db'])) {
+            throw new \Exception('Unable to load MelisCommerce module');
+        }
+
+        // @INFO: Load database
+        $capsule = new Capsule;
+        $charset = 'utf8mb4';
+
+        $capsule->addConnection(array_merge(
+            $config['db'],
+            [
+                'driver' => 'mysql',
+                'host' => $config['db']['hostname'],
+                'charset' => $charset,
+                'collation' => $charset . '_general_ci',
+            ]
+        ));
+
+        $capsule->setAsGlobal();
+        $capsule->bootEloquent();
+    }
+
     public function updateRoutesFrontBack(ModuleEvent $e)
     {
-        if(!empty($_SERVER['REQUEST_URI'])){
+        if (!empty($_SERVER['REQUEST_URI'])) {
             $uri = $_SERVER['REQUEST_URI'];
             $uri1 = '';
             $tabUri = explode('/', $uri);
             if (!empty($tabUri[1]))
                 $uri1 = $tabUri[1];
-            
-                if ($uri1 != 'melis') {
-                    // No need of BO routes if we're in front
-                    $configListener = $e->getConfigListener();
-                    $config         = $configListener->getMergedConfig(false);
-            
-                    unset($config['router']['routes']['melis-backoffice']);
-            
-                    // Pass the changed configuration back to the listener:
-                    $configListener->setMergedConfig($config);
-                } 
-        }        
-        
+
+            if ($uri1 != 'melis') {
+                // No need of BO routes if we're in front
+                $configListener = $e->getConfigListener();
+                $config         = $configListener->getMergedConfig(false);
+
+                unset($config['router']['routes']['melis-backoffice']);
+
+                // Pass the changed configuration back to the listener:
+                $configListener->setMergedConfig($config);
+            }
+        }
     }
 
     public function getConfig()
@@ -210,7 +235,8 @@ class Module
             include __DIR__ . '/../config/interface/app.interface.groups.php',
             include __DIR__ . '/../config/interface/app.interface.settings.php',
             include __DIR__ . '/../config/interface/app.interface.product-page-associations.php',
-        
+            include __DIR__ . '/../config/interface/app.interface.contact.php',
+
             include __DIR__ . '/../config/forms/app.forms.general.php',
             include __DIR__ . '/../config/forms/app.forms.documents.php',
             include __DIR__ . '/../config/forms/app.forms.categories.php',
@@ -227,7 +253,8 @@ class Module
             include __DIR__ . '/../config/forms/app.forms.duplications.php',
             include __DIR__ . '/../config/forms/app.forms.settings.php',
             include __DIR__ . '/../config/forms/app.forms.products-page-associations.php',
-        
+            include __DIR__ . '/../config/forms/app.forms.contact.php',
+
             include __DIR__ . '/../config/tools/app.tools.general.php',
             include __DIR__ . '/../config/tools/app.tools.documents.php',
             include __DIR__ . '/../config/tools/app.tools.categories.php',
@@ -245,6 +272,7 @@ class Module
             include __DIR__ . '/../config/tools/app.tools.country.php',
             include __DIR__ . '/../config/tools/app.tools.assoc_var.php',
             include __DIR__ . '/../config/tools/app.tools.clients_group.php',
+            include __DIR__ . '/../config/tools/app.tools.contact.php',
 
             // categories plugin configs
             include __DIR__ . '/../config/plugins/categories/MelisCommerceCategoryProductListPlugin.php',
@@ -259,7 +287,7 @@ class Module
             include __DIR__ . '/../config/plugins/clients/MelisCommerceProfilePlugin.php',
             include __DIR__ . '/../config/plugins/clients/MelisCommerceDeliveryAddressPlugin.php',
             include __DIR__ . '/../config/plugins/clients/MelisCommerceBillingAddressPlugin.php',
-            
+
             // order plugin configs
             include __DIR__ . '/../config/plugins/orders/MelisCommerceAddToCartPlugin.php',
             include __DIR__ . '/../config/plugins/orders/MelisCommerceCheckoutPlugin.php',
@@ -294,11 +322,11 @@ class Module
             // GDPR
             include __DIR__ . '/../config/gdpr.config.php',
         ];
-        
+
         foreach ($configFiles as $file) {
             $config = ArrayUtils::merge($config, $file);
-        } 
-        
+        }
+
         return $config;
     }
 
@@ -312,7 +340,7 @@ class Module
             ],
         ];
     }
-    
+
     public function createTranslations($e, $routeMatch)
     {
         $sm = $e->getApplication()->getServiceManager();
@@ -325,7 +353,7 @@ class Module
         $request = $sm->get('request');
         if ($renderMode == 'melis') {
             // for templating plugins in page edition, page content lang. should be based from page lang.
-            if ( (isset($param['renderType']) && isset($param['renderMode']) && isset($param['idpage']) ) || ($param['action'] == "getPlugin" && $param['controller'] == "MelisFront\Controller\MelisPluginRenderer")) {
+            if ((isset($param['renderType']) && isset($param['renderMode']) && isset($param['idpage'])) || ($param['action'] == "getPlugin" && $param['controller'] == "MelisFront\Controller\MelisPluginRenderer")) {
                 $container = new Container('melisplugins');
                 $locale = $this->getPageLocale($sm);
             } else {
@@ -338,9 +366,9 @@ class Module
         }
 
 
-        if(!empty($locale)) {
+        if (!empty($locale)) {
             // Commerce sub modules langauge config
-            // used to identify the folder and file name: 
+            // used to identify the folder and file name:
             // Translation path:            module/MelisModuleConfig/languages/MelisCommerce/[locale].interface.[module].php'
             // Default translation path :   __DIR__ . '/../language/[module]/en_EN.interface.[module].php';
             $commerceSubModules = [
@@ -363,37 +391,38 @@ class Module
                 'duplication',
                 'clients-group',
                 'settings',
+                'contact',
             ];
-            
+
             $translationType = [
                 'interface',
                 'forms',
             ];
-            
+
             $translationList = [];
-            if(file_exists($_SERVER['DOCUMENT_ROOT'].'/../module/MelisModuleConfig/config/translation.list.php')){
+            if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/../module/MelisModuleConfig/config/translation.list.php')) {
                 $translationList = include 'module/MelisModuleConfig/config/translation.list.php';
             }
-            
+
             // Load translation files
-            foreach($commerceSubModules as $subModule) {
-                
-                foreach($translationType as $type) {
+            foreach ($commerceSubModules as $subModule) {
+
+                foreach ($translationType as $type) {
 
                     $transPath = '';
-                    $moduleTrans = __NAMESPACE__."/$locale.$type.$subModule.php";
-                    
-                    if(in_array($moduleTrans, $translationList)) {
-                        $transPath = "module/MelisModuleConfig/languages/".$moduleTrans;
+                    $moduleTrans = __NAMESPACE__ . "/$locale.$type.$subModule.php";
+
+                    if (in_array($moduleTrans, $translationList)) {
+                        $transPath = "module/MelisModuleConfig/languages/" . $moduleTrans;
                     }
-                    
-                    if(empty($transPath)) {
-                    
+
+                    if (empty($transPath)) {
+
                         // if translation is not found, use melis default translations
-                        $defaultLocale = (file_exists(__DIR__ . "/../language/$subModule/$locale.$type.$subModule.php"))? $locale : "en_EN";
+                        $defaultLocale = (file_exists(__DIR__ . "/../language/$subModule/$locale.$type.$subModule.php")) ? $locale : "en_EN";
                         $transPath = __DIR__ . "/../language/$subModule/$defaultLocale.$type.$subModule.php";
                     }
-                    
+
                     $translator->addTranslationFile('phparray', $transPath);
                 }
             }

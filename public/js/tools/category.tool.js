@@ -78,7 +78,7 @@ $(function() {
 			catId = $this.data("catid"),
 			dataString = new Array();
 
-		$this.attr("disabled", "disabled");
+		$this.prop("disabled", true);
 
 		// Serialize Forms of Category Panel
 		dataString = $("#id_meliscommerce_categories_category form")
@@ -166,8 +166,7 @@ $(function() {
 			cache: false,
 		})
 			.done(function(data) {
-				var $body = $("body");
-				$("#saveCategory").removeAttr("disabled");
+				$("#saveCategory").prop("disabled", false);
 
 				if (data.success) {
 					$("#categoryTreeViewPanel").collapse("show");
@@ -253,6 +252,8 @@ $(function() {
 					$("#categoryTreeView #" + selectedNode + " div")
 						.first()
 						.addClass("jstree-wholerow-clicked");
+					
+					$("#refreshCategoryTreeView").trigger("click");
 				} else {
 					melisHelper.melisKoNotification(
 						data.textTitle,
@@ -268,7 +269,7 @@ $(function() {
 				melisCore.flashMessenger();
 			})
 			.fail(function() {
-				$("#saveCategory").removeAttr("disabled");
+				$("#saveCategory").prop("disabled", false);
 				alert(translations.tr_meliscore_error_message);
 			});
 	});
@@ -284,9 +285,7 @@ $(function() {
 
 			categoryOpeningItemFlag = false;
 
-			$(
-				".cat-tree-view-languages.commerce-category-tree-view-languages span.filter-key"
-			).text(langText);
+			$(".cat-tree-view-languages.commerce-category-tree-view-languages span.filter-key").text(langText);
 			$("#categoryTreeView").data("langlocale", langLocale);
 			$("#categoryTreeView").jstree(true).settings.core.data.data = [
 				{ name: "langlocale", value: langLocale },
@@ -321,8 +320,8 @@ $(function() {
 	});
 
 	$body.on("keyup keypress", "#categoryTreeViewSearchForm", function(e) {
-		var keyCode = e.keyCode || e.which;
-		if (keyCode === 13) {
+		var key = e.key || e.which;
+		if (key === 'Enter') {
 			e.preventDefault();
 			return false;
 		}
@@ -368,7 +367,7 @@ $(function() {
 			// unchecking category Checkbox
 			$this.find(".fa").removeClass("fa-check-square-o");
 			$this.find(".fa").addClass("fa-square-o");
-			$this.find('input[type="checkbox"]').removeAttr("checked");
+			$this.find('input[type="checkbox"]').prop("checked", false);
 
 			// If the uncheck is check all checkbox
 			if ($this.find(".check-all").hasClass("fa-square-o")) {
@@ -381,13 +380,13 @@ $(function() {
 				$(".ecom-coutries-checkbox .fa")
 					.not(".check-all")
 					.next('input[type="checkbox"]')
-					.removeAttr("checked");
+					.prop("checked", false);
 			}
 		} else {
 			// Checking Category Checkboxes
 			$this.find(".fa").removeClass("fa-square-o");
 			$this.find(".fa").addClass("fa-check-square-o");
-			$this.find('input[type="checkbox"]').attr("checked", "checked");
+			$this.find('input[type="checkbox"]').prop("checked", true);
 		}
 
 		// check all countries
@@ -408,20 +407,20 @@ $(function() {
 			$(".ecom-coutries-checkbox .fa")
 				.not(".check-all")
 				.next('input[type="checkbox"]')
-				.removeAttr("checked");
+				.prop("checked", false);
 
 			// Check mark on checkbox all ang its input checkbox
 			$(".ecom-coutries-checkbox .fa.check-all").removeClass("fa-square-o");
 			$(".ecom-coutries-checkbox .fa.check-all").addClass("fa-check-square-o");
 			$(".ecom-coutries-checkbox .fa.check-all")
 				.next('input[type="checkbox"]')
-				.attr("checked", "checked");
+				.prop("checked", true);
 		} else {
 			// puting back checkbox with check mark to input checkbox checked
 			$(".ecom-coutries-checkbox .fa.fa-check-square-o")
 				.not(".check-all")
 				.next('input[type="checkbox"]')
-				.attr("checked", "checked");
+				.prop("checked", true);
 
 			// Unchecking "check all" checkbox
 			$(".ecom-coutries-checkbox .fa.check-all").addClass("fa-square-o");
@@ -430,7 +429,7 @@ $(function() {
 			);
 			$(".ecom-coutries-checkbox .fa.check-all")
 				.next('input[type="checkbox"]')
-				.removeAttr("checked");
+				.prop("checked", false);
 		}
 
 		evt.stopPropagation();
@@ -442,9 +441,9 @@ $(function() {
 		var $this = $(this);
 
 		if (state.value == true) {
-			$this.find('input[type="checkbox"]').attr("checked", "checked");
+			$this.find('input[type="checkbox"]').prop("checked", true);
 		} else {
-			$this.find('input[type="checkbox"]').removeAttr("checked");
+			$this.find('input[type="checkbox"]').prop("checked", false);
 		}
 	});
 
@@ -596,8 +595,8 @@ $(function() {
 	$body.on("click", "#categoryTreeView .jstree-clicked", function() {
 		var $addCategory = $("#" + activeTabId + " .addCategory");
 
-		$addCategory.attr("disabled", false);
-		$addCategory.attr("title", null);
+		$addCategory.prop("disabled", false);
+		$addCategory.prop("title", null);
 	});
 
 	// Open Single Node in JSTree
@@ -614,7 +613,7 @@ $(function() {
 			loaderText =
 				'<div class="qtipLoader"><hr/><span class="text-center col-lg-12">Loading...</span><br/></div>';
 
-			$(".thClassColId").attr("style", "");
+			$(".thClassColId").prop("style", null);
 
 			$.each(
 				$("table#catProductTable" + productId + " thead").nextAll(),
@@ -679,11 +678,11 @@ window.enableDisableAddCategoryBtn = function(action) {
 	var addCategory = $(".addCategory");
 
 	if (action == "enable") {
-		addCategory.attr("disabled", false);
-		addCategory.attr("title", null);
+		addCategory.prop("disabled", false);
+		addCategory.prop("title", null);
 	} else if (action == "disable") {
-		addCategory.attr("disabled", true);
-		addCategory.attr(
+		addCategory.prop("disabled", true);
+		addCategory.prop(
 			"title",
 			translations.tr_meliscommerce_categories_category_no_selected_catalog_category
 		);
@@ -825,6 +824,7 @@ window.initCategoryTreeView = function() {
 				// Position is the index on the data
 				// Adding One(1) to make to avaoid Zero(0) index of position
 				categoryNewPosition = data.position + 1,
+
 				dataString = new Array();
 
 			// get data from input
@@ -860,13 +860,32 @@ window.initCategoryTreeView = function() {
 				.done(function(data) {
 					if (data.success) {
 						$currentCategoryId = $("body #saveCategory").data("catid");
-
+						
 						if ($currentCategoryId == parseInt(categoryId, 10)) {
 							$("body #saveCategory").data(
 								"catfatherid",
 								parseInt(newParentId, 10)
 							);
 						}
+
+						// added by: Junry
+						var temp = $("ul.jstree-container-ul > li > a");
+
+						temp.each(function() {
+							var father = $(this),
+								fatherIcon = father.data("fathericon"),
+								temp = father.find("i");
+
+							father.html(
+								temp.get(0).outerHTML +
+									"<strong>" +
+									fatherIcon +
+									" " +
+									father.text() +
+									"</strong>"
+							);
+							
+						});
 					} else {
 						alert(translations.tr_meliscore_error_message);
 					}
@@ -1002,7 +1021,7 @@ window.initCategoryTreeView = function() {
 				check_callback: true,
 				animation: 500,
 				themes: {
-					name: "proton",
+					name: "default",
 					responsive: false,
 				},
 				dblclick_toggle: false,

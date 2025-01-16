@@ -26,23 +26,24 @@ $(function () {
 
 	$body.on("click", ".add-variant", function () {
 		var $this = $(this),
-			productId = $this
-				.closest(".container-level-a")
-				.attr("id")
-				.replace(/[^0-9]/g, ""),
+			productId = $this.closest(".container-level-a").attr("id").replace(/[^0-9]/g, ""),
 			prodTabId = productId + "_id_meliscommerce_products_page";
 
-		melisCoreTool.processing();
-		melisHelper.tabOpen(
-			translations.tr_meliscommerce_variant_main_information_sku_new,
-			"icon-tag-2",
-			"id_meliscommerce_variants_page",
-			"meliscommerce_variants_page",
-			{ productId: productId, page: "newvar" },
-			prodTabId
-		);
-		melisCommerce.setUniqueId(0);
-		melisCoreTool.processDone();
+			// melisCoreTool.processing();
+
+			melisHelper.tabOpen(
+				translations.tr_meliscommerce_variant_main_information_sku_new,
+				"icon-tag-2",
+				"id_meliscommerce_variants_page",
+				"meliscommerce_variants_page",
+				{ productId: productId, page: "newvar" },
+				prodTabId,
+				() => {
+					melisCommerce.setUniqueId(0);
+
+					melisCoreTool.processDone();	
+				}
+			);
 	});
 
 	$body.on("click", ".save-add-variant", function () {
@@ -54,26 +55,17 @@ $(function () {
 		var $this = $(this),
 			textCountry = $this.data("country"),
 			textSymbol = $this.data("symbol"),
-			$curSymbol = $(
-				"[data-meliskey='meliscommerce_prices_tab_country_header'] .cur-symbol"
-			);
+			$curSymbol = $("[data-meliskey='meliscommerce_prices_tab_country_header'] .cur-symbol");
 
-		if (textSymbol != "") {
-			$curSymbol
-				.removeClass("fa fa-dollar")
-				.text(textSymbol)
-				.css("font-weight", "600");
-		} else {
-			if (!$curSymbol.hasClass("fa")) {
-				$curSymbol.empty().addClass("fa fa-dollar").removeAttr("style");
+			if (textSymbol != "") {
+				$curSymbol.removeClass("fa fa-dollar").text(textSymbol).css("font-weight", "600");
+			} else {
+				if (!$curSymbol.hasClass("fa")) {
+					$curSymbol.empty().addClass("fa fa-dollar").prop("style", null);
+				}
 			}
-		}
 
-		$(".country-price-label").text(
-			textCountry +
-				" " +
-				translations.tr_meliscommerce_variant_tab_prices_pricing
-		);
+			$(".country-price-label").text(textCountry +" " +translations.tr_meliscommerce_variant_tab_prices_pricing);
 	});
 
 	$body.on("click", ".country-stock-tab li a", function () {
@@ -358,7 +350,7 @@ $(function () {
 			data: $.param(obj),
 			beforeSend: function () {
 				//disable the button
-				_this.addClass("disabled").attr("disabled", true);
+				_this.addClass("disabled").prop("disabled", true);
 				//change icon to loader
 				_this
 					.find(".variant-update-icon-rotate")
@@ -415,7 +407,7 @@ $(function () {
 					//change btn title
 					_this.attr("title", btnTitle);
 				}
-				_this.removeClass("disabled").attr("disabled", false);
+				_this.removeClass("disabled").prop("disabled", false);
 			})
 			.fail(function () {
 				alert(translations.tr_meliscore_error_message);

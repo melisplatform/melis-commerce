@@ -1,0 +1,1 @@
+ALTER TABLE `melis_ecom_client_person` ADD `cper_tags` VARCHAR(255) NULL AFTER `cper_tel_landline`;

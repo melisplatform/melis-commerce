@@ -1,187 +1,35 @@
-<?php 
-	$id = '';
-	if (!empty($this->zoneconfig['conf']['id'])){
-		$id = 'id="'.$this->clientId.'_'.$this->zoneconfig['conf']['id'] .'"';
-	}
-	$data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+<?php
+$id = '';
+if (!empty($this->zoneconfig['conf']['id'])) {
+	$id = 'id="' . $this->zoneconfig['conf']['id'] . '"';
+}
+$data_melisKey = 'data-melisKey="' . $this->melisKey . '"';
 ?>
 
-<div <?php echo $id.' '.$data_melisKey; ?>>
-	<div class="row">
-		<div class="col-xs-12 col-md-3 col-lg-2">
-			<div class="product-text-tab-container">
-				<ul class="nav-tabs product-text-tab" id="<?php echo $this->clientId.'_client_contact_tab_nav' ?>">
-					<?php foreach ($this->clientPerson As $val):?>
-						<?php 
-							$tabId = md5($val->cper_id);
-						?>
-						<li class="">
-							<a class="clearfix" data-toggle="tab" id="<?php echo 'nav_'.$tabId ?>" href="#<?php echo $tabId ?>" aria-expanded="false">
-								<span>
-									<?php if ($val->cper_status):?>
-										<label class="fa fa-circle text-success"></label>
-									<?php else:?>
-										<label class="fa fa-circle text-danger"></label>
-									<?php endif;?>
-									<?php if ($val->cper_is_main_person):?>
-										<label class="fa fa-star"></label>
-									<?php endif;?>
-									<?php echo $this->escapeHtml($val->cper_firstname).' '. $this->escapeHtml($val->cper_name); ?>
-								</span> 
-							</a>
-						</li>
-					<?php endforeach;?>
-				</ul>
-			</div>
-		</div>
-		<div class="col-xs-12 col-md-9 col-lg-10">
-			<div class="tab-content client-contact-tab-content" id="<?php echo $this->clientId.'_client_contact_tab_content' ?>">
-				<?php foreach ($this->clientPerson As $val):?>
-					<?php $tabId = md5($val->cper_id); ?>
-					<div id="<?php echo $tabId ?>" class="tab-pane product-text-tab-content" style="border: 1px solid #eee; padding: 15px; margin-bottom: 20px">
-						<div class="me-heading bg-white border-bottom" style="margin-bottom: 15px">
-							<h3 class=""><i class="fa fa-user" aria-hidden="true"></i> <?php echo $this->translate('tr_meliscommerce_client_Contact_main_datas') ?></h3>
-						</div>
-						<div class="form-group">
-							<div class="row">
-								<div class="col-6">
-									<div class="main-contact-start">
-										<i class="fa <?php echo ($val->cper_is_main_person) ? 'fa-star' : 'fa-star-o'?> fa-2x clientMainContact"  data-clientid="<?php echo $this->clientId ?>" data-tabid="<?php echo $tabId ?>" aria-hidden="true" title="<?php echo $this->translate('tr_meliscommerce_client_Main_contact')?>"></i>
-									</div>
-								</div>
-								<div class="col-6" style="text-align: right;">
-									<div class="make-switch clientContactStatus <?php echo $this->clientId.'-client-contact-status'?>" data-clientid="<?php echo $this->clientId ?>" data-tabid="<?php echo $tabId ?>" data-text-label="<?php echo $this->translate('tr_meliscommerce_client_Contact_status')?>" data-on-label="<?php echo $this->translate('tr_meliscommerce_client_Contact_status_active')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_client_Contact_status_inactive')?>">
-										<input type="checkbox" name="cper_status" <?php echo ($val->cper_status) ? 'checked' : ''?>>
-									</div>
-								</div>
-							</div>
-							<?php 
-								$form = clone($this->meliscommerce_clients_contact_form);
-								$form->bind($val);
-								$form->setAttribute('id', $tabId.'_contact_form');
-								$form->setAttribute('data-tabid', $tabId);
-								$form->get('cper_password')->setValue('');
-								$form->get('cper_password')->setAttribute('placeholder', $this->translate('tr_meliscommerce_client_Contact_password_placeholder'));
-								$form->get('cper_confirm_password')->setAttribute('placeholder', $this->translate('tr_meliscommerce_client_Contact_password_placeholder'));
-								$form->get('cper_password')->setLabel($form->get('cper_password')->getLabel().' <i class="fa fa-info-circle fa-lg" title="'.$this->translate('tr_meliscommerce_client_tooltip_password').'"></i>');
-								$form->get('cper_confirm_password')->setLabel($form->get('cper_confirm_password')->getLabel().' <i class="fa fa-info-circle fa-lg" title="'.$this->translate('tr_meliscommerce_client_tooltip_password_2').'"></i>');
+<div <?php echo $id . ' ' . $data_melisKey; ?>>
+	<?php
+	$this->melisGenericTable()->setTable(array(
+		'id' => $this->clientId . '_accountContactList',
+		'class' => 'table table-striped table-primary dt-responsive nowrap',
+		'cellspacing' => '0',
+		'width' => '100%'
+	));
 
-								foreach($form->getElements() as $element => $attributes)  {
-									$el =  $form->get((string) $element);
-									$elId = $el->getAttribute('id') ?? $el->getName();
+	$columns = array();
+	$columnStyle = array();
+	foreach ($this->tableColumns as $columnText) {
+		$columns[] = $columnText['text'];
+	}
 
-									$el->setAttribute('id', $tabId . '_' . $elId);
-								}
+	$this->melisGenericTable()->setColumns($columns);
 
-								$form->prepare();
-								echo $this->form()->openTag($form);
-								echo $this->melisFieldCollection($form);
+	echo $this->melisGenericTable()->renderTable();
 
-							?>
-							<?php if (! empty($val->emails)) : ?>
-								<?php if (count($val->emails) > 1) : ?>
-								<div class="client-email-list dropdown label-text" style="display: none;font-weight: normal;">
-									&nbsp; (<a style="text-decoration: underline;"><?= $this->translate('tr_meliscommerce_clients_contact_person_email_list_choose_in_list') ?></a>)
-									<ul class="dropdown-menu client-email-dropdown-content" style="margin-top: -4px;">
-										<?php foreach ($val->emails as $email) : ?>
-											<?php if (isset($email['cpmail_email'])) : ?>
-											<li>
-													<?php if ($val->cper_email == $email['cpmail_email']) : ?>
-													<a class="dropdown-item client-email-dropdown-item d-flex flex-row justify-content-between"><?= $email['cpmail_email'] ?></a>
-													<?php else : ?>
-													<a class="dropdown-item client-email-dropdown-item d-flex flex-row justify-content-between"><?= $email['cpmail_email'] ?>&nbsp; <button class="btn btn-danger delete-client-email btn-xs py-0" data-id="<?= $email['cpmail_id'] ?>"><i class="fa fa-times"></i></button></a>
-													<?php endif; ?>
-											</li>
-											<?php endif  ?>
-										<?php endforeach; ?>
-									</ul>
-								</div>
-								<?php endif; ?>
-							<?php endif; ?>
-							<?php
-								echo $this->form()->closeTag();
-							?>
-						</div>
-						<br>
-						<div class="me-heading bg-white border-bottom" style="margin-bottom: 15px">
-							<div class="row">
-								<div class="col-xs-12 col-md-6">
-									<h3 class=""><i class="fa fa-map-marker"></i>  <?php echo $this->translate('tr_meliscommerce_client_Contact_addresses')?></h3>
-								</div>
-								<div class="col-xs-12 col-md-6" style="text-align: right;">
-									<button class="btn btn-success addNewContactAddress" data-loading-text="<?php echo $this->translate('tr_meliscommerce_clients_common_label_loading') ?>" data-clientid="<?php echo $this->clientId ?>" data-tabid="<?php echo $tabId ?>"><i class="fa fa-plus"></i> <?php echo $this->translate('tr_meliscommerce_clients_add_contact_address')?></button>
-								</div>
-							</div>
-						</div>
-						<div class="accordion client-contact-address" id="<?php echo  $tabId.'_contact_address' ?>">
-							<?php foreach ($val->addresses As $pVal):?>
-								<?php $contactAddressId = md5($pVal->cadd_id)?>
-								<div class="card default-card" id="<?php echo $contactAddressId.'_contact_address_content'?>">
-									<div class="card-header">
-										<div class="row">
-											<div class="col-11">
-												<h4 class="card-title">
-													<a class="accordion-toggle collapsed" id="<?php echo 'nav_'.$contactAddressId ?>" data-toggle="collapse" data-parent="#<?php echo  $tabId.'_address' ?>" href="#<?php echo $contactAddressId.'_address_acordion' ?>">
-														<?php echo $pVal->cadd_address_name ?>
-													</a>
-												</h4>
-											</div>
-											<div class="col-1">
-												<i class="fa fa-times float-right fa-lg deleteClientCotactAddress" data-tabid="<?php echo $tabId?>" data-addressid="<?php echo $pVal->cadd_id ?>" data-addressaccordionid="<?php echo $contactAddressId ?>" data-isnewadded="0" style="margin-top: 5px; cursor: pointer"></i>
-											</div>
-										</div>
-									</div>
-									<div id="<?php echo $contactAddressId.'_address_acordion' ?>" class="card-collapse collapse">
-										<div class="card-body">
-											<div class="innerAll spacing-x2">
-												<?php 
-													$addForm = clone($this->meliscommerce_clients_addresses_form);
-													$addForm->setAttribute('id', $contactAddressId.'_contact_address_form');
-													$addForm->setAttribute('data-contactaddressid', $contactAddressId);
-													$addForm->setAttribute('class', 'clientContactAddressForm');
+	?>
 
-													$addForm->prepare();
-
-													foreach($addForm->getElements() as $element => $attributes)  {
-														$el =  $addForm->get((string) $element);
-														$elId = $el->getAttribute('id') ?? $el->getName();
-
-														$el->setAttribute('id', $contactAddressId . '_' . $elId);
-													}
-
-													$addForm->bind($pVal);
-
-													echo $this->form()->openTag($addForm);
-													echo $this->melisFieldCollection($addForm);
-													echo $this->form()->closeTag();
-												?>
-											</div>
-										</div>
-									</div>
-								</div>
-							<?php endforeach;?>
-						</div>
-					</div>
-				<?php endforeach;?>
-			</div>
-		</div>
-	</div>
+	<script type="text/javascript">
+		$(function() {
+			<?php echo $this->getToolDataTableConfig; ?>
+		});
+	</script>
 </div>
-<script>
-	$('.<?php echo $this->clientId.'-client-contact-main-switch'?>, .<?php echo $this->clientId.'-client-contact-status'?>').bootstrapSwitch();
-
-	$('#' + activeTabId + ' .clientContactForm').each(function () {
-		var $cper_name_input = $(this).find('input[name="cper_email"]');
-
-		$cper_name_input
-			.siblings('label')
-			.addClass('d-flex flex-row')
-			.append($(this).find('.client-email-list'));
-
-		$cper_name_input
-			.siblings('label')
-			.find('.client-email-list')
-			.addClass('client-email-dropdown')
-			.css('display', '');
-	});
-</script>

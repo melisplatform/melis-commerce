@@ -60,12 +60,22 @@ $(function() {
 			
 				melisCommerceSettings.submitStockAlertSettings(pageContainer);
 		});
+
+		//locking/unlocking accounts options
+		$body.on("click", "#lock_settings", function(){
+			if($(this).is(":checked")){
+				$("#settingsAccountForm").find("input[name='sa_type']").attr("disabled", false);
+			}else{
+                $("#settingsAccountForm").find("input[name='sa_type']").attr("disabled", true);
+			}
+		});
 })
 
 var melisCommerceSettings = (function(window) {
 	
 	function submitStockAlertSettings(pageContainer) {
 		var stockAlertForm 	= $(pageContainer).find('#id_meliscommerce_settings_tabs_content_main_details_left form'),
+			accountForm 	= $(pageContainer).find('#id_meliscommerce_settings_page_tabs_accounts_content form'),
 			dataString 		= [],
 			url 			= 'melis/MelisCommerce/MelisComSettings/saveSettings',
 			emails 			= $(pageContainer).find('.alert-email-values'),
@@ -74,7 +84,12 @@ var melisCommerceSettings = (function(window) {
 			sea_email 		= '',
 			sea_user_id 	= '';
 
+			//remove disabled in accounts radio button so the data will be included
+        	$("#settingsAccountForm").find("input[name='sa_type']").attr("disabled", false);
+
 			Array.prototype.push.apply(dataString,$(stockAlertForm).serializeArray());
+			//include account forms
+			Array.prototype.push.apply(dataString,$(accountForm).serializeArray());
 			
 			emails.each(function(){
 				var $this = $(this);

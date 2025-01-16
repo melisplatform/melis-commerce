@@ -301,7 +301,11 @@ class MelisCommerceCheckoutAddressesPlugin extends MelisTemplatingPlugin
                         $personBilAdd[str_replace('cadd_', 'm_add_billing_', $key)] = $val;
                     }
 
-                    $billingAddForm->setData(ArrayUtils::merge($this->pluginFrontConfig, $personBilAdd));
+                    if(!$overrideData){
+                        $billingAddForm->setData(ArrayUtils::merge($this->pluginFrontConfig, $personBilAdd));
+                    }else {
+                        $billingAddForm->setData(ArrayUtils::merge($personBilAdd, $this->pluginFrontConfig));
+                    }
                 }
             }
             // Getting the client basket list using Client key

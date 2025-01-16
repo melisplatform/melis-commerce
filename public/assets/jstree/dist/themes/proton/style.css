@@ -337,7 +337,7 @@ filter: gray;
   -webkit-filter: grayscale(100%);
   /* Chrome 19+ & Safari 6+ */
 }
-.jstree-proton .jstree-search {
+.jstree-proton .jstree-anchor.jstree-search {
   font-style: italic;
   color: #8b0000;
   font-weight: bold;

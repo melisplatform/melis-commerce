@@ -38,6 +38,7 @@ class MelisCommerceDashboardPluginOrdersNumber extends MelisCoreDashboardTemplat
         $melisOrdersService = $this->getServiceManager()->get('MelisComOrderService');
         $melisTranslation = $this->getServiceManager()->get('MelisCoreTranslation');
         $melisCoreConfig = $this->getServiceManager()->get('MelisCoreConfig');
+        $melisTool = $this->getServiceManager()->get('MelisCoreTool');
 
         //get language locale and id
         $container = new Container('meliscore');
@@ -92,7 +93,7 @@ class MelisCommerceDashboardPluginOrdersNumber extends MelisCoreDashboardTemplat
             // insert number of products to order object
             $order->getOrder()->numProducts = $numProducts;
             // change date format
-            $order->getOrder()->ord_date_creation = strftime($melisTranslation->getDateFormatByLocate($locale), strtotime($order->getOrder()->ord_date_creation));
+            $order->getOrder()->ord_date_creation = $melisTool->formatDate(strtotime($order->getOrder()->ord_date_creation));
         }
 
         $status = [];

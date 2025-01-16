@@ -15,11 +15,11 @@ return [
                     'meliscommerce_coupon_general_data' => [
                         'attributes' => [
                             'name' => 'coupon',
-                            'id' => '',
+                            'id' => 'formCoupon',
                             'method' => 'POST',
                             'action' => '',
                         ],
-                        'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                        'hydrator'  => 'Laminas\Hydrator\ArraySerializableHydrator',
                         'elements' => [
                             [
                                 'spec' => [
@@ -47,6 +47,7 @@ return [
                                     'attributes' => [
                                         'dateId' => 'couponStart',
                                         'dateLabel' => 'tr_meliscommerce_coupon_date_start',
+                                        'class' => 'form-control melis-date couponStart'
                                     ],
                                 ],
                             ],
@@ -73,6 +74,7 @@ return [
                                     'attributes' => [
                                         'dateId' => 'couponEnd',
                                         'dateLabel' => 'tr_meliscommerce_coupon_date_end',
+                                        'class' => 'form-control melis-date couponEnd'
                                     ],
                                 ],
                             ],
@@ -101,11 +103,11 @@ return [
                     'meliscommerce_coupon_values' => [
                         'attributes' => [
                             'name' => 'couponValues',
-                            'id' => '',
+                            'id' => 'formCouponValues',
                             'method' => 'POST',
                             'action' => '',
                         ],
-                        'hydrator'  => 'Laminas\Hydrator\ArraySerializable',
+                        'hydrator'  => 'Laminas\Hydrator\ArraySerializableHydrator',
                         'elements' => [
                             [
                                 'spec' => [

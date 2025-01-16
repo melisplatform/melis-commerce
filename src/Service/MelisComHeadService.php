@@ -18,7 +18,7 @@ class MelisComHeadService extends MelisComGeneralService
 		    $datasComSeo = $datasComSeo->current();
 		    if (!empty($datasComSeo))
 		    {
-		        $descriptionPage = addslashes($datasComSeo->eseo_meta_description);
+		        $descriptionPage = addslashes($datasComSeo->eseo_meta_description ?? '');
 		        
 		        if ($descriptionPage != '')
 		        {

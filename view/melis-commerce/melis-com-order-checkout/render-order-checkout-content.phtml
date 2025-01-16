@@ -24,14 +24,12 @@
 									$tabId = $menuConfig['conf']['id'];
 									$tabIcon = $menuConfig['conf']['icon'];
 									$tabName = $menuConfig['conf']['name'];
-									
 									echo '<li class="'.$tabIcon.' '.$active.'">
 											<a href="#">
 											<i></i> '.$this->translate($tabName).' 
 											</a>
-											<a href="#'.$tabId.'" id="'.$tabId.'_nav" data-toggle="tab" class="hidden"></a>
+											<a href="#'.$tabId.'" id="'.$tabId.'_nav" data-bs-toggle="tab" class="hidden"></a>
 										</li>';
-									
 									if (!empty($active)){
 										$active = '';
 									}

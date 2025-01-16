@@ -5,7 +5,7 @@ if (!empty($this->zoneconfig['conf']['id'])){
 }
 ?>
 <div class="footer-modal d-flex flex-row justify-content-between">
-	<a data-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->close_text; ?></a>
+	<a data-bs-dismiss="modal" class="btn btn-danger float-left" role="button"><i class="fa fa-times"></i> <?php echo $this->close_text; ?></a>
 	<button class="btn btn-success float-right btnAddText" data-productid="<?php echo $this->productId; ?>" id="btnAddText"><i class="fa fa-plus"></i> <?php echo $this->translate('tr_meliscommerce_general_common_add') ?>
 	</button>
 </div>

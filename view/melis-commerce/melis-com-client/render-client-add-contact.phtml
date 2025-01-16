@@ -1,1 +1,42 @@
-<button class="btn btn-success addNewContact" data-loading-text="<?php echo $this->translate('tr_meliscommerce_clients_common_label_loading') ?>" data-clientid="<?php echo $this->clientId ?>"><i class="fa fa-plus"></i> <?php echo $this->translate('tr_meliscommerce_clients_add_contact')?></button>
+<?php
+$id = '';
+if (!empty($this->zoneconfig['conf']['id'])){
+    $id = 'id="'.$this->zoneconfig['conf']['id'] .'"';
+}
+$data_melisKey = 'data-melisKey="'.$this->melisKey.'"';
+?>
+<div <?php echo $id. ' '.$data_melisKey?>>
+    <?php if($this->canAccess) { ?>
+        <div class="link-contact float-right">
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="input-autosuggest">
+                        <input placeholder="<?= $this->translate('tr_meliscommerce_contact_contact_name');?>" data-accountid="<?= $this->clientId;?>" data-contactid="" class="form-control link-contact-data" type="text"/>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="linkContactBtn">
+                        <button title="<?= $this->translate('tr_meliscommerce_client_add_contact_tooltip');?>" disabled class="btn btn-success accountContactLink"><i class="fa fa-link"></i> <?= $this->translate('tr_meliscommerce_client_link_contact');?></button>
+                    </div>
+                </div>
+            </div>
+            <script type="application/javascript">
+                $(function(){
+                    var element = "#"+activeTabId+" input.link-contact-data";
+                    if(contactToolSelectedAccount != "")
+                        element = "#"+contactToolSelectedAccount+"_id_meliscommerce_client_page_tab_contact input.link-contact-data";
+
+                    initContactAutoSuggesst(element);
+                    $(element).closest(".easy-autocomplete").width("120");
+
+                    //check if field is cleared
+                    $(element).on("blur", function() {
+                        if( $(this).val().length === 0 ) {
+                            $("#"+activeTabId+" button.accountContactLink").prop("disabled", true);
+                        }
+                    });
+                });
+            </script>
+        </div>
+    <?php } ?>
+</div>
