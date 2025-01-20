@@ -76,7 +76,7 @@ return [
                                 'css' => ['width' => '5%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],
-                            'client_group' => [
+                            'cgroup_name' => [
                                 'text' => 'tr_meliscommerce_clients_group_common_group',
                                 'css' => ['width' => '10%', 'padding-right' => '0'],
                                 'sortable' => true,
