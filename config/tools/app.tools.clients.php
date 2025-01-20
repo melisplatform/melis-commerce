@@ -81,11 +81,6 @@ return [
                                 'css' => ['width' => '10%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],
-                            'contact_person' => [
-                                'text' => 'tr_meliscommerce_clients_table_Client_person',
-                                'css' => ['width' => '20%', 'padding-right' => '0'],
-                                'sortable' => true,
-                            ],
                             'cli_name' => [
                                 'text' => 'tr_meliscommerce_clients_table_account_name',
                                 'css' => ['width' => '20%', 'padding-right' => '0'],
