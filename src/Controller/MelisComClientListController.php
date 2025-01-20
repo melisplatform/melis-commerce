@@ -456,7 +456,7 @@ class MelisComClientListController extends MelisAbstractActionController
             $dataCount = $melisEcomClientPersonTable->getTotalData();
         
             $getData = $melisEcomClientPersonTable->getAccountToolList(array(
-                'where' => array(
+                'where' => [
                     'key' => 'cli_id',
                     'value' => $search,
                 ],
