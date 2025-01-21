@@ -120,7 +120,7 @@ class MelisComClientController extends MelisAbstractActionController
                     if (!empty($clientCompany[0]->ccomp_name))
                         $comName = ' (' . $clientCompany[0]->ccomp_name . ')';
 
-                $title = $translator->translate('tr_meliscommerce_clients_common_label_client') . ' / ' . $accountName . $comapanyName;
+                $title = $translator->translate('tr_meliscommerce_clients_common_label_client') . ' / ' . $accountName . $comName;
             }
         }
 
