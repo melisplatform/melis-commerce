@@ -96,12 +96,12 @@ return [
                                 'css' => ['width' => '20%', 'padding-right' => '0'],
                                 'sortable' => true,
                             ],
-                            'total_num_order' => [
+                            'cli_num_orders' => [
                                 'text' => 'tr_meliscommerce_clients_table_Client_num_orders',
                                 'css' => ['width' => '10%', 'padding-right' => '0'],
-                                'sortable' => true,
+                                'sortable' => false,
                             ],
-                            'date_last_order' => [
+                            'cli_last_order' => [
                                 'text' => 'tr_meliscommerce_clients_table_Client_last_order',
                                 'css' => ['width' => '15%', 'padding-right' => '0'],
                                 'sortable' => true,
