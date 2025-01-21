@@ -132,6 +132,27 @@ return [
                     'category' => 1,
                     'product' => 1,
                     'variant' => 1,
+                ],
+                /**
+                 * Used to copy necessary file to
+                 * main public/ folder (image/font/icon only)
+                 */
+                'bundle_all_needed_files' => [
+                    //will be put inside css folder
+                    'css' => [
+                        '/build/css/fonts',
+                        /* '/build/css/30px.png',
+                        '/build/css/32px.png',
+                        '/build/css/40px.png',
+                        '/build/css/throbber.gif', */
+                        '/assets/jstree/dist/themes/default/32px.png',
+                        '/assets/jstree/dist/themes/default/40px.png',
+                        '/assets/jstree/dist/themes/default/throbber.gif',
+                    ],
+                    //will be put inside js folder
+                    'js' => [
+
+                    ]
                 ]
             ],
             'interface' => [
