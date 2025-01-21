@@ -30,3 +30,6 @@
     border-radius: 5px;
     color: #fff;
 }
+#contactList_wrapper .filter-bar label {
+    margin: 0;
+}
