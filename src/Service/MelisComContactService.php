@@ -190,7 +190,7 @@ class MelisComContactService extends MelisComGeneralService
             } else {
                 if (!empty($arrayParameters['personId'])) {
                     // check if email is not used twice
-                    $personWithSameEmail = $personEmails->getEntryByField('cpmail_email', $arrayParameters['person']['cper_email'])->current();
+                    $personWithSameEmail = $personEmails->getEntryByField('cpmail_email', $arrayParameters['person']['cper_email']);
                     if (!empty($personWithSameEmail)) {
                         foreach ($personWithSameEmail as $k => $mail) {
                             if ($mail->cpmail_cper_id != $arrayParameters['personId']) {
