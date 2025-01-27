@@ -163,6 +163,9 @@ class Module
     {
         $config = $e->getConfigListener()->getMergedConfig(false);
 
+        if (!isset($config['db']) && php_sapi_name() == "cli")
+            return;
+
         if (!isset($config['db'])) {
             throw new \Exception('Unable to load MelisCommerce module');
         }
