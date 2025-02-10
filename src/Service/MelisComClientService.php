@@ -332,11 +332,23 @@ class MelisComClientService extends MelisComGeneralService
 		$clientPerson = $melisEcomClientPersonTable->getContactListByClientId($arrayParameters['clientId']);
 
 		$clientPersonData = array();
+
 		foreach ($clientPerson as  $pval) {
-			$pval->civility_trans = $this->getCivilityTransByCivilityIdAndLangId($pval->civ_id);
-			$pval->addresses = $this->getClientAddressesByClientPersonId($pval->cper_id);
-			$pval->emails = $this->getPersonEmailsByPersonId($pval->cper_id);
-			array_push($clientPersonData, $pval);
+
+			if ($arrayParameters['personId']) {
+				if ($arrayParameters['personId'] == $pval->cper_id) {
+					$pval->civility_trans = $this->getCivilityTransByCivilityIdAndLangId($pval->civ_id);
+					$pval->addresses = $this->getClientAddressesByClientPersonId($pval->cper_id);
+					$pval->emails = $this->getPersonEmailsByPersonId($pval->cper_id);
+					array_push($clientPersonData, $pval);
+					break;
+				}
+			} else {
+				$pval->civility_trans = $this->getCivilityTransByCivilityIdAndLangId($pval->civ_id);
+				$pval->addresses = $this->getClientAddressesByClientPersonId($pval->cper_id);
+				$pval->emails = $this->getPersonEmailsByPersonId($pval->cper_id);
+				array_push($clientPersonData, $pval);
+			}
 		}
 		$melisClient->setPersons($clientPersonData);
 
