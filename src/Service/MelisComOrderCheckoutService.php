@@ -374,7 +374,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             if (!is_null($clientBasket)) {
 
                 $container = new Container('meliscommerce');
-                $clientCountryId = $container['checkout'][$this->siteId]['countryId']; // TODO if checkout didn't get thru process, this will not get value too
+                $clientCountryId = $container['checkout'][$this->siteId]['countryId'] ?? -1; // TODO if checkout didn't get thru process, this will not get value too
 
                 // Check Client Group
                 $clientGroupId = 1;

@@ -1373,7 +1373,8 @@ class MelisComProductController extends MelisAbstractActionController
 
                     }
                 }
-                foreach ($requestData['priceForm'] as $prodPrice) {
+                $priceForm = $requestData['priceForm'] ?? [];
+                foreach ($priceForm as $prodPrice) {
                     $tmp = $prodPrice;
 
                     unset($tmp['price_country_id']);
