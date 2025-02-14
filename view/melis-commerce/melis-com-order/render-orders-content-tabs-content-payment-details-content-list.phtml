@@ -7,12 +7,12 @@ $c = 0;
 $collapse = 'collapse in';
 $collapsed = '';
 
-$optyName = (!empty($payment->payment_type)) ? $payment->payment_type->opty_name : null;
 ?>
 <div id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="tab-pane active custom-field-type">
 	<?php foreach ($this->payments as $payment): ?>
+		<?php $optyName = $payment->payment_type?->opty_name ?? null;  ?>
 		<a class="btn btn-primary form-control a-accordion" data-bs-toggle="collapse" href="#<?= $payment->opay_id . '_' . $this->melisKey ?>" aria-expanded="false" aria-controls="payment1">
-			<span><?= $this->translate('tr_meliscommerce_orders_content_tab_paymnet') . ' ' . $payment->payment_type->opty_name ?></span>
+			<span><?= $this->translate('tr_meliscommerce_orders_content_tab_paymnet') . ' ' . $payment->payment_type?->opty_name ?></span>
 			<span style="float:right"><?= $payment->opay_date_payment ?></span>
 		</a>
 		<div class="<?= $collapse ?> show" id="<?= $payment->opay_id . '_' . $this->melisKey ?>">
