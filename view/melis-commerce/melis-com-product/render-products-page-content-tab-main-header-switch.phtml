@@ -1,12 +1,12 @@
-<?php 
+<?php
 $id = '';
 if (!empty($this->zoneconfig['conf']['id']))
-    $id = ' id="'.$this->productId.'_'.$this->zoneconfig['conf']['id'] . '"';
+    $id = ' id="' . $this->productId . '_' . $this->zoneconfig['conf']['id'] . '"';
 $productStatus = 0;
-if(isset($this->layout()->product->prd_status))
-    $productStatus = (int) $this->layout()->product->prd_status ? 'checked="checked"' : '';
+if (isset($this->layout()->product['prd_status']))
+    $productStatus = (int) $this->layout()->product['prd_status'] ? 'checked="checked"' : '';
 ?>
 
-<div <?= $id; ?> class="make-switch" data-on-label="<?php echo $this->translate('tr_meliscommerce_products_page_content_tab_main_header_switch_online')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_products_page_content_tab_main_header_switch_offline')?>" data-text-label="<?php echo $this->translate('tr_meliscommerce_categories_common_label_status')?>">
-    <input type="checkbox" name="prd_status" id="productStatus"  <?= $productStatus; ?>>
+<div <?= $id; ?> class="make-switch" data-on-label="<?php echo $this->translate('tr_meliscommerce_products_page_content_tab_main_header_switch_online') ?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_products_page_content_tab_main_header_switch_offline') ?>" data-text-label="<?php echo $this->translate('tr_meliscommerce_categories_common_label_status') ?>">
+    <input type="checkbox" name="prd_status" id="productStatus" <?= $productStatus; ?>>
 </div>

@@ -199,6 +199,7 @@ class MelisComProductListController extends MelisAbstractActionController
                 ->setTooltipService($toolTipTable)
                 ->setTooltipColumns($this->getToolTipColumns())
                 ->setDocumentService($docSvc)
+                ->setStatusIcon(true)
                 ->getProducts($langId, $categoryIds, null, null, $start, $length, $selColOrder, $order[0]['dir'], $search)->get();
         }
 

@@ -2,6 +2,7 @@
 
 namespace MelisCommerce\Model;
 
+use Laminas\Db\Sql\Select;
 use MelisCommerce\Model\Model;
 use MelisCommerce\Model\ProductCategory;
 use MelisCommerce\Model\ProductText;
@@ -48,6 +49,7 @@ class Product extends Model
     protected static $tooltipTable = null;
     protected static $tooltipColumns = [];
     protected static $type = 'product';
+    protected static $statusIcon = false;
 
     public static function setDataTable($dataTable = false)
     {
@@ -87,6 +89,13 @@ class Product extends Model
     public static function setType($type)
     {
         self::$type = $type ?: 'product';
+
+        return new static;
+    }
+
+    public static function setStatusIcon($setIcon)
+    {
+        self::$statusIcon = $setIcon;
 
         return new static;
     }
@@ -236,6 +245,9 @@ class Product extends Model
 
     public function getprd_statusAttribute()
     {
+        if (!self::$statusIcon)
+            return $this->prd_status;
+
         $status = $this->prd_status ? 'text-success' : 'text-danger';
         return "<span class='$status'><i class='fa fa-fw fa-circle'></i></span>";
     }
