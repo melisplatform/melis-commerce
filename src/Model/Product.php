@@ -220,7 +220,7 @@ class Product extends Model
 
     public function getDT_RowDataAttribute()
     {
-        return ['productname', $this->label];
+        return ['productname' => $this->label];
     }
 
     public function getDT_RowIdAttribute()
