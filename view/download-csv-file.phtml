@@ -1,0 +1,19 @@
+<?php
+$data = $this->data ?? [];
+$output = fopen('php://output', 'w');
+
+// Add Byte Order Mark (BOM)
+// fwrite($output, "\xEF\xBB\xBF");
+
+// Provide separator indication
+// fputcsv($output, ['sep=,']);
+
+foreach ($data as $row) {
+    // fputs($output, chr(0xEF) . chr(0xBB) . chr(0xBF) );
+
+    // Add Byte Order Mark (BOM)
+    fwrite($output, "\xEF\xBB\xBF");
+
+    fputcsv($output, $row, $this->separator);
+}
+fclose($output);

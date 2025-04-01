@@ -392,6 +392,9 @@ return [
             'MelisCommerceDashboardPluginOrdersNumber/dashboard/commerce-orders'            => __DIR__ . '/../view/dashboard-plugins/commerce-dashboard-plugin-orders-number.phtml',
             'MelisCommerceDashboardPluginSalesRevenue/dashboard/commerce-sales-revenue'     => __DIR__ . '/../view/dashboard-plugins/commerce-dashboard-plugin-sales-revenue.phtml',
             'MelisCommerceDashboardPluginOrderMessages/commerce-orders-messages'            => __DIR__ . '/../view/dashboard-plugins/commerce-dashboard-plugin-order-messages.phtml',
+
+            // download csv file template
+            'MelisCommerce/download-csv-file'                       => __DIR__ . '/../view/download-csv-file.phtml',
         ],
         'template_path_stack' => [
             __DIR__ . '/../view',

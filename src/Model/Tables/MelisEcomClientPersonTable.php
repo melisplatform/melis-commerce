@@ -562,4 +562,33 @@ class MelisEcomClientPersonTable extends MelisEcomGenericTable
         $resultData = $this->tableGateway->selectWith($select);
         return $resultData;
     }
+
+    /**
+     * Returns needed data for the gdpr tool
+     * @param array $searchInputs
+     * @param bool $isSpecificSearch
+     * @return mixed
+     */
+    public function getDataForGdpr($searchInputs = [], $isSpecificSearch = false)
+    {
+        $select = $this->tableGateway->getSql()->select();
+        $cper_fullname = new \Laminas\Db\Sql\Predicate\Expression("CONCAT(COALESCE(`cper_firstname`,''),' ',COALESCE(`cper_name`,'')) as cper_fullname");
+
+        $select->columns(['*', $cper_fullname]);
+
+        if (!empty($searchInputs)) {
+            if (!empty($searchInputs['user_name'])) {
+                if ($isSpecificSearch)
+                    $select->where(new \Laminas\Db\Sql\Predicate\Expression("CONCAT(COALESCE(`cper_firstname`,''),' ',COALESCE(`cper_name`,'')) = '" . strtolower($searchInputs['user_name']) . "'"));
+                else
+                    $select->where->literal('LOWER(' . 'cper_firstname' . ') LIKE ' . "'%" . strtolower($searchInputs['user_name']) . "%' OR LOWER(" . 'cper_name' . ') LIKE ' . "'%" . strtolower($searchInputs['user_name']) . "%'");
+            }
+
+            if (!empty($searchInputs['user_email']))
+                $select->where->literal('LOWER(' . 'cper_email' . ') = ' . "'" . strtolower($searchInputs['user_email']) . "'");
+        }
+
+        $resultSet = $this->tableGateway->selectWith($select);
+        return $resultSet;
+    }
 }

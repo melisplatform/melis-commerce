@@ -25,9 +25,9 @@ return [
                 'columns' => [
                     'contact' => [
                         'cper_email',
-                        'cper_name', 
-                        'cper_middle_name', 
-                        'cper_firstname', 
+                        'cper_name',
+                        'cper_middle_name',
+                        'cper_firstname',
                         'cper_tel_mobile',
                         'cper_tel_landline'
                     ],
@@ -51,6 +51,54 @@ return [
                     ]
                 ]
             ]
+        ],
+        'MelisCommerce' => [
+            'gdpr' => [
+                'getUserInfo' => [
+                    'icon' => 'fa fa-user-plus',
+                    'moduleName' => 'MelisCommerce',
+                    'values' => [
+                        'columns' => [
+                            'cper_email' => [
+                                'id' => 'meliscommerce_cper_email',
+                                'class' => '',
+                                'style' => 'width:1%;',
+                                'text' => 'Email',
+                                'sorting' => false
+                            ],
+                            'cper_fullname' => [
+                                'id' => 'meliscommerce_cper_firstname',
+                                'class' => '',
+                                'style' => 'padding-left:70px !important;',
+                                'text' => 'Name',
+                                'sorting' => false
+                            ]
+                        ],
+                    ],
+                ],
+                'extract' => [
+                    'columns' => [
+                        'cper_id' => [
+                            'text' => 'id'
+                        ],
+                        'cper_email' => [
+                            'text' => 'email'
+                        ],
+                        'cper_name' => [
+                            'text' => 'name'
+                        ],
+                        'cper_firstname' => [
+                            'text' => 'firtname'
+                        ],
+                        'cper_tel_mobile' => [
+                            'text' => 'mobile number'
+                        ],
+                        'cper_tel_landline' => [
+                            'text' => 'telephone number'
+                        ]
+                    ],
+                ],
+            ],
         ]
     ]
 ];

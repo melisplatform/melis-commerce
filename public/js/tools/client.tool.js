@@ -35,75 +35,6 @@ $(function () {
 		}
 	);
 
-	$body.on("click", "#saveClientContact", function () {
-		var $this = $(this),
-			clientId = $this.data("clientid");
-		emailList = [];
-
-		// serialize the new array and send it to server
-		dataString = $("#melisCommerceClientContactFormModal").serializeArray();
-
-		dataString.push({
-			name: "clientId",
-			value: clientId,
-		});
-
-		$("#" + activeTabId)
-			.find(".client-contact-tab-content form")
-			.each(function (index, element) {
-				emailList.push($(this).find("#cper_email").val());
-			});
-
-		dataString.push({
-			name: "emailList",
-			value: emailList,
-		});
-
-		dataString = $.param(dataString);
-
-		$("#saveClientContact").attr("disabled", "disabled");
-
-		$.ajax({
-			type: "POST",
-			url: "/melis/MelisCommerce/MelisComClient/addClientContact",
-			data: dataString,
-			dataType: "json",
-			encode: true,
-			cache: false,
-		})
-			.done(function (data) {
-				$("#saveClientContact").removeAttr("disabled");
-
-				if (data.success) {
-					$("#" + clientId + "_client_contact_tab_nav").append(
-						data.clientContactDom.tabNav
-					);
-					$("#" + clientId + "_client_contact_tab_content").append(
-						data.clientContactDom.tabContent
-					);
-					$("#nav_" + data.clientContactDom.tabId).tab("show");
-					$("#id_meliscommerce_client_modal_contact_form_container").modal(
-						"hide"
-					);
-				} else {
-					melisHelper.melisKoNotification(
-						data.textTitle,
-						data.textMessage,
-						data.errors
-					);
-					melisCoreTool.highlightErrors(
-						data.success,
-						data.errors,
-						"melisCommerceClientContactFormModal"
-					);
-				}
-			})
-			.fail(function () {
-				$("#saveClientContact").removeAttr("disabled");
-				alert(translations.tr_meliscore_error_message);
-			});
-	});
-
 	$body.on("click", ".addNewContactAddress", function () {
 		var $this = $(this),
 			clientId = $this.data("clientid"),
@@ -791,33 +722,71 @@ $(function () {
 			filters[val.name] = val.value;
 		});
 
+		// $.ajax({
+		// 	url: "/melis/MelisCommerce/MelisComClientList/exportAccounts",
+		// 	data: $.param(filters),
+		// 	type: "GET",
+		// 	beforeSend: function () {
+		// 		_this.attr("disabled", true);
+		// 	},
+		// })
+		// 	.done(function (data, status, request) {
+		// 		var fileName = request.getResponseHeader("fileName");
+		// 		//decode utf-8
+		// 		fileName = decodeURIComponent(escape(fileName));
+		// 		var mime = request.getResponseHeader("Content-Type");
+		// 		var newContent = "";
+
+		// 		for (var i = 0; i < data.length; i++) {
+		// 			newContent += String.fromCharCode(data.charCodeAt(i) & 0xff);
+		// 		}
+
+		// 		var bytes = new Uint8Array(newContent.length);
+
+		// 		for (var i = 0; i < newContent.length; i++) {
+		// 			bytes[i] = newContent.charCodeAt(i);
+		// 		}
+
+		// 		var blob = new Blob([bytes], { type: mime });
+		// 		saveAs(blob, fileName);
+
+		// 		_this.attr("disabled", false);
+
+		// 		//$("#id_meliscommerce_client_list_export_accounts_form_container").modal("hide");
+		// 		melisCoreTool.hideModal(
+		// 			"id_meliscommerce_client_list_export_accounts_form_container"
+		// 		);
+		// 	})
+		// 	.fail(function () {
+		// 		alert(translations.tr_meliscore_error_message);
+		// 	});
+
 		$.ajax({
 			url: "/melis/MelisCommerce/MelisComClientList/exportAccounts",
 			data: $.param(filters),
-			type: "GET",
+			method: "GET",
+			xhrFields: {
+				responseType: "blob", // Treat response as a binary object
+			},
 			beforeSend: function () {
 				_this.attr("disabled", true);
 			},
-		})
-			.done(function (data, status, request) {
+			success: function (response, status, request) {
 				var fileName = request.getResponseHeader("fileName");
-				//decode utf-8
-				fileName = decodeURIComponent(escape(fileName));
-				var mime = request.getResponseHeader("Content-Type");
-				var newContent = "";
 
-				for (var i = 0; i < data.length; i++) {
-					newContent += String.fromCharCode(data.charCodeAt(i) & 0xff);
-				}
+				let blob = new Blob([response], { type: "text/csv" });
+				let url = window.URL.createObjectURL(blob);
 
-				var bytes = new Uint8Array(newContent.length);
+				// Create a hidden download link
+				let a = document.createElement("a");
+				a.href = url;
+				a.download = fileName;
+				document.body.appendChild(a);
+				a.click();
 
-				for (var i = 0; i < newContent.length; i++) {
-					bytes[i] = newContent.charCodeAt(i);
-				}
-
-				var blob = new Blob([bytes], { type: mime });
-				saveAs(blob, fileName);
+				// Cleanup
+				document.body.removeChild(a);
+				window.URL.revokeObjectURL(url);
 
 				_this.attr("disabled", false);
 
@@ -825,10 +794,11 @@ $(function () {
 				melisCoreTool.hideModal(
 					"id_meliscommerce_client_list_export_accounts_form_container"
 				);
-			})
-			.fail(function () {
+			},
+			error: function (xhr, status, error) {
 				alert(translations.tr_meliscore_error_message);
-			});
+			},
+		});
 	});
 
 	$body.on("click", "#exportClients", function () {

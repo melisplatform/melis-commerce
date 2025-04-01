@@ -245,7 +245,7 @@ class Variant extends Model
 
     public function getDT_RowDataAttribute()
     {
-        return ['var_status', $this->var_status];
+        return ['var_status' => $this->var_status];
     }
 
     private function isMobile()

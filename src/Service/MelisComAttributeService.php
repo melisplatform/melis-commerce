@@ -34,7 +34,8 @@ class MelisComAttributeService extends MelisComGeneralService
         $start = null,
         $limit = null,
         $order = null,
-        $search = null
+        $search = null,
+        $count = false
     ) {
         // Event parameters prepare
         $arrayParameters = $this->makeArrayFromParameters(__METHOD__, func_get_args());
@@ -52,24 +53,30 @@ class MelisComAttributeService extends MelisComGeneralService
             $arrayParameters['start'],
             $arrayParameters['limit'],
             $arrayParameters['order'],
-            $arrayParameters['search']
+            $arrayParameters['search'],
+            $arrayParameters['count'],
         );
 
-        // Caching
-        $cacheConfig = 'commerce_memory_services';
-        $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
-        $cache = $this->getServiceManager()->get($cacheConfig);
+        if (!$arrayParameters['count']) {
 
-        $cacheKey = 'attribute-' . implode('-', $arrayParameters);
-        if ($cache->hasItem($cacheKey)) {
-            $results =  $cache->getItem($cacheKey);
-        } else {
-            foreach ($data as $attr) {
-                $results[] = $this->getAttributeById($attr->attr_id, $arrayParameters['langId']);
+            // Caching
+            $cacheConfig = 'commerce_memory_services';
+            $melisEngineCacheSystem = $this->getServiceManager()->get('MelisEngineCacheSystem');
+            $cache = $this->getServiceManager()->get($cacheConfig);
+
+            $cacheKey = 'attribute-' . implode('-', $arrayParameters);
+            if ($cache->hasItem($cacheKey)) {
+                $results =  $cache->getItem($cacheKey);
+            } else {
+                foreach ($data as $attr) {
+                    $results[] = $this->getAttributeById($attr->attr_id, $arrayParameters['langId']);
+                }
+
+                // Save cache key
+                $melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $results, true);
             }
-
-            // Save cache key
-            $melisEngineCacheSystem->setCacheByKey($cacheKey, $cacheConfig, $results, true);
+        } else {
+            $results = $data->current()->count;
         }
 
         // Service implementation end

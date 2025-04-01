@@ -25,6 +25,8 @@ use MelisCommerce\Listener\GDPR\MelisCommerceGdprAutoDeleteWarningListUsersListe
 use MelisCommerce\Listener\GDPR\MelisCommerceGdprLoginListener;
 use MelisCommerce\Listener\GDPR\MelisCommerceGdprUserExtractListener;
 use MelisCommerce\Listener\GDPR\MelisCommerceGdprUserInfoListener;
+use MelisCommerce\Listener\GDPR\MelisCommerceGdprUserDeleteListener;
+
 use Illuminate\Database\Capsule\Manager as Capsule;
 
 use MelisCommerce\Listener\MelisCommerceCategoryListener;
@@ -150,6 +152,7 @@ class Module
         (new MelisCommerceGdprUserExtractListener())->attach($eventManager);
         (new MelisCommerceGdprUserInfoListener())->attach($eventManager);
         (new MelisCommerceGdprLoginListener())->attach($eventManager);
+        (new MelisCommerceGdprUserDeleteListener())->attach($eventManager);
     }
 
     public function init(ModuleManager $manager)

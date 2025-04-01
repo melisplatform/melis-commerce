@@ -20,7 +20,7 @@ class MelisCommerceGdprUserExtractListener extends MelisGeneralListener
             $events,
             '*',
             'melis_core_gdpr_user_extract_event',
-            function($e){
+            function ($e) {
                 $parameters = $e->getParams();
                 $moduleName = 'MelisCommerce';
 
@@ -36,14 +36,20 @@ class MelisCommerceGdprUserExtractListener extends MelisGeneralListener
                     $root = $xmlDoc->appendChild($xmlDoc->createElement('xml'));
                     $module = $root->appendChild($xmlDoc->createElement($moduleName));
 
-                    $contacts = $personTable->getEntryByField('cper_id', $parameters['selected'][$moduleName])->toArray();
+                    $tblGw = $personTable->getTableGateway();
+                    $select = $tblGw->getSql()->select();
+                    $select->where->in('cper_id', $parameters['selected'][$moduleName]);
+                    $result = $tblGw->selectWith($select);
+
+                    $contacts = $result->toArray();
 
                     foreach ($contacts as $contact) {
                         $moduleId = $module->appendChild($xmlDoc->createElement("contact_" . $contact['cper_id']));
                         foreach ($contact as $contactColumn => $prospectValue) {
                             if (isset($columns[$contactColumn])) {
                                 $newKey = $columns[$contactColumn]['text'];
-                                $moduleId->appendChild($xmlDoc->createElement($newKey, $prospectValue));
+
+                                $moduleId->appendChild($xmlDoc->createElement(str_replace(' ', '_', $newKey), (string)$prospectValue));
                             }
                         }
                     }

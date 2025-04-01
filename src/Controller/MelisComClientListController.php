@@ -914,7 +914,7 @@ class MelisComClientListController extends MelisAbstractActionController
             $data = $exportData;
         }
 
-        $data = $this->mbEncode($data);
+        // $data = $this->mbEncode($data);
 
         return $this->executeCompanyContactExport($data, $fileName, $delimiter);
     }
@@ -1075,9 +1075,13 @@ class MelisComClientListController extends MelisAbstractActionController
 
         $striptags = (int) $csvConfig['striptags'] == 1 ? true : false;
         $response = '';
+        $csvData = [];
 
         if ($data) {
             $csvColumn = $data[0];
+
+            // column headers
+            $csvData[] = array_keys($data[0]);
 
             $content = '';
 
@@ -1090,16 +1094,21 @@ class MelisComClientListController extends MelisAbstractActionController
             // for contents
             foreach ($data as $dataKey => $dataValue) {
 
-                foreach ($dataValue as $key => $value) {
+                foreach ($dataValue as $key => &$value) {
 
-                    if ($striptags) {
-                        $value = $coreTool->iso8859_1ToUtf8($value);
-                    } else {
-                        if (is_int($value)) {
-                            $value = (string) $value;
-                            $value = $coreTool->iso8859_1ToUtf8($value);
-                        }
-                    }
+                    $value = is_null($value) ? '' : $value;
+
+                    if (is_int($value))
+                        $value = (string) $value;
+
+                    // if ($striptags) {
+                    //     $value = $coreTool->iso8859_1ToUtf8($value);
+                    // } else {
+                    //     if (is_int($value)) {
+                    //         $value = (string) $value;
+                    //         $value = $coreTool->iso8859_1ToUtf8($value);
+                    //     }
+                    // }
 
                     /**
                      * to solve the issue of 1 double quoute is to replace it with 2 double quote
@@ -1111,16 +1120,23 @@ class MelisComClientListController extends MelisAbstractActionController
                     $content .= $enclosed . $value . $enclosed . $separator;
                 }
                 $content .= "\r\n";
-            }
 
-            $response = new Response();
-            $headers = $response->getHeaders();
-            $headers->addHeaderLine('Content-Type', 'text/csv; charset=utf-8');
-            $headers->addHeaderLine('Content-Disposition', "attachment; filename=\"" . $fileName . "\"");
-            $headers->addHeaderLine('Accept-Ranges', 'bytes');
-            $headers->addHeaderLine('Content-Length', strlen($content));
-            $headers->addHeaderLine('fileName', $fileName);
-            $response->setContent($content);
+                $csvData[] = $dataValue;
+            }
+            $view = new ViewModel([
+                'data' => $csvData,
+                'separator' => $separator,
+            ]);
+            $view->setTerminal(true);
+            $view->setTemplate('MelisCommerce/download-csv-file');
+
+            // Set the appropriate headers to trigger a file download
+            header('Content-Type: text/csv; charset=utf-8');
+            header('Content-Disposition: attachment; filename=' . $fileName);
+            header('Cache-Control: max-age=0');
+            header('fileName: ' . $fileName);
+
+            return $view;
         }
 
         return $response;
