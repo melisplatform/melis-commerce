@@ -1967,7 +1967,7 @@ class MelisComClientController extends MelisAbstractActionController
         ));
     }
 
-    private function isDefaultAccount($accountId, $contactId)
+    public function isDefaultAccount($accountId, $contactId)
     {
         $personTable = $this->getServiceManager()->get('MelisEcomClientPersonRelTable');
         $data = $personTable->getDataByAccountAndContactId($accountId, $contactId)->current();
