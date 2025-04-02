@@ -10,7 +10,7 @@ var commerceCategoryTree = (function() {
 					"check_callback": true,
 					"animation" : 500,
 					"themes": {
-						"name": "proton",
+						"name": "default",
 						"responsive": false,
 						"icons": false
 					},

@@ -1,56 +1,57 @@
 <button class="btn btn-success productCategoryList" data-productid="<?php echo $this->productId; ?>" title="<?php echo $this->translate('tr_meliscommerce_products_main_tab_categories_all');?>"><i class="fa fa-eye"></i> <?php echo $this->translate('tr_meliscommerce_products_main_tab_categories_all');?></button>
 
 <!--
-<button data-toggle="modal" data-target="#<?= $this->productId; ?>_editCategoryModal" class="btn btn-success" title="<?php echo $this->translate('tr_meliscommerce_products_main_tab_categories_all');?>">
+<button data-bs-toggle="modal" data-bs-target="#<?php //$this->productId; ?>_editCategoryModal" class="btn btn-success" title="<?php //echo $this->translate('tr_meliscommerce_products_main_tab_categories_all');?>">
 	<i class="fa fa-eye" style="padding-right:10px;"></i>
-	<?= $this->translate('tr_meliscommerce_products_main_tab_categories_all');?>
+	<?php //$this->translate('tr_meliscommerce_products_main_tab_categories_all');?>
 </button>
 
-<!-- ADD / EDIT CATEGORIES  Modal 
+ADD / EDIT CATEGORIES  Modal 
 <div class="me-commerce">
-<div class="modal fade" id="<?= $this->productId; ?>_editCategoryModal" role="dialog">
+<div class="modal fade" id="<?php //$this->productId; ?>_editCategoryModal" role="dialog">
     <div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-			  <button type="button" class="close" data-dismiss="modal">&times;</button>
+			  <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
 				<h4 class="modal-title">
 				<i class="fa fa-tags"></i>
-				<?= $this->translate('tr_meliscommerce_categories_list'); ?>
+				<?php //$this->translate('tr_meliscommerce_categories_list'); ?>
 				</h4>				
 			</div>
 			<div class="modal-content-cont">
 				<div class="row">
     				<div class="form-group prodCatLangDropDownContainer col-lg-6 col-xs-12">
                     	<div class="filter-dropdown clearfix productCategoryLangDropdown">
-                    		<a href="#" class="dropdown-toggle category-list-lang-dropdown" data-toggle="dropdown">
+                    		<a href="#" class="dropdown-toggle category-list-lang-dropdown" data-bs-toggle="dropdown">
                     			<i class="fa fa-language"></i>
-                    			<span class="filter-key"><?= $this->currentLangName; ?></span>
+                    			<span class="filter-key"><?php //$this->currentLangName; ?></span>
                     			<span class="caret"></span>
                     		</a>
                     		<ul class="dropdown-menu product-category-tree-view-lang">
-							<?php if($this->langData) { ?>
-                    		<?php foreach($this->langData as $lang): ?>
+							<?php //if($this->langData) { ?>
+                    		<?php //foreach($this->langData as $lang): ?>
                     			<li>
 									<?php
-									$imageData = $lang->elang_flag;
-									$image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay float-right" width="24" height="24"/>' : '<i class="fa fa-globe"></i>';
+									/* $imageData = $lang->elang_flag;
+									$image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay float-right" width="24" height="24"/>' : '<i class="fa fa-globe"></i>'; */
 									?>
-                    				<a data-locale="<?= $lang->elang_locale; ?>"><?= $lang->elang_name; ?><span class="float-right"><?php echo $image; ?></span></a>
+                    				<a data-locale="<?php //$lang->elang_locale; ?>"><?php //$lang->elang_name; ?><span class="float-right"><?php //echo $image; ?></span></a>
                     			</li>
-                			<?php endforeach;
-							}
+                			<?php 
+									//endforeach;
+								//}
 							?>
                     		</ul>
                     	</div>
     				</div>
     				<div class="form-group col-lg-6 col-xs-12">
-    					<input type="text" class="form-control" name="productCategorySearch" id="productCategorySearch" placeholder="<?= $this->translate('tr_meliscommerce_categories_list_tree_view_search_input'); ?>">
+    					<input type="text" class="form-control" name="productCategorySearch" id="productCategorySearch" placeholder="<?php //$this->translate('tr_meliscommerce_categories_list_tree_view_search_input'); ?>">
     				</div>
 				</div>
-				<div id="<?= $this->productId; ?>_productCategory" class="productCategoryView" data-langlocale="<?php echo $this->currentLangLocale ?>"></div>
+				<div id="<?php //$this->productId; ?>_productCategory" class="productCategoryView" data-langlocale="<?php //echo $this->currentLangLocale ?>"></div>
 				<div class="modal-footer">
-				<button type="button" class="btn btn-danger float-left" data-dismiss="modal"><i class="fa fa-close"></i> <?= $this->translate('tr_meliscommerce_general_common_cancel'); ?></button>
-				<button type="button" class="btn btn-success float-right btnProdSaveCategory" data-dismiss="modal"><i class="fa fa-plus"></i> <?= $this->translate('tr_meliscommerce_general_common_add'); ?></button>
+				<button type="button" class="btn btn-danger float-left" data-bs-dismiss="modal"><i class="fa fa-close"></i> <?php //$this->translate('tr_meliscommerce_general_common_cancel'); ?></button>
+				<button type="button" class="btn btn-success float-right btnProdSaveCategory" data-bs-dismiss="modal"><i class="fa fa-plus"></i> <?php //$this->translate('tr_meliscommerce_general_common_add'); ?></button>
 				</div>
 			</div>		        
 		</div>	      

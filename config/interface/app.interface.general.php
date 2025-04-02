@@ -107,7 +107,7 @@ return [
                     '/MelisCommerce/js/tools/ecom.globals.js',
                 ],
                 'css' => [
-                    '/MelisCommerce/assets/jstree/dist/themes/proton/style.min.css',
+                    '/MelisCommerce/assets/jstree/dist/themes/default/style.min.css',
                     '/MelisCommerce/css/easy-autocomplete.min.css',
                     '/MelisCommerce/css/commerce-style.css',
                 ],
@@ -132,6 +132,21 @@ return [
                     'category' => 1,
                     'product' => 1,
                     'variant' => 1,
+                ],
+                /**
+                 * Used to copy necessary file to
+                 * main public/bundles-generated folder
+                 */
+                'bundle_all_needed_files' => [
+                    //will be put inside css folder
+                    'css' => [
+                        '/assets/jstree/dist/themes/default/32px.png',
+                        '/assets/jstree/dist/themes/default/throbber.gif'
+                    ],
+                    //will be put inside js folder
+                    'js' => [
+
+                    ]
                 ]
             ],
             'interface' => [

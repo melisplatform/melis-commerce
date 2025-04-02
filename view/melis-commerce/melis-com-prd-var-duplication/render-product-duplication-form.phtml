@@ -13,7 +13,9 @@
 			<div class="widget widget-tabs widget-tabs-double widget-tabs-responsive margin-none border-none">
                 <div class="widget-head">
                 	<ul class="nav nav-tabs">
-                		<li class="active"><a href="#<?php echo $id ?>" class="glyphicons more_items" data-toggle="tab" aria-expanded="true"><i></i> <?php echo $this->translate('tr_meliscommerce_duplication_Duplicate_product') ?></a></li>
+                		<li class="nav-item active">
+							<a href="#<?php echo $id ?>" class="nav-link glyphicons more_items" data-bs-toggle="tab" aria-expanded="true"><i></i> <?php echo $this->translate('tr_meliscommerce_duplication_Duplicate_product') ?></a>
+						</li>
             		</ul>
         		</div>
         		<div class="widget-body innerAll inner-2x">
@@ -59,7 +61,7 @@
                                         		<td style="padding-top: 18px;">
                                         		<div class="form-group">
                                             		<label class="duplicate-table-label"><?php echo $this->translate('tr_meliscommerce_duplication_Var_sku')?>
-                                            		<i class="fa fa-info-circle fa-lg" data-toggle="tooltip" data-placement="left" title="" data-original-title="<?= $this->translate('tr_meliscommerce_variant_main_information_main_variant_input_label tooltip')?>"></i>
+                                            		<i class="fa fa-info-circle fa-lg" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-title="<?= $this->translate('tr_meliscommerce_variant_main_information_main_variant_input_label tooltip')?>"></i>
                                             		</label>
                                             	</div>	
                                         		</td>
@@ -95,7 +97,7 @@
                                     	<?php endforeach;?>
                                     </table>
 									<div class="footer-modal d-flex flex-row justify-content-between">
-                                 		<button data-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_duplication_common_close')?></button>
+                                 		<button data-bs-dismiss="modal" class="btn btn-danger float-left"><i class="fa fa-times"></i> <?php echo $this->translate('tr_meliscommerce_duplication_common_close')?></button>
                                  		<button class="btn btn-success" id="melisComStartDuplicateProduct" data-productid="<?php echo $this->productId?>"><i class="fa fa-clone"></i>  <?php echo $this->translate('tr_meliscommerce_duplication_common_duplicate') ?></button>
                                  	</div>
                             	</div>

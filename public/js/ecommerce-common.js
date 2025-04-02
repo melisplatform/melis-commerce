@@ -16,66 +16,74 @@ var melisCommerce = (function(window) {
 	}
 
 	function initTooltipTable() {
-		$(".tooltipTable").each(function() {
-			var $this = $(this);
-			$this.qtip({
-				content: {
-					text: $(this).next(".tooltiptext"),
-				},
-				overwrite: false,
-				style: {
-					classes: "qtip-tipsy qtip-shadow",
-					width: "auto",
-				},
-				hide: {
-					fixed: true,
-					delay: 300,
-					event: "mouseleave",
-				},
-				position: {
-					target: "mouse",
-					adjust: {
-						mouse: false,
-					},
-					my: "center center",
-					at: "center center",
-					//container : false,
-				},
-				/* adjust:{
-					screen: true,
-					}, */
-			});
-		});
+		var $tooltipTable = $(".tooltipTable");
+
+			if ( $tooltipTable.length ) {
+				$tooltipTable.each(function() {
+					var $this = $(this);
+					$this.qtip({
+						content: {
+							text: $(this).next(".tooltiptext"),
+						},
+						overwrite: false,
+						style: {
+							classes: "qtip-tipsy qtip-shadow",
+							width: "auto",
+						},
+						hide: {
+							fixed: true,
+							delay: 300,
+							event: "mouseleave",
+						},
+						position: {
+							target: "mouse",
+							adjust: {
+								mouse: false,
+							},
+							my: "center center",
+							at: "center center",
+							//container : false,
+						},
+						/* adjust:{
+							screen: true,
+							}, */
+					});
+				});
+			}
 	}
 
 	function initTooltipVarTable() {
-		$(".tooltipTableVar").each(function() {
-			var $this = $(this);
+		var $tooltipTableVar = $(".tooltipTableVar");
+		
+			if ( $tooltipTableVar.length ) {
+				$tooltipTableVar.each(function() {
+					var $this = $(this);
 
-			$this.qtip({
-				content: {
-					text: $(this).next(".tooltiptext"),
-				},
-				overwrite: false,
-				style: {
-					classes: "qtip-tipsy qtip-shadow",
-					width: "auto",
-				},
-				hide: {
-					fixed: true,
-					delay: 300,
-					event: "mouseleave",
-				},
-				position: {
-					target: "mouse",
-					adjust: {
-						mouse: false,
-					},
-					my: "center center",
-					at: "center center",
-				},
-			});
-		});
+					$this.qtip({
+						content: {
+							text: $(this).next(".tooltiptext"),
+						},
+						overwrite: false,
+						style: {
+							classes: "qtip-tipsy qtip-shadow",
+							width: "auto",
+						},
+						hide: {
+							fixed: true,
+							delay: 300,
+							event: "mouseleave",
+						},
+						position: {
+							target: "mouse",
+							adjust: {
+								mouse: false,
+							},
+							my: "center center",
+							at: "center center",
+						},
+					});
+				});
+			}
 	}
 
 	function openProductPage(productId, productName, navTabsGroup, callback) {
@@ -134,7 +142,6 @@ var melisCommerce = (function(window) {
 				language: locale,
 				height: 200,
 				plugins: [
-					//[contextmenu, textcolor, colorpicker] this plugin is already built in the core editor as of TinyMCE v. 5
 					"advlist autolink lists link image charmap preview anchor",
 					"searchreplace visualblocks code fullscreen",
 					"insertdatetime media table minitemplate",
@@ -184,7 +191,6 @@ var melisCommerce = (function(window) {
 				{ responsivePriority: 2, targets: -1 },
 			],
 			language: melisDataTable.tableLanguage[tableLangTrans],
-			/* "responsive": true, */
 			dom: '<"bulk-action"><"filter-bar fl">rtip',
 			drawCallback: function(settings) {
 				$(this).css("width", "100%");
@@ -202,12 +208,12 @@ var melisCommerce = (function(window) {
 			dataType: "json",
 			encode: true,
 		})
-			.done(function(data) {
-				successCallBack(data);
-			})
-			.fail(function() {
-				errorCallBack();
-			});
+		.done(function(data) {
+			successCallBack(data);
+		})
+		.fail(function() {
+			errorCallBack();
+		});
 	}
 
 	function getDocFormType() {
@@ -229,12 +235,12 @@ var melisCommerce = (function(window) {
 				dataType: "json",
 				encode: true,
 			})
-				.done(function(data) {
-					pUniqueId[activeTabId] = data.id;
-				})
-				.fail(function() {
-					alert(translations.tr_meliscore_error_message);
-				});
+			.done(function(data) {
+				pUniqueId[activeTabId] = data.id;
+			})
+			.fail(function() {
+				alert(translations.tr_meliscore_error_message);
+			});
 		} else {
 			pUniqueId[activeTabId] = id;
 		}
@@ -300,74 +306,80 @@ var melisCommerce = (function(window) {
 	//order-checkout-steps
 	function switchOrderTab(tabId) {
 		var $tabId = $(tabId),
-			$navTab = $(tabId + "[data-toggle='tab']"),
+			$navTab = $(tabId + "[data-bs-toggle='tab']"),
 			$navTabLi = $navTab.closest("li"),
 			hrefId = $navTab.attr("href"),
-			$tabPane = $(
-				"#id_meliscommerce_order_checkout_content .tab-content"
-			).find(".tab-pane");
+			$tabPane = $("#id_meliscommerce_order_checkout_content .tab-content").find(".tab-pane");
 
-		// to show active tab content
-		$tabPane.siblings().removeClass("active");
-		$tabId.removeClass("active");
-		$(hrefId).tab("show");
+			// to show active tab content
+			$tabPane.siblings().removeClass("active");
+			$tabId.removeClass("active");
+			//$(hrefId).tab("show");
 
-		// to show active tabsbar/link
-		//$navTab.removeClass("hidden");
-		$navTabLi.siblings().removeClass("active");
-		$navTabLi.addClass("active");
+			$(hrefId).show();
+			$(hrefId).siblings().hide();
+			$(hrefId).addClass("active");
+			
+			// to show active tabsbar/link
+			//$navTab.removeClass("hidden");
+			$navTabLi.siblings().removeClass("active");
+			$navTabLi.addClass("active");
 	}
 
 	function priceLogTooltip() {
-		$(".price-log-data-tooltip").each(function() {
-			var $this = $(this);
+		var $qtip = $(".price-log-data-tooltip");
+			
+			if ( $qtip.length ) {
+				$qtip.each(function() {
+					var $this = $(this);
 
-			var priceLog = $(this)
-				.find(".price-log-data")
-				.text();
+					var priceLog = $(this)
+						.find(".price-log-data")
+						.text();
 
-			var qtipContent = "";
-			if (priceLog != "") {
-				logs = JSON.parse(priceLog);
+					var qtipContent = "";
+					if (priceLog != "") {
+						logs = JSON.parse(priceLog);
 
-				for (i = 0; i < logs.length; i++) {
-					qtipContent += "<li>" + logs[i] + "</li>";
-				}
+						for (i = 0; i < logs.length; i++) {
+							qtipContent += "<li>" + logs[i] + "</li>";
+						}
+					}
+
+					qtipContent = qtipContent == "" ? "N/A" : qtipContent;
+					
+					$this.qtip({
+						content: {
+							text:
+								"<div class='price-log-data-container'>" +
+								"<p>Price Log</p>" +
+								"<ul>" +
+								qtipContent +
+								"</ul>" +
+								"</div>",
+						},
+						overwrite: false,
+						style: {
+							classes: "qtip-tipsy qtip-shadow",
+							width: "auto",
+						},
+						hide: {
+							fixed: true,
+							delay: 300,
+							event: "mouseleave",
+						},
+						position: {
+							target: "mouse",
+							adjust: {
+								mouse: false,
+							},
+							my: "center center",
+							at: "center center",
+							//container : false,
+						},
+					});
+				});
 			}
-
-			qtipContent = qtipContent == "" ? "N/A" : qtipContent;
-
-			$this.qtip({
-				content: {
-					text:
-						"<div class='price-log-data-container'>" +
-						"<p>Price Log</p>" +
-						"<ul>" +
-						qtipContent +
-						"</ul>" +
-						"</div>",
-				},
-				overwrite: false,
-				style: {
-					classes: "qtip-tipsy qtip-shadow",
-					width: "auto",
-				},
-				hide: {
-					fixed: true,
-					delay: 300,
-					event: "mouseleave",
-				},
-				position: {
-					target: "mouse",
-					adjust: {
-						mouse: false,
-					},
-					my: "center center",
-					at: "center center",
-					//container : false,
-				},
-			});
-		});
 	}
 
 	return {
@@ -391,7 +403,7 @@ var melisCommerce = (function(window) {
 		enableAllTabs: enableAllTabs,
 		accordionToggle: accordionToggle,
 		switchOrderTab: switchOrderTab,
-		priceLogTooltip: priceLogTooltip,
+		priceLogTooltip: priceLogTooltip
 	};
 })(window);
 
@@ -401,25 +413,24 @@ setInterval(function() {
 
 $(function() {
 	var $body = $("body");
-	/*
-	 * Triggers accordion toggle manually data-target="#1_accordion" not triggering
-	 * same goes to modal
-	 * https://github.com/twbs/bootstrap/issues/29129
-	 */
+		/*
+		* Triggers accordion toggle manually data-target="#1_accordion" not triggering
+		* same goes to modal
+		* https://github.com/twbs/bootstrap/issues/29129
+		*/
+		$body.on("click", ".accordion-toggle", melisCommerce.accordionToggle);
 
-	$body.on("click", ".accordion-toggle", melisCommerce.accordionToggle);
-
-	/**
-	 * Export modal checkbox
-	 */
-	$body.on(
-		"click",
-		".melis-commerce-checkbox input[type=checkbox]",
-		function() {
-			$(this)
-				.parent()
-				.find(".cbmask-inner")
-				.toggleClass("cb-active");
-		}
-	);
+		/**
+		 * Export modal checkbox
+		 */
+		$body.on(
+			"click",
+			".melis-commerce-checkbox input[type=checkbox]",
+			function() {
+				$(this)
+					.parent()
+					.find(".cbmask-inner")
+					.toggleClass("cb-active");
+			}
+		);
 });

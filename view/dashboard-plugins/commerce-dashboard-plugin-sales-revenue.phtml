@@ -7,19 +7,19 @@
             <div class="innerAll">
                 <div class="tab-content">
                     <div id="chart-simple-lines-<?php echo $this->pluginConfig['plugin_id']?>" class="tab-pane active commerce-dashboard-plugin-sales-revenue-button-header">
-                        <div class="btn-group float-right" data-toggle="buttons">
-                            <label class="btn btn-default btn-sm <?= ($activeFilter == 'hourly') ? 'active' : '' ?>">
-                                <input type="radio" class="commerce-dashboard-plugin-sales-revenue" name="commerce-dashboard-plugin-sales-revenue" value="hourly"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_hourly')?>
-                            </label>
-                            <label class="btn btn-default btn-sm <?= ($activeFilter == 'daily') ? 'active' : '' ?>">
-                                <input type="radio" class="commerce-dashboard-plugin-sales-revenue" name="commerce-dashboard-plugin-sales-revenue" value="daily"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_daily')?>
-                            </label>
-                            <label class="btn btn-default btn-sm <?= ($activeFilter == 'weekly') ? 'active' : '' ?>">
-                                <input type="radio" class="commerce-dashboard-plugin-sales-revenue" name="commerce-dashboard-plugin-sales-revenue" value="weekly"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_weekly')?>
-                            </label>
-                            <label class="btn btn-default btn-sm <?= ($activeFilter == 'monthly') ? 'active' : '' ?>">
-                                <input type="radio" class="commerce-dashboard-plugin-sales-revenue" name="commerce-dashboard-plugin-sales-revenue" value="monthly"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_monthly')?>
-                            </label>
+                        <div class="btn-group float-right" data-bs-toggle="buttons" role="group">
+                            <input type="radio" class="commerce-dashboard-plugin-sales-revenue btn-check" id="commerce-dashboard-plugin-sales-revenue-hourly" name="commerce-dashboard-plugin-sales-revenue" value="hourly" autocomplete="off" checked>
+                            <!-- active = focus to remove css on active -->
+                            <label class="btn btn-default btn-sm <?= ($activeFilter == 'hourly') ? 'focus' : '' ?>" for="commerce-dashboard-plugin-sales-revenue-hourly"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_hourly')?></label>
+                            
+                            <input type="radio" class="commerce-dashboard-plugin-sales-revenue btn-check" id="commerce-dashboard-plugin-sales-revenue-daily" name="commerce-dashboard-plugin-sales-revenue" value="daily" autocomplete="off">
+                            <label class="btn btn-default btn-sm <?= ($activeFilter == 'daily') ? 'focus' : '' ?>" for="commerce-dashboard-plugin-sales-revenue-daily"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_daily')?></label>
+
+                            <input type="radio" class="commerce-dashboard-plugin-sales-revenue btn-check" id="commerce-dashboard-plugin-sales-revenue-weekly" name="commerce-dashboard-plugin-sales-revenue" value="weekly" autocomplete="off">
+                            <label class="btn btn-default btn-sm <?= ($activeFilter == 'weekly') ? 'focus' : '' ?>" for="commerce-dashboard-plugin-sales-revenue-weekly"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_weekly')?></label>
+
+                            <input type="radio" class="commerce-dashboard-plugin-sales-revenue btn-check" id="commerce-dashboard-plugin-sales-revenue-monthly" name="commerce-dashboard-plugin-sales-revenue" value="monthly" autocomplete="off">
+                            <label class="btn btn-default btn-sm <?= ($activeFilter == 'monthly') ? 'focus' : '' ?>" for="commerce-dashboard-plugin-sales-revenue-monthly"><?php echo $this->translate('tr_melis_commerce_orders_dashboard_statistics_monthly')?></label>
                         </div>
                         <div class="separator bottom"></div>
                         <div class="flotchart-holder commerce-dashboard-plugin-sales-revenue-placeholder" id="commerce-dashboard-plugin-sales-revenue-placeholder-<?php echo $this->pluginConfig['plugin_id']?>" data-activefilter="<?= $activeFilter ?>"></div>

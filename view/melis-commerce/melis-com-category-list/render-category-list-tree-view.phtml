@@ -7,7 +7,7 @@
 ?>
 <div class="col-xs-12 col-lg-8" <?php echo $id. ' '.$data_melisKey?>>
 	<div class="cat-tree-view-languages commerce-category-tree-view-languages filter-dropdown clearfix">
-		<a href="#" class="dropdown-toggle category-list-lang-dropdown" data-toggle="dropdown">
+		<a href="#" class="dropdown-toggle category-list-lang-dropdown" data-bs-toggle="dropdown">
 			<?php //echo $this->currentLangImg; ?>
 			<i class="fa fa-language"></i>
 			<span class="filter-key"><?php echo $this->currentLangName; ?></span>
@@ -16,7 +16,6 @@
 		<ul class="dropdown-menu category-tree-view-lang commerce-category-tree-view-lang">
 			<?php foreach ($this->ecomLang As $val):?>
     			<li>
-
 					<?php
 					$imageData = $val['elang_flag'];
 					$image = !empty($imageData) ? '<img src="data:image/jpeg;base64,'. ($imageData) .'" class="imgDisplay" width="24" height="24"/>' : '<i class="fa fa-globe"></i>';

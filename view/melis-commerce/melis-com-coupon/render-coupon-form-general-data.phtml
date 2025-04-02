@@ -20,7 +20,7 @@ if(!$this->couponId):
 <div class="form-group">
 	<label class="label-block" style="padding-top: 12px;">
 		<?= $this->translate('tr_meliscommerce_coupon_page_tabs_assign_form');?>
-		<i class="fa fa-info-circle fa-lg" data-toggle="tooltip" data-placement="left" title="" data-original-title="<?= $this->translate('tr_meliscommerce_coupon_page_tabs_assign_form tooltip')?>"></i>
+		<i class="fa fa-info-circle fa-lg" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-title="<?= $this->translate('tr_meliscommerce_coupon_page_tabs_assign_form tooltip')?>"></i>
 	</label>
 	<div id="<?= $this->couponId.'_assignTo' ?>" data-melisKey="<?= $this->melisKey; ?>" class="make-switch main_variant_switch" data-on-label="<?php echo $this->translate('tr_meliscommerce_coupon_page_tabs_yes')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_coupon_page_tabs_no')?>" data-text-label="<i class='fa fa-arrows-h'>">
         <input type="checkbox" name="coup_type" id="coup_type"  <?= $this->type ?>>
@@ -32,7 +32,7 @@ if(!$this->couponId):
 <div class="form-group">
 	<label class="label-block" style="padding-top: 12px;">
 		<?= $this->translate('tr_meliscommerce_coupon_page_tabs_assign_product');?>
-		<i class="fa fa-info-circle fa-lg" data-toggle="tooltip" data-placement="left" title="" data-original-title="<?= $this->translate('tr_meliscommerce_coupon_page_tabs_assign_product tooltip')?>"></i>
+		<i class="fa fa-info-circle fa-lg" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-title="<?= $this->translate('tr_meliscommerce_coupon_page_tabs_assign_product tooltip')?>"></i>
 	</label>
 	<div id="<?= $this->couponId.'_assignProduct' ?>" data-melisKey="<?= $this->melisKey; ?>" class="make-switch main_variant_switch" data-on-label="<?php echo $this->translate('tr_meliscommerce_coupon_page_tabs_yes')?>" data-off-label="<?php echo $this->translate('tr_meliscommerce_coupon_page_tabs_no')?>" data-text-label="<i class='fa fa-arrows-h'>">
         <input type="checkbox" name="coup_product_assign" id="coup_product_assign"  <?= $this->type ?>>

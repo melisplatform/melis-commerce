@@ -36,7 +36,11 @@ $(function() {
 						var docRelationType = $("#" + activeTabId + " div.ecom-doc-container").data("doc-relation-type"),
 							docRelationId   = $("#" + activeTabId + " div.ecom-doc-container").data("doc-relation-id");
 
-							$("div.modal").modal("hide");
+							// $("div.modal").modal("hide");
+							var modalId = $("div.modal").attr("id");
+								if (modalId != "" && modalId != "undefined") {
+									melisCoreTool.hideModal(modalId);
+								}
 							
 							if ( data.type == "file" ) {
 								melisHelper.zoneReload(activeTabId+" #id_meliscommerce_documents_file_attachments_lists", "meliscommerce_documents_file_attachments_lists", {
@@ -155,7 +159,11 @@ $(function() {
 							}
 							melisCoreTool.done(".btn");
 						}).fail(function(){
-							$("div.modal").modal("hide");
+							// $("div.modal").modal("hide");
+							var modalId = $("div.modal").attr("id");
+								if (modalId != "" && modalId != "undefined") {
+									melisCoreTool.hideModal(modalId);
+								}
 
 							melisCoreTool.done(".btn");
 

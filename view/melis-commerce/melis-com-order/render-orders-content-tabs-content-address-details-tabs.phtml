@@ -5,15 +5,15 @@
     }
 ?>
 
-<ul id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="nav-tabs product-text-tab">
+<ul id="<?= $id ?>" data-melisKey="<?= $this->melisKey; ?>" class="nav nav-tabs product-text-tab">
 	<?php 
 	$c = 0 ;
 	foreach($this->addressTypes as $type):
 	if($c<1){$active='active';}else{$active='';}
 	$name = $this->orderId .'_'. $type->catypt_name;
 	?>
-	<li class="<?= $active?>">
-		<a class="clearfix" data-toggle="tab" href="#<?= $name?>" aria-expanded="true">
+	<li class="nav-item <?= $active?>">
+		<a class="nav-link clearfix" data-bs-toggle="tab" href="#<?= $name?>" aria-expanded="true">
 			<i class=""></i>
 			<span><?= $type->catypt_name ?></span>
 		</a>

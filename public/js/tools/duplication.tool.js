@@ -100,7 +100,8 @@ $(function() {
                         btn.attr('disabled', false);
 
                         if ( data.success ) {
-                            $("#id_meliscommerce_variant_duplication_container").modal("hide");
+                            // $("#id_meliscommerce_variant_duplication_container").modal("hide");
+                            melisCoreTool.hideModal("id_meliscommerce_variant_duplication_container");
 
                             melisHelper.melisOkNotification( data.textTitle, data.textMessage, '#72af46' );
                             melisHelper.zoneReload(melisCommerce.getCurrentProductId()+"_id_meliscommerce_products_page_content_tab_variant_content_container", "meliscommerce_products_page_content_tab_variant_content_container", {productId : melisCommerce.getCurrentProductId()});
@@ -197,7 +198,7 @@ $(function() {
                         value: "product"
                     });
 
-                    btn.attr('disabled', true);
+                    btn.prop('disabled', true);
 
                     $.ajax({
                         type        : "POST",
@@ -207,10 +208,11 @@ $(function() {
                         encode		: true
                     }).done(function(data){
 
-                        btn.attr('disabled', false);
+                        btn.prop('disabled', false);
 
                         if ( data.success ) {
-                            $("#id_meliscommerce_product_duplication_container").modal("hide");
+                           // $("#id_meliscommerce_product_duplication_container").modal("hide");
+                           melisCoreTool.hideModal("id_meliscommerce_product_duplication_container");
 
                             melisHelper.melisOkNotification( data.textTitle, data.textMessage, '#72af46' );
                             melisHelper.zoneReload("id_meliscommerce_product_list_container", "meliscommerce_product_list_container");
@@ -222,7 +224,7 @@ $(function() {
                         highlightSKUErrors(data.success, data.errors);
                         melisCore.flashMessenger();
                     }).fail(function(){
-                        btn.attr('disabled', false);
+                        btn.prop('disabled', false);
                         alert(translations.tr_meliscore_error_message);
                     });
         });

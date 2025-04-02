@@ -13,7 +13,7 @@
                             $tabId = $menuConfig['conf']['id'];
                             $tabIcon = empty($this->icon) ? !empty($menuConfig['conf']['icon']) ? $menuConfig['conf']['icon'] : 'pencil' : $this->icon;
                             $tabName = $menuConfig['conf']['name'];
-                            echo '<li class="'.$active.'"><a href="#'.$tabId.'" class="glyphicons '.$tabIcon.'" data-toggle="tab" aria-expanded="true"><i></i> '.(empty($this->title) ? $this->translate($tabName) : $this->title).'</a></li>';
+                            echo '<li class="nav-item '.$active.'"><a href="#'.$tabId.'" class="nav-link glyphicons '.$tabIcon.'" data-bs-toggle="tab" aria-expanded="true"><i></i> '.(empty($this->title) ? $this->translate($tabName) : $this->title).'</a></li>';
                         }
                         ?>
                     </ul>
@@ -37,7 +37,7 @@
                         }
                         ?>
                         <div class="footer-modal d-flex flex-row justify-content-between">
-                            <a data-dismiss="modal" class="btn btn-danger"><i class="fa fa-times"></i> <span class="btn-text"><?php echo $this->translate('tr_meliscommerce_general_common_close')?></span></a>
+                            <a data-bs-dismiss="modal" class="btn btn-danger"><i class="fa fa-times"></i> <span class="btn-text"><?php echo $this->translate('tr_meliscommerce_general_common_close')?></span></a>
                             <button class="btn btn-success btnSaveClientsGroup" data-group-id="<?= $this->groupId; ?>"><i class="fa fa-save"></i> <span class="btn-text"><?php echo $this->translate('tr_meliscommerce_general_common_save'); ?></span></button>
                         </div>
                     </div>

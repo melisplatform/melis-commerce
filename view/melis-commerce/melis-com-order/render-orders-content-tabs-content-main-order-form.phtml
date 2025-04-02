@@ -1,7 +1,7 @@
 <br>
 <div class="form-group">
 	<label><?= $this->translate('tr_meliscommerce_orders_select')?>
-	<i class="fa fa-info-circle fa-lg" data-toggle="tooltip" data-placement="left" title="" data-original-title="<?= $this->translate('tr_meliscommerce_orders_status tooltip')?>"></i>
+	<i class="fa fa-info-circle fa-lg" data-bs-toggle="tooltip" data-bs-placement="left" title="" data-bs-title="<?= $this->translate('tr_meliscommerce_orders_status tooltip')?>"></i>
 	</label><br>
 		<?= $this->statusButtons;?>
 </div>
@@ -17,30 +17,30 @@
     
 //     echo $this->colorScript;
 ?>
-<script>
-$('#<?= $this->orderId?>_id_meliscommerce_orders_content_tabs_content_main_details_sub_content .mainOrderStatus').each(function(){
-	var button = $(this).find('span');
-	if($(this).data('statusid') == <?= $this->currStatus?>){		
-		var statusColor = button.css('border-top-color');
-		button.css('color', '#fff');
-		button.css('background', statusColor);		
-	}
-	button.css('margin-bottom', '5px');
-});
+<script type="text/javascript">
+    $('#<?= $this->orderId?>_id_meliscommerce_orders_content_tabs_content_main_details_sub_content .mainOrderStatus').each(function(){
+        var button = $(this).find('span');
+        if($(this).data('statusid') == <?= $this->currStatus?>){		
+            var statusColor = button.css('border-top-color');
+            button.css('color', '#fff');
+            button.css('background', statusColor);		
+        }
+        button.css('margin-bottom', '5px');
+    });
 
-$('form[name=order] select[name=ord_status]').ready(function () {
-    <?php 
-    $c = 1;
-    foreach($this->status as $status):
-    ?>
-    $('form[name=order] select[name=ord_status] option:nth-child(<?= $c ?>)').css("color", "<?= $status->osta_color_code ?>");
-    <?php
-    $c++;
-    endforeach;
-    ?>
-    $('form[name=order] select[name=ord_status]').attr("style", $("form[name=order] select[name=ord_status] option:selected").attr("style"));
-});
-$('form[name=order] select[name=ord_status]').change(function () {
-    $('form[name=order] select[name=ord_status]').attr("style", $("form[name=order] select[name=ord_status] option:selected").attr("style"));
-});
+    $('form[name=order] select[name=ord_status]').ready(function () {
+        <?php 
+        $c = 1;
+        foreach($this->status as $status):
+        ?>
+        $('form[name=order] select[name=ord_status] option:nth-child(<?= $c ?>)').css("color", "<?= $status->osta_color_code ?>");
+        <?php
+        $c++;
+        endforeach;
+        ?>
+        $('form[name=order] select[name=ord_status]').attr("style", $("form[name=order] select[name=ord_status] option:selected").attr("style"));
+    });
+    $('form[name=order] select[name=ord_status]').on("change", function () {
+        $('form[name=order] select[name=ord_status]').attr("style", $("form[name=order] select[name=ord_status] option:selected").attr("style"));
+    });
 </script>
