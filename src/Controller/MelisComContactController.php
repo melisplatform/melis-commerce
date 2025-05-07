@@ -1819,7 +1819,9 @@ class MelisComContactController extends MelisAbstractActionController
                 foreach (array_keys($val) as $key) {
                     $tmp = $val[$key];
                     // encode utf8_encode
-                    $newData[$idx][$coreTool->iso8859_1ToUtf8($key)] = !empty($tmp) ? $tmp : '';
+//                    $newData[$idx][$coreTool->iso8859_1ToUtf8($key)] = !empty($tmp) ? $tmp : '';
+                    $newKey = $this->utfEncode($key);
+                    $newData[$idx][$newKey] = $tmp;
 
                 }
             }
@@ -1868,11 +1870,13 @@ class MelisComContactController extends MelisAbstractActionController
                 foreach ($dataValue as $key => $value) {
 
                     if ($striptags) {
-                        $value = $coreTool->iso8859_1ToUtf8($value);
+//                        $value = $coreTool->iso8859_1ToUtf8($value);
+                        $value = $this->utfEncode($value);
                     } else {
                         if (is_int($value)) {
                             $value = (string) $value;
-                            $value = $coreTool->iso8859_1ToUtf8($value);
+//                            $value = $coreTool->iso8859_1ToUtf8($value);
+                            $value = $this->utfEncode($value);
                         }
                     }
 
@@ -1880,8 +1884,10 @@ class MelisComContactController extends MelisAbstractActionController
                      * to solve the issue of 1 double quoute is to replace it with 2 double quote
                      * so that it will not break the csv file
                      */
-                    $value = str_replace('"', '""', $value);
-                    $value = str_replace(array("\r", "\n"), '', $value);
+                    if(!empty($value)) {
+                        $value = str_replace('"', '""', $value);
+                        $value = str_replace(array("\r", "\n"), '', $value);
+                    }
                     // content
                     $content .= $enclosed . $value . $enclosed . $separator;
 
@@ -1900,6 +1906,21 @@ class MelisComContactController extends MelisAbstractActionController
         }
 
         return $response;
+    }
+
+    /**
+     * @param $data
+     * @return string
+     */
+    private function utfEncode($data)
+    {
+        if(!empty($data)) {
+            //since utf8_encode is deprecated, we use mb_convert_encoding
+            if (!mb_check_encoding($data, 'UTF-8')) {
+                $data = mb_convert_encoding($data, 'UTF-8', 'ISO-8859-1');
+            }
+        }
+        return $data;
     }
 
     /**
@@ -2200,7 +2221,8 @@ class MelisComContactController extends MelisAbstractActionController
         $data = [];
         foreach($dataTemplate as $key => $val){
             foreach($val as $k => $v){
-                $name = $coreTool->iso8859_1ToUtf8($translator->translate($k));
+//                $name = $coreTool->iso8859_1ToUtf8($translator->translate($k));
+                $name = $this->utfEncode($translator->translate($k));
                 $data[$key][$name] = $v;
             }
         }
