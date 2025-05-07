@@ -1912,7 +1912,7 @@ class MelisComContactController extends MelisAbstractActionController
      * @param $data
      * @return string
      */
-    private function utfEncode($data)
+    public function utfEncode($data)
     {
         if(!empty($data)) {
             //since utf8_encode is deprecated, we use mb_convert_encoding
