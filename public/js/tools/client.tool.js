@@ -623,7 +623,7 @@ $(function() {
 			var data = $("form#client-list-export-accounts").serializeArray();
 			filters['groupId'] = $("#clientsGroupSelect").val();
 			filters['status'] = $("#clientsStatusSelect").val();
-			filters['search'] = $("#clientListTbl_filter input[type='search']").val();
+			filters['search'] = $(".meliscommerce-clients-list-tbl-search input[type='search']").val();
 
 			$.each(data, function(key, val){
 				filters[val.name] = val.value;
