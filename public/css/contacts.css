@@ -30,3 +30,8 @@
     border-radius: 5px;
     color: #fff;
 }
+
+/* mantis issue: 8420 */
+#contactTypeSelect {
+	max-width: 48% !important;
+}
