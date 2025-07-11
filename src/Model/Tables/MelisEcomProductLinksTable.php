@@ -16,14 +16,15 @@ class MelisEcomProductLinksTable extends MelisEcomGenericTable
     const TABLE = 'melis_ecom_product_links';
     const PRIMARY_KEY = 'plink_id';
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->idField = self::PRIMARY_KEY;
     }
 
     public function getProductPageAssociationsByProductId($productId)
     {
         $select = $this->getTableGateway()->getSql()->select();
-        $select->where->equalTo('plink_product_id', $productId);
+        $select->where->equalTo('plink_product_id', (int)$productId);
         return $this->tableGateway->selectWith($select);
     }
 }

@@ -11,7 +11,7 @@ namespace MelisCommerce\Model\Tables;
 
 use Laminas\Db\TableGateway\TableGateway;
 
-class MelisEcomVariantStockTable extends MelisEcomGenericTable 
+class MelisEcomVariantStockTable extends MelisEcomGenericTable
 {
     /**
      * Model table
@@ -33,17 +33,17 @@ class MelisEcomVariantStockTable extends MelisEcomGenericTable
         $select = $this->getTableGateway()->getSql()->select();
         $select->columns(array('*'));
         $clause = array();
-        
-        if(!is_null($countryId))
-            $clause['stock_country_id'] = (int) $countryId;        
-        
+
+        if (!is_null($countryId))
+            $clause['stock_country_id'] = (int) $countryId;
+
         $clause['melis_ecom_variant_stock.stock_var_id'] = (int) $variantId;
-        
-        if($clause){
+
+        if ($clause) {
             $select->where($clause);
         }
-        
-        $resultSet = $this->getTableGateway()->selectwith($select);
+
+        $resultSet = $this->getTableGateway()->selectWith($select);
 
         return $resultSet;
     }

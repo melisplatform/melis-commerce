@@ -9,9 +9,7 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Laminas\Db\TableGateway\TableGateway;
-
-class MelisEcomBasketAnonymousTable extends MelisEcomGenericTable 
+class MelisEcomBasketAnonymousTable extends MelisEcomGenericTable
 {
     /**
      * Model table
@@ -31,22 +29,21 @@ class MelisEcomBasketAnonymousTable extends MelisEcomGenericTable
     public function getBasketAnonymousByVarianIdAndClientKey($variantId, $clientKey)
     {
         $select = $this->tableGateway->getSql()->select();
-        
-        $select->where('bano_key = "'. $clientKey .'"');
-        $select->where('bano_variant_id ='. $variantId);
-        
+
+        $select->where->equalTo('bano_key', $clientKey);
+        $select->where->equalTo('bano_variant_id', (int)$variantId);
+
         $resultData = $this->tableGateway->selectWith($select);
         return $resultData;
     }
-    
+
     public function cleanAnonymousBaskets($daysToKeep)
     {
         $delete = $this->tableGateway->getSql()->delete();
-        
-        $delete->where('bano_date_added < "'. $daysToKeep . '"');
-        
+
+        $delete->where->lessThan('bano_date_added', $daysToKeep);
+
         $resultData = $this->tableGateway->deleteWith($delete);
         return $resultData;
     }
-    
 }

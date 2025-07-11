@@ -9,9 +9,7 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Laminas\Db\TableGateway\TableGateway;
-
-class MelisEcomCouponClientTable extends MelisEcomGenericTable 
+class MelisEcomCouponClientTable extends MelisEcomGenericTable
 {
     /**
      * Model table
@@ -31,22 +29,21 @@ class MelisEcomCouponClientTable extends MelisEcomGenericTable
     public function checkCouponClientExist($couponId, $clientId)
     {
         $select = $this->tableGateway->getSql()->select();
-        $select->where('melis_ecom_coupon_client.ccli_coupon_id ='.$couponId);
-        $select->where('melis_ecom_coupon_client.ccli_client_id ='.$clientId);
-        
+        $select->where->equalTo('melis_ecom_coupon_client.ccli_coupon_id', (int)$couponId);
+        $select->where->equalTo('melis_ecom_coupon_client.ccli_client_id', (int)$clientId);
+
         $resultData = $this->tableGateway->selectWith($select);
         return $resultData;
     }
-    
+
     public function removeCouponFromClient($couponId, $clientId)
     {
         $delete = $this->tableGateway->getSql()->delete();
-        
-        $delete->where('melis_ecom_coupon_client.ccli_coupon_id ='.$couponId);
-        $delete->where('melis_ecom_coupon_client.ccli_client_id ='.$clientId);
-        
+
+        $delete->where->equalTo('melis_ecom_coupon_client.ccli_coupon_id', (int)$couponId);
+        $delete->where->equalTo('melis_ecom_coupon_client.ccli_client_id', (int)$clientId);
+
         $resultData = $this->tableGateway->deleteWith($delete);
         return $resultData;
     }
-    
 }

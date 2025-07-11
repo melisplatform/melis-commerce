@@ -9,10 +9,6 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Laminas\Db\Sql\Predicate\Like;
-use Laminas\Db\Sql\Predicate\PredicateSet;
-use Laminas\Db\TableGateway\TableGateway;
-
 class MelisEcomClientAccountRelTable extends MelisEcomGenericTable
 {
     /**
@@ -39,8 +35,8 @@ class MelisEcomClientAccountRelTable extends MelisEcomGenericTable
     {
         $delete = $this->tableGateway->getSql()->delete();
 
-        $delete->where->equalTo('car_client_id', $accountId);
-        $delete->where->equalTo('car_client_person_id', $contactId);
+        $delete->where->equalTo('car_client_id', (int)$accountId);
+        $delete->where->equalTo('car_client_person_id', (int)$contactId);
 
         $resultData = $this->tableGateway->deleteWith($delete);
         return $resultData;
@@ -54,9 +50,9 @@ class MelisEcomClientAccountRelTable extends MelisEcomGenericTable
     public function getDataByAccountAndContactId($accountId, $contactId)
     {
         $select = $this->getTableGateway()->getSql()->select();
-        $select->where->equalTo('car_client_id', $accountId);
-        $select->where->equalTo('car_client_person_id', $contactId);
+        $select->where->equalTo('car_client_id', (int)$accountId);
+        $select->where->equalTo('car_client_person_id', (int)$contactId);
 
-        return $this->getTableGateway()->selectwith($select);
+        return $this->getTableGateway()->selectWith($select);
     }
 }

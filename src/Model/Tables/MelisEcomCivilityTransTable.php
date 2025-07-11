@@ -9,9 +9,7 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Laminas\Db\TableGateway\TableGateway;
-
-class MelisEcomCivilityTransTable extends MelisEcomGenericTable 
+class MelisEcomCivilityTransTable extends MelisEcomGenericTable
 {
     /**
      * Model table
@@ -31,31 +29,28 @@ class MelisEcomCivilityTransTable extends MelisEcomGenericTable
     public function getCivilityByLangId($langId = null)
     {
         $select = $this->tableGateway->getSql()->select();
-        
-        if (!is_null($langId))
-        {
-            $select->where('civt_lang_id ='.$langId);
+
+        if (!is_null($langId)) {
+            $select->where->equalTo('civt_lang_id', (int)$langId);
         }
-        
+
         $resultData = $this->tableGateway->selectWith($select);
         return $resultData;
     }
-    
+
     public function getCivilityTransByCivilityId($civt_civ_id, $langId = null)
     {
         $select = $this->tableGateway->getSql()->select();
-        
+
         $clause = array();
         $clause['civt_civ_id'] = (int) $civt_civ_id;
-        if (!is_null($langId))
-        {
+        if (!is_null($langId)) {
             $clause['civt_lang_id'] = (int) $langId;
         }
-        
+
         $select->where($clause);
-        $resultSet = $this->tableGateway->selectwith($select);
-        
+        $resultSet = $this->tableGateway->selectWith($select);
+
         return $resultSet;
     }
-    
 }

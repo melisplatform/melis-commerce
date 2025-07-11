@@ -9,10 +9,6 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Laminas\Db\TableGateway\TableGateway;
-use Laminas\Db\Sql\Predicate\Predicate;
-use Laminas\Db\Sql\Expression;
-
 class MelisEcomOrderProductReturnDetailsTable extends MelisEcomGenericTable
 {
     /**

@@ -9,9 +9,7 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Laminas\Db\TableGateway\TableGateway;
-
-class MelisEcomCouponProductTable extends MelisEcomGenericTable 
+class MelisEcomCouponProductTable extends MelisEcomGenericTable
 {
     /**
      * Model table
@@ -30,32 +28,31 @@ class MelisEcomCouponProductTable extends MelisEcomGenericTable
 
     public function checkCouponProductExist($couponId, $clientId, $productId = null)
     {
-        
+
         $select = $this->getTableGateway()->getSql()->select();
-        
-        if(!is_null($clientId)){
+
+        if (!is_null($clientId)) {
             $select->join('melis_ecom_coupon_client', 'melis_ecom_coupon_client.ccli_coupon_id = cprod_coupon_id', array(), $select::JOIN_LEFT);
             $select->where->equalTo('ccli_client_id', $clientId);
         }
-        
-        $select->where->equalTo('cprod_coupon_id', $couponId);
-        
-        $select->where->equalTo('cprod_product_id', $productId);
-        
+
+        $select->where->equalTo('cprod_coupon_id', (int)$couponId);
+
+        $select->where->equalTo('cprod_product_id', (int)$productId);
+
         $resultSet = $this->getTableGateway()->selectWith($select);
-        
+
         return $resultSet;
     }
-    
+
     public function deleteCouponproduct($couponId, $productId)
     {
         $delete = $this->getTableGateway()->getSql()->delete();
-        
-        $delete->where->equalTo('cprod_coupon_id', $couponId);
-        $delete->where->equalTo('cprod_product_id', $productId);
-        
+
+        $delete->where->equalTo('cprod_coupon_id', (int)$couponId);
+        $delete->where->equalTo('cprod_product_id', (int)$productId);
+
         $resultData = $this->getTableGateway()->deleteWith($delete);
         return $resultData;
     }
-    
 }

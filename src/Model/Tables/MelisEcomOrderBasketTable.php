@@ -9,9 +9,7 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Laminas\Db\TableGateway\TableGateway;
-
-class MelisEcomOrderBasketTable extends MelisEcomGenericTable 
+class MelisEcomOrderBasketTable extends MelisEcomGenericTable
 {
     /**
      * Model table
@@ -33,26 +31,26 @@ class MelisEcomOrderBasketTable extends MelisEcomGenericTable
         $select = $this->getTableGateway()->getSql()->select();
         $select->columns(array('*'));
         $clause = array();
-        
+
         $clause['melis_ecom_order_basket.obas_order_id'] = (int) $orderId;
         $select->where($clause);
-        if(!is_null($search)){
-            $search = '%'.$search.'%';
+        if (!is_null($search)) {
+            $search = '%' . $search . '%';
             $select->where->NEST->like('obas_product_name', $search)
-            ->or->like('obas_id', $search)            
-            ->or->like('obas_sku', $search)
-            ->or->like('obas_quantity', $search)
-            ->or->like('obas_price_net', $search);
+                ->or->like('obas_id', $search)
+                ->or->like('obas_sku', $search)
+                ->or->like('obas_quantity', $search)
+                ->or->like('obas_price_net', $search);
         }
-        
-        if(!is_null($limit)) {
+
+        if (!is_null($limit)) {
             $select->limit((int)$limit);
         }
-        
+
         $select->order($order);
-        if(!empty($start)){
+        if (!empty($start)) {
             $select->offset((int)$start);
         }
-        return $this->getTableGateway()->selectwith($select);
+        return $this->getTableGateway()->selectWith($select);
     }
 }

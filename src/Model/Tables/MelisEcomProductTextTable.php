@@ -10,9 +10,8 @@
 namespace MelisCommerce\Model\Tables;
 
 use Laminas\Db\Sql\Where;
-use Laminas\Db\TableGateway\TableGateway;
 
-class MelisEcomProductTextTable extends MelisEcomGenericTable 
+class MelisEcomProductTextTable extends MelisEcomGenericTable
 {
     /**
      * Model table
@@ -38,14 +37,14 @@ class MelisEcomProductTextTable extends MelisEcomGenericTable
         $where = new Where();
         $nest = $where->nest();
 
-        $nest->equalTo('melis_ecom_product_text.ptxt_prd_id', $productId);
+        $nest->equalTo('melis_ecom_product_text.ptxt_prd_id', (int)$productId);
 
         if (!is_null($productTextCode)) {
             $nest->equalTo('melis_ecom_product_text_type.ptt_code', $productTextCode);
         }
 
         if (!is_null($langId)) {
-            $nest->equalTo('melis_ecom_product_text.ptxt_lang_id', $langId);
+            $nest->equalTo('melis_ecom_product_text.ptxt_lang_id', (int)$langId);
         }
 
         $nest = $nest->where->nest();
@@ -54,60 +53,59 @@ class MelisEcomProductTextTable extends MelisEcomGenericTable
 
         if (!is_null($langId)) {
             $nest = $where->OR->nest();
-                    $nest->OR->equalTo('ptxt_prd_id', $productId);
-                    $nest->isNotNull('melis_ecom_product_text.ptxt_lang_id');
+            $nest->OR->equalTo('ptxt_prd_id', (int)$productId);
+            $nest->isNotNull('melis_ecom_product_text.ptxt_lang_id');
 
             $nest = $nest->where->nest();
-                    $nest->isNotNull('melis_ecom_product_text.ptxt_field_short');
-                    $nest->OR->isNotNull('melis_ecom_product_text.ptxt_field_long');
+            $nest->isNotNull('melis_ecom_product_text.ptxt_field_short');
+            $nest->OR->isNotNull('melis_ecom_product_text.ptxt_field_long');
         }
 
         $select->where($where);
         $select->order('ptt_id ASC');
 
-        $resultSet = $this->getTableGateway()->selectwith($select);
+        $resultSet = $this->getTableGateway()->selectWith($select);
 
         return $resultSet;
     }
-    
-    public function getProductTextLangId($productId) 
+
+    public function getProductTextLangId($productId)
     {
         $select = $this->getTableGateway()->getSql()->select();
         $select->columns(array('ptxt_lang_id'));
 
-        $select->where->equalTo('ptxt_prd_id', $productId);
-        
+        $select->where->equalTo('ptxt_prd_id', (int)$productId);
+
         $select->order('ptxt_id ASC');
-        $resultSet = $this->getTableGateway()->selectwith($select);
-        
+        $resultSet = $this->getTableGateway()->selectWith($select);
+
         return $resultSet;
     }
-    
-    public function getProductTextsByProductId($productId, $langId = 1) 
+
+    public function getProductTextsByProductId($productId, $langId = 1)
     {
         $select = $this->getTableGateway()->getSql()->select();
         $select->columns(array('*'));
 
-        $select->where->equalTo('ptxt_prd_id', $productId)->and->equalTo('ptxt_lang_id', $langId);
-        
+        $select->where->equalTo('ptxt_prd_id', (int)$productId)->and->equalTo('ptxt_lang_id', (int)$langId);
+
         $select->order('ptxt_id ASC');
-        $resultSet = $this->getTableGateway()->selectwith($select);
-        
+        $resultSet = $this->getTableGateway()->selectWith($select);
+
         return $resultSet;
     }
-    
-    public function getProductTextsWithLang($productId, $langId = 1) 
+
+    public function getProductTextsWithLang($productId, $langId = 1)
     {
         $select = $this->getTableGateway()->getSql()->select();
         $select->columns(array('*'));
 
         $select->join('melis_ecom_lang', 'melis_ecom_lang.elang_id = melis_ecom_product_text.ptxt_lang_id', array('*'), $select::JOIN_LEFT);
 
-        $select->where->equalTo('ptxt_prd_id', $productId)->and->equalTo('ptxt_lang_id', $langId);
-        
-        $resultSet = $this->getTableGateway()->selectwith($select);
-        
+        $select->where->equalTo('ptxt_prd_id', (int)$productId)->and->equalTo('ptxt_lang_id', (int)$langId);
+
+        $resultSet = $this->getTableGateway()->selectWith($select);
+
         return $resultSet;
     }
-    
 }

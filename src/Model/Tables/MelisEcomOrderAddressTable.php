@@ -9,9 +9,7 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Laminas\Db\TableGateway\TableGateway;
-
-class MelisEcomOrderAddressTable extends MelisEcomGenericTable 
+class MelisEcomOrderAddressTable extends MelisEcomGenericTable
 {
     /**
      * Model table
@@ -31,22 +29,21 @@ class MelisEcomOrderAddressTable extends MelisEcomGenericTable
     public function getOrderAddressesByOrderId($orderId)
     {
         $select = $this->getTableGateway()->getSql()->select();
-        
-        $select->where('oadd_order_id ='.$orderId);
-        
+
+        $select->where->equalTo('oadd_order_id', (int)$orderId);
+
         $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
-    
+
     public function getorderAddressByOrderAddressIdandTypeId($orderAddressId, $typeId)
     {
         $select = $this->getTableGateway()->getSql()->select();
-        
-        $select->where('oadd_id ='.$orderAddressId);
-        $select->where('oadd_type ='.$typeId);
-        
+
+        $select->where->equalTo('oadd_id', (int)$orderAddressId);
+        $select->where->equalTo('oadd_type', (int)$typeId);
+
         $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
-    
 }

@@ -9,9 +9,7 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Laminas\Db\TableGateway\TableGateway;
-
-class MelisEcomDocumentTable extends MelisEcomGenericTable 
+class MelisEcomDocumentTable extends MelisEcomGenericTable
 {
     /**
      * Model table
@@ -28,99 +26,98 @@ class MelisEcomDocumentTable extends MelisEcomGenericTable
         $this->idField = self::PRIMARY_KEY;
     }
 
-    public function getDocumentAndType($documentId) 
+    public function getDocumentAndType($documentId)
     {
         $select = $this->getTableGateway()->getSql()->select();
         $select->columns(array('*'));
-        
+
         $select->join('melis_ecom_doc_type', 'melis_ecom_doc_type.dtype_id = melis_ecom_document.doc_type_id', array('*'), $select::JOIN_LEFT);
-        
-        $select->where(array('doc_id' => $documentId));
-        
-        $resultSet = $this->getTableGateway()->selectwith($select);
-        
+
+        $select->where(array('doc_id' => (int)$documentId));
+
+        $resultSet = $this->getTableGateway()->selectWith($select);
+
         return $resultSet;
     }
-    
+
     public function getDocumentsRelationAndDocType($docRelation, $relationId, $typeCode = null)
     {
         $select = $this->getTableGateway()->getSql()->select();
         $select->columns(array('*'));
         $clause = array();
-    
-        $select->join('melis_ecom_doc_relations', 'melis_ecom_doc_relations.rdoc_doc_id = melis_ecom_document.doc_id', array('*'), $select::JOIN_LEFT)
-               ->join('melis_ecom_doc_type', 'melis_ecom_doc_type.dtype_id = melis_ecom_document.doc_type_id', array('*'), $select::JOIN_LEFT);
 
-       $clause['rdoc_'.$docRelation.'_id'] = (int) $relationId;
-       if($typeCode) {
-           $clause['dtype_code'] = $typeCode;
-       }
-       
-       $select->where($clause);
-    
-        $resultSet = $this->getTableGateway()->selectwith($select);
-    
+        $select->join('melis_ecom_doc_relations', 'melis_ecom_doc_relations.rdoc_doc_id = melis_ecom_document.doc_id', array('*'), $select::JOIN_LEFT)
+            ->join('melis_ecom_doc_type', 'melis_ecom_doc_type.dtype_id = melis_ecom_document.doc_type_id', array('*'), $select::JOIN_LEFT);
+
+        $clause['rdoc_' . $docRelation . '_id'] = (int) $relationId;
+        if ($typeCode) {
+            $clause['dtype_code'] = $typeCode;
+        }
+
+        $select->where($clause);
+
+        $resultSet = $this->getTableGateway()->selectWith($select);
+
         return $resultSet;
     }
-    
+
     public function getDocumentRelationsAndDocSubType($docRelation, $relationId, $typeId = null, $subTypeId = null)
     {
         $select = $this->getTableGateway()->getSql()->select();
         $select->columns(array('*'));
         $clause = array();
-        
+
         $select->join('melis_ecom_doc_relations', 'melis_ecom_doc_relations.rdoc_doc_id = melis_ecom_document.doc_id', array('*'), $select::JOIN_LEFT)
-        ->join('melis_ecom_doc_type', 'melis_ecom_doc_type.dtype_id = melis_ecom_document.doc_subtype_id', array('*'), $select::JOIN_LEFT);
-        
-        $clause['rdoc_'.$docRelation.'_id'] = (int) $relationId;
-        
-        if($typeId) {
+            ->join('melis_ecom_doc_type', 'melis_ecom_doc_type.dtype_id = melis_ecom_document.doc_subtype_id', array('*'), $select::JOIN_LEFT);
+
+        $clause['rdoc_' . $docRelation . '_id'] = (int) $relationId;
+
+        if ($typeId) {
             $clause['melis_ecom_document.doc_type_id'] = (int) $typeId;
         }
-        
-        if($subTypeId) {
+
+        if ($subTypeId) {
             $clause['melis_ecom_document.doc_subtype_id'] = (int) $subTypeId;
         }
-        
+
         $select->where($clause);
-        
-        $resultSet = $this->getTableGateway()->selectwith($select);
-        
+
+        $resultSet = $this->getTableGateway()->selectWith($select);
+
         return $resultSet;
     }
-    
+
     public function getDocumentsByParentTypeId($docRelation, $docRelationId)
     {
         $select = $this->getTableGateway()->getSql()->select();
-        
+
         $select->join('melis_ecom_doc_relations', 'melis_ecom_doc_relations.rdoc_doc_id = melis_ecom_document.doc_id', array('*'), $select::JOIN_LEFT);
-        
-        $select->where('melis_ecom_doc_relations.rdoc_'.$docRelation.'_id ='.$docRelationId);
-                
-        $resultSet = $this->getTableGateway()->selectwith($select);
-        
+
+        $select->where->equalTo('melis_ecom_doc_relations.rdoc_' . $docRelation . '_id', (int)$docRelationId);
+
+        $resultSet = $this->getTableGateway()->selectWith($select);
+
         return $resultSet;
     }
-    
+
     public function getDocumentsByRelationsAndTypes($docRelation, $relationId, $typeCode1 = null, $typeCode2 = array())
     {
-        
         $select = $this->getTableGateway()->getSql()->select();
-        
+
         $select->join('melis_ecom_doc_relations', 'melis_ecom_doc_relations.rdoc_doc_id = melis_ecom_document.doc_id', array('*'), $select::JOIN_LEFT)
-        ->join('melis_ecom_doc_type', 'melis_ecom_doc_type.dtype_id = melis_ecom_document.doc_type_id', array('*'), $select::JOIN_LEFT)
-        ->join(array('doc_sub_type' => 'melis_ecom_doc_type'), 'doc_sub_type.dtype_id = melis_ecom_document.doc_subtype_id', array('dtype_sub_code'=>'dtype_code'), $select::JOIN_LEFT);
-        
-       $select->where->equalTo('rdoc_'.$docRelation.'_id', $relationId);
-        
-       if(!is_null($typeCode1)){
-           $select->where->equalTo('melis_ecom_doc_type.dtype_code', $typeCode1);
-       }
-       
-       if(!empty($typeCode2)){
-           $select->where->in('doc_sub_type.dtype_code', $typeCode2);
-       }
-//        echo $this->getRawSql($select); die();
-       return $this->getTableGateway()->selectWith($select);
+            ->join('melis_ecom_doc_type', 'melis_ecom_doc_type.dtype_id = melis_ecom_document.doc_type_id', array('*'), $select::JOIN_LEFT)
+            ->join(array('doc_sub_type' => 'melis_ecom_doc_type'), 'doc_sub_type.dtype_id = melis_ecom_document.doc_subtype_id', array('dtype_sub_code' => 'dtype_code'), $select::JOIN_LEFT);
+
+        $select->where->equalTo('rdoc_' . $docRelation . '_id', (int)$relationId);
+
+        if (!is_null($typeCode1)) {
+            $select->where->equalTo('melis_ecom_doc_type.dtype_code', $typeCode1);
+        }
+
+        if (!empty($typeCode2)) {
+            $select->where->in('doc_sub_type.dtype_code', $typeCode2);
+        }
+
+        return $this->getTableGateway()->selectWith($select);
     }
 }

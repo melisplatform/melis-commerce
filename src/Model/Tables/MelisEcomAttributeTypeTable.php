@@ -9,9 +9,7 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Laminas\Db\TableGateway\TableGateway;
-
-class MelisEcomAttributeTypeTable extends MelisEcomGenericTable 
+class MelisEcomAttributeTypeTable extends MelisEcomGenericTable
 {
     /**
      * Model table

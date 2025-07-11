@@ -9,9 +9,7 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Laminas\Db\TableGateway\TableGateway;
-
-class MelisEcomOrderMessageTable extends MelisEcomGenericTable 
+class MelisEcomOrderMessageTable extends MelisEcomGenericTable
 {
     /**
      * Model table
@@ -32,12 +30,12 @@ class MelisEcomOrderMessageTable extends MelisEcomGenericTable
     {
         $select = $this->getTableGateway()->getSql()->select();
 
-        if(!empty($msgType))
+        if (!empty($msgType))
             $select->where->equalTo('omsg_type', $msgType);
 
-        $select->where('omsg_order_id ='.$orderId);
+        $select->where->equalTo('omsg_order_id', $orderId);
         $select->order('omsg_date_creation');
-        
+
         $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }

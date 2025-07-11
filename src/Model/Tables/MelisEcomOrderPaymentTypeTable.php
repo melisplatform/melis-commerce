@@ -9,9 +9,7 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Laminas\Db\TableGateway\TableGateway;
-
-class MelisEcomOrderPaymentTypeTable extends MelisEcomGenericTable 
+class MelisEcomOrderPaymentTypeTable extends MelisEcomGenericTable
 {
     /**
      * Model table

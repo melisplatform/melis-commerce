@@ -9,9 +9,7 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Laminas\Db\TableGateway\TableGateway;
-
-class MelisEcomOrderPaymentTable extends MelisEcomGenericTable 
+class MelisEcomOrderPaymentTable extends MelisEcomGenericTable
 {
     /**
      * Model table
@@ -31,13 +29,17 @@ class MelisEcomOrderPaymentTable extends MelisEcomGenericTable
     public function getOrderPaymentByOrderId($orderId)
     {
         $select = $this->getTableGateway()->getSql()->select();
-        
-        $select->join('melis_ecom_order_payment_type', 'melis_ecom_order_payment_type.opty_id=melis_ecom_order_payment.opay_payment_type_id',
-            array('*'),$select::JOIN_LEFT);
-        
-        $select->where('opay_order_id ='.$orderId);
+
+        $select->join(
+            'melis_ecom_order_payment_type',
+            'melis_ecom_order_payment_type.opty_id=melis_ecom_order_payment.opay_payment_type_id',
+            array('*'),
+            $select::JOIN_LEFT
+        );
+
+        $select->where->equalTo('opay_order_id', (int)$orderId);
         $select->order('opay_date_payment');
-        
+
         $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }

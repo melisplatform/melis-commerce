@@ -9,10 +9,9 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Laminas\Db\TableGateway\TableGateway;
 use Laminas\Db\Sql\Where;
 
-class MelisEcomAttributeTransTable extends MelisEcomGenericTable 
+class MelisEcomAttributeTransTable extends MelisEcomGenericTable
 {
     /**
      * Model table
@@ -36,20 +35,20 @@ class MelisEcomAttributeTransTable extends MelisEcomGenericTable
         $clause = array();
 
         $clause['melis_ecom_attribute_trans.atrans_id'] = (int) $attributeTransId;
-        
-        if(!is_null($langId)) {
+
+        if (!is_null($langId)) {
             $clause['melis_ecom_attribute_trans.atrans_lang_id'] = (int) $langId;
         }
-    
-        if($clause){
+
+        if ($clause) {
             $select->where($clause);
         }
-    
-        $resultSet = $this->getTableGateway()->selectwith($select);
-    
+
+        $resultSet = $this->getTableGateway()->selectWith($select);
+
         return $resultSet;
     }
-    
+
     public function getAttributeTransByAtributeId($attributeId, $langId = null)
     {
         $select = $this->getTableGateway()->getSql()->select();
@@ -58,18 +57,17 @@ class MelisEcomAttributeTransTable extends MelisEcomGenericTable
         $where = new Where();
         $nest = $where->nest();
 
-        $nest->equalTo('melis_ecom_attribute_trans.atrans_attribute_id', $attributeId);
-        $nest->equalTo('melis_ecom_attribute_trans.atrans_lang_id', $langId);
+        $nest->equalTo('melis_ecom_attribute_trans.atrans_attribute_id', (int)$attributeId);
+        $nest->equalTo('melis_ecom_attribute_trans.atrans_lang_id', (int)$langId);
 
         $nest = $where->OR->nest();
-        $nest->equalTo('atrans_attribute_id', $attributeId);
+        $nest->equalTo('atrans_attribute_id', (int)$attributeId);
         $nest->isNotNull('melis_ecom_attribute_trans.atrans_lang_id');
 
         $select->where($where);
-    
-        $resultSet = $this->getTableGateway()->selectwith($select);
-    
+
+        $resultSet = $this->getTableGateway()->selectWith($select);
+
         return $resultSet;
     }
-    
 }

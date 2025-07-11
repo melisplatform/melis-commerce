@@ -9,9 +9,7 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Laminas\Db\TableGateway\TableGateway;
-
-class MelisEcomLangTable extends MelisEcomGenericTable 
+class MelisEcomLangTable extends MelisEcomGenericTable
 {
     /**
      * Model table
@@ -35,9 +33,8 @@ class MelisEcomLangTable extends MelisEcomGenericTable
         $select->where->equalTo('elang_status', 1);
         $order = 'elang_name ASC';
         $select->order($order);
-        
+
         $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
-    
 }

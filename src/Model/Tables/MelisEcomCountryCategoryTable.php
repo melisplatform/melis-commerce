@@ -9,9 +9,7 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Laminas\Db\TableGateway\TableGateway;
-
-class MelisEcomCountryCategoryTable extends MelisEcomGenericTable 
+class MelisEcomCountryCategoryTable extends MelisEcomGenericTable
 {
     /**
      * Model table
@@ -32,14 +30,17 @@ class MelisEcomCountryCategoryTable extends MelisEcomGenericTable
     {
         $select = $this->getTableGateway()->getSql()->select();
 
-        $select->join('melis_ecom_country', 'melis_ecom_country.ctry_id = melis_ecom_country_category.ccat_country_id',
-            array('*'), $select::JOIN_LEFT);
+        $select->join(
+            'melis_ecom_country',
+            'melis_ecom_country.ctry_id = melis_ecom_country_category.ccat_country_id',
+            array('*'),
+            $select::JOIN_LEFT
+        );
 
         $select->where->equalTo('melis_ecom_country_category.ccat_category_id', (int) $categoryId)->and->equalTo('melis_ecom_country.ctry_status', 1);
 
-        $resultSet = $this->getTableGateway()->selectwith($select);
+        $resultSet = $this->getTableGateway()->selectWith($select);
 
         return $resultSet;
     }
-    
 }

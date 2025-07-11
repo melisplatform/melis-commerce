@@ -9,9 +9,7 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Laminas\Db\TableGateway\TableGateway;
-
-class MelisEcomAttributeValueTransTable extends MelisEcomGenericTable 
+class MelisEcomAttributeValueTransTable extends MelisEcomGenericTable
 {
     /**
      * Model table
@@ -33,19 +31,19 @@ class MelisEcomAttributeValueTransTable extends MelisEcomGenericTable
         $select = $this->tableGateway->getSql()->select();
         $select->columns(array('*'));
         $clause = array();
-        
+
         $clause['melis_ecom_attribute_value_trans.avt_id'] = (int) $attributeValueTransId;
-        
-        if(!is_null($langId)) {
+
+        if (!is_null($langId)) {
             $clause['melis_ecom_attribute_value_trans.avt_lang_id'] = (int) $langId;
         }
-        
-        if($clause){
+
+        if ($clause) {
             $select->where($clause);
         }
-        
-        $resultSet = $this->tableGateway->selectwith($select);
-        
+
+        $resultSet = $this->tableGateway->selectWith($select);
+
         return $resultSet;
     }
 }

@@ -9,9 +9,7 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Laminas\Db\TableGateway\TableGateway;
-
-class MelisEcomClientCompanyTable extends MelisEcomGenericTable 
+class MelisEcomClientCompanyTable extends MelisEcomGenericTable
 {
     /**
      * Model table
@@ -28,12 +26,12 @@ class MelisEcomClientCompanyTable extends MelisEcomGenericTable
         $this->idField = self::PRIMARY_KEY;
     }
 
-    public function getClientCompanyByClientId($clientId = null)
+    public function getClientCompanyByClientId($clientId)
     {
         $select = $this->getTableGateway()->getSql()->select();
-        
-        $select->where('ccomp_client_id ='.$clientId);
-        
+
+        $select->where->equalTo('ccomp_client_id', (int)$clientId);
+
         $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }
@@ -41,9 +39,9 @@ class MelisEcomClientCompanyTable extends MelisEcomGenericTable
     public function getClientCompaniesByClientIdArray($clientIds = [])
     {
         $select = $this->getTableGateway()->getSql()->select();
-        
+
         $select->where->in('ccomp_client_id', $clientIds);
-        
+
         $resultData = $this->getTableGateway()->selectWith($select);
         return $resultData;
     }

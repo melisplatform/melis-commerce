@@ -9,7 +9,6 @@
 
 namespace MelisCommerce\Model\Tables;
 
-use Laminas\Db\TableGateway\TableGateway;
 use Laminas\Db\Sql\Predicate\Like;
 use Laminas\Db\Sql\Predicate\PredicateSet;
 
@@ -44,41 +43,40 @@ class MelisEcomClientGroupsTable extends MelisEcomGenericTable
     {
         $select = $this->getTableGateway()->getSql()->select();
 
-        if (!empty($searchValue)){
+        if (!empty($searchValue)) {
             $search = [];
-            foreach ($searchKeys As $col)
-                $search[$col] = new Like($col, '%'.$searchValue.'%');
+            foreach ($searchKeys as $col)
+                $search[$col] = new Like($col, '%' . $searchValue . '%');
 
             $filters = [new PredicateSet($search, PredicateSet::COMBINED_BY_OR)];
             $select->where($filters);
         }
 
-        if(!empty($status)){
-            $select->where->equalTo('cgroup_status', $status);
+        if (!empty($status)) {
+            $select->where->equalTo('cgroup_status', (int)$status);
         }
 
-        if(!empty($start)){
+        if (!empty($start)) {
             $select->offset($start);
         }
 
-        if(!empty($limit)){
+        if (!empty($limit)) {
             $select->limit($limit);
         }
 
         if (!empty($orderKey))
-            $select->order($orderKey.' '.$order);
+            $select->order($orderKey . ' ' . $order);
 
         $resultSet = $this->getTableGateway()->selectWith($select);
 
         return $resultSet;
-
     }
 
     public function getActiveClientGroups()
     {
         $select = $this->getTableGateway()->getSql()->select();
 
-        $select->where('cgroup_status', 1);
+        $select->where->equalTo('cgroup_status', 1);
 
         $resultSet = $this->getTableGateway()->selectWith($select);
 
