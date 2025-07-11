@@ -319,7 +319,7 @@ class MelisEcomVariantTable extends MelisEcomGenericTable
         $this->_currentVarDataCount = $dataCount;
     }
 
-    public function getVaraintsFullDetails($selectCols = array(), $whereClause = array(), $start = null, $limit = null, $sortOrder = array(), $groubBy = 'var_id', $onlyValid = true)
+    public function getVaraintsFullDetails($selectCols = array(), $whereClause = array(), $start = null, $limit = null, $sortOrder = array(), $groupBy = 'var_id', $onlyValid = true)
     {
         $select = $this->getTableGateway()->getSql()->select();
 
@@ -359,7 +359,7 @@ class MelisEcomVariantTable extends MelisEcomGenericTable
             $select->order($sortOrder);
         }
 
-        $select->group($groubBy);
+        $select->group($groupBy);
 
         $resultData = $this->getTableGateway()->selectWith($select);
 
