@@ -760,29 +760,36 @@ window.initCategoryTreeView = function() {
 			/*console.log(data);*/
 		})
 		.on("open_node.jstree", function(e, data) {
-			if (categoryOpeningItemFlag == true) {
-				if ($(".cat-div").length) {
-					// if Node open sub nodes and not visible to the parent container, this will scroll down to show the sub nodes
-					if (
-						$(".cat-div #" + data.node.id).offset().top +
-							$(".cat-div #" + data.node.id).height() >
-						$(".cat-div").offset().top + $(".cat-div").height()
-					) {
-						// exucute scroll after the opening animation of the node
-						$timeOut = setTimeout(function() {
-							var catContainer = $(".cat-div").scrollTop(),
-								catItemHeight = $(".cat-div #" + data.node.id).innerHeight();
+			if (!categoryOpeningItemFlag) return;
 
-							$(".cat-div").animate(
-								{
-									scrollTop: catContainer + catItemHeight,
-								},
-								"slow"
+			const $catDiv = $(".cat-div");
+				if (!$catDiv.length) return;
+
+				// prevent multiple scrolls in quick succession
+				if (scrollTimeout) clearTimeout(scrollTimeout);
+
+				scrollTimeout = setTimeout(function () {
+					const safeId = CSS.escape(data.node.id),
+						$node = $catDiv.find("#" + safeId);
+
+					// make sure node exists and has offset
+					if (!$node.length || !$node.offset()) return;
+
+					const nodeTop = $node.offset().top,
+						nodeBottom = nodeTop + $node.outerHeight(),
+						containerTop = $catDiv.offset().top,
+						containerBottom = containerTop + $catDiv.height();
+
+					// only scroll if the node is outside visible area
+					if (nodeBottom > containerBottom || nodeTop < containerTop) {
+						const scrollPos = $catDiv.scrollTop() + (nodeTop - containerTop) - $catDiv.height() / 3;
+							$catDiv.stop(true).animate(
+								{ scrollTop: scrollPos },
+								500,
+								"easeOutCubic"
 							);
-						}, 1000);
 					}
-				}
-			}
+				}, 300); // delay batches multiple open_node events
 		})
 		.on("after_open.jstree", function(e, data) {
 			$.each(data.node.children_d, function(k, v) {
