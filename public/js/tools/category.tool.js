@@ -763,6 +763,7 @@ window.initCategoryTreeView = function() {
 			if (!categoryOpeningItemFlag) return;
 
 			const $catDiv = $(".cat-div");
+
 				if (!$catDiv.length) return;
 
 				// prevent multiple scrolls in quick succession
@@ -783,6 +784,7 @@ window.initCategoryTreeView = function() {
 					// only scroll if the node is outside visible area
 					if (nodeBottom > containerBottom || nodeTop < containerTop) {
 						const scrollPos = $catDiv.scrollTop() + (nodeTop - containerTop) - $catDiv.height() / 3;
+						
 							$catDiv.stop(true).animate(
 								{ scrollTop: scrollPos },
 								500,
