@@ -946,7 +946,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
         return $arrayParameters['results'];
     }
 
-    private function compareFloats($val1, $val2, int $scale = null)
+    private function compareFloats($val1, $val2, ?int $scale = null)
     {
         $epsilon = 0.000000000001;
         if(!is_null($scale) && $scale > 0) {
