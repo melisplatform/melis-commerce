@@ -589,7 +589,7 @@ $(function(){
             filters['accountId'] = $("#contactAccountSelect").val();
             filters['type'] = $("#contactTypeSelect").val();
             filters['status'] = $("#contactStatusSelect").val();
-            filters['search'] = $("#contactList_filter input[type='search']").val();
+            filters['search'] = $(".meliscommerce-contact-list-tbl-search input[type='search']").val();
 
             $.each(data, function(key, val){
                 filters[val.name] = val.value;
