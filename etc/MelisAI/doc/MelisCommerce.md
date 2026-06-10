@@ -1,3 +1,16 @@
+---
+title: MelisCommerce module
+package: melisplatform/melis-commerce
+doc_type: module-documentation
+audience: [users, developers, ai]
+language: en
+module_version: unversioned
+last_reviewed: 2026-06-10
+maintainer: Melis Technology
+keywords: [commerce, ecommerce, catalog, product, variant, attribute, category, price, stock, basket, cart, checkout, order, payment, shipping, coupon, currency, client, account, contact, b2b, melis]
+screenshots_dir: ./images
+---
+
 # MelisCommerce — AI & developer guide
 
 > **Module:** `melisplatform/melis-commerce` · **Namespace:** `MelisCommerce` · `melis-site: false`
