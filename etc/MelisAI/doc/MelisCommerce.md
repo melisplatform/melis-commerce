@@ -32,6 +32,35 @@ from many tables, and every service method is wrapped in `*_start`/`*_end` event
 
 # PART A — Functional guide
 
+## A0. The commerce object model, in plain words
+
+Before the tools, the vocabulary — because MelisCommerce makes a few deliberate choices that surprise people
+coming from simpler shops:
+
+- A **catalog** is a top-level container; **categories** are the branches inside it. Together they form the
+  navigable tree a shopper browses. A product can sit in several categories at once.
+- A **product** is *not* the thing you sell — it is a **container for variants**. The sellable unit, the thing
+  with a **SKU**, its own **stock** and its own **price**, is the **variant**. A T-shirt is a product; *“red /
+  large”* is a variant. Even a product with no real options still has **one (main) variant** behind the scenes.
+  This is why stock and price live on the variant, not the product.
+- **Attributes** (Color, Size…) describe products and, through their **values** (Red, Large…), *define* the
+  variants. A product *declares* which attributes it uses; each variant *picks one value per attribute*.
+- A **price** is never a single number: it is resolved for a **(country, client-group)** pair, with VAT, and
+  falls back gracefully (see §B4). The same variant can legitimately cost different amounts to a French retail
+  visitor and a German B2B account.
+- A customer is modelled for **B2B first**: an **account** (an organisation, with a company record, group and
+  addresses) that **contains one or more contacts** (the actual people who log in). One person can belong to
+  several accounts and switch between them. A pure B2C shop simply has one contact per account.
+- A shopper fills a **basket** (anonymous until they log in, then persistent); checkout turns the basket into
+  an **order** — first a *temporary* order, then a real one once payment is confirmed.
+
+**The lifecycle of a sale, end to end:** *browse the catalog → open a product → pick a variant (attribute
+values) → **add to basket** → log in or register (the anonymous basket merges into the account’s) → **checkout**
+(addresses → coupon → summary) → an order is created at status `-1` → pay → payment confirmed → order moves to
+`New order` → back office fulfils it (status → shipped → delivered), possibly handling **returns** and
+**messages** along the way.* Every step above is a service call wrapped in events you can observe or override
+(§B). The rest of Part A is the back-office side of that story.
+
 ## A1. The back-office suite — the Commerce menu
 
 The whole commerce back office lives under one **MelisCommerce** left-menu section. Note the labels — a couple
@@ -199,14 +228,32 @@ clients,orders}`):
 - **Orders (customer):** `OrderPlugin`, `OrderHistoryPlugin`, `OrderMessagesPlugin`,
   `OrderShippingDetailsPlugin`, `OrderReturnProductPlugin`, `OrderAddressPlugin`.
 
-## A10. How do I…?
+## A10. How do I…? (functional recipes)
 
-- **…build a shop?** Run the catalog in the BO (Catalogs → Attributes → Products with variants/prices), then
-  drop the front plugins on CMS pages (category list, product show, cart, the checkout chain, account).
-- **…read a product in code?** `$sm->get('MelisComProductService')->getProductById($id, $langId, …)` → a
-  `MelisProduct` entity (see §B2).
-- **…react to an order being placed?** Listen on the checkout events (§B6) — e.g. post-payment.
-- **…support B2B?** An *account* holds multiple *contacts*; see §B5.
+- **…stand up a shop from scratch?** Work the catalog top-down: **Commerce settings** (currencies, countries,
+  the account-name strategy) → **Attributes** (define Color/Size and their values) → **Catalogs** (build the
+  category tree) → **Products** (create a product, declare its attributes, add **variants** for each combination,
+  set **stock** and a **price** per country/group, write **texts** and **SEO**). Then build the storefront by
+  dropping the front-office plugins on CMS pages (§A9).
+- **…model a product with options (e.g. size & colour)?** Create the product, add *Color* and *Size* attributes
+  on its **Properties** tab, then add one **variant per combination** under the **Variants** tab — each variant
+  carries its own SKU, stock and price. Mark one as the **main** variant (used when the shop shows the product
+  without a selection).
+- **…charge B2B customers different prices?** Put the account in a **Client’s group**, then on the product’s
+  **Prices** tab fill the row for that **(country, group)**; retail visitors fall back to the *General* group
+  (§B4 explains the fallback order).
+- **…discount with a coupon?** Create a **Coupon** (code, validity, a **%** *or* a fixed **amount**, a max-use
+  limit), optionally restrict it to specific **accounts** or **products**. It’s applied during checkout and can
+  only be deleted while unused.
+- **…take an order on a customer’s behalf?** Use **Orders → Create an order**: the 7-step back-office tunnel
+  (Contact → Account → Products → Addresses → Summary → Payment → Confirmation) — the same engine as the
+  storefront checkout.
+- **…get notified when stock runs low?** Set a **Stock alert** threshold and **recipients** on the product (or
+  globally in **Commerce settings**); a low-stock email (`VARIANTSLOWSTOCK`) is sent after orders drop the level.
+- **…handle a return?** Open the order → the **product-returns** flow records returned items and a message
+  timeline.
+- **…read a product / price / order in code, or hook into the shop’s logic?** That’s Part B — every read returns
+  a rich entity and every service method is an event you can observe or override (§B1, §B10).
 
 ---
 
@@ -244,6 +291,35 @@ Three layers, one convention:
 `MelisComHead` alias is a small SEO helper — `updateTitleAndDescription()` — not a service locator.) **Caching**
 is centralised in `MelisComCacheService` (cache `commerce_big_services`, key prefixes `product-/category-/
 variant-/document-/attribute-`); listeners call `deleteCache()` on saves to invalidate the right keys.
+
+**Why the event wrapping matters (the whole extension story).** Because *every* service method emits a
+`_start` and an `_end` event carrying the **named arguments** and the **`results`**, you can change almost any
+behaviour without touching the module: a `_start` listener mutates the inputs before the work runs; an `_end`
+listener mutates the returned entity/array before the caller sees it. The arguments arrive keyed by their
+parameter name (that is what `makeArrayFromParameters` builds via reflection), and the return value is
+`$params['results']`. This is exactly how the built-in coupon discount works — it does **not** live inside the
+price service; it is a listener on the price service’s `_end` event:
+
+```php
+// MelisCommerceCouponProductPriceListener — applies a coupon to a just-computed price
+$this->attachEventListener(
+    $events, '*', 'meliscommerce_service_get_item_price_end',
+    function ($e) {
+        $params = $e->getParams();
+        $price  = $params['results'];   // the array MelisComPriceService::getItemPrice() is about to return
+        $data   = $params['data'];      // an input argument, by name
+        if (empty($params['data']) || empty($price['price'])) return;
+        // …reduce $price['price'] by the coupon, then write it back…
+        $params['results'] = $price;    // the caller receives the discounted price
+        return $params;
+    }
+);
+```
+
+So to **extend MelisCommerce you almost never subclass** — you attach a listener to the right
+`meliscommerce_service_*_{start,end}` event. Use `_start` to validate/normalise inputs (the `…Save*Listener`
+family does this), and `_end` to enrich or rewrite results (pricing, SEO, stock). See §B10 for the read/write
+recipes and §B7 for the full catalogue of listeners.
 
 ## B2. The entity + service façade (the public API)
 
@@ -412,6 +488,88 @@ src/
 config/
   module.config.php · interface/* (BO menu) · plugins/* (FO) · app.emails.php · diagnostic.config.php
 ```
+
+## B10. Developer recipes (copy-paste, verbatim signatures)
+
+All services are reached from the service manager by alias; every call returns an entity (or array) and is
+event-wrapped. Signatures below are verbatim from the source.
+
+**Read a product, its main variant and a resolved price**
+
+```php
+$prdSrv   = $sm->get('MelisComProductService');
+$varSrv   = $sm->get('MelisComVariantService');
+$priceSrv = $sm->get('MelisComPriceService');
+
+// getProductById($productId, $langId = null, $countryId = null, $groupId = -1, $docType = null, $docSubType = array())
+$product  = $prdSrv->getProductById($prdId, $langId, $countryId);          // → MelisProduct entity
+$texts    = $product->getTexts();        // typed texts (TITLE, …) per language
+$cats     = $product->getCategories();   // the categories it belongs to
+
+// getMainVariantByProductId($productId, $langId = null, $countryId = null, $groupId = 1)
+$variant  = $varSrv->getMainVariantByProductId($prdId, $langId, $countryId);   // → MelisVariant (sellable unit)
+
+// getItemPrice($itemId, $countryId, $groupId, $type = 'variant', Array $data = [])
+$price    = $priceSrv->getItemPrice($variant->getId(), $countryId, $groupId, 'variant');
+// $price['price'] (net), $price['price_currency'], $price['price_details']… (see §B4)
+```
+
+`getVariantBySKU($variantSKU, $langId = null)` looks a variant up directly by SKU;
+`getProductList($langId, $categoryIds = [], $countryId, $onlyValid, $start, $limit, …)` returns a page of
+`MelisProduct[]` for a category listing.
+
+**Add to basket, then run the two-phase checkout**
+
+```php
+$basketSrv   = $sm->get('MelisComBasketService');
+$checkoutSrv = $sm->get('MelisComOrderCheckoutService');
+$authSrv     = $sm->get('MelisComAuthenticationService');
+
+// addVariantToBasket($variantId, $quantity, $clientId, $clientKey = null)
+$basketSrv->addVariantToBasket($variantId, 1, $clientId, $clientKey);   // anonymous uses $clientKey only
+
+// when a guest logs in, merge their anonymous cart into the account's persistent one
+$basketSrv->transferAnonymousBasketToPersistentBasket($clientKey, $clientId);
+
+// Phase 1 — create the order (status -1, "temporary"): validates basket+addresses, computes costs+shipping
+$step1 = $checkoutSrv->checkoutStep1_prePayment($clientId);   // ['success'=>bool, 'orderId'=>int, …]
+
+// …hand the customer to the payment gateway with $step1['orderId']…
+
+// Phase 2 — after the gateway returns: record the transaction and move the order off status -1
+$step2 = $checkoutSrv->checkoutStep2_postPayment();           // reads the posted payment values
+```
+
+The events `meliscommerce_service_checkout_step1_prepayment_save_success` (carries the new `orderId`) and
+`meliscommerce_service_checkout_step2_postpayment_end` are the natural places to plug **emails, ERP sync or a
+real payment gateway** (the built-in `…PostPaymentListener` and `…VariantCheckLowStockListener` already hook
+the latter).
+
+**Authenticate a front-office customer**
+
+```php
+$auth = $sm->get('MelisComAuthenticationService');
+$res  = $auth->login($email, $password, $rememberMe);   // login($email, $password, $rememberMe = false)
+if ($res['success']) {
+    $personId = $auth->getPersonId();     // the logged-in contact (cper_id)
+    $clientId = $auth->getClientId();     // the currently-selected account (cli_id)
+    $group    = $auth->getClientGroup();  // that account's pricing group → feeds getItemPrice()
+    // $auth->setClientId($otherAccountId)  // switch account for a multi-account contact
+}
+```
+
+**Read orders for the customer dashboard**
+
+```php
+$orderSrv = $sm->get('MelisComOrderService');
+// getOrderList($orderStatusId, $onlyValid, $langId, $clientId, $clientPersonId, …)
+$orders   = $orderSrv->getOrderList(null, null, $langId, $clientId);     // → MelisOrder[]
+$order    = $orderSrv->getOrderById($orderId, $langId);                  // one fully-assembled MelisOrder
+$basket   = $order->getBasket();   // line items;  $order->getAddresses(), getPayment(), getShipping(), getMessages()
+```
+
+**Hook the shop without subclassing** — attach a listener to any `meliscommerce_service_*_{start,end}` event
+(see the verbatim coupon example in §B1): `_start` to alter inputs, `_end` to alter `$params['results']`.
 
 ---
 
