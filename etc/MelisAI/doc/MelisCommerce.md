@@ -32,30 +32,161 @@ from many tables, and every service method is wrapped in `*_start`/`*_end` event
 
 # PART A — Functional guide
 
-## A1. The back-office suite
+## A1. The back-office suite — the Commerce menu
 
-Under the **Commerce** section (`meliscommerce_toolstree_section`) the module registers a full management suite
-(controller in parentheses):
+The whole commerce back office lives under one **MelisCommerce** left-menu section. Note the labels — a couple
+differ from the internal class names: **Catalogs** is the category/catalog tree, and **Accounts** is the client
+(B2B) tool.
 
-| Tool | Manages |
-|---|---|
-| **Products** (`MelisComProductList` → `MelisComProduct`) | products and, drilling in, their **variants** (`MelisComVariant`), **prices** (`MelisComPrice`), **SEO** (`MelisComSeo`), **documents/images** (`MelisComDocument`), **associated variants** (`MelisComAssociateVariant`). |
-| **Categories** (`MelisComCategory`/`MelisComCategoryList`) | the category tree, translations, per-country availability, SEO. |
-| **Attributes** (`MelisComAttribute`/`MelisComAttributeList`) | attributes (Color, Size…) + their typed, translatable **values**. |
-| **Clients** (`MelisComClientList` → `MelisComClient`) | B2B **accounts** (company, group, addresses) and the contacts linked to them. |
-| **Contact** (`MelisComContact`) | the **people** (individuals) — managed independently and linked to accounts; CSV import/export. |
-| **Client Groups** (`MelisComClientsGroup`) | pricing/segmentation groups. |
-| **Orders** (`MelisComOrderList` → `MelisComOrder`) | orders (info / basket / addresses / payment / shipping / messages / returns), plus a BO **manual checkout** (`MelisComOrderCheckout`), **order statuses** (`MelisComOrderStatus`) and **product returns** (`MelisComOrderProductReturn`). |
-| **Coupons** (`MelisComCouponList` → `MelisComCoupon`) | discount coupons (by %, by value; per client / product / order). |
-| **Settings** | **Currencies** (`MelisComCurrency`), **Countries** (`MelisComCountry`), **Languages** (`MelisComLanguage`), and account **Settings** (`MelisComSettings`). |
+![The MelisCommerce back-office menu](./images/meliscommerce-menu-tools-selector.png)
+
+| Menu entry | Controller | Manages |
+|---|---|---|
+| **Catalogs** | `MelisComCategory(List)` | the **catalog / category tree** (a catalog is the root; categories nest under it), translations, per-country availability, SEO. |
+| **Products** | `MelisComProduct(List)` | products → their **variants**, **prices**, **texts**, **SEO**, images, associated variants. |
+| **Accounts** | `MelisComClient(List)` | B2B **accounts** (company, group, addresses, linked contacts, orders, files). |
+| **Contacts** | `MelisComContact` | the **people** — managed independently and linked to accounts; CSV import/export. |
+| **Orders** | `MelisComOrder(List)` + `MelisComOrderCheckout` | orders + a BO **“Create an order” tunnel**; statuses; returns. |
+| **Coupons** | `MelisComCoupon(List)` | discount coupons (% or amount; assignable to accounts / products). |
+| **Attributes** | `MelisComAttribute(List)` | attributes (Color, Size…) + typed, translatable **values**. |
+| **Countries** / **Commerce languages** / **Currencies** / **Order status** / **Client’s groups** | `MelisComCountry` / `MelisComLanguage` / `MelisComCurrency` / `MelisComOrderStatus` / `MelisComClientsGroup` | the reference data (each a list + an edit modal). |
+| **Commerce settings** | `MelisComSettings` | global stock-alert + the account-name strategy. |
 
 It also adds three **dashboard widgets**: latest orders (`OrdersNumber`), order messages (`OrderMessages`) and
 a sales-revenue chart (`SalesRevenue`).
 
-## A2. The front office (a shop made of plugins)
+## A2. Catalogs (the catalog / category tree)
 
-The storefront is assembled from droppable **templating plugins** (grouped in `config/plugins/{products,
-categories,clients,orders}`):
+The **Catalogs** tool manages a drag-and-drop **catalog → categories** tree (a *catalog* is the root container;
+*categories* nest beneath it):
+
+![Catalogs / Categories tree view](./images/meliscommerce-tools-catalogs-treeview.png)
+
+Adding a catalog or category has three tabs — **Properties** (name + rich description per language, validity
+dates, and the **countries** it’s available in), **SEO**, and **Products**:
+
+![Catalog — Properties tab](./images/meliscommerce-tools-catalogs-add-tab-properties.png)
+
+## A3. Products (the catalog item editor)
+
+The **Product list** (ID / Status / Image / Name / Categories), filterable by catalog, with **+ Add product**:
+
+![Product list](./images/meliscommerce-tools-products-list.png)
+
+A product has five tabs — **Properties / Text / Variants / SEO / Prices**:
+
+- **Properties** — reference, categories, **attributes**, a **stock alert** threshold + email recipients, and
+  up to three CMS **page associations**.
+
+  ![Product → Properties](./images/meliscommerce-tools-products-new-tab-properties.png)
+
+- **Text** — the typed, per-language texts (e.g. *Title (TITLE)*; add more text types):
+
+  ![Product → Text](./images/meliscommerce-tools-products-new-tab-text.png)
+
+- **Variants** — the sellable units (ID / Main / Image / Status / **SKU** / Attribute(s)); each product needs
+  at least one. Drilling into a variant gives it its own stock, prices and attribute values.
+
+  ![Product → Variants](./images/meliscommerce-tools-products-new-tab-variants.png)
+
+- **Prices** — a **Country × client-Group matrix**; per cell you set **Net price**, **Gross price**, **VAT
+  percentage**, **VAT amount** and **Other tax amount** (this is what the price-resolution hierarchy in §B4
+  reads):
+
+  ![Product → Prices](./images/meliscommerce-tools-products-new-tab-prices.png)
+
+- **SEO** — the product’s URL + meta per language:
+
+  ![Product → SEO](./images/meliscommerce-tools-products-new-tab-seo.png)
+
+## A4. Accounts & Contacts (the B2B model)
+
+**Accounts** is the customer tool — *“List of all acquired customers”* — with KPI cards (total / this month /
+active vs inactive) and columns Account / Default contact / Company / Orders:
+
+![Account list](./images/meliscommerce-tools-accounts-list.png)
+
+An account has six tabs — **Properties / Contacts / Company / Addresses / Orders / Files** — which *is* the B2B
+model in §B5: an account (name, group, country, **main contact**) that **links contacts**, owns a **company**
+record (VAT, registration…), addresses, and its order history.
+
+![Account → Properties](./images/meliscommerce-tools-accounts-new-tab-properties.png)
+![Account → Contacts (Link contact)](./images/meliscommerce-tools-accounts-new-tab-contacts.png)
+![Account → Company](./images/meliscommerce-tools-accounts-new-tab-company.png)
+
+**Contacts** is the *people* tool — individuals managed independently of accounts (filter by account/type/
+status), linkable to one or many accounts:
+
+![Contact list](./images/meliscommerce-tools-contacts-list.png)
+
+## A5. Orders (incl. the back-office order tunnel)
+
+The **Order list** (*“Create a new order from this tool”*) with KPI cards and columns Reference / Status /
+Price / customer / Company:
+
+![Order list](./images/meliscommerce-tools-order-list.png)
+
+**Create an order** opens a **7-step tunnel** — **Contact → Account → Products → Addresses → Summary →
+Payment → Confirmation** — the back-office mirror of the front-office checkout (the `MelisComOrderCheckout`
+tool, site id `-1`):
+
+![Create an order — the 7-step tunnel](./images/meliscommerce-tools-order-newordertunnelt.png)
+
+## A6. Coupons
+
+**Coupon list** (*a coupon can be deleted only if it has never been used*) — Code / % / Price / Uses:
+
+![Coupon list](./images/meliscommerce-tools-coupons-list.png)
+
+A coupon’s **Properties**: a **Code**, validity dates, **Assign to accounts / Assign to products** toggles, and
+the discount as a **Percentage** *or* an **Amount**, with a **Max use limit**:
+
+![Coupon → Properties](./images/meliscommerce-tools-coupons-edit-tab-properties.png)
+
+## A7. Attributes
+
+**Attributes** define filterable/variant-defining properties. The list, then an attribute’s **Properties**
+(reference, **Type**, **Visible**, **Searchable**) and **Labels** tab (translations + the attribute’s values):
+
+![Attribute list](./images/meliscommerce-tools-attributes-list.png)
+![Attribute → Properties](./images/meliscommerce-tools-attributes-new-tab-properties.png)
+![Attribute → Labels](./images/meliscommerce-tools-attributes-new-tab-labels.png)
+
+## A8. Settings & reference data
+
+**Commerce settings** has two tabs: **Properties** (a global stock-alert threshold + recipients) and
+**Accounts** — where the **account-name strategy** is chosen: **Manual input / Company name / Contact name**
+(the `sa_type` of §B5), behind a *“Check to edit”* guard warning that changes have *irreversible critical
+consequences*:
+
+![Settings → Properties](./images/meliscommerce-tools-settings-tab-properties.png)
+![Settings → Accounts (account-name strategy)](./images/meliscommerce-tools-settings-tab-accounts.png)
+
+The **reference-data** tools are simple list + edit-modal CRUD: **Countries**, **Commerce languages**,
+**Currencies**, **Order status**, **Client’s groups**.
+
+![Countries](./images/meliscommerce-tools-countries-list.png)
+![Country edit modal](./images/meliscommerce-tools-countries-edit-modal.png)
+![Commerce languages](./images/meliscommerce-tools-commercelanguages-list.png)
+![Commerce language edit modal](./images/meliscommerce-tools-commercelanguages-edit-modal.png)
+![Currencies](./images/meliscommerce-tools-currencies-list.png)
+![Currency edit modal](./images/meliscommerce-tools-currencies-edit-modal.png)
+![Order status list](./images/meliscommerce-tools-orderstatus-list.png)
+![Order status edit modal](./images/meliscommerce-tools-orderstatus-edit-modal.png)
+![Client’s groups](./images/meliscommerce-tools-clientsgroups-list.png)
+![Client’s group edit modal](./images/meliscommerce-tools-clientsgroups-edit-modal.png)
+
+> Remaining catalog/account sub-tabs not embedded above are in the Screenshot index:
+> ![Catalog → SEO](./images/meliscommerce-tools-catalogs-add-tab-seo.png)
+> ![Catalog → Products](./images/meliscommerce-tools-catalogs-add-tab-products.png)
+> ![Account → Addresses](./images/meliscommerce-tools-accounts-new-tab-adresses.png)
+> ![Account → Orders](./images/meliscommerce-tools-accounts-new-tab-orders.png)
+> ![Contact edit modal](./images/meliscommerce-tools-contacts-edit-modal.png)
+
+## A9. The front office (a shop made of plugins)
+
+The storefront is assembled from droppable **templating plugins** (`config/plugins/{products,categories,
+clients,orders}`):
 
 - **Catalog:** `ProductShowPlugin`, `ProductListPlugin`, `ProductSearchPlugin`, `CategoryTreePlugin`,
   `CategoryProductListPlugin`, `RelatedProductsPlugin`, `AttributesShowPlugin`, `ProductAttributePlugin`
@@ -68,14 +199,14 @@ categories,clients,orders}`):
 - **Orders (customer):** `OrderPlugin`, `OrderHistoryPlugin`, `OrderMessagesPlugin`,
   `OrderShippingDetailsPlugin`, `OrderReturnProductPlugin`, `OrderAddressPlugin`.
 
-## A3. How do I…?
+## A10. How do I…?
 
-- **…build a shop?** Install the module, run the catalog (Products/Categories/Attributes) in the BO, then drop
-  the front plugins on CMS pages (category list, product show, cart, the checkout chain, account).
+- **…build a shop?** Run the catalog in the BO (Catalogs → Attributes → Products with variants/prices), then
+  drop the front plugins on CMS pages (category list, product show, cart, the checkout chain, account).
 - **…read a product in code?** `$sm->get('MelisComProductService')->getProductById($id, $langId, …)` → a
   `MelisProduct` entity (see §B2).
 - **…react to an order being placed?** Listen on the checkout events (§B6) — e.g. post-payment.
-- **…support B2B?** A *client* is an account that holds multiple *contacts*; see §B5.
+- **…support B2B?** An *account* holds multiple *contacts*; see §B5.
 
 ---
 
@@ -284,5 +415,48 @@ config/
 
 ---
 
-*No screenshots are bundled yet — images expected later. When added (the BO catalog/order tools and the FO
-shop), place them under `./images/`, reference 1:1 from Part A, and add a Screenshot index here.*
+## Screenshot index
+
+| File | Shows |
+|---|---|
+| `images/meliscommerce-menu-tools-selector.png` | The **MelisCommerce** back-office menu (Catalogs/Products/Accounts/Contacts/Orders/Coupons/Attributes/Countries/Commerce languages/Currencies/Order status/Client’s groups/Commerce settings). |
+| `images/meliscommerce-tools-catalogs-treeview.png` | **Catalogs** — the catalog/category drag-and-drop tree. |
+| `images/meliscommerce-tools-catalogs-add-tab-properties.png` | Catalog → **Properties** (name/description per lang, validity dates, countries). |
+| `images/meliscommerce-tools-catalogs-add-tab-seo.png` | Catalog → **SEO**. |
+| `images/meliscommerce-tools-catalogs-add-tab-products.png` | Catalog → **Products** (items in the catalog). |
+| `images/meliscommerce-tools-products-list.png` | **Product list** (filter by catalog, add product). |
+| `images/meliscommerce-tools-products-new-tab-properties.png` | Product → **Properties** (reference, categories, attributes, stock alert, page association). |
+| `images/meliscommerce-tools-products-new-tab-text.png` | Product → **Text** (typed texts per language). |
+| `images/meliscommerce-tools-products-new-tab-variants.png` | Product → **Variants** (SKU/main/attributes list). |
+| `images/meliscommerce-tools-products-new-tab-prices.png` | Product → **Prices** (Country × Group matrix: net/gross/VAT). |
+| `images/meliscommerce-tools-products-new-tab-seo.png` | Product → **SEO** (URL + meta). |
+| `images/meliscommerce-tools-accounts-list.png` | **Account list** (KPIs + Account/Default contact/Company/Orders). |
+| `images/meliscommerce-tools-accounts-new-tab-properties.png` | Account → **Properties** (name/group/country/tags/main contact). |
+| `images/meliscommerce-tools-accounts-new-tab-contacts.png` | Account → **Contacts** (Link contact). |
+| `images/meliscommerce-tools-accounts-new-tab-company.png` | Account → **Company** (VAT/registration/address). |
+| `images/meliscommerce-tools-accounts-new-tab-adresses.png` | Account → **Addresses**. |
+| `images/meliscommerce-tools-accounts-new-tab-orders.png` | Account → **Orders** (the account’s order history). |
+| `images/meliscommerce-tools-contacts-list.png` | **Contacts** list (people, filterable by account/type/status). |
+| `images/meliscommerce-tools-contacts-edit-modal.png` | Contact **edit modal**. |
+| `images/meliscommerce-tools-order-list.png` | **Order list** (KPIs + Reference/Status/Price/customer). |
+| `images/meliscommerce-tools-order-newordertunnelt.png` | **Create an order** — the 7-step BO tunnel (Contact→…→Confirmation). |
+| `images/meliscommerce-tools-coupons-list.png` | **Coupon list**. |
+| `images/meliscommerce-tools-coupons-edit-tab-properties.png` | Coupon → **Properties** (code, dates, assign to accounts/products, %/amount, max uses). |
+| `images/meliscommerce-tools-attributes-list.png` | **Attribute list**. |
+| `images/meliscommerce-tools-attributes-new-tab-properties.png` | Attribute → **Properties** (reference/type/visible/searchable). |
+| `images/meliscommerce-tools-attributes-new-tab-labels.png` | Attribute → **Labels** (translations + values). |
+| `images/meliscommerce-tools-settings-tab-properties.png` | **Commerce settings** → Properties (global stock alert + recipients). |
+| `images/meliscommerce-tools-settings-tab-accounts.png` | **Commerce settings** → Accounts (account-name strategy = `sa_type`). |
+| `images/meliscommerce-tools-countries-list.png` | **Countries** list. |
+| `images/meliscommerce-tools-countries-edit-modal.png` | Country edit modal. |
+| `images/meliscommerce-tools-commercelanguages-list.png` | **Commerce languages** list. |
+| `images/meliscommerce-tools-commercelanguages-edit-modal.png` | Commerce language edit modal. |
+| `images/meliscommerce-tools-currencies-list.png` | **Currencies** list. |
+| `images/meliscommerce-tools-currencies-edit-modal.png` | Currency edit modal. |
+| `images/meliscommerce-tools-orderstatus-list.png` | **Order status** list. |
+| `images/meliscommerce-tools-orderstatus-edit-modal.png` | Order status edit modal. |
+| `images/meliscommerce-tools-clientsgroups-list.png` | **Client’s groups** list. |
+| `images/meliscommerce-tools-clientsgroups-edit-modal.png` | Client’s group edit modal. |
+
+*The promo images under `etc/MarketPlace/` are kept separate and are not referenced by this doc. Front-office
+shop screenshots are not captured yet — add them under `./images/` and extend this index.*
