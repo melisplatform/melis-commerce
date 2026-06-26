@@ -225,7 +225,10 @@ return [
                             'conf' => [
                                 'id' => 'id_meliscommerce_contact_list_page',
                                 'melisKey' => 'meliscommerce_contact_list_page',
-                                'name' => 'tr_meliscommerce_contact_list_page'
+                                'name' => 'tr_meliscommerce_contact_list_page',
+                                // Rend l'outil en page autonome (sans le layout BO complet) dans
+                                // l'iframe React (toggle « Old ») — comme le clients list page.
+                                'follow_regular_rendering' => false,
                             ],
                             'forward' => [
                                 'module' => 'MelisCommerce',

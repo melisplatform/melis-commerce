@@ -1,0 +1,21 @@
+{
+  "entry": "brick.js",
+  "bricks": [
+    {
+      "id": "commerce-accounts",
+      "route": "/melis-commerce/clients-list",
+      "label": "Accounts",
+      "forwardKey": "MelisCommerce/MelisComClientList",
+      "melisKey": "meliscommerce_clients_list_page",
+      "subtabs": true
+    },
+    {
+      "id": "commerce-contacts",
+      "route": "/melis-commerce/contact-list",
+      "label": "Contacts",
+      "forwardKey": "MelisCommerce/MelisComContact",
+      "melisKey": "meliscommerce_contact_list_page",
+      "subtabs": true
+    }
+  ]
+}
