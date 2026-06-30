@@ -1,5 +1,7 @@
 import AccountPage from './tools/accounts/AccountPage'
 import ContactPage from './tools/contacts/ContactPage'
+import CatalogPage from './tools/catalog/CatalogPage'
+import ProductPage from './tools/products/ProductPage'
 
 /**
  * Point d'entrée de la brique MelisCommerce. Un seul bundle IIFE livre PLUSIEURS outils
@@ -15,3 +17,5 @@ declare global {
 
 window.__melisRegisterBrick?.({ id: 'commerce-accounts', Component: AccountPage })
 window.__melisRegisterBrick?.({ id: 'commerce-contacts', Component: ContactPage })
+window.__melisRegisterBrick?.({ id: 'commerce-catalog', Component: CatalogPage })
+window.__melisRegisterBrick?.({ id: 'commerce-products', Component: ProductPage })

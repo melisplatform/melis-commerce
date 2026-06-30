@@ -42,7 +42,10 @@ return [
                             'conf' => [
                                 'id' => 'id_meliscommerce_categories_page',
                                 'melisKey' => 'meliscommerce_categories_page',
-                                'name' => 'tr_meliscommerce_categories_page'
+                                'name' => 'tr_meliscommerce_categories_page',
+                                // Rend l'outil en page autonome (sans le layout BO complet) quand il est
+                                // ouvert dans l'iframe React (toggle « Old ») — comme meliscore_tool_user.
+                                'follow_regular_rendering' => false,
                             ],
                             'forward' => [
                                 'module' => 'MelisCommerce',

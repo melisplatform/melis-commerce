@@ -7,8 +7,8 @@ import {
 } from './api'
 import { DICT } from './dict'
 import { makeT, fmtDate } from '../../shared/i18n'
-import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint, segBtn } from '../../shared/styles'
-import { PencilIcon, TrashIcon, PlusIcon, GripIcon, FileDownIcon } from '../../shared/icons'
+import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } from '../../shared/styles'
+import { PencilIcon, TrashIcon, PlusIcon, GripIcon, FileDownIcon, UsersKpiIcon, ToggleRightIcon, KeyIcon } from '../../shared/icons'
 import { StatusBadge, Kpi, ViewModeToggle, LegacyFrame } from '../../shared/widgets'
 import { ColManager } from '../../shared/ColManager'
 import { ExportModal } from '../../shared/ExportModal'
@@ -16,7 +16,7 @@ import { makeColStore, visibleCols, type ColDef } from '../../shared/columns'
 import { openSubTab, closeSubTab, updateSubLabel } from '../../shared/subtabs'
 import type { Option } from '../../shared/api'
 import { Tabs, type TabDef } from '../../shared/Tabs'
-import { TagIcon, MapPinIcon, LinkIcon } from '../../shared/icons'
+import { TagIcon, MapPinIcon, LinkIcon, UserIcon } from '../../shared/icons'
 import { AddressTab, AssociationTab } from './ContactTabs'
 
 /* Brique « Contacts » (MelisCommerce) — full React, montée à /melis-commerce/contact-list
@@ -65,6 +65,9 @@ function ContactList({ base }: { base: string }) {
   const [searchInput, setSearchInput] = useState('')
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState<number | null>(null)
+  const [filterAccountId, setFilterAccountId] = useState(0)
+  const [filterType, setFilterType] = useState('')
+  const [accounts, setAccounts] = useState<{ id: number; name: string }[]>([])
   const [sortCol, setSortCol] = useState<string>('id')
   const [sortAsc, setSortAsc] = useState(false)
   const [toDelete, setToDelete] = useState<ContactItem | null>(null)
@@ -74,10 +77,11 @@ function ContactList({ base }: { base: string }) {
   const [showExport, setShowExport] = useState(false)
 
   useEffect(() => { fetchContactStats().then(setStats).catch(() => null) }, [tick])
+  useEffect(() => { fetchContactOptions().then((o) => setAccounts(o.accounts)).catch(() => null) }, [])
   useEffect(() => {
     setLoading(true)
-    fetchContacts({ search, status }).then((r) => setItems(r.items)).catch(() => null).finally(() => setLoading(false))
-  }, [search, status, tick])
+    fetchContacts({ search, status, accountId: filterAccountId || null }).then((r) => setItems(r.items)).catch(() => null).finally(() => setLoading(false))
+  }, [search, status, filterAccountId, tick])
 
   const sortVal = (c: ContactItem): string | number => {
     switch (sortCol) {
@@ -86,18 +90,21 @@ function ContactList({ base }: { base: string }) {
       case 'tags': return c.tags; case 'created': return c.dateCreation ?? ''; default: return c.id
     }
   }
-  const sorted = useMemo(() => [...items].sort((a, b) => {
-    const va = sortVal(a), vb = sortVal(b)
-    const cmp = typeof va === 'number' && typeof vb === 'number' ? va - vb : String(va).localeCompare(String(vb))
-    return sortAsc ? cmp : -cmp
-  }), [items, sortCol, sortAsc])
+  const sorted = useMemo(() => {
+    let list = filterType ? items.filter((c) => c.type === filterType) : [...items]
+    return list.sort((a, b) => {
+      const va = sortVal(a), vb = sortVal(b)
+      const cmp = typeof va === 'number' && typeof vb === 'number' ? va - vb : String(va).localeCompare(String(vb))
+      return sortAsc ? cmp : -cmp
+    })
+  }, [items, sortCol, sortAsc, filterType])
 
   function toggleSort(id: string) { if (sortCol === id) setSortAsc((v) => !v); else { setSortCol(id); setSortAsc(true) } }
   async function confirmDelete() {
     if (!toDelete) return
     try { await deleteContact(toDelete.id); setToDelete(null); setTick((x) => x + 1) } catch { setToDelete(null) }
   }
-  const FILTERS: { k: string; v: number | null }[] = [{ k: 'f_all', v: null }, { k: 'f_active', v: 1 }, { k: 'f_inactive', v: 0 }]
+  const FILTERS: { k: string; v: number | null; dot?: string }[] = [{ k: 'f_all', v: null }, { k: 'f_active', v: 1, dot: '#10b981' }, { k: 'f_inactive', v: 0, dot: '#ef4444' }]
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, height: '100%', boxSizing: 'border-box', overflow: mode === 'old' ? 'hidden' : 'auto' }}>
@@ -116,22 +123,38 @@ function ContactList({ base }: { base: string }) {
       {oldLoaded && <LegacyFrame melisKey={TOOL_MELIS_KEY} title={t('title')} visible={mode === 'old'} />}
 
       <div style={{ display: mode === 'react' ? 'flex' : 'none', flexDirection: 'column', gap: 20, flex: 1, minHeight: 0 }}>
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-          <Kpi label={t('kpi_total')} value={stats?.total ?? null} />
-          <Kpi label={t('kpi_active')} value={stats?.active ?? null} />
-          <Kpi label={t('kpi_inactive')} value={stats?.inactive ?? null} />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+          <Kpi label={t('kpi_total')}    value={stats?.total    ?? null} icon={<UsersKpiIcon />} iconBg="rgba(59,130,246,0.1)"  iconColor="#3b82f6" />
+          <Kpi label={t('kpi_active')}   value={stats?.active   ?? null} icon={<UsersKpiIcon />} iconBg="rgba(16,185,129,0.1)"  iconColor="#10b981" />
+          <Kpi label={t('kpi_inactive')} value={stats?.inactive ?? null} icon={<UsersKpiIcon />} iconBg="rgba(239,68,68,0.1)"   iconColor="#ef4444" />
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          <input style={{ ...inputCss, height: 36, flex: 1, minWidth: 220 }} value={searchInput}
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
+          <input style={{ ...inputCss, height: 36, flex: 1, minWidth: 180, maxWidth: 384 }} value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && setSearch(searchInput.trim())} placeholder={t('search')} />
-          <div style={{ display: 'inline-flex', gap: 2, padding: 2, borderRadius: 8, border: '1px solid var(--color-border)' }}>
-            {FILTERS.map((f) => <button key={f.k} style={segBtn(status === f.v)} onClick={() => setStatus(f.v)}>{t(f.k)}</button>)}
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: 4, borderRadius: 8, border: '1px solid var(--color-border)', background: 'var(--color-muted,rgba(0,0,0,.04))' }}>
+            {FILTERS.map((f) => (
+              <button key={f.k} onClick={() => setStatus(f.v)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 6, border: 0, cursor: 'pointer', fontSize: 12, fontWeight: 500, background: status === f.v ? 'var(--color-card)' : 'transparent', color: status === f.v ? 'var(--color-foreground)' : 'var(--color-muted-foreground)', boxShadow: status === f.v ? '0 1px 2px rgba(0,0,0,.08)' : 'none' }}>
+                {f.dot && <span style={{ width: 6, height: 6, borderRadius: '50%', background: f.dot, flexShrink: 0 }} />}
+                {t(f.k)}
+              </button>
+            ))}
           </div>
-          <div style={{ position: 'relative' }}>
-            <button style={{ ...btnGhost, height: 36 }} onClick={() => setShowCols((v) => !v)}><GripIcon />{t('columns')}</button>
-            {showCols && <ColManager cols={cols} labelFor={(id) => t(COL_LABEL[id])} onChange={setCols} onClose={() => setShowCols(false)} save={cols$.save} defaults={cols$.DEFAULT} t={t} />}
+          <select style={{ ...inputCss, height: 36, width: 'auto', minWidth: 170 }} value={filterAccountId} onChange={(e) => setFilterAccountId(Number(e.target.value))}>
+            <option value={0}>{t('filter_account')}</option>
+            {accounts.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
+          </select>
+          <select style={{ ...inputCss, height: 36, width: 'auto', minWidth: 130 }} value={filterType} onChange={(e) => setFilterType(e.target.value)}>
+            <option value="">{t('filter_type')}</option>
+            <option value="person">{t('type_person')}</option>
+            <option value="company">{t('type_company')}</option>
+          </select>
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
+            <div style={{ position: 'relative' }}>
+              <button style={{ ...btnGhost, height: 36 }} onClick={() => setShowCols((v) => !v)}><GripIcon />{t('columns')}</button>
+              {showCols && <ColManager cols={cols} labelFor={(id) => t(COL_LABEL[id])} onChange={setCols} onClose={() => setShowCols(false)} save={cols$.save} defaults={cols$.DEFAULT} t={t} />}
+            </div>
+            <button style={{ ...btnGhost, height: 36 }} onClick={() => setShowExport(true)}><FileDownIcon />{t('export')}</button>
           </div>
-          <button style={{ ...btnGhost, height: 36 }} onClick={() => setShowExport(true)}><FileDownIcon />{t('export')}</button>
         </div>
 
         <div style={{ ...card, overflow: 'hidden' }}>
@@ -208,39 +231,65 @@ function ContactForm({ id, base }: { id: string; base: string }) {
 
   const [accounts, setAccounts] = useState<Option[]>([])
   const [civilities, setCivilities] = useState<Option[]>([])
+  const [languages, setLanguages] = useState<Option[]>([])
   const [civility, setCivility] = useState<number>(0)
   const [firstname, setFirstname] = useState('')
   const [name, setName] = useState('')
+  const [middleName, setMiddleName] = useState('')
+  const [langId, setLangId] = useState<number>(0)
   const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [jobTitle, setJobTitle] = useState('')
+  const [jobService, setJobService] = useState('')
   const [telMobile, setTelMobile] = useState('')
+  const [telLandline, setTelLandline] = useState('')
   const [accountId, setAccountId] = useState<number>(0)
   const [type, setType] = useState('person')
   const [tags, setTags] = useState('')
   const [active, setActive] = useState(true)
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [firstnameError, setFirstnameError] = useState('')
+  const [nameError, setNameError] = useState('')
+  const [langError, setLangError] = useState('')
+  const [emailError, setEmailError] = useState('')
+  const [passwordError, setPasswordError] = useState('')
+  const [saveError, setSaveError] = useState('')
   const [saved, setSaved] = useState(false)
   const [tab, setTab] = useState('information')
+  const [visitedTabs, setVisitedTabs] = useState(new Set<string>())
   const [addresses, setAddresses] = useState<ContactAddress[]>([])
   const [addressesLoaded, setAddressesLoaded] = useState(false)
 
   const TABS: TabDef[] = [
     { key: 'information', label: t('tab_information'), icon: <TagIcon /> },
-    { key: 'address',     label: t('tab_address'),     icon: <MapPinIcon />, disabled: !isEdit },
+    { key: 'address',     label: t('tab_address'),     icon: <MapPinIcon /> },
     { key: 'association', label: t('tab_association'), icon: <LinkIcon />,   disabled: !isEdit },
   ]
 
-  useEffect(() => { fetchContactOptions().then((o) => { setAccounts(o.accounts); setCivilities(o.civilities) }).catch(() => null) }, [])
+  function handleTabChange(newTab: string) {
+    setVisitedTabs((s) => { const n = new Set(s); n.add(newTab); return n })
+    setTab(newTab)
+  }
+
+  useEffect(() => { fetchContactOptions().then((o) => { setAccounts(o.accounts); setCivilities(o.civilities); setLanguages(o.languages) }).catch(() => null) }, [])
+  // Reset derived/lazy state when switching contacts so stale data from a previous contact isn't saved.
+  useEffect(() => {
+    setAddresses([]); setAddressesLoaded(false)
+    setSaved(false); setFirstnameError(''); setNameError(''); setLangError(''); setEmailError(''); setPasswordError(''); setSaveError('')
+  }, [contactId])
   useEffect(() => {
     if (!contactId) return
     setLoading(true)
     fetchContactById(contactId)
       .then((c) => {
-        setCivility(c.civility); setFirstname(c.firstname); setName(c.name); setEmail(c.email)
-        setJobTitle(c.jobTitle); setTelMobile(c.telMobile); setAccountId(c.accountId)
-        setType(c.type); setTags(c.tags); setActive(c.status === 1)
+        setCivility(c.civility); setFirstname(c.firstname); setName(c.name)
+        setMiddleName(c.middleName ?? ''); setLangId(c.langId ?? 0)
+        setEmail(c.email); setPassword(''); setConfirmPassword('')
+        setJobTitle(c.jobTitle); setJobService(c.jobService ?? '')
+        setTelMobile(c.telMobile); setTelLandline(c.telLandline ?? '')
+        setAccountId(c.accountId); setType(c.type); setTags(c.tags); setActive(c.status === 1)
       })
       .catch(() => navigate(base)).finally(() => setLoading(false))
   }, [contactId, navigate, base])
@@ -261,20 +310,32 @@ function ContactForm({ id, base }: { id: string; base: string }) {
   }, [firstname, name])
 
   async function submit() {
-    if (!name.trim()) { setError(t('err_name')); return }
-    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError(t('err_email')); return }
-    setSaving(true); setError(null)
+    let hasError = false
+    if (!firstname.trim()) { setFirstnameError(t('err_firstname')); hasError = true } else setFirstnameError('')
+    if (!name.trim()) { setNameError(t('err_name')); hasError = true } else setNameError('')
+    if (!langId) { setLangError(t('err_language')); hasError = true } else setLangError('')
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setEmailError(t('err_email')); hasError = true } else setEmailError('')
+    if (!isEdit && !password.trim()) { setPasswordError(t('err_password_required')); hasError = true }
+    else if (password && password !== confirmPassword) { setPasswordError(t('err_password')); hasError = true }
+    else setPasswordError('')
+    if (hasError) return
+    setSaving(true); setSaveError('')
     try {
-      await saveContact({
+      const r = await saveContact({
         id: contactId, status: active, type: type.trim(), civility,
-        firstname: firstname.trim(), name: name.trim(), email: email.trim(),
-        accountId, jobTitle: jobTitle.trim(), telMobile: telMobile.trim(), tags: tags.trim(),
+        firstname: firstname.trim(), name: name.trim(), middleName: middleName.trim(),
+        langId, email: email.trim(), password: password.trim(),
+        accountId, jobTitle: jobTitle.trim(), jobService: jobService.trim(),
+        telMobile: telMobile.trim(), telLandline: telLandline.trim(), tags: tags.trim(),
       })
-      if (isEdit && contactId && addressesLoaded) { try { await saveContactAddresses(contactId, addresses) } catch { /* */ } }
+      const savedId = contactId ?? r?.id
+      if (savedId && (addressesLoaded || visitedTabs.has('address'))) {
+        try { await saveContactAddresses(savedId, addresses) } catch { /* */ }
+      }
       setSaved(true)
       if (!isEdit) closeSubTab(base, `${base}/new`)
       setTimeout(() => navigate(base), 500)
-    } catch (e) { setError(e instanceof Error ? e.message : t('err_save')) } finally { setSaving(false) }
+    } catch (e) { setSaveError(e instanceof Error ? e.message : t('err_save')) } finally { setSaving(false) }
   }
 
   const fieldTitle = { fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 12px' } as const
@@ -288,84 +349,150 @@ function ContactForm({ id, base }: { id: string; base: string }) {
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           {saved && <span style={{ fontSize: 14, color: '#059669' }}>{t('saved')}</span>}
+          {saveError && <span style={{ fontSize: 13, color: '#dc2626' }}>{saveError}</span>}
           <button style={btnPrimary} onClick={submit} disabled={saving || loading}>{saving ? '…' : t('save')}</button>
         </div>
       </div>
 
-      <Tabs tabs={TABS} active={tab} onChange={setTab} />
+      <Tabs tabs={TABS} active={tab} onChange={handleTabChange} />
 
-      {tab === 'address' && contactId ? <AddressTab addresses={addresses} onChange={setAddresses} t={t} /> :
-       tab === 'association' && contactId ? <AssociationTab contactId={contactId} t={t} /> : (
+      {tab === 'address' ? <AddressTab addresses={addresses} onChange={setAddresses} t={t} /> :
+       tab === 'association' && contactId ? <AssociationTab contactId={contactId} t={t} /> :
+       tab === 'information' ? (
       <>
-      {error && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14 }}>{error}</div>}
-
       {loading ? (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '40vh', color: 'var(--color-muted-foreground)' }}>{t('loading')}</div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 16, maxWidth: 880, alignItems: 'start' }}>
-          <div style={{ ...card, padding: 20 }}>
-            <h3 style={fieldTitle}>{t('f_identity')}</h3>
-            <label style={label}>{t('f_civility')}</label>
-            <select style={inputCss} value={civility} onChange={(e) => setCivility(Number(e.target.value))}>
-              <option value={0}>{t('f_civility_ph')}</option>
-              {civilities.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 16 }}>
-              <div>
-                <label style={label}>{t('f_firstname')}</label>
-                <input style={inputCss} value={firstname} onChange={(e) => setFirstname(e.target.value)} placeholder={t('f_firstname_ph')} autoComplete="off" />
-              </div>
-              <div>
-                <label style={label}>{t('f_name')}</label>
-                <input style={inputCss} value={name} onChange={(e) => { setName(e.target.value); setError(null) }} placeholder={t('f_name_ph')} autoComplete="off" />
+        <div style={{ display: 'flex', gap: 20, alignItems: 'start' }}>
+          {/* Main content */}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ ...card, padding: 24 }}>
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 20px' }}>
+                <UserIcon />{t('f_identity')}
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                {/* Type (person/company) */}
+                <div>
+                  <label style={label}>{t('f_type_label')}</label>
+                  <div style={{ display: 'flex', gap: 16, alignItems: 'center', paddingTop: 4 }}>
+                    {([['person', t('type_person')], ['company', t('type_company')]] as const).map(([val, lbl]) => (
+                      <label key={val} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 14, cursor: 'pointer' }}>
+                        <input type="radio" name="cper_type" value={val} checked={type === val} onChange={() => setType(val)} style={{ accentColor: 'var(--color-primary)' }} />
+                        {lbl}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                {/* Civility */}
+                <div>
+                  <label style={label}>{t('f_civility')}</label>
+                  <select style={inputCss} value={civility} onChange={(e) => setCivility(Number(e.target.value))}>
+                    <option value={0}>{t('f_civility_ph')}</option>
+                    {civilities.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </select>
+                </div>
+                {/* Firstname + Name */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                  <div>
+                    <label style={{ ...label, ...(firstnameError ? { color: '#ef4444' } : {}) }}>{t('f_firstname')} <span style={{ color: '#ef4444' }}>*</span></label>
+                    <input style={inputCss} value={firstname} onChange={(e) => { setFirstname(e.target.value); if (firstnameError && e.target.value.trim()) setFirstnameError('') }} placeholder={t('f_firstname_ph')} autoComplete="off" />
+                    {firstnameError && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{firstnameError}</p>}
+                  </div>
+                  <div>
+                    <label style={{ ...label, ...(nameError ? { color: '#ef4444' } : {}) }}>{t('f_name')} <span style={{ color: '#ef4444' }}>*</span></label>
+                    <input style={inputCss} value={name} onChange={(e) => { setName(e.target.value); if (nameError && e.target.value.trim()) setNameError('') }} placeholder={t('f_name_ph')} autoComplete="off" />
+                    {nameError && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{nameError}</p>}
+                  </div>
+                </div>
+                {/* Middle name */}
+                <div>
+                  <label style={label}>{t('f_middle_name')}</label>
+                  <input style={inputCss} value={middleName} onChange={(e) => setMiddleName(e.target.value)} placeholder={t('f_middle_name_ph')} autoComplete="off" />
+                </div>
+                {/* Language */}
+                <div>
+                  <label style={{ ...label, ...(langError ? { color: '#ef4444' } : {}) }}>{t('f_language')} <span style={{ color: '#ef4444' }}>*</span></label>
+                  <select style={inputCss} value={langId} onChange={(e) => { setLangId(Number(e.target.value)); if (langError) setLangError('') }}>
+                    <option value={0}>{t('f_language_ph')}</option>
+                    {languages.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
+                  </select>
+                  {langError && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{langError}</p>}
+                </div>
+                {/* Email */}
+                <div>
+                  <label style={{ ...label, ...(emailError ? { color: '#ef4444' } : {}) }}>{t('f_email')} <span style={{ color: '#ef4444' }}>*</span></label>
+                  <input style={inputCss} value={email} onChange={(e) => { setEmail(e.target.value); if (emailError) setEmailError('') }} placeholder={t('f_email_ph')} autoComplete="off" />
+                  {emailError && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{emailError}</p>}
+                </div>
+                {/* Job title + Job service */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                  <div>
+                    <label style={label}>{t('f_job')}</label>
+                    <input style={inputCss} value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder={t('f_job_ph')} autoComplete="off" />
+                  </div>
+                  <div>
+                    <label style={label}>{t('f_job_service')}</label>
+                    <input style={inputCss} value={jobService} onChange={(e) => setJobService(e.target.value)} placeholder={t('f_job_service_ph')} autoComplete="off" />
+                  </div>
+                </div>
+                {/* Mobile + Landline */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                  <div>
+                    <label style={label}>{t('f_mobile')}</label>
+                    <input style={inputCss} value={telMobile} onChange={(e) => setTelMobile(e.target.value)} placeholder={t('f_mobile_ph')} autoComplete="off" />
+                  </div>
+                  <div>
+                    <label style={label}>{t('f_landline')}</label>
+                    <input style={inputCss} value={telLandline} onChange={(e) => setTelLandline(e.target.value)} placeholder={t('f_landline_ph')} autoComplete="off" />
+                  </div>
+                </div>
+                {/* Tags */}
+                <div>
+                  <label style={label}>{t('f_tags')}</label>
+                  <input style={inputCss} value={tags} onChange={(e) => setTags(e.target.value)} placeholder={t('f_tags_ph')} autoComplete="off" />
+                </div>
               </div>
             </div>
-            <label style={{ ...label, marginTop: 16 }}>{t('f_email')}</label>
-            <input style={inputCss} value={email} onChange={(e) => { setEmail(e.target.value); setError(null) }} placeholder={t('f_email_ph')} autoComplete="off" />
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 16 }}>
-              <div>
-                <label style={label}>{t('f_job')}</label>
-                <input style={inputCss} value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder={t('f_job_ph')} autoComplete="off" />
+
+            {/* Password card */}
+            <div style={{ ...card, padding: 24 }}>
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 20px' }}>
+                <KeyIcon />{t('f_section_password')}
+              </h3>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ ...label, ...(passwordError ? { color: '#ef4444' } : {}) }}>{isEdit ? t('f_password_edit') : t('f_password')} <span style={{ color: '#ef4444' }}>*</span></label>
+                  <input type="password" style={inputCss} value={password} onChange={(e) => { setPassword(e.target.value); if (passwordError) setPasswordError('') }} placeholder="******" autoComplete="new-password" />
+                </div>
+                <div>
+                  <label style={{ ...label, ...(passwordError ? { color: '#ef4444' } : {}) }}>{t('f_confirm_password')} <span style={{ color: '#ef4444' }}>*</span></label>
+                  <input type="password" style={inputCss} value={confirmPassword} onChange={(e) => { setConfirmPassword(e.target.value); if (passwordError) setPasswordError('') }} placeholder="******" autoComplete="new-password" />
+                </div>
               </div>
-              <div>
-                <label style={label}>{t('f_mobile')}</label>
-                <input style={inputCss} value={telMobile} onChange={(e) => setTelMobile(e.target.value)} placeholder={t('f_mobile_ph')} autoComplete="off" />
-              </div>
+              {passwordError && <p style={{ margin: '8px 0 0', fontSize: 12, color: '#ef4444' }}>{passwordError}</p>}
             </div>
           </div>
-          <div style={{ ...card, padding: 20 }}>
-            <h3 style={fieldTitle}>{t('f_options')}</h3>
-            <label style={label}>{t('f_account')}</label>
-            <select style={inputCss} value={accountId} onChange={(e) => setAccountId(Number(e.target.value))}>
-              <option value={0}>{t('f_account_ph')}</option>
-              {accounts.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
-            </select>
-            <label style={{ ...label, marginTop: 16 }}>{t('f_type_label')}</label>
-            <div style={{ display: 'flex', gap: 18, alignItems: 'center', height: 40 }}>
-              {([['person', t('type_person')], ['company', t('type_company')]] as const).map(([val, lbl]) => (
-                <label key={val} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 14, cursor: 'pointer' }}>
-                  <input type="radio" name="cper_type" value={val} checked={type === val} onChange={() => setType(val)} style={{ accentColor: 'var(--color-primary)' }} />
-                  {lbl}
-                </label>
-              ))}
-            </div>
-            <label style={{ ...label, marginTop: 16 }}>{t('f_tags')}</label>
-            <input style={inputCss} value={tags} onChange={(e) => setTags(e.target.value)} placeholder={t('f_tags_ph')} autoComplete="off" />
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginTop: 18, borderTop: '1px solid var(--color-border)', paddingTop: 14 }}>
-              <div>
-                <p style={{ margin: 0, fontSize: 14, fontWeight: 500 }}>{t('f_active')}</p>
-                <p style={hint}>{t('f_active_hint')}</p>
-              </div>
-              <button type="button" onClick={() => setActive((v) => !v)}
-                style={{ position: 'relative', width: 44, height: 24, borderRadius: 999, border: 0, cursor: 'pointer', background: active ? 'var(--color-primary)' : 'var(--color-muted-foreground)', flexShrink: 0 }}>
-                <span style={{ position: 'absolute', top: 2, left: active ? 22 : 2, width: 20, height: 20, borderRadius: 999, background: '#fff', transition: 'left .15s' }} />
+
+          {/* Right sidebar */}
+          <div style={{ width: 256, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ ...card, padding: 16 }}>
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 12px' }}>
+                <ToggleRightIcon />{t('col_status')}
+              </h3>
+              <button type="button" onClick={() => setActive((v) => !v)} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
+                <div style={{ position: 'relative', width: 36, height: 20, borderRadius: 999, background: active ? '#22c55e' : 'var(--color-muted-foreground)', transition: 'background .15s', flexShrink: 0 }}>
+                  <span style={{ position: 'absolute', top: 2, left: active ? 18 : 2, width: 16, height: 16, borderRadius: 999, background: '#fff', transition: 'left .15s', boxShadow: '0 1px 2px rgba(0,0,0,.3)' }} />
+                </div>
+                <span style={{ fontSize: 14, fontWeight: 500, color: active ? '#16a34a' : 'var(--color-muted-foreground)' }}>
+                  {active ? t('status_active') : t('status_inactive')}
+                </span>
               </button>
             </div>
           </div>
         </div>
       )}
       </>
-      )}
+      ) : null}
     </div>
   )
 }

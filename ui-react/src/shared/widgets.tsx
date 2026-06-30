@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import { card, vmBtn } from './styles'
 import { SparklesIcon, LayoutIcon } from './icons'
 import type { T } from './i18n'
@@ -15,11 +15,18 @@ export function StatusBadge({ active, t }: { active: boolean; t: T }) {
 }
 
 /** Carte KPI. */
-export function Kpi({ label, value }: { label: string; value: number | null }) {
+export function Kpi({ label, value, icon, iconBg, iconColor }: { label: string; value: number | null; icon?: ReactNode; iconBg?: string; iconColor?: string }) {
   return (
-    <div style={{ ...card, display: 'flex', flexDirection: 'column', gap: 2, padding: 16, flex: 1, minWidth: 140 }}>
-      <span style={{ fontSize: 12, color: 'var(--color-muted-foreground)' }}>{label}</span>
-      <span style={{ fontSize: 22, fontWeight: 700 }}>{value == null ? '…' : value}</span>
+    <div style={{ ...card, display: 'flex', alignItems: 'center', gap: 12, padding: 16, minWidth: 0 }}>
+      {icon && (
+        <div style={{ width: 40, height: 40, borderRadius: 8, flexShrink: 0, display: 'grid', placeItems: 'center', background: iconBg ?? 'rgba(59,130,246,0.1)', color: iconColor ?? '#3b82f6' }}>
+          {icon}
+        </div>
+      )}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
+        <span style={{ fontSize: 12, color: 'var(--color-muted-foreground)' }}>{label}</span>
+        <span style={{ fontSize: 20, fontWeight: 700 }}>{value == null ? '…' : value}</span>
+      </div>
     </div>
   )
 }

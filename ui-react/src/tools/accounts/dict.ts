@@ -4,7 +4,7 @@ import { mergeDict } from '../../shared/i18n'
 export const DICT = mergeDict({
   fr: {
     title: 'Comptes clients', subtitle: 'Comptes clients MelisCommerce',
-    new: 'Nouveau compte', search: 'Rechercher un compte…', empty: 'Aucun compte trouvé',
+    new: 'Nouveau compte', search: 'Rechercher un compte…', empty: 'Aucun compte trouvé', filter_group: 'Tous les groupes',
     count: '{n} comptes — fin de la liste',
     col_id: 'ID', col_name: 'Nom', col_status: 'Statut', col_group: 'Groupe', col_country: 'Pays', col_created: 'Créé le',
     exp_title: 'Exporter les comptes', exp_subtitle: '{n} comptes seront exportés', exp_filename: 'comptes',
@@ -20,7 +20,7 @@ export const DICT = mergeDict({
     co_name: 'Raison sociale', co_number: 'N° d’identification', co_vat: 'N° TVA', co_group: 'Groupe', co_employees: 'Effectif',
     co_address: 'Adresse', co_street: 'Rue', co_zip: 'Code postal', co_city: 'Ville', co_state: 'État/Région', co_country: 'Pays',
     co_phone: 'Téléphone', co_website: 'Site web', co_section_id: 'Identité société', co_section_addr: 'Adresse société',
-    c_firstname: 'Prénom', c_name: 'Nom', c_email: 'Email', c_empty: 'Aucun contact associé',
+    c_firstname: 'Prénom', c_name: 'Nom', c_email: 'Email', c_civility: 'Civilité', c_empty: 'Aucun contact associé',
     c_def_contact: 'Contact par défaut', c_def_account: 'Compte par défaut',
     c_link_ph: 'Nom du contact', c_link: 'Lier le contact', c_add: 'Ajouter un contact',
     c_unlink_title: 'Délier le contact', c_unlink_confirm: 'Délier « {u} » de ce compte ?',
@@ -47,7 +47,7 @@ export const DICT = mergeDict({
   },
   en: {
     title: 'Accounts', subtitle: 'MelisCommerce customer accounts',
-    new: 'New account', search: 'Search an account…', empty: 'No account found',
+    new: 'New account', search: 'Search an account…', empty: 'No account found', filter_group: 'All groups',
     count: '{n} accounts — end of list',
     col_id: 'ID', col_name: 'Name', col_status: 'Status', col_group: 'Group', col_country: 'Country', col_created: 'Created',
     exp_title: 'Export accounts', exp_subtitle: '{n} accounts will be exported', exp_filename: 'accounts',
@@ -63,7 +63,7 @@ export const DICT = mergeDict({
     co_name: 'Company name', co_number: 'Registration no.', co_vat: 'VAT number', co_group: 'Group', co_employees: 'Employees',
     co_address: 'Address', co_street: 'Street', co_zip: 'Zip code', co_city: 'City', co_state: 'State/Region', co_country: 'Country',
     co_phone: 'Phone', co_website: 'Website', co_section_id: 'Company identity', co_section_addr: 'Company address',
-    c_firstname: 'First name', c_name: 'Name', c_email: 'Email', c_empty: 'No linked contact',
+    c_firstname: 'First name', c_name: 'Name', c_email: 'Email', c_civility: 'Civility', c_empty: 'No linked contact',
     c_def_contact: 'Default contact', c_def_account: 'Default account',
     c_link_ph: 'Contact name', c_link: 'Link contact', c_add: 'Add contact',
     c_unlink_title: 'Unlink contact', c_unlink_confirm: 'Unlink “{u}” from this account?',

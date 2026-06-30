@@ -39,19 +39,19 @@ export function CompanyTab({ company, onChange, loading, t }: {
   )
   if (loading) return <div style={{ display: 'flex', justifyContent: 'center', minHeight: '30vh', alignItems: 'center', color: 'var(--color-muted-foreground)' }}>{t('loading')}</div>
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 16, maxWidth: 880, alignItems: 'start' }}>
-      <div style={{ ...card, padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, alignItems: 'start' }}>
+      <div style={{ ...card, padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
         <h3 style={sectionTitle}>{t('co_section_id')}</h3>
         {field('name', t('co_name'))}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>{field('numberId', t('co_number'))}{field('vatNumber', t('co_vat'))}</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>{field('group', t('co_group'))}{field('employees', t('co_employees'), 'number')}</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>{field('numberId', t('co_number'))}{field('vatNumber', t('co_vat'))}</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>{field('group', t('co_group'))}{field('employees', t('co_employees'), 'number')}</div>
         {field('website', t('co_website'))}
       </div>
-      <div style={{ ...card, padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div style={{ ...card, padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
         <h3 style={sectionTitle}>{t('co_section_addr')}</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: '90px 1fr', gap: 12 }}>{field('addNumber', t('co_address'))}{field('addStreet', t('co_street'))}</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: 12 }}>{field('addZip', t('co_zip'))}{field('addCity', t('co_city'))}</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>{field('addState', t('co_state'))}{field('addCountry', t('co_country'))}</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '90px 1fr', gap: 14 }}>{field('addNumber', t('co_address'))}{field('addStreet', t('co_street'))}</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: 14 }}>{field('addZip', t('co_zip'))}{field('addCity', t('co_city'))}</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>{field('addState', t('co_state'))}{field('addCountry', t('co_country'))}</div>
         {field('phone', t('co_phone'))}
       </div>
     </div>
@@ -252,13 +252,13 @@ export function FilesTab({ accountId, t }: { accountId: number; t: T }) {
                 <span style={{ fontSize: 13, color: file ? 'var(--color-foreground)' : 'var(--color-muted-foreground)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file ? file.name : '—'}</span>
               </div>
               <div><label style={label}>{t('fi_modal_name')}</label><input style={inputCss} value={fname} onChange={(e) => setFname(e.target.value)} autoComplete="off" /></div>
-              <div><label style={label}>{t('fi_type')} *</label>
+              <div><label style={label}>{t('fi_type')}<span style={{ color: '#ef4444', marginLeft: 2 }}>*</span></label>
                 <select style={inputCss} value={ftype} onChange={(e) => setFtype(Number(e.target.value))}>
                   <option value={0}>{t('fi_choose')}</option>
                   {opts.types.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
                 </select>
               </div>
-              <div><label style={label}>{t('fi_country')} *</label>
+              <div><label style={label}>{t('fi_country')}<span style={{ color: '#ef4444', marginLeft: 2 }}>*</span></label>
                 <select style={inputCss} value={fcountry} onChange={(e) => setFcountry(Number(e.target.value))}>
                   <option value={0}>{t('fi_choose')}</option>
                   <option value={-1}>{t('fi_all_country')}</option>
@@ -274,8 +274,8 @@ export function FilesTab({ accountId, t }: { accountId: number; t: T }) {
                 {showType && (
                   <div style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
                     {terr && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '6px 12px', fontSize: 13 }}>{terr}</div>}
-                    <div><label style={label}>{t('fi_type_code')} *</label><input style={inputCss} value={tcode} maxLength={10} onChange={(e) => setTcode(e.target.value)} autoComplete="off" /></div>
-                    <div><label style={label}>{t('fi_type_name')} *</label><input style={inputCss} value={tname} maxLength={45} onChange={(e) => setTname(e.target.value)} autoComplete="off" /></div>
+                    <div><label style={label}>{t('fi_type_code')}<span style={{ color: '#ef4444', marginLeft: 2 }}>*</span></label><input style={inputCss} value={tcode} maxLength={10} onChange={(e) => setTcode(e.target.value)} autoComplete="off" /></div>
+                    <div><label style={label}>{t('fi_type_name')}<span style={{ color: '#ef4444', marginLeft: 2 }}>*</span></label><input style={inputCss} value={tname} maxLength={45} onChange={(e) => setTname(e.target.value)} autoComplete="off" /></div>
                     <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                       <button style={{ ...btnGhost, height: 34, color: 'var(--color-primary)', borderColor: 'var(--color-primary)' }} onClick={addType}><PlusIcon />{t('fi_type_add')}</button>
                     </div>

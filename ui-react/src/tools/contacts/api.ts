@@ -4,17 +4,20 @@ import type { Address, AddressOptions } from '../../shared/address'
 export interface ContactItem {
   id: number; status: number; type: string
   civility: number; civilityName: string
-  firstname: string; name: string; email: string
+  firstname: string; name: string; middleName: string
+  langId: number; email: string
   accountId: number; accountName: string
-  jobTitle: string; telMobile: string; tags: string
-  dateCreation: string | null; dateEdit: string | null
+  jobTitle: string; jobService: string
+  telMobile: string; telLandline: string
+  tags: string; dateCreation: string | null; dateEdit: string | null
 }
 export type ContactStats = Stats
-export interface ContactOptions { accounts: Option[]; civilities: Option[] }
+export interface ContactOptions { accounts: Option[]; civilities: Option[]; languages: Option[] }
 export interface ContactSavePayload {
   id?: number | null; status: boolean; type: string; civility: number
-  firstname: string; name: string; email: string; accountId: number
-  jobTitle: string; telMobile: string; tags: string
+  firstname: string; name: string; middleName: string; langId: number; email: string
+  accountId: number; jobTitle: string; jobService: string
+  telMobile: string; telLandline: string; password: string; tags: string
 }
 
 export function fetchContacts(params: { search?: string; status?: number | null; accountId?: number | null } = {}): Promise<ListResult<ContactItem>> {

@@ -42,6 +42,9 @@ return [
                                   'id' => 'id_meliscommerce_product_list_container',
                                   'melisKey' => 'meliscommerce_product_list_container',
                                   'name' => 'tr_meliscommerce_products_Products',
+                                  // Rend l'outil en page autonome (sans le layout BO complet) quand il est
+                                  // ouvert dans l'iframe React (toggle « Old ») — comme meliscore_tool_user.
+                                  'follow_regular_rendering' => false,
                               ],
                               'forward' => [
                                   'module' => 'MelisCommerce',

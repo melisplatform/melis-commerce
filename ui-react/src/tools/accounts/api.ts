@@ -31,7 +31,7 @@ export interface CompanyData {
   addNumber: string; addStreet: string; addZip: string; addCity: string; addState: string; addCountry: string
   phone: string; website: string
 }
-export interface AccountContact { id: number; status: number; firstname: string; name: string; email: string; isMain: number; isDefaultAccount: number }
+export interface AccountContact { id: number; status: number; firstname: string; name: string; email: string; isMain: number; isDefaultAccount: number; civility?: number; civilityName?: string }
 export type { Address as AccountAddress, AddressOptions } from '../../shared/address'
 export interface AccountOrder { id: number; reference: string; status: number; statusName: string; dateCreation: string | null }
 export interface AccountFile { id: number; name: string; path: string; typeId: number }

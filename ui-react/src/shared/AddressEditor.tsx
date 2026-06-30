@@ -13,9 +13,9 @@ function AddressForm({ value, onChange, opts, t }: { value: Address; onChange: (
   )
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      <div><label style={label}>{t('ad_name')} *</label><input style={inputCss} value={value.addressName} onChange={(e) => set('addressName', e.target.value)} autoComplete="off" /></div>
+      <div><label style={label}>{t('ad_name')}<span style={{ color: '#ef4444', marginLeft: 2 }}>*</span></label><input style={inputCss} value={value.addressName} onChange={(e) => set('addressName', e.target.value)} autoComplete="off" /></div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-        <div><label style={label}>{t('ad_type')} *</label>
+        <div><label style={label}>{t('ad_type')}<span style={{ color: '#ef4444', marginLeft: 2 }}>*</span></label>
           <select style={inputCss} value={value.type} onChange={(e) => set('type', Number(e.target.value))}>
             {opts.types.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
           </select>

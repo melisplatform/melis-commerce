@@ -5,6 +5,7 @@
       "id": "commerce-accounts",
       "route": "/melis-commerce/clients-list",
       "label": "Accounts",
+      "icon": "building-2",
       "forwardKey": "MelisCommerce/MelisComClientList",
       "melisKey": "meliscommerce_clients_list_page",
       "subtabs": true
@@ -13,8 +14,25 @@
       "id": "commerce-contacts",
       "route": "/melis-commerce/contact-list",
       "label": "Contacts",
+      "icon": "users",
       "forwardKey": "MelisCommerce/MelisComContact",
       "melisKey": "meliscommerce_contact_list_page",
+      "subtabs": true
+    },
+    {
+      "id": "commerce-catalog",
+      "route": "/melis-commerce/categories",
+      "label": "Catalogs",
+      "forwardKey": "MelisCommerce/MelisComCategoryList",
+      "melisKey": "meliscommerce_categories_page",
+      "subtabs": true
+    },
+    {
+      "id": "commerce-products",
+      "route": "/melis-commerce/product-list",
+      "label": "Products",
+      "forwardKey": "MelisCommerce/MelisComProductList",
+      "melisKey": "meliscommerce_product_list_container",
       "subtabs": true
     }
   ]
