@@ -34,6 +34,15 @@
       "forwardKey": "MelisCommerce/MelisComProductList",
       "melisKey": "meliscommerce_product_list_container",
       "subtabs": true
+    },
+    {
+      "id": "commerce-orders",
+      "route": "/melis-commerce/order-list",
+      "label": "Orders",
+      "icon": "shopping-cart",
+      "forwardKey": "MelisCommerce/MelisComOrderList",
+      "melisKey": "meliscommerce_order_list_page",
+      "subtabs": true
     }
   ]
 }
