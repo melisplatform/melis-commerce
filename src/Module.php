@@ -298,6 +298,9 @@ class Module
             include __DIR__ . '/../config/dashboard-plugins/MelisCommerceDashboardPluginOrdersNumber.config.php',
             include __DIR__ . '/../config/dashboard-plugins/MelisCommerceDashboardPluginSalesRevenue.config.php',
             include __DIR__ . '/../config/dashboard-plugins/MelisCommerceDashboardPluginOrderMessages.config.php',
+
+            // React API routes + controller invokables for commerce tools
+            include __DIR__ . '/../config/react-api.php',
         ];
 
         foreach ($configFiles as $file) {
