@@ -9,10 +9,10 @@
 interface SubTabWindow {
   __melisOpenSubTab?: (section: string, tab: { id: string; label: string; path: string }) => void
   __melisCloseSubTab?: (section: string, id: string) => void
-  __melisUpdateSubLabel?: (section: string, id: string, label: string) => void
+  __melisUpdateSubTabLabel?: (section: string, id: string, label: string) => void
 }
 const w = () => window as unknown as SubTabWindow
 
 export const openSubTab = (section: string, tab: { id: string; label: string; path: string }) => w().__melisOpenSubTab?.(section, tab)
 export const closeSubTab = (section: string, id: string) => w().__melisCloseSubTab?.(section, id)
-export const updateSubLabel = (section: string, id: string, label: string) => w().__melisUpdateSubLabel?.(section, id, label)
+export const updateSubLabel = (section: string, id: string, label: string) => w().__melisUpdateSubTabLabel?.(section, id, label)

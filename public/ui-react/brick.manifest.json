@@ -8,7 +8,7 @@
       "icon": "building-2",
       "forwardKey": "MelisCommerce/MelisComClientList",
       "melisKey": "meliscommerce_clients_list_page",
-      "subtabs": true
+      "subTabs": true
     },
     {
       "id": "commerce-contacts",
@@ -17,7 +17,7 @@
       "icon": "users",
       "forwardKey": "MelisCommerce/MelisComContact",
       "melisKey": "meliscommerce_contact_list_page",
-      "subtabs": true
+      "subTabs": true
     },
     {
       "id": "commerce-catalog",
@@ -25,7 +25,7 @@
       "label": "Catalogs",
       "forwardKey": "MelisCommerce/MelisComCategoryList",
       "melisKey": "meliscommerce_categories_page",
-      "subtabs": true
+      "subTabs": true
     },
     {
       "id": "commerce-products",
@@ -33,7 +33,7 @@
       "label": "Products",
       "forwardKey": "MelisCommerce/MelisComProductList",
       "melisKey": "meliscommerce_product_list_container",
-      "subtabs": true
+      "subTabs": true
     },
     {
       "id": "commerce-orders",
@@ -42,7 +42,7 @@
       "icon": "shopping-cart",
       "forwardKey": "MelisCommerce/MelisComOrderList",
       "melisKey": "meliscommerce_order_list_page",
-      "subtabs": true
+      "subTabs": true
     }
   ]
 }
