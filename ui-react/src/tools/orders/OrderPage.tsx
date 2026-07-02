@@ -9,8 +9,9 @@ import {
 import { DICT } from './dict'
 import { makeT, fmtDate } from '../../shared/i18n'
 import { card, inputCss, btnGhost, btnPrimary, th, td } from '../../shared/styles'
-import { CartIcon, ShoppingCartKpiIcon, PackageIcon, CalendarIcon, PlusIcon, RefreshIcon, PencilIcon } from '../../shared/icons'
+import { CartIcon, ShoppingCartKpiIcon, PackageIcon, CalendarIcon, PlusIcon, RefreshIcon, PencilIcon, ArrowLeftIcon } from '../../shared/icons'
 import { Kpi, ViewModeToggle, LegacyFrame, ConfirmModal } from '../../shared/widgets'
+import { notify } from '../../shared/notify'
 import { DateRangeFilter } from '../../shared/DateRangeFilter'
 import { makeColStore, visibleCols, type ColDef } from '../../shared/columns'
 import { ExportModal } from '../../shared/ExportModal'
@@ -275,8 +276,6 @@ function OrderForm({ id, base }: { id: string; base: string }) {
   const [statuses, setStatuses] = useState<OrderStatus[]>([])
   const [activeTab, setActiveTab] = useState('information')
   const [saving, setSaving]     = useState(false)
-  const [saved, setSaved]       = useState(false)
-  const [saveErr, setSaveErr]   = useState('')
 
   // Controlled form state — only committed on Save
   const [localStatus, setLocalStatus]       = useState<number>(1)
@@ -310,8 +309,8 @@ function OrderForm({ id, base }: { id: string; base: string }) {
   ]
 
   async function submit() {
-    if (!localReference.trim()) { setSaveErr(t('err_reference_required')); return }
-    setSaving(true); setSaveErr(''); setSaved(false)
+    if (!localReference.trim()) { notify('ko', t('title'), t('err_reference_required')); return }
+    setSaving(true)
     try {
       if (isEdit && orderId) {
         await saveOrderInfo(orderId, { status: localStatus, reference: localReference.trim() })
@@ -321,13 +320,12 @@ function OrderForm({ id, base }: { id: string; base: string }) {
           statusColor: statuses.find((s) => s.id === localStatus)?.color ?? o.statusColor,
         } : o)
         updateSubLabel(base, subTabPath, localReference.trim())
-        setSaved(true)
-        setTimeout(() => setSaved(false), 3000)
+        notify('ok', t('title'), t('status_changed'))
       } else {
         const r = await createOrder({ reference: localReference.trim(), status: localStatus })
         navigate(`${base}/${r.id}`)
       }
-    } catch (e) { setSaveErr(e instanceof Error ? e.message : t('err_cancelled')) }
+    } catch (e) { notify('ko', t('title'), e instanceof Error ? e.message : t('err_cancelled')) }
     finally { setSaving(false) }
   }
 
@@ -336,15 +334,13 @@ function OrderForm({ id, base }: { id: string; base: string }) {
       {/* Header — back + title + Save (same pattern as AccountForm) */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <button style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 6, border: '1px solid var(--color-border)', background: 'transparent', cursor: 'pointer', fontSize: 16, color: 'var(--color-foreground)' }}
-            onClick={() => navigate(base)} title={t('back')}>←</button>
+          <button type="button" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 6, border: '1px solid var(--color-border)', background: 'transparent', cursor: 'pointer', color: 'var(--color-foreground)' }}
+            onClick={() => navigate(base)} title={t('back')}><ArrowLeftIcon /></button>
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>
             {isEdit ? (order ? `${t('title')} ${order.reference || `#${order.id}`}` : t('loading')) : t('new')}
           </h1>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          {saved    && <span style={{ fontSize: 14, color: '#059669' }}>{t('status_changed')}</span>}
-          {saveErr  && <span style={{ fontSize: 13, color: '#dc2626' }}>{saveErr}</span>}
           <button style={btnPrimary} onClick={submit} disabled={saving || (isEdit && !order)}>
             {saving ? '…' : t('save')}
           </button>

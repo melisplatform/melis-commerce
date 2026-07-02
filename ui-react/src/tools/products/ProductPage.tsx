@@ -14,8 +14,9 @@ import { fetchCatalogTree } from '../catalog/api'
 import { DICT } from './dict'
 import { makeT, fmtDate } from '../../shared/i18n'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint, segBtn } from '../../shared/styles'
-import { PencilIcon, TrashIcon, PlusIcon, GripIcon, FileDownIcon, TagIcon, FileTextIcon, LayoutIcon, CartIcon, PackageIcon, PackageCheckIcon, PackageXIcon, ToggleRightIcon } from '../../shared/icons'
+import { PencilIcon, TrashIcon, PlusIcon, GripIcon, FileDownIcon, TagIcon, FileTextIcon, LayoutIcon, CartIcon, PackageIcon, PackageCheckIcon, PackageXIcon, ToggleRightIcon, ArrowLeftIcon } from '../../shared/icons'
 import { StatusBadge, Kpi, ViewModeToggle, LegacyFrame, ConfirmModal } from '../../shared/widgets'
+import { notify } from '../../shared/notify'
 import { ColManager } from '../../shared/ColManager'
 import { ExportModal } from '../../shared/ExportModal'
 import { makeColStore, visibleCols, type ColDef } from '../../shared/columns'
@@ -320,7 +321,6 @@ function ProductForm({ id, base }: { id: string; base: string }) {
   const [error, setError] = useState<string | null>(null)
   const [errRef, setErrRef] = useState(false)
   const [errName, setErrName] = useState(false)
-  const [saved, setSaved] = useState(false)
   const [tab, setTab] = useState('main')
 
   const TABS: TabDef[] = [
@@ -346,7 +346,7 @@ function ProductForm({ id, base }: { id: string; base: string }) {
     setPendingAttrIds([]); setPendingRecipientIds([]); setPendingPrices([])
     setPendingDeleteAttrPattIds([]); setPendingDeleteRecipientSeaIds([])
     setPendingDeleteFileIds([]); setPendingDeleteImageIds([])
-    setSaved(false); setError(null)
+    setError(null)
   }, [productId])
 
   useEffect(() => {
@@ -397,7 +397,7 @@ function ProductForm({ id, base }: { id: string; base: string }) {
           ...pendingRecipientIds.map((uid) => saveProductRecipient(pid, uid, stockLow.trim() === '' ? null : parseInt(stockLow, 10) || 0)),
           ...meaningfulPrices.map((p) => saveProductPrice(pid, { id: null, countryId: p.countryId, currency: p.currency, net: p.net, gross: p.gross, vatPercent: p.vatPercent, vatPrice: p.vatPrice, otherTax: p.otherTax })),
         ])
-        setSaved(true)
+        notify('ok', t('title'), t('saved'))
         closeSubTab(base, `${base}/new`)
         const newPath = `${base}/${pid}`
         openSubTab(base, { id: newPath, label: reference.trim(), path: newPath })
@@ -415,10 +415,10 @@ function ProductForm({ id, base }: { id: string; base: string }) {
           ...pendingDeleteFileIds.map((id) => deleteProductMedia(productId!, id)),
           ...pendingDeleteImageIds.map((id) => deleteProductMedia(productId!, id)),
         ])
-        setSaved(true)
+        notify('ok', t('title'), t('saved'))
         setTimeout(() => navigate(base), 500)
       }
-    } catch (e) { setError(e instanceof Error ? e.message : t('err_save')) } finally { setSaving(false) }
+    } catch (e) { const msg = e instanceof Error ? e.message : t('err_save'); setError(msg); notify('ko', t('title'), msg) } finally { setSaving(false) }
   }
 
   // After save navigates new→edit, apply the intended tab/state.
@@ -439,11 +439,10 @@ function ProductForm({ id, base }: { id: string; base: string }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, height: '100%', boxSizing: 'border-box', overflow: 'auto' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <button style={{ ...iconBtn, width: 32, height: 32 }} onClick={() => navigate(base)} title={t('back')}>←</button>
+          <button type="button" style={{ ...iconBtn, width: 32, height: 32 }} onClick={() => navigate(base)} title={t('back')}><ArrowLeftIcon /></button>
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{isEdit ? t('edit_title') : t('new_title')}</h1>
         </div>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-          {saved && <span style={{ fontSize: 14, color: '#059669' }}>{t('saved')}</span>}
           <button style={btnPrimary} onClick={submit} disabled={saving || loading}>{saving ? '…' : t('save')}</button>
         </div>
       </div>

@@ -9,6 +9,7 @@ import { makeT } from '../../shared/i18n'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, label, hint, th, td } from '../../shared/styles'
 import { PlusIcon, PencilIcon, TrashIcon, ChevronDownIcon, LayoutIcon, TagIcon, FileTextIcon, MapPinIcon, CartIcon, RefreshIcon } from '../../shared/icons'
 import { ViewModeToggle, LegacyFrame, StatusBadge, ConfirmModal } from '../../shared/widgets'
+import { notify } from '../../shared/notify'
 import { Tabs, type TabDef } from '../../shared/Tabs'
 import type { Option } from '../../shared/api'
 
@@ -300,7 +301,6 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [errName, setErrName] = useState(false)
-  const [saved, setSaved] = useState(false)
   // SEO + Produits (chargés à la demande)
   const [seo, setSeo] = useState<CatSeo[]>([])
   const [seoLoaded, setSeoLoaded] = useState(false)
@@ -356,9 +356,9 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
       if (seoLoaded || seo.some((s) => s.url || s.metaTitle || s.metaDescription)) {
         try { await saveCategorySeo(r.id, seo.map((s) => ({ langId: s.langId, url: s.url, metaTitle: s.metaTitle, metaDescription: s.metaDescription }))) } catch { /* */ }
       }
-      setSaved(true); setTimeout(() => setSaved(false), 1500)
+      notify('ok', t('title'), t('saved'))
       onSaved(r.id, isCatalog ? 'catalog' : 'category')
-    } catch (e) { setError(e instanceof Error ? e.message : t('err_save')) } finally { setSaving(false) }
+    } catch (e) { const msg = e instanceof Error ? e.message : t('err_save'); setError(msg); notify('ko', t('title'), msg) } finally { setSaving(false) }
   }
 
   const headerTitle = isEdit ? (isCatalog ? t('edit_catalog_title') : t('edit_category_title')) : (isCatalog ? t('new_catalog_title') : t('new_category_title'))
@@ -374,7 +374,6 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
           {sel.mode === 'new-category' && parentName && <span style={{ fontSize: 13, color: 'var(--color-muted-foreground)' }}>↳ {parentName}</span>}
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          {saved && <span style={{ fontSize: 14, color: '#059669' }}>{t('saved')}</span>}
           <button style={btnGhost} onClick={onClose}>{t('cancel')}</button>
           <button style={btnPrimary} onClick={submit} disabled={saving || loading}>{saving ? '…' : (isCatalog ? t('save_catalog') : t('save_category'))}</button>
         </div>

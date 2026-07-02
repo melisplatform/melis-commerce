@@ -8,8 +8,9 @@ import {
 import { DICT } from './dict'
 import { makeT, fmtDate } from '../../shared/i18n'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } from '../../shared/styles'
-import { PencilIcon, TrashIcon, PlusIcon, GripIcon, FileDownIcon, UsersKpiIcon, ToggleRightIcon, KeyIcon } from '../../shared/icons'
+import { PencilIcon, TrashIcon, PlusIcon, GripIcon, FileDownIcon, UsersKpiIcon, ToggleRightIcon, KeyIcon, ArrowLeftIcon } from '../../shared/icons'
 import { StatusBadge, Kpi, ViewModeToggle, LegacyFrame, ConfirmModal } from '../../shared/widgets'
+import { notify } from '../../shared/notify'
 import { ColManager } from '../../shared/ColManager'
 import { ExportModal } from '../../shared/ExportModal'
 import { makeColStore, visibleCols, type ColDef } from '../../shared/columns'
@@ -247,8 +248,6 @@ function ContactForm({ id, base }: { id: string; base: string }) {
   const [langError, setLangError] = useState('')
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
-  const [saveError, setSaveError] = useState('')
-  const [saved, setSaved] = useState(false)
   const [tab, setTab] = useState('information')
   const [visitedTabs, setVisitedTabs] = useState(new Set<string>())
   const [addresses, setAddresses] = useState<ContactAddress[]>([])
@@ -269,7 +268,7 @@ function ContactForm({ id, base }: { id: string; base: string }) {
   // Reset derived/lazy state when switching contacts so stale data from a previous contact isn't saved.
   useEffect(() => {
     setAddresses([]); setAddressesLoaded(false)
-    setSaved(false); setFirstnameError(''); setNameError(''); setLangError(''); setEmailError(''); setPasswordError(''); setSaveError('')
+    setFirstnameError(''); setNameError(''); setLangError(''); setEmailError(''); setPasswordError('')
   }, [contactId])
   useEffect(() => {
     if (!contactId) return
@@ -311,7 +310,7 @@ function ContactForm({ id, base }: { id: string; base: string }) {
     else if (password && password !== confirmPassword) { setPasswordError(t('err_password')); hasError = true }
     else setPasswordError('')
     if (hasError) return
-    setSaving(true); setSaveError('')
+    setSaving(true)
     try {
       const r = await saveContact({
         id: contactId, status: active, type: type.trim(), civility,
@@ -324,10 +323,10 @@ function ContactForm({ id, base }: { id: string; base: string }) {
       if (savedId && (addressesLoaded || visitedTabs.has('address'))) {
         try { await saveContactAddresses(savedId, addresses) } catch { /* */ }
       }
-      setSaved(true)
+      notify('ok', t('title'), t('saved'))
       if (!isEdit) closeSubTab(base, `${base}/new`)
       setTimeout(() => navigate(base), 500)
-    } catch (e) { setSaveError(e instanceof Error ? e.message : t('err_save')) } finally { setSaving(false) }
+    } catch (e) { notify('ko', t('title'), e instanceof Error ? e.message : t('err_save')) } finally { setSaving(false) }
   }
 
   const fieldTitle = { fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 12px' } as const
@@ -336,12 +335,10 @@ function ContactForm({ id, base }: { id: string; base: string }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, height: '100%', boxSizing: 'border-box', overflow: 'auto' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <button style={{ ...iconBtn, width: 32, height: 32 }} onClick={() => navigate(base)} title={t('back')}>←</button>
+          <button type="button" style={{ ...iconBtn, width: 32, height: 32 }} onClick={() => navigate(base)} title={t('back')}><ArrowLeftIcon /></button>
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{isEdit ? t('edit_title') : t('new_title')}</h1>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          {saved && <span style={{ fontSize: 14, color: '#059669' }}>{t('saved')}</span>}
-          {saveError && <span style={{ fontSize: 13, color: '#dc2626' }}>{saveError}</span>}
           <button style={btnPrimary} onClick={submit} disabled={saving || loading}>{saving ? '…' : t('save')}</button>
         </div>
       </div>

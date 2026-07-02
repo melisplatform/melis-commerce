@@ -9,8 +9,9 @@ import {
 import { DICT } from './dict'
 import { makeT, fmtDate } from '../../shared/i18n'
 import { card, inputCss, label, btnGhost, btnPrimary, th, td } from '../../shared/styles'
-import { TagIcon, CheckIcon, RefreshIcon, PlusIcon, PencilIcon, TrashIcon, FileDownIcon, GripIcon, UsersIcon, CartIcon } from '../../shared/icons'
+import { TagIcon, CheckIcon, RefreshIcon, PlusIcon, PencilIcon, TrashIcon, FileDownIcon, GripIcon, UsersIcon, CartIcon, ArrowLeftIcon } from '../../shared/icons'
 import { Kpi, ViewModeToggle, LegacyFrame, ConfirmModal } from '../../shared/widgets'
+import { notify } from '../../shared/notify'
 import { makeColStore, visibleCols, type ColDef } from '../../shared/columns'
 import { ExportModal } from '../../shared/ExportModal'
 import { ColManager } from '../../shared/ColManager'
@@ -314,8 +315,6 @@ function CouponForm({ id, base }: { id: string; base: string }) {
   const [coupon, setCoupon] = useState<CouponDetail | null>(null)
   const [activeTab, setActiveTab] = useState('information')
   const [saving, setSaving] = useState(false)
-  const [saved, setSaved] = useState(false)
-  const [saveErr, setSaveErr] = useState('')
 
   const [code, setCode] = useState('')
   const [status, setStatus] = useState(true)
@@ -403,9 +402,9 @@ function CouponForm({ id, base }: { id: string; base: string }) {
   ]
 
   async function submit() {
-    if (!code.trim()) { setSaveErr(t('err_code_required')); return }
-    if (percentage.trim() === '' && discountValue.trim() === '') { setSaveErr(t('err_discount_required')); return }
-    setSaving(true); setSaveErr(''); setSaved(false)
+    if (!code.trim()) { notify('ko', t('title'), t('err_code_required')); return }
+    if (percentage.trim() === '' && discountValue.trim() === '') { notify('ko', t('title'), t('err_discount_required')); return }
+    setSaving(true)
     try {
       const payload = {
         code: code.trim(), status, assignClients, assignProducts,
@@ -416,14 +415,14 @@ function CouponForm({ id, base }: { id: string; base: string }) {
         await reconcileAssignments(couponId)
         loadAssignments(couponId)
         updateSubLabel(base, subTabPath, code.trim())
-        setSaved(true)
-        setTimeout(() => setSaved(false), 3000)
+        notify('ok', t('title'), t('saved'))
       } else {
         const r = await saveCoupon(payload)
         await reconcileAssignments(r.id)
+        notify('ok', t('title'), t('saved'))
         navigate(`${base}/${r.id}`)
       }
-    } catch (e) { setSaveErr(e instanceof Error ? e.message : 'Error') }
+    } catch (e) { notify('ko', t('title'), e instanceof Error ? e.message : 'Error') }
     finally { setSaving(false) }
   }
 
@@ -431,15 +430,13 @@ function CouponForm({ id, base }: { id: string; base: string }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, height: '100%', boxSizing: 'border-box', overflow: 'auto' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <button style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 6, border: '1px solid var(--color-border)', background: 'transparent', cursor: 'pointer', fontSize: 16, color: 'var(--color-foreground)' }}
-            onClick={() => navigate(base)} title={t('back')}>←</button>
+          <button type="button" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 6, border: '1px solid var(--color-border)', background: 'transparent', cursor: 'pointer', color: 'var(--color-foreground)' }}
+            onClick={() => navigate(base)} title={t('back')}><ArrowLeftIcon /></button>
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>
             {isEdit ? (coupon ? coupon.code : t('loading')) : t('new')}
           </h1>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          {saved   && <span style={{ fontSize: 14, color: '#059669' }}>{t('saved')}</span>}
-          {saveErr && <span style={{ fontSize: 13, color: '#dc2626' }}>{saveErr}</span>}
           <button style={btnPrimary} onClick={submit} disabled={saving || (isEdit && !coupon)}>
             {saving ? '…' : t('save')}
           </button>

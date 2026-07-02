@@ -11,8 +11,9 @@ import {
   type AssocVariant, type AvailVariant, type VariantAttrValue,
 } from './api'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } from '../../shared/styles'
-import { PlusIcon, TrashIcon, PencilIcon, EyeIcon } from '../../shared/icons'
+import { PlusIcon, TrashIcon, PencilIcon, EyeIcon, ArrowLeftIcon } from '../../shared/icons'
 import { StatusBadge } from '../../shared/widgets'
+import { notify } from '../../shared/notify'
 import { Tabs, type TabDef } from '../../shared/Tabs'
 import { StatusToggle, InfoDot, FlagSwitcher, MediaModal, Lightbox, hoverCircle } from './ProductTabs'
 import type { Option } from '../../shared/api'
@@ -43,7 +44,6 @@ export function VariantEditor({ productId, variantId, countries, currencies, lan
   const [saving, setSaving] = useState(false)
   const [err, setErr] = useState<string | null>(null)
   const [errSku, setErrSku] = useState(false)
-  const [saved, setSaved] = useState(false)
 
   const TABS: TabDef[] = [
     { key: 'properties', label: t('tab_main') }, { key: 'seo', label: t('tab_seo') }, { key: 'prices', label: t('tab_prices') },
@@ -87,8 +87,8 @@ export function VariantEditor({ productId, variantId, countries, currencies, lan
         try { if (pricesSaveRef.current) await pricesSaveRef.current(id) } catch { /* */ }
         try { if (stocksSaveRef.current) await stocksSaveRef.current(id) } catch { /* */ }
       }
-      setSaved(true); setTimeout(() => setSaved(false), 1500); onSaved()
-    } catch (e) { setErr(e instanceof Error ? e.message : t('err_save')) } finally { setSaving(false) }
+      notify('ok', t('title'), t('saved')); onSaved()
+    } catch (e) { const msg = e instanceof Error ? e.message : t('err_save'); setErr(msg); notify('ko', t('title'), msg) } finally { setSaving(false) }
   }
   function setSeoF(lid: number, f: keyof VariantSeo, val: string) { setSeo((p) => p.map((s) => s.langId === lid ? { ...s, [f]: val } : s)) }
 
@@ -96,11 +96,10 @@ export function VariantEditor({ productId, variantId, countries, currencies, lan
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <button style={{ ...iconBtn, width: 32, height: 32 }} onClick={onClose} title={t('back')}>←</button>
+          <button type="button" style={{ ...iconBtn, width: 32, height: 32 }} onClick={onClose} title={t('back')}><ArrowLeftIcon /></button>
           <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>{isEdit ? t('var_edit') : t('var_new')}</h2>
         </div>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-          {saved && <span style={{ fontSize: 14, color: '#059669' }}>{t('saved')}</span>}
           <button style={btnPrimary} onClick={save} disabled={saving || loading}>{saving ? '…' : t('save')}</button>
         </div>
       </div>
