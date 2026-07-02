@@ -9,7 +9,7 @@ import { DICT } from './dict'
 import { makeT, fmtDate } from '../../shared/i18n'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } from '../../shared/styles'
 import { PencilIcon, TrashIcon, PlusIcon, GripIcon, FileDownIcon, UsersKpiIcon, ToggleRightIcon, KeyIcon } from '../../shared/icons'
-import { StatusBadge, Kpi, ViewModeToggle, LegacyFrame } from '../../shared/widgets'
+import { StatusBadge, Kpi, ViewModeToggle, LegacyFrame, ConfirmModal } from '../../shared/widgets'
 import { ColManager } from '../../shared/ColManager'
 import { ExportModal } from '../../shared/ExportModal'
 import { makeColStore, visibleCols, type ColDef } from '../../shared/columns'
@@ -206,16 +206,8 @@ function ContactList({ base }: { base: string }) {
       {showExport && <ExportModal cols={cols} items={items} getCell={(c, id) => getCellExport(c, id, t)} labelFor={(id) => t(COL_LABEL[id])} filename={t('exp_filename')} sheetTitle={t('title')} t={t} onClose={() => setShowExport(false)} />}
 
       {toDelete && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,.5)' }}>
-          <div style={{ ...card, padding: 24, width: '100%', maxWidth: 360 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>{t('del_title')}</h3>
-            <p style={{ fontSize: 14, color: 'var(--color-muted-foreground)', marginTop: 8 }}>{t('del_confirm', { u: fullName(toDelete) })}</p>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 20 }}>
-              <button style={btnGhost} onClick={() => setToDelete(null)}>{t('cancel')}</button>
-              <button style={{ ...btnGhost, borderColor: '#fca5a5', color: '#dc2626' }} onClick={confirmDelete}>{t('del')}</button>
-            </div>
-          </div>
-        </div>
+        <ConfirmModal title={t('del_title')} message={t('del_confirm', { u: fullName(toDelete) })}
+          onConfirm={confirmDelete} onCancel={() => setToDelete(null)} t={t} />
       )}
     </div>
   )

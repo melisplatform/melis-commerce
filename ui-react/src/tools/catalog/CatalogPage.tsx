@@ -8,7 +8,7 @@ import { DICT } from './dict'
 import { makeT } from '../../shared/i18n'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, label, hint, th, td } from '../../shared/styles'
 import { PlusIcon, PencilIcon, TrashIcon, ChevronDownIcon, LayoutIcon, TagIcon, FileTextIcon, MapPinIcon, CartIcon, RefreshIcon } from '../../shared/icons'
-import { ViewModeToggle, LegacyFrame, StatusBadge } from '../../shared/widgets'
+import { ViewModeToggle, LegacyFrame, StatusBadge, ConfirmModal } from '../../shared/widgets'
 import { Tabs, type TabDef } from '../../shared/Tabs'
 import type { Option } from '../../shared/api'
 
@@ -188,17 +188,9 @@ export default function CatalogPage() {
       )}
 
       {toDelete && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,.5)' }}>
-          <div style={{ ...card, padding: 24, width: '100%', maxWidth: 380 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>{t('del_title')}</h3>
-            <p style={{ fontSize: 14, color: 'var(--color-muted-foreground)', marginTop: 8 }}>{t('del_confirm', { u: `${toDelete.id} - ${toDelete.name}` })}</p>
-            {toDelete.type === 'catalog' && toDelete.children.length > 0 && <p style={{ fontSize: 13, color: '#b45309', marginTop: 6 }}>{t('del_catalog_warn')}</p>}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 20 }}>
-              <button style={btnGhost} onClick={() => setToDelete(null)}>{t('cancel')}</button>
-              <button style={{ ...btnGhost, borderColor: '#fca5a5', color: '#dc2626' }} onClick={confirmDelete}>{t('del')}</button>
-            </div>
-          </div>
-        </div>
+        <ConfirmModal title={t('del_title')} message={t('del_confirm', { u: `${toDelete.id} - ${toDelete.name}` })}
+          extra={toDelete.type === 'catalog' && toDelete.children.length > 0 && <p style={{ fontSize: 13, color: '#b45309', marginTop: 6 }}>{t('del_catalog_warn')}</p>}
+          onConfirm={confirmDelete} onCancel={() => setToDelete(null)} t={t} />
       )}
     </div>
   )

@@ -10,7 +10,7 @@ import { DICT } from './dict'
 import { makeT, fmtDate } from '../../shared/i18n'
 import { card, inputCss, btnGhost, btnPrimary, th, td } from '../../shared/styles'
 import { CartIcon, ShoppingCartKpiIcon, PackageIcon, CalendarIcon, PlusIcon, RefreshIcon, PencilIcon } from '../../shared/icons'
-import { Kpi, ViewModeToggle, LegacyFrame } from '../../shared/widgets'
+import { Kpi, ViewModeToggle, LegacyFrame, ConfirmModal } from '../../shared/widgets'
 import { DateRangeFilter } from '../../shared/DateRangeFilter'
 import { makeColStore, visibleCols, type ColDef } from '../../shared/columns'
 import { ExportModal } from '../../shared/ExportModal'
@@ -494,14 +494,17 @@ function InformationTab({ orderId, statuses, locked, localStatus, setLocalStatus
 }) {
   const [attachments, setAttachments] = useState<OrderAttachment[]>([])
   const [showUpload, setShowUpload]   = useState(false)
+  const [toDelete, setToDelete]       = useState<OrderAttachment | null>(null)
 
   useEffect(() => {
     if (!orderId) return
     fetchOrderAttachments(orderId).then(setAttachments).catch(() => null)
   }, [orderId])
 
-  function removeAttachment(docId: number) {
-    if (!orderId || !confirm(t('upload_delete_confirm'))) return
+  function confirmDeleteAttachment() {
+    if (!orderId || !toDelete) return
+    const docId = toDelete.id
+    setToDelete(null)
     deleteOrderAttachment(orderId, docId).then(() => {
       setAttachments((prev) => prev.filter((a) => a.id !== docId))
     }).catch(() => null)
@@ -555,7 +558,7 @@ function InformationTab({ orderId, statuses, locked, localStatus, setLocalStatus
                     onMouseLeave={(e) => (e.currentTarget.style.textDecoration = 'none')}>
                     {a.name}
                   </a>
-                  <button onClick={() => removeAttachment(a.id)}
+                  <button onClick={() => setToDelete(a)}
                     style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 26, height: 26, borderRadius: 5, border: '1px solid rgba(239,68,68,.4)', background: 'transparent', color: '#ef4444', cursor: 'pointer', fontSize: 12, padding: 0, flexShrink: 0 }}>
                     ✕
                   </button>
@@ -610,6 +613,11 @@ function InformationTab({ orderId, statuses, locked, localStatus, setLocalStatus
         <UploadModal orderId={orderId} t={t}
           onUploaded={(a) => setAttachments((prev) => [a, ...prev])}
           onClose={() => setShowUpload(false)} />
+      )}
+
+      {toDelete && (
+        <ConfirmModal title={t('upload_delete_title')} message={t('upload_delete_confirm', { u: toDelete.name })}
+          onConfirm={confirmDeleteAttachment} onCancel={() => setToDelete(null)} t={t} />
       )}
 
     </div>

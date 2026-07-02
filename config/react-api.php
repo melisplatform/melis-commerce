@@ -700,6 +700,106 @@ return [
                                 ],
                             ],
 
+                            // ─── Coupons (MelisCommerce) ───────────────────────────────────────
+                            'coupons-list' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/coupons[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCoupon', 'action' => 'list'],
+                                ],
+                            ],
+                            'coupons-stats' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/coupons/stats[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCoupon', 'action' => 'stats'],
+                                ],
+                            ],
+                            'coupons-save' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/coupons/save[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCoupon', 'action' => 'save'],
+                                ],
+                            ],
+                            'coupons-clients-directory' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/coupons/clients-directory[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCoupon', 'action' => 'clientsDirectory'],
+                                ],
+                            ],
+                            'coupons-products-directory' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/coupons/products-directory[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCoupon', 'action' => 'productsDirectory'],
+                                ],
+                            ],
+                            'coupons-delete' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/coupons/delete/:id[/]', 'constraints' => ['id' => '[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCoupon', 'action' => 'delete'],
+                                ],
+                            ],
+                            'coupons-clients-list' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/coupons/:id/clients[/]', 'constraints' => ['id' => '[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCoupon', 'action' => 'clients'],
+                                ],
+                            ],
+                            'coupons-clients-save' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/coupons/:id/clients/save[/]', 'constraints' => ['id' => '[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCoupon', 'action' => 'clientSave'],
+                                ],
+                            ],
+                            'coupons-clients-delete' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/coupons/:id/clients/:ccliId/delete[/]', 'constraints' => ['id' => '[0-9]+', 'ccliId' => '[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCoupon', 'action' => 'clientDelete'],
+                                ],
+                            ],
+                            'coupons-products-list' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/coupons/:id/products[/]', 'constraints' => ['id' => '[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCoupon', 'action' => 'products'],
+                                ],
+                            ],
+                            'coupons-products-save' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/coupons/:id/products/save[/]', 'constraints' => ['id' => '[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCoupon', 'action' => 'productSave'],
+                                ],
+                            ],
+                            'coupons-products-delete' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/coupons/:id/products/:cprodId/delete[/]', 'constraints' => ['id' => '[0-9]+', 'cprodId' => '[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCoupon', 'action' => 'productDelete'],
+                                ],
+                            ],
+                            'coupons-orders' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/coupons/:id/orders[/]', 'constraints' => ['id' => '[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCoupon', 'action' => 'orders'],
+                                ],
+                            ],
+                            'coupons-item' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/coupons/:id', 'constraints' => ['id' => '[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCoupon', 'action' => 'get'],
+                                ],
+                            ],
+
                         ], // end child_routes melis-react-api
                     ],
                 ],
@@ -714,6 +814,7 @@ return [
             'MelisCommerce\Controller\MelisComReactApiCatalog' => \MelisCommerce\Controller\ReactApi\MelisComReactApiCatalogController::class,
             'MelisCommerce\Controller\MelisComReactApiProduct' => \MelisCommerce\Controller\ReactApi\MelisComReactApiProductController::class,
             'MelisCommerce\Controller\MelisComReactApiOrder'   => \MelisCommerce\Controller\ReactApi\MelisComReactApiOrderController::class,
+            'MelisCommerce\Controller\MelisComReactApiCoupon'  => \MelisCommerce\Controller\ReactApi\MelisComReactApiCouponController::class,
         ],
     ],
 ];

@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react'
-import { card, vmBtn } from './styles'
+import { card, vmBtn, btnGhost } from './styles'
 import { SparklesIcon, LayoutIcon } from './icons'
 import type { T } from './i18n'
 
@@ -54,6 +54,29 @@ export function LegacyFrame({ melisKey, title, visible }: { melisKey: string; ti
     <div style={style}>
       <iframe title={title} src={`/melis/react-tool-page?key=${encodeURIComponent(melisKey)}`}
         style={{ height: '100%', width: '100%', border: 0 }} />
+    </div>
+  )
+}
+
+/**
+ * Modale de confirmation standard (suppression, etc.) — utilisée par tous les outils
+ * MelisCommerce à la place du `confirm()` natif du navigateur.
+ */
+export function ConfirmModal({ title, message, extra, confirmLabel, danger = true, onConfirm, onCancel, t }: {
+  title: string; message: ReactNode; extra?: ReactNode; confirmLabel?: string; danger?: boolean
+  onConfirm: () => void; onCancel: () => void; t: T
+}) {
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,.5)' }}>
+      <div style={{ ...card, padding: 24, width: '100%', maxWidth: 380 }}>
+        <h3 style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>{title}</h3>
+        <p style={{ fontSize: 14, color: 'var(--color-muted-foreground)', marginTop: 8 }}>{message}</p>
+        {extra}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 20 }}>
+          <button style={btnGhost} onClick={onCancel}>{t('cancel')}</button>
+          <button style={danger ? { ...btnGhost, borderColor: '#fca5a5', color: '#dc2626' } : btnGhost} onClick={onConfirm}>{confirmLabel ?? t('del')}</button>
+        </div>
+      </div>
     </div>
   )
 }

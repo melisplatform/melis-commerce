@@ -3,6 +3,7 @@ import ContactPage from './tools/contacts/ContactPage'
 import CatalogPage from './tools/catalog/CatalogPage'
 import ProductPage from './tools/products/ProductPage'
 import OrderPage from './tools/orders/OrderPage'
+import CouponPage from './tools/coupons/CouponPage'
 
 /**
  * Point d'entrée de la brique MelisCommerce. Un seul bundle IIFE livre PLUSIEURS outils
@@ -21,3 +22,4 @@ window.__melisRegisterBrick?.({ id: 'commerce-contacts', Component: ContactPage 
 window.__melisRegisterBrick?.({ id: 'commerce-catalog', Component: CatalogPage })
 window.__melisRegisterBrick?.({ id: 'commerce-products', Component: ProductPage })
 window.__melisRegisterBrick?.({ id: 'commerce-orders', Component: OrderPage })
+window.__melisRegisterBrick?.({ id: 'commerce-coupons', Component: CouponPage })

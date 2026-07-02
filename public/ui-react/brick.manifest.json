@@ -43,6 +43,15 @@
       "forwardKey": "MelisCommerce/MelisComOrderList",
       "melisKey": "meliscommerce_order_list_page",
       "subTabs": true
+    },
+    {
+      "id": "commerce-coupons",
+      "route": "/melis-commerce/coupon-list",
+      "label": "Coupons",
+      "icon": "ticket",
+      "forwardKey": "MelisCommerce/MelisComCouponList",
+      "melisKey": "meliscommerce_coupon_list_page",
+      "subTabs": true
     }
   ]
 }

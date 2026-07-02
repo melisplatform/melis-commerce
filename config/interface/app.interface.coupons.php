@@ -40,6 +40,7 @@ return [
                                 'id' => 'id_meliscommerce_coupon_list_page',
                                 'melisKey' => 'meliscommerce_coupon_list_page',
                                 'name' => 'tr_meliscommerce_coupon_list_page',
+                                'follow_regular_rendering' => false,
                             ],
                             'forward' => [
                                 'module' => 'MelisCommerce',
