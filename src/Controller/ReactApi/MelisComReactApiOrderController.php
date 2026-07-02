@@ -317,7 +317,7 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             }
 
             $msgRows = iterator_to_array($db->query(
-                "SELECT m.*, u.usr_firstname, u.usr_lastname FROM melis_ecom_order_message m
+                "SELECT m.*, u.usr_firstname, u.usr_lastname, u.usr_email FROM melis_ecom_order_message m
                  LEFT JOIN melis_core_user u ON u.usr_id = m.omsg_user_id
                  WHERE m.omsg_order_id = ? ORDER BY m.omsg_id DESC",
                 [$id]
@@ -329,6 +329,7 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
                     'id' => (int) $r['omsg_id'], 'message' => $r['omsg_message'] ?? '',
                     'userId' => (int) ($r['omsg_user_id'] ?? 0),
                     'userName' => trim(($r['usr_firstname'] ?? '') . ' ' . ($r['usr_lastname'] ?? '')) ?: 'Admin',
+                    'userEmail' => $r['usr_email'] ?? '',
                     'clientId' => (int) ($r['omsg_client_id'] ?? 0),
                     'dateCreation' => $r['omsg_date_creation'] ?? null,
                 ];
@@ -679,11 +680,14 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             if ($msg === '') return $this->jsonResponse(['success' => false, 'error' => 'Message cannot be empty'], 400);
 
             $db     = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
+            $orderRow = iterator_to_array($db->query('SELECT ord_client_id FROM melis_ecom_order WHERE ord_id = ?', [$id]));
+            if (!$orderRow) return $this->jsonResponse(['success' => false, 'error' => 'Order not found'], 404);
+            $clientId = (int) ((array) $orderRow[0])['ord_client_id'];
             $userId = $this->currentUserId();
             $now    = date('Y-m-d H:i:s');
             $db->query(
-                "INSERT INTO melis_ecom_order_message (omsg_order_id, omsg_user_id, omsg_message, omsg_date_creation) VALUES (?, ?, ?, ?)",
-                [$id, $userId ?: null, $msg, $now]
+                "INSERT INTO melis_ecom_order_message (omsg_order_id, omsg_client_id, omsg_user_id, omsg_message, omsg_date_creation) VALUES (?, ?, ?, ?, ?)",
+                [$id, $clientId, $userId ?: null, $msg, $now]
             );
             $newId = (int) iterator_to_array($db->query('SELECT LAST_INSERT_ID() AS id', []))[0]['id'];
             return $this->ok(['id' => $newId, 'dateCreation' => $now]);

@@ -33,7 +33,7 @@ export interface OrderPayment {
 export interface OrderShipping { id: number; trackingCode: string; content: string; dateSent: string | null }
 
 export interface OrderMessage {
-  id: number; message: string; userId: number; userName: string; clientId: number; dateCreation: string | null
+  id: number; message: string; userId: number; userName: string; userEmail: string; clientId: number; dateCreation: string | null
 }
 
 export interface OrderAttachment { id: number; name: string; path: string; url: string }

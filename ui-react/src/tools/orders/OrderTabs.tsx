@@ -5,10 +5,43 @@ import {
 } from './api'
 import { card, inputCss, th, td, label, btnPrimary, btnGhost } from '../../shared/styles'
 import { fmtDate, type T } from '../../shared/i18n'
-import { PackageIcon, MapPinIcon, CreditCardIcon, TruckIcon, MessageSquareIcon } from '../../shared/icons'
+import { PackageIcon, MapPinIcon, CreditCardIcon, TruckIcon, MessageSquareIcon, ChevronDownIcon, UserIcon } from '../../shared/icons'
 
 const sectionTitle = { fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 6 } as const
 const hint = { fontSize: 12, color: 'var(--color-muted-foreground)', marginTop: 4 } as const
+const labelRow = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 } as const
+
+// ── Tooltip d'aide (icône (i) à côté d'un champ) ────────────────────────────────
+function InfoDot({ text }: { text: string }) {
+  if (!text) return null
+  return (
+    <span title={text} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 15, height: 15, borderRadius: 999, background: 'var(--color-muted-foreground)', color: 'var(--color-background,#fff)', fontSize: 10, fontWeight: 700, cursor: 'help', flexShrink: 0 }}>i</span>
+  )
+}
+
+function MailIcon() {
+  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 12, height: 12, flexShrink: 0 }}><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m2 7 10 7 10-7" /></svg>
+}
+function ClockIcon() {
+  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 12, height: 12, flexShrink: 0 }}><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+}
+
+function fmtTime(value: string | null | undefined): string {
+  if (!value) return ''
+  const d = new Date(value.replace(' ', 'T'))
+  if (isNaN(d.getTime())) return ''
+  return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false })
+}
+
+function dateParts(value: string | null | undefined): { day: string; month: string; key: string } {
+  const d = value ? new Date(value.replace(' ', 'T')) : new Date(NaN)
+  if (isNaN(d.getTime())) return { day: '--', month: '---', key: 'unknown' }
+  return {
+    day: String(d.getDate()).padStart(2, '0'),
+    month: d.toLocaleDateString(undefined, { month: 'short' }).toUpperCase(),
+    key: `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`,
+  }
+}
 
 // ── Basket ────────────────────────────────────────────────────────────────────
 export function BasketTab({ basket, t }: { basket: OrderBasketItem[]; t: T }) {
@@ -206,6 +239,7 @@ function ShippingModal({ orderId, onSaved, onClose, t }: {
   const [form, setForm] = useState({ trackingCode: '', content: '', dateSent: '' })
   const [saving, setSaving] = useState(false)
   const [err, setErr] = useState('')
+  const dateRef = useRef<HTMLInputElement>(null)
 
   const submit = async () => {
     if (!form.trackingCode.trim()) { setErr(t('err_tracking_required')); return }
@@ -229,19 +263,23 @@ function ShippingModal({ orderId, onSaved, onClose, t }: {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 18 }}>
             <div>
               <label style={{ display: 'block', fontWeight: 700, fontSize: 13, color: '#333', marginBottom: 4 }}>{t('field_tracking')} *</label>
-              <input style={{ width: '100%', boxSizing: 'border-box', padding: '7px 10px', fontSize: 13, border: `1px solid ${err ? '#d9534f' : '#ccc'}`, borderRadius: 4, background: '#fff', color: '#333' }}
+              <input style={{ ...inputCss, border: err ? '1px solid #dc2626' : inputCss.border }}
                 value={form.trackingCode} onChange={(e) => setForm({ ...form, trackingCode: e.target.value })} autoComplete="off" />
-              {err && <div style={{ color: '#d9534f', fontSize: 12, marginTop: 3 }}>{err}</div>}
+              {err && <div style={{ color: '#dc2626', fontSize: 12, marginTop: 3 }}>{err}</div>}
             </div>
             <div>
               <label style={{ display: 'block', fontWeight: 700, fontSize: 13, color: '#333', marginBottom: 4 }}>{t('field_content')} *</label>
-              <textarea rows={4} style={{ width: '100%', boxSizing: 'border-box', padding: '7px 10px', fontSize: 13, border: '1px solid #ccc', borderRadius: 4, background: '#fff', color: '#333', resize: 'vertical', fontFamily: 'inherit' }}
+              <textarea rows={4} style={{ ...inputCss, height: 'auto', minHeight: 90, padding: '8px 12px', resize: 'vertical', fontFamily: 'inherit' }}
                 value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} />
             </div>
             <div>
-              <label style={{ display: 'block', fontWeight: 700, fontSize: 13, color: '#333', marginBottom: 4 }}>{t('field_date_sent')} *</label>
-              <input type="date" style={{ width: '100%', boxSizing: 'border-box', padding: '7px 10px', fontSize: 13, border: '1px solid #ccc', borderRadius: 4, background: '#fff', color: '#333' }}
-                value={form.dateSent} onChange={(e) => setForm({ ...form, dateSent: e.target.value })} />
+              <div style={{ ...labelRow, marginBottom: 4 }}>
+                <label style={{ fontWeight: 700, fontSize: 13, color: '#333' }}>{t('field_date_sent')} *</label>
+                <InfoDot text={t('tip_date_sent')} />
+              </div>
+              <input ref={dateRef} type="date" style={{ ...inputCss, cursor: 'pointer' }}
+                value={form.dateSent} onChange={(e) => setForm({ ...form, dateSent: e.target.value })}
+                onClick={() => { try { dateRef.current?.showPicker?.() } catch { /* unsupported browser */ } }} />
             </div>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 6, borderTop: '1px solid #eee' }}>
@@ -264,37 +302,68 @@ export function ShippingTab({ orderId, shippings, locked, t, onSaved }: {
 }) {
   const [list, setList]         = useState(shippings)
   const [showModal, setShowModal] = useState(false)
-  useEffect(() => { setList(shippings) }, [shippings])
+  const [openId, setOpenId]     = useState<number | null>(shippings[0]?.id ?? null)
+  useEffect(() => { setList(shippings); setOpenId(shippings[0]?.id ?? null) }, [shippings])
 
-  const headers = [t('shipping_col_tracking'), t('shipping_col_content'), t('shipping_col_date')]
+  const fieldBox = { ...inputCss, height: 'auto', minHeight: 40, display: 'flex', alignItems: 'center', background: 'var(--color-muted,var(--color-secondary))', color: 'var(--color-muted-foreground)' } as const
+
   return (
     <div style={{ ...card, padding: 28 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
         <h3 style={{ ...sectionTitle, margin: 0 }}><TruckIcon />{t('section_shipping')}</h3>
         {!locked && (
           <button onClick={() => setShowModal(true)}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 13, fontWeight: 600, border: '1.5px solid #337ab7', borderRadius: 6, background: 'transparent', color: '#337ab7', cursor: 'pointer' }}>
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 13, fontWeight: 600, border: '1.5px solid var(--color-primary)', borderRadius: 6, background: 'transparent', color: 'var(--color-primary)', cursor: 'pointer' }}>
             + {t('shipping_add')}
           </button>
         )}
       </div>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead><tr>{headers.map((h) => <th key={h} style={th}>{h}</th>)}</tr></thead>
-        <tbody>
-          {list.length === 0 ? (
-            <tr><td colSpan={3} style={{ ...td, textAlign: 'center', padding: '28px', color: 'var(--color-muted-foreground)' }}>{t('no_shippings')}</td></tr>
-          ) : list.map((s) => (
-            <tr key={s.id}>
-              <td style={td}><code style={{ fontSize: 12 }}>{s.trackingCode}</code></td>
-              <td style={td}>{s.content || '—'}</td>
-              <td style={td}>{s.dateSent ? fmtDate(s.dateSent) : '—'}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {list.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '28px', color: 'var(--color-muted-foreground)', fontSize: 14 }}>{t('no_shippings')}</div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {list.map((s) => {
+            const isOpen = openId === s.id
+            return (
+              <div key={s.id} style={{ borderRadius: 8, overflow: 'hidden', border: '1px solid var(--color-border)' }}>
+                <button
+                  onClick={() => setOpenId(isOpen ? null : s.id)}
+                  style={{
+                    width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
+                    padding: '10px 16px', background: 'var(--color-primary)', color: 'var(--color-primary-foreground,#fff)',
+                    border: 0, cursor: 'pointer', fontSize: 13, fontWeight: 600,
+                  }}
+                >
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ display: 'inline-flex', transform: isOpen ? 'none' : 'rotate(-90deg)', transition: 'transform .15s' }}><ChevronDownIcon /></span>
+                    {s.trackingCode}
+                  </span>
+                  <span style={{ fontWeight: 400, opacity: .9 }}>{s.dateSent ? fmtDate(s.dateSent) : '—'}</span>
+                </button>
+                {isOpen && (
+                  <div style={{ padding: '18px 16px', display: 'flex', flexDirection: 'column', gap: 14, background: 'var(--color-card)' }}>
+                    <div>
+                      <label style={label}>{t('field_tracking')}</label>
+                      <div style={fieldBox}>{s.trackingCode}</div>
+                    </div>
+                    <div>
+                      <label style={label}>{t('field_content')}</label>
+                      <div style={{ ...fieldBox, minHeight: 70, alignItems: 'flex-start', padding: '8px 12px', whiteSpace: 'pre-wrap' }}>{s.content || '—'}</div>
+                    </div>
+                    <div>
+                      <label style={label}>{t('field_date_sent')}</label>
+                      <div style={fieldBox}>{s.dateSent ? fmtDate(s.dateSent) : '—'}</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
       {showModal && (
         <ShippingModal orderId={orderId} t={t}
-          onSaved={(s) => { setList((prev) => [s, ...prev]); onSaved?.() }}
+          onSaved={(s) => { setList((prev) => [s, ...prev]); setOpenId(s.id); onSaved?.() }}
           onClose={() => setShowModal(false)} />
       )}
     </div>
@@ -317,10 +386,18 @@ export function MessagesTab({ orderId, messages, t, onSaved }: {
     setSending(true); setErr('')
     try {
       const res = await saveOrderMessage(orderId, text.trim())
-      setList((prev) => [{ id: res.id, message: text.trim(), userId: 0, userName: 'Admin', clientId: 0, dateCreation: res.dateCreation }, ...prev])
+      setList((prev) => [{ id: res.id, message: text.trim(), userId: 0, userName: 'Admin', userEmail: '', clientId: 0, dateCreation: res.dateCreation }, ...prev])
       setText(''); onSaved?.()
     } catch { setErr('Error.') }
     finally { setSending(false) }
+  }
+
+  const groups: { key: string; day: string; month: string; items: OrderMessage[] }[] = []
+  for (const m of list) {
+    const dp = dateParts(m.dateCreation)
+    const last = groups[groups.length - 1]
+    if (last && last.key === dp.key) last.items.push(m)
+    else groups.push({ key: dp.key, day: dp.day, month: dp.month, items: [m] })
   }
 
   return (
@@ -339,14 +416,40 @@ export function MessagesTab({ orderId, messages, t, onSaved }: {
         {list.length === 0 ? (
           <p style={{ color: 'var(--color-muted-foreground)', fontSize: 14 }}>{t('msg_empty')}</p>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {list.map((m) => (
-              <div key={m.id} style={{ borderBottom: '1px solid var(--color-border)', paddingBottom: 16 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                  <span style={{ fontWeight: 600, fontSize: 13 }}>{m.userName}</span>
-                  <span style={{ fontSize: 12, color: 'var(--color-muted-foreground)' }}>{m.dateCreation ? fmtDate(m.dateCreation) : ''}</span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            {groups.map((g) => (
+              <div key={g.key} style={{ position: 'relative' }}>
+                <div style={{ border: '1px solid var(--color-border)', borderRadius: 6, padding: '4px 8px', textAlign: 'center', lineHeight: 1.2, width: 40, marginLeft: 46 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700 }}>{g.day}</div>
+                  <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--color-muted-foreground)' }}>{g.month}</div>
                 </div>
-                <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{m.message}</p>
+                <div style={{ position: 'absolute', left: 66, top: 38, bottom: 0, width: 2, background: 'var(--color-primary)' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginTop: 12 }}>
+                  {g.items.map((m) => (
+                    <div key={m.id} style={{ display: 'flex', position: 'relative' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', width: 150, flexShrink: 0, paddingTop: 12 }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, width: 58, color: '#dc2626', fontSize: 10, fontWeight: 700, letterSpacing: '.03em', whiteSpace: 'nowrap' }}>
+                          {t('msg_author_admin')}<MessageSquareIcon />
+                        </span>
+                        <div style={{ width: 9, height: 9, background: 'var(--color-primary)', flexShrink: 0, marginLeft: 4 }} />
+                        <div style={{ flex: 1, height: 2, background: 'var(--color-primary)' }} />
+                      </div>
+                      <div style={{ flex: 1, border: '1px solid var(--color-border)', borderRadius: 8, padding: 14 }}>
+                        <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                          <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'var(--color-muted,var(--color-secondary))', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'var(--color-muted-foreground)' }}>
+                            <UserIcon />
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontWeight: 600, fontSize: 13, color: '#dc2626' }}><UserIcon />{m.userName}</span>
+                            {m.userEmail && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--color-muted-foreground)' }}><MailIcon />{m.userEmail}</span>}
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--color-muted-foreground)' }}><ClockIcon />{fmtTime(m.dateCreation)}</span>
+                          </div>
+                        </div>
+                        <div style={{ marginTop: 10, background: 'var(--color-muted,var(--color-secondary))', borderRadius: 6, padding: '8px 12px', fontSize: 14, lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{m.message}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
