@@ -1,6 +1,6 @@
 <?php
 
-namespace MelisCommerce\Controller;
+namespace MelisCommerce\Controller\ReactApi;
 
 use Laminas\Http\PhpEnvironment\Response as HttpResponse;
 use MelisCore\Controller\MelisAbstractActionController;

@@ -709,11 +709,11 @@ return [
 
     'controllers' => [
         'invokables' => [
-            'MelisCommerce\Controller\MelisComReactApiAccount' => \MelisCommerce\Controller\MelisComReactApiAccountController::class,
-            'MelisCommerce\Controller\MelisComReactApiContact' => \MelisCommerce\Controller\MelisComReactApiContactController::class,
-            'MelisCommerce\Controller\MelisComReactApiCatalog' => \MelisCommerce\Controller\MelisComReactApiCatalogController::class,
-            'MelisCommerce\Controller\MelisComReactApiProduct' => \MelisCommerce\Controller\MelisComReactApiProductController::class,
-            'MelisCommerce\Controller\MelisComReactApiOrder'   => \MelisCommerce\Controller\MelisComReactApiOrderController::class,
+            'MelisCommerce\Controller\MelisComReactApiAccount' => \MelisCommerce\Controller\ReactApi\MelisComReactApiAccountController::class,
+            'MelisCommerce\Controller\MelisComReactApiContact' => \MelisCommerce\Controller\ReactApi\MelisComReactApiContactController::class,
+            'MelisCommerce\Controller\MelisComReactApiCatalog' => \MelisCommerce\Controller\ReactApi\MelisComReactApiCatalogController::class,
+            'MelisCommerce\Controller\MelisComReactApiProduct' => \MelisCommerce\Controller\ReactApi\MelisComReactApiProductController::class,
+            'MelisCommerce\Controller\MelisComReactApiOrder'   => \MelisCommerce\Controller\ReactApi\MelisComReactApiOrderController::class,
         ],
     ],
 ];
