@@ -665,7 +665,8 @@ export function ImagesSection({ productId, t, countries = [], pendingImages = []
 // ── Onglet Variantes (table type legacy : ID / Principale / Image / Statut / SKU / Attributs / Action) ──
 const actBtn = (color: string) => ({ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 30, height: 30, borderRadius: 6, border: '1px solid ' + color, background: 'transparent', color, cursor: 'pointer', fontSize: 13 } as const)
 
-export function VariantsTab({ productId, t, onAdd, onEdit }: { productId: number | null; t: TFn; onAdd: () => void; onEdit: (id: number) => void }) {
+export function VariantsTab({ productId, t, onAdd, onEdit, can }: { productId: number | null; t: TFn; onAdd: () => void; onEdit: (id: number) => void; can?: (cap: string) => boolean }) {
+  const allow = (cap: string) => (can ? can(cap) : true)
   const [items, setItems] = useState<ProductVariant[]>([])
   const [tick, setTick] = useState(0)
   const [search, setSearch] = useState('')
@@ -685,7 +686,7 @@ export function VariantsTab({ productId, t, onAdd, onEdit }: { productId: number
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <input style={{ ...inputCss, height: 34, width: 220 }} value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('search')} />
           <button style={{ ...btnGhost, height: 34 }} onClick={() => setTick((x) => x + 1)} title={t('refresh')}>↻</button>
-          {productId && <button style={btnPrimary} onClick={onAdd}><PlusIcon />{t('var_add')}</button>}
+          {productId && allow('variants.create') && <button style={btnPrimary} onClick={onAdd}><PlusIcon />{t('var_add')}</button>}
         </div>
       </div>
 
@@ -714,10 +715,10 @@ export function VariantsTab({ productId, t, onAdd, onEdit }: { productId: number
                 <td style={{ ...td, color: 'var(--color-muted-foreground)' }}>{v.attributes || '—'}</td>
                 <td style={td}>
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 5 }}>
-                    <button style={actBtn(v.status === 1 ? '#dc2626' : '#16a34a')} title={t('var_toggle_status')} onClick={() => toggleStatus(v)}>{v.status === 1 ? '↓' : '↑'}</button>
-                    <button style={actBtn('#2563eb')} title={t('var_duplicate')} onClick={() => setToDup(v)}>⧉</button>
-                    <button style={actBtn('#16a34a')} title={t('edit')} onClick={() => onEdit(v.id)}><PencilIcon /></button>
-                    <button style={actBtn('#dc2626')} title={t('del')} onClick={() => setToDelete(v)}>✕</button>
+                    {allow('variants.edit') && <button style={actBtn(v.status === 1 ? '#dc2626' : '#16a34a')} title={t('var_toggle_status')} onClick={() => toggleStatus(v)}>{v.status === 1 ? '↓' : '↑'}</button>}
+                    {allow('variants.duplicate') && <button style={actBtn('#2563eb')} title={t('var_duplicate')} onClick={() => setToDup(v)}>⧉</button>}
+                    {allow('variants.edit') && <button style={actBtn('#16a34a')} title={t('edit')} onClick={() => onEdit(v.id)}><PencilIcon /></button>}
+                    {allow('variants.delete') && <button style={actBtn('#dc2626')} title={t('del')} onClick={() => setToDelete(v)}>✕</button>}
                   </div>
                 </td>
               </tr>

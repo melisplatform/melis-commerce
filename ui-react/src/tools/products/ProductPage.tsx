@@ -17,6 +17,7 @@ import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint, seg
 import { PencilIcon, TrashIcon, PlusIcon, GripIcon, FileDownIcon, TagIcon, FileTextIcon, LayoutIcon, CartIcon, PackageIcon, PackageCheckIcon, PackageXIcon, ToggleRightIcon, ArrowLeftIcon } from '../../shared/icons'
 import { StatusBadge, Kpi, ViewModeToggle, LegacyFrame, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
+import { useCaps } from '../../shared/useCaps'
 import { ColManager } from '../../shared/ColManager'
 import { ExportModal } from '../../shared/ExportModal'
 import { makeColStore, visibleCols, type ColDef } from '../../shared/columns'
@@ -110,6 +111,7 @@ function ProductNameCell({ id, name, t }: { id: number; name: string; t: T }) {
 function ProductList({ base }: { base: string }) {
   const t = makeT(DICT)
   const navigate = useNavigate()
+  const { can } = useCaps(TOOL_MELIS_KEY)
   const [mode, setMode] = useState<'react' | 'old'>('react')
   const [oldLoaded, setOldLoaded] = useState(false)
   const [items, setItems] = useState<ProductItem[]>([])
@@ -166,7 +168,7 @@ function ProductList({ base }: { base: string }) {
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <ViewModeToggle mode={mode} onReact={() => setMode('react')} onOld={() => { setMode('old'); setOldLoaded(true) }} />
           <button style={{ ...btnGhost, width: 36, padding: 0, justifyContent: 'center' }} onClick={() => setTick((x) => x + 1)} title={t('refresh')}>↻</button>
-          <button style={btnPrimary} onClick={() => navigate(`${base}/new`)}><PlusIcon />{t('new')}</button>
+          {can('create') && <button style={btnPrimary} onClick={() => navigate(`${base}/new`)}><PlusIcon />{t('new')}</button>}
         </div>
       </div>
 
@@ -197,7 +199,7 @@ function ProductList({ base }: { base: string }) {
               <button style={{ ...btnGhost, height: 36 }} onClick={() => setShowCols((v) => !v)}><GripIcon />{t('columns')}</button>
               {showCols && <ColManager cols={cols} labelFor={(id) => t(COL_LABEL[id])} onChange={setCols} onClose={() => setShowCols(false)} save={cols$.save} defaults={cols$.DEFAULT} t={t} />}
             </div>
-            <button style={{ ...btnGhost, height: 36 }} onClick={() => setShowExport(true)}><FileDownIcon />{t('export')}</button>
+            {can('export') && <button style={{ ...btnGhost, height: 36 }} onClick={() => setShowExport(true)}><FileDownIcon />{t('export')}</button>}
           </div>
         </div>
 
@@ -231,9 +233,9 @@ function ProductList({ base }: { base: string }) {
                   ))}
                   <td style={td}>
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 4 }}>
-                      <button style={iconBtn} title={t('var_duplicate')} onClick={() => setToDup(p)}>⧉</button>
-                      <button style={iconBtn} title={t('edit')} onClick={() => navigate(`${base}/${p.id}`)}><PencilIcon /></button>
-                      <button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => setToDelete(p)}><TrashIcon /></button>
+                      {can('duplicate') && <button style={iconBtn} title={t('var_duplicate')} onClick={() => setToDup(p)}>⧉</button>}
+                      {can('edit') && <button style={iconBtn} title={t('edit')} onClick={() => navigate(`${base}/${p.id}`)}><PencilIcon /></button>}
+                      {can('delete') && <button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => setToDelete(p)}><TrashIcon /></button>}
                     </div>
                   </td>
                 </tr>
@@ -322,14 +324,22 @@ function ProductForm({ id, base }: { id: string; base: string }) {
   const [errRef, setErrRef] = useState(false)
   const [errName, setErrName] = useState(false)
   const [tab, setTab] = useState('main')
+  const { can, loaded: capsLoaded } = useCaps(TOOL_MELIS_KEY)
 
-  const TABS: TabDef[] = [
+  // Onglets masqués selon les droits (l'accès à un onglet = capacité de même clé : main/text/…).
+  const TABS: TabDef[] = ([
     { key: 'main',     label: t('tab_main'),     icon: <TagIcon /> },
     { key: 'text',     label: t('tab_text'),     icon: <FileTextIcon /> },
     { key: 'variants', label: t('tab_variants'), icon: <LayoutIcon /> },
     { key: 'seo',      label: t('tab_seo'),      icon: <TagIcon /> },
     { key: 'prices',   label: t('tab_prices'),   icon: <span style={{ fontWeight: 700 }}>€</span> },
-  ]
+  ] as TabDef[]).filter((tb) => can(tb.key))
+
+  // Si l'onglet actif vient d'être retiré par les droits, basculer sur le premier autorisé.
+  useEffect(() => {
+    if (capsLoaded && TABS.length && !TABS.some((tb) => tb.key === tab)) setTab(TABS[0].key)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [capsLoaded])
 
   useEffect(() => {
     fetchProductOptions().then((o) => {
@@ -541,9 +551,9 @@ function ProductForm({ id, base }: { id: string; base: string }) {
         </div>
       ) : tab === 'variants' ? (
         variantEdit !== null && productId ? (
-          <VariantEditor productId={productId} variantId={variantEdit === 'new' ? null : variantEdit} countries={countries} currencies={currencies} languages={languages} t={t} onClose={() => setVariantEdit(null)} onSaved={() => { /* list reloads on close */ }} />
+          <VariantEditor productId={productId} variantId={variantEdit === 'new' ? null : variantEdit} countries={countries} currencies={currencies} languages={languages} t={t} onClose={() => setVariantEdit(null)} onSaved={() => { /* list reloads on close */ }} can={can} />
         ) : (
-          <VariantsTab productId={productId} t={t} onAdd={() => setVariantEdit('new')} onEdit={(id) => setVariantEdit(id)} />
+          <VariantsTab productId={productId} t={t} onAdd={() => setVariantEdit('new')} onEdit={(id) => setVariantEdit(id)} can={can} />
         )
       ) : tab === 'prices' ? (
         <PricesTab productId={productId} countries={countries} currencies={currencies} t={t} pendingPrices={pendingPrices} onBufferPrice={(p) => setPendingPrices((prev) => [...prev.filter((x) => x.countryId !== p.countryId), p])} />

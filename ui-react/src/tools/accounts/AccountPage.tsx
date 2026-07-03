@@ -12,6 +12,7 @@ import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } fr
 import { PencilIcon, TrashIcon, PlusIcon, GripIcon, FileDownIcon, BuildingKpiIcon, ArrowLeftIcon } from '../../shared/icons'
 import { StatusBadge, Kpi, ViewModeToggle, LegacyFrame, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
+import { useCaps } from '../../shared/useCaps'
 import { ColManager } from '../../shared/ColManager'
 import { ExportModal } from '../../shared/ExportModal'
 import { makeColStore, visibleCols, type ColDef } from '../../shared/columns'
@@ -52,6 +53,7 @@ export default function AccountPage() {
 function AccountList({ base }: { base: string }) {
   const t = makeT(DICT)
   const navigate = useNavigate()
+  const { can } = useCaps(TOOL_MELIS_KEY)
   const [mode, setMode] = useState<'react' | 'old'>('react')
   const [oldLoaded, setOldLoaded] = useState(false)
   const [items, setItems] = useState<AccountItem[]>([])
@@ -107,7 +109,7 @@ function AccountList({ base }: { base: string }) {
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <ViewModeToggle mode={mode} onReact={() => setMode('react')} onOld={() => { setMode('old'); setOldLoaded(true) }} />
           <button style={{ ...btnGhost, width: 36, padding: 0, justifyContent: 'center' }} onClick={() => setTick((x) => x + 1)} title={t('refresh')}>↻</button>
-          <button style={btnPrimary} onClick={() => navigate(`${base}/new`)}><PlusIcon />{t('new')}</button>
+          {can('create') && <button style={btnPrimary} onClick={() => navigate(`${base}/new`)}><PlusIcon />{t('new')}</button>}
         </div>
       </div>
 
@@ -139,7 +141,7 @@ function AccountList({ base }: { base: string }) {
               <button style={{ ...btnGhost, height: 36 }} onClick={() => setShowCols((v) => !v)}><GripIcon />{t('columns')}</button>
               {showCols && <ColManager cols={cols} labelFor={(id) => t(COL_LABEL[id])} onChange={setCols} onClose={() => setShowCols(false)} save={cols$.save} defaults={cols$.DEFAULT} t={t} />}
             </div>
-            <button style={{ ...btnGhost, height: 36 }} onClick={() => setShowExport(true)}><FileDownIcon />{t('export')}</button>
+            {can('export') && <button style={{ ...btnGhost, height: 36 }} onClick={() => setShowExport(true)}><FileDownIcon />{t('export')}</button>}
           </div>
         </div>
 
@@ -172,8 +174,8 @@ function AccountList({ base }: { base: string }) {
                   ))}
                   <td style={td}>
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 4 }}>
-                      <button style={iconBtn} title={t('edit')} onClick={() => navigate(`${base}/${a.id}`)}><PencilIcon /></button>
-                      <button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => setToDelete(a)}><TrashIcon /></button>
+                      {can('edit') && <button style={iconBtn} title={t('edit')} onClick={() => navigate(`${base}/${a.id}`)}><PencilIcon /></button>}
+                      {can('delete') && <button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => setToDelete(a)}><TrashIcon /></button>}
                     </div>
                   </td>
                 </tr>
@@ -223,15 +225,23 @@ function AccountForm({ id, base }: { id: string; base: string }) {
   const [addresses, setAddresses] = useState<AccountAddress[]>([])
   const [addressesLoaded, setAddressesLoaded] = useState(false)
   const [mainContact, setMainContact] = useState<AccountContact | null>(null)
+  const { can, loaded: capsLoaded } = useCaps(TOOL_MELIS_KEY)
 
-  const TABS: TabDef[] = [
+  // Onglets masqués selon les droits (l'accès à un onglet = capacité de même clé : properties/contacts/…).
+  const TABS: TabDef[] = ([
     { key: 'properties', label: t('tab_properties'), icon: <TagIcon /> },
     { key: 'contacts',   label: t('tab_contacts'),   icon: <UsersIcon />,     disabled: !isEdit },
     { key: 'company',    label: t('tab_company'),    icon: <BuildingIcon /> },
     { key: 'addresses',  label: t('tab_addresses'),  icon: <MapPinIcon /> },
     { key: 'orders',     label: t('tab_orders'),     icon: <CartIcon />,      disabled: !isEdit },
     { key: 'files',      label: t('tab_files'),      icon: <PaperclipIcon />, disabled: !isEdit },
-  ]
+  ] as TabDef[]).filter((tb) => can(tb.key))
+
+  // Si l'onglet actif vient d'être retiré par les droits, basculer sur le premier autorisé.
+  useEffect(() => {
+    if (capsLoaded && TABS.length && !TABS.some((tb) => tb.key === tab)) setTab(TABS[0].key)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [capsLoaded])
 
   function handleTabChange(newTab: string) {
     setVisitedTabs((s) => { const n = new Set(s); n.add(newTab); return n })
@@ -308,11 +318,11 @@ function AccountForm({ id, base }: { id: string; base: string }) {
       ) : tab === 'addresses' ? (
         <AddressesTab addresses={addresses} onChange={setAddresses} t={t} />
       ) : tab === 'contacts' && accountId ? (
-        <ContactsTab accountId={accountId} t={t} />
+        <ContactsTab accountId={accountId} t={t} can={can} />
       ) : tab === 'orders' && accountId ? (
         <OrdersTab accountId={accountId} t={t} />
       ) : tab === 'files' && accountId ? (
-        <FilesTab accountId={accountId} t={t} />
+        <FilesTab accountId={accountId} t={t} can={can} />
       ) : tab === 'properties' ? (
         loading ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '40vh', color: 'var(--color-muted-foreground)' }}>{t('loading')}</div>

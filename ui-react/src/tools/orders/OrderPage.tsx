@@ -20,6 +20,7 @@ import { openSubTab, updateSubLabel } from '../../shared/subtabs'
 import { Tabs } from '../../shared/Tabs'
 import { BasketTab, AddressesTab, PaymentTab, ShippingTab, MessagesTab, ReturnsTab } from './OrderTabs'
 import { FileDownIcon, GripIcon } from '../../shared/icons'
+import { useCaps } from '../../shared/useCaps'
 
 const TOOL_MELIS_KEY = 'meliscommerce_order_list_page'
 const CANCELLED_STATUS = 5
@@ -74,6 +75,7 @@ function StatusPill({ color, name, size = 'sm' }: { color: string; name: string;
 function OrderList({ base }: { base: string }) {
   const t = makeT(DICT)
   const navigate = useNavigate()
+  const { can } = useCaps(TOOL_MELIS_KEY)
   const [mode, setMode] = useState<'react' | 'old'>('react')
   const [oldLoaded, setOldLoaded] = useState(false)
   const [items, setItems] = useState<OrderItem[]>([])
@@ -148,7 +150,7 @@ function OrderList({ base }: { base: string }) {
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <ViewModeToggle mode={mode} onReact={() => setMode('react')} onOld={() => { setMode('old'); setOldLoaded(true) }} />
           <button style={{ ...btnGhost, width: 36, padding: 0, justifyContent: 'center' }} title={t('refresh')} onClick={() => setTick((x) => x + 1)}><RefreshIcon /></button>
-          <button style={btnPrimary} onClick={() => navigate(`${base}/new`)}><PlusIcon />{t('new')}</button>
+          {can('create') && <button style={btnPrimary} onClick={() => navigate(`${base}/new`)}><PlusIcon />{t('new')}</button>}
         </div>
       </div>
 
@@ -183,7 +185,7 @@ function OrderList({ base }: { base: string }) {
                   onClose={() => setShowCols(false)} save={cols$.save} defaults={cols$.DEFAULT} t={t} />
               )}
             </div>
-            <button style={{ ...btnGhost, height: 36, opacity: sorted.length === 0 ? 0.4 : 1 }} disabled={sorted.length === 0} onClick={() => setShowExport(true)}><FileDownIcon />{t('btn_export')}</button>
+            {can('export') && <button style={{ ...btnGhost, height: 36, opacity: sorted.length === 0 ? 0.4 : 1 }} disabled={sorted.length === 0} onClick={() => setShowExport(true)}><FileDownIcon />{t('btn_export')}</button>}
           </div>
         </div>
 
@@ -225,12 +227,14 @@ function OrderList({ base }: { base: string }) {
                     return <td key={c.id} style={td}>—</td>
                   })}
                   <td style={{ ...td, textAlign: 'center', width: 60 }} onClick={(e) => e.stopPropagation()}>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); openOrder(o) }}
-                      style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, border: '1px solid #5cb85c', background: 'transparent', color: '#5cb85c', cursor: 'pointer', padding: 0 }}
-                      title={t('col_action')}>
-                      <PencilIcon />
-                    </button>
+                    {can('edit') && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); openOrder(o) }}
+                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, border: '1px solid #5cb85c', background: 'transparent', color: '#5cb85c', cursor: 'pointer', padding: 0 }}
+                        title={t('col_action')}>
+                        <PencilIcon />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -272,6 +276,8 @@ function OrderForm({ id, base }: { id: string; base: string }) {
   const orderId = isEdit ? Number(id) : null
   const subTabPath = `${base}/${id}`
 
+  const { can, loaded: capsLoaded } = useCaps(TOOL_MELIS_KEY)
+
   const [order, setOrder]       = useState<OrderDetail | null>(null)
   const [statuses, setStatuses] = useState<OrderStatus[]>([])
   const [activeTab, setActiveTab] = useState('information')
@@ -298,7 +304,8 @@ function OrderForm({ id, base }: { id: string; base: string }) {
 
   const locked = order?.status === CANCELLED_STATUS
 
-  const tabs = [
+  // Onglets masqués selon les droits (l'accès à un onglet = capacité de même clé).
+  const TABS = [
     { key: 'information', label: t('tab_information') },
     { key: 'basket',      label: t('tab_basket'),     disabled: !isEdit },
     { key: 'addresses',   label: t('tab_addresses'),  disabled: !isEdit },
@@ -306,7 +313,13 @@ function OrderForm({ id, base }: { id: string; base: string }) {
     { key: 'shipping',    label: t('tab_shipping'),   disabled: !isEdit },
     { key: 'messages',    label: t('tab_messages'),   disabled: !isEdit },
     { key: 'returns',     label: t('tab_returns'),    disabled: !isEdit },
-  ]
+  ].filter((tb) => can(tb.key))
+
+  // Si l'onglet actif vient d'être retiré par les droits, basculer sur le premier autorisé.
+  useEffect(() => {
+    if (capsLoaded && TABS.length && !TABS.some((tb) => tb.key === activeTab)) setActiveTab(TABS[0].key)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [capsLoaded])
 
   async function submit() {
     if (!localReference.trim()) { notify('ko', t('title'), t('err_reference_required')); return }
@@ -351,7 +364,7 @@ function OrderForm({ id, base }: { id: string; base: string }) {
         <div style={{ padding: 40, display: 'flex', justifyContent: 'center', color: 'var(--color-muted-foreground)' }}>{t('loading')}</div>
       ) : (
         <>
-          <Tabs tabs={tabs} active={activeTab} onChange={setActiveTab} />
+          <Tabs tabs={TABS} active={activeTab} onChange={setActiveTab} />
           <div>
             {activeTab === 'information' && (
               <InformationTab
@@ -364,15 +377,15 @@ function OrderForm({ id, base }: { id: string; base: string }) {
             {activeTab === 'basket'    && order && <BasketTab basket={order.basket} t={t} />}
             {activeTab === 'addresses' && order && (
               <AddressesTab orderId={orderId!} billing={order.billing} delivery={order.delivery}
-                locked={locked} t={t} onSaved={() => fetchOrderById(orderId!).then(setOrder).catch(() => null)} />
+                locked={locked} t={t} can={can} onSaved={() => fetchOrderById(orderId!).then(setOrder).catch(() => null)} />
             )}
             {activeTab === 'payment'   && order && <PaymentTab payments={order.payments} t={t} />}
             {activeTab === 'shipping'  && order && (
-              <ShippingTab orderId={orderId!} shippings={order.shippings} locked={locked} t={t}
+              <ShippingTab orderId={orderId!} shippings={order.shippings} locked={locked} t={t} can={can}
                 onSaved={() => fetchOrderById(orderId!).then(setOrder).catch(() => null)} />
             )}
             {activeTab === 'messages'  && order && (
-              <MessagesTab orderId={orderId!} messages={order.messages} t={t}
+              <MessagesTab orderId={orderId!} messages={order.messages} t={t} can={can}
                 onSaved={() => fetchOrderById(orderId!).then(setOrder).catch(() => null)} />
             )}
             {activeTab === 'returns'   && order && (

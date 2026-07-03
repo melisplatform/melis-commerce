@@ -26,9 +26,9 @@ const num = (v: string) => v === '' ? null : (parseFloat(v) || 0)
 const str = (v: number | null) => v == null ? '' : String(v)
 
 /** Éditeur d'une variante — onglets Propriétés / SEO / Prix / Stocks / Association. */
-export function VariantEditor({ productId, variantId, countries, currencies, languages, t, onClose, onSaved }: {
+export function VariantEditor({ productId, variantId, countries, currencies, languages, t, onClose, onSaved, can }: {
   productId: number; variantId: number | null; countries: CountryOption[]; currencies: Option[]; languages: LangOption[]
-  t: TFn; onClose: () => void; onSaved: () => void
+  t: TFn; onClose: () => void; onSaved: () => void; can?: (cap: string) => boolean
 }) {
   const [vid, setVid] = useState<number | null>(variantId)
   const isEdit = vid != null
@@ -45,10 +45,17 @@ export function VariantEditor({ productId, variantId, countries, currencies, lan
   const [err, setErr] = useState<string | null>(null)
   const [errSku, setErrSku] = useState(false)
 
-  const TABS: TabDef[] = [
+  // Onglets de la variante masqués selon les droits (accès onglet = capacité `variants.<clé>`).
+  const allow = (cap: string) => (can ? can(cap) : true)
+  const TABS: TabDef[] = ([
     { key: 'properties', label: t('tab_main') }, { key: 'seo', label: t('tab_seo') }, { key: 'prices', label: t('tab_prices') },
     { key: 'stocks', label: t('var_tab_stocks') }, { key: 'assoc', label: t('var_tab_assoc') },
-  ]
+  ] as TabDef[]).filter((tb) => allow(`variants.${tb.key}`))
+
+  useEffect(() => {
+    if (TABS.length && !TABS.some((tb) => tb.key === tab)) setTab(TABS[0].key)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [can])
   // « Général » (pays -1, comme le legacy) + pays — pour le sélecteur des onglets Prix / Stocks.
   const countryItems = [{ id: -1, name: t('price_general'), flag: '' }, ...countries]
 

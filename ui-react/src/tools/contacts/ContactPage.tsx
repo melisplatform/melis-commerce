@@ -11,6 +11,7 @@ import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } fr
 import { PencilIcon, TrashIcon, PlusIcon, GripIcon, FileDownIcon, UsersKpiIcon, ToggleRightIcon, KeyIcon, ArrowLeftIcon } from '../../shared/icons'
 import { StatusBadge, Kpi, ViewModeToggle, LegacyFrame, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
+import { useCaps } from '../../shared/useCaps'
 import { ColManager } from '../../shared/ColManager'
 import { ExportModal } from '../../shared/ExportModal'
 import { makeColStore, visibleCols, type ColDef } from '../../shared/columns'
@@ -58,6 +59,7 @@ export default function ContactPage() {
 function ContactList({ base }: { base: string }) {
   const t = makeT(DICT)
   const navigate = useNavigate()
+  const { can } = useCaps(TOOL_MELIS_KEY)
   const [mode, setMode] = useState<'react' | 'old'>('react')
   const [oldLoaded, setOldLoaded] = useState(false)
   const [items, setItems] = useState<ContactItem[]>([])
@@ -117,7 +119,7 @@ function ContactList({ base }: { base: string }) {
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <ViewModeToggle mode={mode} onReact={() => setMode('react')} onOld={() => { setMode('old'); setOldLoaded(true) }} />
           <button style={{ ...btnGhost, width: 36, padding: 0, justifyContent: 'center' }} onClick={() => setTick((x) => x + 1)} title={t('refresh')}>↻</button>
-          <button style={btnPrimary} onClick={() => navigate(`${base}/new`)}><PlusIcon />{t('new')}</button>
+          {can('create') && <button style={btnPrimary} onClick={() => navigate(`${base}/new`)}><PlusIcon />{t('new')}</button>}
         </div>
       </div>
 
@@ -154,7 +156,7 @@ function ContactList({ base }: { base: string }) {
               <button style={{ ...btnGhost, height: 36 }} onClick={() => setShowCols((v) => !v)}><GripIcon />{t('columns')}</button>
               {showCols && <ColManager cols={cols} labelFor={(id) => t(COL_LABEL[id])} onChange={setCols} onClose={() => setShowCols(false)} save={cols$.save} defaults={cols$.DEFAULT} t={t} />}
             </div>
-            <button style={{ ...btnGhost, height: 36 }} onClick={() => setShowExport(true)}><FileDownIcon />{t('export')}</button>
+            {can('export') && <button style={{ ...btnGhost, height: 36 }} onClick={() => setShowExport(true)}><FileDownIcon />{t('export')}</button>}
           </div>
         </div>
 
@@ -190,8 +192,8 @@ function ContactList({ base }: { base: string }) {
                   ))}
                   <td style={td}>
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 4 }}>
-                      <button style={iconBtn} title={t('edit')} onClick={() => navigate(`${base}/${c.id}`)}><PencilIcon /></button>
-                      <button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => setToDelete(c)}><TrashIcon /></button>
+                      {can('edit') && <button style={iconBtn} title={t('edit')} onClick={() => navigate(`${base}/${c.id}`)}><PencilIcon /></button>}
+                      {can('delete') && <button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => setToDelete(c)}><TrashIcon /></button>}
                     </div>
                   </td>
                 </tr>
@@ -252,12 +254,20 @@ function ContactForm({ id, base }: { id: string; base: string }) {
   const [visitedTabs, setVisitedTabs] = useState(new Set<string>())
   const [addresses, setAddresses] = useState<ContactAddress[]>([])
   const [addressesLoaded, setAddressesLoaded] = useState(false)
+  const { can, loaded: capsLoaded } = useCaps(TOOL_MELIS_KEY)
 
-  const TABS: TabDef[] = [
+  // Onglets masqués selon les droits (l'accès à un onglet = capacité de même clé : information/address/association).
+  const TABS: TabDef[] = ([
     { key: 'information', label: t('tab_information'), icon: <TagIcon /> },
     { key: 'address',     label: t('tab_address'),     icon: <MapPinIcon /> },
     { key: 'association', label: t('tab_association'), icon: <LinkIcon />,   disabled: !isEdit },
-  ]
+  ] as TabDef[]).filter((tb) => can(tb.key))
+
+  // Si l'onglet actif vient d'être retiré par les droits, basculer sur le premier autorisé.
+  useEffect(() => {
+    if (capsLoaded && TABS.length && !TABS.some((tb) => tb.key === tab)) setTab(TABS[0].key)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [capsLoaded])
 
   function handleTabChange(newTab: string) {
     setVisitedTabs((s) => { const n = new Set(s); n.add(newTab); return n })
@@ -346,7 +356,7 @@ function ContactForm({ id, base }: { id: string; base: string }) {
       <Tabs tabs={TABS} active={tab} onChange={handleTabChange} />
 
       {tab === 'address' ? <AddressTab addresses={addresses} onChange={setAddresses} t={t} /> :
-       tab === 'association' && contactId ? <AssociationTab contactId={contactId} t={t} /> :
+       tab === 'association' && contactId ? <AssociationTab contactId={contactId} t={t} can={can} /> :
        tab === 'information' ? (
       <>
       {loading ? (

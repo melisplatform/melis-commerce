@@ -301,6 +301,8 @@ class Module
 
             // React API routes + controller invokables for commerce tools
             include __DIR__ . '/../config/react-api.php',
+            // Tool capabilities (List/Create/Edit/Delete/Export checkboxes in the Rights tab)
+            include __DIR__ . '/../config/react.capabilities.php',
         ];
 
         foreach ($configFiles as $file) {

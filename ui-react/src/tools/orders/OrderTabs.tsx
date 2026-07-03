@@ -132,10 +132,11 @@ const EMPTY_ADDR: Omit<OrderAddress, 'id' | 'type'> = {
 }
 
 // ── Addresses tab — master-detail matching shared AddressEditor style ──────────
-export function AddressesTab({ orderId, billing, delivery, locked, t, onSaved }: {
+export function AddressesTab({ orderId, billing, delivery, locked, t, onSaved, can }: {
   orderId: number; billing: OrderAddress | null; delivery: OrderAddress | null;
-  locked: boolean; t: T; onSaved?: () => void
+  locked: boolean; t: T; onSaved?: () => void; can?: (cap: string) => boolean
 }) {
+  const allow = (cap: string) => (can ? can(cap) : true)
   const [active, setActive] = useState<'billing' | 'delivery'>('billing')
   const [bAddr, setBAddr] = useState<Omit<OrderAddress, 'id' | 'type'>>(billing ?? EMPTY_ADDR)
   const [dAddr, setDAddr] = useState<Omit<OrderAddress, 'id' | 'type'>>(delivery ?? EMPTY_ADDR)
@@ -192,7 +193,7 @@ export function AddressesTab({ orderId, billing, delivery, locked, t, onSaved }:
           {active === 'billing' ? t('section_billing') : t('section_delivery')}
         </h3>
         <AddressEditor addr={addr} onChange={setAddr} t={t} locked={locked} />
-        {!locked && (
+        {!locked && allow('addresses.edit') && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 20, paddingTop: 16, borderTop: '1px solid var(--color-border)' }}>
             <button style={btnPrimary} onClick={save} disabled={saving}>{saving ? '…' : t('save')}</button>
             {notice && <span style={{ fontSize: 13, color: notice.includes('Error') ? '#ef4444' : '#059669' }}>{notice}</span>}
@@ -297,9 +298,10 @@ function ShippingModal({ orderId, onSaved, onClose, t }: {
 }
 
 // ── Shipping tab ──────────────────────────────────────────────────────────────
-export function ShippingTab({ orderId, shippings, locked, t, onSaved }: {
-  orderId: number; shippings: OrderShipping[]; locked: boolean; t: T; onSaved?: () => void
+export function ShippingTab({ orderId, shippings, locked, t, onSaved, can }: {
+  orderId: number; shippings: OrderShipping[]; locked: boolean; t: T; onSaved?: () => void; can?: (cap: string) => boolean
 }) {
+  const allow = (cap: string) => (can ? can(cap) : true)
   const [list, setList]         = useState(shippings)
   const [showModal, setShowModal] = useState(false)
   const [openId, setOpenId]     = useState<number | null>(shippings[0]?.id ?? null)
@@ -311,7 +313,7 @@ export function ShippingTab({ orderId, shippings, locked, t, onSaved }: {
     <div style={{ ...card, padding: 28 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
         <h3 style={{ ...sectionTitle, margin: 0 }}><TruckIcon />{t('section_shipping')}</h3>
-        {!locked && (
+        {!locked && allow('shipping.create') && (
           <button onClick={() => setShowModal(true)}
             style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 13, fontWeight: 600, border: '1.5px solid var(--color-primary)', borderRadius: 6, background: 'transparent', color: 'var(--color-primary)', cursor: 'pointer' }}>
             + {t('shipping_add')}
@@ -371,9 +373,10 @@ export function ShippingTab({ orderId, shippings, locked, t, onSaved }: {
 }
 
 // ── Messages tab ──────────────────────────────────────────────────────────────
-export function MessagesTab({ orderId, messages, t, onSaved }: {
-  orderId: number; messages: OrderMessage[]; t: T; onSaved?: () => void
+export function MessagesTab({ orderId, messages, t, onSaved, can }: {
+  orderId: number; messages: OrderMessage[]; t: T; onSaved?: () => void; can?: (cap: string) => boolean
 }) {
+  const allow = (cap: string) => (can ? can(cap) : true)
   const [list, setList] = useState(messages)
   const [text, setText] = useState('')
   const [sending, setSending] = useState(false)
@@ -408,9 +411,11 @@ export function MessagesTab({ orderId, messages, t, onSaved }: {
           style={{ ...inputCss, resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.5, borderColor: err ? '#ef4444' : undefined }}
           placeholder={t('msg_placeholder')} value={text} onChange={(e) => setText(e.target.value)} />
         {err && <div style={{ color: '#ef4444', fontSize: 12, marginTop: 4 }}>{err}</div>}
-        <div style={{ marginTop: 12 }}>
-          <button style={btnPrimary} onClick={send} disabled={sending}>{sending ? '…' : t('msg_send')}</button>
-        </div>
+        {allow('messages.create') && (
+          <div style={{ marginTop: 12 }}>
+            <button style={btnPrimary} onClick={send} disabled={sending}>{sending ? '…' : t('msg_send')}</button>
+          </div>
+        )}
       </div>
       <div style={{ ...card, padding: 28 }}>
         {list.length === 0 ? (

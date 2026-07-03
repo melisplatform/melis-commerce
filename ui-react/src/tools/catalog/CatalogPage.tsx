@@ -11,6 +11,7 @@ import { PlusIcon, PencilIcon, TrashIcon, ChevronDownIcon, LayoutIcon, TagIcon, 
 import { ViewModeToggle, LegacyFrame, StatusBadge, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { Tabs, type TabDef } from '../../shared/Tabs'
+import { useCaps } from '../../shared/useCaps'
 import type { Option } from '../../shared/api'
 
 /* Brique « Catalogues / Catégories » (MelisCommerce) — arbre full React (drag-and-drop) +
@@ -43,6 +44,7 @@ function filterTree(nodes: CatNode[], q: string): CatNode[] {
 
 export default function CatalogPage() {
   const t = makeT(DICT)
+  const { can } = useCaps(TOOL_MELIS_KEY)
   const [mode, setMode] = useState<'react' | 'old'>('react')
   const [oldLoaded, setOldLoaded] = useState(false)
   const [tree, setTree] = useState<CatNode[]>([])
@@ -116,8 +118,8 @@ export default function CatalogPage() {
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <ViewModeToggle mode={mode} onReact={() => setMode('react')} onOld={() => { setMode('old'); setOldLoaded(true) }} />
-          <button style={btnGhost} onClick={() => { setErr(null); setSel({ mode: 'new-catalog' }) }}><PlusIcon />{t('add_catalog')}</button>
-          <button style={btnPrimary} onClick={addCategory}><PlusIcon />{t('add_category')}</button>
+          {can('create') && <button style={btnGhost} onClick={() => { setErr(null); setSel({ mode: 'new-catalog' }) }}><PlusIcon />{t('add_catalog')}</button>}
+          {can('create') && <button style={btnPrimary} onClick={addCategory}><PlusIcon />{t('add_category')}</button>}
         </div>
       </div>
 
@@ -147,7 +149,7 @@ export default function CatalogPage() {
           ) : (
             <div onDragEnd={() => { setDrag(null); setDropHint(null) }}>
               <NodeList
-                nodes={view} depth={0} parentId={-1} t={t} anchorId={anchorId}
+                nodes={view} depth={0} parentId={-1} t={t} anchorId={anchorId} can={can}
                 expanded={expanded} toggle={toggle}
                 onHighlight={(n) => setHighlightId(n.id)} onEdit={openEdit} onAddChild={addChild} onDelete={setToDelete}
                 onContext={(n, x, y) => { setHighlightId(n.id); setCtxMenu({ node: n, x, y }) }}
@@ -174,10 +176,10 @@ export default function CatalogPage() {
           <div style={{ position: 'fixed', inset: 0, zIndex: 60 }} onClick={() => setCtxMenu(null)} onContextMenu={(e) => { e.preventDefault(); setCtxMenu(null) }} />
           <div style={{ position: 'fixed', top: ctxMenu.y, left: ctxMenu.x, zIndex: 61, ...card, padding: 4, minWidth: 160, boxShadow: '0 8px 24px rgba(0,0,0,.18)' }}>
             {[
-              { icon: <PlusIcon />, label: t('ctx_add'), on: () => addChild(ctxMenu.node) },
-              { icon: <PencilIcon />, label: t('ctx_update'), on: () => openEdit(ctxMenu.node) },
-              { icon: <TrashIcon />, label: t('ctx_delete'), on: () => setToDelete(ctxMenu.node), danger: true },
-            ].map((it) => (
+              { icon: <PlusIcon />, label: t('ctx_add'), on: () => addChild(ctxMenu.node), cap: 'create' },
+              { icon: <PencilIcon />, label: t('ctx_update'), on: () => openEdit(ctxMenu.node), cap: 'edit' },
+              { icon: <TrashIcon />, label: t('ctx_delete'), on: () => setToDelete(ctxMenu.node), danger: true, cap: 'delete' },
+            ].filter((it) => can(it.cap)).map((it) => (
               <button key={it.label} onClick={() => { it.on(); setCtxMenu(null) }}
                 style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '8px 12px', border: 0, background: 'transparent', cursor: 'pointer', fontSize: 14, borderRadius: 6, color: it.danger ? '#dc2626' : 'inherit', textAlign: 'left' }}
                 onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--color-muted,rgba(0,0,0,.06))')} onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}>
@@ -200,6 +202,7 @@ export default function CatalogPage() {
 // ── Arbre (liste de nœuds d'un niveau + barres de drop) ──────────────────────────
 type RowProps = {
   depth: number; parentId: number; t: (k: string, v?: Record<string, string | number>) => string; anchorId: number | null
+  can: (cap: string) => boolean
   expanded: Set<number>; toggle: (id: number) => void
   onHighlight: (n: CatNode) => void; onEdit: (n: CatNode) => void; onAddChild: (n: CatNode) => void; onDelete: (n: CatNode) => void
   onContext: (n: CatNode, x: number, y: number) => void
@@ -234,7 +237,7 @@ function DropBar({ active, depth, onOver, onDrop }: { active: boolean; depth: nu
 }
 
 function NodeRow(props: RowProps & { node: CatNode }) {
-  const { node, depth, t, anchorId, expanded, toggle, onHighlight, onEdit, onAddChild, onDelete, onContext, drag, dropHint, setDropHint, startDrag, doMove, canDrop } = props
+  const { node, depth, t, anchorId, can, expanded, toggle, onHighlight, onEdit, onAddChild, onDelete, onContext, drag, dropHint, setDropHint, startDrag, doMove, canDrop } = props
   const isOpen = expanded.has(node.id)
   const hasKids = node.children.length > 0
   const intoActive = !!drag && drag.id !== node.id && dropHint === `into-${node.id}` && canDrop(node.id)
@@ -267,9 +270,9 @@ function NodeRow(props: RowProps & { node: CatNode }) {
         <span style={{ fontWeight: node.type === 'catalog' || active ? 600 : 400, color: active ? 'var(--color-primary)' : 'inherit' }}>{node.id} - {node.name}</span>
         <span style={{ fontSize: 12, color: 'var(--color-muted-foreground)' }}>{t('products_n', { n: node.productCount })}</span>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 4, opacity: hover || active ? 1 : 0, transition: 'opacity .1s' }}>
-          <button style={iconBtn} title={t('add_child')} onClick={(e) => { e.stopPropagation(); onAddChild(node) }}><PlusIcon /></button>
-          <button style={iconBtn} title={t('edit')} onClick={(e) => { e.stopPropagation(); onEdit(node) }}><PencilIcon /></button>
-          <button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={(e) => { e.stopPropagation(); onDelete(node) }}><TrashIcon /></button>
+          {can('create') && <button style={iconBtn} title={t('add_child')} onClick={(e) => { e.stopPropagation(); onAddChild(node) }}><PlusIcon /></button>}
+          {can('edit') && <button style={iconBtn} title={t('edit')} onClick={(e) => { e.stopPropagation(); onEdit(node) }}><PencilIcon /></button>}
+          {can('delete') && <button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={(e) => { e.stopPropagation(); onDelete(node) }}><TrashIcon /></button>}
         </div>
       </div>
       {isOpen && hasKids && <NodeList {...props} nodes={node.children} depth={depth + 1} parentId={node.id} />}
@@ -283,6 +286,7 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
   onSaved: (id: number, type: 'catalog' | 'category') => void; onClose: () => void
   t: (k: string, v?: Record<string, string | number>) => string
 }) {
+  const { can, loaded: capsLoaded } = useCaps(TOOL_MELIS_KEY)
   const isEdit = sel.mode === 'edit'
   const isCatalog = sel.mode === 'new-catalog' || (sel.mode === 'edit' && sel.type === 'catalog')
   const catId = sel.mode === 'edit' ? sel.catId : null
@@ -331,7 +335,13 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
     { key: 'properties', label: t('tab_properties'), icon: <FileTextIcon /> },
     { key: 'seo',        label: t('tab_seo'),        icon: <TagIcon /> },
     { key: 'products',   label: t('tab_products'),   icon: <CartIcon />, disabled: !isEdit },
-  ]
+  ].filter((tb) => can(tb.key))
+
+  // Si l'onglet actif vient d'être retiré par les droits, basculer sur le premier autorisé.
+  useEffect(() => {
+    if (capsLoaded && TABS.length && !TABS.some((tb) => tb.key === tab)) setTab(TABS[0].key)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [capsLoaded])
 
   function setText(langId: number, field: 'name' | 'description', value: string) { setTexts((p) => p.map((x) => x.langId === langId ? { ...x, [field]: value } : x)); setError(null) }
   function setSeoField(langId: number, field: 'url' | 'metaTitle' | 'metaDescription', value: string) { setSeo((p) => p.map((x) => x.langId === langId ? { ...x, [field]: value } : x)) }

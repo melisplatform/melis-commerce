@@ -26,7 +26,8 @@ export function AddressTab({ addresses, onChange, t }: { addresses: ContactAddre
 }
 
 // ── Comptes associés (lecture seule) ────────────────────────────────────────────
-export function AssociationTab({ contactId, t }: { contactId: number; t: T }) {
+export function AssociationTab({ contactId, t, can }: { contactId: number; t: T; can?: (cap: string) => boolean }) {
+  const allow = (cap: string) => (can ? can(cap) : true)
   const navigate = useNavigate()
   const [rows, setRows] = useState<ContactAssociation[]>([])
   const [opts, setOpts] = useState<Option[]>([])
@@ -45,7 +46,7 @@ export function AssociationTab({ contactId, t }: { contactId: number; t: T }) {
   }
   return (
     <div>
-      <LinkHeader options={available} placeholder={t('as_link_ph')} linkLabel={t('as_link')} onLink={link} />
+      {allow('association.create') && <LinkHeader options={available} placeholder={t('as_link_ph')} linkLabel={t('as_link')} onLink={link} />}
       <SimpleTable<ContactAssociation> rows={rows} rowKey={(r) => r.id} empty={t('as_empty')} loading={loading} loadingText={t('loading')}
         t={t} search={(r) => r.name} searchPlaceholder={t('ph_search_account')} onRefresh={() => setTick((x) => x + 1)}
         onAdd={() => navigate(`${ACCOUNT_ROUTE}/new`)} addIcon={<UserPlusIcon />} addTitle={t('as_add')}
@@ -59,7 +60,7 @@ export function AssociationTab({ contactId, t }: { contactId: number; t: T }) {
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6 }}>
               <button style={actionBtn('#16a34a')} title={t('edit')} onClick={() => navigate(`${ACCOUNT_ROUTE}/${r.id}`)}><PencilIcon /></button>
               {!r.isDefaultAccount && <button style={actionBtn('#2563eb')} title={t('set_default')} onClick={() => setDefault(r.id)}><CheckIcon /></button>}
-              <button style={actionBtn('#ef4444')} title={t('unlink')} onClick={() => setToUnlink(r)}><TrashIcon /></button>
+              {allow('association.delete') && <button style={actionBtn('#ef4444')} title={t('unlink')} onClick={() => setToUnlink(r)}><TrashIcon /></button>}
             </div>
           ) },
         ]} />

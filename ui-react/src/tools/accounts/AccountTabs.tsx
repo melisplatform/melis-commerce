@@ -59,7 +59,8 @@ export function CompanyTab({ company, onChange, loading, t }: {
 }
 
 // ── Contacts (lecture seule) ──────────────────────────────────────────────────
-export function ContactsTab({ accountId, t }: { accountId: number; t: T }) {
+export function ContactsTab({ accountId, t, can }: { accountId: number; t: T; can?: (cap: string) => boolean }) {
+  const allow = (cap: string) => (can ? can(cap) : true)
   const navigate = useNavigate()
   const [rows, setRows] = useState<AccountContact[]>([])
   const [opts, setOpts] = useState<Option[]>([])
@@ -78,10 +79,10 @@ export function ContactsTab({ accountId, t }: { accountId: number; t: T }) {
   }
   return (
     <div>
-      <LinkHeader options={available} placeholder={t('c_link_ph')} linkLabel={t('c_link')} onLink={link} />
+      {allow('contacts.create') && <LinkHeader options={available} placeholder={t('c_link_ph')} linkLabel={t('c_link')} onLink={link} />}
       <SimpleTable<AccountContact> rows={rows} rowKey={(r) => r.id} empty={t('c_empty')} loading={loading} loadingText={t('loading')}
         t={t} search={(r) => `${r.firstname} ${r.name} ${r.email}`} searchPlaceholder={t('ph_search_contact')} onRefresh={() => setTick((x) => x + 1)}
-        onAdd={() => navigate(`${CONTACT_ROUTE}/new`)} addIcon={<UserPlusIcon />} addTitle={t('c_add')}
+        onAdd={allow('contacts.create') ? () => navigate(`${CONTACT_ROUTE}/new`) : undefined} addIcon={<UserPlusIcon />} addTitle={t('c_add')}
         cols={[
           { key: 'firstname', label: t('c_firstname'), render: (r) => r.firstname || '—' },
           { key: 'name', label: t('c_name'), render: (r) => <span style={{ fontWeight: 500 }}>{r.name || '—'}</span> },
@@ -93,7 +94,7 @@ export function ContactsTab({ accountId, t }: { accountId: number; t: T }) {
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6 }}>
               <button style={actionBtn('#16a34a')} title={t('edit')} onClick={() => navigate(`${CONTACT_ROUTE}/${r.id}`)}><PencilIcon /></button>
               {!r.isMain && <button style={actionBtn('#2563eb')} title={t('set_default')} onClick={() => setDefault(r.id)}><CheckIcon /></button>}
-              <button style={actionBtn('#ef4444')} title={t('unlink')} onClick={() => setToUnlink(r)}><TrashIcon /></button>
+              {allow('contacts.delete') && <button style={actionBtn('#ef4444')} title={t('unlink')} onClick={() => setToUnlink(r)}><TrashIcon /></button>}
             </div>
           ) },
         ]} />
@@ -159,7 +160,8 @@ export function OrdersTab({ accountId, t }: { accountId: number; t: T }) {
 }
 
 // ── Fichiers (lecture seule) ──────────────────────────────────────────────────
-export function FilesTab({ accountId, t }: { accountId: number; t: T }) {
+export function FilesTab({ accountId, t, can }: { accountId: number; t: T; can?: (cap: string) => boolean }) {
+  const allow = (cap: string) => (can ? can(cap) : true)
   const [rows, setRows] = useState<AccountFile[]>([])
   const [loading, setLoading] = useState(true)
   const [tick, setTick] = useState(0)
@@ -217,7 +219,7 @@ export function FilesTab({ accountId, t }: { accountId: number; t: T }) {
     <div style={{ ...card, padding: 20 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginBottom: 16 }}>
         <h3 style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 16, fontWeight: 600, margin: 0 }}><PaperclipIcon />{t('fi_section')}</h3>
-        <button style={{ ...btnGhost, height: 34, color: 'var(--color-primary)', borderColor: 'var(--color-primary)' }} onClick={openModal}><PlusIcon />{t('fi_add')}</button>
+        {allow('files.create') && <button style={{ ...btnGhost, height: 34, color: 'var(--color-primary)', borderColor: 'var(--color-primary)' }} onClick={openModal}><PlusIcon />{t('fi_add')}</button>}
       </div>
       {loading ? (
         <div style={{ textAlign: 'center', color: 'var(--color-muted-foreground)', padding: 16 }}>{t('loading')}</div>
@@ -230,7 +232,7 @@ export function FilesTab({ accountId, t }: { accountId: number; t: T }) {
               <a href={r.path} target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--color-foreground)', fontSize: 14, fontWeight: 500, textDecoration: 'none', overflow: 'hidden' }}>
                 <PaperclipIcon /><span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.name || r.path}</span>
               </a>
-              <button style={actionBtn('#ef4444')} title={t('del')} onClick={() => setToDelete(r)}><TrashIcon /></button>
+              {allow('files.delete') && <button style={actionBtn('#ef4444')} title={t('del')} onClick={() => setToDelete(r)}><TrashIcon /></button>}
             </div>
           ))}
         </div>

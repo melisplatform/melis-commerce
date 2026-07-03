@@ -16,6 +16,7 @@ import { makeColStore, visibleCols, type ColDef } from '../../shared/columns'
 import { ExportModal } from '../../shared/ExportModal'
 import { ColManager } from '../../shared/ColManager'
 import { openSubTab, updateSubLabel } from '../../shared/subtabs'
+import { useCaps } from '../../shared/useCaps'
 import { Tabs } from '../../shared/Tabs'
 import { CouponClientsTab, CouponProductsTab, CouponOrdersTab } from './CouponTabs'
 
@@ -118,6 +119,7 @@ function StatusPill({ active, t }: { active: boolean; t: (k: string) => string }
 function CouponList({ base }: { base: string }) {
   const t = makeT(DICT)
   const navigate = useNavigate()
+  const { can } = useCaps(TOOL_MELIS_KEY)
   const [mode, setMode] = useState<'react' | 'old'>('react')
   const [oldLoaded, setOldLoaded] = useState(false)
   const [items, setItems] = useState<CouponItem[]>([])
@@ -189,7 +191,7 @@ function CouponList({ base }: { base: string }) {
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <ViewModeToggle mode={mode} onReact={() => setMode('react')} onOld={() => { setMode('old'); setOldLoaded(true) }} />
           <button style={{ ...btnGhost, width: 36, padding: 0, justifyContent: 'center' }} title={t('refresh')} onClick={() => setTick((x) => x + 1)}><RefreshIcon /></button>
-          <button style={btnPrimary} onClick={() => navigate(`${base}/new`)}><PlusIcon />{t('new')}</button>
+          {can('create') && <button style={btnPrimary} onClick={() => navigate(`${base}/new`)}><PlusIcon />{t('new')}</button>}
         </div>
       </div>
 
@@ -221,7 +223,7 @@ function CouponList({ base }: { base: string }) {
                   onClose={() => setShowCols(false)} save={cols$.save} defaults={cols$.DEFAULT} t={t} />
               )}
             </div>
-            <button style={{ ...btnGhost, height: 36, opacity: sorted.length === 0 ? 0.4 : 1 }} disabled={sorted.length === 0} onClick={() => setShowExport(true)}><FileDownIcon />{t('btn_export')}</button>
+            {can('export') && <button style={{ ...btnGhost, height: 36, opacity: sorted.length === 0 ? 0.4 : 1 }} disabled={sorted.length === 0} onClick={() => setShowExport(true)}><FileDownIcon />{t('btn_export')}</button>}
           </div>
         </div>
 
@@ -260,12 +262,12 @@ function CouponList({ base }: { base: string }) {
                   })}
                   <td style={{ ...td, textAlign: 'center', width: 90 }} onClick={(e) => e.stopPropagation()}>
                     <div style={{ display: 'inline-flex', gap: 6 }}>
-                      <button onClick={(e) => { e.stopPropagation(); openCoupon(c) }}
+                      {can('edit') && <button onClick={(e) => { e.stopPropagation(); openCoupon(c) }}
                         style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, border: '1px solid #5cb85c', background: 'transparent', color: '#5cb85c', cursor: 'pointer', padding: 0 }}
-                        title={t('edit')}><PencilIcon /></button>
-                      <button onClick={(e) => { e.stopPropagation(); setToDelete(c) }}
+                        title={t('edit')}><PencilIcon /></button>}
+                      {can('delete') && <button onClick={(e) => { e.stopPropagation(); setToDelete(c) }}
                         style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, border: '1px solid #dc2626', background: 'transparent', color: '#dc2626', cursor: 'pointer', padding: 0 }}
-                        title={t('del')}><TrashIcon /></button>
+                        title={t('del')}><TrashIcon /></button>}
                     </div>
                   </td>
                 </tr>
@@ -311,6 +313,7 @@ function CouponForm({ id, base }: { id: string; base: string }) {
   const isEdit = id !== 'new'
   const couponId = isEdit ? Number(id) : null
   const subTabPath = `${base}/${id}`
+  const { can, loaded: capsLoaded } = useCaps(TOOL_MELIS_KEY)
 
   const [coupon, setCoupon] = useState<CouponDetail | null>(null)
   const [activeTab, setActiveTab] = useState('information')
@@ -394,12 +397,19 @@ function CouponForm({ id, base }: { id: string; base: string }) {
     for (const pid of productRemoves) { const cprodId = productCprodMapRef.current[pid]; if (cprodId) await deleteCouponProduct(targetId, cprodId) }
   }
 
-  const tabs = [
+  // Onglets masqués selon les droits (l'accès à un onglet = capacité de même clé).
+  const TABS = [
     { key: 'information', label: t('tab_information'), icon: <GearIcon /> },
     { key: 'clients',     label: t('tab_clients'),  icon: <UsersIcon /> },
     { key: 'products',    label: t('tab_products'), icon: <TagIcon /> },
     { key: 'orders',      label: t('tab_orders'),   disabled: !isEdit, icon: <CartIcon /> },
-  ]
+  ].filter((tb) => can(tb.key))
+
+  // Si l'onglet actif vient d'être retiré par les droits, basculer sur le premier autorisé.
+  useEffect(() => {
+    if (capsLoaded && TABS.length && !TABS.some((tb) => tb.key === activeTab)) setActiveTab(TABS[0].key)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [capsLoaded])
 
   async function submit() {
     if (!code.trim()) { notify('ko', t('title'), t('err_code_required')); return }
@@ -447,7 +457,7 @@ function CouponForm({ id, base }: { id: string; base: string }) {
         <div style={{ padding: 40, display: 'flex', justifyContent: 'center', color: 'var(--color-muted-foreground)' }}>{t('loading')}</div>
       ) : (
         <>
-          <Tabs tabs={tabs} active={activeTab} onChange={setActiveTab} />
+          <Tabs tabs={TABS} active={activeTab} onChange={setActiveTab} />
           <div>
             {activeTab === 'information' && (
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 260px', gap: 16, alignItems: 'start' }}>
