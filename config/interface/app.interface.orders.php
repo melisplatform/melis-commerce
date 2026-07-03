@@ -62,6 +62,9 @@ return [
                                 'id' => 'id_meliscommerce_order_status_tool_page',
                                 'melisKey' => 'meliscommerce_order_status_tool_page',
                                 'name' => 'tr_meliscommerce_order_status_tool_page',
+                                // Rend l'outil en page autonome (sans le layout BO complet) quand il est
+                                // ouvert dans l'iframe React (toggle « Old »).
+                                'follow_regular_rendering' => false,
                             ],
                             'forward' => [
                                 'module' => 'MelisCommerce',

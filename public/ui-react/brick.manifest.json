@@ -52,6 +52,65 @@
       "forwardKey": "MelisCommerce/MelisComCouponList",
       "melisKey": "meliscommerce_coupon_list_page",
       "subTabs": true
+    },
+    {
+      "id": "commerce-attributes",
+      "route": "/melis-commerce/attribute-list",
+      "label": "Attributes",
+      "icon": "tag",
+      "forwardKey": "MelisCommerce/MelisComAttributeList",
+      "melisKey": "meliscommerce_attribute_list_page",
+      "subTabs": true
+    },
+    {
+      "id": "commerce-countries",
+      "route": "/melis-commerce/country-list",
+      "label": "Countries",
+      "icon": "globe",
+      "forwardKey": "MelisCommerce/MelisComCountry",
+      "melisKey": "meliscommerce_country_list_container",
+      "subTabs": true
+    },
+    {
+      "id": "commerce-languages",
+      "route": "/melis-commerce/language-list",
+      "label": "Commerce languages",
+      "icon": "globe",
+      "forwardKey": "MelisCommerce/MelisComLanguage",
+      "melisKey": "meliscommerce_language_list_container"
+    },
+    {
+      "id": "commerce-currencies",
+      "route": "/melis-commerce/currency-lists",
+      "label": "Currencies",
+      "icon": "coins",
+      "forwardKey": "MelisCommerce/MelisComCurrency",
+      "melisKey": "meliscommerce_currency_conf"
+    },
+    {
+      "id": "commerce-order-status",
+      "route": "/melis-commerce/order-status-lists",
+      "label": "Order status",
+      "icon": "list",
+      "forwardKey": "MelisCommerce/MelisComOrderStatus",
+      "melisKey": "meliscommerce_order_status_tool_page",
+      "subTabs": true
+    },
+    {
+      "id": "commerce-clients-groups",
+      "route": "/melis-commerce/clients-group-list",
+      "label": "Client's groups",
+      "icon": "users",
+      "forwardKey": "MelisCommerce/MelisComClientsGroup",
+      "melisKey": "meliscommerce_clients_group_tool_container"
+    },
+    {
+      "id": "commerce-settings",
+      "route": "/melis-commerce/settings",
+      "label": "Commerce settings",
+      "icon": "settings",
+      "forwardKey": "MelisCommerce/MelisComSettings",
+      "melisKey": "meliscommerce_settings_page"
     }
   ]
 }

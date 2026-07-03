@@ -38,6 +38,9 @@ return [
                                 'id' => 'id_meliscommerce_attribute_list_page',
                                 'melisKey' => 'meliscommerce_attribute_list_page',
                                 'name' => 'tr_meliscommerce_attribute_list_page',
+                                // Rend l'outil en page autonome (sans le layout BO complet) quand il est
+                                // ouvert dans l'iframe React (toggle « Old ») — comme meliscore_tool_user.
+                                'follow_regular_rendering' => false,
                             ],
                             'forward' => [
                                 'module' => 'MelisCommerce',

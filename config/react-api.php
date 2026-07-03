@@ -800,6 +800,245 @@ return [
                                 ],
                             ],
 
+                            // ─── Attributs (MelisCommerce) ─────────────────────────────────────
+                            'attributes-list' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/attributes[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiAttribute', 'action' => 'list'],
+                                ],
+                            ],
+                            'attributes-stats' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/attributes/stats[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiAttribute', 'action' => 'stats'],
+                                ],
+                            ],
+                            'attributes-options' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/attributes/options[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiAttribute', 'action' => 'options'],
+                                ],
+                            ],
+                            'attributes-save' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/attributes/save[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiAttribute', 'action' => 'save'],
+                                ],
+                            ],
+                            'attributes-delete' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/attributes/delete/:id', 'constraints' => ['id' => '[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiAttribute', 'action' => 'delete'],
+                                ],
+                            ],
+                            'attributes-values' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/attributes/:id/values[/]', 'constraints' => ['id' => '[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiAttribute', 'action' => 'values'],
+                                ],
+                            ],
+                            'attributes-value-save' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/attributes/:id/values/save[/]', 'constraints' => ['id' => '[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiAttribute', 'action' => 'valueSave'],
+                                ],
+                            ],
+                            'attributes-value-binary' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/attributes/:id/values/:valId/binary[/]', 'constraints' => ['id' => '[0-9]+', 'valId' => '[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiAttribute', 'action' => 'valueBinary'],
+                                ],
+                            ],
+                            'attributes-value-delete' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/attributes/:id/values/:valId', 'constraints' => ['id' => '[0-9]+', 'valId' => '[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiAttribute', 'action' => 'valueDelete'],
+                                ],
+                            ],
+                            'attributes-item' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/attributes/:id', 'constraints' => ['id' => '[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiAttribute', 'action' => 'get'],
+                                ],
+                            ],
+
+                            // ─── Pays (MelisCommerce) ───────────────────────────────────────────
+                            'countries-list' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/countries[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCountry', 'action' => 'list'] ],
+                            ],
+                            'countries-stats' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/countries/stats[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCountry', 'action' => 'stats'] ],
+                            ],
+                            'countries-options' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/countries/options[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCountry', 'action' => 'options'] ],
+                            ],
+                            'countries-save' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/countries/save[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCountry', 'action' => 'save'] ],
+                            ],
+                            'countries-delete' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/countries/delete/:id', 'constraints' => ['id' => '[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCountry', 'action' => 'delete'] ],
+                            ],
+                            'countries-item' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/countries/:id', 'constraints' => ['id' => '[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCountry', 'action' => 'get'] ],
+                            ],
+
+                            // ─── Langues Commerce (MelisCommerce) ───────────────────────────────
+                            'languages-list' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/languages[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiLanguage', 'action' => 'list'] ],
+                            ],
+                            'languages-stats' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/languages/stats[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiLanguage', 'action' => 'stats'] ],
+                            ],
+                            'languages-save' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/languages/save[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiLanguage', 'action' => 'save'] ],
+                            ],
+                            'languages-delete' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/languages/delete/:id', 'constraints' => ['id' => '[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiLanguage', 'action' => 'delete'] ],
+                            ],
+                            'languages-item' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/languages/:id', 'constraints' => ['id' => '[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiLanguage', 'action' => 'get'] ],
+                            ],
+
+                            // ─── Devises (MelisCommerce) ─────────────────────────────────────────
+                            'currencies-list' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/currencies[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCurrency', 'action' => 'list'] ],
+                            ],
+                            'currencies-stats' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/currencies/stats[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCurrency', 'action' => 'stats'] ],
+                            ],
+                            'currencies-save' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/currencies/save[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCurrency', 'action' => 'save'] ],
+                            ],
+                            'currencies-delete' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/currencies/delete/:id', 'constraints' => ['id' => '[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCurrency', 'action' => 'delete'] ],
+                            ],
+                            'currencies-set-default' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/currencies/:id/set-default[/]', 'constraints' => ['id' => '[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCurrency', 'action' => 'setDefault'] ],
+                            ],
+                            'currencies-item' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/currencies/:id', 'constraints' => ['id' => '[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCurrency', 'action' => 'get'] ],
+                            ],
+
+                            // ─── Statuts de commande (MelisCommerce) ─────────────────────────────
+                            'order-statuses-list' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/order-statuses[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrderStatus', 'action' => 'list'] ],
+                            ],
+                            'order-statuses-stats' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/order-statuses/stats[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrderStatus', 'action' => 'stats'] ],
+                            ],
+                            'order-statuses-options' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/order-statuses/options[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrderStatus', 'action' => 'options'] ],
+                            ],
+                            'order-statuses-save' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/order-statuses/save[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrderStatus', 'action' => 'save'] ],
+                            ],
+                            'order-statuses-delete' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/order-statuses/delete/:id', 'constraints' => ['id' => '-?[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrderStatus', 'action' => 'delete'] ],
+                            ],
+                            'order-statuses-item' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/order-statuses/:id', 'constraints' => ['id' => '-?[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrderStatus', 'action' => 'get'] ],
+                            ],
+
+                            // ─── Groupes de clients (MelisCommerce) ──────────────────────────────
+                            'clients-groups-list' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/clients-groups[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiClientsGroup', 'action' => 'list'] ],
+                            ],
+                            'clients-groups-stats' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/clients-groups/stats[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiClientsGroup', 'action' => 'stats'] ],
+                            ],
+                            'clients-groups-save' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/clients-groups/save[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiClientsGroup', 'action' => 'save'] ],
+                            ],
+                            'clients-groups-delete' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/clients-groups/delete/:id', 'constraints' => ['id' => '[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiClientsGroup', 'action' => 'delete'] ],
+                            ],
+                            'clients-groups-item' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/clients-groups/:id', 'constraints' => ['id' => '[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiClientsGroup', 'action' => 'get'] ],
+                            ],
+
+                            // ─── Paramètres commerce (MelisCommerce) — page unique, pas de liste ─
+                            'settings-get' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/settings[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiSettings', 'action' => 'get'] ],
+                            ],
+                            'settings-options' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/settings/options[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiSettings', 'action' => 'options'] ],
+                            ],
+                            'settings-save' => [
+                                'type' => 'Segment',
+                                'options' => [ 'route' => '/settings/save[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiSettings', 'action' => 'save'] ],
+                            ],
+
                         ], // end child_routes melis-react-api
                     ],
                 ],
@@ -809,12 +1048,19 @@ return [
 
     'controllers' => [
         'invokables' => [
-            'MelisCommerce\Controller\MelisComReactApiAccount' => \MelisCommerce\Controller\ReactApi\MelisComReactApiAccountController::class,
-            'MelisCommerce\Controller\MelisComReactApiContact' => \MelisCommerce\Controller\ReactApi\MelisComReactApiContactController::class,
-            'MelisCommerce\Controller\MelisComReactApiCatalog' => \MelisCommerce\Controller\ReactApi\MelisComReactApiCatalogController::class,
-            'MelisCommerce\Controller\MelisComReactApiProduct' => \MelisCommerce\Controller\ReactApi\MelisComReactApiProductController::class,
-            'MelisCommerce\Controller\MelisComReactApiOrder'   => \MelisCommerce\Controller\ReactApi\MelisComReactApiOrderController::class,
-            'MelisCommerce\Controller\MelisComReactApiCoupon'  => \MelisCommerce\Controller\ReactApi\MelisComReactApiCouponController::class,
+            'MelisCommerce\Controller\MelisComReactApiAccount'   => \MelisCommerce\Controller\ReactApi\MelisComReactApiAccountController::class,
+            'MelisCommerce\Controller\MelisComReactApiContact'   => \MelisCommerce\Controller\ReactApi\MelisComReactApiContactController::class,
+            'MelisCommerce\Controller\MelisComReactApiCatalog'   => \MelisCommerce\Controller\ReactApi\MelisComReactApiCatalogController::class,
+            'MelisCommerce\Controller\MelisComReactApiProduct'   => \MelisCommerce\Controller\ReactApi\MelisComReactApiProductController::class,
+            'MelisCommerce\Controller\MelisComReactApiOrder'     => \MelisCommerce\Controller\ReactApi\MelisComReactApiOrderController::class,
+            'MelisCommerce\Controller\MelisComReactApiCoupon'    => \MelisCommerce\Controller\ReactApi\MelisComReactApiCouponController::class,
+            'MelisCommerce\Controller\MelisComReactApiAttribute'    => \MelisCommerce\Controller\ReactApi\MelisComReactApiAttributeController::class,
+            'MelisCommerce\Controller\MelisComReactApiCountry'      => \MelisCommerce\Controller\ReactApi\MelisComReactApiCountryController::class,
+            'MelisCommerce\Controller\MelisComReactApiLanguage'     => \MelisCommerce\Controller\ReactApi\MelisComReactApiLanguageController::class,
+            'MelisCommerce\Controller\MelisComReactApiCurrency'     => \MelisCommerce\Controller\ReactApi\MelisComReactApiCurrencyController::class,
+            'MelisCommerce\Controller\MelisComReactApiOrderStatus'  => \MelisCommerce\Controller\ReactApi\MelisComReactApiOrderStatusController::class,
+            'MelisCommerce\Controller\MelisComReactApiClientsGroup' => \MelisCommerce\Controller\ReactApi\MelisComReactApiClientsGroupController::class,
+            'MelisCommerce\Controller\MelisComReactApiSettings'     => \MelisCommerce\Controller\ReactApi\MelisComReactApiSettingsController::class,
         ],
     ],
 ];

@@ -1,0 +1,41 @@
+import { mergeDict } from '../../shared/i18n'
+
+/** Dictionnaire de l'outil Groupes de clients (fusionné avec les clés COMMUNES). */
+export const DICT = mergeDict({
+  fr: {
+    title: 'Groupes de clients',
+    subtitle: "Cet outil permet de créer des groupes. Les clients peuvent être associés à ces groupes, permettant la mise en place de règles spécifiques pour différents groupes de clients (exemple : prix produit différent par groupe). Créez les groupes ici puis affectez les clients aux groupes depuis l'outil Clients.",
+    new: 'Ajouter un groupe',
+    search_placeholder: 'Rechercher un groupe…',
+    filter_status: 'Tous les statuts',
+    btn_export: 'Exporter', btn_col_manager: 'Colonnes',
+    exp_title: 'Exporter les groupes de clients', exp_subtitle: '{n} groupes seront exportés', exp_filename: 'groupes-clients',
+    col_id: 'ID', col_name: 'Nom', col_status: 'Statut', col_action: 'Action',
+    no_items: 'Aucun groupe trouvé.',
+    status_label: 'STATUT',
+    field_name: 'Nom du groupe',
+    err_name_required: 'Ce champ est requis et ne peut pas être vide',
+    modal_new_title: 'Ajouter un groupe', modal_edit_title: 'Modifier le groupe',
+    del_title: 'Supprimer le groupe de clients',
+    del_confirm: 'Êtes-vous sûr de vouloir supprimer ce groupe ?',
+    err_general_delete: 'Le groupe General par défaut ne peut pas être supprimé.',
+  },
+  en: {
+    title: "Client's groups",
+    subtitle: 'This tool is to create groups. Clients can be associated to these groups, allowing the implementation of specific rules for different groups of clients (example: different product prices per group). Create the groups here then affect the clients to the groups from the Clients tool.',
+    new: 'Add group',
+    search_placeholder: 'Search a group…',
+    filter_status: 'All statuses',
+    btn_export: 'Export', btn_col_manager: 'Columns',
+    exp_title: 'Export clients groups', exp_subtitle: '{n} groups will be exported', exp_filename: 'clients-groups',
+    col_id: 'ID', col_name: 'Name', col_status: 'Status', col_action: 'Action',
+    no_items: 'No group found.',
+    status_label: 'STATUS',
+    field_name: 'Group Name',
+    err_name_required: 'The input is required and cannot be empty',
+    modal_new_title: 'Add group', modal_edit_title: 'Edit group',
+    del_title: 'Delete clients group',
+    del_confirm: 'Are you sure you want to delete this group?',
+    err_general_delete: 'The default General group cannot be deleted.',
+  },
+})

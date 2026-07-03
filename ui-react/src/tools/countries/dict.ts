@@ -1,0 +1,39 @@
+import { mergeDict } from '../../shared/i18n'
+
+/** Dictionnaire de l'outil Countries (fusionné avec les clés COMMUNES). */
+export const DICT = mergeDict({
+  fr: {
+    title: 'Pays',
+    subtitle: 'Retrouvez ici les différents pays. Vous pouvez activer/désactiver, ajouter ou supprimer des pays et définir leur devise en fonction des besoins de vos sites.',
+    new: 'Ajouter un pays', search_placeholder: 'Rechercher un pays…',
+    filter_status: 'Tous les statuts',
+    btn_export: 'Exporter', btn_col_manager: 'Colonnes',
+    exp_title: 'Exporter les pays', exp_subtitle: '{n} pays seront exportés', exp_filename: 'pays',
+    del_title: 'Supprimer le pays', del_confirm: 'Êtes-vous sûr de vouloir supprimer ce pays ?',
+    col_id: 'ID', col_flag: 'Drapeau', col_status: 'Statut', col_name: 'Nom', col_currency: 'Devise', col_action: 'Action',
+    no_items: 'Aucun pays trouvé.',
+    section_general_data: 'Données générales',
+    field_name: 'Nom', field_currency: 'Devise', field_flag: 'Drapeau',
+    err_name_required: 'Veuillez saisir le nom du pays',
+    err_name_exists: 'Ce nom de pays existe déjà',
+    flag_choose: 'Choisir un fichier', flag_none: 'Aucun drapeau',
+    status_label: 'STATUT',
+  },
+  en: {
+    title: 'Countries',
+    subtitle: 'Find here the different countries. You can activate/deactivate, add or delete countries and define their currency depending on the needs of your sites.',
+    new: 'Add country', search_placeholder: 'Search a country…',
+    filter_status: 'All statuses',
+    btn_export: 'Export', btn_col_manager: 'Columns',
+    exp_title: 'Export countries', exp_subtitle: '{n} countries will be exported', exp_filename: 'countries',
+    del_title: 'Delete country', del_confirm: 'Are you sure you want to delete this country?',
+    col_id: 'ID', col_flag: 'Flag', col_status: 'Status', col_name: 'Name', col_currency: 'Currency', col_action: 'Action',
+    no_items: 'No country found.',
+    section_general_data: 'General Data',
+    field_name: 'Name', field_currency: 'Currency', field_flag: 'Flag',
+    err_name_required: 'Please enter the name of the country',
+    err_name_exists: 'Country name already exists',
+    flag_choose: 'Choose a file', flag_none: 'No flag',
+    status_label: 'STATUS',
+  },
+})

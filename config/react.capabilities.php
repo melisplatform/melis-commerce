@@ -132,5 +132,56 @@ return [
                 ['key' => 'orders',      'label' => 'tr_meliscommerce_coupon_page_tabs_orders'],               // Orders (lecture seule)
             ],
         ],
+
+        // Attributes : Main (reference/type/status/visible/searchable) et Labels (traductions
+        // name/description) sont sauvés avec le formulaire ; Values a sa propre CRUD (liste des
+        // valeurs de l'attribut, chacune avec ses traductions typées) → seul cet onglet a des actions.
+        'meliscommerce_attribute_list_page' => [
+            'actions' => ['list', 'create', 'edit', 'delete', 'export'],
+            'tabs' => [
+                ['key' => 'main',   'label' => 'tr_meliscommerce_attribute_page_tabs_main'],     // Properties
+                ['key' => 'labels', 'label' => 'tr_meliscommerce_attribute_page_tabs_labels'],    // Labels (traductions)
+                ['key' => 'values', 'label' => 'tr_meliscommerce_attribute_page_tabs_values',     // Values
+                    'actions' => ['list', 'create', 'edit', 'delete']],
+            ],
+        ],
+
+        // Countries / Commerce languages / Currencies / Client's groups : outils "réglages" à
+        // formulaire unique (pas d'onglets — modale ou page à un seul bloc de champs).
+        'meliscommerce_country_list_container' => [
+            'actions' => ['list', 'create', 'edit', 'delete', 'export'],
+        ],
+        'meliscommerce_language_list_container' => [
+            'actions' => ['list', 'create', 'edit', 'delete', 'export'],
+        ],
+        'meliscommerce_currency_conf' => [
+            'actions' => ['list', 'create', 'edit', 'delete', 'export'],
+        ],
+        'meliscommerce_clients_group_tool_container' => [
+            'actions' => ['list', 'create', 'edit', 'delete', 'export'],
+        ],
+
+        // Statuts de commande : Properties (couleur/statut) et Labels (traductions par langue)
+        // sont tous deux sauvés avec le formulaire → repères sans droits propres.
+        'meliscommerce_order_status_tool_page' => [
+            'actions' => ['list', 'create', 'edit', 'delete', 'export'],
+            'tabs' => [
+                // Legacy n'a pas d'onglets pour ce formulaire (simple modale) — ces 2 onglets sont
+                // une réorganisation React ; on réutilise les clés Properties/Labels d'Attributs
+                // (même sens exact : propriétés générales vs traductions par langue).
+                ['key' => 'main',   'label' => 'tr_meliscommerce_attribute_page_tabs_main'],   // Properties
+                ['key' => 'labels', 'label' => 'tr_meliscommerce_attribute_page_tabs_labels'], // Labels (traductions)
+            ],
+        ],
+
+        // Paramètres commerce : page UNIQUE (pas de liste/suppression) — seule l'action `edit`
+        // a un sens ; les deux onglets (Properties/Accounts) sont des repères sans droits propres.
+        'meliscommerce_settings_page' => [
+            'actions' => ['edit'],
+            'tabs' => [
+                ['key' => 'main',     'label' => 'tr_meliscommerce_settings_page_tabs_main'],     // Properties
+                ['key' => 'accounts', 'label' => 'tr_meliscommerce_settings_page_tabs_accounts'],  // Accounts
+            ],
+        ],
     ],
 ];

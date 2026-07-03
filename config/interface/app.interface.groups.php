@@ -40,6 +40,9 @@ return [
                                 'name' => 'tr_meliscommerce_clients_group',
                                 'melisKey' => 'meliscommerce_clients_group_tool_container',
                                 'icon' => 'fa fa-user-times',
+                                // Rend l'outil en page autonome (sans le layout BO complet) quand il est
+                                // ouvert dans l'iframe React (toggle « Old »).
+                                'follow_regular_rendering' => false,
                             ],
                             'forward' => [
                                 'module' => 'MelisCommerce',
