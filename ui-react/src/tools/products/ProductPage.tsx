@@ -309,6 +309,7 @@ function ProductForm({ id, base }: { id: string; base: string }) {
   const [pendingFiles, setPendingFiles] = useState<PendingMedia[]>([])
   const [pendingAttrIds, setPendingAttrIds] = useState<number[]>([])
   const [pendingRecipientIds, setPendingRecipientIds] = useState<number[]>([])
+  const [pendingRecipientEmails, setPendingRecipientEmails] = useState<string[]>([])
   const [pendingPrices, setPendingPrices] = useState<PendingPrice[]>([])
   const [pendingDeleteAttrPattIds, setPendingDeleteAttrPattIds] = useState<number[]>([])
   const [pendingDeleteRecipientSeaIds, setPendingDeleteRecipientSeaIds] = useState<number[]>([])
@@ -353,7 +354,7 @@ function ProductForm({ id, base }: { id: string; base: string }) {
   // Reset all pending/delta state when switching between products (React Router reuses the component).
   useEffect(() => {
     setPendingImages([]); setPendingFiles([])
-    setPendingAttrIds([]); setPendingRecipientIds([]); setPendingPrices([])
+    setPendingAttrIds([]); setPendingRecipientIds([]); setPendingRecipientEmails([]); setPendingPrices([])
     setPendingDeleteAttrPattIds([]); setPendingDeleteRecipientSeaIds([])
     setPendingDeleteFileIds([]); setPendingDeleteImageIds([])
     setError(null)
@@ -404,7 +405,8 @@ function ProductForm({ id, base }: { id: string; base: string }) {
           ...pendingImages.map((m) => uploadProductMedia(pid, { ...m, kind: 'image' })),
           ...pendingFiles.map((m) => uploadProductMedia(pid, { ...m, kind: 'file' })),
           ...pendingAttrIds.map((aid) => saveProductAttribute(pid, aid)),
-          ...pendingRecipientIds.map((uid) => saveProductRecipient(pid, uid, stockLow.trim() === '' ? null : parseInt(stockLow, 10) || 0)),
+          ...pendingRecipientIds.map((uid) => saveProductRecipient(pid, { userId: uid }, stockLow.trim() === '' ? null : parseInt(stockLow, 10) || 0)),
+          ...pendingRecipientEmails.map((email) => saveProductRecipient(pid, { email }, stockLow.trim() === '' ? null : parseInt(stockLow, 10) || 0)),
           ...meaningfulPrices.map((p) => saveProductPrice(pid, { id: null, countryId: p.countryId, currency: p.currency, net: p.net, gross: p.gross, vatPercent: p.vatPercent, vatPrice: p.vatPrice, otherTax: p.otherTax })),
         ])
         notify('ok', t('title'), t('saved'))
@@ -417,7 +419,8 @@ function ProductForm({ id, base }: { id: string; base: string }) {
         await Promise.allSettled([
           ...meaningfulPrices.map((p) => saveProductPrice(productId!, { id: p.id ?? null, countryId: p.countryId, currency: p.currency, net: p.net, gross: p.gross, vatPercent: p.vatPercent, vatPrice: p.vatPrice, otherTax: p.otherTax })),
           ...pendingAttrIds.map((aid) => saveProductAttribute(productId!, aid)),
-          ...pendingRecipientIds.map((uid) => saveProductRecipient(productId!, uid, stockLevelNum)),
+          ...pendingRecipientIds.map((uid) => saveProductRecipient(productId!, { userId: uid }, stockLevelNum)),
+          ...pendingRecipientEmails.map((email) => saveProductRecipient(productId!, { email }, stockLevelNum)),
           ...pendingImages.map((m) => uploadProductMedia(productId!, { ...m, kind: 'image' })),
           ...pendingFiles.map((m) => uploadProductMedia(productId!, { ...m, kind: 'file' })),
           ...pendingDeleteAttrPattIds.map((pattId) => deleteProductAttribute(productId!, pattId)),
@@ -499,7 +502,10 @@ function ProductForm({ id, base }: { id: string; base: string }) {
               <div style={labelRow}><label style={label}>{t('f_stock_alert')}</label><InfoDot text={t('tip_stock_alert')} /></div>
               <input style={inputCss} type="number" min={0} value={stockLow} onChange={(e) => setStockLow(e.target.value)} placeholder={t('f_stock_ph')} autoComplete="off" />
               <div style={{ marginTop: 16 }}>
-                <RecipientsSection productId={productId} users={users} stockLevel={stockLow.trim() === '' ? null : parseInt(stockLow, 10) || 0} t={t} pendingRecipientIds={pendingRecipientIds} onTogglePendingRecipient={(id) => setPendingRecipientIds((p) => p.includes(id) ? p.filter((x) => x !== id) : [...p, id])} onMarkDeleteRecipient={(seaId) => setPendingDeleteRecipientSeaIds((p) => [...p, seaId])} />
+                <RecipientsSection productId={productId} users={users} stockLevel={stockLow.trim() === '' ? null : parseInt(stockLow, 10) || 0} t={t}
+                  pendingRecipientIds={pendingRecipientIds} onTogglePendingRecipient={(id) => setPendingRecipientIds((p) => p.includes(id) ? p.filter((x) => x !== id) : [...p, id])}
+                  pendingRecipientEmails={pendingRecipientEmails} onAddPendingRecipientEmail={(email) => setPendingRecipientEmails((p) => p.includes(email) ? p : [...p, email])} onRemovePendingRecipientEmail={(email) => setPendingRecipientEmails((p) => p.filter((x) => x !== email))}
+                  onMarkDeleteRecipient={(seaId) => setPendingDeleteRecipientSeaIds((p) => [...p, seaId])} />
               </div>
             </section>
             <section>
@@ -541,7 +547,7 @@ function ProductForm({ id, base }: { id: string; base: string }) {
         <div style={{ display: 'grid', gridTemplateColumns: '150px 1fr', gap: 14, maxWidth: 760 }}>
           <LangSwitcher languages={languages} value={lang} onChange={setLang} />
           {texts.filter((x) => x.langId === lang).map((tx) => (
-            <div key={tx.langId}>
+            <div key={tx.langId} style={{ ...card, padding: 18 }}>
               <div style={labelRow}><label style={{ ...label, color: errName ? '#dc2626' : undefined }}>{t('f_name')}</label></div>
               <input style={{ ...inputCss, ...(errName ? { borderColor: '#dc2626' } : {}) }} value={tx.name} onChange={(e) => { setText(tx.langId, 'name', e.target.value); setErrName(false) }} placeholder={t('f_name_ph')} autoComplete="off" />
               <div style={{ ...labelRow, marginTop: 14 }}><label style={label}>{t('f_description')}</label></div>
@@ -570,7 +576,7 @@ function ProductForm({ id, base }: { id: string; base: string }) {
                 ['url301', 'seo_url_301', 'tip_prd_seo_url_301'],
               ]
               return (
-                <div key={s.langId}>
+                <div key={s.langId} style={{ ...card, padding: 18 }}>
                   {SEO_FIELDS.map(([k, lbl, tip], i) => (
                     <div key={k} style={{ marginTop: i === 0 ? 0 : 14 }}>
                       <div style={labelRow}><label style={label}>{t(lbl)}</label><InfoDot text={t(tip)} /></div>

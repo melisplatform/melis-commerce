@@ -11,11 +11,11 @@ import {
   type AssocVariant, type AvailVariant, type VariantAttrValue,
 } from './api'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } from '../../shared/styles'
-import { PlusIcon, TrashIcon, PencilIcon, EyeIcon, ArrowLeftIcon } from '../../shared/icons'
+import { PlusIcon, TrashIcon, PencilIcon, EyeIcon, ArrowLeftIcon, ToggleRightIcon } from '../../shared/icons'
 import { StatusBadge } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { Tabs, type TabDef } from '../../shared/Tabs'
-import { StatusToggle, InfoDot, FlagSwitcher, MediaModal, Lightbox, hoverCircle } from './ProductTabs'
+import { InfoDot, FlagSwitcher, MediaModal, Lightbox, hoverCircle } from './ProductTabs'
 import type { Option } from '../../shared/api'
 import type { LangOption } from '../catalog/api'
 
@@ -117,12 +117,11 @@ export function VariantEditor({ productId, variantId, countries, currencies, lan
       {loading ? <div style={{ padding: 30, color: 'var(--color-muted-foreground)' }}>{t('loading')}</div>
       : tab === 'properties' ? (
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--color-border)', paddingBottom: 12, marginBottom: 20 }}>
+          <div style={{ borderBottom: '1px solid var(--color-border)', paddingBottom: 12, marginBottom: 20 }}>
             <h3 style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>{t('tab_main')}</h3>
-            <StatusToggle active={status} onChange={setStatus} t={t} />
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(320px,1fr))', gap: 28, alignItems: 'start', maxWidth: 1100 }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr minmax(200px,220px)', gap: 20, alignItems: 'start' }}>
+            <div style={{ ...card, padding: 24, display: 'flex', flexDirection: 'column', gap: 24 }}>
               <section>
                 <h3 style={secT}>⚙ {t('var_information')}</h3>
                 <div style={labelRow}><label style={{ ...label, color: errSku ? '#dc2626' : undefined }}>{t('var_sku')}</label><InfoDot text={t('tip_sku')} /></div>
@@ -136,7 +135,20 @@ export function VariantEditor({ productId, variantId, countries, currencies, lan
               <VarFiles productId={productId} variantId={vid} t={t} countries={countries} onNeedVid={ensureVid} />
               <VarAttributes productId={productId} variantId={vid} t={t} onNeedVid={ensureVid} />
             </div>
-            <div><VarImages productId={productId} variantId={vid} t={t} countries={countries} onNeedVid={ensureVid} /></div>
+            <div style={{ ...card, padding: 24 }}><VarImages productId={productId} variantId={vid} t={t} countries={countries} onNeedVid={ensureVid} /></div>
+            <div style={{ ...card, padding: 16 }}>
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 12px' }}>
+                <ToggleRightIcon />{t('status_label')}
+              </h3>
+              <button type="button" onClick={() => setStatus((v) => !v)} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
+                <div style={{ position: 'relative', width: 36, height: 20, borderRadius: 999, background: status ? '#22c55e' : 'var(--color-muted-foreground)', transition: 'background .15s', flexShrink: 0 }}>
+                  <span style={{ position: 'absolute', top: 2, left: status ? 18 : 2, width: 16, height: 16, borderRadius: 999, background: '#fff', transition: 'left .15s', boxShadow: '0 1px 2px rgba(0,0,0,.3)' }} />
+                </div>
+                <span style={{ fontSize: 14, fontWeight: 500, color: status ? '#16a34a' : 'var(--color-muted-foreground)' }}>
+                  {status ? t('online') : t('offline')}
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       ) : tab === 'seo' ? (
@@ -148,7 +160,7 @@ export function VariantEditor({ productId, variantId, countries, currencies, lan
               {seo.filter((s) => s.langId === seoLang).map((s) => {
               const SEO_TIPS: Record<string, string> = { pageId: 'tip_var_seo_page_id', metaTitle: 'tip_var_seo_meta_title', metaDescription: 'tip_var_seo_meta_desc', url: 'tip_var_seo_url', urlRedirect: 'tip_var_seo_url_redirect', url301: 'tip_var_seo_url_301' }
               return (
-                <div key={s.langId}>
+                <div key={s.langId} style={{ ...card, padding: 18 }}>
                   {([['pageId', 'seo_page_id'], ['metaTitle', 'seo_meta_title'], ['metaDescription', 'seo_meta_desc'], ['url', 'seo_url'], ['urlRedirect', 'seo_url_redirect'], ['url301', 'seo_url_301']] as const).map(([k, lbl], i) => (
                     <div key={k} style={{ marginTop: i === 0 ? 0 : 14 }}>
                       <div style={labelRow}><label style={label}>{t(lbl)}</label><InfoDot text={t(SEO_TIPS[k])} /></div>

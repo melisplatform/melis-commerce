@@ -612,12 +612,20 @@ class MelisComReactApiProductController extends MelisAbstractActionController
         try {
             $body = json_decode($this->getRequest()->getContent(), true) ?? [];
             $userId = (int) ($body['userId'] ?? 0);
+            $email  = trim((string) ($body['email'] ?? ''));
             $level  = ($body['stockLevel'] ?? '') === '' ? 0 : (int) $body['stockLevel'];
-            if ($userId <= 0) { return $this->jsonResponse(['success' => false, 'error' => 'Invalid user'], 400); }
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
-            $uRows = iterator_to_array($db->query('SELECT usr_email FROM melis_core_user WHERE usr_id = ? LIMIT 1', [$userId]));
-            $email = $uRows ? (string) ((array) $uRows[0])['usr_email'] : '';
-            $dup = iterator_to_array($db->query('SELECT sea_id FROM melis_ecom_stock_email_alert WHERE sea_prd_id = ? AND sea_user_id = ? LIMIT 1', [$prdId, $userId]));
+            if ($userId > 0) {
+                $uRows = iterator_to_array($db->query('SELECT usr_email FROM melis_core_user WHERE usr_id = ? LIMIT 1', [$userId]));
+                $email = $uRows ? (string) ((array) $uRows[0])['usr_email'] : '';
+                $dup = iterator_to_array($db->query('SELECT sea_id FROM melis_ecom_stock_email_alert WHERE sea_prd_id = ? AND sea_user_id = ? LIMIT 1', [$prdId, $userId]));
+            } elseif (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                // No BO account tied to this recipient (free-typed address, mirrors legacy select2 tags:true behavior).
+                $userId = -1;
+                $dup = iterator_to_array($db->query('SELECT sea_id FROM melis_ecom_stock_email_alert WHERE sea_prd_id = ? AND sea_email = ? LIMIT 1', [$prdId, $email]));
+            } else {
+                return $this->jsonResponse(['success' => false, 'error' => 'Invalid recipient'], 400);
+            }
             if (!$dup) { $db->query('INSERT INTO melis_ecom_stock_email_alert (sea_stock_level_alert, sea_email, sea_prd_id, sea_user_id) VALUES (?, ?, ?, ?)', [$level, $email, $prdId, $userId]); }
             return $this->jsonResponse(['success' => true, 'data' => null], 201);
         } catch (\Throwable $e) { return $this->errorResponse($e); }

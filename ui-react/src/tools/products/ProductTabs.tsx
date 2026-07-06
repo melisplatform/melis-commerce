@@ -335,15 +335,19 @@ export function AttributesSection({ productId, options, t, pendingAttrIds = [], 
   )
 }
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 // ── Section Destinataires d'alerte stock (ajout / suppression) ──────────────────
-export function RecipientsSection({ productId, users, stockLevel, t, pendingRecipientIds = [], onTogglePendingRecipient, onMarkDeleteRecipient }: {
+export function RecipientsSection({ productId, users, stockLevel, t, pendingRecipientIds = [], onTogglePendingRecipient, pendingRecipientEmails = [], onAddPendingRecipientEmail, onRemovePendingRecipientEmail, onMarkDeleteRecipient }: {
   productId: number | null; users: UserOption[]; stockLevel: number | null; t: TFn
   pendingRecipientIds?: number[]; onTogglePendingRecipient?: (id: number) => void
+  pendingRecipientEmails?: string[]; onAddPendingRecipientEmail?: (email: string) => void; onRemovePendingRecipientEmail?: (email: string) => void
   onMarkDeleteRecipient?: (seaId: number) => void
 }) {
   const [items, setItems] = useState<AlertRecipient[]>([])
   const [tick, setTick] = useState(0)
   const [pick, setPick] = useState<number>(0)
+  const [emailInput, setEmailInput] = useState('')
   const [toDelete, setToDelete] = useState<AlertRecipient | null>(null)
 
   useEffect(() => { if (!productId) return; fetchProductAlert(productId).then((r) => setItems(r.recipients)).catch(() => null) }, [productId, tick])
@@ -351,6 +355,12 @@ export function RecipientsSection({ productId, users, stockLevel, t, pendingReci
   function add() {
     if (pick <= 0) return
     onTogglePendingRecipient?.(pick); setPick(0)
+  }
+  function addEmail() {
+    const email = emailInput.trim()
+    if (!EMAIL_RE.test(email)) return
+    if (items.some((it) => it.email === email) || pendingRecipientEmails.includes(email)) { setEmailInput(''); return }
+    onAddPendingRecipientEmail?.(email); setEmailInput('')
   }
   function confirmDelete() {
     if (!toDelete) return
@@ -360,18 +370,26 @@ export function RecipientsSection({ productId, users, stockLevel, t, pendingReci
   }
   const pendingUsers = users.filter((u) => pendingRecipientIds.includes(u.id))
   const avail = users.filter((u) => !items.some((it) => it.userId === u.id) && !pendingRecipientIds.includes(u.id))
-  const allEmpty = items.length === 0 && pendingUsers.length === 0
+  const allEmpty = items.length === 0 && pendingUsers.length === 0 && pendingRecipientEmails.length === 0
+  const emailValid = EMAIL_RE.test(emailInput.trim())
 
   return (
     <section>
       <h3 style={sectionTitle}>{t('sec_recipients')}</h3>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
         <select style={{ ...inputCss, flex: 1 }} value={pick} onChange={(e) => setPick(Number(e.target.value))}>
           <option value={0}>{t('recip_add_ph')}</option>
           {avail.map((u) => <option key={u.id} value={u.id}>{u.name}</option>)}
         </select>
         <button style={btnGhost} onClick={add} disabled={pick <= 0}><PlusIcon />{t('recip_add')}</button>
       </div>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+        <input type="email" style={{ ...inputCss, flex: 1 }} value={emailInput} onChange={(e) => setEmailInput(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addEmail() } }}
+          placeholder={t('recip_email_ph')} autoComplete="off" />
+        <button style={btnGhost} onClick={addEmail} disabled={!emailValid}><PlusIcon />{t('recip_email_add')}</button>
+      </div>
+      {emailInput.trim() !== '' && !emailValid && <p style={{ ...hint, color: '#dc2626', margin: '-6px 0 12px' }}>{t('err_invalid_email')}</p>}
       {allEmpty ? <p style={{ ...hint, margin: 0 }}>{t('recip_empty')}</p> : (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           {items.map((it) => (
@@ -384,6 +402,12 @@ export function RecipientsSection({ productId, users, stockLevel, t, pendingReci
             <span key={`p-${u.id}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 999, background: 'var(--color-muted,rgba(0,0,0,.05))', fontSize: 14 }}>
               {u.name}
               <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-muted-foreground)' }} title={t('del')} onClick={() => onTogglePendingRecipient?.(u.id)}>✕</button>
+            </span>
+          ))}
+          {pendingRecipientEmails.map((email) => (
+            <span key={`pe-${email}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 999, background: 'var(--color-muted,rgba(0,0,0,.05))', fontSize: 14 }}>
+              {email}
+              <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-muted-foreground)' }} title={t('del')} onClick={() => onRemovePendingRecipientEmail?.(email)}>✕</button>
             </span>
           ))}
         </div>

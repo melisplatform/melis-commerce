@@ -83,8 +83,8 @@ export const addDocumentType = (kind: 'image' | 'file', code: string, name: stri
 
 // ── Alerte stock — destinataires ────────────────────────────────────────────────
 export const fetchProductAlert = (id: number) => apiFetch<{ recipients: AlertRecipient[] }>(`/melis/react-api/products/${id}/alert`)
-export const saveProductRecipient = (id: number, userId: number, stockLevel: number | null) =>
-  apiFetch<null>(`/melis/react-api/products/${id}/alert/recipients/save`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId, stockLevel }) })
+export const saveProductRecipient = (id: number, recipient: { userId: number } | { email: string }, stockLevel: number | null) =>
+  apiFetch<null>(`/melis/react-api/products/${id}/alert/recipients/save`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...recipient, stockLevel }) })
 export const deleteProductRecipient = (id: number, seaId: number) =>
   apiFetch<null>(`/melis/react-api/products/${id}/alert/recipients/${seaId}`, { method: 'DELETE' })
 
