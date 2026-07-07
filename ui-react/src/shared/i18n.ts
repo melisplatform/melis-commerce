@@ -9,7 +9,7 @@ export type Dict = Record<Lang, Record<string, string>>
 export type T = (key: string, vars?: Record<string, string | number>) => string
 
 export function currentLang(): Lang {
-  const l = (document.documentElement.lang || 'en').toLowerCase()
+  const l = (document.documentElement.lang || 'fr').toLowerCase()
   return l.startsWith('fr') ? 'fr' : 'en'
 }
 
