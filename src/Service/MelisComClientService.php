@@ -2501,7 +2501,7 @@ class MelisComClientService extends MelisComGeneralService
 
                 //check if client already exist
                 if($position == 0){
-                    $name = str_replace('"', '', $accountsData[$position]);
+                    $name = str_replace('"', '', $accountsData[$position] ?? '');
                     $cliData = $clientTable->getEntryByField('cli_name', $name)->current();
                     if(!empty($cliData)){
                         if($typeToCheck == 'account_name')

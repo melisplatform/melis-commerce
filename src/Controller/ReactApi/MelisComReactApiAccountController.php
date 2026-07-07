@@ -136,7 +136,8 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
             }
 
             $countries = [];
-            foreach ($db->query('SELECT ctry_id, ctry_name FROM melis_ecom_country ORDER BY ctry_name', []) as $r) {
+            // Seuls les pays ACTIFS (ctry_status=1) — comme le back-office (EcomCountriesSelectFactory).
+            foreach ($db->query('SELECT ctry_id, ctry_name FROM melis_ecom_country WHERE ctry_status = 1 ORDER BY ctry_name', []) as $r) {
                 $r = (array) $r;
                 $countries[] = ['id' => (int) $r['ctry_id'], 'name' => (string) $r['ctry_name']];
             }
@@ -683,6 +684,101 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
             $this->unlinkClientPerson($db, $this->routeId(), (int) $this->params()->fromRoute('contactId', 0));
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
+    }
+
+    // ─── POST /accounts/import-test — valide le CSV sans rien écrire en base ──
+    public function importTestAction(): HttpResponse
+    {
+        if ($deny = $this->denyUnlessAccess()) { return $deny; }
+        try {
+            [$file, $error] = $this->requireCsvUpload();
+            if ($error) { return $error; }
+
+            $delimiter    = $this->detectCsvDelimiter($file['tmp_name']);
+            $fileContents = $this->readImportedCsvFile($file['tmp_name']);
+            $accountService = $this->getServiceManager()->get('MelisComClientService');
+            $result = $accountService->importFileValidator($fileContents, $delimiter, false, 'account_name');
+
+            // success = l'appel API a fonctionné ; le résultat métier (fichier valide ou non) est dans `data`.
+            return $this->jsonResponse([
+                'success' => true,
+                'data'    => ['valid' => empty($result['errors']), 'errors' => $result['errors'] ?? []],
+            ]);
+        } catch (\Throwable $e) { return $this->errorResponse($e); }
+    }
+
+    // ─── POST /accounts/import — importe le CSV (mêmes règles que le back-office legacy) ──
+    public function importAction(): HttpResponse
+    {
+        if ($deny = $this->denyUnlessAccess()) { return $deny; }
+        try {
+            [$file, $error] = $this->requireCsvUpload();
+            if ($error) { return $error; }
+
+            $delimiter    = $this->detectCsvDelimiter($file['tmp_name']);
+            $fileContents = $this->readImportedCsvFile($file['tmp_name']);
+            $accountService = $this->getServiceManager()->get('MelisComClientService');
+            $result = $accountService->importFileValidator($fileContents, $delimiter, false, 'account_name');
+            if (empty($result['proceedImporting'])) {
+                return $this->jsonResponse(['success' => true, 'data' => ['imported' => false, 'errors' => $result['errors'] ?? []]]);
+            }
+
+            $adapter = $this->getServiceManager()->get('Laminas\Db\Adapter\Adapter');
+            $con = $adapter->getDriver()->getConnection();
+            $con->beginTransaction();
+            try {
+                $accountService->importAccounts($fileContents, [], $delimiter, (bool) ($result['allowOverride'] ?? false), 'account_name');
+                $con->commit();
+            } catch (\Throwable $ex) {
+                $con->rollback();
+                throw $ex;
+            }
+            return $this->jsonResponse(['success' => true, 'data' => ['imported' => true, 'errors' => []]]);
+        } catch (\Throwable $e) { return $this->errorResponse($e); }
+    }
+
+    /** @return array{0: ?array, 1: ?HttpResponse} [$file, $errorResponseOrNull] */
+    private function requireCsvUpload(): array
+    {
+        $files = $this->getRequest()->getFiles()->toArray();
+        $file  = $files['account_file'] ?? null;
+        if (!$file || !isset($file['tmp_name']) || ($file['error'] ?? 1) !== UPLOAD_ERR_OK) {
+            return [null, $this->jsonResponse(['success' => false, 'error' => 'No file uploaded'], 400)];
+        }
+        if (strtolower(pathinfo((string) $file['name'], PATHINFO_EXTENSION)) !== 'csv') {
+            return [null, $this->jsonResponse(['success' => false, 'error' => 'The file must be a CSV'], 400)];
+        }
+        return [$file, null];
+    }
+
+    /** Devine le séparateur CSV (,/;/tab) en comptant les colonnes sur les 3 premières lignes — cf. MelisComClientController::getCsvDelimiter(). */
+    private function detectCsvDelimiter(string $filePath, int $checkLines = 3): string
+    {
+        $delimiters = [',', ';', "\t"];
+        $counts = [];
+        $fileObject = new \SplFileObject($filePath);
+        $counter = 0;
+        while ($fileObject->valid() && $counter <= $checkLines) {
+            $line = $fileObject->fgets();
+            foreach ($delimiters as $delimiter) {
+                $total = count(explode($delimiter, $line));
+                if ($total > 1) { $counts[$delimiter] = ($counts[$delimiter] ?? 0) + $total; }
+            }
+            $counter++;
+        }
+        if (!$counts) { return ';'; }
+        $best = array_keys($counts, max($counts));
+        return $best[0];
+    }
+
+    /** Lit le CSV importé, en forçant l'UTF-8 si besoin — cf. MelisComClientController::readImportedCsv(). */
+    private function readImportedCsvFile(string $tmpName): string
+    {
+        $data = file_get_contents($tmpName);
+        if ($data !== false && !mb_check_encoding($data, 'UTF-8')) {
+            $data = mb_convert_encoding($data, 'UTF-8', 'ISO-8859-1');
+        }
+        return $data === false ? '' : $data;
     }
 
     /** Lie un contact à un compte dans LES DEUX tables symétriques (car + cpr), dédupliqué. */

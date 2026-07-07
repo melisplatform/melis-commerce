@@ -208,7 +208,9 @@ class MelisComReactApiContactController extends MelisAbstractActionController
             $password    = trim((string) ($body['password'] ?? ''));
             $tags        = trim((string) ($body['tags'] ?? ''));
 
-            if ($name === '') {
+            // Pour un contact « company », le nom (cper_name) n'est pas requis — le firstname
+            // (relabellisé « Société » côté UI) porte seul l'identité. Cf. legacy validateContact().
+            if ($type !== 'company' && $name === '') {
                 return $this->jsonResponse(['success' => false, 'error' => 'Le nom est obligatoire.'], 400);
             }
             if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {

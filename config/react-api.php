@@ -60,6 +60,28 @@ return [
                                     ],
                                 ],
                             ],
+                            'accounts-import-test' => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/accounts/import-test[/]',
+                                    'defaults' => [
+                                        '__NAMESPACE__' => 'MelisCommerce\Controller',
+                                        'controller'    => 'MelisComReactApiAccount',
+                                        'action'        => 'importTest',
+                                    ],
+                                ],
+                            ],
+                            'accounts-import' => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'    => '/accounts/import[/]',
+                                    'defaults' => [
+                                        '__NAMESPACE__' => 'MelisCommerce\Controller',
+                                        'controller'    => 'MelisComReactApiAccount',
+                                        'action'        => 'import',
+                                    ],
+                                ],
+                            ],
                             'accounts-delete' => [
                                 'type'    => 'Segment',
                                 'options' => [

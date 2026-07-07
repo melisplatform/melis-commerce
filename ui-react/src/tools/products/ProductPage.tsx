@@ -429,7 +429,6 @@ function ProductForm({ id, base }: { id: string; base: string }) {
           ...pendingDeleteImageIds.map((id) => deleteProductMedia(productId!, id)),
         ])
         notify('ok', t('title'), t('saved'))
-        setTimeout(() => navigate(base), 500)
       }
     } catch (e) { const msg = e instanceof Error ? e.message : t('err_save'); setError(msg); notify('ko', t('title'), msg) } finally { setSaving(false) }
   }

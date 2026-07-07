@@ -1115,6 +1115,10 @@ class MelisComClientListController extends MelisAbstractActionController
                 $content .= "\r\n";
             }
 
+            // BOM UTF-8 : sans lui, Excel (Windows) ré-interprète le fichier en ANSI/Windows-1252
+            // et affiche les caractères accentués sous forme de charabia (Ã©, Ã¢, etc.).
+            $content = "\xEF\xBB\xBF" . $content;
+
             $response = new Response();
             $headers = $response->getHeaders();
             $headers->addHeaderLine('Content-Type', 'text/csv; charset=utf-8');
@@ -1146,7 +1150,7 @@ class MelisComClientListController extends MelisAbstractActionController
             }
         }
 
-        $fileName = $translator->translate('tr_client_accounts_import_file_title');
+        $fileName = $translator->translate('tr_client_accounts_import_file_title') . '.csv';
         return $this->executeCompanyContactExport($data, $fileName, ';');
     }
 }

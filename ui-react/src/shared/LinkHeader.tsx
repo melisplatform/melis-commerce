@@ -1,30 +1,72 @@
-import { useState } from 'react'
-import { inputCss, btnGhost } from './styles'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { card, inputCss, btnGhost } from './styles'
 import { LinkIcon } from './icons'
 import type { Option } from './api'
 
 /**
- * En-tête « lier » d'un onglet relationnel (Association / Contacts) : un sélecteur
- * d'entités + un bouton « Lier », façon back-office (input « Account name » + « Link account »).
+ * En-tête « lier » d'un onglet relationnel (Association / Contacts) : une AUTOCOMPLETE
+ * (filtrage local, façon back-office `easyAutocomplete` — cf. client.tool.js
+ * `initContactAutoSuggesst`) + un bouton « Lier ». Les options sont déjà chargées
+ * intégralement par l'appelant (petites listes) : le filtrage se fait donc côté client,
+ * pas de nouvel appel réseau par frappe.
  */
 export function LinkHeader({ options, placeholder, linkLabel, onLink }: {
   options: Option[]; placeholder: string; linkLabel: string; onLink: (id: number) => Promise<void> | void
 }) {
-  const [sel, setSel] = useState(0)
+  const [query, setQuery] = useState('')
+  const [selectedId, setSelectedId] = useState(0)
+  const [open, setOpen] = useState(false)
   const [busy, setBusy] = useState(false)
-  async function link() {
-    if (!sel) return
-    setBusy(true)
-    try { await onLink(sel); setSel(0) } finally { setBusy(false) }
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const onDown = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false) }
+    document.addEventListener('mousedown', onDown)
+    return () => document.removeEventListener('mousedown', onDown)
+  }, [open])
+
+  const matches = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    if (!q) return []
+    return options.filter((o) => o.name.toLowerCase().includes(q)).slice(0, 20)
+  }, [options, query])
+
+  function pick(o: Option) {
+    setQuery(o.name); setSelectedId(o.id); setOpen(false)
   }
+
+  function onQueryChange(v: string) {
+    setQuery(v); setSelectedId(0); setOpen(true)
+  }
+
+  async function link() {
+    if (!selectedId) return
+    setBusy(true)
+    try { await onLink(selectedId); setQuery(''); setSelectedId(0) } finally { setBusy(false) }
+  }
+
   return (
     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
-      <select style={{ ...inputCss, height: 36, width: 'auto', minWidth: 220 }} value={sel} onChange={(e) => setSel(Number(e.target.value))}>
-        <option value={0}>{placeholder}</option>
-        {options.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
-      </select>
+      <div ref={ref} style={{ position: 'relative', width: 260 }}>
+        <input style={{ ...inputCss, height: 36 }} value={query} placeholder={placeholder}
+          onChange={(e) => onQueryChange(e.target.value)}
+          onFocus={() => { if (query.trim()) setOpen(true) }} />
+        {open && matches.length > 0 && (
+          <div style={{ ...card, position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4, zIndex: 60, maxHeight: 240, overflow: 'auto', padding: 4 }}>
+            {matches.map((o) => (
+              <button key={o.id} type="button" onClick={() => pick(o)}
+                style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 10px', border: 0, borderRadius: 6, background: 'transparent', color: 'var(--color-foreground)', fontSize: 13, cursor: 'pointer' }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-primary) 10%, transparent)')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}>
+                {o.name}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
       <button style={{ ...btnGhost, height: 36, color: 'var(--color-primary)', borderColor: 'var(--color-primary)' }}
-        onClick={link} disabled={!sel || busy}>
+        onClick={link} disabled={!selectedId || busy}>
         <LinkIcon />{linkLabel}
       </button>
     </div>

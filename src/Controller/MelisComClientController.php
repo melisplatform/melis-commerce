@@ -2257,7 +2257,7 @@ class MelisComClientController extends MelisAbstractActionController
             $data = file_get_contents($fileParameters['tmp_name']);
             if (!mb_check_encoding($data, 'UTF-8')) {
                 //encode data to utf
-                $data = utf8_encode($data);
+                $data = mb_convert_encoding($data, 'UTF-8', 'ISO-8859-1');
             }
         }
 

@@ -310,10 +310,12 @@ function ContactForm({ id, base }: { id: string; base: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [firstname, name])
 
+  const isCompany = type === 'company'
+
   async function submit() {
     let hasError = false
     if (!firstname.trim()) { setFirstnameError(t('err_firstname')); hasError = true } else setFirstnameError('')
-    if (!name.trim()) { setNameError(t('err_name')); hasError = true } else setNameError('')
+    if (!isCompany && !name.trim()) { setNameError(t('err_name')); hasError = true } else setNameError('')
     if (!langId) { setLangError(t('err_language')); hasError = true } else setLangError('')
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setEmailError(t('err_email')); hasError = true } else setEmailError('')
     if (!isEdit && !password.trim()) { setPasswordError(t('err_password_required')); hasError = true }
@@ -334,8 +336,7 @@ function ContactForm({ id, base }: { id: string; base: string }) {
         try { await saveContactAddresses(savedId, addresses) } catch { /* */ }
       }
       notify('ok', t('title'), t('saved'))
-      if (!isEdit) closeSubTab(base, `${base}/new`)
-      setTimeout(() => navigate(base), 500)
+      if (!isEdit) { closeSubTab(base, `${base}/new`); setTimeout(() => navigate(base), 500) }
     } catch (e) { notify('ko', t('title'), e instanceof Error ? e.message : t('err_save')) } finally { setSaving(false) }
   }
 
@@ -382,32 +383,38 @@ function ContactForm({ id, base }: { id: string; base: string }) {
                     ))}
                   </div>
                 </div>
-                {/* Civility */}
-                <div>
-                  <label style={label}>{t('f_civility')}</label>
-                  <select style={inputCss} value={civility} onChange={(e) => setCivility(Number(e.target.value))}>
-                    <option value={0}>{t('f_civility_ph')}</option>
-                    {civilities.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                  </select>
-                </div>
-                {/* Firstname + Name */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                {/* Civility (masquée pour un contact « Société ») */}
+                {!isCompany && (
                   <div>
-                    <label style={{ ...label, ...(firstnameError ? { color: '#ef4444' } : {}) }}>{t('f_firstname')} <span style={{ color: '#ef4444' }}>*</span></label>
-                    <input style={inputCss} value={firstname} onChange={(e) => { setFirstname(e.target.value); if (firstnameError && e.target.value.trim()) setFirstnameError('') }} placeholder={t('f_firstname_ph')} autoComplete="off" />
+                    <label style={label}>{t('f_civility')}</label>
+                    <select style={inputCss} value={civility} onChange={(e) => setCivility(Number(e.target.value))}>
+                      <option value={0}>{t('f_civility_ph')}</option>
+                      {civilities.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    </select>
+                  </div>
+                )}
+                {/* Firstname (relabellisé « Société » en mode company) + Name (masqué en mode company) */}
+                <div style={{ display: 'grid', gridTemplateColumns: isCompany ? '1fr' : '1fr 1fr', gap: 16 }}>
+                  <div>
+                    <label style={{ ...label, ...(firstnameError ? { color: '#ef4444' } : {}) }}>{isCompany ? t('type_company') : t('f_firstname')} <span style={{ color: '#ef4444' }}>*</span></label>
+                    <input style={inputCss} value={firstname} onChange={(e) => { setFirstname(e.target.value); if (firstnameError && e.target.value.trim()) setFirstnameError('') }} placeholder={isCompany ? t('type_company') : t('f_firstname_ph')} autoComplete="off" />
                     {firstnameError && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{firstnameError}</p>}
                   </div>
+                  {!isCompany && (
+                    <div>
+                      <label style={{ ...label, ...(nameError ? { color: '#ef4444' } : {}) }}>{t('f_name')} <span style={{ color: '#ef4444' }}>*</span></label>
+                      <input style={inputCss} value={name} onChange={(e) => { setName(e.target.value); if (nameError && e.target.value.trim()) setNameError('') }} placeholder={t('f_name_ph')} autoComplete="off" />
+                      {nameError && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{nameError}</p>}
+                    </div>
+                  )}
+                </div>
+                {/* Middle name (masqué en mode company) */}
+                {!isCompany && (
                   <div>
-                    <label style={{ ...label, ...(nameError ? { color: '#ef4444' } : {}) }}>{t('f_name')} <span style={{ color: '#ef4444' }}>*</span></label>
-                    <input style={inputCss} value={name} onChange={(e) => { setName(e.target.value); if (nameError && e.target.value.trim()) setNameError('') }} placeholder={t('f_name_ph')} autoComplete="off" />
-                    {nameError && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{nameError}</p>}
+                    <label style={label}>{t('f_middle_name')}</label>
+                    <input style={inputCss} value={middleName} onChange={(e) => setMiddleName(e.target.value)} placeholder={t('f_middle_name_ph')} autoComplete="off" />
                   </div>
-                </div>
-                {/* Middle name */}
-                <div>
-                  <label style={label}>{t('f_middle_name')}</label>
-                  <input style={inputCss} value={middleName} onChange={(e) => setMiddleName(e.target.value)} placeholder={t('f_middle_name_ph')} autoComplete="off" />
-                </div>
+                )}
                 {/* Language */}
                 <div>
                   <label style={{ ...label, ...(langError ? { color: '#ef4444' } : {}) }}>{t('f_language')} <span style={{ color: '#ef4444' }}>*</span></label>
@@ -423,17 +430,19 @@ function ContactForm({ id, base }: { id: string; base: string }) {
                   <input style={inputCss} value={email} onChange={(e) => { setEmail(e.target.value); if (emailError) setEmailError('') }} placeholder={t('f_email_ph')} autoComplete="off" />
                   {emailError && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{emailError}</p>}
                 </div>
-                {/* Job title + Job service */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                  <div>
-                    <label style={label}>{t('f_job')}</label>
-                    <input style={inputCss} value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder={t('f_job_ph')} autoComplete="off" />
+                {/* Job title + Job service (masqués en mode company) */}
+                {!isCompany && (
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                    <div>
+                      <label style={label}>{t('f_job')}</label>
+                      <input style={inputCss} value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder={t('f_job_ph')} autoComplete="off" />
+                    </div>
+                    <div>
+                      <label style={label}>{t('f_job_service')}</label>
+                      <input style={inputCss} value={jobService} onChange={(e) => setJobService(e.target.value)} placeholder={t('f_job_service_ph')} autoComplete="off" />
+                    </div>
                   </div>
-                  <div>
-                    <label style={label}>{t('f_job_service')}</label>
-                    <input style={inputCss} value={jobService} onChange={(e) => setJobService(e.target.value)} placeholder={t('f_job_service_ph')} autoComplete="off" />
-                  </div>
-                </div>
+                )}
                 {/* Mobile + Landline */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                   <div>

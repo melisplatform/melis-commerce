@@ -25,6 +25,18 @@ export const saveAccount = (payload: AccountSavePayload) =>
   apiFetch<{ id: number }>('/melis/react-api/accounts/save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
 export const deleteAccount = (id: number) => apiFetch<null>(`/melis/react-api/accounts/delete/${id}`, { method: 'DELETE' })
 
+// ── Import CSV (bouton « Importer » de la liste) ────────────────────────────────
+export interface AccountImportResult { valid?: boolean; imported?: boolean; errors: string[] }
+export const testImportAccounts = (file: File) => {
+  const fd = new FormData(); fd.append('account_file', file)
+  return apiFetch<AccountImportResult>('/melis/react-api/accounts/import-test', { method: 'POST', body: fd })
+}
+export const importAccounts = (file: File) => {
+  const fd = new FormData(); fd.append('account_file', file)
+  return apiFetch<AccountImportResult>('/melis/react-api/accounts/import', { method: 'POST', body: fd })
+}
+export const ACCOUNT_IMPORT_TEMPLATE_URL = '/melis/download-account-template'
+
 // ── Onglets de la fiche compte (sous-ressources) ────────────────────────────────
 export interface CompanyData {
   id: number; name: string; numberId: string; vatNumber: string; group: string; employees: number

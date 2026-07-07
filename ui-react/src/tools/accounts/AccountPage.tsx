@@ -3,13 +3,13 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   deleteAccount, fetchAccountById, fetchAccountOptions, fetchAccounts, fetchAccountStats,
   saveAccount, fetchCompany, saveCompany, fetchAccountAddresses, saveAccountAddresses,
-  fetchAccountContacts,
+  fetchAccountContacts, testImportAccounts, importAccounts, ACCOUNT_IMPORT_TEMPLATE_URL,
   type AccountItem, type AccountStats, type CompanyData, type AccountAddress, type AccountContact,
 } from './api'
 import { DICT } from './dict'
-import { makeT, fmtDate } from '../../shared/i18n'
+import { makeT, fmtDate, type T } from '../../shared/i18n'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } from '../../shared/styles'
-import { PencilIcon, TrashIcon, PlusIcon, GripIcon, FileDownIcon, BuildingKpiIcon } from '../../shared/icons'
+import { PencilIcon, TrashIcon, PlusIcon, GripIcon, FileDownIcon, FileUpIcon, BuildingKpiIcon } from '../../shared/icons'
 import { StatusBadge, Kpi, ViewModeToggle, LegacyFrame, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { useCaps } from '../../shared/useCaps'
@@ -39,6 +39,98 @@ function getCellExport(a: AccountItem, id: string, t: (k: string) => string): st
     case 'created': return a.dateCreation || ''
     default: return ''
   }
+}
+
+// ── Import CSV (modale « Importer » de la liste) ────────────────────────────────
+function ImportAccountsModal({ t, onClose, onImported }: { t: T; onClose: () => void; onImported: () => void }) {
+  const [file, setFile] = useState<File | null>(null)
+  const [tested, setTested] = useState(false)
+  const [busy, setBusy] = useState<'test' | 'import' | null>(null)
+  const [errors, setErrors] = useState<string[]>([])
+  const [message, setMessage] = useState<string | null>(null)
+
+  function pickFile(f: File | null) {
+    setFile(f); setTested(false); setErrors([]); setMessage(null)
+  }
+
+  async function runTest() {
+    if (!file) { setErrors([t('imp_err_file')]); return }
+    if (!file.name.toLowerCase().endsWith('.csv')) { setErrors([t('imp_err_not_csv')]); return }
+    setBusy('test'); setErrors([]); setMessage(null)
+    try {
+      const r = await testImportAccounts(file)
+      setTested(!!r.valid)
+      setErrors(r.errors ?? [])
+      setMessage(r.valid ? t('imp_test_ok') : t('imp_test_ko'))
+    } catch (e) {
+      setTested(false)
+      setMessage(e instanceof Error ? e.message : t('imp_test_ko'))
+    } finally { setBusy(null) }
+  }
+
+  async function runImport() {
+    if (!file) return
+    setBusy('import'); setErrors([]); setMessage(null)
+    try {
+      const r = await importAccounts(file)
+      if (r.imported) {
+        notify('ok', t('imp_title'), t('imp_import_ok'))
+        onImported()
+      } else {
+        setTested(false)
+        setErrors(r.errors ?? [])
+        setMessage(t('imp_import_ko'))
+      }
+    } catch (e) {
+      setTested(false)
+      setMessage(e instanceof Error ? e.message : t('imp_import_ko'))
+    } finally { setBusy(null) }
+  }
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,.5)' }}>
+      <div style={{ ...card, padding: 24, width: '100%', maxWidth: 480, maxHeight: '85vh', overflow: 'auto' }}>
+        <h3 style={{ fontSize: 16, fontWeight: 600, margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8 }}><FileUpIcon />{t('imp_title')}</h3>
+
+        <p style={{ fontSize: 14, margin: '0 0 8px' }}>{t('imp_desc1')}</p>
+        <p style={{ fontSize: 13, color: 'var(--color-muted-foreground)', margin: '0 0 4px' }}>{t('imp_desc2')}</p>
+        <p style={{ fontSize: 13, color: 'var(--color-muted-foreground)', margin: '0 0 4px' }}>{t('imp_desc3')}</p>
+        <p style={{ fontSize: 13, color: 'var(--color-muted-foreground)', margin: '0 0 12px' }}>{t('imp_sections')}</p>
+        <p style={{ fontSize: 13, margin: '0 0 12px' }}>{t('imp_required')}</p>
+
+        <a href={ACCOUNT_IMPORT_TEMPLATE_URL} style={{ fontSize: 13, color: 'var(--color-primary)', fontWeight: 500, textDecoration: 'underline' }}>
+          {t('imp_download')}
+        </a>
+
+        <div style={{ marginTop: 16 }}>
+          <label style={label}>{t('imp_choose_file')}</label>
+          <input type="file" accept=".csv" style={inputCss}
+            onChange={(e) => pickFile(e.target.files?.[0] ?? null)} />
+        </div>
+
+        {message && (
+          <p style={{ fontSize: 13, marginTop: 12, color: errors.length ? '#dc2626' : '#16a34a' }}>{message}</p>
+        )}
+        {errors.length > 0 && (
+          <ul style={{ margin: '8px 0 0', paddingLeft: 18, fontSize: 12, color: '#dc2626', display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {errors.map((e, i) => <li key={i}>{e}</li>)}
+          </ul>
+        )}
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginTop: 24 }}>
+          <button style={btnGhost} onClick={onClose}>{t('imp_close')}</button>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button style={btnGhost} disabled={!file || busy !== null} onClick={runTest}>
+              {busy === 'test' ? '…' : t('imp_test')}
+            </button>
+            <button style={btnPrimary} disabled={!tested || busy !== null} onClick={runImport}>
+              {busy === 'import' ? '…' : t('imp_import')}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default function AccountPage() {
@@ -71,6 +163,7 @@ function AccountList({ base }: { base: string }) {
   const [cols, setCols] = useState<ColDef[]>(cols$.load)
   const [showCols, setShowCols] = useState(false)
   const [showExport, setShowExport] = useState(false)
+  const [showImport, setShowImport] = useState(false)
 
   useEffect(() => { fetchAccountStats().then(setStats).catch(() => null) }, [tick])
   useEffect(() => { fetchAccountOptions().then((o) => setGroups(o.groups)).catch(() => null) }, [])
@@ -142,6 +235,7 @@ function AccountList({ base }: { base: string }) {
               {showCols && <ColManager cols={cols} labelFor={(id) => t(COL_LABEL[id])} onChange={setCols} onClose={() => setShowCols(false)} save={cols$.save} defaults={cols$.DEFAULT} t={t} />}
             </div>
             {can('export') && <button style={{ ...btnGhost, height: 36 }} onClick={() => setShowExport(true)}><FileDownIcon />{t('export')}</button>}
+            {can('create') && <button style={{ ...btnGhost, height: 36 }} onClick={() => setShowImport(true)}><FileUpIcon />{t('imp_btn')}</button>}
           </div>
         </div>
 
@@ -189,6 +283,11 @@ function AccountList({ base }: { base: string }) {
       </div>
 
       {showExport && <ExportModal cols={cols} items={items} getCell={(a, id) => getCellExport(a, id, t)} labelFor={(id) => t(COL_LABEL[id])} filename={t('exp_filename')} sheetTitle={t('title')} t={t} onClose={() => setShowExport(false)} />}
+
+      {showImport && (
+        <ImportAccountsModal t={t} onClose={() => setShowImport(false)}
+          onImported={() => { setShowImport(false); setTick((x) => x + 1) }} />
+      )}
 
       {toDelete && (
         <ConfirmModal title={t('del_title')} message={t('del_confirm', { u: toDelete.name })}
@@ -294,8 +393,7 @@ function AccountForm({ id, base }: { id: string; base: string }) {
         if (addressesLoaded || visitedTabs.has('addresses')) { try { await saveAccountAddresses(savedId, addresses) } catch { /* */ } }
       }
       notify('ok', t('title'), t('saved'))
-      if (!isEdit) closeSubTab(base, `${base}/new`)
-      setTimeout(() => navigate(base), 500)
+      if (!isEdit) { closeSubTab(base, `${base}/new`); setTimeout(() => navigate(base), 500) }
     } catch (e) { notify('ko', t('title'), e instanceof Error ? e.message : t('err_save')) } finally { setSaving(false) }
   }
 
