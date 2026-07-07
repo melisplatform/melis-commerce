@@ -11,7 +11,7 @@ import {
   type AssocVariant, type AvailVariant, type VariantAttrValue,
 } from './api'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } from '../../shared/styles'
-import { PlusIcon, TrashIcon, PencilIcon, EyeIcon, ArrowLeftIcon, ToggleRightIcon } from '../../shared/icons'
+import { PlusIcon, TrashIcon, PencilIcon, EyeIcon, ToggleRightIcon, ArrowLeftIcon } from '../../shared/icons'
 import { StatusBadge } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { Tabs, type TabDef } from '../../shared/Tabs'
@@ -103,6 +103,9 @@ export function VariantEditor({ productId, variantId, countries, currencies, lan
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {/* Vraie navigation arrière (pas juste décorative) : ce formulaire est niché DANS l'onglet
+              Variants du produit — le SubTabBar de l'hôte ne connaît que le niveau Produit, donc cette
+              flèche reste nécessaire pour revenir à la LISTE des variantes. */}
           <button type="button" style={{ ...iconBtn, width: 32, height: 32 }} onClick={onClose} title={t('back')}><ArrowLeftIcon /></button>
           <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>{isEdit ? t('var_edit') : t('var_new')}</h2>
         </div>

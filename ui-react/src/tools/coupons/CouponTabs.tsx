@@ -6,7 +6,7 @@ import {
   type CouponOrderUsage, type CouponOrderStatus,
 } from './api'
 import { card, inputCss, th, td, actionBtn } from '../../shared/styles'
-import { fmtDate, type T } from '../../shared/i18n'
+import { fmtDate, currentLang, type T } from '../../shared/i18n'
 import { CartIcon, TrashIcon, PencilIcon, PlusIcon, RefreshIcon } from '../../shared/icons'
 import { AssignTable, type AssignCol } from './AssignTable'
 import { DateRangeFilter } from '../../shared/DateRangeFilter'
@@ -109,7 +109,7 @@ export function CouponOrdersTab({ couponId, t }: { couponId: number; t: T }) {
       .then((r) => { setItems(r.items); setStatuses(r.statuses) }).catch(() => null)
   }, [couponId, search, status, dateStart, dateEnd, tick])
 
-  const fmtAmt = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  const fmtAmt = (v: number) => v.toLocaleString(currentLang() === 'fr' ? 'fr-FR' : 'en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
   return (
     <div style={{ ...card, padding: 28 }}>

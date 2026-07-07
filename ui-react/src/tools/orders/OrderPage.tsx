@@ -7,9 +7,9 @@ import {
   type OrderItem, type OrderStats, type OrderStatus, type OrderDetail, type OrderAttachment,
 } from './api'
 import { DICT } from './dict'
-import { makeT, fmtDate } from '../../shared/i18n'
+import { makeT, fmtDate, currentLang } from '../../shared/i18n'
 import { card, inputCss, btnGhost, btnPrimary, th, td } from '../../shared/styles'
-import { CartIcon, ShoppingCartKpiIcon, PackageIcon, CalendarIcon, PlusIcon, RefreshIcon, PencilIcon, ArrowLeftIcon } from '../../shared/icons'
+import { CartIcon, ShoppingCartKpiIcon, PackageIcon, CalendarIcon, PlusIcon, RefreshIcon, PencilIcon } from '../../shared/icons'
 import { Kpi, ViewModeToggle, LegacyFrame, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { DateRangeFilter } from '../../shared/DateRangeFilter'
@@ -130,7 +130,7 @@ function OrderList({ base }: { base: string }) {
 
   const onSort = (col: string) => { if (sortCol === col) setSortAsc((p) => !p); else { setSortCol(col); setSortAsc(true) } }
   const arrow  = (col: string) => sortCol === col ? (sortAsc ? ' ↑' : ' ↓') : ''
-  const fmtAmt = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  const fmtAmt = (v: number) => v.toLocaleString(currentLang() === 'fr' ? 'fr-FR' : 'en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
   const totalPages = Math.max(1, Math.ceil(total / LIMIT))
 
   const openOrder = (o: OrderItem) => {
@@ -347,8 +347,7 @@ function OrderForm({ id, base }: { id: string; base: string }) {
       {/* Header — back + title + Save (same pattern as AccountForm) */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <button type="button" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 6, border: '1px solid var(--color-border)', background: 'transparent', cursor: 'pointer', color: 'var(--color-foreground)' }}
-            onClick={() => navigate(base)} title={t('back')}><ArrowLeftIcon /></button>
+          <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 8, background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', color: 'var(--color-primary)' }}><ShoppingCartKpiIcon /></span>
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>
             {isEdit ? (order ? `${t('title')} ${order.reference || `#${order.id}`}` : t('loading')) : t('new')}
           </h1>

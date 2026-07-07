@@ -4,7 +4,7 @@ import {
   type OrderBasketItem, type OrderAddress, type OrderPayment, type OrderShipping, type OrderMessage, type OrderReturn,
 } from './api'
 import { card, inputCss, th, td, label, btnPrimary, btnGhost } from '../../shared/styles'
-import { fmtDate, type T } from '../../shared/i18n'
+import { fmtDate, currentLang, type T } from '../../shared/i18n'
 import { PackageIcon, MapPinIcon, CreditCardIcon, TruckIcon, MessageSquareIcon, ChevronDownIcon, UserIcon } from '../../shared/icons'
 
 const sectionTitle = { fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 6 } as const
@@ -30,7 +30,7 @@ function fmtTime(value: string | null | undefined): string {
   if (!value) return ''
   const d = new Date(value.replace(' ', 'T'))
   if (isNaN(d.getTime())) return ''
-  return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false })
+  return d.toLocaleTimeString(currentLang() === 'fr' ? 'fr-FR' : 'en-GB', { hour: '2-digit', minute: '2-digit', hour12: false })
 }
 
 function dateParts(value: string | null | undefined): { day: string; month: string; key: string } {
@@ -38,14 +38,14 @@ function dateParts(value: string | null | undefined): { day: string; month: stri
   if (isNaN(d.getTime())) return { day: '--', month: '---', key: 'unknown' }
   return {
     day: String(d.getDate()).padStart(2, '0'),
-    month: d.toLocaleDateString(undefined, { month: 'short' }).toUpperCase(),
+    month: d.toLocaleDateString(currentLang() === 'fr' ? 'fr-FR' : 'en-GB', { month: 'short' }).toUpperCase(),
     key: `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`,
   }
 }
 
 // ── Basket ────────────────────────────────────────────────────────────────────
 export function BasketTab({ basket, t }: { basket: OrderBasketItem[]; t: T }) {
-  const fmtPrice = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  const fmtPrice = (v: number) => v.toLocaleString(currentLang() === 'fr' ? 'fr-FR' : 'en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
   const total = basket.reduce((s, i) => s + i.qty * i.priceGross, 0)
   const headers = [t('basket_col_sku'), t('basket_col_name'), t('basket_col_category'), t('basket_col_qty'), t('basket_col_price_net'), t('basket_col_price_gross'), t('basket_col_currency')]
   return (
@@ -206,7 +206,7 @@ export function AddressesTab({ orderId, billing, delivery, locked, t, onSaved, c
 
 // ── Payment tab ───────────────────────────────────────────────────────────────
 export function PaymentTab({ payments, t }: { payments: OrderPayment[]; t: T }) {
-  const fmt = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  const fmt = (v: number) => v.toLocaleString(currentLang() === 'fr' ? 'fr-FR' : 'en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
   const headers = [t('payment_col_type'), t('payment_col_transac'), t('payment_col_total'), t('payment_col_order'), t('payment_col_shipping'), t('payment_col_currency'), t('payment_col_date')]
   return (
     <div style={{ ...card, padding: 28 }}>
