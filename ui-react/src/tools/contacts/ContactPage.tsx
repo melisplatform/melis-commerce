@@ -282,9 +282,14 @@ function ContactForm({ id, base }: { id: string; base: string }) {
   }, [contactId])
   useEffect(() => {
     if (!contactId) return
+    // Garde de montage : un fetch en vol au moment où l'onglet se ferme n'est pas annulé par le
+    // démontage — sans ce garde, son .catch() pouvait naviguer vers `base` APRÈS coup et écraser
+    // une navigation par ailleurs légitime (ex. fermeture d'onglet → retour Dashboard).
+    let cancelled = false
     setLoading(true)
     fetchContactById(contactId)
       .then((c) => {
+        if (cancelled) return
         setCivility(c.civility); setFirstname(c.firstname); setName(c.name)
         setMiddleName(c.middleName ?? ''); setLangId(c.langId ?? 0)
         setEmail(c.email); setPassword(''); setConfirmPassword('')
@@ -292,7 +297,8 @@ function ContactForm({ id, base }: { id: string; base: string }) {
         setTelMobile(c.telMobile); setTelLandline(c.telLandline ?? '')
         setAccountId(c.accountId); setType(c.type); setTags(c.tags); setActive(c.status === 1)
       })
-      .catch(() => navigate(base)).finally(() => setLoading(false))
+      .catch(() => { if (!cancelled) navigate(base) }).finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
   }, [contactId, navigate, base])
   useEffect(() => {
     if (!contactId) return

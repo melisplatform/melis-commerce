@@ -357,10 +357,15 @@ function AccountForm({ id, base }: { id: string; base: string }) {
   }, [accountId])
   useEffect(() => {
     if (!accountId) return
+    // Garde de montage : un fetch en vol au moment où l'onglet se ferme n'est pas annulé par le
+    // démontage — sans ce garde, son .catch() pouvait naviguer vers `base` APRÈS coup et écraser
+    // une navigation par ailleurs légitime (ex. fermeture d'onglet → retour Dashboard).
+    let cancelled = false
     setLoading(true)
     fetchAccountById(accountId)
-      .then((a) => { setName(a.name); setActive(a.status === 1); setGroupId(a.groupId); setCountryId(a.countryId); setTags(a.tags) })
-      .catch(() => navigate(base)).finally(() => setLoading(false))
+      .then((a) => { if (cancelled) return; setName(a.name); setActive(a.status === 1); setGroupId(a.groupId); setCountryId(a.countryId); setTags(a.tags) })
+      .catch(() => { if (!cancelled) navigate(base) }).finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
   }, [accountId, navigate, base])
   useEffect(() => {
     if (!accountId) return

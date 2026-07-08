@@ -125,13 +125,12 @@ export const saveVariantAssoc = (prdId: number, varId: number, variantId: number
 export const deleteVariantAssoc = (prdId: number, varId: number, avarId: number) =>
   apiFetch<null>(`/melis/react-api/products/${prdId}/variants/${varId}/assoc/${avarId}`, { method: 'DELETE' })
 
-// Valeurs d'attribut de la variante
-export interface VariantAttrValue { vatvId: number; valueId: number; name: string }
-export const fetchVariantAttributes = (prdId: number, varId: number) => apiFetch<{ items: VariantAttrValue[]; available: Option[] }>(`/melis/react-api/products/${prdId}/variants/${varId}/attributes`)
-export const saveVariantAttribute = (prdId: number, varId: number, valueId: number) =>
-  apiFetch<null>(`/melis/react-api/products/${prdId}/variants/${varId}/attributes/save`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ valueId }) })
-export const deleteVariantAttribute = (prdId: number, varId: number, vatvId: number) =>
-  apiFetch<null>(`/melis/react-api/products/${prdId}/variants/${varId}/attributes/${vatvId}`, { method: 'DELETE' })
+// Valeurs d'attribut de la variante — une entrée par attribut ASSIGNÉ AU PRODUIT, avec sa
+// valeur actuellement sélectionnée (0/1 par attribut, comme le legacy) et ses valeurs possibles.
+export interface VariantAttrGroup { attributeId: number; attributeName: string; selectedValueId: number | null; selectedVatvId: number | null; values: Option[] }
+export const fetchVariantAttributes = (prdId: number, varId: number) => apiFetch<{ attributes: VariantAttrGroup[] }>(`/melis/react-api/products/${prdId}/variants/${varId}/attributes`)
+export const saveVariantAttribute = (prdId: number, varId: number, attributeId: number, valueId: number) =>
+  apiFetch<null>(`/melis/react-api/products/${prdId}/variants/${varId}/attributes/save`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ attributeId, valueId }) })
 
 // ── Arbre des pages CMS (sélecteur d'association de page) ────────────────────────
 export interface PageNode { id: number; father: number; name: string; type: string; children: PageNode[] }

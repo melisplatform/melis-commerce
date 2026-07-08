@@ -5,10 +5,10 @@ import {
   fetchVariantPrices, saveVariantPrice,
   fetchVariantStocks, saveVariantStock, saveVariantSeo,
   fetchVariantAssoc, saveVariantAssoc, deleteVariantAssoc,
-  fetchVariantAttributes, saveVariantAttribute, deleteVariantAttribute,
+  fetchVariantAttributes, saveVariantAttribute,
   uploadVariantMedia, updateVariantMedia, deleteVariantMedia,
   type VariantSeo, type VariantPrice, type VariantStock, type MediaItem, type CountryOption,
-  type AssocVariant, type AvailVariant, type VariantAttrValue,
+  type AssocVariant, type AvailVariant, type VariantAttrGroup,
 } from './api'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } from '../../shared/styles'
 import { PlusIcon, TrashIcon, PencilIcon, EyeIcon, ToggleRightIcon, ArrowLeftIcon, ImageIcon, SettingsIcon, PaperclipIcon, CubesIcon } from '../../shared/icons'
@@ -340,31 +340,33 @@ function VarImages({ productId, variantId, t, countries, onNeedVid }: { productI
   )
 }
 
-// ── Attributs de la variante (valeurs d'attribut : ajout / suppression) ─────────
+// ── Attributs de la variante : une ligne par attribut assigné au produit (Color, Shoe size…),
+// chacune avec son propre sélecteur de valeur (une seule valeur par attribut, comme le legacy) ──
 function VarAttributes({ productId, variantId, t, onNeedVid }: { productId: number; variantId: number | null; t: TFn; onNeedVid?: () => Promise<number | null> }) {
-  const [items, setItems] = useState<VariantAttrValue[]>([])
-  const [avail, setAvail] = useState<{ id: number; name: string }[]>([])
-  const [pick, setPick] = useState(0)
+  const [groups, setGroups] = useState<VariantAttrGroup[]>([])
   const [tick, setTick] = useState(0)
-  useEffect(() => { if (variantId == null) return; fetchVariantAttributes(productId, variantId).then((r) => { setItems(r.items); setAvail(r.available) }).catch(() => null) }, [productId, variantId, tick])
-  async function add() { if (pick <= 0) return; const id = variantId ?? await onNeedVid?.(); if (!id) return; try { await saveVariantAttribute(productId, id, pick); setPick(0); setTick((x) => x + 1) } catch { /* */ } }
-  async function del(vatvId: number) { const id = variantId ?? await onNeedVid?.(); if (!id) return; try { await deleteVariantAttribute(productId, id, vatvId); setTick((x) => x + 1) } catch { /* */ } }
+  const [saving, setSaving] = useState<number | null>(null)
+  useEffect(() => { if (variantId == null) return; fetchVariantAttributes(productId, variantId).then((r) => setGroups(r.attributes)).catch(() => null) }, [productId, variantId, tick])
+  async function pick(attributeId: number, valueId: number) {
+    const id = variantId ?? await onNeedVid?.(); if (!id) return
+    setSaving(attributeId)
+    try { await saveVariantAttribute(productId, id, attributeId, valueId); setTick((x) => x + 1) }
+    catch { /* */ } finally { setSaving(null) }
+  }
   return (
     <section>
       <h3 style={secT}><CubesIcon />{t('sec_attributes')}</h3>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-        <select style={{ ...inputCss, flex: 1 }} value={pick} onChange={(e) => setPick(Number(e.target.value))}>
-          <option value={0}>{t('attr_add_ph')}</option>
-          {avail.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
-        </select>
-        <button style={btnGhost} onClick={add} disabled={pick <= 0}><PlusIcon />{t('attr_add')}</button>
-      </div>
-      {items.length === 0 ? <p style={{ ...hint, margin: 0 }}>{t('attr_empty')}</p> : (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-          {items.map((it) => (
-            <span key={it.vatvId} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 999, background: 'var(--color-muted,rgba(0,0,0,.05))', fontSize: 14 }}>
-              {it.name}<button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-muted-foreground)' }} title={t('del')} onClick={() => del(it.vatvId)}>✕</button>
-            </span>
+      {groups.length === 0 ? <p style={{ ...hint, margin: 0 }}>{t('attr_empty')}</p> : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {groups.map((g) => (
+            <div key={g.attributeId} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <label style={{ ...label, flex: '0 0 120px', margin: 0 }}>{g.attributeName}</label>
+              <select style={{ ...inputCss, flex: 1 }} value={g.selectedValueId ?? 0} disabled={saving === g.attributeId}
+                onChange={(e) => pick(g.attributeId, Number(e.target.value))}>
+                <option value={0}>{t('attr_value_ph')}</option>
+                {g.values.map((v) => <option key={v.id} value={v.id}>{v.name}</option>)}
+              </select>
+            </div>
           ))}
         </div>
       )}

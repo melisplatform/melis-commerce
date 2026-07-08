@@ -207,7 +207,16 @@ class MelisComReactApiProductController extends MelisAbstractActionController
             $lang = $this->langId();
             $ttId = $this->titleTypeId($db);
 
-            $rows = iterator_to_array($db->query('SELECT prd_id, prd_reference, prd_status, prd_stock_low, prd_date_creation, prd_date_edit FROM melis_ecom_product WHERE prd_id = ? LIMIT 1', [$id]));
+            // name_cur/name_any/image_path : mêmes sous-requêtes que listAction(), requises par formatProduct()
+            // — sans elles, data.name/data.image retombent toujours sur la référence/vide, même produit sauvé.
+            $rows = iterator_to_array($db->query("
+                SELECT p.prd_id, p.prd_reference, p.prd_status, p.prd_stock_low, p.prd_date_creation, p.prd_date_edit,
+                       (SELECT pt.ptxt_field_short FROM melis_ecom_product_text pt WHERE pt.ptxt_prd_id = p.prd_id AND pt.ptxt_type = ? AND pt.ptxt_lang_id = ? LIMIT 1) AS name_cur,
+                       (SELECT pt2.ptxt_field_short FROM melis_ecom_product_text pt2 WHERE pt2.ptxt_prd_id = p.prd_id AND pt2.ptxt_type = ? AND pt2.ptxt_field_short <> '' LIMIT 1) AS name_any,
+                       (SELECT d.doc_path FROM melis_ecom_doc_relations dr JOIN melis_ecom_document d ON d.doc_id = dr.rdoc_doc_id WHERE dr.rdoc_product_id = p.prd_id AND d.doc_type_id != 2 ORDER BY d.doc_id ASC LIMIT 1) AS image_path
+                FROM melis_ecom_product p
+                WHERE p.prd_id = ? LIMIT 1
+            ", [$ttId, $lang, $ttId, $id]));
             if (empty($rows)) { return $this->jsonResponse(['success' => false, 'error' => 'Product not found'], 404); }
             $p = (array) $rows[0];
 
@@ -718,42 +727,73 @@ class MelisComReactApiProductController extends MelisAbstractActionController
     }
 
     // ─── Variant attribute values (melis_ecom_variant_attribute_value) ────────
+    // Une ligne par attribut ASSIGNÉ AU PRODUIT (comme le legacy) : chaque attribut a ses propres
+    // valeurs possibles (av.atval_attribute_id) et au plus UNE valeur sélectionnée pour la variante
+    // (sélection simple, pas un multi-ajout générique — cf. Mantis "attributs de variante").
     public function variantAttributesAction(): HttpResponse
     {
         if ($deny = $this->denyUnlessAccess()) { return $deny; }
+        $prdId = (int) $this->params()->fromRoute('id', 0);
         $varId = (int) $this->params()->fromRoute('variantId', 0);
+        if ($prdId <= 0 || $varId <= 0) { return $this->jsonResponse(['success' => false, 'error' => 'Invalid variant'], 400); }
         try {
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
             $lang = $this->langId();
             $valName = $this->attributeValueNameSql();
-            $items = [];
-            foreach ($db->query("SELECT vatv.vatv_id, vatv.vatv_attribute_value_id AS vid, $valName AS name
+
+            $selected = [];
+            foreach ($db->query("SELECT av.atval_attribute_id AS attr_id, vatv.vatv_id, vatv.vatv_attribute_value_id AS value_id
                 FROM melis_ecom_variant_attribute_value vatv
                 JOIN melis_ecom_attribute_value av ON av.atval_id = vatv.vatv_attribute_value_id
-                LEFT JOIN melis_ecom_attribute_value_trans tr ON tr.av_attribute_value_id = av.atval_id AND tr.avt_lang_id = ?
-                WHERE vatv.vatv_variant_id = ?", [$lang, $varId]) as $r) {
-                $r = (array) $r; $items[] = ['vatvId' => (int) $r['vatv_id'], 'valueId' => (int) $r['vid'], 'name' => (string) ($r['name'] ?? ('#' . $r['vid']))];
+                WHERE vatv.vatv_variant_id = ?", [$varId]) as $r) {
+                $r = (array) $r;
+                $selected[(int) $r['attr_id']] = ['vatvId' => (int) $r['vatv_id'], 'valueId' => (int) $r['value_id']];
             }
-            $available = [];
-            foreach ($db->query("SELECT av.atval_id, $valName AS name FROM melis_ecom_attribute_value av
-                LEFT JOIN melis_ecom_attribute_value_trans tr ON tr.av_attribute_value_id = av.atval_id AND tr.avt_lang_id = ?
-                WHERE av.atval_id NOT IN (SELECT vatv_attribute_value_id FROM melis_ecom_variant_attribute_value WHERE vatv_variant_id = ?) ORDER BY name", [$lang, $varId]) as $r) {
-                $r = (array) $r; $available[] = ['id' => (int) $r['atval_id'], 'name' => (string) ($r['name'] ?? ('#' . $r['atval_id']))];
+
+            $attributes = [];
+            foreach ($db->query("SELECT pa.patt_attribute_id AS attr_id, COALESCE(NULLIF(tr.atrans_name,''), a.attr_reference) AS attr_name
+                FROM melis_ecom_product_attribute pa
+                JOIN melis_ecom_attribute a ON a.attr_id = pa.patt_attribute_id
+                LEFT JOIN melis_ecom_attribute_trans tr ON tr.atrans_attribute_id = a.attr_id AND tr.atrans_lang_id = ?
+                WHERE pa.patt_product_id = ? ORDER BY attr_name", [$lang, $prdId]) as $r) {
+                $r = (array) $r;
+                $attrId = (int) $r['attr_id'];
+                $values = [];
+                foreach ($db->query("SELECT av.atval_id, $valName AS name FROM melis_ecom_attribute_value av
+                    LEFT JOIN melis_ecom_attribute_value_trans tr ON tr.av_attribute_value_id = av.atval_id AND tr.avt_lang_id = ?
+                    WHERE av.atval_attribute_id = ? ORDER BY name", [$lang, $attrId]) as $vr) {
+                    $vr = (array) $vr;
+                    $values[] = ['id' => (int) $vr['atval_id'], 'name' => (string) ($vr['name'] ?? ('#' . $vr['atval_id']))];
+                }
+                $sel = $selected[$attrId] ?? null;
+                $attributes[] = [
+                    'attributeId' => $attrId,
+                    'attributeName' => (string) ($r['attr_name'] ?? ('#' . $attrId)),
+                    'selectedValueId' => $sel ? $sel['valueId'] : null,
+                    'selectedVatvId' => $sel ? $sel['vatvId'] : null,
+                    'values' => $values,
+                ];
             }
-            return $this->jsonResponse(['success' => true, 'data' => ['items' => $items, 'available' => $available]]);
+            return $this->jsonResponse(['success' => true, 'data' => ['attributes' => $attributes]]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
+    // Upsert : une variante n'a qu'UNE valeur par attribut → on retire l'ancienne sélection de cet
+    // attribut avant d'insérer la nouvelle. valueId = 0 efface simplement la sélection.
     public function variantAttributeSaveAction(): HttpResponse
     {
         if ($deny = $this->denyUnlessAccess()) { return $deny; }
         $varId = (int) $this->params()->fromRoute('variantId', 0);
+        if ($varId <= 0) { return $this->jsonResponse(['success' => false, 'error' => 'Invalid variant'], 400); }
         try {
             $body = json_decode($this->getRequest()->getContent(), true) ?? [];
+            $attrId  = (int) ($body['attributeId'] ?? 0);
             $valueId = (int) ($body['valueId'] ?? 0);
-            if ($valueId <= 0) { return $this->jsonResponse(['success' => false, 'error' => 'Invalid value'], 400); }
+            if ($attrId <= 0) { return $this->jsonResponse(['success' => false, 'error' => 'Invalid attribute'], 400); }
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
-            $dup = iterator_to_array($db->query('SELECT vatv_id FROM melis_ecom_variant_attribute_value WHERE vatv_variant_id = ? AND vatv_attribute_value_id = ? LIMIT 1', [$varId, $valueId]));
-            if (!$dup) { $db->query('INSERT INTO melis_ecom_variant_attribute_value (vatv_variant_id, vatv_attribute_value_id) VALUES (?, ?)', [$varId, $valueId]); }
+            $db->query('DELETE vatv FROM melis_ecom_variant_attribute_value vatv
+                JOIN melis_ecom_attribute_value av ON av.atval_id = vatv.vatv_attribute_value_id
+                WHERE vatv.vatv_variant_id = ? AND av.atval_attribute_id = ?', [$varId, $attrId]);
+            if ($valueId > 0) { $db->query('INSERT INTO melis_ecom_variant_attribute_value (vatv_variant_id, vatv_attribute_value_id) VALUES (?, ?)', [$varId, $valueId]); }
             return $this->jsonResponse(['success' => true, 'data' => null], 201);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -1118,7 +1158,11 @@ class MelisComReactApiProductController extends MelisAbstractActionController
                 if (!is_array($tx)) { continue; }
                 $lid = (int) ($tx['langId'] ?? 0); if ($lid <= 0) { continue; }
                 $name = trim((string) ($tx['name'] ?? '')); $desc = (string) ($tx['description'] ?? '');
-                if ($name === '' && $desc === '') { continue; }
+                // Ne pas créer une ligne vide pour une langue qui n'en a jamais eu (pas d'ptxt_id) — mais
+                // si la langue a DÉJÀ un texte enregistré et que l'utilisateur l'a vidé, on doit quand même
+                // envoyer la ligne (avec son ptxt_id) pour que l'update la vide réellement en base ; sinon
+                // saveProductTexts() n'est jamais appelé pour cette langue et l'ancienne valeur reste figée.
+                if ($name === '' && $desc === '' && !isset($existing[$lid])) { continue; }
                 $row = ['ptxt_lang_id' => $lid, 'ptxt_type' => $ttId, 'ptxt_field_short' => $name, 'ptxt_field_long' => $desc];
                 if (isset($existing[$lid])) { $row['ptxt_id'] = $existing[$lid]; }
                 $productTexts[] = $row;

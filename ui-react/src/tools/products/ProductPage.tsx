@@ -335,12 +335,19 @@ function ProductForm({ id, base }: { id: string; base: string }) {
 
   useEffect(() => {
     if (!productId) return
+    // Garde de montage : la brique reste montée (Shell.tsx isActive) le temps que React
+    // réconcilie — un fetch en vol au moment où l'onglet se ferme n'est PAS annulé par le
+    // démontage ; sans ce garde, son .catch() pouvait naviguer vers `base` APRÈS coup et
+    // écraser une navigation par ailleurs légitime (ex. fermeture d'onglet → retour Dashboard).
+    let cancelled = false
     setLoading(true)
     fetchProductById(productId).then((p) => {
+      if (cancelled) return
       setReference(p.reference); setStockLow(p.stockLow === null ? '' : String(p.stockLow)); setActive(p.status === 1)
       setTexts(p.texts); setSeo(p.seo); setCategoryIds(p.categoryIds)
       if (p.pageLinks) setPageLinks(p.pageLinks)
-    }).catch(() => navigate(base)).finally(() => setLoading(false))
+    }).catch(() => { if (!cancelled) navigate(base) }).finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
   }, [productId, navigate, base])
 
   useEffect(() => {
