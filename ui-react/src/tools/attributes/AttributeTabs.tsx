@@ -89,9 +89,9 @@ export function AttributeValuesTab({ attributeId, languages, can, t }: {
       <SimpleTable cols={cols} rows={items} rowKey={(r) => r.id} empty={t('values_empty')} loading={loading} loadingText={t('loading')} t={t}
         search={(r) => `${r.reference ?? ''} ${displayValue(r.displayValue, typeColumn, t)}`} searchPlaceholder={t('search')}
         paginate={false}
-        filters={(
+        toolbarEnd={(
           <div style={{ position: 'relative' }}>
-            <button style={{ ...iconBtn, width: 34, height: 34, border: '1px solid var(--color-border)' }} title={t('columns')} onClick={() => setShowCols((v) => !v)}><GripIcon /></button>
+            <button style={{ ...iconBtn, width: 'auto', height: 34, padding: '0 12px', gap: 6, border: '1px solid var(--color-border)' }} title={t('columns')} onClick={() => setShowCols((v) => !v)}><GripIcon /><span>{t('columns')}</span></button>
             {showCols && (
               <ColManager cols={colDefs} labelFor={(id) => t(`value_col_${id}`)} onChange={setColDefs} onClose={() => setShowCols(false)}
                 save={valueColStore.save} defaults={valueColStore.DEFAULT} t={t} />

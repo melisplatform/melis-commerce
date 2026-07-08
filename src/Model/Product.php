@@ -256,10 +256,10 @@ class Product extends Model
             return $category !== '';
         });
 
-        return array_map(function ($cat) {
-            $template = '<span class="cell-val-table" style="margin:0 2px 4px 0;display:inline-block;padding: 3px 10px;background: #ECEBEB;border-radius: 4px;color: #7D7B7B;">%s</span>';
+        $template = '<span class="cell-val-table" style="margin:0 2px 4px 0;display:inline-block;padding: 3px 10px;background: #ECEBEB;border-radius: 4px;color: #7D7B7B;">%s</span>';
+        return implode('', array_map(function ($cat) use ($template) {
             return sprintf($template, $cat);
-        }, $category);
+        }, $category));
     }
 
     public function getproduct_table_checkboxAttribute()
