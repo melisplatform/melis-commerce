@@ -11,11 +11,11 @@ import {
   type AssocVariant, type AvailVariant, type VariantAttrValue,
 } from './api'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } from '../../shared/styles'
-import { PlusIcon, TrashIcon, PencilIcon, EyeIcon, ToggleRightIcon, ArrowLeftIcon } from '../../shared/icons'
+import { PlusIcon, TrashIcon, PencilIcon, EyeIcon, ToggleRightIcon, ArrowLeftIcon, ImageIcon, SettingsIcon, PaperclipIcon, CubesIcon } from '../../shared/icons'
 import { StatusBadge } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { Tabs, type TabDef } from '../../shared/Tabs'
-import { InfoDot, FlagSwitcher, MediaModal, Lightbox, hoverCircle } from './ProductTabs'
+import { InfoDot, FlagSwitcher, MediaModal, Lightbox, hoverCircle, ImageFilters, passesImageFilter } from './ProductTabs'
 import type { Option } from '../../shared/api'
 import type { LangOption } from '../catalog/api'
 
@@ -126,7 +126,7 @@ export function VariantEditor({ productId, variantId, countries, currencies, lan
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr minmax(200px,220px)', gap: 20, alignItems: 'start' }}>
             <div style={{ ...card, padding: 24, display: 'flex', flexDirection: 'column', gap: 24 }}>
               <section>
-                <h3 style={secT}>⚙ {t('var_information')}</h3>
+                <h3 style={secT}><SettingsIcon />{t('var_information')}</h3>
                 <div style={labelRow}><label style={{ ...label, color: errSku ? '#dc2626' : undefined }}>{t('var_sku')}</label><InfoDot text={t('tip_sku')} /></div>
                 <input style={{ ...inputCss, ...(errSku ? { borderColor: '#dc2626' } : {}) }} value={sku} onChange={(e) => { setSku(e.target.value); setErr(null); setErrSku(false) }} placeholder={t('var_sku_ph')} autoComplete="off" />
                 <div style={{ marginTop: 16, fontSize: 14, fontWeight: 500 }}>{t('var_main_label')}</div>
@@ -268,7 +268,7 @@ function VarFiles({ productId, variantId, t, countries, onNeedVid }: { productId
   return (
     <section>
       <h3 style={secT}>
-        {t('sec_files')}
+        <PaperclipIcon />{t('sec_files')}
         <button style={{ ...btnGhost, fontSize: 12, padding: '2px 8px' }} onClick={() => setModal({})}>{t('file_add')}</button>
       </h3>
       {files.length === 0
@@ -298,18 +298,23 @@ function VarImages({ productId, variantId, t, countries, onNeedVid }: { productI
   const [hovered, setHovered] = useState<number | null>(null)
   const [lightbox, setLightbox] = useState<string | null>(null)
   const [modal, setModal] = useState<{ doc?: MediaItem } | null>(null)
+  const [countryFilter, setCountryFilter] = useState(0)
+  const [typeFilter, setTypeFilter] = useState(0)
   useEffect(() => { if (variantId == null) return; fetchVariantMedia(productId, variantId).then((r) => setImages(r.images)).catch(() => null) }, [productId, variantId, tick])
   async function del(docId: number) { const id = variantId ?? await onNeedVid?.(); if (!id) return; try { await deleteVariantMedia(productId, id, docId); setTick((x) => x + 1) } catch { /* */ } }
+  const filteredImages = images.filter((im) => passesImageFilter(im.countryId, countryFilter) && passesImageFilter(im.typeId, typeFilter))
   return (
     <section>
       <h3 style={secT}>
-        {t('sec_images')}
+        <ImageIcon />{t('sec_images')}
         <button style={{ ...btnGhost, fontSize: 12, padding: '2px 8px' }} onClick={() => setModal({})}>{t('img_add')}</button>
       </h3>
-      {images.length === 0
+      <ImageFilters countries={countries} countryFilter={countryFilter} onCountryChange={setCountryFilter}
+        typeFilter={typeFilter} onTypeChange={setTypeFilter} t={t} />
+      {filteredImages.length === 0
         ? <p style={{ ...hint, margin: 0 }}>{t('img_empty')}</p>
         : <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-            {images.map((im) => (
+            {filteredImages.map((im) => (
               <div key={im.id} style={{ position: 'relative', width: 160, height: 140, borderRadius: 8, overflow: 'hidden', border: '1px solid var(--color-border)', flexShrink: 0 }}
                 onMouseEnter={() => setHovered(im.id)} onMouseLeave={() => setHovered(null)}>
                 <img src={im.path} alt={im.name} title={im.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { (e.target as HTMLImageElement).style.opacity = '.25' }} />
@@ -346,7 +351,7 @@ function VarAttributes({ productId, variantId, t, onNeedVid }: { productId: numb
   async function del(vatvId: number) { const id = variantId ?? await onNeedVid?.(); if (!id) return; try { await deleteVariantAttribute(productId, id, vatvId); setTick((x) => x + 1) } catch { /* */ } }
   return (
     <section>
-      <h3 style={secT}>{t('sec_attributes')}</h3>
+      <h3 style={secT}><CubesIcon />{t('sec_attributes')}</h3>
       <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
         <select style={{ ...inputCss, flex: 1 }} value={pick} onChange={(e) => setPick(Number(e.target.value))}>
           <option value={0}>{t('attr_add_ph')}</option>

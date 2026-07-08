@@ -6,11 +6,11 @@ import {
   fetchProductAttributes, saveProductAttribute, deleteProductAttribute,
   fetchProductMedia, uploadProductMedia, updateProductMedia, deleteProductMedia,
   fetchDocumentTypes, addDocumentType,
-  fetchProductAlert, saveProductRecipient, deleteProductRecipient,
-  type ProductVariant, type ProductPrice, type ProductAttribute, type MediaItem, type DocType, type AlertRecipient, type UserOption, type CountryOption,
+  fetchProductAlert, saveProductRecipient, deleteProductRecipient, fetchProductTooltip,
+  type ProductVariant, type ProductPrice, type ProductAttribute, type MediaItem, type DocType, type AlertRecipient, type UserOption, type CountryOption, type TooltipVariant,
 } from './api'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } from '../../shared/styles'
-import { PencilIcon, EyeIcon, TrashIcon, PlusIcon } from '../../shared/icons'
+import { PencilIcon, EyeIcon, TrashIcon, PlusIcon, GlobeIcon, ImageIcon, ChevronDownIcon, PaperclipIcon, CubesIcon } from '../../shared/icons'
 import { StatusBadge } from '../../shared/widgets'
 import type { Option } from '../../shared/api'
 import { fetchCatalogTree, type CatNode, type LangOption } from '../catalog/api'
@@ -306,7 +306,7 @@ export function AttributesSection({ productId, options, t, pendingAttrIds = [], 
 
   return (
     <section>
-      <h3 style={sectionTitle}>{t('sec_attributes')}</h3>
+      <h3 style={sectionTitle}><span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><CubesIcon />{t('sec_attributes')}</span></h3>
       <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
         <select style={{ ...inputCss, flex: 1 }} value={pick} onChange={(e) => setPick(Number(e.target.value))}>
           <option value={0}>{t('attr_add_ph')}</option>
@@ -581,7 +581,7 @@ export function FilesSection({ productId, t, countries = [], pendingFiles = [], 
   return (
     <section>
       <h3 style={sectionTitle}>
-        {t('sec_files')}
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><PaperclipIcon />{t('sec_files')}</span>
         <button style={{ ...btnGhost, fontSize: 13, padding: '3px 10px' }} onClick={() => setModal({})}>
           {t('file_add')}
         </button>
@@ -619,6 +619,67 @@ export function FilesSection({ productId, t, countries = [], pendingFiles = [], 
 // ── Section Images (galerie avec survol 3 boutons) ──────────────────────────────
 export const hoverCircle: import('react').CSSProperties = { width: 36, height: 36, borderRadius: 999, background: 'rgba(255,255,255,.9)', border: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#333', flexShrink: 0 }
 
+/** Un seul bouton de filtre : icône + libellé (statique, ou la valeur choisie une fois sélectionnée) +
+ * chevron, ouvrant un menu « Tous » + options — calqué sur le dropdown Bootstrap legacy
+ * (documents.tool.js : le clic met à jour le texte du bouton avec le libellé choisi). */
+function FilterDropdownButton({ icon, label, allLabel, options, valueId, onChange }: {
+  icon: import('react').ReactNode; label: string; allLabel: string
+  options: { id: number; name: string }[]; valueId: number; onChange: (id: number) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!open) return
+    const onDown = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false) }
+    document.addEventListener('mousedown', onDown)
+    return () => document.removeEventListener('mousedown', onDown)
+  }, [open])
+  const selected = options.find((o) => o.id === valueId)
+  const buttonLabel = selected ? selected.name : label
+  const itemStyle = (active: boolean): import('react').CSSProperties => ({
+    display: 'block', width: '100%', textAlign: 'left', padding: '8px 12px', border: 0, borderRadius: 6,
+    background: active ? 'var(--color-primary)' : 'transparent', color: active ? 'var(--color-primary-foreground,#fff)' : 'var(--color-foreground)',
+    fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap',
+  })
+  function pick(id: number) { onChange(id); setOpen(false) }
+  return (
+    <div ref={ref} style={{ position: 'relative', display: 'inline-flex' }}>
+      <button style={{ ...btnGhost, height: 32, gap: 6 }} onClick={() => setOpen((o) => !o)}>
+        {icon}<span style={{ maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{buttonLabel}</span><ChevronDownIcon />
+      </button>
+      {open && (
+        <div style={{ ...card, position: 'absolute', top: '100%', left: 0, marginTop: 6, zIndex: 60, padding: 6, minWidth: 200, maxHeight: 260, overflowY: 'auto' }}>
+          <button style={itemStyle(valueId === 0)} onClick={() => pick(0)}>{allLabel}</button>
+          {options.map((o) => <button key={o.id} style={itemStyle(valueId === o.id)} onClick={() => pick(o.id)}>{o.name}</button>)}
+        </div>
+      )}
+    </div>
+  )
+}
+
+/** Filtres Pays / Type d'image au-dessus de la galerie — même filtrage (et wording) que le
+ * back-office legacy (render-document-image-lists.phtml : 2 dropdowns Pays/Type, « Tous » par défaut). */
+export function ImageFilters({ countries, countryFilter, onCountryChange, typeFilter, onTypeChange, t }: {
+  countries: CountryOption[]; countryFilter: number; onCountryChange: (v: number) => void
+  typeFilter: number; onTypeChange: (v: number) => void; t: TFn
+}) {
+  const [types, setTypes] = useState<DocType[]>([])
+  useEffect(() => { fetchDocumentTypes().then((d) => setTypes(d.imageTypes)).catch(() => null) }, [])
+  return (
+    <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+      <FilterDropdownButton icon={<GlobeIcon />} label={t('img_filter_country')} allLabel={t('img_filter_all')}
+        options={countries} valueId={countryFilter} onChange={onCountryChange} />
+      <FilterDropdownButton icon={<ImageIcon />} label={t('img_filter_type')} allLabel={t('img_filter_all')}
+        options={types} valueId={typeFilter} onChange={onTypeChange} />
+    </div>
+  )
+}
+
+/** Un item ne passe le filtre que si sa valeur correspond (ou si le filtre est « Tous » = 0). */
+export function passesImageFilter(itemVal: number | null | undefined, filter: number): boolean {
+  return filter === 0 || itemVal === filter
+}
+
 export function ImagesSection({ productId, t, countries = [], pendingImages = [], onAddPendingImage, onRemovePendingImage, onMarkDeleteImage }: {
   productId: number | null; t: TFn; countries?: CountryOption[]
   pendingImages?: PendingMedia[]
@@ -631,23 +692,27 @@ export function ImagesSection({ productId, t, countries = [], pendingImages = []
   const [hovered, setHovered] = useState<number | null>(null)
   const [lightbox, setLightbox] = useState<string | null>(null)
   const [modal, setModal] = useState<{ doc?: MediaItem; pendingIdx?: number } | null>(null)
+  const [countryFilter, setCountryFilter] = useState(0)
+  const [typeFilter, setTypeFilter] = useState(0)
 
   useEffect(() => { if (!productId) return; fetchProductMedia(productId).then((r) => setImages(r.images)).catch(() => null) }, [productId, tick])
   function markDeleteImage(id: number) { setImages((p) => p.filter((im) => im.id !== id)); onMarkDeleteImage?.(id) }
 
-  const allImages: { id: number; path: string; name: string; isPending: boolean }[] = [
-    ...images.map(im => ({ id: im.id, path: im.path, name: im.name, isPending: false })),
-    ...pendingImages.map((m, i) => ({ id: -(i + 1), path: m.data, name: m.name, isPending: true })),
-  ]
+  const allImages: { id: number; path: string; name: string; isPending: boolean; countryId: number | null; typeId: number | null }[] = [
+    ...images.map(im => ({ id: im.id, path: im.path, name: im.name, isPending: false, countryId: im.countryId, typeId: im.typeId })),
+    ...pendingImages.map((m, i) => ({ id: -(i + 1), path: m.data, name: m.name, isPending: true, countryId: m.countryId ?? null, typeId: m.typeId ?? null })),
+  ].filter((im) => passesImageFilter(im.countryId, countryFilter) && passesImageFilter(im.typeId, typeFilter))
 
   return (
     <section>
       <h3 style={sectionTitle}>
-        {t('sec_images')}
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><ImageIcon />{t('sec_images')}</span>
         <button style={{ ...btnGhost, fontSize: 13, padding: '3px 10px' }} onClick={() => setModal({})}>
           {t('img_add')}
         </button>
       </h3>
+      <ImageFilters countries={countries} countryFilter={countryFilter} onCountryChange={setCountryFilter}
+        typeFilter={typeFilter} onTypeChange={setTypeFilter} t={t} />
       {allImages.length === 0 ? (
         <p style={{ ...hint, margin: 0 }}>{t('img_empty')}</p>
       ) : (
@@ -686,6 +751,39 @@ export function ImagesSection({ productId, t, countries = [], pendingImages = []
   )
 }
 
+/** Table de tooltip variantes (ID/Image/SKU/Attributs/Pays/Prix/Stock), flottante via portal — calquée
+ * sur le qTip legacy (MelisComProductListController::getToolTipAction()). Partagée entre le survol du
+ * NOM produit (liste produits, toutes ses variantes) et le survol du SKU (onglet Variantes, 1 seule ligne
+ * puisque legacy filtre alors `$vcontent` sur ce variantId — cf. la même action avec `variantId` posté). */
+export function VariantTooltipTable({ items, pos, t }: { items: TooltipVariant[]; pos: { x: number; y: number }; t: TFn }) {
+  const cellTh = { padding: '6px 12px', textAlign: 'left' as const, fontSize: 11, textTransform: 'uppercase' as const, letterSpacing: '.04em', color: 'rgba(255,255,255,.7)', whiteSpace: 'nowrap' as const }
+  const cellTd = { padding: '6px 12px', fontSize: 13, color: '#fff', whiteSpace: 'nowrap' as const }
+  return createPortal(
+    <div style={{ position: 'fixed', top: pos.y, left: pos.x, zIndex: 9999, background: '#4a4a4a', borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,.3)', padding: 4, maxWidth: 640, overflow: 'auto', pointerEvents: 'none' }}>
+      <table style={{ borderCollapse: 'collapse' }}>
+        <thead><tr>
+          <th style={cellTh}>{t('var_col_id')}</th><th style={cellTh}>{t('col_image')}</th><th style={cellTh}>{t('var_col_sku')}</th>
+          <th style={cellTh}>{t('var_col_attrs')}</th><th style={cellTh}>{t('tt_country')}</th><th style={cellTh}>{t('tt_price')}</th><th style={cellTh}>{t('tt_stocks')}</th>
+        </tr></thead>
+        <tbody>
+          {items.map((v) => (
+            <tr key={v.id}>
+              <td style={cellTd}>{v.id}</td>
+              <td style={cellTd}>{v.image ? <img src={v.image} alt="" style={{ width: 28, height: 28, objectFit: 'cover', borderRadius: 4 }} /> : '🖼'}</td>
+              <td style={cellTd}>{v.sku || '—'}</td>
+              <td style={cellTd}>{v.attributes || '—'}</td>
+              <td style={cellTd}>🌐 {t('price_general')}</td>
+              <td style={cellTd}>{v.price == null ? '—' : v.price.toFixed(2)}</td>
+              <td style={cellTd}>{v.stock == null ? '—' : v.stock}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>,
+    document.body
+  )
+}
+
 // ── Onglet Variantes (table type legacy : ID / Principale / Image / Statut / SKU / Attributs / Action) ──
 const actBtn = (color: string) => ({ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 30, height: 30, borderRadius: 6, border: '1px solid ' + color, background: 'transparent', color, cursor: 'pointer', fontSize: 13 } as const)
 
@@ -695,6 +793,18 @@ export function VariantsTab({ productId, t, onAdd, onEdit, can }: { productId: n
   const [tick, setTick] = useState(0)
   const [search, setSearch] = useState('')
   const [toDelete, setToDelete] = useState<ProductVariant | null>(null)
+  // Tooltip au survol du SKU (calqué sur ProductNameCell / legacy toolTipVarHoverEvent, cf. VariantTooltipTable) —
+  // chargée une fois pour toutes les lignes (déjà toutes les variantes du produit), pas par ligne survolée.
+  const [tooltipItems, setTooltipItems] = useState<TooltipVariant[] | null>(null)
+  const [hoveredSkuId, setHoveredSkuId] = useState<number | null>(null)
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
+  function hoverSku(e: import('react').MouseEvent<HTMLElement>, id: number) {
+    const r = e.currentTarget.getBoundingClientRect()
+    setTooltipPos({ x: r.left, y: r.bottom + 6 })
+    setHoveredSkuId(id)
+    if (tooltipItems === null && productId) fetchProductTooltip(productId).then((res) => setTooltipItems(res.items)).catch(() => setTooltipItems([]))
+  }
+  const hoveredTooltipRow = tooltipItems?.filter((v) => v.id === hoveredSkuId) ?? []
   const [toDup, setToDup] = useState<ProductVariant | null>(null)
 
   useEffect(() => { if (!productId) return; fetchProductVariants(productId).then((r) => setItems(r.items)).catch(() => null) }, [productId, tick])
@@ -735,7 +845,13 @@ export function VariantsTab({ productId, t, onAdd, onEdit, can }: { productId: n
                     : <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 38, height: 38, borderRadius: 6, background: 'var(--color-muted,rgba(0,0,0,.05))', color: 'var(--color-muted-foreground)' }}>🖼</span>}
                 </td>
                 <td style={td}><span style={{ color: v.status === 1 ? '#16a34a' : '#dc2626', fontSize: 12 }}>●</span></td>
-                <td style={td}><button onClick={() => onEdit(v.id)} style={{ border: 0, background: 'transparent', color: 'var(--color-primary)', cursor: 'pointer', fontWeight: 500, fontSize: 14, padding: 0, textDecoration: 'underline' }}>{v.sku || `#${v.id}`}</button></td>
+                <td style={td}>
+                  <button onClick={() => onEdit(v.id)} onMouseEnter={(e) => hoverSku(e, v.id)} onMouseLeave={() => setHoveredSkuId(null)}
+                    style={{ border: 0, background: 'transparent', color: 'var(--color-primary)', cursor: 'pointer', fontWeight: 500, fontSize: 14, padding: 0, textDecoration: 'underline' }}>
+                    {v.sku || `#${v.id}`}
+                  </button>
+                  {hoveredSkuId === v.id && hoveredTooltipRow.length > 0 && <VariantTooltipTable items={hoveredTooltipRow} pos={tooltipPos} t={t} />}
+                </td>
                 <td style={{ ...td, color: 'var(--color-muted-foreground)' }}>{v.attributes || '—'}</td>
                 <td style={td}>
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 5 }}>

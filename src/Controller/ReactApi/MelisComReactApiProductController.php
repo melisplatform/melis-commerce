@@ -41,6 +41,27 @@ class MelisComReactApiProductController extends MelisAbstractActionController
         return $rows ? (int) ((array) $rows[0])['ptt_id'] : 1;
     }
 
+    /**
+     * Expression SQL résolvant le libellé affichable d'une valeur d'attribut (melis_ecom_attribute_value
+     * + sa traduction melis_ecom_attribute_value_trans). Le type de l'attribut (atval_type_id →
+     * atype_column_value) détermine QUELLE colonne avt_v_* porte la traduction (varchar/text/int/float/
+     * bool/datetime) — cf. legacy MelisComAssociateVariantController::getVarAttributeText() qui résout la
+     * colonne dynamiquement. Ne couvrir que varchar/text laissait les valeurs numériques/booléennes/date
+     * (ex. une pointure "int") sans traduction trouvée, tombant sur atval_reference — souvent vide lui
+     * aussi (varchar(45) nullable) → badge d'attribut vide (contrairement au fallback PHP `?? '#id'`,
+     * `??` ne rattrape pas une chaîne vide, seulement NULL).
+     */
+    private function attributeValueNameSql(): string
+    {
+        return "COALESCE(
+            NULLIF(tr.avt_v_varchar, ''), NULLIF(tr.avt_v_text, ''),
+            CAST(tr.avt_v_int AS CHAR), CAST(tr.avt_v_float AS CHAR),
+            CASE WHEN tr.avt_v_bool IS NOT NULL THEN CAST(tr.avt_v_bool AS CHAR) END,
+            CAST(tr.avt_v_datetime AS CHAR),
+            NULLIF(av.atval_reference, '')
+        )";
+    }
+
     private function currentUserId(): int
     {
         try { return (int) ($this->getServiceManager()->get('MelisCoreAuth')->getStorage()->read()->usr_id ?? 0); }
@@ -103,7 +124,7 @@ class MelisComReactApiProductController extends MelisAbstractActionController
         try {
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
             $lang = $this->langId();
-            $valName = "COALESCE(NULLIF(tr.avt_v_varchar,''), NULLIF(tr.avt_v_text,''), av.atval_reference)";
+            $valName = $this->attributeValueNameSql();
             $items = [];
             foreach ($db->query("SELECT v.var_id, v.var_sku,
                     (SELECT d.doc_path FROM melis_ecom_doc_relations dr JOIN melis_ecom_document d ON d.doc_id = dr.rdoc_doc_id WHERE dr.rdoc_variant_id = v.var_id AND d.doc_type_id <> 2 LIMIT 1) AS image,
@@ -242,7 +263,7 @@ class MelisComReactApiProductController extends MelisAbstractActionController
     private function variantList($db, int $prdId): array
     {
         $lang = $this->langId();
-        $valName = "COALESCE(NULLIF(tr.avt_v_varchar,''), NULLIF(tr.avt_v_text,''), av.atval_reference)";
+        $valName = $this->attributeValueNameSql();
         $items = [];
         foreach ($db->query("SELECT v.var_id, v.var_sku, v.var_status, v.var_main_variant, v.var_date_creation,
                 (SELECT d.doc_path FROM melis_ecom_doc_relations dr JOIN melis_ecom_document d ON d.doc_id = dr.rdoc_doc_id WHERE dr.rdoc_variant_id = v.var_id AND d.doc_type_id <> 2 LIMIT 1) AS image,
@@ -704,7 +725,7 @@ class MelisComReactApiProductController extends MelisAbstractActionController
         try {
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
             $lang = $this->langId();
-            $valName = "COALESCE(NULLIF(tr.avt_v_varchar,''), NULLIF(tr.avt_v_text,''), av.atval_reference)";
+            $valName = $this->attributeValueNameSql();
             $items = [];
             foreach ($db->query("SELECT vatv.vatv_id, vatv.vatv_attribute_value_id AS vid, $valName AS name
                 FROM melis_ecom_variant_attribute_value vatv
@@ -1071,10 +1092,10 @@ class MelisComReactApiProductController extends MelisAbstractActionController
             $seo       = is_array($body['seo'] ?? null) ? $body['seo'] : [];
             $categoryIds = array_values(array_unique(array_map('intval', is_array($body['categoryIds'] ?? null) ? $body['categoryIds'] : [])));
 
+            // Comme le legacy (prd_reference seul requis dans le form de sauvegarde produit — le nom est
+            // un texte associé, validé séparément par son propre form quand on l'ajoute) : ne PAS exiger
+            // de nom ici, sinon impossible de créer un produit avec juste sa référence.
             if ($reference === '') { return $this->jsonResponse(['success' => false, 'error' => 'La référence est obligatoire.'], 400); }
-            $hasName = false;
-            foreach ($texts as $tx) { if (trim((string) ($tx['name'] ?? '')) !== '') { $hasName = true; break; } }
-            if (!$hasName) { return $this->jsonResponse(['success' => false, 'error' => 'Un nom de produit est obligatoire.'], 400); }
 
             $db   = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
             $ttId = $this->titleTypeId($db);

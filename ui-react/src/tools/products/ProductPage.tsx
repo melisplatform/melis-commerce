@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { createPortal } from 'react-dom'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   deleteProduct, duplicateProduct, fetchProductById, fetchProductOptions, fetchProducts, fetchProductStats, saveProduct, fetchProductTooltip,
@@ -7,7 +6,7 @@ import {
   type ProductItem, type ProductStats, type ProductText, type ProductSeo, type TooltipVariant,
 } from './api'
 import type { T } from '../../shared/i18n'
-import { VariantsTab, PricesTab, AttributesSection, FilesSection, ImagesSection, RecipientsSection, CategoryPickerModal, SiteTreeModal, DuplicateModal, InfoDot, SitemapIcon, StatusToggle, flattenCatNames, type PendingPrice, type PendingMedia } from './ProductTabs'
+import { VariantsTab, PricesTab, AttributesSection, FilesSection, ImagesSection, RecipientsSection, CategoryPickerModal, SiteTreeModal, DuplicateModal, InfoDot, SitemapIcon, StatusToggle, flattenCatNames, VariantTooltipTable, type PendingPrice, type PendingMedia } from './ProductTabs'
 import { VariantEditor } from './ProductVariantEditor'
 import type { UserOption, CountryOption } from './api'
 import { fetchCatalogTree } from '../catalog/api'
@@ -74,35 +73,10 @@ function ProductNameCell({ id, name, t }: { id: number; name: string; t: T }) {
     setPos({ x: r ? r.left : 0, y: r ? r.bottom + 6 : 0 }); setShow(true)
     if (data === null) fetchProductTooltip(id).then((res) => setData(res.items)).catch(() => setData([]))
   }
-  const cellTh = { padding: '6px 12px', textAlign: 'left' as const, fontSize: 11, textTransform: 'uppercase' as const, letterSpacing: '.04em', color: 'rgba(255,255,255,.7)', whiteSpace: 'nowrap' as const }
-  const cellTd = { padding: '6px 12px', fontSize: 13, color: '#fff', whiteSpace: 'nowrap' as const }
   return (
     <span ref={ref} onMouseEnter={enter} onMouseLeave={() => setShow(false)} style={{ fontWeight: 500, cursor: 'default' }}>
       {name || '—'}
-      {show && data && data.length > 0 && createPortal(
-        <div style={{ position: 'fixed', top: pos.y, left: pos.x, zIndex: 9999, background: '#4a4a4a', borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,.3)', padding: 4, maxWidth: 640, overflow: 'auto', pointerEvents: 'none' }}>
-          <table style={{ borderCollapse: 'collapse' }}>
-            <thead><tr>
-              <th style={cellTh}>{t('var_col_id')}</th><th style={cellTh}>{t('col_image')}</th><th style={cellTh}>{t('var_col_sku')}</th>
-              <th style={cellTh}>{t('var_col_attrs')}</th><th style={cellTh}>{t('tt_country')}</th><th style={cellTh}>{t('tt_price')}</th><th style={cellTh}>{t('tt_stocks')}</th>
-            </tr></thead>
-            <tbody>
-              {data.map((v) => (
-                <tr key={v.id}>
-                  <td style={cellTd}>{v.id}</td>
-                  <td style={cellTd}>{v.image ? <img src={v.image} alt="" style={{ width: 28, height: 28, objectFit: 'cover', borderRadius: 4 }} /> : '🖼'}</td>
-                  <td style={cellTd}>{v.sku || '—'}</td>
-                  <td style={cellTd}>{v.attributes || '—'}</td>
-                  <td style={cellTd}>🌐 {t('price_general')}</td>
-                  <td style={cellTd}>{v.price == null ? '—' : v.price.toFixed(2)}</td>
-                  <td style={cellTd}>{v.stock == null ? '—' : v.stock}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>,
-        document.body
-      )}
+      {show && data && data.length > 0 && <VariantTooltipTable items={data} pos={pos} t={t} />}
     </span>
   )
 }
@@ -323,7 +297,6 @@ function ProductForm({ id, base }: { id: string; base: string }) {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [errRef, setErrRef] = useState(false)
-  const [errName, setErrName] = useState(false)
   const [tab, setTab] = useState('main')
   const { can, loaded: capsLoaded } = useCaps(TOOL_MELIS_KEY)
 
@@ -388,7 +361,6 @@ function ProductForm({ id, base }: { id: string; base: string }) {
 
   async function submit() {
     if (!reference.trim()) { setErrRef(true); setError(t('err_reference')); setTab('main'); return }
-    if (!texts.some((x) => x.name.trim())) { setErrName(true); setError(t('err_name')); setTab('text'); return }
     setSaving(true); setError(null)
     try {
       const result = await saveProduct({
@@ -547,8 +519,8 @@ function ProductForm({ id, base }: { id: string; base: string }) {
           <LangSwitcher languages={languages} value={lang} onChange={setLang} />
           {texts.filter((x) => x.langId === lang).map((tx) => (
             <div key={tx.langId} style={{ ...card, padding: 18 }}>
-              <div style={labelRow}><label style={{ ...label, color: errName ? '#dc2626' : undefined }}>{t('f_name')}</label></div>
-              <input style={{ ...inputCss, ...(errName ? { borderColor: '#dc2626' } : {}) }} value={tx.name} onChange={(e) => { setText(tx.langId, 'name', e.target.value); setErrName(false) }} placeholder={t('f_name_ph')} autoComplete="off" />
+              <div style={labelRow}><label style={label}>{t('f_name')}</label></div>
+              <input style={inputCss} value={tx.name} onChange={(e) => setText(tx.langId, 'name', e.target.value)} placeholder={t('f_name_ph')} autoComplete="off" />
               <div style={{ ...labelRow, marginTop: 14 }}><label style={label}>{t('f_description')}</label></div>
               <textarea style={{ ...inputCss, minHeight: 140, resize: 'vertical', paddingTop: 8 }} value={tx.description} onChange={(e) => setText(tx.langId, 'description', e.target.value)} placeholder={t('f_description_ph')} />
             </div>
