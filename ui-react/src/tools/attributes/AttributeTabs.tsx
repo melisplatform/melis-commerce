@@ -3,11 +3,13 @@ import {
   fetchAttributeValues, saveAttributeValue, deleteAttributeValue, attributeValueBinaryUrl,
   type AttributeValueItem, type AttributeValueRaw, type LangOption,
 } from './api'
-import { card, inputCss, label, btnGhost, btnPrimary } from '../../shared/styles'
-import { PlusIcon } from '../../shared/icons'
+import { card, inputCss, label, btnGhost, btnPrimary, iconBtn } from '../../shared/styles'
+import { PlusIcon, GripIcon } from '../../shared/icons'
 import { ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { SimpleTable, type SimpleCol } from '../../shared/SimpleTable'
+import { ColManager } from '../../shared/ColManager'
+import { makeColStore, visibleCols } from '../../shared/columns'
 import type { T } from '../../shared/i18n'
 
 const fieldGap = { display: 'flex', flexDirection: 'column', gap: 16 } as const
@@ -32,6 +34,9 @@ function displayValue(v: AttributeValueRaw, typeColumn: string, t: T): string {
   return String(v)
 }
 
+const VALUE_COL_ORDER = ['id', 'value'] as const
+const valueColStore = makeColStore('melis-attr-values-cols-v1', VALUE_COL_ORDER)
+
 // ── Onglet Values : liste des valeurs de l'attribut + éditeur (créer/modifier) ──
 export function AttributeValuesTab({ attributeId, languages, can, t }: {
   attributeId: number; languages: LangOption[]; can?: (cap: string) => boolean; t: T
@@ -44,6 +49,8 @@ export function AttributeValuesTab({ attributeId, languages, can, t }: {
   const [tick, setTick] = useState(0)
   const [editing, setEditing] = useState<AttributeValueItem | 'new' | null>(null)
   const [toDelete, setToDelete] = useState<AttributeValueItem | null>(null)
+  const [colDefs, setColDefs] = useState(valueColStore.load)
+  const [showCols, setShowCols] = useState(false)
 
   useEffect(() => {
     setLoading(true)
@@ -59,11 +66,12 @@ export function AttributeValuesTab({ attributeId, languages, can, t }: {
     catch (e) { notify('ko', t('tab_values'), e instanceof Error ? e.message : 'Error'); setToDelete(null) }
   }
 
-  const cols: SimpleCol<AttributeValueItem>[] = [
-    { key: 'id', label: t('value_col_id'), width: 70, render: (r) => <span style={{ color: 'var(--color-muted-foreground)' }}>{r.id}</span> },
-    { key: 'reference', label: t('value_col_reference'), render: (r) => r.reference || '—' },
-    { key: 'value', label: t('value_col_value'), render: (r) => displayValue(r.displayValue, typeColumn, t) },
-    { key: 'action', label: t('col_action'), width: 90, render: (r) => (
+  const allCols: Record<string, SimpleCol<AttributeValueItem>> = {
+    id: { key: 'id', label: t('value_col_id'), width: 70, render: (r) => <span style={{ color: 'var(--color-muted-foreground)' }}>{r.id}</span> },
+    value: { key: 'value', label: t('value_col_value'), render: (r) => displayValue(r.displayValue, typeColumn, t) },
+  }
+  const action: SimpleCol<AttributeValueItem> = {
+    key: 'action', label: t('col_action'), width: 90, render: (r) => (
       <div style={{ display: 'inline-flex', gap: 6 }}>
         {allow('values.edit') && <button onClick={() => setEditing(r)}
           style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, border: '1px solid #5cb85c', background: 'transparent', color: '#5cb85c', cursor: 'pointer', padding: 0 }}
@@ -72,12 +80,24 @@ export function AttributeValuesTab({ attributeId, languages, can, t }: {
           style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, border: '1px solid #dc2626', background: 'transparent', color: '#dc2626', cursor: 'pointer', padding: 0 }}
           title={t('del')}>✕</button>}
       </div>
-    ) },
-  ]
+    ),
+  }
+  const cols: SimpleCol<AttributeValueItem>[] = [...visibleCols(colDefs).map((c) => allCols[c.id]).filter(Boolean), action]
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <SimpleTable cols={cols} rows={items} rowKey={(r) => r.id} empty={t('values_empty')} loading={loading} loadingText={t('loading')} t={t}
+        search={(r) => `${r.reference ?? ''} ${displayValue(r.displayValue, typeColumn, t)}`} searchPlaceholder={t('search')}
+        paginate={false} countLabel={(n) => t('values_count', { n })}
+        toolbarEnd={(
+          <div style={{ position: 'relative' }}>
+            <button style={{ ...iconBtn, width: 'auto', height: 34, padding: '0 12px', gap: 6, border: '1px solid var(--color-border)' }} title={t('columns')} onClick={() => setShowCols((v) => !v)}><GripIcon /><span>{t('columns')}</span></button>
+            {showCols && (
+              <ColManager cols={colDefs} labelFor={(id) => t(`value_col_${id}`)} onChange={setColDefs} onClose={() => setShowCols(false)}
+                save={valueColStore.save} defaults={valueColStore.DEFAULT} t={t} />
+            )}
+          </div>
+        )}
         onAdd={allow('values.create') ? () => setEditing('new') : undefined} addIcon={<PlusIcon />} addTitle={t('values_add')} />
 
       {editing && (

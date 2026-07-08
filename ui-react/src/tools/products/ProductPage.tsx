@@ -5,6 +5,7 @@ import {
   uploadProductMedia, deleteProductMedia, saveProductAttribute, deleteProductAttribute, saveProductRecipient, deleteProductRecipient, saveProductPrice,
   type ProductItem, type ProductStats, type ProductText, type ProductSeo, type TooltipVariant,
 } from './api'
+import { makeCache } from '../../shared/listCache'
 import type { T } from '../../shared/i18n'
 import { VariantsTab, PricesTab, AttributesSection, FilesSection, ImagesSection, RecipientsSection, CategoryPickerModal, SiteTreeModal, DuplicateModal, InfoDot, SitemapIcon, StatusToggle, flattenCatNames, VariantTooltipTable, type PendingPrice, type PendingMedia } from './ProductTabs'
 import { VariantEditor } from './ProductVariantEditor'
@@ -33,6 +34,11 @@ const TOOL_MELIS_KEY = 'meliscommerce_product_list_container'
 const COL_ORDER = ['id', 'status', 'image', 'reference', 'name', 'categories', 'created'] as const
 const COL_LABEL: Record<string, string> = { id: 'col_id', status: 'col_status', image: 'col_image', reference: 'col_reference', name: 'col_name', categories: 'col_categories', created: 'col_created' }
 const cols$ = makeColStore('melis-products-cols-v1', COL_ORDER)
+
+const listCache = makeCache<{
+  items: ProductItem[]; stats: ProductStats | null
+  search: string; searchInput: string; status: number | null; categoryId: number; sortCol: string; sortAsc: boolean; mode: 'react' | 'old'
+}>()
 
 function getCellExport(p: ProductItem, id: string, t: (k: string) => string): string | number {
   switch (id) {
@@ -86,24 +92,28 @@ function ProductList({ base }: { base: string }) {
   const t = makeT(DICT)
   const navigate = useNavigate()
   const { can } = useCaps(TOOL_MELIS_KEY)
-  const [mode, setMode] = useState<'react' | 'old'>('react')
+  const [mode, setMode] = useState<'react' | 'old'>(listCache.get()?.mode ?? 'react')
   const [oldLoaded, setOldLoaded] = useState(false)
-  const [items, setItems] = useState<ProductItem[]>([])
-  const [stats, setStats] = useState<ProductStats | null>(null)
+  const [items, setItems] = useState<ProductItem[]>(listCache.get()?.items ?? [])
+  const [stats, setStats] = useState<ProductStats | null>(listCache.get()?.stats ?? null)
   const [loading, setLoading] = useState(false)
-  const [searchInput, setSearchInput] = useState('')
-  const [search, setSearch] = useState('')
-  const [status, setStatus] = useState<number | null>(null)
-  const [categoryId, setCategoryId] = useState<number>(0)
+  const [searchInput, setSearchInput] = useState(listCache.get()?.searchInput ?? '')
+  const [search, setSearch] = useState(listCache.get()?.search ?? '')
+  const [status, setStatus] = useState<number | null>(listCache.get()?.status ?? null)
+  const [categoryId, setCategoryId] = useState<number>(listCache.get()?.categoryId ?? 0)
   const [categories, setCategories] = useState<Option[]>([])
-  const [sortCol, setSortCol] = useState<string>('id')
-  const [sortAsc, setSortAsc] = useState(false)
+  const [sortCol, setSortCol] = useState<string>(listCache.get()?.sortCol ?? 'id')
+  const [sortAsc, setSortAsc] = useState(listCache.get()?.sortAsc ?? false)
   const [toDelete, setToDelete] = useState<ProductItem | null>(null)
   const [toDup, setToDup] = useState<ProductItem | null>(null)
   const [tick, setTick] = useState(0)
   const [cols, setCols] = useState<ColDef[]>(cols$.load)
   const [showCols, setShowCols] = useState(false)
   const [showExport, setShowExport] = useState(false)
+
+  const cacheRef = useRef({ items, stats, search, searchInput, status, categoryId, sortCol, sortAsc, mode })
+  useEffect(() => { cacheRef.current = { items, stats, search, searchInput, status, categoryId, sortCol, sortAsc, mode } })
+  useEffect(() => () => listCache.set(cacheRef.current), [])
 
   useEffect(() => { fetchProductStats().then(setStats).catch(() => null) }, [tick])
   useEffect(() => { fetchProductOptions().then((o) => setCategories(o.categories)).catch(() => null) }, [])
@@ -133,7 +143,7 @@ function ProductList({ base }: { base: string }) {
   ]
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, height: '100%', boxSizing: 'border-box', overflow: mode === 'old' ? 'hidden' : 'auto' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, boxSizing: 'border-box', ...(mode === 'old' ? { height: '100%', overflow: 'hidden' } : {}) }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
         <div>
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{t('title')}</h1>
@@ -335,12 +345,19 @@ function ProductForm({ id, base }: { id: string; base: string }) {
 
   useEffect(() => {
     if (!productId) return
+    // Garde de montage : la brique reste montée (Shell.tsx isActive) le temps que React
+    // réconcilie — un fetch en vol au moment où l'onglet se ferme n'est PAS annulé par le
+    // démontage ; sans ce garde, son .catch() pouvait naviguer vers `base` APRÈS coup et
+    // écraser une navigation par ailleurs légitime (ex. fermeture d'onglet → retour Dashboard).
+    let cancelled = false
     setLoading(true)
     fetchProductById(productId).then((p) => {
+      if (cancelled) return
       setReference(p.reference); setStockLow(p.stockLow === null ? '' : String(p.stockLow)); setActive(p.status === 1)
       setTexts(p.texts); setSeo(p.seo); setCategoryIds(p.categoryIds)
       if (p.pageLinks) setPageLinks(p.pageLinks)
-    }).catch(() => navigate(base)).finally(() => setLoading(false))
+    }).catch(() => { if (!cancelled) navigate(base) }).finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
   }, [productId, navigate, base])
 
   useEffect(() => {
@@ -420,7 +437,7 @@ function ProductForm({ id, base }: { id: string; base: string }) {
   const labelRow = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 } as const
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, height: '100%', boxSizing: 'border-box', overflow: 'auto' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, boxSizing: 'border-box' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 8, background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', color: 'var(--color-primary)' }}><PackageIcon /></span>

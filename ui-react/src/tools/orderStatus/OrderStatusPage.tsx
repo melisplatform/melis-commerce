@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   fetchOrderStatuses, fetchOrderStatusStats, fetchOrderStatusOptions, fetchOrderStatusById, saveOrderStatus, deleteOrderStatus,
   type OrderStatusItem, type OrderStatusStats, type OrderStatusOptions, type OrderStatusDetail, type OrderStatusTranslation, type LangOption,
 } from './api'
+import { makeCache } from '../../shared/listCache'
 import { DICT } from './dict'
 import { makeT } from '../../shared/i18n'
 import { card, inputCss, label, btnGhost, btnPrimary, th, td } from '../../shared/styles'
@@ -22,6 +23,11 @@ const TOOL_MELIS_KEY = 'meliscommerce_order_status_tool_page'
 const COL_ORDER = ['id', 'color', 'name', 'status'] as const
 const COL_LABEL: Record<string, string> = { id: 'col_id', color: 'col_color', name: 'col_name', status: 'col_status' }
 const cols$ = makeColStore('melis-order-status-cols-v1', COL_ORDER)
+
+const listCache = makeCache<{
+  items: OrderStatusItem[]; stats: OrderStatusStats | null; total: number; page: number
+  search: string; searchInput: string; filterStatus: number | null; sortCol: string; sortAsc: boolean; mode: 'react' | 'old'
+}>()
 
 const labelRow = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 } as const
 const fieldSectionTitle = { display: 'flex', alignItems: 'center', gap: 8, fontSize: 15, fontWeight: 500, color: 'var(--color-muted-foreground)', margin: '0 0 20px' } as const
@@ -123,24 +129,28 @@ function OrderStatusList({ base }: { base: string }) {
   const t = makeT(DICT)
   const navigate = useNavigate()
   const { can } = useCaps(TOOL_MELIS_KEY)
-  const [mode, setMode] = useState<'react' | 'old'>('react')
+  const [mode, setMode] = useState<'react' | 'old'>(listCache.get()?.mode ?? 'react')
   const [oldLoaded, setOldLoaded] = useState(false)
-  const [items, setItems] = useState<OrderStatusItem[]>([])
-  const [stats, setStats] = useState<OrderStatusStats | null>(null)
+  const [items, setItems] = useState<OrderStatusItem[]>(listCache.get()?.items ?? [])
+  const [stats, setStats] = useState<OrderStatusStats | null>(listCache.get()?.stats ?? null)
   const [loading, setLoading] = useState(false)
-  const [total, setTotal] = useState(0)
-  const [page, setPage] = useState(1)
+  const [total, setTotal] = useState(listCache.get()?.total ?? 0)
+  const [page, setPage] = useState(listCache.get()?.page ?? 1)
   const LIMIT = 50
-  const [searchInput, setSearchInput] = useState('')
-  const [search, setSearch] = useState('')
-  const [filterStatus, setFilterStatus] = useState<number | null>(null)
-  const [sortCol, setSortCol] = useState('id')
-  const [sortAsc, setSortAsc] = useState(true)
+  const [searchInput, setSearchInput] = useState(listCache.get()?.searchInput ?? '')
+  const [search, setSearch] = useState(listCache.get()?.search ?? '')
+  const [filterStatus, setFilterStatus] = useState<number | null>(listCache.get()?.filterStatus ?? null)
+  const [sortCol, setSortCol] = useState(listCache.get()?.sortCol ?? 'id')
+  const [sortAsc, setSortAsc] = useState(listCache.get()?.sortAsc ?? true)
   const [tick, setTick] = useState(0)
   const [cols, setCols] = useState<ColDef[]>(cols$.load)
   const [showCols, setShowCols] = useState(false)
   const [showExport, setShowExport] = useState(false)
   const [toDelete, setToDelete] = useState<OrderStatusItem | null>(null)
+
+  const cacheRef = useRef({ items, stats, total, page, search, searchInput, filterStatus, sortCol, sortAsc, mode })
+  useEffect(() => { cacheRef.current = { items, stats, total, page, search, searchInput, filterStatus, sortCol, sortAsc, mode } })
+  useEffect(() => () => listCache.set(cacheRef.current), [])
 
   useEffect(() => { fetchOrderStatusStats().then(setStats).catch(() => null) }, [tick])
   useEffect(() => {
@@ -184,7 +194,7 @@ function OrderStatusList({ base }: { base: string }) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, height: '100%', boxSizing: 'border-box', overflow: mode === 'old' ? 'hidden' : 'auto' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, boxSizing: 'border-box', ...(mode === 'old' ? { height: '100%', overflow: 'hidden' } : {}) }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
         <div>
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{t('title')}</h1>
@@ -242,13 +252,13 @@ function OrderStatusList({ base }: { base: string }) {
               </tr>
             </thead>
             <tbody>
-              {loading && (
+              {loading && sorted.length === 0 && (
                 <tr><td colSpan={visible.length + 1} style={{ ...td, textAlign: 'center', padding: '40px 16px', color: 'var(--color-muted-foreground)' }}>{t('loading')}</td></tr>
               )}
               {!loading && sorted.length === 0 && (
                 <tr><td colSpan={visible.length + 1} style={{ ...td, textAlign: 'center', padding: '40px 16px', color: 'var(--color-muted-foreground)' }}>{t('no_items')}</td></tr>
               )}
-              {!loading && sorted.map((s) => (
+              {sorted.map((s) => (
                 <tr key={s.id} style={{ cursor: 'pointer' }}
                   onClick={() => openStatus(s)}
                   onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--color-accent)')}
@@ -275,7 +285,7 @@ function OrderStatusList({ base }: { base: string }) {
             </tbody>
           </table>
           <div style={{ padding: '10px 16px', textAlign: 'center', fontSize: 12, color: 'var(--color-muted-foreground)' }}>
-            {loading ? t('loading') : `${total}`}
+            {loading ? t('loading') : t('count', { n: total })}
           </div>
         </div>
 
@@ -392,7 +402,7 @@ function OrderStatusForm({ id, base }: { id: string; base: string }) {
   const isPermanent = orderStatus?.isPermanent ?? false
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, height: '100%', boxSizing: 'border-box', overflow: 'auto' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, boxSizing: 'border-box' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 8, background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', color: 'var(--color-primary)' }}><TagIcon /></span>

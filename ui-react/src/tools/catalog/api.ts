@@ -20,7 +20,7 @@ export interface CatSavePayload {
   texts: { langId: number; name: string; description: string }[]; countryIds: number[]
 }
 
-export interface CatSeo { langId: number; langName: string; url: string; metaTitle: string; metaDescription: string }
+export interface CatSeo { langId: number; langName: string; pageId: string; url: string; urlRedirect: string; url301: string; metaTitle: string; metaDescription: string }
 export interface CatProduct { id: number; reference: string; name: string; status: number }
 
 export const fetchCatalogTree = (langId?: number) =>
@@ -33,6 +33,6 @@ export const reorderCategory = (payload: { catId: number; fatherId: number; orde
   apiFetch<null>('/melis/react-api/catalog/reorder', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
 export const deleteCategory = (id: number) => apiFetch<null>(`/melis/react-api/catalog/delete/${id}`, { method: 'DELETE' })
 export const fetchCategorySeo = (id: number) => apiFetch<{ items: CatSeo[] }>(`/melis/react-api/catalog/${id}/seo`)
-export const saveCategorySeo = (id: number, items: { langId: number; url: string; metaTitle: string; metaDescription: string }[]) =>
+export const saveCategorySeo = (id: number, items: { langId: number; pageId: string; url: string; urlRedirect: string; url301: string; metaTitle: string; metaDescription: string }[]) =>
   apiFetch<null>(`/melis/react-api/catalog/${id}/seo/save`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items }) })
 export const fetchCategoryProducts = (id: number) => apiFetch<{ items: CatProduct[] }>(`/melis/react-api/catalog/${id}/products`)

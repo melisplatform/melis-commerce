@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   deleteContact, fetchContactById, fetchContactOptions, fetchContacts, fetchContactStats,
   saveContact, fetchContactAddresses, saveContactAddresses,
   type ContactItem, type ContactStats, type ContactAddress,
 } from './api'
+import { makeCache } from '../../shared/listCache'
 import { DICT } from './dict'
 import { makeT, fmtDate } from '../../shared/i18n'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } from '../../shared/styles'
@@ -30,6 +31,12 @@ const COL_LABEL: Record<string, string> = {
   email: 'col_email', type: 'col_type', tags: 'col_tags', created: 'col_created',
 }
 const cols$ = makeColStore('melis-contact-cols-v1', COL_ORDER)
+
+const listCache = makeCache<{
+  items: ContactItem[]; stats: ContactStats | null
+  search: string; searchInput: string; status: number | null; filterAccountId: number; filterType: string
+  sortCol: string; sortAsc: boolean; mode: 'react' | 'old'
+}>()
 
 function getCellExport(c: ContactItem, id: string, t: (k: string) => string): string | number {
   switch (id) {
@@ -60,24 +67,28 @@ function ContactList({ base }: { base: string }) {
   const t = makeT(DICT)
   const navigate = useNavigate()
   const { can } = useCaps(TOOL_MELIS_KEY)
-  const [mode, setMode] = useState<'react' | 'old'>('react')
+  const [mode, setMode] = useState<'react' | 'old'>(listCache.get()?.mode ?? 'react')
   const [oldLoaded, setOldLoaded] = useState(false)
-  const [items, setItems] = useState<ContactItem[]>([])
-  const [stats, setStats] = useState<ContactStats | null>(null)
+  const [items, setItems] = useState<ContactItem[]>(listCache.get()?.items ?? [])
+  const [stats, setStats] = useState<ContactStats | null>(listCache.get()?.stats ?? null)
   const [loading, setLoading] = useState(false)
-  const [searchInput, setSearchInput] = useState('')
-  const [search, setSearch] = useState('')
-  const [status, setStatus] = useState<number | null>(null)
-  const [filterAccountId, setFilterAccountId] = useState(0)
-  const [filterType, setFilterType] = useState('')
+  const [searchInput, setSearchInput] = useState(listCache.get()?.searchInput ?? '')
+  const [search, setSearch] = useState(listCache.get()?.search ?? '')
+  const [status, setStatus] = useState<number | null>(listCache.get()?.status ?? null)
+  const [filterAccountId, setFilterAccountId] = useState(listCache.get()?.filterAccountId ?? 0)
+  const [filterType, setFilterType] = useState(listCache.get()?.filterType ?? '')
   const [accounts, setAccounts] = useState<{ id: number; name: string }[]>([])
-  const [sortCol, setSortCol] = useState<string>('id')
-  const [sortAsc, setSortAsc] = useState(false)
+  const [sortCol, setSortCol] = useState<string>(listCache.get()?.sortCol ?? 'id')
+  const [sortAsc, setSortAsc] = useState(listCache.get()?.sortAsc ?? false)
   const [toDelete, setToDelete] = useState<ContactItem | null>(null)
   const [tick, setTick] = useState(0)
   const [cols, setCols] = useState<ColDef[]>(cols$.load)
   const [showCols, setShowCols] = useState(false)
   const [showExport, setShowExport] = useState(false)
+
+  const cacheRef = useRef({ items, stats, search, searchInput, status, filterAccountId, filterType, sortCol, sortAsc, mode })
+  useEffect(() => { cacheRef.current = { items, stats, search, searchInput, status, filterAccountId, filterType, sortCol, sortAsc, mode } })
+  useEffect(() => () => listCache.set(cacheRef.current), [])
 
   useEffect(() => { fetchContactStats().then(setStats).catch(() => null) }, [tick])
   useEffect(() => { fetchContactOptions().then((o) => setAccounts(o.accounts)).catch(() => null) }, [])
@@ -110,7 +121,7 @@ function ContactList({ base }: { base: string }) {
   const FILTERS: { k: string; v: number | null; dot?: string }[] = [{ k: 'f_all', v: null }, { k: 'f_active', v: 1, dot: '#10b981' }, { k: 'f_inactive', v: 0, dot: '#ef4444' }]
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, height: '100%', boxSizing: 'border-box', overflow: mode === 'old' ? 'hidden' : 'auto' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, boxSizing: 'border-box', ...(mode === 'old' ? { height: '100%', overflow: 'hidden' } : {}) }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
         <div>
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{t('title')}</h1>
@@ -282,9 +293,14 @@ function ContactForm({ id, base }: { id: string; base: string }) {
   }, [contactId])
   useEffect(() => {
     if (!contactId) return
+    // Garde de montage : un fetch en vol au moment où l'onglet se ferme n'est pas annulé par le
+    // démontage — sans ce garde, son .catch() pouvait naviguer vers `base` APRÈS coup et écraser
+    // une navigation par ailleurs légitime (ex. fermeture d'onglet → retour Dashboard).
+    let cancelled = false
     setLoading(true)
     fetchContactById(contactId)
       .then((c) => {
+        if (cancelled) return
         setCivility(c.civility); setFirstname(c.firstname); setName(c.name)
         setMiddleName(c.middleName ?? ''); setLangId(c.langId ?? 0)
         setEmail(c.email); setPassword(''); setConfirmPassword('')
@@ -292,7 +308,8 @@ function ContactForm({ id, base }: { id: string; base: string }) {
         setTelMobile(c.telMobile); setTelLandline(c.telLandline ?? '')
         setAccountId(c.accountId); setType(c.type); setTags(c.tags); setActive(c.status === 1)
       })
-      .catch(() => navigate(base)).finally(() => setLoading(false))
+      .catch(() => { if (!cancelled) navigate(base) }).finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
   }, [contactId, navigate, base])
   useEffect(() => {
     if (!contactId) return
@@ -343,7 +360,7 @@ function ContactForm({ id, base }: { id: string; base: string }) {
   const fieldTitle = { fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 12px' } as const
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, height: '100%', boxSizing: 'border-box', overflow: 'auto' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, boxSizing: 'border-box' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 8, background: 'color-mix(in srgb, var(--color-primary) 10%, transparent)', color: 'var(--color-primary)' }}><UsersKpiIcon /></span>

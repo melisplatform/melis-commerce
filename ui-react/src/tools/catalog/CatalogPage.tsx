@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import {
   deleteCategory, fetchCatalogOptions, fetchCatalogTree, fetchCategoryById, fetchCategoryProducts,
   fetchCategorySeo, reorderCategory, saveCategory, saveCategorySeo,
@@ -30,6 +30,13 @@ function allIds(nodes: CatNode[]): number[] { const a: number[] = []; const w = 
 function findNode(nodes: CatNode[], id: number): CatNode | null {
   for (const n of nodes) { if (n.id === id) return n; const f = findNode(n.children, id); if (f) return f }
   return null
+}
+/** Surligne (en rouge) la première occurrence de `query` dans `text` — insensible à la casse. */
+function highlightMatch(text: string, query: string): ReactNode {
+  if (!query) return text
+  const i = text.toLowerCase().indexOf(query.toLowerCase())
+  if (i === -1) return text
+  return <>{text.slice(0, i)}<span style={{ color: '#dc2626' }}>{text.slice(i, i + query.length)}</span>{text.slice(i + query.length)}</>
 }
 function filterTree(nodes: CatNode[], q: string): CatNode[] {
   if (!q) return nodes
@@ -110,7 +117,7 @@ export default function CatalogPage() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, height: '100%', boxSizing: 'border-box', overflow: mode === 'old' ? 'hidden' : 'auto' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, boxSizing: 'border-box', ...(mode === 'old' ? { height: '100%', overflow: 'hidden' } : {}) }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
         <div>
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{t('title')}</h1>
@@ -149,7 +156,7 @@ export default function CatalogPage() {
           ) : (
             <div onDragEnd={() => { setDrag(null); setDropHint(null) }}>
               <NodeList
-                nodes={view} depth={0} parentId={-1} t={t} anchorId={anchorId} can={can}
+                nodes={view} depth={0} parentId={-1} t={t} anchorId={anchorId} can={can} search={search.trim()}
                 expanded={expanded} toggle={toggle}
                 onHighlight={(n) => setHighlightId(n.id)} onEdit={openEdit} onAddChild={addChild} onDelete={setToDelete}
                 onContext={(n, x, y) => { setHighlightId(n.id); setCtxMenu({ node: n, x, y }) }}
@@ -202,7 +209,7 @@ export default function CatalogPage() {
 // ── Arbre (liste de nœuds d'un niveau + barres de drop) ──────────────────────────
 type RowProps = {
   depth: number; parentId: number; t: (k: string, v?: Record<string, string | number>) => string; anchorId: number | null
-  can: (cap: string) => boolean
+  can: (cap: string) => boolean; search: string
   expanded: Set<number>; toggle: (id: number) => void
   onHighlight: (n: CatNode) => void; onEdit: (n: CatNode) => void; onAddChild: (n: CatNode) => void; onDelete: (n: CatNode) => void
   onContext: (n: CatNode, x: number, y: number) => void
@@ -237,7 +244,7 @@ function DropBar({ active, depth, onOver, onDrop }: { active: boolean; depth: nu
 }
 
 function NodeRow(props: RowProps & { node: CatNode }) {
-  const { node, depth, t, anchorId, can, expanded, toggle, onHighlight, onEdit, onAddChild, onDelete, onContext, drag, dropHint, setDropHint, startDrag, doMove, canDrop } = props
+  const { node, depth, t, anchorId, can, search, expanded, toggle, onHighlight, onEdit, onAddChild, onDelete, onContext, drag, dropHint, setDropHint, startDrag, doMove, canDrop } = props
   const isOpen = expanded.has(node.id)
   const hasKids = node.children.length > 0
   const intoActive = !!drag && drag.id !== node.id && dropHint === `into-${node.id}` && canDrop(node.id)
@@ -267,7 +274,7 @@ function NodeRow(props: RowProps & { node: CatNode }) {
         </button>
         <span style={{ display: 'inline-flex', color: node.status === 1 ? '#16a34a' : '#dc2626', fontSize: 10 }} title={node.status === 1 ? t('online') : t('offline')}>●</span>
         <span style={{ display: 'inline-flex', color: 'var(--color-muted-foreground)' }}>{node.type === 'catalog' ? <LayoutIcon /> : <TagIcon />}</span>
-        <span style={{ fontWeight: node.type === 'catalog' || active ? 600 : 400, color: active ? 'var(--color-primary)' : 'inherit' }}>{node.id} - {node.name}</span>
+        <span style={{ fontWeight: node.type === 'catalog' || active ? 600 : 400, color: active ? 'var(--color-primary)' : 'inherit' }}>{node.id} - {highlightMatch(node.name, search)}</span>
         <span style={{ fontSize: 12, color: 'var(--color-muted-foreground)' }}>{t('products_n', { n: node.productCount })}</span>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 4, opacity: hover || active ? 1 : 0, transition: 'opacity .1s' }}>
           {can('create') && <button style={iconBtn} title={t('add_child')} onClick={(e) => { e.stopPropagation(); onAddChild(node) }}><PlusIcon /></button>}
@@ -313,7 +320,7 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
 
   useEffect(() => {
     setTexts(languages.map((l) => ({ langId: l.id, langName: l.name, name: '', description: '' })))
-    setSeo(languages.map((l) => ({ langId: l.id, langName: l.name, url: '', metaTitle: '', metaDescription: '' })))
+    setSeo(languages.map((l) => ({ langId: l.id, langName: l.name, pageId: '', url: '', urlRedirect: '', url301: '', metaTitle: '', metaDescription: '' })))
     setLang((v) => v || languages[0]?.id || 0)
   }, [languages])
   useEffect(() => {
@@ -344,7 +351,7 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
   }, [capsLoaded])
 
   function setText(langId: number, field: 'name' | 'description', value: string) { setTexts((p) => p.map((x) => x.langId === langId ? { ...x, [field]: value } : x)); setError(null) }
-  function setSeoField(langId: number, field: 'url' | 'metaTitle' | 'metaDescription', value: string) { setSeo((p) => p.map((x) => x.langId === langId ? { ...x, [field]: value } : x)) }
+  function setSeoField(langId: number, field: 'pageId' | 'url' | 'urlRedirect' | 'url301' | 'metaTitle' | 'metaDescription', value: string) { setSeo((p) => p.map((x) => x.langId === langId ? { ...x, [field]: value } : x)) }
   function toggleCountry(cid: number) { setCountryIds((p) => p.includes(cid) ? p.filter((x) => x !== cid) : [...p, cid]) }
   const allCountries = countries.length > 0 && countryIds.length === countries.length
   function toggleAllCountries() { setCountryIds(allCountries ? [] : countries.map((c) => c.id)) }
@@ -363,8 +370,8 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
         countryIds,
       })
       // SEO (si déjà chargé / modifié) — sauvé après que la catégorie ait un id.
-      if (seoLoaded || seo.some((s) => s.url || s.metaTitle || s.metaDescription)) {
-        try { await saveCategorySeo(r.id, seo.map((s) => ({ langId: s.langId, url: s.url, metaTitle: s.metaTitle, metaDescription: s.metaDescription }))) } catch { /* */ }
+      if (seoLoaded || seo.some((s) => s.pageId || s.url || s.urlRedirect || s.url301 || s.metaTitle || s.metaDescription)) {
+        try { await saveCategorySeo(r.id, seo.map((s) => ({ langId: s.langId, pageId: s.pageId, url: s.url, urlRedirect: s.urlRedirect, url301: s.url301, metaTitle: s.metaTitle, metaDescription: s.metaDescription }))) } catch { /* */ }
       }
       notify('ok', t('title'), t('saved'))
       onSaved(r.id, isCatalog ? 'catalog' : 'category')
@@ -470,12 +477,18 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
               <LangSwitcher languages={languages} value={lang} onChange={setLang} />
               {seo.filter((s) => s.langId === lang).map((s) => (
                 <div key={s.langId}>
-                  <label style={label}>{t('seo_url')}</label>
-                  <input style={inputCss} value={s.url} onChange={(e) => setSeoField(s.langId, 'url', e.target.value)} placeholder={t('seo_url_ph')} autoComplete="off" />
+                  <label style={label}>{t('seo_page_id')}</label>
+                  <input style={inputCss} value={s.pageId} onChange={(e) => setSeoField(s.langId, 'pageId', e.target.value)} placeholder={t('seo_page_id_ph')} autoComplete="off" />
                   <label style={{ ...label, marginTop: 14 }}>{t('seo_meta_title')}</label>
                   <input style={inputCss} value={s.metaTitle} onChange={(e) => setSeoField(s.langId, 'metaTitle', e.target.value)} placeholder={t('seo_meta_title_ph')} autoComplete="off" />
                   <label style={{ ...label, marginTop: 14 }}>{t('seo_meta_desc')}</label>
                   <textarea style={{ ...inputCss, minHeight: 90, resize: 'vertical', paddingTop: 8 }} value={s.metaDescription} onChange={(e) => setSeoField(s.langId, 'metaDescription', e.target.value)} placeholder={t('seo_meta_desc_ph')} />
+                  <label style={{ ...label, marginTop: 14 }}>{t('seo_url')}</label>
+                  <input style={inputCss} value={s.url} onChange={(e) => setSeoField(s.langId, 'url', e.target.value)} placeholder={t('seo_url_ph')} autoComplete="off" />
+                  <label style={{ ...label, marginTop: 14 }}>{t('seo_url_redirect')}</label>
+                  <input style={inputCss} value={s.urlRedirect} onChange={(e) => setSeoField(s.langId, 'urlRedirect', e.target.value)} placeholder={t('seo_url_redirect_ph')} autoComplete="off" />
+                  <label style={{ ...label, marginTop: 14 }}>{t('seo_url_301')}</label>
+                  <input style={inputCss} value={s.url301} onChange={(e) => setSeoField(s.langId, 'url301', e.target.value)} placeholder={t('seo_url_301_ph')} autoComplete="off" />
                 </div>
               ))}
             </div>

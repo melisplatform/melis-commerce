@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   fetchOrders, fetchOrderStats, fetchOrderStatuses, fetchOrderById,
@@ -6,6 +6,7 @@ import {
   fetchOrderAttachments, uploadOrderAttachment, deleteOrderAttachment,
   type OrderItem, type OrderStats, type OrderStatus, type OrderDetail, type OrderAttachment,
 } from './api'
+import { makeCache } from '../../shared/listCache'
 import { DICT } from './dict'
 import { makeT, fmtDate, currentLang } from '../../shared/i18n'
 import { card, inputCss, btnGhost, btnPrimary, th, td } from '../../shared/styles'
@@ -32,6 +33,12 @@ const COL_LABEL: Record<string, string> = {
   firstname: 'col_firstname', name: 'col_name', company: 'col_company', date: 'col_date',
 }
 const cols$ = makeColStore('melis-order-cols-v2', COL_ORDER)
+
+const listCache = makeCache<{
+  items: OrderItem[]; stats: OrderStats | null; total: number; page: number
+  search: string; searchInput: string; filterStatus: number | null; dateStart: string; dateEnd: string
+  sortCol: string; sortAsc: boolean; mode: 'react' | 'old'
+}>()
 
 function getCellExport(o: OrderItem, id: string): string | number {
   switch (id) {
@@ -76,26 +83,30 @@ function OrderList({ base }: { base: string }) {
   const t = makeT(DICT)
   const navigate = useNavigate()
   const { can } = useCaps(TOOL_MELIS_KEY)
-  const [mode, setMode] = useState<'react' | 'old'>('react')
+  const [mode, setMode] = useState<'react' | 'old'>(listCache.get()?.mode ?? 'react')
   const [oldLoaded, setOldLoaded] = useState(false)
-  const [items, setItems] = useState<OrderItem[]>([])
-  const [stats, setStats] = useState<OrderStats | null>(null)
+  const [items, setItems] = useState<OrderItem[]>(listCache.get()?.items ?? [])
+  const [stats, setStats] = useState<OrderStats | null>(listCache.get()?.stats ?? null)
   const [statuses, setStatuses] = useState<OrderStatus[]>([])
   const [loading, setLoading] = useState(false)
-  const [total, setTotal] = useState(0)
-  const [page, setPage] = useState(1)
+  const [total, setTotal] = useState(listCache.get()?.total ?? 0)
+  const [page, setPage] = useState(listCache.get()?.page ?? 1)
   const LIMIT = 25
-  const [searchInput, setSearchInput] = useState('')
-  const [search, setSearch] = useState('')
-  const [filterStatus, setFilterStatus] = useState<number | null>(null)
-  const [dateStart, setDateStart] = useState('')
-  const [dateEnd, setDateEnd] = useState('')
-  const [sortCol, setSortCol] = useState('id')
-  const [sortAsc, setSortAsc] = useState(false)
+  const [searchInput, setSearchInput] = useState(listCache.get()?.searchInput ?? '')
+  const [search, setSearch] = useState(listCache.get()?.search ?? '')
+  const [filterStatus, setFilterStatus] = useState<number | null>(listCache.get()?.filterStatus ?? null)
+  const [dateStart, setDateStart] = useState(listCache.get()?.dateStart ?? '')
+  const [dateEnd, setDateEnd] = useState(listCache.get()?.dateEnd ?? '')
+  const [sortCol, setSortCol] = useState(listCache.get()?.sortCol ?? 'id')
+  const [sortAsc, setSortAsc] = useState(listCache.get()?.sortAsc ?? false)
   const [tick, setTick] = useState(0)
   const [cols, setCols] = useState<ColDef[]>(cols$.load)
   const [showCols, setShowCols] = useState(false)
   const [showExport, setShowExport] = useState(false)
+
+  const cacheRef = useRef({ items, stats, total, page, search, searchInput, filterStatus, dateStart, dateEnd, sortCol, sortAsc, mode })
+  useEffect(() => { cacheRef.current = { items, stats, total, page, search, searchInput, filterStatus, dateStart, dateEnd, sortCol, sortAsc, mode } })
+  useEffect(() => () => listCache.set(cacheRef.current), [])
 
   useEffect(() => { fetchOrderStats().then(setStats).catch(() => null) }, [tick])
   useEffect(() => { fetchOrderStatuses().then(setStatuses).catch(() => null) }, [])
@@ -140,7 +151,7 @@ function OrderList({ base }: { base: string }) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, height: '100%', boxSizing: 'border-box', overflow: mode === 'old' ? 'hidden' : 'auto' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, boxSizing: 'border-box', ...(mode === 'old' ? { height: '100%', overflow: 'hidden' } : {}) }}>
       {/* Title row */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
         <div>
@@ -203,13 +214,13 @@ function OrderList({ base }: { base: string }) {
               </tr>
             </thead>
             <tbody>
-              {loading && (
+              {loading && sorted.length === 0 && (
                 <tr><td colSpan={visible.length} style={{ ...td, textAlign: 'center', padding: '40px 16px', color: 'var(--color-muted-foreground)' }}>{t('loading')}</td></tr>
               )}
               {!loading && sorted.length === 0 && (
                 <tr><td colSpan={visible.length} style={{ ...td, textAlign: 'center', padding: '40px 16px', color: 'var(--color-muted-foreground)' }}>{t('no_items')}</td></tr>
               )}
-              {!loading && sorted.map((o) => (
+              {sorted.map((o) => (
                 <tr key={o.id} style={{ cursor: 'pointer' }}
                   onClick={() => openOrder(o)}
                   onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--color-accent)')}
@@ -241,7 +252,7 @@ function OrderList({ base }: { base: string }) {
             </tbody>
           </table>
           <div style={{ padding: '10px 16px', textAlign: 'center', fontSize: 12, color: 'var(--color-muted-foreground)' }}>
-            {loading ? t('loading') : `${total} ${t('col_reference').toLowerCase() === 'reference' ? 'orders' : 'commandes'}`}
+            {loading ? t('loading') : t('count', { n: total })}
           </div>
         </div>
 
@@ -343,7 +354,7 @@ function OrderForm({ id, base }: { id: string; base: string }) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, height: '100%', boxSizing: 'border-box', overflow: 'auto' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, boxSizing: 'border-box' }}>
       {/* Header — back + title + Save (same pattern as AccountForm) */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
