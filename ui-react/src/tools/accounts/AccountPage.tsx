@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   deleteAccount, fetchAccountById, fetchAccountOptions, fetchAccounts, fetchAccountStats,
@@ -6,6 +6,7 @@ import {
   fetchAccountContacts, testImportAccounts, importAccounts, ACCOUNT_IMPORT_TEMPLATE_URL,
   type AccountItem, type AccountStats, type CompanyData, type AccountAddress, type AccountContact,
 } from './api'
+import { makeCache } from '../../shared/listCache'
 import { DICT } from './dict'
 import { makeT, fmtDate, type T } from '../../shared/i18n'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } from '../../shared/styles'
@@ -28,6 +29,11 @@ const TOOL_MELIS_KEY = 'meliscommerce_clients_list_page'
 const COL_ORDER = ['id', 'name', 'status', 'group', 'country', 'created'] as const
 const COL_LABEL: Record<string, string> = { id: 'col_id', name: 'col_name', status: 'col_status', group: 'col_group', country: 'col_country', created: 'col_created' }
 const cols$ = makeColStore('melis-account-cols-v1', COL_ORDER)
+
+const listCache = makeCache<{
+  items: AccountItem[]; stats: AccountStats | null
+  search: string; searchInput: string; status: number | null; filterGroupId: number; sortCol: string; sortAsc: boolean; mode: 'react' | 'old'
+}>()
 
 function getCellExport(a: AccountItem, id: string, t: (k: string) => string): string | number {
   switch (id) {
@@ -146,24 +152,28 @@ function AccountList({ base }: { base: string }) {
   const t = makeT(DICT)
   const navigate = useNavigate()
   const { can } = useCaps(TOOL_MELIS_KEY)
-  const [mode, setMode] = useState<'react' | 'old'>('react')
+  const [mode, setMode] = useState<'react' | 'old'>(listCache.get()?.mode ?? 'react')
   const [oldLoaded, setOldLoaded] = useState(false)
-  const [items, setItems] = useState<AccountItem[]>([])
-  const [stats, setStats] = useState<AccountStats | null>(null)
+  const [items, setItems] = useState<AccountItem[]>(listCache.get()?.items ?? [])
+  const [stats, setStats] = useState<AccountStats | null>(listCache.get()?.stats ?? null)
   const [loading, setLoading] = useState(false)
-  const [searchInput, setSearchInput] = useState('')
-  const [search, setSearch] = useState('')
-  const [status, setStatus] = useState<number | null>(null)
-  const [filterGroupId, setFilterGroupId] = useState(0)
+  const [searchInput, setSearchInput] = useState(listCache.get()?.searchInput ?? '')
+  const [search, setSearch] = useState(listCache.get()?.search ?? '')
+  const [status, setStatus] = useState<number | null>(listCache.get()?.status ?? null)
+  const [filterGroupId, setFilterGroupId] = useState(listCache.get()?.filterGroupId ?? 0)
   const [groups, setGroups] = useState<{ id: number; name: string }[]>([])
-  const [sortCol, setSortCol] = useState<string>('id')
-  const [sortAsc, setSortAsc] = useState(false)
+  const [sortCol, setSortCol] = useState<string>(listCache.get()?.sortCol ?? 'id')
+  const [sortAsc, setSortAsc] = useState(listCache.get()?.sortAsc ?? false)
   const [toDelete, setToDelete] = useState<AccountItem | null>(null)
   const [tick, setTick] = useState(0)
   const [cols, setCols] = useState<ColDef[]>(cols$.load)
   const [showCols, setShowCols] = useState(false)
   const [showExport, setShowExport] = useState(false)
   const [showImport, setShowImport] = useState(false)
+
+  const cacheRef = useRef({ items, stats, search, searchInput, status, filterGroupId, sortCol, sortAsc, mode })
+  useEffect(() => { cacheRef.current = { items, stats, search, searchInput, status, filterGroupId, sortCol, sortAsc, mode } })
+  useEffect(() => () => listCache.set(cacheRef.current), [])
 
   useEffect(() => { fetchAccountStats().then(setStats).catch(() => null) }, [tick])
   useEffect(() => { fetchAccountOptions().then((o) => setGroups(o.groups)).catch(() => null) }, [])

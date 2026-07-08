@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   fetchLanguages, fetchLanguageStats, saveLanguage, deleteLanguage,
   type LanguageItem, type LanguageStats,
 } from './api'
+import { makeCache } from '../../shared/listCache'
 import { DICT } from './dict'
 import { makeT, type T } from '../../shared/i18n'
 import { card, inputCss, label, btnGhost, btnPrimary, th, td } from '../../shared/styles'
@@ -21,6 +22,11 @@ const COL_LABEL: Record<string, string> = {
   id: 'col_id', flag: 'col_flag', status: 'col_status', locale: 'col_locale', name: 'col_name',
 }
 const cols$ = makeColStore('melis-language-cols-v1', COL_ORDER)
+
+const listCache = makeCache<{
+  items: LanguageItem[]; stats: LanguageStats | null; total: number; page: number
+  search: string; searchInput: string; filterStatus: number | null; sortCol: string; sortAsc: boolean; mode: 'react' | 'old'
+}>()
 
 const fieldGap = { display: 'flex', flexDirection: 'column', gap: 16 } as const
 const labelRow = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 } as const
@@ -69,25 +75,29 @@ function getCellExport(l: LanguageItem, id: string): string | number {
 export default function LanguagePage() {
   const t = makeT(DICT)
   const { can } = useCaps(TOOL_MELIS_KEY)
-  const [mode, setMode] = useState<'react' | 'old'>('react')
+  const [mode, setMode] = useState<'react' | 'old'>(listCache.get()?.mode ?? 'react')
   const [oldLoaded, setOldLoaded] = useState(false)
-  const [items, setItems] = useState<LanguageItem[]>([])
-  const [stats, setStats] = useState<LanguageStats | null>(null)
+  const [items, setItems] = useState<LanguageItem[]>(listCache.get()?.items ?? [])
+  const [stats, setStats] = useState<LanguageStats | null>(listCache.get()?.stats ?? null)
   const [loading, setLoading] = useState(false)
-  const [total, setTotal] = useState(0)
-  const [page, setPage] = useState(1)
+  const [total, setTotal] = useState(listCache.get()?.total ?? 0)
+  const [page, setPage] = useState(listCache.get()?.page ?? 1)
   const LIMIT = 50
-  const [searchInput, setSearchInput] = useState('')
-  const [search, setSearch] = useState('')
-  const [filterStatus, setFilterStatus] = useState<number | null>(null)
-  const [sortCol, setSortCol] = useState('id')
-  const [sortAsc, setSortAsc] = useState(false)
+  const [searchInput, setSearchInput] = useState(listCache.get()?.searchInput ?? '')
+  const [search, setSearch] = useState(listCache.get()?.search ?? '')
+  const [filterStatus, setFilterStatus] = useState<number | null>(listCache.get()?.filterStatus ?? null)
+  const [sortCol, setSortCol] = useState(listCache.get()?.sortCol ?? 'id')
+  const [sortAsc, setSortAsc] = useState(listCache.get()?.sortAsc ?? false)
   const [tick, setTick] = useState(0)
   const [cols, setCols] = useState<ColDef[]>(cols$.load)
   const [showCols, setShowCols] = useState(false)
   const [showExport, setShowExport] = useState(false)
   const [toDelete, setToDelete] = useState<LanguageItem | null>(null)
   const [editing, setEditing] = useState<LanguageItem | 'new' | null>(null)
+
+  const cacheRef = useRef({ items, stats, total, page, search, searchInput, filterStatus, sortCol, sortAsc, mode })
+  useEffect(() => { cacheRef.current = { items, stats, total, page, search, searchInput, filterStatus, sortCol, sortAsc, mode } })
+  useEffect(() => () => listCache.set(cacheRef.current), [])
 
   useEffect(() => { fetchLanguageStats().then(setStats).catch(() => null) }, [tick])
   useEffect(() => {
@@ -184,13 +194,13 @@ export default function LanguagePage() {
               </tr>
             </thead>
             <tbody>
-              {loading && (
+              {loading && sorted.length === 0 && (
                 <tr><td colSpan={visible.length + 1} style={{ ...td, textAlign: 'center', padding: '40px 16px', color: 'var(--color-muted-foreground)' }}>{t('loading')}</td></tr>
               )}
               {!loading && sorted.length === 0 && (
                 <tr><td colSpan={visible.length + 1} style={{ ...td, textAlign: 'center', padding: '40px 16px', color: 'var(--color-muted-foreground)' }}>{t('no_items')}</td></tr>
               )}
-              {!loading && sorted.map((l) => (
+              {sorted.map((l) => (
                 <tr key={l.id} style={{ cursor: 'pointer' }}
                   onClick={() => setEditing(l)}
                   onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--color-accent)')}
@@ -218,7 +228,7 @@ export default function LanguagePage() {
             </tbody>
           </table>
           <div style={{ padding: '10px 16px', textAlign: 'center', fontSize: 12, color: 'var(--color-muted-foreground)' }}>
-            {loading ? t('loading') : `${total}`}
+            {loading ? t('loading') : t('count', { n: total })}
           </div>
         </div>
 

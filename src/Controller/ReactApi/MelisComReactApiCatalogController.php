@@ -353,10 +353,13 @@ class MelisComReactApiCatalogController extends MelisAbstractActionController
         try {
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
             $seo = [];
-            foreach ($db->query('SELECT eseo_lang_id, eseo_url, eseo_meta_title, eseo_meta_description FROM melis_ecom_seo WHERE eseo_category_id = ?', [$id]) as $r) {
+            foreach ($db->query('SELECT eseo_lang_id, eseo_page_id, eseo_url, eseo_url_redirect, eseo_url_301, eseo_meta_title, eseo_meta_description FROM melis_ecom_seo WHERE eseo_category_id = ?', [$id]) as $r) {
                 $r = (array) $r;
                 $seo[(int) $r['eseo_lang_id']] = [
+                    'pageId'          => (string) ($r['eseo_page_id'] ?? ''),
                     'url'             => (string) ($r['eseo_url'] ?? ''),
+                    'urlRedirect'     => (string) ($r['eseo_url_redirect'] ?? ''),
+                    'url301'          => (string) ($r['eseo_url_301'] ?? ''),
                     'metaTitle'       => (string) ($r['eseo_meta_title'] ?? ''),
                     'metaDescription' => (string) ($r['eseo_meta_description'] ?? ''),
                 ];
@@ -368,7 +371,10 @@ class MelisComReactApiCatalogController extends MelisAbstractActionController
                 $list[] = [
                     'langId'          => $lid,
                     'langName'        => (string) $r['elang_name'],
+                    'pageId'          => $seo[$lid]['pageId']          ?? '',
                     'url'             => $seo[$lid]['url']             ?? '',
+                    'urlRedirect'     => $seo[$lid]['urlRedirect']     ?? '',
+                    'url301'          => $seo[$lid]['url301']          ?? '',
                     'metaTitle'       => $seo[$lid]['metaTitle']       ?? '',
                     'metaDescription' => $seo[$lid]['metaDescription'] ?? '',
                 ];
@@ -402,7 +408,10 @@ class MelisComReactApiCatalogController extends MelisAbstractActionController
                 $seoData[] = [
                     'eseo_id'               => $existing[$lid] ?? null,
                     'eseo_lang_id'          => $lid,
+                    'eseo_page_id'          => ($it['pageId'] ?? '') === '' ? null : (int) $it['pageId'],
                     'eseo_url'              => trim((string) ($it['url'] ?? '')),
+                    'eseo_url_redirect'     => trim((string) ($it['urlRedirect'] ?? '')),
+                    'eseo_url_301'          => trim((string) ($it['url301'] ?? '')),
                     'eseo_meta_title'       => trim((string) ($it['metaTitle'] ?? '')),
                     'eseo_meta_description' => trim((string) ($it['metaDescription'] ?? '')),
                 ];

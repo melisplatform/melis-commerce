@@ -12,7 +12,7 @@ export interface SimpleCol<TRow> { key: string; label: string; render: (row: TRo
  */
 export function SimpleTable<TRow>({
   cols, rows, rowKey, empty, loading, loadingText, t,
-  search, searchPlaceholder, filters, onAdd, addIcon, addTitle, onRefresh, paginate = true, toolbarEnd,
+  search, searchPlaceholder, filters, onAdd, addIcon, addTitle, onRefresh, paginate = true, toolbarEnd, countLabel,
 }: {
   cols: SimpleCol<TRow>[]; rows: TRow[]; rowKey: (r: TRow) => string | number
   empty: string; loading?: boolean; loadingText?: string; t?: T
@@ -26,6 +26,8 @@ export function SimpleTable<TRow>({
   paginate?: boolean
   /** Actions additionnelles (ex. gestionnaire de colonnes) rendues à droite, à côté d'Ajouter/Actualiser. */
   toolbarEnd?: ReactNode
+  /** Libellé de fin de liste (déjà traduit par l'appelant, ex. `t('values_count', {n})`) — affiché quand paginate=false. */
+  countLabel?: (n: number) => string
 }) {
   const [q, setQ] = useState('')
   const [limit, setLimit] = useState(10)
@@ -95,6 +97,11 @@ export function SimpleTable<TRow>({
             <button style={{ ...iconBtn, width: 'auto', padding: '0 10px', height: 30, border: '1px solid var(--color-border)', opacity: cur <= 1 ? 0.5 : 1 }} disabled={cur <= 1} onClick={() => setPage(cur - 1)}>{tr('prev')}</button>
             <button style={{ ...iconBtn, width: 'auto', padding: '0 10px', height: 30, border: '1px solid var(--color-border)', opacity: cur >= pages ? 0.5 : 1 }} disabled={cur >= pages} onClick={() => setPage(cur + 1)}>{tr('next')}</button>
           </div>
+        </div>
+      )}
+      {!paginate && countLabel && total > 0 && (
+        <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--color-muted-foreground)', padding: '2px 0' }}>
+          {countLabel(total)}
         </div>
       )}
     </div>

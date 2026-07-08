@@ -6,6 +6,7 @@ import {
   saveCouponClient, deleteCouponClient, saveCouponProduct, deleteCouponProduct,
   type CouponItem, type CouponStats, type CouponDetail, type CouponClientOption, type CouponProductOption,
 } from './api'
+import { makeCache } from '../../shared/listCache'
 import { DICT } from './dict'
 import { makeT, fmtDate } from '../../shared/i18n'
 import { card, inputCss, label, btnGhost, btnPrimary, th, td } from '../../shared/styles'
@@ -27,6 +28,11 @@ const COL_LABEL: Record<string, string> = {
   id: 'col_id', code: 'col_code', status: 'col_status', discount: 'col_discount', uses: 'col_uses', valid: 'col_valid',
 }
 const cols$ = makeColStore('melis-coupon-cols-v1', COL_ORDER)
+
+const listCache = makeCache<{
+  items: CouponItem[]; stats: CouponStats | null; total: number; page: number
+  search: string; searchInput: string; filterStatus: number | null; sortCol: string; sortAsc: boolean; mode: 'react' | 'old'
+}>()
 
 const labelRow = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 } as const
 const fieldSectionTitle = { display: 'flex', alignItems: 'center', gap: 8, fontSize: 15, fontWeight: 500, color: 'var(--color-muted-foreground)', margin: '0 0 20px' } as const
@@ -120,24 +126,28 @@ function CouponList({ base }: { base: string }) {
   const t = makeT(DICT)
   const navigate = useNavigate()
   const { can } = useCaps(TOOL_MELIS_KEY)
-  const [mode, setMode] = useState<'react' | 'old'>('react')
+  const [mode, setMode] = useState<'react' | 'old'>(listCache.get()?.mode ?? 'react')
   const [oldLoaded, setOldLoaded] = useState(false)
-  const [items, setItems] = useState<CouponItem[]>([])
-  const [stats, setStats] = useState<CouponStats | null>(null)
+  const [items, setItems] = useState<CouponItem[]>(listCache.get()?.items ?? [])
+  const [stats, setStats] = useState<CouponStats | null>(listCache.get()?.stats ?? null)
   const [loading, setLoading] = useState(false)
-  const [total, setTotal] = useState(0)
-  const [page, setPage] = useState(1)
+  const [total, setTotal] = useState(listCache.get()?.total ?? 0)
+  const [page, setPage] = useState(listCache.get()?.page ?? 1)
   const LIMIT = 50
-  const [searchInput, setSearchInput] = useState('')
-  const [search, setSearch] = useState('')
-  const [filterStatus, setFilterStatus] = useState<number | null>(null)
-  const [sortCol, setSortCol] = useState('id')
-  const [sortAsc, setSortAsc] = useState(false)
+  const [searchInput, setSearchInput] = useState(listCache.get()?.searchInput ?? '')
+  const [search, setSearch] = useState(listCache.get()?.search ?? '')
+  const [filterStatus, setFilterStatus] = useState<number | null>(listCache.get()?.filterStatus ?? null)
+  const [sortCol, setSortCol] = useState(listCache.get()?.sortCol ?? 'id')
+  const [sortAsc, setSortAsc] = useState(listCache.get()?.sortAsc ?? false)
   const [tick, setTick] = useState(0)
   const [cols, setCols] = useState<ColDef[]>(cols$.load)
   const [showCols, setShowCols] = useState(false)
   const [showExport, setShowExport] = useState(false)
   const [toDelete, setToDelete] = useState<CouponItem | null>(null)
+
+  const cacheRef = useRef({ items, stats, total, page, search, searchInput, filterStatus, sortCol, sortAsc, mode })
+  useEffect(() => { cacheRef.current = { items, stats, total, page, search, searchInput, filterStatus, sortCol, sortAsc, mode } })
+  useEffect(() => () => listCache.set(cacheRef.current), [])
 
   useEffect(() => { fetchCouponStats().then(setStats).catch(() => null) }, [tick])
   useEffect(() => {
@@ -240,13 +250,13 @@ function CouponList({ base }: { base: string }) {
               </tr>
             </thead>
             <tbody>
-              {loading && (
+              {loading && sorted.length === 0 && (
                 <tr><td colSpan={visible.length + 1} style={{ ...td, textAlign: 'center', padding: '40px 16px', color: 'var(--color-muted-foreground)' }}>{t('loading')}</td></tr>
               )}
               {!loading && sorted.length === 0 && (
                 <tr><td colSpan={visible.length + 1} style={{ ...td, textAlign: 'center', padding: '40px 16px', color: 'var(--color-muted-foreground)' }}>{t('no_items')}</td></tr>
               )}
-              {!loading && sorted.map((c) => (
+              {sorted.map((c) => (
                 <tr key={c.id} style={{ cursor: 'pointer' }}
                   onClick={() => openCoupon(c)}
                   onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--color-accent)')}
@@ -275,7 +285,7 @@ function CouponList({ base }: { base: string }) {
             </tbody>
           </table>
           <div style={{ padding: '10px 16px', textAlign: 'center', fontSize: 12, color: 'var(--color-muted-foreground)' }}>
-            {loading ? t('loading') : `${total}`}
+            {loading ? t('loading') : t('count', { n: total })}
           </div>
         </div>
 

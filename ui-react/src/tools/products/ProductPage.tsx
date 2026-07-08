@@ -5,6 +5,7 @@ import {
   uploadProductMedia, deleteProductMedia, saveProductAttribute, deleteProductAttribute, saveProductRecipient, deleteProductRecipient, saveProductPrice,
   type ProductItem, type ProductStats, type ProductText, type ProductSeo, type TooltipVariant,
 } from './api'
+import { makeCache } from '../../shared/listCache'
 import type { T } from '../../shared/i18n'
 import { VariantsTab, PricesTab, AttributesSection, FilesSection, ImagesSection, RecipientsSection, CategoryPickerModal, SiteTreeModal, DuplicateModal, InfoDot, SitemapIcon, StatusToggle, flattenCatNames, VariantTooltipTable, type PendingPrice, type PendingMedia } from './ProductTabs'
 import { VariantEditor } from './ProductVariantEditor'
@@ -33,6 +34,11 @@ const TOOL_MELIS_KEY = 'meliscommerce_product_list_container'
 const COL_ORDER = ['id', 'status', 'image', 'reference', 'name', 'categories', 'created'] as const
 const COL_LABEL: Record<string, string> = { id: 'col_id', status: 'col_status', image: 'col_image', reference: 'col_reference', name: 'col_name', categories: 'col_categories', created: 'col_created' }
 const cols$ = makeColStore('melis-products-cols-v1', COL_ORDER)
+
+const listCache = makeCache<{
+  items: ProductItem[]; stats: ProductStats | null
+  search: string; searchInput: string; status: number | null; categoryId: number; sortCol: string; sortAsc: boolean; mode: 'react' | 'old'
+}>()
 
 function getCellExport(p: ProductItem, id: string, t: (k: string) => string): string | number {
   switch (id) {
@@ -86,24 +92,28 @@ function ProductList({ base }: { base: string }) {
   const t = makeT(DICT)
   const navigate = useNavigate()
   const { can } = useCaps(TOOL_MELIS_KEY)
-  const [mode, setMode] = useState<'react' | 'old'>('react')
+  const [mode, setMode] = useState<'react' | 'old'>(listCache.get()?.mode ?? 'react')
   const [oldLoaded, setOldLoaded] = useState(false)
-  const [items, setItems] = useState<ProductItem[]>([])
-  const [stats, setStats] = useState<ProductStats | null>(null)
+  const [items, setItems] = useState<ProductItem[]>(listCache.get()?.items ?? [])
+  const [stats, setStats] = useState<ProductStats | null>(listCache.get()?.stats ?? null)
   const [loading, setLoading] = useState(false)
-  const [searchInput, setSearchInput] = useState('')
-  const [search, setSearch] = useState('')
-  const [status, setStatus] = useState<number | null>(null)
-  const [categoryId, setCategoryId] = useState<number>(0)
+  const [searchInput, setSearchInput] = useState(listCache.get()?.searchInput ?? '')
+  const [search, setSearch] = useState(listCache.get()?.search ?? '')
+  const [status, setStatus] = useState<number | null>(listCache.get()?.status ?? null)
+  const [categoryId, setCategoryId] = useState<number>(listCache.get()?.categoryId ?? 0)
   const [categories, setCategories] = useState<Option[]>([])
-  const [sortCol, setSortCol] = useState<string>('id')
-  const [sortAsc, setSortAsc] = useState(false)
+  const [sortCol, setSortCol] = useState<string>(listCache.get()?.sortCol ?? 'id')
+  const [sortAsc, setSortAsc] = useState(listCache.get()?.sortAsc ?? false)
   const [toDelete, setToDelete] = useState<ProductItem | null>(null)
   const [toDup, setToDup] = useState<ProductItem | null>(null)
   const [tick, setTick] = useState(0)
   const [cols, setCols] = useState<ColDef[]>(cols$.load)
   const [showCols, setShowCols] = useState(false)
   const [showExport, setShowExport] = useState(false)
+
+  const cacheRef = useRef({ items, stats, search, searchInput, status, categoryId, sortCol, sortAsc, mode })
+  useEffect(() => { cacheRef.current = { items, stats, search, searchInput, status, categoryId, sortCol, sortAsc, mode } })
+  useEffect(() => () => listCache.set(cacheRef.current), [])
 
   useEffect(() => { fetchProductStats().then(setStats).catch(() => null) }, [tick])
   useEffect(() => { fetchProductOptions().then((o) => setCategories(o.categories)).catch(() => null) }, [])

@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   fetchAttributes, fetchAttributeStats, fetchAttributeOptions, fetchAttributeById, saveAttribute, deleteAttribute,
   type AttributeItem, type AttributeStats, type AttributeOptions, type AttributeDetail, type AttributeTranslation, type LangOption,
 } from './api'
+import { makeCache } from '../../shared/listCache'
 import { DICT } from './dict'
 import { makeT } from '../../shared/i18n'
 import { card, inputCss, label, btnGhost, btnPrimary, th, td } from '../../shared/styles'
@@ -26,6 +27,11 @@ const COL_LABEL: Record<string, string> = {
   status: 'col_status', visible: 'col_visible', searchable: 'col_searchable', values: 'col_values',
 }
 const cols$ = makeColStore('melis-attribute-cols-v1', COL_ORDER)
+
+const listCache = makeCache<{
+  items: AttributeItem[]; stats: AttributeStats | null; total: number; page: number
+  search: string; searchInput: string; filterStatus: number | null; filterType: number | null; sortCol: string; sortAsc: boolean; mode: 'react' | 'old'
+}>()
 
 const labelRow = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 } as const
 const fieldSectionTitle = { display: 'flex', alignItems: 'center', gap: 8, fontSize: 15, fontWeight: 500, color: 'var(--color-muted-foreground)', margin: '0 0 20px' } as const
@@ -134,26 +140,30 @@ function AttributeList({ base }: { base: string }) {
   const t = makeT(DICT)
   const navigate = useNavigate()
   const { can } = useCaps(TOOL_MELIS_KEY)
-  const [mode, setMode] = useState<'react' | 'old'>('react')
+  const [mode, setMode] = useState<'react' | 'old'>(listCache.get()?.mode ?? 'react')
   const [oldLoaded, setOldLoaded] = useState(false)
-  const [items, setItems] = useState<AttributeItem[]>([])
-  const [stats, setStats] = useState<AttributeStats | null>(null)
+  const [items, setItems] = useState<AttributeItem[]>(listCache.get()?.items ?? [])
+  const [stats, setStats] = useState<AttributeStats | null>(listCache.get()?.stats ?? null)
   const [options, setOptions] = useState<AttributeOptions | null>(null)
   const [loading, setLoading] = useState(false)
-  const [total, setTotal] = useState(0)
-  const [page, setPage] = useState(1)
+  const [total, setTotal] = useState(listCache.get()?.total ?? 0)
+  const [page, setPage] = useState(listCache.get()?.page ?? 1)
   const LIMIT = 50
-  const [searchInput, setSearchInput] = useState('')
-  const [search, setSearch] = useState('')
-  const [filterStatus, setFilterStatus] = useState<number | null>(null)
-  const [filterType, setFilterType] = useState<number | null>(null)
-  const [sortCol, setSortCol] = useState('id')
-  const [sortAsc, setSortAsc] = useState(false)
+  const [searchInput, setSearchInput] = useState(listCache.get()?.searchInput ?? '')
+  const [search, setSearch] = useState(listCache.get()?.search ?? '')
+  const [filterStatus, setFilterStatus] = useState<number | null>(listCache.get()?.filterStatus ?? null)
+  const [filterType, setFilterType] = useState<number | null>(listCache.get()?.filterType ?? null)
+  const [sortCol, setSortCol] = useState(listCache.get()?.sortCol ?? 'id')
+  const [sortAsc, setSortAsc] = useState(listCache.get()?.sortAsc ?? false)
   const [tick, setTick] = useState(0)
   const [cols, setCols] = useState<ColDef[]>(cols$.load)
   const [showCols, setShowCols] = useState(false)
   const [showExport, setShowExport] = useState(false)
   const [toDelete, setToDelete] = useState<AttributeItem | null>(null)
+
+  const cacheRef = useRef({ items, stats, total, page, search, searchInput, filterStatus, filterType, sortCol, sortAsc, mode })
+  useEffect(() => { cacheRef.current = { items, stats, total, page, search, searchInput, filterStatus, filterType, sortCol, sortAsc, mode } })
+  useEffect(() => () => listCache.set(cacheRef.current), [])
 
   useEffect(() => { fetchAttributeStats().then(setStats).catch(() => null) }, [tick])
   useEffect(() => { fetchAttributeOptions().then(setOptions).catch(() => null) }, [])
@@ -264,13 +274,13 @@ function AttributeList({ base }: { base: string }) {
               </tr>
             </thead>
             <tbody>
-              {loading && (
+              {loading && sorted.length === 0 && (
                 <tr><td colSpan={visible.length + 1} style={{ ...td, textAlign: 'center', padding: '40px 16px', color: 'var(--color-muted-foreground)' }}>{t('loading')}</td></tr>
               )}
               {!loading && sorted.length === 0 && (
                 <tr><td colSpan={visible.length + 1} style={{ ...td, textAlign: 'center', padding: '40px 16px', color: 'var(--color-muted-foreground)' }}>{t('no_items')}</td></tr>
               )}
-              {!loading && sorted.map((a) => (
+              {sorted.map((a) => (
                 <tr key={a.id} style={{ cursor: 'pointer' }}
                   onClick={() => openAttribute(a)}
                   onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--color-accent)')}
@@ -301,7 +311,7 @@ function AttributeList({ base }: { base: string }) {
             </tbody>
           </table>
           <div style={{ padding: '10px 16px', textAlign: 'center', fontSize: 12, color: 'var(--color-muted-foreground)' }}>
-            {loading ? t('loading') : `${total}`}
+            {loading ? t('loading') : t('count', { n: total })}
           </div>
         </div>
 

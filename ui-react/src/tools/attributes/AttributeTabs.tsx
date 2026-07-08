@@ -88,7 +88,7 @@ export function AttributeValuesTab({ attributeId, languages, can, t }: {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <SimpleTable cols={cols} rows={items} rowKey={(r) => r.id} empty={t('values_empty')} loading={loading} loadingText={t('loading')} t={t}
         search={(r) => `${r.reference ?? ''} ${displayValue(r.displayValue, typeColumn, t)}`} searchPlaceholder={t('search')}
-        paginate={false}
+        paginate={false} countLabel={(n) => t('values_count', { n })}
         toolbarEnd={(
           <div style={{ position: 'relative' }}>
             <button style={{ ...iconBtn, width: 'auto', height: 34, padding: '0 12px', gap: 6, border: '1px solid var(--color-border)' }} title={t('columns')} onClick={() => setShowCols((v) => !v)}><GripIcon /><span>{t('columns')}</span></button>

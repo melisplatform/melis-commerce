@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   fetchCurrencies, fetchCurrencyStats, fetchCurrencyById, saveCurrency, deleteCurrency, setDefaultCurrency,
   type CurrencyItem, type CurrencyStats,
 } from './api'
+import { makeCache } from '../../shared/listCache'
 import { DICT } from './dict'
 import { makeT, type T } from '../../shared/i18n'
 import { card, inputCss, label, btnGhost, btnPrimary, th, td, iconBtn } from '../../shared/styles'
@@ -23,6 +24,11 @@ const COL_LABEL: Record<string, string> = {
   id: 'col_id', default: 'col_default', status: 'col_status', symbol: 'col_symbol', code: 'col_code', name: 'col_name',
 }
 const cols$ = makeColStore('melis-currency-cols-v1', COL_ORDER)
+
+const listCache = makeCache<{
+  items: CurrencyItem[]; stats: CurrencyStats | null; total: number; page: number
+  search: string; searchInput: string; filterStatus: number | null; sortCol: string; sortAsc: boolean; mode: 'react' | 'old'
+}>()
 
 function StatusPill({ active, t }: { active: boolean; t: T }) {
   return (
@@ -78,19 +84,19 @@ function getCellExport(c: CurrencyItem, id: string, t: T): string | number {
 export default function CurrencyPage() {
   const t = makeT(DICT)
   const { can } = useCaps(TOOL_MELIS_KEY)
-  const [mode, setMode] = useState<'react' | 'old'>('react')
+  const [mode, setMode] = useState<'react' | 'old'>(listCache.get()?.mode ?? 'react')
   const [oldLoaded, setOldLoaded] = useState(false)
-  const [items, setItems] = useState<CurrencyItem[]>([])
-  const [stats, setStats] = useState<CurrencyStats | null>(null)
+  const [items, setItems] = useState<CurrencyItem[]>(listCache.get()?.items ?? [])
+  const [stats, setStats] = useState<CurrencyStats | null>(listCache.get()?.stats ?? null)
   const [loading, setLoading] = useState(false)
-  const [total, setTotal] = useState(0)
-  const [page, setPage] = useState(1)
+  const [total, setTotal] = useState(listCache.get()?.total ?? 0)
+  const [page, setPage] = useState(listCache.get()?.page ?? 1)
   const LIMIT = 50
-  const [searchInput, setSearchInput] = useState('')
-  const [search, setSearch] = useState('')
-  const [filterStatus, setFilterStatus] = useState<number | null>(null)
-  const [sortCol, setSortCol] = useState('id')
-  const [sortAsc, setSortAsc] = useState(true)
+  const [searchInput, setSearchInput] = useState(listCache.get()?.searchInput ?? '')
+  const [search, setSearch] = useState(listCache.get()?.search ?? '')
+  const [filterStatus, setFilterStatus] = useState<number | null>(listCache.get()?.filterStatus ?? null)
+  const [sortCol, setSortCol] = useState(listCache.get()?.sortCol ?? 'id')
+  const [sortAsc, setSortAsc] = useState(listCache.get()?.sortAsc ?? true)
   const [tick, setTick] = useState(0)
   const [cols, setCols] = useState<ColDef[]>(cols$.load)
   const [showCols, setShowCols] = useState(false)
@@ -98,6 +104,10 @@ export default function CurrencyPage() {
   const [toDelete, setToDelete] = useState<CurrencyItem | null>(null)
   // null = fermée, 'new' = création, number = édition de la devise cur_id
   const [formId, setFormId] = useState<number | 'new' | null>(null)
+
+  const cacheRef = useRef({ items, stats, total, page, search, searchInput, filterStatus, sortCol, sortAsc, mode })
+  useEffect(() => { cacheRef.current = { items, stats, total, page, search, searchInput, filterStatus, sortCol, sortAsc, mode } })
+  useEffect(() => () => listCache.set(cacheRef.current), [])
 
   useEffect(() => { fetchCurrencyStats().then(setStats).catch(() => null) }, [tick])
   useEffect(() => {
@@ -202,13 +212,13 @@ export default function CurrencyPage() {
               </tr>
             </thead>
             <tbody>
-              {loading && (
+              {loading && sorted.length === 0 && (
                 <tr><td colSpan={visible.length + 1} style={{ ...td, textAlign: 'center', padding: '40px 16px', color: 'var(--color-muted-foreground)' }}>{t('loading')}</td></tr>
               )}
               {!loading && sorted.length === 0 && (
                 <tr><td colSpan={visible.length + 1} style={{ ...td, textAlign: 'center', padding: '40px 16px', color: 'var(--color-muted-foreground)' }}>{t('no_items')}</td></tr>
               )}
-              {!loading && sorted.map((c) => (
+              {sorted.map((c) => (
                 <tr key={c.id} style={{ cursor: can('edit') ? 'pointer' : 'default' }}
                   onClick={() => can('edit') && setFormId(c.id)}
                   onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--color-accent)')}
@@ -242,7 +252,7 @@ export default function CurrencyPage() {
             </tbody>
           </table>
           <div style={{ padding: '10px 16px', textAlign: 'center', fontSize: 12, color: 'var(--color-muted-foreground)' }}>
-            {loading ? t('loading') : `${total}`}
+            {loading ? t('loading') : t('count', { n: total })}
           </div>
         </div>
 

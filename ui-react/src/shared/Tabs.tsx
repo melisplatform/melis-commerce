@@ -5,7 +5,7 @@ export interface TabDef { key: string; label: string; icon?: ReactNode; disabled
 /** Barre d'onglets de fiche (Properties / Contacts / Company / …) façon back-office. */
 export function Tabs({ tabs, active, onChange }: { tabs: TabDef[]; active: string; onChange: (k: string) => void }) {
   return (
-    <div style={{ display: 'flex', gap: 2, borderBottom: '1px solid var(--color-border)', flexWrap: 'wrap' }}>
+    <div style={{ display: 'flex', gap: 2, borderBottom: '1px solid var(--color-border)', flexWrap: 'wrap', marginBottom: 20 }}>
       {tabs.map((tb) => {
         const on = tb.key === active
         return (
