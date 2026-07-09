@@ -927,29 +927,33 @@ return [
                             ],
 
                             // ─── Langues Commerce (MelisCommerce) ───────────────────────────────
-                            'languages-list' => [
+                            // ⚠️ Namespacé en `/commerce-languages` : `/languages` est DÉJÀ pris par l'outil
+                            // core BO Languages (MelisCore, `languages-list`). Deux child_routes de même clé
+                            // sous le parent partagé `melis-react-api` se mergent (ArrayUtils) → l'un écrase
+                            // l'autre → l'outil core remonte une liste vide. Clé + route préfixées commerce.
+                            'commerce-languages-list' => [
                                 'type' => 'Segment',
-                                'options' => [ 'route' => '/languages[/]',
+                                'options' => [ 'route' => '/commerce-languages[/]',
                                     'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiLanguage', 'action' => 'list'] ],
                             ],
-                            'languages-stats' => [
+                            'commerce-languages-stats' => [
                                 'type' => 'Segment',
-                                'options' => [ 'route' => '/languages/stats[/]',
+                                'options' => [ 'route' => '/commerce-languages/stats[/]',
                                     'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiLanguage', 'action' => 'stats'] ],
                             ],
-                            'languages-save' => [
+                            'commerce-languages-save' => [
                                 'type' => 'Segment',
-                                'options' => [ 'route' => '/languages/save[/]',
+                                'options' => [ 'route' => '/commerce-languages/save[/]',
                                     'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiLanguage', 'action' => 'save'] ],
                             ],
-                            'languages-delete' => [
+                            'commerce-languages-delete' => [
                                 'type' => 'Segment',
-                                'options' => [ 'route' => '/languages/delete/:id', 'constraints' => ['id' => '[0-9]+'],
+                                'options' => [ 'route' => '/commerce-languages/delete/:id', 'constraints' => ['id' => '[0-9]+'],
                                     'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiLanguage', 'action' => 'delete'] ],
                             ],
-                            'languages-item' => [
+                            'commerce-languages-item' => [
                                 'type' => 'Segment',
-                                'options' => [ 'route' => '/languages/:id', 'constraints' => ['id' => '[0-9]+'],
+                                'options' => [ 'route' => '/commerce-languages/:id', 'constraints' => ['id' => '[0-9]+'],
                                     'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiLanguage', 'action' => 'get'] ],
                             ],
 

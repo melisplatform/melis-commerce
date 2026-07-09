@@ -17,18 +17,18 @@ export function fetchLanguages(params: {
   if (params.status !== undefined && params.status !== null) qs.set('status', String(params.status))
   qs.set('page', String(params.page ?? 1))
   qs.set('limit', String(params.limit ?? 50))
-  return apiFetch<LanguageListResult>(`/melis/react-api/languages?${qs}`)
+  return apiFetch<LanguageListResult>(`/melis/react-api/commerce-languages?${qs}`)
 }
 
-export const fetchLanguageStats = () => apiFetch<LanguageStats>('/melis/react-api/languages/stats')
-export const fetchLanguageById  = (id: number) => apiFetch<LanguageItem>(`/melis/react-api/languages/${id}`)
+export const fetchLanguageStats = () => apiFetch<LanguageStats>('/melis/react-api/commerce-languages/stats')
+export const fetchLanguageById  = (id: number) => apiFetch<LanguageItem>(`/melis/react-api/commerce-languages/${id}`)
 
 export const saveLanguage = (payload: {
   id?: number; locale: string; name: string; status: boolean; flag?: string | null
 }) =>
-  apiFetch<{ id: number }>('/melis/react-api/languages/save', {
+  apiFetch<{ id: number }>('/melis/react-api/commerce-languages/save', {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
   })
 
 export const deleteLanguage = (id: number) =>
-  apiFetch<null>(`/melis/react-api/languages/delete/${id}`, { method: 'DELETE' })
+  apiFetch<null>(`/melis/react-api/commerce-languages/delete/${id}`, { method: 'DELETE' })
