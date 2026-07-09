@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from 'react'
+import { useState, type CSSProperties, type ReactNode } from 'react'
 import { card, vmBtn, btnGhost } from './styles'
 import { SparklesIcon, LayoutIcon } from './icons'
 import type { T } from './i18n'
@@ -37,6 +37,69 @@ export function ViewModeToggle({ mode, onReact, onOld }: { mode: 'react' | 'old'
     <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, borderRadius: 10, border: '1px solid var(--color-border)', background: 'var(--color-muted,rgba(0,0,0,.04))', padding: 4 }}>
       <button style={vmBtn(mode === 'react')} onClick={onReact}><SparklesIcon />New</button>
       <button style={vmBtn(mode === 'old')} onClick={onOld}><LayoutIcon />Old</button>
+    </div>
+  )
+}
+
+/**
+ * Champ de tags (chips) façon legacy — saisie libre, Entrée/virgule pour ajouter, croix pour
+ * retirer, Retour arrière sur champ vide pour retirer le dernier. Valeur = string CSV (le
+ * contrat existant côté formulaire/API), pour un remplacement direct d'un `<input>` texte.
+ */
+export function TagsInput({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder?: string }) {
+  const tags = value.split(',').map((s) => s.trim()).filter(Boolean)
+  const [draft, setDraft] = useState('')
+
+  function commit(next: string[]) { onChange(next.join(',')) }
+  function addTag(raw: string) {
+    const t = raw.trim()
+    if (!t || tags.includes(t)) { setDraft(''); return }
+    commit([...tags, t]); setDraft('')
+  }
+  function removeTag(t: string) { commit(tags.filter((x) => x !== t)) }
+
+  return (
+    <div style={{
+      display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6, minHeight: 40, width: '100%', boxSizing: 'border-box',
+      borderRadius: 8, border: '1px solid var(--color-input,var(--color-border))', background: 'var(--color-card)', padding: '6px 8px',
+    }}>
+      {tags.map((t) => (
+        <span key={t} style={{
+          display: 'inline-flex', alignItems: 'center', gap: 5, padding: '2px 6px 2px 10px', borderRadius: 999, fontSize: 13,
+          background: 'var(--color-primary)', color: 'var(--color-primary-foreground,#fff)', whiteSpace: 'nowrap',
+        }}>
+          {t}
+          <button type="button" onClick={() => removeTag(t)}
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, borderRadius: 999, border: 0, background: 'rgba(255,255,255,.25)', color: 'inherit', cursor: 'pointer', fontSize: 11, lineHeight: 1, padding: 0 }}>✕</button>
+        </span>
+      ))}
+      <input
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addTag(draft) }
+          else if (e.key === 'Backspace' && !draft && tags.length) { removeTag(tags[tags.length - 1]) }
+        }}
+        onBlur={() => { if (draft.trim()) addTag(draft) }}
+        placeholder={tags.length ? '' : placeholder}
+        style={{ flex: 1, minWidth: 100, border: 0, outline: 'none', background: 'transparent', color: 'var(--color-foreground)', fontSize: 14, height: 26 }}
+      />
+    </div>
+  )
+}
+
+/** Rendu en lecture seule des tags (chips) dans une cellule de tableau — même style que TagsInput. */
+export function TagsDisplay({ value }: { value: string }) {
+  const tags = value.split(',').map((s) => s.trim()).filter(Boolean)
+  if (!tags.length) return <>—</>
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+      {tags.map((t) => (
+        <span key={t} style={{
+          display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 999, fontSize: 12,
+          background: 'var(--color-primary)', color: 'var(--color-primary-foreground,#fff)', whiteSpace: 'nowrap',
+        }}>{t}</span>
+      ))}
     </div>
   )
 }

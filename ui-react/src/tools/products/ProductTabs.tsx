@@ -13,6 +13,7 @@ import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } fr
 import { PencilIcon, EyeIcon, TrashIcon, PlusIcon, GlobeIcon, ImageIcon, ChevronDownIcon, PaperclipIcon, CubesIcon } from '../../shared/icons'
 import { StatusBadge } from '../../shared/widgets'
 import type { Option } from '../../shared/api'
+import { notify } from '../../shared/notify'
 import { fetchCatalogTree, type CatNode, type LangOption } from '../catalog/api'
 import { fetchPageTree, type PageNode } from './api'
 
@@ -755,11 +756,16 @@ export function ImagesSection({ productId, t, countries = [], pendingImages = []
  * sur le qTip legacy (MelisComProductListController::getToolTipAction()). Partagée entre le survol du
  * NOM produit (liste produits, toutes ses variantes) et le survol du SKU (onglet Variantes, 1 seule ligne
  * puisque legacy filtre alors `$vcontent` sur ce variantId — cf. la même action avec `variantId` posté). */
-export function VariantTooltipTable({ items, pos, t }: { items: TooltipVariant[]; pos: { x: number; y: number }; t: TFn }) {
+export function VariantTooltipTable({ items, pos, t, onMouseEnter, onMouseLeave, onRowClick }: {
+  items: TooltipVariant[]; pos: { x: number; y: number }; t: TFn; onMouseEnter?: () => void; onMouseLeave?: () => void
+  /** Rend chaque ligne cliquable → ouvre cette variante dans l'onglet Variantes. */
+  onRowClick?: (variantId: number) => void
+}) {
   const cellTh = { padding: '6px 12px', textAlign: 'left' as const, fontSize: 11, textTransform: 'uppercase' as const, letterSpacing: '.04em', color: 'rgba(255,255,255,.7)', whiteSpace: 'nowrap' as const }
   const cellTd = { padding: '6px 12px', fontSize: 13, color: '#fff', whiteSpace: 'nowrap' as const }
   return createPortal(
-    <div style={{ position: 'fixed', top: pos.y, left: pos.x, zIndex: 9999, background: '#4a4a4a', borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,.3)', padding: 4, maxWidth: 640, overflow: 'auto', pointerEvents: 'none' }}>
+    <div onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}
+      style={{ position: 'fixed', top: pos.y, left: pos.x, zIndex: 9999, background: '#4a4a4a', borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,.3)', padding: 4, maxWidth: 640, overflow: 'auto' }}>
       <table style={{ borderCollapse: 'collapse' }}>
         <thead><tr>
           <th style={cellTh}>{t('var_col_id')}</th><th style={cellTh}>{t('col_image')}</th><th style={cellTh}>{t('var_col_sku')}</th>
@@ -767,7 +773,10 @@ export function VariantTooltipTable({ items, pos, t }: { items: TooltipVariant[]
         </tr></thead>
         <tbody>
           {items.map((v) => (
-            <tr key={v.id}>
+            <tr key={v.id} onClick={onRowClick ? () => onRowClick(v.id) : undefined}
+              style={onRowClick ? { cursor: 'pointer' } : undefined}
+              onMouseOver={onRowClick ? (e) => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,.1)' } : undefined}
+              onMouseOut={onRowClick ? (e) => { (e.currentTarget as HTMLElement).style.background = 'transparent' } : undefined}>
               <td style={cellTd}>{v.id}</td>
               <td style={cellTd}>{v.image ? <img src={v.image} alt="" style={{ width: 28, height: 28, objectFit: 'cover', borderRadius: 4 }} /> : '🖼'}</td>
               <td style={cellTd}>{v.sku || '—'}</td>
@@ -798,7 +807,14 @@ export function VariantsTab({ productId, t, onAdd, onEdit, can }: { productId: n
   const [tooltipItems, setTooltipItems] = useState<TooltipVariant[] | null>(null)
   const [hoveredSkuId, setHoveredSkuId] = useState<number | null>(null)
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
+  // Le tooltip flotte SOUS le SKU (pas un enfant DOM) : quitter le bouton pour l'atteindre
+  // traverse un instant "hors survol" — un délai court (au lieu d'un clearHover immédiat)
+  // laisse la souris arriver dessus avant fermeture, pour pouvoir cliquer une variante dedans.
+  const tooltipCloseTimer = useRef<number | null>(null)
+  function clearTooltipCloseTimer() { if (tooltipCloseTimer.current) { window.clearTimeout(tooltipCloseTimer.current); tooltipCloseTimer.current = null } }
+  function scheduleTooltipClose() { clearTooltipCloseTimer(); tooltipCloseTimer.current = window.setTimeout(() => setHoveredSkuId(null), 150) }
   function hoverSku(e: import('react').MouseEvent<HTMLElement>, id: number) {
+    clearTooltipCloseTimer()
     const r = e.currentTarget.getBoundingClientRect()
     setTooltipPos({ x: r.left, y: r.bottom + 6 })
     setHoveredSkuId(id)
@@ -808,7 +824,7 @@ export function VariantsTab({ productId, t, onAdd, onEdit, can }: { productId: n
   const [toDup, setToDup] = useState<ProductVariant | null>(null)
 
   useEffect(() => { if (!productId) return; fetchProductVariants(productId).then((r) => setItems(r.items)).catch(() => null) }, [productId, tick])
-  async function confirmDelete() { if (!toDelete || !productId) return; try { await deleteProductVariant(productId, toDelete.id); setToDelete(null); setTick((x) => x + 1) } catch { setToDelete(null) } }
+  async function confirmDelete() { if (!toDelete || !productId) return; try { await deleteProductVariant(productId, toDelete.id); notify('ok', t('title'), t('deleted')); setToDelete(null); setTick((x) => x + 1) } catch { setToDelete(null) } }
   async function toggleStatus(v: ProductVariant) { if (!productId) return; try { await saveProductVariant(productId, { variantId: v.id, sku: v.sku, status: v.status !== 1, isMain: v.isMain === 1 }); setTick((x) => x + 1) } catch { /* */ } }
 
   const view = items.filter((v) => !search || v.sku.toLowerCase().includes(search.toLowerCase()) || v.attributes.toLowerCase().includes(search.toLowerCase()) || String(v.id).includes(search))
@@ -846,11 +862,14 @@ export function VariantsTab({ productId, t, onAdd, onEdit, can }: { productId: n
                 </td>
                 <td style={td}><span style={{ color: v.status === 1 ? '#16a34a' : '#dc2626', fontSize: 12 }}>●</span></td>
                 <td style={td}>
-                  <button onClick={() => onEdit(v.id)} onMouseEnter={(e) => hoverSku(e, v.id)} onMouseLeave={() => setHoveredSkuId(null)}
+                  <button onClick={() => onEdit(v.id)} onMouseEnter={(e) => hoverSku(e, v.id)} onMouseLeave={scheduleTooltipClose}
                     style={{ border: 0, background: 'transparent', color: 'var(--color-primary)', cursor: 'pointer', fontWeight: 500, fontSize: 14, padding: 0, textDecoration: 'underline' }}>
                     {v.sku || `#${v.id}`}
                   </button>
-                  {hoveredSkuId === v.id && hoveredTooltipRow.length > 0 && <VariantTooltipTable items={hoveredTooltipRow} pos={tooltipPos} t={t} />}
+                  {hoveredSkuId === v.id && hoveredTooltipRow.length > 0 && (
+                    <VariantTooltipTable items={hoveredTooltipRow} pos={tooltipPos} t={t} onMouseEnter={clearTooltipCloseTimer} onMouseLeave={scheduleTooltipClose}
+                      onRowClick={(variantId) => { clearTooltipCloseTimer(); setHoveredSkuId(null); onEdit(variantId) }} />
+                  )}
                 </td>
                 <td style={{ ...td, color: 'var(--color-muted-foreground)' }}>{v.attributes || '—'}</td>
                 <td style={td}>

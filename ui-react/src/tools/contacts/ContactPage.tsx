@@ -10,7 +10,7 @@ import { DICT } from './dict'
 import { makeT, fmtDate } from '../../shared/i18n'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } from '../../shared/styles'
 import { PencilIcon, TrashIcon, PlusIcon, GripIcon, FileDownIcon, UsersKpiIcon, ToggleRightIcon, KeyIcon } from '../../shared/icons'
-import { StatusBadge, Kpi, ViewModeToggle, LegacyFrame, ConfirmModal } from '../../shared/widgets'
+import { StatusBadge, Kpi, ViewModeToggle, LegacyFrame, ConfirmModal, TagsInput, TagsDisplay } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { useCaps } from '../../shared/useCaps'
 import { ColManager } from '../../shared/ColManager'
@@ -116,7 +116,7 @@ function ContactList({ base }: { base: string }) {
   function toggleSort(id: string) { if (sortCol === id) setSortAsc((v) => !v); else { setSortCol(id); setSortAsc(true) } }
   async function confirmDelete() {
     if (!toDelete) return
-    try { await deleteContact(toDelete.id); setToDelete(null); setTick((x) => x + 1) } catch { setToDelete(null) }
+    try { await deleteContact(toDelete.id); notify('ok', t('title'), t('deleted')); setToDelete(null); setTick((x) => x + 1) } catch { setToDelete(null) }
   }
   const FILTERS: { k: string; v: number | null; dot?: string }[] = [{ k: 'f_all', v: null }, { k: 'f_active', v: 1, dot: '#10b981' }, { k: 'f_inactive', v: 0, dot: '#ef4444' }]
 
@@ -197,7 +197,7 @@ function ContactList({ base }: { base: string }) {
                       {id === 'account' && (c.accountName || '—')}
                       {id === 'email' && (c.email || '—')}
                       {id === 'type' && (c.type || '—')}
-                      {id === 'tags' && (c.tags || '—')}
+                      {id === 'tags' && <TagsDisplay value={c.tags} />}
                       {id === 'created' && <span style={{ color: 'var(--color-muted-foreground)' }}>{fmtDate(c.dateCreation)}</span>}
                     </td>
                   ))}
@@ -479,7 +479,7 @@ function ContactForm({ id, base }: { id: string; base: string }) {
                 {/* Tags */}
                 <div>
                   <label style={label}>{t('f_tags')}</label>
-                  <input style={inputCss} value={tags} onChange={(e) => setTags(e.target.value)} placeholder={t('f_tags_ph')} autoComplete="off" />
+                  <TagsInput value={tags} onChange={setTags} placeholder={t('f_tags_ph')} />
                 </div>
               </div>
             </div>

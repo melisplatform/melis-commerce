@@ -144,7 +144,7 @@ export default function CurrencyPage() {
     if (!toDelete) return
     const target = toDelete
     setToDelete(null)
-    try { await deleteCurrency(target.id); notify('ok', t('title'), t('saved')); setTick((x) => x + 1) }
+    try { await deleteCurrency(target.id); notify('ok', t('title'), t('deleted')); setTick((x) => x + 1) }
     catch (e) { notify('ko', t('title'), e instanceof Error ? e.message : 'Error') }
   }
 

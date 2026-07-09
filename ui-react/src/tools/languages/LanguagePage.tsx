@@ -131,7 +131,7 @@ export default function LanguagePage() {
 
   async function confirmDelete() {
     if (!toDelete) return
-    try { await deleteLanguage(toDelete.id); setToDelete(null); setTick((x) => x + 1) }
+    try { await deleteLanguage(toDelete.id); notify('ok', t('title'), t('deleted')); setToDelete(null); setTick((x) => x + 1) }
     catch (e) { notify('ko', t('title'), e instanceof Error ? e.message : 'Error'); setToDelete(null) }
   }
 

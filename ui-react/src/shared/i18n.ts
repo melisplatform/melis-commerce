@@ -17,7 +17,7 @@ export function currentLang(): Lang {
 export const COMMON: Dict = {
   fr: {
     cancel: 'Annuler', save: 'Enregistrer', loading: 'Chargement…', back: 'retour', refresh: 'Rafraîchir',
-    edit: 'Modifier', del: 'Supprimer', saved: 'Enregistré ✓',
+    edit: 'Modifier', del: 'Supprimer', saved: 'Enregistré ✓', deleted: 'Supprimé avec succès',
     action: 'Action', unlink: 'Délier', linked: 'Lié ✓', set_default: 'Définir par défaut',
     tbl_show: 'Afficher', tbl_add: 'Ajouter', prev: 'Précédent', next: 'Suivant', showing: '{a}–{b} sur {n}',
     dr_label: 'Date', dr_all: 'Toutes les dates', dr_today: "Aujourd'hui", dr_yesterday: 'Hier',
@@ -41,7 +41,7 @@ export const COMMON: Dict = {
   },
   en: {
     cancel: 'Cancel', save: 'Save', loading: 'Loading…', back: 'back', refresh: 'Refresh',
-    edit: 'Edit', del: 'Delete', saved: 'Saved ✓',
+    edit: 'Edit', del: 'Delete', saved: 'Saved ✓', deleted: 'Successfully deleted',
     action: 'Action', unlink: 'Unlink', linked: 'Linked ✓', set_default: 'Set as default',
     tbl_show: 'Show', tbl_add: 'Add', prev: 'Previous', next: 'Next', showing: '{a}–{b} of {n}',
     dr_label: 'Date', dr_all: 'All dates', dr_today: 'Today', dr_yesterday: 'Yesterday',

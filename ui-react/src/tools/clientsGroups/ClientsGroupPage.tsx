@@ -137,7 +137,7 @@ export default function ClientsGroupPage() {
     }
     try {
       await deleteClientsGroup(toDelete.id)
-      notify('ok', t('title'), t('saved'))
+      notify('ok', t('title'), t('deleted'))
       setToDelete(null)
       setTick((x) => x + 1)
     } catch (e) {

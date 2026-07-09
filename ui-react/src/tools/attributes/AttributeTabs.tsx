@@ -4,7 +4,7 @@ import {
   type AttributeValueItem, type AttributeValueRaw, type LangOption,
 } from './api'
 import { card, inputCss, label, btnGhost, btnPrimary, iconBtn } from '../../shared/styles'
-import { PlusIcon, GripIcon } from '../../shared/icons'
+import { PlusIcon, GripIcon, ChevronDownIcon } from '../../shared/icons'
 import { ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { SimpleTable, type SimpleCol } from '../../shared/SimpleTable'
@@ -62,7 +62,7 @@ export function AttributeValuesTab({ attributeId, languages, can, t }: {
 
   async function confirmDelete() {
     if (!toDelete) return
-    try { await deleteAttributeValue(attributeId, toDelete.id); setToDelete(null); setTick((x) => x + 1) }
+    try { await deleteAttributeValue(attributeId, toDelete.id); notify('ok', t('tab_values'), t('deleted')); setToDelete(null); setTick((x) => x + 1) }
     catch (e) { notify('ko', t('tab_values'), e instanceof Error ? e.message : 'Error'); setToDelete(null) }
   }
 
@@ -122,7 +122,7 @@ function AttributeValueEditor({ attributeId, value, typeColumn, languages, t, on
   onClose: () => void; onSaved: () => void
 }) {
   const isEdit = !!value
-  const [reference, setReference] = useState(value?.reference ?? '')
+  const [perLangOpen, setPerLangOpen] = useState(typeColumn === 'binary')
   const [perLang, setPerLang] = useState<Record<number, AttributeValueRaw>>(() => {
     const init: Record<number, AttributeValueRaw> = {}
     for (const l of languages) {
@@ -165,7 +165,7 @@ function AttributeValueEditor({ attributeId, value, typeColumn, languages, t, on
         for (const l of languages) translations.push({ langId: l.id, value: perLang[l.id] ?? null })
       }
 
-      await saveAttributeValue(attributeId, { id: value?.id, reference: reference.trim(), translations })
+      await saveAttributeValue(attributeId, { id: value?.id, reference: value?.reference ?? '', translations })
       notify('ok', t('tab_values'), t('saved'))
       onSaved()
     } catch (e) { notify('ko', t('tab_values'), e instanceof Error ? e.message : 'Error') }
@@ -218,14 +218,9 @@ function AttributeValueEditor({ attributeId, value, typeColumn, languages, t, on
       <div style={{ ...card, padding: 24, width: '100%', maxWidth: 520, maxHeight: '85vh', overflow: 'auto' }}>
         <h3 style={{ fontSize: 16, fontWeight: 600, margin: '0 0 16px' }}>{isEdit ? t('value_edit_title') : t('value_new_title')}</h3>
         <div style={fieldGap}>
-          <div>
-            <label style={label}>{t('value_field_reference')}</label>
-            <input style={inputCss} value={reference} onChange={(e) => setReference(e.target.value)} />
-          </div>
-
           {typeColumn !== 'binary' && (
             <div>
-              <div style={labelRow}><label style={label}>{t('value_field_value')}</label></div>
+              <div style={labelRow}><label style={label}>{t(`type_${typeColumn}`)}</label></div>
               {typeColumn === 'bool' ? (
                 <select style={inputCss} value={fillAll} onChange={(e) => setFillAll(e.target.value)}>
                   <option value="">—</option>
@@ -242,16 +237,26 @@ function AttributeValueEditor({ attributeId, value, typeColumn, languages, t, on
             </div>
           )}
 
-          <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {languages.map((l) => (
-              <div key={l.id} style={{ opacity: typeColumn !== 'binary' && fillAll.trim() !== '' ? 0.4 : 1 }}>
-                <div style={labelRow}>
-                  <label style={label}>{l.name}</label>
-                  {l.flag ? <img src={`data:image/png;base64,${l.flag}`} alt="" style={{ width: 18, height: 18, borderRadius: 3 }} /> : null}
-                </div>
-                <ValueInput langId={l.id} />
+          <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, overflow: 'hidden' }}>
+            <button type="button" onClick={() => setPerLangOpen((v) => !v)}
+              style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '10px 12px', background: 'var(--color-muted)', border: 'none', cursor: 'pointer', color: 'var(--color-foreground)', fontSize: 13, fontWeight: 600 }}>
+              <span>{t('value_field_perlang')}</span>
+              <span style={{ display: 'inline-flex', transform: perLangOpen ? 'none' : 'rotate(-90deg)', transition: 'transform .1s' }}><ChevronDownIcon /></span>
+            </button>
+            {perLangOpen && (
+              <div style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {languages.map((l) => (
+                  <div key={l.id} style={{ opacity: typeColumn !== 'binary' && fillAll.trim() !== '' ? 0.4 : 1 }}>
+                    <div style={labelRow}>
+                      <label style={label}>{l.name}</label>
+                      {l.flag ? <img src={`data:image/png;base64,${l.flag}`} alt="" style={{ width: 18, height: 18, borderRadius: 3 }} /> : null}
+                    </div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-muted-foreground)', marginBottom: 4 }}>{t(`type_${typeColumn}`)}</div>
+                    <ValueInput langId={l.id} />
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
         </div>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 20 }}>

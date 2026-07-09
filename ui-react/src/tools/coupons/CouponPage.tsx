@@ -188,7 +188,7 @@ function CouponList({ base }: { base: string }) {
 
   async function confirmDelete() {
     if (!toDelete) return
-    try { await deleteCoupon(toDelete.id); setToDelete(null); setTick((x) => x + 1) } catch { setToDelete(null) }
+    try { await deleteCoupon(toDelete.id); notify('ok', t('title'), t('deleted')); setToDelete(null); setTick((x) => x + 1) } catch { setToDelete(null) }
   }
 
   return (

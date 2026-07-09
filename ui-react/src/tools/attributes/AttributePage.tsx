@@ -207,7 +207,7 @@ function AttributeList({ base }: { base: string }) {
 
   async function confirmDelete() {
     if (!toDelete) return
-    try { await deleteAttribute(toDelete.id); setToDelete(null); setTick((x) => x + 1) } catch { setToDelete(null) }
+    try { await deleteAttribute(toDelete.id); notify('ok', t('title'), t('deleted')); setToDelete(null); setTick((x) => x + 1) } catch { setToDelete(null) }
   }
 
   return (

@@ -11,7 +11,7 @@ import { DICT } from './dict'
 import { makeT, fmtDate, type T } from '../../shared/i18n'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } from '../../shared/styles'
 import { PencilIcon, TrashIcon, PlusIcon, GripIcon, FileDownIcon, FileUpIcon, BuildingKpiIcon } from '../../shared/icons'
-import { StatusBadge, Kpi, ViewModeToggle, LegacyFrame, ConfirmModal } from '../../shared/widgets'
+import { StatusBadge, Kpi, ViewModeToggle, LegacyFrame, ConfirmModal, TagsInput } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { useCaps } from '../../shared/useCaps'
 import { ColManager } from '../../shared/ColManager'
@@ -198,7 +198,7 @@ function AccountList({ base }: { base: string }) {
   function toggleSort(id: string) { if (sortCol === id) setSortAsc((v) => !v); else { setSortCol(id); setSortAsc(true) } }
   async function confirmDelete() {
     if (!toDelete) return
-    try { await deleteAccount(toDelete.id); setToDelete(null); setTick((x) => x + 1) } catch { setToDelete(null) }
+    try { await deleteAccount(toDelete.id); notify('ok', t('title'), t('deleted')); setToDelete(null); setTick((x) => x + 1) } catch { setToDelete(null) }
   }
   const FILTERS: { k: string; v: number | null; dot?: string }[] = [{ k: 'f_all', v: null }, { k: 'f_active', v: 1, dot: '#10b981' }, { k: 'f_inactive', v: 0, dot: '#ef4444' }]
 
@@ -479,7 +479,7 @@ function AccountForm({ id, base }: { id: string; base: string }) {
                 <label style={{ ...label, display: 'flex', alignItems: 'center', gap: 5 }}>
                   <TagIcon /><span>{t('f_tags')}</span>
                 </label>
-                <input style={inputCss} value={tags} onChange={(e) => setTags(e.target.value)} placeholder={t('f_tags_ph')} autoComplete="off" />
+                <TagsInput value={tags} onChange={setTags} placeholder={t('f_tags_ph')} />
               </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>

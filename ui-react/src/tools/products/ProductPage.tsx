@@ -69,20 +69,30 @@ function ProductThumb({ src, alt }: { src: string; alt: string }) {
 }
 
 // Nom de produit avec tooltip au survol : détails des variantes (image/SKU/attributs/pays/prix/stocks).
-function ProductNameCell({ id, name, t }: { id: number; name: string; t: T }) {
+function ProductNameCell({ id, name, t, onOpenVariant }: { id: number; name: string; t: T; onOpenVariant?: (productId: number, variantId: number) => void }) {
   const [show, setShow] = useState(false)
   const [data, setData] = useState<TooltipVariant[] | null>(null)
   const [pos, setPos] = useState({ x: 0, y: 0 })
   const ref = useRef<HTMLSpanElement>(null)
+  // Le tooltip flotte SOUS le nom (pas un enfant DOM) : quitter le déclencheur pour l'atteindre
+  // traverse un instant "hors survol" — un délai court laisse la souris arriver dessus avant
+  // fermeture, pour pouvoir cliquer une variante dedans au lieu qu'il disparaisse aussitôt.
+  const closeTimer = useRef<number | null>(null)
+  function clearCloseTimer() { if (closeTimer.current) { window.clearTimeout(closeTimer.current); closeTimer.current = null } }
+  function scheduleClose() { clearCloseTimer(); closeTimer.current = window.setTimeout(() => setShow(false), 150) }
   function enter() {
+    clearCloseTimer()
     const r = ref.current?.getBoundingClientRect()
     setPos({ x: r ? r.left : 0, y: r ? r.bottom + 6 : 0 }); setShow(true)
     if (data === null) fetchProductTooltip(id).then((res) => setData(res.items)).catch(() => setData([]))
   }
   return (
-    <span ref={ref} onMouseEnter={enter} onMouseLeave={() => setShow(false)} style={{ fontWeight: 500, cursor: 'default' }}>
+    <span ref={ref} onMouseEnter={enter} onMouseLeave={scheduleClose} style={{ fontWeight: 500, cursor: 'default' }}>
       {name || '—'}
-      {show && data && data.length > 0 && <VariantTooltipTable items={data} pos={pos} t={t} />}
+      {show && data && data.length > 0 && (
+        <VariantTooltipTable items={data} pos={pos} t={t} onMouseEnter={clearCloseTimer} onMouseLeave={scheduleClose}
+          onRowClick={onOpenVariant ? (variantId) => { clearCloseTimer(); setShow(false); onOpenVariant(id, variantId) } : undefined} />
+      )}
     </span>
   )
 }
@@ -135,7 +145,9 @@ function ProductList({ base }: { base: string }) {
   }), [items, sortCol, sortAsc])
 
   function toggleSort(id: string) { if (sortCol === id) setSortAsc((v) => !v); else { setSortCol(id); setSortAsc(true) } }
-  async function confirmDelete() { if (!toDelete) return; try { await deleteProduct(toDelete.id); setToDelete(null); setTick((x) => x + 1) } catch { setToDelete(null) } }
+  async function confirmDelete() { if (!toDelete) return; try { await deleteProduct(toDelete.id); notify('ok', t('title'), t('deleted')); setToDelete(null); setTick((x) => x + 1) } catch { setToDelete(null) } }
+  // Depuis le tooltip variantes (survol du nom) : ouvre le produit sur l'onglet Variantes, cette variante éditée.
+  function openVariant(productId: number, variantId: number) { navigate(`${base}/${productId}`, { state: { tab: 'variants', openVariantEditor: variantId } }) }
   const FILTERS: { k: string; v: number | null; dot: string | null }[] = [
     { k: 'f_all', v: null, dot: null },
     { k: 'f_active', v: 1, dot: '#10b981' },
@@ -210,7 +222,7 @@ function ProductList({ base }: { base: string }) {
                       {id === 'status' && <StatusBadge active={p.status === 1} t={t} />}
                       {id === 'image' && <ProductThumb src={p.image} alt={p.name} />}
                       {id === 'reference' && (p.reference || '—')}
-                      {id === 'name' && <ProductNameCell id={p.id} name={p.name} t={t} />}
+                      {id === 'name' && <ProductNameCell id={p.id} name={p.name} t={t} onOpenVariant={openVariant} />}
                       {id === 'categories' && (p.categories.length ? p.categories.join(', ') : '—')}
                       {id === 'created' && <span style={{ color: 'var(--color-muted-foreground)' }}>{fmtDate(p.dateCreation)}</span>}
                     </td>
@@ -428,9 +440,10 @@ function ProductForm({ id, base }: { id: string; base: string }) {
     if (!isEdit) { stateApplied.current = false; return }
     if (stateApplied.current) return
     stateApplied.current = true
-    const s = (location.state as { tab?: string; openVariantEditor?: boolean }) ?? {}
+    const s = (location.state as { tab?: string; openVariantEditor?: boolean | number }) ?? {}
     if (s.tab) setTab(s.tab)
-    if (s.openVariantEditor) setVariantEdit('new')
+    if (typeof s.openVariantEditor === 'number') setVariantEdit(s.openVariantEditor)
+    else if (s.openVariantEditor) setVariantEdit('new')
   }, [isEdit]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const secTitle = { fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 12px' } as const

@@ -96,7 +96,7 @@ export default function CatalogPage() {
   async function confirmDelete() {
     if (!toDelete) return
     const wasSel = anchorId === toDelete.id
-    try { await deleteCategory(toDelete.id); setToDelete(null); if (wasSel) { setSel(null); setHighlightId(null) } refresh() } catch { setToDelete(null) }
+    try { await deleteCategory(toDelete.id); notify('ok', t('title'), t('deleted')); setToDelete(null); if (wasSel) { setSel(null); setHighlightId(null) } refresh() } catch { setToDelete(null) }
   }
 
   // Drag-and-drop : réordonnancement / changement de parent.
