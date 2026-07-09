@@ -297,6 +297,8 @@ function OrderForm({ id, base }: { id: string; base: string }) {
   // Controlled form state — only committed on Save
   const [localStatus, setLocalStatus]       = useState<number>(1)
   const [localReference, setLocalReference] = useState('')
+  const [errReference, setErrReference]     = useState(false)
+  const [formError, setFormError]           = useState(false)
 
   useEffect(() => {
     openSubTab(base, { id: subTabPath, label: isEdit ? t('loading') : t('new'), path: subTabPath })
@@ -333,7 +335,8 @@ function OrderForm({ id, base }: { id: string; base: string }) {
   }, [capsLoaded])
 
   async function submit() {
-    if (!localReference.trim()) { notify('ko', t('title'), t('err_reference_required')); return }
+    if (!localReference.trim()) { setErrReference(true); setFormError(true); return }
+    setFormError(false)
     setSaving(true)
     try {
       if (isEdit && orderId) {
@@ -375,12 +378,14 @@ function OrderForm({ id, base }: { id: string; base: string }) {
       ) : (
         <>
           <Tabs tabs={TABS} active={activeTab} onChange={setActiveTab} />
+          {formError && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14, marginBottom: 16 }}>{t('err_required_fields')}</div>}
           <div>
             {activeTab === 'information' && (
               <InformationTab
                 orderId={orderId} statuses={statuses} locked={locked}
                 localStatus={localStatus} setLocalStatus={setLocalStatus}
                 localReference={localReference} setLocalReference={setLocalReference}
+                errReference={errReference} setErrReference={setErrReference}
                 t={t}
               />
             )}
@@ -410,7 +415,7 @@ function OrderForm({ id, base }: { id: string; base: string }) {
 
 // ── Info card — titled section card ───────────────────────────────────────────
 function InfoCard({ icon, title, action, children }: {
-  icon: React.ReactNode; title: string; action?: React.ReactNode; children: React.ReactNode
+  icon: React.ReactNode; title: React.ReactNode; action?: React.ReactNode; children: React.ReactNode
 }) {
   return (
     <div style={{ background: 'var(--color-card,#1a1f2e)', border: '1px solid var(--color-border)', borderRadius: 10, padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -505,10 +510,11 @@ function UploadModal({ orderId, onUploaded, onClose, t }: {
 }
 
 // ── Information tab ─── fully controlled, no internal saves ───────────────────
-function InformationTab({ orderId, statuses, locked, localStatus, setLocalStatus, localReference, setLocalReference, t }: {
+function InformationTab({ orderId, statuses, locked, localStatus, setLocalStatus, localReference, setLocalReference, errReference, setErrReference, t }: {
   orderId: number | null; statuses: OrderStatus[]; locked: boolean
   localStatus: number; setLocalStatus: (s: number) => void
   localReference: string; setLocalReference: (r: string) => void
+  errReference: boolean; setErrReference: (v: boolean) => void
   t: (k: string) => string
 }) {
   const [attachments, setAttachments] = useState<OrderAttachment[]>([])
@@ -539,10 +545,12 @@ function InformationTab({ orderId, statuses, locked, localStatus, setLocalStatus
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
 
         {/* Reference */}
-        <InfoCard icon={iconSvg(<><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></>)} title={t('field_reference')}>
-          <input value={localReference} onChange={(e) => setLocalReference(e.target.value)}
+        <InfoCard icon={iconSvg(<><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></>)}
+          title={`${t('field_reference')} *`}>
+          <input value={localReference} onChange={(e) => { setLocalReference(e.target.value); setErrReference(false) }}
             style={{ ...inputCss, width: '100%', fontSize: 14, fontWeight: 500 }}
             placeholder={t('field_reference')} disabled={locked} />
+          {errReference && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_reference_required')}</p>}
         </InfoCard>
 
         {/* Invoice */}

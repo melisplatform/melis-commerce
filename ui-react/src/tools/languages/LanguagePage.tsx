@@ -276,6 +276,9 @@ function LanguageEditor({ language, t, onClose, onSaved }: {
   const [status, setStatus] = useState(language ? language.status === 1 : true)
   const [newFlag, setNewFlag] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  const [errName, setErrName] = useState(false)
+  const [errLocale, setErrLocale] = useState(false)
+  const [formError, setFormError] = useState(false)
 
   async function onPickFlag(file: File | null) {
     if (!file) return
@@ -284,8 +287,9 @@ function LanguageEditor({ language, t, onClose, onSaved }: {
   }
 
   async function submit() {
-    if (!name.trim()) { notify('ko', t('title'), t('err_name_required')); return }
-    if (!locale.trim()) { notify('ko', t('title'), t('err_locale_required')); return }
+    if (!name.trim()) { setErrName(true); setFormError(true); return }
+    if (!locale.trim()) { setErrLocale(true); setFormError(true); return }
+    setFormError(false)
     setSaving(true)
     try {
       const payload = { name: name.trim(), locale: locale.trim(), status, flag: newFlag }
@@ -308,13 +312,16 @@ function LanguageEditor({ language, t, onClose, onSaved }: {
       <div style={{ ...card, padding: 24, width: '100%', maxWidth: 440, maxHeight: '85vh', overflow: 'auto' }}>
         <h3 style={{ fontSize: 16, fontWeight: 600, margin: '0 0 16px' }}>{isEdit ? t('edit') : t('new')}</h3>
         <div style={fieldGap}>
+          {formError && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14 }}>{t('err_required_fields')}</div>}
           <div>
             <label style={label}>{t('field_name')} *</label>
-            <input style={inputCss} maxLength={45} value={name} onChange={(e) => setName(e.target.value)} />
+            <input style={inputCss} maxLength={45} value={name} onChange={(e) => { setName(e.target.value); setErrName(false) }} />
+            {errName && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_name_required')}</p>}
           </div>
           <div>
             <label style={label}>{t('field_locale')} *</label>
-            <input style={inputCss} maxLength={45} placeholder="en_EN" value={locale} onChange={(e) => setLocale(e.target.value)} />
+            <input style={inputCss} maxLength={45} placeholder="en_EN" value={locale} onChange={(e) => { setLocale(e.target.value); setErrLocale(false) }} />
+            {errLocale && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_locale_required')}</p>}
           </div>
           <div>
             <div style={labelRow}><label style={label}>{t('status_active')}</label></div>

@@ -305,8 +305,8 @@ function ProductForm({ id, base }: { id: string; base: string }) {
   const [lang, setLang] = useState<number>(0)
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [errRef, setErrRef] = useState(false)
+  const [formError, setFormError] = useState(false)
   const [tab, setTab] = useState('main')
   const { can, loaded: capsLoaded } = useCaps(TOOL_MELIS_KEY)
 
@@ -340,7 +340,6 @@ function ProductForm({ id, base }: { id: string; base: string }) {
     setPendingAttrIds([]); setPendingRecipientIds([]); setPendingRecipientEmails([]); setPendingPrices([])
     setPendingDeleteAttrPattIds([]); setPendingDeleteRecipientSeaIds([])
     setPendingDeleteFileIds([]); setPendingDeleteImageIds([])
-    setError(null)
   }, [productId])
 
   useEffect(() => {
@@ -372,13 +371,14 @@ function ProductForm({ id, base }: { id: string; base: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [primaryName, reference])
 
-  function setText(langId: number, field: 'name' | 'description', value: string) { setTexts((p) => p.map((x) => x.langId === langId ? { ...x, [field]: value } : x)); setError(null) }
+  function setText(langId: number, field: 'name' | 'description', value: string) { setTexts((p) => p.map((x) => x.langId === langId ? { ...x, [field]: value } : x)) }
   function setSeoField(langId: number, field: keyof ProductSeo, value: string) { setSeo((p) => p.map((x) => x.langId === langId ? { ...x, [field]: value } : x)) }
   function toggleCategory(cid: number) { setCategoryIds((p) => p.includes(cid) ? p.filter((x) => x !== cid) : [...p, cid]) }
 
   async function submit() {
-    if (!reference.trim()) { setErrRef(true); setError(t('err_reference')); setTab('main'); return }
-    setSaving(true); setError(null)
+    if (!reference.trim()) { setErrRef(true); setFormError(true); setTab('main'); return }
+    setFormError(false)
+    setSaving(true)
     try {
       const result = await saveProduct({
         id: productId, reference: reference.trim(), status: active,
@@ -419,7 +419,7 @@ function ProductForm({ id, base }: { id: string; base: string }) {
         ])
         notify('ok', t('title'), t('saved'))
       }
-    } catch (e) { const msg = e instanceof Error ? e.message : t('err_save'); setError(msg); notify('ko', t('title'), msg) } finally { setSaving(false) }
+    } catch (e) { const msg = e instanceof Error ? e.message : t('err_save'); notify('ko', t('title'), msg) } finally { setSaving(false) }
   }
 
   // After save navigates new→edit, apply the intended tab/state.
@@ -450,7 +450,7 @@ function ProductForm({ id, base }: { id: string; base: string }) {
 
       <Tabs tabs={TABS} active={tab} onChange={setTab} />
 
-      {error && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14 }}>{error}</div>}
+      {formError && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14, marginBottom: 16 }}>{t('err_required_fields')}</div>}
 
       {loading ? (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '40vh', color: 'var(--color-muted-foreground)' }}>{t('loading')}</div>
@@ -464,8 +464,9 @@ function ProductForm({ id, base }: { id: string; base: string }) {
           <div style={{ ...card, padding: 24, display: 'flex', flexDirection: 'column', gap: 24 }}>
             <section>
               <h3 style={secTitle}>{t('sec_general')}</h3>
-              <div style={labelRow}><label style={{ ...label, color: errRef ? '#dc2626' : undefined }}>{t('f_reference')}</label><InfoDot text={t('tip_reference')} /></div>
-              <input style={{ ...inputCss, ...(errRef ? { borderColor: '#dc2626' } : {}) }} value={reference} onChange={(e) => { setReference(e.target.value); setError(null); setErrRef(false) }} placeholder={t('f_reference_ph')} autoComplete="off" />
+              <div style={labelRow}><label style={label}>{t('f_reference')} *</label><InfoDot text={t('tip_reference')} /></div>
+              <input style={inputCss} value={reference} onChange={(e) => { setReference(e.target.value); setErrRef(false); setFormError(false) }} placeholder={t('f_reference_ph')} autoComplete="off" />
+              {errRef && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_reference')}</p>}
             </section>
             <section>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>

@@ -363,6 +363,10 @@ function AttributeForm({ id, base }: { id: string; base: string }) {
   const [visible, setVisible] = useState(true)
   const [searchable, setSearchable] = useState(true)
   const [translations, setTranslations] = useState<AttributeTranslation[]>([])
+  const [errReference, setErrReference] = useState(false)
+  const [errType, setErrType] = useState(false)
+  const [errName, setErrName] = useState(false)
+  const [formError, setFormError] = useState(false)
 
   useEffect(() => {
     openSubTab(base, { id: subTabPath, label: isEdit ? t('loading') : t('new'), path: subTabPath })
@@ -410,9 +414,10 @@ function AttributeForm({ id, base }: { id: string; base: string }) {
   }, [capsLoaded])
 
   async function submit() {
-    if (!reference.trim()) { notify('ko', t('title'), t('err_reference_required')); return }
-    if (!typeId) { notify('ko', t('title'), t('err_type_required')); return }
-    if (!translations.some((tr) => tr.name.trim())) { notify('ko', t('title'), t('err_name_required')); return }
+    if (!reference.trim()) { setErrReference(true); setFormError(true); return }
+    if (!typeId) { setErrType(true); setFormError(true); return }
+    if (!translations.some((tr) => tr.name.trim())) { setErrName(true); setFormError(true); return }
+    setFormError(false)
     setSaving(true)
     try {
       const payload = { reference: reference.trim(), typeId, status, visible, searchable, translations }
@@ -453,6 +458,7 @@ function AttributeForm({ id, base }: { id: string; base: string }) {
       ) : (
         <>
           <Tabs tabs={TABS} active={activeTab} onChange={setActiveTab} />
+          {formError && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14, marginBottom: 16 }}>{t('err_required_fields')}</div>}
           <div>
             {activeTab === 'main' && (
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 260px', gap: 16, alignItems: 'start' }}>
@@ -461,16 +467,19 @@ function AttributeForm({ id, base }: { id: string; base: string }) {
                   <div style={fieldGap}>
                     <div>
                       <div style={labelRow}><label style={label}>{t('field_reference')} *</label><InfoDot text={t('tip_reference')} /></div>
-                      <input style={inputCss} value={reference} onChange={(e) => setReference(e.target.value)} />
+                      <input style={inputCss} value={reference}
+                        onChange={(e) => { setReference(e.target.value); setErrReference(false) }} />
+                      {errReference && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_reference_required')}</p>}
                     </div>
                     <div>
                       <div style={labelRow}><label style={label}>{t('field_type')} *</label><InfoDot text={t('tip_type')} /></div>
                       <select style={{ ...inputCss, opacity: isEdit ? 0.6 : 1, cursor: isEdit ? 'not-allowed' : 'pointer' }}
                         value={typeId} disabled={isEdit}
-                        onChange={(e) => setTypeId(Number(e.target.value))}>
+                        onChange={(e) => { setTypeId(Number(e.target.value)); setErrType(false) }}>
                         <option value={0} disabled>—</option>
                         {(options?.types ?? []).map((ty) => <option key={ty.id} value={ty.id}>{ty.name}</option>)}
                       </select>
+                      {errType && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_type_required')}</p>}
                     </div>
                   </div>
                 </div>
@@ -505,7 +514,9 @@ function AttributeForm({ id, base }: { id: string; base: string }) {
                   <div style={fieldGap}>
                     <div>
                       <div style={labelRow}><label style={label}>{t('field_name')} *</label><InfoDot text={t('tip_name')} /></div>
-                      <input style={inputCss} value={currentTrans?.name ?? ''} onChange={(e) => setTrans(lang, 'name', e.target.value)} />
+                      <input style={inputCss} value={currentTrans?.name ?? ''}
+                        onChange={(e) => { setTrans(lang, 'name', e.target.value); setErrName(false) }} />
+                      {errName && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_name_required')}</p>}
                     </div>
                     <div>
                       <div style={labelRow}><label style={label}>{t('field_description')}</label><InfoDot text={t('tip_description')} /></div>

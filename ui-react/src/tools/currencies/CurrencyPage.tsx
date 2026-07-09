@@ -301,6 +301,10 @@ function CurrencyFormModal({ id, onClose, onSaved, t }: {
   const [code, setCode] = useState('')
   const [symbol, setSymbol] = useState('')
   const [status, setStatus] = useState(true)
+  const [errName, setErrName] = useState(false)
+  const [errCode, setErrCode] = useState(false)
+  const [errSymbol, setErrSymbol] = useState(false)
+  const [formError, setFormError] = useState(false)
 
   useEffect(() => {
     if (!isEdit || id === null) return
@@ -312,9 +316,10 @@ function CurrencyFormModal({ id, onClose, onSaved, t }: {
   }, [id])
 
   async function submit() {
-    if (!name.trim())   { notify('ko', t('title'), t('err_name_required'));   return }
-    if (!code.trim())   { notify('ko', t('title'), t('err_code_required'));   return }
-    if (!symbol.trim()) { notify('ko', t('title'), t('err_symbol_required')); return }
+    if (!name.trim())   { setErrName(true);   setFormError(true); return }
+    if (!code.trim())   { setErrCode(true);   setFormError(true); return }
+    if (!symbol.trim()) { setErrSymbol(true); setFormError(true); return }
+    setFormError(false)
     setSaving(true)
     try {
       await saveCurrency({ id: id ?? undefined, name: name.trim(), code: code.trim().toUpperCase(), symbol: symbol.trim(), status })
@@ -337,19 +342,25 @@ function CurrencyFormModal({ id, onClose, onSaved, t }: {
           <div style={{ padding: 40, textAlign: 'center', color: 'var(--color-muted-foreground)' }}>{t('loading')}</div>
         ) : (
           <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {formError && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14 }}>{t('err_required_fields')}</div>}
             <div>
               <label style={label}>{t('field_name')} *</label>
-              <input style={inputCss} value={name} onChange={(e) => setName(e.target.value)} maxLength={45} />
+              <input style={inputCss} value={name}
+                onChange={(e) => { setName(e.target.value); setErrName(false) }} maxLength={45} />
+              {errName && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_name_required')}</p>}
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               <div>
                 <label style={label}>{t('field_code')} *</label>
                 <input style={{ ...inputCss, textTransform: 'uppercase' }} value={code}
-                  onChange={(e) => setCode(e.target.value)} maxLength={8} />
+                  onChange={(e) => { setCode(e.target.value); setErrCode(false) }} maxLength={8} />
+                {errCode && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_code_required')}</p>}
               </div>
               <div>
                 <label style={label}>{t('field_symbol')} *</label>
-                <input style={inputCss} value={symbol} onChange={(e) => setSymbol(e.target.value)} maxLength={5} />
+                <input style={inputCss} value={symbol}
+                  onChange={(e) => { setSymbol(e.target.value); setErrSymbol(false) }} maxLength={5} />
+                {errSymbol && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_symbol_required')}</p>}
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

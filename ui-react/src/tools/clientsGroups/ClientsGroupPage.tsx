@@ -286,9 +286,12 @@ function ClientsGroupFormModal({ t, initial, onClose, onSaved }: {
   const [name, setName] = useState(initial?.name ?? '')
   const [status, setStatus] = useState(initial ? initial.status === 1 : true)
   const [saving, setSaving] = useState(false)
+  const [errName, setErrName] = useState(false)
+  const [formError, setFormError] = useState(false)
 
   async function submit() {
-    if (!name.trim()) { notify('ko', t('title'), t('err_name_required')); return }
+    if (!name.trim()) { setErrName(true); setFormError(true); return }
+    setFormError(false)
     setSaving(true)
     try {
       await saveClientsGroup({ id: initial?.id, name: name.trim(), status })
@@ -309,11 +312,13 @@ function ClientsGroupFormModal({ t, initial, onClose, onSaved }: {
           {isEdit ? t('modal_edit_title') : t('modal_new_title')}
         </h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {formError && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14 }}>{t('err_required_fields')}</div>}
           <div>
             <label style={label}>{t('field_name')} *</label>
             <input style={inputCss} value={name} autoFocus
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => { setName(e.target.value); setErrName(false) }}
               onKeyDown={(e) => { if (e.key === 'Enter') submit() }} />
+            {errName && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_name_required')}</p>}
           </div>
           <div>
             <label style={label}>{t('status_label')}</label>

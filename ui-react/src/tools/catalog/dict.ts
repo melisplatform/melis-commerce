@@ -5,6 +5,7 @@ export const DICT = mergeDict({
   fr: {
     title: 'Catalogues / Catégories', subtitle: 'Gérez vos catalogues et catégories. Réordonnez-les par glisser-déposer.',
     search: 'Rechercher un catalogue / une catégorie…', empty: 'Aucun catalogue. Créez-en un pour commencer.',
+    search_not_found: '"{q}" non trouvé',
     add_catalog: 'Ajouter un catalogue', add_category: 'Ajouter une catégorie', add_child: 'Ajouter une sous-catégorie',
     ctx_add: 'Ajouter', ctx_update: 'Modifier', ctx_delete: 'Supprimer',
     clear: 'Effacer', collapse_all: 'Tout réduire', expand_all: 'Tout déplier',
@@ -38,6 +39,7 @@ export const DICT = mergeDict({
   en: {
     title: 'Catalogs / Categories', subtitle: 'Manage your catalogs and categories. Reorder them by drag and drop.',
     search: 'Search a catalog / category…', empty: 'No catalog yet. Create one to get started.',
+    search_not_found: '"{q}" not found',
     add_catalog: 'Add catalog', add_category: 'Add category', add_child: 'Add subcategory',
     ctx_add: 'Add', ctx_update: 'Update', ctx_delete: 'Delete',
     clear: 'Clear', collapse_all: 'Collapse all', expand_all: 'Expand all',

@@ -314,6 +314,9 @@ function CountryForm({ id, base }: { id: string; base: string }) {
   const [existingFlag, setExistingFlag] = useState<string | null>(null)
   const [newFlagB64, setNewFlagB64] = useState<string | null>(null)
   const [newFlagPreview, setNewFlagPreview] = useState<string | null>(null)
+  const [errName, setErrName] = useState(false)
+  const [errCurrency, setErrCurrency] = useState(false)
+  const [formError, setFormError] = useState(false)
 
   useEffect(() => {
     openSubTab(base, { id: subTabPath, label: isEdit ? t('loading') : t('new'), path: subTabPath })
@@ -346,8 +349,9 @@ function CountryForm({ id, base }: { id: string; base: string }) {
 
   async function submit() {
     const trimmed = name.trim()
-    if (!trimmed) { notify('ko', t('title'), t('err_name_required')); return }
-    if (!currencyId) { notify('ko', t('title'), t('err_name_required')); return }
+    if (!trimmed) { setErrName(true); setFormError(true); return }
+    if (!currencyId) { setErrCurrency(true); setFormError(true); return }
+    setFormError(false)
     setSaving(true)
     try {
       const payload = {
@@ -387,6 +391,8 @@ function CountryForm({ id, base }: { id: string; base: string }) {
         </div>
       </div>
 
+      {formError && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14 }}>{t('err_required_fields')}</div>}
+
       {isEdit && !country ? (
         <div style={{ padding: 40, display: 'flex', justifyContent: 'center', color: 'var(--color-muted-foreground)' }}>{t('loading')}</div>
       ) : (
@@ -396,16 +402,20 @@ function CountryForm({ id, base }: { id: string; base: string }) {
             <div style={fieldGap}>
               <div>
                 <label style={label}>{t('field_name')} *</label>
-                <input style={inputCss} maxLength={45} value={name} onChange={(e) => setName(e.target.value)} />
+                <input style={inputCss} maxLength={45} value={name}
+                  onChange={(e) => { setName(e.target.value); setErrName(false) }} />
+                {errName && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_name_required')}</p>}
               </div>
               <div>
                 <label style={label}>{t('field_currency')} *</label>
-                <select style={inputCss} value={currencyId} onChange={(e) => setCurrencyId(Number(e.target.value))}>
+                <select style={inputCss} value={currencyId}
+                  onChange={(e) => { setCurrencyId(Number(e.target.value)); setErrCurrency(false) }}>
                   <option value={0} disabled>—</option>
                   {(options?.currencies ?? []).map((cu) => (
                     <option key={cu.id} value={cu.id}>{cu.name}{cu.symbol ? ` (${cu.symbol})` : ''}</option>
                   ))}
                 </select>
+                {errCurrency && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_currency_required')}</p>}
               </div>
             </div>
           </div>

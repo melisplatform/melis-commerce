@@ -147,16 +147,23 @@ export default function CatalogPage() {
 
         {err && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14 }}>{err}</div>}
 
+        {/* Recherche sans résultat : bandeau d'avertissement — l'arbre COMPLET reste affiché en dessous (comme le legacy), pas de vide. */}
+        {!loading && search.trim() && view.length === 0 && tree.length > 0 && (
+          <div style={{ maxWidth: 760, border: '1px solid color-mix(in srgb, #f59e0b 50%, transparent)', background: 'color-mix(in srgb, #f59e0b 16%, transparent)', color: 'var(--color-foreground)', borderRadius: 8, padding: '8px 14px', fontSize: 14, fontWeight: 500 }}>
+            {t('search_not_found', { q: search.trim() })}
+          </div>
+        )}
+
         {/* Arbre — largeur limitée (pas plein écran), toujours visible, scroll interne si grand */}
         <div style={{ ...card, padding: 8, minHeight: 90, maxHeight: '45vh', maxWidth: 760, overflow: 'auto', flexShrink: 0 }}>
-          {loading && !view.length ? (
+          {loading && !tree.length ? (
             <div style={{ padding: 40, textAlign: 'center', color: 'var(--color-muted-foreground)' }}>{t('loading')}</div>
-          ) : !view.length ? (
+          ) : !tree.length ? (
             <div style={{ padding: 40, textAlign: 'center', color: 'var(--color-muted-foreground)' }}>{t('empty')}</div>
           ) : (
             <div onDragEnd={() => { setDrag(null); setDropHint(null) }}>
               <NodeList
-                nodes={view} depth={0} parentId={-1} t={t} anchorId={anchorId} can={can} search={search.trim()}
+                nodes={view.length ? view : tree} depth={0} parentId={-1} t={t} anchorId={anchorId} can={can} search={search.trim()}
                 expanded={expanded} toggle={toggle}
                 onHighlight={(n) => setHighlightId(n.id)} onEdit={openEdit} onAddChild={addChild} onDelete={setToDelete}
                 onContext={(n, x, y) => { setHighlightId(n.id); setCtxMenu({ node: n, x, y }) }}
@@ -310,8 +317,8 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
   const [lang, setLang] = useState<number>(languages[0]?.id ?? 0)
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [errName, setErrName] = useState(false)
+  const [formError, setFormError] = useState(false)
   // SEO + Produits (chargés à la demande)
   const [seo, setSeo] = useState<CatSeo[]>([])
   const [seoLoaded, setSeoLoaded] = useState(false)
@@ -350,7 +357,7 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [capsLoaded])
 
-  function setText(langId: number, field: 'name' | 'description', value: string) { setTexts((p) => p.map((x) => x.langId === langId ? { ...x, [field]: value } : x)); setError(null) }
+  function setText(langId: number, field: 'name' | 'description', value: string) { setTexts((p) => p.map((x) => x.langId === langId ? { ...x, [field]: value } : x)) }
   function setSeoField(langId: number, field: 'pageId' | 'url' | 'urlRedirect' | 'url301' | 'metaTitle' | 'metaDescription', value: string) { setSeo((p) => p.map((x) => x.langId === langId ? { ...x, [field]: value } : x)) }
   function toggleCountry(cid: number) { setCountryIds((p) => p.includes(cid) ? p.filter((x) => x !== cid) : [...p, cid]) }
   const allCountries = countries.length > 0 && countryIds.length === countries.length
@@ -359,9 +366,10 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
   const parentName = !isCatalog ? (findNode(tree, fatherId)?.name ?? '') : ''
 
   async function submit() {
-    if (!texts.some((x) => x.name.trim())) { setErrName(true); setError(t('err_name')); setTab('properties'); return }
-    if (validStart && validEnd && validStart > validEnd) { setError(t('err_dates')); setTab('properties'); return }
-    setSaving(true); setError(null)
+    if (!texts.some((x) => x.name.trim())) { setErrName(true); setFormError(true); setTab('properties'); return }
+    if (validStart && validEnd && validStart > validEnd) { setTab('properties'); notify('ko', t('title'), t('err_dates')); return }
+    setFormError(false)
+    setSaving(true)
     try {
       const r = await saveCategory({
         id: catId, fatherId, status: active, reference: reference.trim(),
@@ -375,7 +383,7 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
       }
       notify('ok', t('title'), t('saved'))
       onSaved(r.id, isCatalog ? 'catalog' : 'category')
-    } catch (e) { const msg = e instanceof Error ? e.message : t('err_save'); setError(msg); notify('ko', t('title'), msg) } finally { setSaving(false) }
+    } catch (e) { const msg = e instanceof Error ? e.message : t('err_save'); notify('ko', t('title'), msg) } finally { setSaving(false) }
   }
 
   const headerTitle = isEdit ? (isCatalog ? t('edit_catalog_title') : t('edit_category_title')) : (isCatalog ? t('new_catalog_title') : t('new_category_title'))
@@ -398,7 +406,8 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
 
       <div style={{ padding: '16px 20px' }}>
         <Tabs tabs={TABS} active={tab} onChange={setTab} />
-        {error && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14, marginBottom: 14 }}>{error}</div>}
+
+        {formError && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14, marginBottom: 14 }}>{t('err_required_fields')}</div>}
 
         {loading ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 200, color: 'var(--color-muted-foreground)' }}>{t('loading')}</div>
@@ -425,8 +434,9 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
                   <LangSwitcher languages={languages} value={lang} onChange={setLang} />
                   {texts.filter((x) => x.langId === lang).map((tx) => (
                     <div key={tx.langId}>
-                      <label style={{ ...label, color: errName ? '#dc2626' : undefined }}>{t('f_name')}</label>
-                      <input style={{ ...inputCss, ...(errName ? { borderColor: '#dc2626' } : {}) }} value={tx.name} onChange={(e) => { setText(tx.langId, 'name', e.target.value); setErrName(false) }} placeholder={t('f_name_ph')} autoComplete="off" />
+                      <label style={label}>{t('f_name')} *</label>
+                      <input style={inputCss} value={tx.name} onChange={(e) => { setText(tx.langId, 'name', e.target.value); setErrName(false); setFormError(false) }} placeholder={t('f_name_ph')} autoComplete="off" />
+                      {errName && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_name')}</p>}
                       <label style={{ ...label, marginTop: 14 }}>{t('f_description')}</label>
                       <textarea style={{ ...inputCss, minHeight: 120, resize: 'vertical', paddingTop: 8 }} value={tx.description} onChange={(e) => setText(tx.langId, 'description', e.target.value)} placeholder={t('f_description_ph')} />
                     </div>

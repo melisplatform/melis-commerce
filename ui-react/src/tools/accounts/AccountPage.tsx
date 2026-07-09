@@ -326,6 +326,7 @@ function AccountForm({ id, base }: { id: string; base: string }) {
   const [saving, setSaving] = useState(false)
   const [nameError, setNameError] = useState('')
   const [countryError, setCountryError] = useState('')
+  const [formError, setFormError] = useState(false)
   const [tab, setTab] = useState('properties')
   const [visitedTabs, setVisitedTabs] = useState(new Set<string>())
   // Données de l'onglet Société, remontées ici pour être sauvées par le bouton du HAUT (un seul Save).
@@ -395,10 +396,12 @@ function AccountForm({ id, base }: { id: string; base: string }) {
   }, [name])
 
   async function submit() {
-    let hasError = false
-    if (!name.trim()) { setNameError(t('err_name')); hasError = true } else setNameError('')
-    if (!countryId) { setCountryError(t('err_country')); hasError = true } else setCountryError('')
-    if (hasError) return
+    let firstError = ''
+    const fail = (msg: string) => { firstError ||= msg; return msg }
+    if (!name.trim()) setNameError(fail(t('err_name'))); else setNameError('')
+    if (!countryId) setCountryError(fail(t('err_country'))); else setCountryError('')
+    setFormError(!!firstError)
+    if (firstError) return
     setSaving(true)
     try {
       const r = await saveAccount({ id: accountId, name: name.trim(), status: active, groupId, countryId, tags: tags.trim() })
@@ -426,6 +429,8 @@ function AccountForm({ id, base }: { id: string; base: string }) {
 
       <Tabs tabs={TABS} active={tab} onChange={handleTabChange} />
 
+      {formError && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14, marginBottom: 16 }}>{t('err_required_fields')}</div>}
+
       {tab === 'company' ? (
         <CompanyTab company={company} onChange={setCompany} loading={!companyLoaded && !!accountId} t={t} />
       ) : tab === 'addresses' ? (
@@ -445,7 +450,7 @@ function AccountForm({ id, base }: { id: string; base: string }) {
             <div style={{ ...card, padding: 32, display: 'flex', flexDirection: 'column', gap: 18 }}>
               <h3 style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: 0 }}>{t('f_identity')}</h3>
               <div>
-                <label style={{ ...label, display: 'flex', alignItems: 'center', gap: 5, ...(nameError ? { color: '#ef4444' } : {}) }}>
+                <label style={{ ...label, display: 'flex', alignItems: 'center', gap: 5 }}>
                   <UserIcon /><span>{t('f_name')} <span style={{ color: '#ef4444' }}>*</span></span>
                 </label>
                 <input style={inputCss} value={name} onChange={(e) => { setName(e.target.value); if (nameError && e.target.value.trim()) setNameError('') }} placeholder={t('f_name_ph')} autoComplete="off" />
@@ -461,7 +466,7 @@ function AccountForm({ id, base }: { id: string; base: string }) {
                 </select>
               </div>
               <div>
-                <label style={{ ...label, display: 'flex', alignItems: 'center', gap: 5, ...(countryError ? { color: '#ef4444' } : {}) }}>
+                <label style={{ ...label, display: 'flex', alignItems: 'center', gap: 5 }}>
                   <GlobeIcon /><span>{t('f_country')} <span style={{ color: '#ef4444' }}>*</span></span>
                 </label>
                 <select style={inputCss} value={countryId} onChange={(e) => { setCountryId(Number(e.target.value)); if (countryError) setCountryError('') }}>

@@ -261,6 +261,7 @@ function ContactForm({ id, base }: { id: string; base: string }) {
   const [langError, setLangError] = useState('')
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
+  const [formError, setFormError] = useState(false)
   const [tab, setTab] = useState('information')
   const [visitedTabs, setVisitedTabs] = useState(new Set<string>())
   const [addresses, setAddresses] = useState<ContactAddress[]>([])
@@ -330,15 +331,17 @@ function ContactForm({ id, base }: { id: string; base: string }) {
   const isCompany = type === 'company'
 
   async function submit() {
-    let hasError = false
-    if (!firstname.trim()) { setFirstnameError(t('err_firstname')); hasError = true } else setFirstnameError('')
-    if (!isCompany && !name.trim()) { setNameError(t('err_name')); hasError = true } else setNameError('')
-    if (!langId) { setLangError(t('err_language')); hasError = true } else setLangError('')
-    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setEmailError(t('err_email')); hasError = true } else setEmailError('')
-    if (!isEdit && !password.trim()) { setPasswordError(t('err_password_required')); hasError = true }
-    else if (password && password !== confirmPassword) { setPasswordError(t('err_password')); hasError = true }
+    let firstError = ''
+    const fail = (msg: string) => { firstError ||= msg; return msg }
+    if (!firstname.trim()) setFirstnameError(fail(t('err_firstname'))); else setFirstnameError('')
+    if (!isCompany && !name.trim()) setNameError(fail(t('err_name'))); else setNameError('')
+    if (!langId) setLangError(fail(t('err_language'))); else setLangError('')
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) setEmailError(fail(t('err_email'))); else setEmailError('')
+    if (!isEdit && !password.trim()) setPasswordError(fail(t('err_password_required')))
+    else if (password && password !== confirmPassword) setPasswordError(fail(t('err_password')))
     else setPasswordError('')
-    if (hasError) return
+    setFormError(!!firstError)
+    if (firstError) return
     setSaving(true)
     try {
       const r = await saveContact({
@@ -372,6 +375,8 @@ function ContactForm({ id, base }: { id: string; base: string }) {
       </div>
 
       <Tabs tabs={TABS} active={tab} onChange={handleTabChange} />
+
+      {formError && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14, marginBottom: 16 }}>{t('err_required_fields')}</div>}
 
       {tab === 'address' ? <AddressTab addresses={addresses} onChange={setAddresses} t={t} /> :
        tab === 'association' && contactId ? <AssociationTab contactId={contactId} t={t} can={can} /> :
@@ -413,13 +418,13 @@ function ContactForm({ id, base }: { id: string; base: string }) {
                 {/* Firstname (relabellisé « Société » en mode company) + Name (masqué en mode company) */}
                 <div style={{ display: 'grid', gridTemplateColumns: isCompany ? '1fr' : '1fr 1fr', gap: 16 }}>
                   <div>
-                    <label style={{ ...label, ...(firstnameError ? { color: '#ef4444' } : {}) }}>{isCompany ? t('type_company') : t('f_firstname')} <span style={{ color: '#ef4444' }}>*</span></label>
+                    <label style={label}>{isCompany ? t('type_company') : t('f_firstname')} <span style={{ color: '#ef4444' }}>*</span></label>
                     <input style={inputCss} value={firstname} onChange={(e) => { setFirstname(e.target.value); if (firstnameError && e.target.value.trim()) setFirstnameError('') }} placeholder={isCompany ? t('type_company') : t('f_firstname_ph')} autoComplete="off" />
                     {firstnameError && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{firstnameError}</p>}
                   </div>
                   {!isCompany && (
                     <div>
-                      <label style={{ ...label, ...(nameError ? { color: '#ef4444' } : {}) }}>{t('f_name')} <span style={{ color: '#ef4444' }}>*</span></label>
+                      <label style={label}>{t('f_name')} <span style={{ color: '#ef4444' }}>*</span></label>
                       <input style={inputCss} value={name} onChange={(e) => { setName(e.target.value); if (nameError && e.target.value.trim()) setNameError('') }} placeholder={t('f_name_ph')} autoComplete="off" />
                       {nameError && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{nameError}</p>}
                     </div>
@@ -434,7 +439,7 @@ function ContactForm({ id, base }: { id: string; base: string }) {
                 )}
                 {/* Language */}
                 <div>
-                  <label style={{ ...label, ...(langError ? { color: '#ef4444' } : {}) }}>{t('f_language')} <span style={{ color: '#ef4444' }}>*</span></label>
+                  <label style={label}>{t('f_language')} <span style={{ color: '#ef4444' }}>*</span></label>
                   <select style={inputCss} value={langId} onChange={(e) => { setLangId(Number(e.target.value)); if (langError) setLangError('') }}>
                     <option value={0}>{t('f_language_ph')}</option>
                     {languages.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
@@ -443,7 +448,7 @@ function ContactForm({ id, base }: { id: string; base: string }) {
                 </div>
                 {/* Email */}
                 <div>
-                  <label style={{ ...label, ...(emailError ? { color: '#ef4444' } : {}) }}>{t('f_email')} <span style={{ color: '#ef4444' }}>*</span></label>
+                  <label style={label}>{t('f_email')} <span style={{ color: '#ef4444' }}>*</span></label>
                   <input style={inputCss} value={email} onChange={(e) => { setEmail(e.target.value); if (emailError) setEmailError('') }} placeholder={t('f_email_ph')} autoComplete="off" />
                   {emailError && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{emailError}</p>}
                 </div>
@@ -486,11 +491,11 @@ function ContactForm({ id, base }: { id: string; base: string }) {
               </h3>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                 <div>
-                  <label style={{ ...label, ...(passwordError ? { color: '#ef4444' } : {}) }}>{isEdit ? t('f_password_edit') : t('f_password')} <span style={{ color: '#ef4444' }}>*</span></label>
+                  <label style={label}>{isEdit ? t('f_password_edit') : t('f_password')} <span style={{ color: '#ef4444' }}>*</span></label>
                   <input type="password" style={inputCss} value={password} onChange={(e) => { setPassword(e.target.value); if (passwordError) setPasswordError('') }} placeholder="******" autoComplete="new-password" />
                 </div>
                 <div>
-                  <label style={{ ...label, ...(passwordError ? { color: '#ef4444' } : {}) }}>{t('f_confirm_password')} <span style={{ color: '#ef4444' }}>*</span></label>
+                  <label style={label}>{t('f_confirm_password')} <span style={{ color: '#ef4444' }}>*</span></label>
                   <input type="password" style={inputCss} value={confirmPassword} onChange={(e) => { setConfirmPassword(e.target.value); if (passwordError) setPasswordError('') }} placeholder="******" autoComplete="new-password" />
                 </div>
               </div>

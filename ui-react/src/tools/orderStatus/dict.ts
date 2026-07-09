@@ -20,6 +20,7 @@ export const DICT = mergeDict({
     field_name: 'Nom', tip_name: 'Nom du statut.',
     err_color_required: 'La couleur est obligatoire.',
     err_name_required: 'Le nom est obligatoire pour au moins une langue.',
+    err_required_fields: 'Veuillez vérifier les champs obligatoires.',
     permanent_badge: 'Statut indispensable',
   },
   en: {
@@ -40,6 +41,7 @@ export const DICT = mergeDict({
     field_name: 'Name', tip_name: 'Status name.',
     err_color_required: 'The color is required.',
     err_name_required: 'Name is required for at least one language.',
+    err_required_fields: 'Please check the required fields.',
     permanent_badge: 'Mandatory status',
   },
 })

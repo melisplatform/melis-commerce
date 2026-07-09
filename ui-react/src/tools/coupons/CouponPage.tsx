@@ -338,6 +338,9 @@ function CouponForm({ id, base }: { id: string; base: string }) {
   const [maxUseNumber, setMaxUseNumber] = useState('')
   const [dateValidStart, setDateValidStart] = useState('')
   const [dateValidEnd, setDateValidEnd] = useState('')
+  const [errCode, setErrCode] = useState(false)
+  const [errDiscount, setErrDiscount] = useState(false)
+  const [formError, setFormError] = useState(false)
   const startDateRef = useRef<HTMLInputElement>(null)
   const endDateRef = useRef<HTMLInputElement>(null)
 
@@ -422,8 +425,9 @@ function CouponForm({ id, base }: { id: string; base: string }) {
   }, [capsLoaded])
 
   async function submit() {
-    if (!code.trim()) { notify('ko', t('title'), t('err_code_required')); return }
-    if (percentage.trim() === '' && discountValue.trim() === '') { notify('ko', t('title'), t('err_discount_required')); return }
+    if (!code.trim()) { setErrCode(true); setFormError(true); return }
+    if (percentage.trim() === '' && discountValue.trim() === '') { setErrDiscount(true); setFormError(true); return }
+    setFormError(false)
     setSaving(true)
     try {
       const payload = {
@@ -467,6 +471,7 @@ function CouponForm({ id, base }: { id: string; base: string }) {
       ) : (
         <>
           <Tabs tabs={TABS} active={activeTab} onChange={setActiveTab} />
+          {formError && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14, marginBottom: 16 }}>{t('err_required_fields')}</div>}
           <div>
             {activeTab === 'information' && (
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 260px', gap: 16, alignItems: 'start' }}>
@@ -475,7 +480,9 @@ function CouponForm({ id, base }: { id: string; base: string }) {
                   <div style={fieldGap}>
                     <div>
                       <div style={labelRow}><label style={label}>{t('field_code')} *</label><InfoDot text={t('tip_code')} /></div>
-                      <input style={{ ...inputCss, textTransform: 'uppercase' }} value={code} onChange={(e) => setCode(e.target.value)} />
+                      <input style={{ ...inputCss, textTransform: 'uppercase' }} value={code}
+                        onChange={(e) => { setCode(e.target.value); setErrCode(false) }} />
+                      {errCode && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_code_required')}</p>}
                     </div>
                     <div>
                       <div style={labelRow}><label style={label}>{t('field_valid_start')}</label><InfoDot text={t('tip_valid_start')} /></div>
@@ -505,11 +512,14 @@ function CouponForm({ id, base }: { id: string; base: string }) {
                   <div style={fieldGap}>
                     <div>
                       <div style={labelRow}><label style={label}>{t('field_percentage')}</label><InfoDot text={t('tip_percentage')} /></div>
-                      <input style={inputCss} type="number" step="0.01" value={percentage} onChange={(e) => setPercentage(e.target.value)} />
+                      <input style={inputCss} type="number" step="0.01" value={percentage}
+                        onChange={(e) => { setPercentage(e.target.value); setErrDiscount(false) }} />
                     </div>
                     <div>
                       <div style={labelRow}><label style={label}>{t('field_discount_value')}</label><InfoDot text={t('tip_discount_value')} /></div>
-                      <input style={inputCss} type="number" step="0.01" value={discountValue} onChange={(e) => setDiscountValue(e.target.value)} />
+                      <input style={inputCss} type="number" step="0.01" value={discountValue}
+                        onChange={(e) => { setDiscountValue(e.target.value); setErrDiscount(false) }} />
+                      {errDiscount && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_discount_required')}</p>}
                     </div>
                     <div>
                       <div style={labelRow}><label style={label}>{t('field_current_use')}</label><InfoDot text={t('tip_current_use')} /></div>

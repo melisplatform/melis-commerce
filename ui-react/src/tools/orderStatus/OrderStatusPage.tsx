@@ -334,6 +334,9 @@ function OrderStatusForm({ id, base }: { id: string; base: string }) {
   const [colorCode, setColorCode] = useState('#0696cb')
   const [status, setStatus] = useState(true)
   const [translations, setTranslations] = useState<OrderStatusTranslation[]>([])
+  const [errColor, setErrColor] = useState(false)
+  const [errName, setErrName] = useState(false)
+  const [formError, setFormError] = useState(false)
 
   useEffect(() => {
     openSubTab(base, { id: subTabPath, label: isEdit ? t('loading') : t('new'), path: subTabPath })
@@ -379,8 +382,9 @@ function OrderStatusForm({ id, base }: { id: string; base: string }) {
   }, [capsLoaded])
 
   async function submit() {
-    if (!colorCode.trim()) { notify('ko', t('title'), t('err_color_required')); return }
-    if (!translations.some((tr) => tr.name.trim())) { notify('ko', t('title'), t('err_name_required')); return }
+    if (!colorCode.trim()) { setErrColor(true); setFormError(true); return }
+    if (!translations.some((tr) => tr.name.trim())) { setErrName(true); setFormError(true); return }
+    setFormError(false)
     setSaving(true)
     try {
       const payload = { colorCode: colorCode.trim(), status, translations }
@@ -423,6 +427,7 @@ function OrderStatusForm({ id, base }: { id: string; base: string }) {
       ) : (
         <>
           <Tabs tabs={TABS} active={activeTab} onChange={setActiveTab} />
+          {formError && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14, marginBottom: 16 }}>{t('err_required_fields')}</div>}
           <div>
             {activeTab === 'main' && (
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 260px', gap: 16, alignItems: 'start' }}>
@@ -433,10 +438,12 @@ function OrderStatusForm({ id, base }: { id: string; base: string }) {
                       <div style={labelRow}><label style={label}>{t('field_color')} *</label><InfoDot text={t('tip_color')} /></div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         <input type="color" value={/^#[0-9a-fA-F]{6}$/.test(colorCode) ? colorCode : '#6b7280'}
-                          onChange={(e) => setColorCode(e.target.value)}
+                          onChange={(e) => { setColorCode(e.target.value); setErrColor(false) }}
                           style={{ width: 40, height: 36, padding: 2, border: '1px solid var(--color-border)', borderRadius: 6, cursor: 'pointer', background: 'transparent' }} />
-                        <input style={{ ...inputCss, flex: 1 }} value={colorCode} onChange={(e) => setColorCode(e.target.value)} placeholder="#0696cb" />
+                        <input style={{ ...inputCss, flex: 1 }} value={colorCode}
+                          onChange={(e) => { setColorCode(e.target.value); setErrColor(false) }} placeholder="#0696cb" />
                       </div>
+                      {errColor && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_color_required')}</p>}
                     </div>
                   </div>
                 </div>
@@ -457,7 +464,9 @@ function OrderStatusForm({ id, base }: { id: string; base: string }) {
                   <div style={fieldGap}>
                     <div>
                       <div style={labelRow}><label style={label}>{t('field_name')} *</label><InfoDot text={t('tip_name')} /></div>
-                      <input style={inputCss} value={currentTrans?.name ?? ''} onChange={(e) => setTrans(lang, e.target.value)} />
+                      <input style={inputCss} value={currentTrans?.name ?? ''}
+                        onChange={(e) => { setTrans(lang, e.target.value); setErrName(false) }} />
+                      {errName && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_name_required')}</p>}
                     </div>
                   </div>
                 </div>

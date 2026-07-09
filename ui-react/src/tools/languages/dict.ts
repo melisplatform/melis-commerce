@@ -14,6 +14,7 @@ export const DICT = mergeDict({
     no_items: 'Aucune langue trouvée.', count: '{n} langues — fin de la liste',
     field_name: 'Nom', field_locale: 'Locale', field_flag: 'Drapeau',
     err_name_required: 'Veuillez saisir le nom de la langue', err_locale_required: 'La locale est vide', err_locale_exists: 'Cette locale existe déjà',
+    err_required_fields: 'Veuillez vérifier les champs obligatoires.',
     flag_current: 'Drapeau existant', flag_none: 'Aucun drapeau', flag_replace: 'Remplacer le drapeau',
   },
   en: {
@@ -28,6 +29,7 @@ export const DICT = mergeDict({
     no_items: 'No language found.', count: '{n} languages — end of list',
     field_name: 'Name', field_locale: 'Locale', field_flag: 'Flag',
     err_name_required: 'Please enter the language name', err_locale_required: 'Locale is empty', err_locale_exists: 'Language locale already exists',
+    err_required_fields: 'Please check the required fields.',
     flag_current: 'Existing flag', flag_none: 'No flag', flag_replace: 'Replace flag',
   },
 })
