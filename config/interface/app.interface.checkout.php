@@ -214,13 +214,15 @@ return [
                                                         'module' => 'MelisCommerce',
                                                         'controller' => 'MelisComOrderCheckout',
                                                         'action' => 'render-order-checkout-product-basket',
-                                                        // productNextButtonState() removed from here: this zone (and every other wizard
-                                                        // step's zone) is rendered EAGERLY at wizard bootstrap regardless of which tab is
-                                                        // active, so calling it here fired an empty-basket check/notification while the
-                                                        // user was still on the Contact step, having done nothing. The Products step's own
-                                                        // "Suivant" button (.orderCheckoutFirstStepBtn, checkout.tool.js) already performs
-                                                        // the same checkBasket validation on click, so no real check is lost by removing this.
-                                                        'jscallback' => 'melisCommerce.priceLogTooltip();'
+                                                        // productNextButtonState() keeps the Products step's "Suivant" button's
+                                                        // disabled/tooltip state in sync with the basket — it runs every time THIS
+                                                        // zone reloads: at wizard bootstrap (all steps render eagerly regardless of
+                                                        // active tab) AND after every real basket mutation (add/qty-change/country
+                                                        // change, via their own melisHelper.zoneReload() calls in checkout.tool.js).
+                                                        // Its own code only ever touches the button's disabled/title attributes, it
+                                                        // never shows a toast — an earlier empty-basket toast bug was traced (and
+                                                        // fixed) separately, in orderCheckoutSetCountryAction's PHP response, not here.
+                                                        'jscallback' => 'productNextButtonState(); melisCommerce.priceLogTooltip();'
                                                     ],
                                                 ]
                                             ]
