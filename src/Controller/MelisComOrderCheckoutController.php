@@ -136,6 +136,7 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
             $container['checkout'][self::SITE_ID]['countryId'] = $countryId;
 
             $success = 1;
+            $textMessage = '';
         }
 
         $response = array(

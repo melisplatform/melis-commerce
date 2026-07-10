@@ -214,7 +214,13 @@ return [
                                                         'module' => 'MelisCommerce',
                                                         'controller' => 'MelisComOrderCheckout',
                                                         'action' => 'render-order-checkout-product-basket',
-                                                        'jscallback' => 'productNextButtonState(); melisCommerce.priceLogTooltip();'
+                                                        // productNextButtonState() removed from here: this zone (and every other wizard
+                                                        // step's zone) is rendered EAGERLY at wizard bootstrap regardless of which tab is
+                                                        // active, so calling it here fired an empty-basket check/notification while the
+                                                        // user was still on the Contact step, having done nothing. The Products step's own
+                                                        // "Suivant" button (.orderCheckoutFirstStepBtn, checkout.tool.js) already performs
+                                                        // the same checkBasket validation on click, so no real check is lost by removing this.
+                                                        'jscallback' => 'melisCommerce.priceLogTooltip();'
                                                     ],
                                                 ]
                                             ]

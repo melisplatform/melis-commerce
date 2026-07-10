@@ -114,3 +114,62 @@ export const uploadOrderAttachment = (orderId: number, file: File, name: string)
   fd.append('name', name)
   return apiFetch<OrderAttachment>(`/melis/react-api/orders/${orderId}/attachments/upload`, { method: 'POST', body: fd })
 }
+
+// ── Checkout wizard ("New Order") — wraps the legacy MelisComOrderCheckoutService /
+// MelisComBasketService via /melis/react-api/orders/checkout/*. State lives server-side
+// in the PHP session (same mechanism as the legacy BO checkout), keyed to a distinct
+// site id — see MelisComReactApiOrderController.php's checkoutSvc()/WIZARD_SITE_ID.
+const CHECKOUT_BASE = '/melis/react-api/orders/checkout'
+const postJson = <T,>(url: string, body: unknown) =>
+  apiFetch<T>(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+
+export interface CheckoutContact {
+  id: number; status: number; firstname: string; name: string; email: string
+  groupName: string; numOrders: number; lastOrder: string | null
+}
+export const fetchCheckoutContacts = (params: { search?: string } = {}) => {
+  const qs = new URLSearchParams()
+  qs.set('page', '1')
+  qs.set('limit', '200')
+  if (params.search) qs.set('search', params.search)
+  return apiFetch<ListResult<CheckoutContact>>(`${CHECKOUT_BASE}/contacts?${qs}`)
+}
+
+export const checkoutStart = () => postJson<{ started: boolean }>(`${CHECKOUT_BASE}/start`, {})
+export const checkoutSelectContact = (contactId: number) => postJson<{ contactId: number }>(`${CHECKOUT_BASE}/select-contact`, { contactId })
+export const checkoutSelectAccount = (clientId: number) => postJson<{ clientId: number }>(`${CHECKOUT_BASE}/select-account`, { clientId })
+export const checkoutSetCountry = (countryId: number) => postJson<{ countryId: number }>(`${CHECKOUT_BASE}/country`, { countryId })
+
+export interface CheckoutProduct { id: number; reference: string; name: string; image: string; variantCount: number }
+export const fetchCheckoutProducts = (params: { page?: number; search?: string } = {}) => {
+  const qs = new URLSearchParams()
+  qs.set('page', String(params.page ?? 1))
+  qs.set('limit', '25')
+  if (params.search) qs.set('search', params.search)
+  return apiFetch<ListResult<CheckoutProduct>>(`${CHECKOUT_BASE}/products?${qs}`)
+}
+
+export interface CheckoutVariant { id: number; sku: string; image: string; attributes: string; price: number | null; stock: number | null }
+export const fetchCheckoutVariants = (productId: number) =>
+  apiFetch<{ items: CheckoutVariant[] }>(`${CHECKOUT_BASE}/products/${productId}/variants`)
+
+export interface CheckoutBasketLine { variantId: number; sku: string; productName: string; quantity: number; price: number | null; lineTotal: number | null }
+export const fetchCheckoutBasket = () => apiFetch<{ items: CheckoutBasketLine[] }>(`${CHECKOUT_BASE}/basket`)
+export const checkoutBasketAdd = (variantId: number, quantity: number) => postJson<{ items: CheckoutBasketLine[] }>(`${CHECKOUT_BASE}/basket/add`, { variantId, quantity })
+export const checkoutBasketSetQty = (variantId: number, quantity: number) => postJson<{ items: CheckoutBasketLine[] }>(`${CHECKOUT_BASE}/basket/qty`, { variantId, quantity })
+export const checkoutBasketRemove = (variantId: number) => postJson<{ items: CheckoutBasketLine[] }>(`${CHECKOUT_BASE}/basket/remove`, { variantId })
+
+export const checkoutValidateAddresses = (billingId: number, deliveryId: number) =>
+  postJson<{ success: boolean }>(`${CHECKOUT_BASE}/addresses`, { billingId, deliveryId })
+
+export interface CheckoutSummary {
+  success: boolean; subTotal: number; total: number; errors: Record<string, string>; items: CheckoutBasketLine[]
+}
+export const fetchCheckoutSummary = () => apiFetch<CheckoutSummary>(`${CHECKOUT_BASE}/summary`)
+export const checkoutApplyCoupon = (code: string) => postJson<{ couponId: number | null; type: string | null }>(`${CHECKOUT_BASE}/coupon`, { code })
+
+export interface CheckoutConfirmResult {
+  success?: boolean; orderId?: number; reference?: string
+  errors?: { basket?: Record<string, unknown>; addresses?: unknown; costs?: unknown }
+}
+export const checkoutConfirm = () => postJson<CheckoutConfirmResult>(`${CHECKOUT_BASE}/confirm`, {})

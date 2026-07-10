@@ -20,8 +20,10 @@ import { ColManager } from '../../shared/ColManager'
 import { openSubTab, updateSubLabel } from '../../shared/subtabs'
 import { Tabs } from '../../shared/Tabs'
 import { BasketTab, AddressesTab, PaymentTab, ShippingTab, MessagesTab, ReturnsTab } from './OrderTabs'
+import OrderCheckoutWizard from './wizard/OrderCheckoutWizard'
 import { FileDownIcon, GripIcon } from '../../shared/icons'
 import { useCaps } from '../../shared/useCaps'
+import { useExternalBrickComponent } from '../../shared/externalBricks'
 
 const TOOL_MELIS_KEY = 'meliscommerce_order_list_page'
 const CANCELLED_STATUS = 5
@@ -59,6 +61,7 @@ export default function OrderPage() {
   const { id } = useParams()
   const location = useLocation()
   const base = id ? location.pathname.slice(0, location.pathname.length - id.length - 1) : location.pathname
+  if (id === 'new') return <OrderCheckoutWizard base={base} />
   if (id) return <OrderForm id={id} base={base} />
   return <OrderList base={base} />
 }
@@ -83,6 +86,9 @@ function OrderList({ base }: { base: string }) {
   const t = makeT(DICT)
   const navigate = useNavigate()
   const { can } = useCaps(TOOL_MELIS_KEY)
+  // Brique optionnelle : n'apparaît que si le module MelisCommerceOrderInvoice est actif
+  // (voir shared/externalBricks.ts) — melis-commerce ignore tout du contenu du bouton.
+  const OrderInvoiceButton = useExternalBrickComponent<{ orderId: number }>('MelisCommerceOrderInvoiceBrick', 'OrderRowButton')
   const [mode, setMode] = useState<'react' | 'old'>(listCache.get()?.mode ?? 'react')
   const [oldLoaded, setOldLoaded] = useState(false)
   const [items, setItems] = useState<OrderItem[]>(listCache.get()?.items ?? [])
@@ -210,7 +216,7 @@ function OrderList({ base }: { base: string }) {
                     {t(COL_LABEL[c.id])}{arrow(c.id)}
                   </th>
                 ))}
-                <th style={{ ...th, width: 60, textAlign: 'center' }}>{t('col_action')}</th>
+                <th style={{ ...th, width: OrderInvoiceButton ? 100 : 60, textAlign: 'center' }}>{t('col_action')}</th>
               </tr>
             </thead>
             <tbody>
@@ -237,7 +243,7 @@ function OrderList({ base }: { base: string }) {
                     if (c.id === 'date')      return <td key={c.id} style={{ ...td, color: 'var(--color-muted-foreground)' }}>{o.dateCreation ? fmtDate(o.dateCreation) : '—'}</td>
                     return <td key={c.id} style={td}>—</td>
                   })}
-                  <td style={{ ...td, textAlign: 'center', width: 60 }} onClick={(e) => e.stopPropagation()}>
+                  <td style={{ ...td, textAlign: 'center', width: OrderInvoiceButton ? 100 : 60 }} onClick={(e) => e.stopPropagation()}>
                     {can('edit') && (
                       <button
                         onClick={(e) => { e.stopPropagation(); openOrder(o) }}
@@ -246,6 +252,7 @@ function OrderList({ base }: { base: string }) {
                         <PencilIcon />
                       </button>
                     )}
+                    {OrderInvoiceButton && <OrderInvoiceButton orderId={o.id} />}
                   </td>
                 </tr>
               ))}

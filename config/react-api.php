@@ -679,6 +679,120 @@ return [
                                     'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'messageSave'],
                                 ],
                             ],
+                            // ─── Orders — "New Order" checkout wizard ──────────────────────────
+                            'orders-checkout-start' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/orders/checkout/start[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'checkoutStart'],
+                                ],
+                            ],
+                            'orders-checkout-debug-state' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/orders/checkout/debug-state[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'checkoutDebugState'],
+                                ],
+                            ],
+                            'orders-checkout-contacts' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/orders/checkout/contacts[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'checkoutContacts'],
+                                ],
+                            ],
+                            'orders-checkout-select-contact' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/orders/checkout/select-contact[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'checkoutSelectContact'],
+                                ],
+                            ],
+                            'orders-checkout-select-account' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/orders/checkout/select-account[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'checkoutSelectAccount'],
+                                ],
+                            ],
+                            'orders-checkout-country' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/orders/checkout/country[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'checkoutSetCountry'],
+                                ],
+                            ],
+                            'orders-checkout-products' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/orders/checkout/products[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'checkoutProducts'],
+                                ],
+                            ],
+                            'orders-checkout-variants' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/orders/checkout/products/:productId/variants[/]', 'constraints' => ['productId' => '[0-9]+'],
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'checkoutVariants'],
+                                ],
+                            ],
+                            'orders-checkout-basket' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/orders/checkout/basket[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'checkoutBasket'],
+                                ],
+                            ],
+                            'orders-checkout-basket-add' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/orders/checkout/basket/add[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'checkoutBasketAdd'],
+                                ],
+                            ],
+                            'orders-checkout-basket-qty' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/orders/checkout/basket/qty[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'checkoutBasketSetQty'],
+                                ],
+                            ],
+                            'orders-checkout-basket-remove' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/orders/checkout/basket/remove[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'checkoutBasketRemove'],
+                                ],
+                            ],
+                            'orders-checkout-addresses' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/orders/checkout/addresses[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'checkoutValidateAddresses'],
+                                ],
+                            ],
+                            'orders-checkout-summary' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/orders/checkout/summary[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'checkoutSummary'],
+                                ],
+                            ],
+                            'orders-checkout-coupon' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/orders/checkout/coupon[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'checkoutCoupon'],
+                                ],
+                            ],
+                            'orders-checkout-confirm' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/orders/checkout/confirm[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'checkoutConfirm'],
+                                ],
+                            ],
+
                             'orders-returns' => [
                                 'type' => 'Segment',
                                 'options' => [
