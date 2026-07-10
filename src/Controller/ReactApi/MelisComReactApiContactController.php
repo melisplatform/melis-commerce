@@ -453,7 +453,11 @@ class MelisComReactApiContactController extends MelisAbstractActionController
             $db->query('INSERT INTO melis_ecom_client_account_rel (car_client_id, car_client_person_id, car_default_person) VALUES (?, ?, 0)', [$clientId, $contactId]);
         }
         if (!iterator_to_array($db->query('SELECT cpr_id FROM melis_ecom_client_person_rel WHERE cpr_client_id = ? AND cpr_client_person_id = ? LIMIT 1', [$clientId, $contactId]))) {
-            $db->query('INSERT INTO melis_ecom_client_person_rel (cpr_client_id, cpr_client_person_id, cpr_default_client) VALUES (?, ?, 0)', [$clientId, $contactId]);
+            // Matches legacy's MelisComContactService::linkAccountContact(): if the contact has no
+            // OTHER account association yet, this new one becomes its default account.
+            $hasOther = (bool) iterator_to_array($db->query('SELECT cpr_id FROM melis_ecom_client_person_rel WHERE cpr_client_person_id = ? LIMIT 1', [$contactId]));
+            $isDefault = $hasOther ? 0 : 1;
+            $db->query('INSERT INTO melis_ecom_client_person_rel (cpr_client_id, cpr_client_person_id, cpr_default_client) VALUES (?, ?, ?)', [$clientId, $contactId, $isDefault]);
         }
     }
 
