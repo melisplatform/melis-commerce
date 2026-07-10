@@ -151,7 +151,7 @@ class MelisEcomCountryTable extends MelisEcomGenericTable
             $select->where('melis_ecom_country.ctry_status = 1');
         }
 
-        $select->where->equalTo('melis_ecom_country_category.ccat_category_id,', (int)$categoryId);
+        $select->where->equalTo('melis_ecom_country_category.ccat_category_id', (int)$categoryId);
 
         $dataCategory = $this->getTableGateway()->selectWith($select);
         return $dataCategory;
