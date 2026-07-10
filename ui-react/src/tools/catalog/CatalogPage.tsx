@@ -117,7 +117,7 @@ export default function CatalogPage() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', padding: 24, boxSizing: 'border-box', ...(mode === 'old' ? { height: '100%', overflow: 'hidden' } : {}) }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, boxSizing: 'border-box', ...(mode === 'old' ? { height: '100%', overflow: 'hidden' } : {}) }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
         <div>
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{t('title')}</h1>
@@ -130,11 +130,9 @@ export default function CatalogPage() {
         </div>
       </div>
 
-      {/* No marginTop here on purpose: in "Old" view the legacy tool's own sticky header pins
-          flush to the iframe top, so no extra gap should sit between it and the shell header above. */}
       {oldLoaded && <LegacyFrame melisKey={TOOL_MELIS_KEY} title={t('title')} visible={mode === 'old'} />}
 
-      <div style={{ display: mode === 'react' ? 'flex' : 'none', flexDirection: 'column', gap: 16, flexShrink: 0, marginTop: 20 }}>
+      <div style={{ display: mode === 'react' ? 'flex' : 'none', flexDirection: 'column', gap: 16, flexShrink: 0 }}>
         {/* Toolbar : recherche + langue + Effacer / Réduire / Déplier / Rafraîchir (même largeur que l'arbre) */}
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', maxWidth: 760 }}>
           <input style={{ ...inputCss, height: 36, flex: 1, minWidth: 220 }} value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('search')} />

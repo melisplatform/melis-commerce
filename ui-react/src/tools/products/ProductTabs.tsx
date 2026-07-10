@@ -434,7 +434,7 @@ export function MediaModal({ kind, doc, countries, t, onClose, onSaved, onAddPen
   const [fileTypes, setFileTypes] = useState<DocType[]>([])
   const [name, setName] = useState(doc?.name ?? '')
   const [typeId, setTypeId] = useState<number | null>(doc?.typeId ?? null)
-  const [countryId, setCountryId] = useState<number>(doc?.countryId ?? -1)
+  const [countryId, setCountryId] = useState<number | null>(doc?.countryId ?? null)
   const [fileData, setFileData] = useState<string | null>(null)
   const [preview, setPreview] = useState<string | null>(doc && kind === 'image' ? doc.path : null)
   const [saving, setSaving] = useState(false)
@@ -442,6 +442,8 @@ export function MediaModal({ kind, doc, countries, t, onClose, onSaved, onAddPen
   const [newCode, setNewCode] = useState('')
   const [newTypeName, setNewTypeName] = useState('')
   const [addingType, setAddingType] = useState(false)
+  const [typeError, setTypeError] = useState('')
+  const [countryError, setCountryError] = useState('')
   const fileRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -460,13 +462,17 @@ export function MediaModal({ kind, doc, countries, t, onClose, onSaved, onAddPen
 
   async function save() {
     if (!isEdit && !fileData) return
+    let ok = true
+    if (!typeId) { setTypeError(t('modal_err_type')); ok = false } else setTypeError('')
+    if (countryId == null) { setCountryError(t('modal_err_country')); ok = false } else setCountryError('')
+    if (!ok) return
     setSaving(true)
     try {
       if (isEdit && doc) {
-        if (onUpdate) await onUpdate(doc.id, { name, typeId, countryId, ...(fileData ? { data: fileData } : {}) })
+        if (onUpdate) await onUpdate(doc.id, { name, typeId, countryId: countryId ?? undefined, ...(fileData ? { data: fileData } : {}) })
         onSaved?.(); onClose()
       } else if (fileData) {
-        await onAddPending?.({ name: name || 'file', data: fileData, typeId, countryId })
+        await onAddPending?.({ name: name || 'file', data: fileData, typeId, countryId: countryId ?? undefined })
         onClose()
       }
     } catch { /* */ } finally { setSaving(false) }
@@ -512,18 +518,21 @@ export function MediaModal({ kind, doc, countries, t, onClose, onSaved, onAddPen
             <input style={inputCss} value={name} onChange={e => setName(e.target.value)} />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span style={label}>{t('modal_doc_type')}</span>
-            <select style={inputCss} value={typeId ?? ''} onChange={e => setTypeId(e.target.value ? Number(e.target.value) : null)}>
+            <span style={label}>{t('modal_doc_type')} <span style={{ color: '#ef4444' }}>*</span></span>
+            <select style={inputCss} value={typeId ?? ''} onChange={e => { setTypeId(e.target.value ? Number(e.target.value) : null); if (typeError) setTypeError('') }}>
               <option value="">{t('modal_choose')}</option>
               {types.map(tp => <option key={tp.id} value={tp.id}>{tp.name}</option>)}
             </select>
+            {typeError && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{typeError}</p>}
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span style={label}>{t('modal_doc_country')}</span>
-            <select style={inputCss} value={countryId} onChange={e => setCountryId(Number(e.target.value))}>
+            <span style={label}>{t('modal_doc_country')} <span style={{ color: '#ef4444' }}>*</span></span>
+            <select style={inputCss} value={countryId ?? ''} onChange={e => { setCountryId(e.target.value ? Number(e.target.value) : null); if (countryError) setCountryError('') }}>
+              <option value="">{t('modal_choose')}</option>
               <option value={-1}>{t('modal_all_countries')}</option>
               {countries.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
+            {countryError && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{countryError}</p>}
           </div>
           <div style={{ borderRadius: 6, border: '1px solid var(--color-border)', overflow: 'hidden' }}>
             <button style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: 'var(--color-muted,rgba(0,0,0,.03))', border: 0, cursor: 'pointer', fontSize: 13, fontWeight: 500 }}
@@ -765,7 +774,7 @@ export function VariantTooltipTable({ items, pos, t, onMouseEnter, onMouseLeave,
   const cellTd = { padding: '6px 12px', fontSize: 13, color: '#fff', whiteSpace: 'nowrap' as const }
   return createPortal(
     <div onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}
-      style={{ position: 'fixed', top: pos.y, left: pos.x, zIndex: 9999, background: '#4a4a4a', borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,.3)', padding: 4, maxWidth: 640, overflow: 'auto' }}>
+      style={{ position: 'fixed', top: pos.y, left: pos.x, zIndex: 9999, background: '#4a4a4a', borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,.3)', padding: 4, maxWidth: 'min(90vw, 900px)', maxHeight: '80vh', overflow: 'auto' }}>
       <table style={{ borderCollapse: 'collapse' }}>
         <thead><tr>
           <th style={cellTh}>{t('var_col_id')}</th><th style={cellTh}>{t('col_image')}</th><th style={cellTh}>{t('var_col_sku')}</th>
