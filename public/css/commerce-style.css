@@ -2883,16 +2883,25 @@ span .fa-globe {
 	border-bottom: none medium;
 }
 .red-box-panel-list .order-basket-list {
-	border-bottom: 1px solid rgba(147, 46, 42, 0.2);
+	border-bottom: 1px solid rgba(230, 28, 35, 0.2);
 	margin: 0 0 10px;
 }
 .red-box-panel-list {
 	padding: 5px 10px;
 	border: 1px solid #e0e0e0;
+	width: 100%;
+	box-sizing: border-box;
+}
+/* Empty-basket state reuses the generic file-attachment ".me-file-cont" class, which elsewhere
+   is used for narrow inline chips — force it back to the basket panel's full width here. */
+.red-box-panel-list .me-file-cont,
+.red-box-panel-list .me-file-cont p {
+	width: 100%;
+	box-sizing: border-box;
 }
 .red-box-panel h3 {
-	border-bottom: 1px solid #932e2a;
-	background: #932e2a;
+	border-bottom: 1px solid #e61c23;
+	background: #e61c23;
 	color: #fff;
 	font-size: 16px;
 	padding: 7px 10px;

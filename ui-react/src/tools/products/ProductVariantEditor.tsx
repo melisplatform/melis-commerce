@@ -196,13 +196,21 @@ function VarPrices({ productId, variantId, countryItems, currency, t, saveRef }:
   const [prices, setPrices] = useState<VariantPrice[]>([])
   const [country, setCountry] = useState<number>(-1)
   const [tick, setTick] = useState(0)
-  const [f, setF] = useState({ net: '', gross: '', vatPercent: '', vatPrice: '', otherTax: '' })
+  // Per-country draft, keyed by countryId — switching the country tab must never discard an
+  // unsaved edit, so edits live here (not in a single shared field-state reset on every switch)
+  // and Save flushes every touched country, not just whichever tab happens to be active.
+  const [drafts, setDrafts] = useState<Record<number, { net: string; gross: string; vatPercent: string; vatPrice: string; otherTax: string }>>({})
   useEffect(() => { if (variantId == null) return; fetchVariantPrices(productId, variantId).then((r) => setPrices(r.items)).catch(() => null) }, [productId, variantId, tick])
   const cur = prices.find((p) => p.countryId === country) ?? null
-  useEffect(() => { setF({ net: str(cur?.net ?? null), gross: str(cur?.gross ?? null), vatPercent: str(cur?.vatPercent ?? null), vatPrice: str(cur?.vatPrice ?? null), otherTax: str(cur?.otherTax ?? null) }) }, [country, prices])
+  const f = drafts[country] ?? { net: str(cur?.net ?? null), gross: str(cur?.gross ?? null), vatPercent: str(cur?.vatPercent ?? null), vatPrice: str(cur?.vatPrice ?? null), otherTax: str(cur?.otherTax ?? null) }
+  function setF(nf: typeof f) { setDrafts((d) => ({ ...d, [country]: nf })) }
   async function doSave(id: number) {
-    await saveVariantPrice(productId, id, { id: cur?.id ?? null, countryId: country, currency, net: num(f.net), gross: num(f.gross), vatPercent: num(f.vatPercent), vatPrice: num(f.vatPrice), otherTax: num(f.otherTax) })
-    setTick((x) => x + 1)
+    for (const cid of new Set([...Object.keys(drafts).map(Number), country])) {
+      const draft = drafts[cid]; if (!draft) continue
+      const orig = prices.find((p) => p.countryId === cid) ?? null
+      await saveVariantPrice(productId, id, { id: orig?.id ?? null, countryId: cid, currency, net: num(draft.net), gross: num(draft.gross), vatPercent: num(draft.vatPercent), vatPrice: num(draft.vatPrice), otherTax: num(draft.otherTax) })
+    }
+    setDrafts({}); setTick((x) => x + 1)
   }
   if (saveRef) saveRef.current = doSave
   const PRICE_TIPS: Record<string, string> = { net: 'tip_price_net', gross: 'tip_price_gross', vatPercent: 'tip_price_vat', vatPrice: 'tip_price_vat_amount', otherTax: 'tip_price_other_tax' }
@@ -231,14 +239,19 @@ function VarStocks({ productId, variantId, countryItems, t, saveRef }: { product
   const [stocks, setStocks] = useState<VariantStock[]>([])
   const [country, setCountry] = useState<number>(-1)
   const [tick, setTick] = useState(0)
-  const [qty, setQty] = useState('')
-  const [next, setNext] = useState('')
+  // Per-country draft — see VarPrices for why (switching tabs must not discard unsaved edits).
+  const [drafts, setDrafts] = useState<Record<number, { qty: string; next: string }>>({})
   useEffect(() => { if (variantId == null) return; fetchVariantStocks(productId, variantId).then((r) => setStocks(r.items)).catch(() => null) }, [productId, variantId, tick])
   const cur = stocks.find((s) => s.countryId === country) ?? null
-  useEffect(() => { setQty(cur ? String(cur.quantity) : ''); setNext(cur?.nextFillUp ? String(cur.nextFillUp).slice(0, 10) : '') }, [country, stocks])
+  const draft = drafts[country] ?? { qty: cur ? String(cur.quantity) : '', next: cur?.nextFillUp ? String(cur.nextFillUp).slice(0, 10) : '' }
+  function setDraft(nd: typeof draft) { setDrafts((d) => ({ ...d, [country]: nd })) }
   async function doSave(id: number) {
-    await saveVariantStock(productId, id, { id: cur?.id ?? null, countryId: country, quantity: qty === '' ? 0 : parseInt(qty, 10) || 0, low: null, nextFillUp: next || null })
-    setTick((x) => x + 1)
+    for (const cid of new Set([...Object.keys(drafts).map(Number), country])) {
+      const d = drafts[cid]; if (!d) continue
+      const orig = stocks.find((s) => s.countryId === cid) ?? null
+      await saveVariantStock(productId, id, { id: orig?.id ?? null, countryId: cid, quantity: d.qty === '' ? 0 : parseInt(d.qty, 10) || 0, low: null, nextFillUp: d.next || null })
+    }
+    setDrafts({}); setTick((x) => x + 1)
   }
   if (saveRef) saveRef.current = doSave
   return (
@@ -249,9 +262,9 @@ function VarStocks({ productId, variantId, countryItems, t, saveRef }: { product
         <div style={{ ...card, padding: 18 }}>
           <h4 style={{ fontSize: 14, fontWeight: 600, margin: '0 0 14px' }}>{t('stock_general')}</h4>
           <div style={labelRow}><label style={label}>{t('stock_qty')}</label><InfoDot text={t('tip_stock_qty')} /></div>
-          <input style={inputCss} type="number" value={qty} onChange={(e) => setQty(e.target.value)} />
+          <input style={inputCss} type="number" value={draft.qty} onChange={(e) => setDraft({ ...draft, qty: e.target.value })} />
           <div style={{ ...labelRow, marginTop: 14 }}><label style={label}>{t('stock_next')}</label><InfoDot text={t('tip_stock_next')} /></div>
-          <input style={inputCss} type="date" value={next} onChange={(e) => setNext(e.target.value)} />
+          <input style={inputCss} type="date" value={draft.next} onChange={(e) => setDraft({ ...draft, next: e.target.value })} />
         </div>
       </div>
     </div>

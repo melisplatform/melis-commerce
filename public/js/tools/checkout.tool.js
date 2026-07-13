@@ -766,6 +766,19 @@ $(function() {
 
 //refresh contact list when clicking the next step button
 
+// zoneReload's $("#"+zoneId).html(data.html) (melisHelper.js) inserts this zone's phtml — which
+// itself re-declares a "#zoneId.col-md-N" wrapper matching the reload target's own id/class —
+// INSIDE the pre-existing wrapper of that same id. That nests two .col-md-N columns (one inside
+// the other), shrinking the effective width to roughly a third of what it should be. Flatten the
+// duplicate back out after every reload of a step zone that has this self-wrapping phtml.
+window.fixOrderCheckoutZoneWrapper = function(zoneId) {
+	var $outer = $("#" + zoneId),
+		$inner = $outer.children("#" + zoneId).first();
+	if ($inner.length) {
+		$inner.children().unwrap();
+	}
+};
+
 window.productNextButtonState = function() {
 	var nextButton = $(".orderCheckoutFirstStepBtn");
 

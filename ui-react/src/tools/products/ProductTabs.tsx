@@ -948,14 +948,16 @@ export function PricesTab({ productId, countries, currencies, t, pendingPrices =
   const s = (v: number | null) => v == null ? '' : String(v)
   const n = (v: string) => v === '' ? null : (parseFloat(v) || 0)
 
+  // A country switch must never discard an unsaved edit: prefer the buffered `pendingPrices` entry
+  // (kept by the parent across tab switches) over the last-fetched server value for that country.
   useEffect(() => {
-    if (!productId) {
-      const pf = pendingPrices.find((p) => p.countryId === country) ?? null
-      setF({ net: s(pf?.net ?? null), gross: s(pf?.gross ?? null), vatPercent: s(pf?.vatPercent ?? null), vatPrice: s(pf?.vatPrice ?? null), otherTax: s(pf?.otherTax ?? null) })
+    const pf = pendingPrices.find((p) => p.countryId === country) ?? null
+    if (pf) {
+      setF({ net: s(pf.net), gross: s(pf.gross), vatPercent: s(pf.vatPercent), vatPrice: s(pf.vatPrice), otherTax: s(pf.otherTax) })
     } else {
       setF({ net: s(cur?.net ?? null), gross: s(cur?.gross ?? null), vatPercent: s(cur?.vatPercent ?? null), vatPrice: s(cur?.vatPrice ?? null), otherTax: s(cur?.otherTax ?? null) })
     }
-  }, [country, items, productId]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [country, items]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Called from onChange — buffers the current form state for save on main button.
   function bufferCurrent(nf: typeof f) {

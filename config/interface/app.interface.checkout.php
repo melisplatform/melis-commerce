@@ -188,6 +188,10 @@ return [
                                                         'module' => 'MelisCommerce',
                                                         'controller' => 'MelisComOrderCheckout',
                                                         'action' => 'render-order-checkout-product-list',
+                                                        // See fixOrderCheckoutZoneWrapper() in checkout.tool.js — this zone's phtml
+                                                        // self-wraps with the same id zoneReload targets, nesting a duplicate
+                                                        // .col-md-8 on every reload and shrinking the table column's width.
+                                                        'jscallback' => 'fixOrderCheckoutZoneWrapper("id_meliscommerce_order_checkout_product_list");'
                                                     ],
                                                     'interface' => [
                                                         'meliscommerce_order_checkout_product_variant_list' => [
@@ -222,7 +226,10 @@ return [
                                                         // Its own code only ever touches the button's disabled/title attributes, it
                                                         // never shows a toast — an earlier empty-basket toast bug was traced (and
                                                         // fixed) separately, in orderCheckoutSetCountryAction's PHP response, not here.
-                                                        'jscallback' => 'productNextButtonState(); melisCommerce.priceLogTooltip();'
+                                                        // fixOrderCheckoutZoneWrapper() runs first — see its definition in
+                                                        // checkout.tool.js (self-wrapping phtml duplicates the zone's own wrapper
+                                                        // on reload, shrinking the Panier box's width).
+                                                        'jscallback' => 'fixOrderCheckoutZoneWrapper("id_meliscommerce_order_checkout_product_bakset"); productNextButtonState(); melisCommerce.priceLogTooltip();'
                                                     ],
                                                 ]
                                             ]
