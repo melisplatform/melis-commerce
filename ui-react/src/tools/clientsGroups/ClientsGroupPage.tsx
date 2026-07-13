@@ -7,7 +7,7 @@ import { makeCache } from '../../shared/listCache'
 import { DICT } from './dict'
 import { makeT } from '../../shared/i18n'
 import { card, inputCss, label, btnGhost, btnPrimary, th, td } from '../../shared/styles'
-import { UsersIcon, CheckIcon, ListIcon, RefreshIcon, PlusIcon, PencilIcon, TrashIcon, FileDownIcon, GripIcon } from '../../shared/icons'
+import { UsersIcon, CheckIcon, ListIcon, RefreshIcon, PlusIcon, PencilIcon, TrashIcon, FileDownIcon, GripIcon, ResetIcon } from '../../shared/icons'
 import { Kpi, ViewModeToggle, LegacyFrame, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { makeColStore, visibleCols, type ColDef } from '../../shared/columns'
@@ -146,6 +146,18 @@ export default function ClientsGroupPage() {
     }
   }
 
+
+  // Réinitialiser les filtres : recherche + statut + tri par défaut (id desc), retour page 1, puis refetch.
+  // On vide `items` : sinon les lignes restent affichées pendant le refetch et le clic paraît sans effet.
+  function resetFilters() {
+    setSearchInput(''); setSearch('')
+    setFilterStatus(null)
+    setSortCol('id'); setSortAsc(false)
+    setItems([])
+    setPage(1)
+    setTick((x) => x + 1)
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, boxSizing: 'border-box', ...(mode === 'old' ? { height: '100%', overflow: 'hidden' } : {}) }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
@@ -181,6 +193,7 @@ export default function ClientsGroupPage() {
             <option value={0}>{t('status_inactive')}</option>
           </select>
           <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
+            <button style={{ ...btnGhost, height: 36 }} onClick={resetFilters}><ResetIcon />{t('reset_filters')}</button>
             <div style={{ position: 'relative' }}>
               <button style={{ ...btnGhost, height: 36 }} onClick={() => setShowCols((v) => !v)}><GripIcon />{t('btn_col_manager')}</button>
               {showCols && (
