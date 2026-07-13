@@ -311,6 +311,9 @@ function ProductForm({ id, base }: { id: string; base: string }) {
   const [pendingDeleteRecipientSeaIds, setPendingDeleteRecipientSeaIds] = useState<number[]>([])
   const [pendingDeleteFileIds, setPendingDeleteFileIds] = useState<number[]>([])
   const [pendingDeleteImageIds, setPendingDeleteImageIds] = useState<number[]>([])
+  // Bumped after a save so Images/Files sections re-fetch and newly-uploaded media becomes editable
+  // right away (their own local fetch only reruns on mount otherwise).
+  const [mediaTick, setMediaTick] = useState(0)
   const [catNames, setCatNames] = useState<Record<number, string>>({})
   const [categoryIds, setCategoryIds] = useState<number[]>([])
   const [languages, setLanguages] = useState<LangOption[]>([])
@@ -410,6 +413,8 @@ function ProductForm({ id, base }: { id: string; base: string }) {
           ...pendingRecipientEmails.map((email) => saveProductRecipient(pid, { email }, stockLow.trim() === '' ? null : parseInt(stockLow, 10) || 0)),
           ...meaningfulPrices.map((p) => saveProductPrice(pid, { id: null, countryId: p.countryId, currency: p.currency, net: p.net, gross: p.gross, vatPercent: p.vatPercent, vatPrice: p.vatPrice, otherTax: p.otherTax })),
         ])
+        setPendingImages([]); setPendingFiles([])
+        setMediaTick((x) => x + 1)
         notify('ok', t('title'), t('saved'))
         closeSubTab(base, `${base}/new`)
         const newPath = `${base}/${pid}`
@@ -429,6 +434,8 @@ function ProductForm({ id, base }: { id: string; base: string }) {
           ...pendingDeleteFileIds.map((id) => deleteProductMedia(productId!, id)),
           ...pendingDeleteImageIds.map((id) => deleteProductMedia(productId!, id)),
         ])
+        setPendingImages([]); setPendingFiles([]); setPendingDeleteFileIds([]); setPendingDeleteImageIds([])
+        setMediaTick((x) => x + 1)
         notify('ok', t('title'), t('saved'))
       }
     } catch (e) { const msg = e instanceof Error ? e.message : t('err_save'); notify('ko', t('title'), msg) } finally { setSaving(false) }
@@ -497,7 +504,7 @@ function ProductForm({ id, base }: { id: string; base: string }) {
                 </div>
               )}
             </section>
-            <FilesSection productId={productId} t={t} countries={countries} pendingFiles={pendingFiles} onAddPendingFile={(m) => setPendingFiles((p) => [...p, m])} onRemovePendingFile={(i) => setPendingFiles((p) => p.filter((_, idx) => idx !== i))} onMarkDeleteFile={(id) => setPendingDeleteFileIds((p) => [...p, id])} />
+            <FilesSection productId={productId} t={t} countries={countries} pendingFiles={pendingFiles} onAddPendingFile={(m) => setPendingFiles((p) => [...p, m])} onRemovePendingFile={(i) => setPendingFiles((p) => p.filter((_, idx) => idx !== i))} onMarkDeleteFile={(id) => setPendingDeleteFileIds((p) => [...p, id])} refreshSignal={mediaTick} />
             <AttributesSection productId={productId} options={attrOptions} t={t} pendingAttrIds={pendingAttrIds} onTogglePendingAttr={(id) => setPendingAttrIds((p) => p.includes(id) ? p.filter((x) => x !== id) : [...p, id])} onMarkDeleteAttr={(pattId) => setPendingDeleteAttrPattIds((p) => [...p, pattId])} />
             <section>
               <h3 style={secTitle}>{t('sec_alert')}</h3>
@@ -526,7 +533,7 @@ function ProductForm({ id, base }: { id: string; base: string }) {
 
           {/* Col 2 : Images card */}
           <div style={{ ...card, padding: 24 }}>
-            <ImagesSection productId={productId} t={t} countries={countries} pendingImages={pendingImages} onAddPendingImage={(m) => setPendingImages((p) => [...p, m])} onRemovePendingImage={(i) => setPendingImages((p) => p.filter((_, idx) => idx !== i))} onMarkDeleteImage={(id) => setPendingDeleteImageIds((p) => [...p, id])} />
+            <ImagesSection productId={productId} t={t} countries={countries} pendingImages={pendingImages} onAddPendingImage={(m) => setPendingImages((p) => [...p, m])} onRemovePendingImage={(i) => setPendingImages((p) => p.filter((_, idx) => idx !== i))} onMarkDeleteImage={(id) => setPendingDeleteImageIds((p) => [...p, id])} onUpdatePendingImage={(i, m) => setPendingImages((p) => p.map((x, idx) => idx === i ? m : x))} refreshSignal={mediaTick} />
           </div>
 
           {/* Col 3 : Status card */}

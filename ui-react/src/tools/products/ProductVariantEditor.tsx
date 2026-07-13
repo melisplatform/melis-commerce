@@ -12,10 +12,10 @@ import {
 } from './api'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } from '../../shared/styles'
 import { PlusIcon, TrashIcon, PencilIcon, EyeIcon, ToggleRightIcon, ArrowLeftIcon, ImageIcon, SettingsIcon, PaperclipIcon, CubesIcon } from '../../shared/icons'
-import { StatusBadge } from '../../shared/widgets'
+import { StatusBadge, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { Tabs, type TabDef } from '../../shared/Tabs'
-import { InfoDot, FlagSwitcher, MediaModal, Lightbox, hoverCircle, ImageFilters, passesImageFilter } from './ProductTabs'
+import { InfoDot, FlagSwitcher, MediaModal, Lightbox, hoverCircle, ImageFilters, passesImageFilter, type PendingMedia } from './ProductTabs'
 import type { Option } from '../../shared/api'
 import type { LangOption } from '../catalog/api'
 
@@ -138,7 +138,7 @@ export function VariantEditor({ productId, variantId, countries, currencies, lan
               <VarFiles productId={productId} variantId={vid} t={t} countries={countries} onNeedVid={ensureVid} />
               <VarAttributes productId={productId} variantId={vid} t={t} onNeedVid={ensureVid} />
             </div>
-            <div style={{ ...card, padding: 24 }}><VarImages productId={productId} variantId={vid} t={t} countries={countries} onNeedVid={ensureVid} /></div>
+            <div style={{ ...card, padding: 24 }}><VarImages productId={productId} variantId={vid} t={t} countries={countries} /></div>
             <div style={{ ...card, padding: 16 }}>
               <h3 style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 12px' }}>
                 <ToggleRightIcon />{t('status_label')}
@@ -292,17 +292,42 @@ function VarFiles({ productId, variantId, t, countries, onNeedVid }: { productId
     </section>
   )
 }
-function VarImages({ productId, variantId, t, countries, onNeedVid }: { productId: number; variantId: number | null; t: TFn; countries: CountryOption[]; onNeedVid?: () => Promise<number | null> }) {
+function VarImages({ productId, variantId, t, countries }: { productId: number; variantId: number | null; t: TFn; countries: CountryOption[] }) {
   const [images, setImages] = useState<MediaItem[]>([])
+  // Images added while the variant doesn't exist yet (still on "Nouvelle variante") are queued
+  // here instead of eagerly auto-saving the variant to get an id — auto-saving would run the same
+  // full-form validation (e.g. SKU required) as the main Save button, which must not fire just
+  // because the user picked an image. Flushed once `variantId` becomes real (see effect below).
+  const [pendingImages, setPendingImages] = useState<PendingMedia[]>([])
   const [tick, setTick] = useState(0)
   const [hovered, setHovered] = useState<number | null>(null)
   const [lightbox, setLightbox] = useState<string | null>(null)
-  const [modal, setModal] = useState<{ doc?: MediaItem } | null>(null)
+  const [modal, setModal] = useState<{ doc?: MediaItem; pendingIdx?: number } | null>(null)
   const [countryFilter, setCountryFilter] = useState(0)
   const [typeFilter, setTypeFilter] = useState(0)
+  const [toDelete, setToDelete] = useState<{ id: number; pendingIdx?: number } | null>(null)
   useEffect(() => { if (variantId == null) return; fetchVariantMedia(productId, variantId).then((r) => setImages(r.images)).catch(() => null) }, [productId, variantId, tick])
-  async function del(docId: number) { const id = variantId ?? await onNeedVid?.(); if (!id) return; try { await deleteVariantMedia(productId, id, docId); setTick((x) => x + 1) } catch { /* */ } }
-  const filteredImages = images.filter((im) => passesImageFilter(im.countryId, countryFilter) && passesImageFilter(im.typeId, typeFilter))
+  useEffect(() => {
+    if (variantId == null || pendingImages.length === 0) return
+    let cancelled = false
+    ;(async () => {
+      for (const m of pendingImages) { try { await uploadVariantMedia(productId, variantId, { ...m, kind: 'image' }) } catch { /* */ } }
+      if (!cancelled) { setPendingImages([]); setTick((x) => x + 1) }
+    })()
+    return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [variantId])
+  async function del(docId: number) { if (variantId == null) return; try { await deleteVariantMedia(productId, variantId, docId); setTick((x) => x + 1) } catch { /* */ } }
+  function confirmDelete() {
+    if (!toDelete) return
+    if (toDelete.pendingIdx !== undefined) setPendingImages((p) => p.filter((_, i) => i !== toDelete.pendingIdx))
+    else del(toDelete.id)
+    setToDelete(null)
+  }
+  const allImages: { id: number; path: string; name: string; isPending: boolean; countryId: number | null; typeId: number | null }[] = [
+    ...images.map(im => ({ id: im.id, path: im.path, name: im.name, isPending: false, countryId: im.countryId, typeId: im.typeId })),
+    ...pendingImages.map((m, i) => ({ id: -(i + 1), path: m.data, name: m.name, isPending: true, countryId: m.countryId ?? null, typeId: m.typeId ?? null })),
+  ].filter((im) => passesImageFilter(im.countryId, countryFilter) && passesImageFilter(im.typeId, typeFilter))
   return (
     <section>
       <h3 style={secT}>
@@ -311,18 +336,24 @@ function VarImages({ productId, variantId, t, countries, onNeedVid }: { productI
       </h3>
       <ImageFilters countries={countries} countryFilter={countryFilter} onCountryChange={setCountryFilter}
         typeFilter={typeFilter} onTypeChange={setTypeFilter} t={t} />
-      {filteredImages.length === 0
+      {allImages.length === 0
         ? <p style={{ ...hint, margin: 0 }}>{t('img_empty')}</p>
         : <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-            {filteredImages.map((im) => (
+            {allImages.map((im) => (
               <div key={im.id} style={{ position: 'relative', width: 160, height: 140, borderRadius: 8, overflow: 'hidden', border: '1px solid var(--color-border)', flexShrink: 0 }}
                 onMouseEnter={() => setHovered(im.id)} onMouseLeave={() => setHovered(null)}>
                 <img src={im.path} alt={im.name} title={im.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { (e.target as HTMLImageElement).style.opacity = '.25' }} />
                 {hovered === im.id && (
                   <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,.48)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
                     <button style={hoverCircle} title={t('img_view')} onClick={() => setLightbox(im.path)}><EyeIcon /></button>
-                    <button style={hoverCircle} title={t('img_edit')} onClick={() => setModal({ doc: im })}><PencilIcon /></button>
-                    <button style={{ ...hoverCircle, color: '#ef4444' }} title={t('img_del')} onClick={() => del(im.id)}>✕</button>
+                    <button style={hoverCircle} title={t('img_edit')}
+                      onClick={() => setModal(im.isPending ? { pendingIdx: (-im.id) - 1 } : { doc: images.find(x => x.id === im.id) })}>
+                      <PencilIcon />
+                    </button>
+                    <button style={{ ...hoverCircle, color: '#ef4444' }} title={t('img_del')}
+                      onClick={() => setToDelete(im.isPending ? { id: im.id, pendingIdx: (-im.id) - 1 } : { id: im.id })}>
+                      ✕
+                    </button>
                   </div>
                 )}
               </div>
@@ -330,11 +361,20 @@ function VarImages({ productId, variantId, t, countries, onNeedVid }: { productI
           </div>}
       {lightbox && <Lightbox src={lightbox} onClose={() => setLightbox(null)} />}
       {modal !== null && (
-        <MediaModal kind="image" doc={modal.doc} countries={countries} t={t}
+        <MediaModal kind="image" doc={modal.doc} pendingDoc={modal.pendingIdx !== undefined ? pendingImages[modal.pendingIdx] : undefined} countries={countries} t={t}
           onClose={() => setModal(null)}
           onSaved={() => setTick(x => x + 1)}
-          onUpdate={async (docId, m) => { const id = variantId ?? await onNeedVid?.(); if (id) await updateVariantMedia(productId, id, docId, m) }}
-          onAddPending={async (m) => { const id = variantId ?? await onNeedVid?.(); if (id) { await uploadVariantMedia(productId, id, { ...m, kind: 'image' }); setTick(x => x + 1) } }} />
+          onUpdate={variantId != null ? async (docId, m) => { await updateVariantMedia(productId, variantId, docId, m) } : undefined}
+          onAddPending={async (m) => {
+            if (variantId != null) { try { await uploadVariantMedia(productId, variantId, { ...m, kind: 'image' }) } catch { /* */ } setTick((x) => x + 1); return }
+            setPendingImages((p) => [...p, m])
+          }}
+          onUpdatePending={(m) => { if (modal.pendingIdx !== undefined) setPendingImages((p) => p.map((x, i) => i === modal.pendingIdx ? m : x)) }} />
+      )}
+      {toDelete !== null && (
+        <ConfirmModal t={t} title={t('del_title')} message={t('img_del_confirm')}
+          onCancel={() => setToDelete(null)}
+          onConfirm={confirmDelete} />
       )}
     </section>
   )

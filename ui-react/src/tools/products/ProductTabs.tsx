@@ -422,21 +422,26 @@ export function RecipientsSection({ productId, users, stockLevel, t, pendingReci
 export interface PendingMedia { name: string; data: string; typeId?: number | null; countryId?: number }
 
 // ── Modal ajout / édition d'un média (image ou fichier) ────────────────────────
-export function MediaModal({ kind, doc, countries, t, onClose, onSaved, onAddPending, onUpdate }: {
+export function MediaModal({ kind, doc, pendingDoc, countries, t, onClose, onSaved, onAddPending, onUpdate, onUpdatePending }: {
   kind: 'image' | 'file'; doc?: MediaItem | null
+  /** Edit an already-added-but-not-yet-saved item (no server docId yet) — e.g. re-picking the file
+   * or changing country/type right after upload, without needing a product save first. */
+  pendingDoc?: PendingMedia | null
   countries: CountryOption[]; t: TFn
   onClose: () => void; onSaved?: () => void
   onAddPending?: (m: PendingMedia) => Promise<void> | void
   onUpdate?: (docId: number, m: { name: string; typeId?: number | null; countryId?: number; data?: string }) => Promise<void>
+  onUpdatePending?: (m: PendingMedia) => void
 }) {
   const isEdit = !!doc
+  const isEditPending = !!pendingDoc
   const [imgTypes, setImgTypes] = useState<DocType[]>([])
   const [fileTypes, setFileTypes] = useState<DocType[]>([])
-  const [name, setName] = useState(doc?.name ?? '')
-  const [typeId, setTypeId] = useState<number | null>(doc?.typeId ?? null)
-  const [countryId, setCountryId] = useState<number | null>(doc?.countryId ?? null)
+  const [name, setName] = useState(doc?.name ?? pendingDoc?.name ?? '')
+  const [typeId, setTypeId] = useState<number | null>(doc?.typeId ?? pendingDoc?.typeId ?? null)
+  const [countryId, setCountryId] = useState<number | null>(doc?.countryId ?? pendingDoc?.countryId ?? null)
   const [fileData, setFileData] = useState<string | null>(null)
-  const [preview, setPreview] = useState<string | null>(doc && kind === 'image' ? doc.path : null)
+  const [preview, setPreview] = useState<string | null>(kind === 'image' ? (doc?.path ?? pendingDoc?.data ?? null) : null)
   const [saving, setSaving] = useState(false)
   const [showAddType, setShowAddType] = useState(false)
   const [newCode, setNewCode] = useState('')
@@ -456,12 +461,12 @@ export function MediaModal({ kind, doc, countries, t, onClose, onSaved, onAddPen
     const file = e.target.files?.[0]; if (!file) return
     const data = await readFileDataUrl(file)
     setFileData(data)
-    if (!name) setName(file.name.replace(/\.[^.]+$/, ''))
+    setName(file.name.replace(/\.[^.]+$/, ''))
     if (kind === 'image') setPreview(data)
   }
 
   async function save() {
-    if (!isEdit && !fileData) return
+    if (!isEdit && !isEditPending && !fileData) return
     let ok = true
     if (!typeId) { setTypeError(t('modal_err_type')); ok = false } else setTypeError('')
     if (countryId == null) { setCountryError(t('modal_err_country')); ok = false } else setCountryError('')
@@ -471,6 +476,9 @@ export function MediaModal({ kind, doc, countries, t, onClose, onSaved, onAddPen
       if (isEdit && doc) {
         if (onUpdate) await onUpdate(doc.id, { name, typeId, countryId: countryId ?? undefined, ...(fileData ? { data: fileData } : {}) })
         onSaved?.(); onClose()
+      } else if (isEditPending && pendingDoc) {
+        onUpdatePending?.({ name: name || 'file', data: fileData ?? pendingDoc.data, typeId, countryId: countryId ?? undefined })
+        onClose()
       } else if (fileData) {
         await onAddPending?.({ name: name || 'file', data: fileData, typeId, countryId: countryId ?? undefined })
         onClose()
@@ -553,7 +561,7 @@ export function MediaModal({ kind, doc, countries, t, onClose, onSaved, onAddPen
         </div>
         <div style={{ padding: '12px 20px', display: 'flex', justifyContent: 'flex-end', gap: 10, borderTop: '1px solid var(--color-border)' }}>
           <button style={btnGhost} onClick={onClose}>{t('modal_close')}</button>
-          <button style={btnPrimary} disabled={saving || (!isEdit && !fileData)} onClick={save}>
+          <button style={btnPrimary} disabled={saving || (!isEdit && !isEditPending && !fileData)} onClick={save}>
             {saving ? t('modal_saving') : t('modal_save')}
           </button>
         </div>
@@ -575,17 +583,19 @@ export function Lightbox({ src, onClose }: { src: string; onClose: () => void })
 }
 
 // ── Section Fichiers joints ─────────────────────────────────────────────────────
-export function FilesSection({ productId, t, countries = [], pendingFiles = [], onAddPendingFile, onRemovePendingFile, onMarkDeleteFile }: {
+export function FilesSection({ productId, t, countries = [], pendingFiles = [], onAddPendingFile, onRemovePendingFile, onMarkDeleteFile, refreshSignal }: {
   productId: number | null; t: TFn; countries?: CountryOption[]
   pendingFiles?: PendingMedia[]
   onAddPendingFile?: (m: PendingMedia) => void
   onRemovePendingFile?: (index: number) => void
   onMarkDeleteFile?: (id: number) => void
+  /** Bumped by the parent after a product save — see ImagesSection's refreshSignal. */
+  refreshSignal?: number
 }) {
   const [files, setFiles] = useState<MediaItem[]>([])
   const [tick, setTick] = useState(0)
   const [modal, setModal] = useState<{ doc?: MediaItem } | null>(null)
-  useEffect(() => { if (!productId) return; fetchProductMedia(productId).then((r) => setFiles(r.files)).catch(() => null) }, [productId, tick])
+  useEffect(() => { if (!productId) return; fetchProductMedia(productId).then((r) => setFiles(r.files)).catch(() => null) }, [productId, tick, refreshSignal])
   function markDeleteFile(id: number) { setFiles((p) => p.filter((f) => f.id !== id)); onMarkDeleteFile?.(id) }
   const allEmpty = files.length === 0 && pendingFiles.length === 0
   return (
@@ -690,12 +700,17 @@ export function passesImageFilter(itemVal: number | null | undefined, filter: nu
   return filter === 0 || itemVal === filter
 }
 
-export function ImagesSection({ productId, t, countries = [], pendingImages = [], onAddPendingImage, onRemovePendingImage, onMarkDeleteImage }: {
+export function ImagesSection({ productId, t, countries = [], pendingImages = [], onAddPendingImage, onRemovePendingImage, onMarkDeleteImage, onUpdatePendingImage, refreshSignal }: {
   productId: number | null; t: TFn; countries?: CountryOption[]
   pendingImages?: PendingMedia[]
   onAddPendingImage?: (m: PendingMedia) => void
   onRemovePendingImage?: (index: number) => void
   onMarkDeleteImage?: (id: number) => void
+  onUpdatePendingImage?: (index: number, m: PendingMedia) => void
+  /** Bumped by the parent after a product save so newly-uploaded images (until then only in
+   * `pendingImages`) get re-fetched as real, editable items — without this the Edit button stays
+   * hidden on them until the tab is closed and reopened. */
+  refreshSignal?: number
 }) {
   const [images, setImages] = useState<MediaItem[]>([])
   const [tick, setTick] = useState(0)
@@ -704,9 +719,16 @@ export function ImagesSection({ productId, t, countries = [], pendingImages = []
   const [modal, setModal] = useState<{ doc?: MediaItem; pendingIdx?: number } | null>(null)
   const [countryFilter, setCountryFilter] = useState(0)
   const [typeFilter, setTypeFilter] = useState(0)
+  const [toDelete, setToDelete] = useState<{ id: number; pendingIdx?: number } | null>(null)
 
-  useEffect(() => { if (!productId) return; fetchProductMedia(productId).then((r) => setImages(r.images)).catch(() => null) }, [productId, tick])
+  useEffect(() => { if (!productId) return; fetchProductMedia(productId).then((r) => setImages(r.images)).catch(() => null) }, [productId, tick, refreshSignal])
   function markDeleteImage(id: number) { setImages((p) => p.filter((im) => im.id !== id)); onMarkDeleteImage?.(id) }
+  function confirmDelete() {
+    if (!toDelete) return
+    if (toDelete.pendingIdx !== undefined) onRemovePendingImage?.(toDelete.pendingIdx)
+    else markDeleteImage(toDelete.id)
+    setToDelete(null)
+  }
 
   const allImages: { id: number; path: string; name: string; isPending: boolean; countryId: number | null; typeId: number | null }[] = [
     ...images.map(im => ({ id: im.id, path: im.path, name: im.name, isPending: false, countryId: im.countryId, typeId: im.typeId })),
@@ -736,11 +758,12 @@ export function ImagesSection({ productId, t, countries = [], pendingImages = []
               {hovered === im.id && (
                 <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,.48)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
                   <button style={hoverCircle} title={t('img_view')} onClick={() => setLightbox(im.path)}><EyeIcon /></button>
-                  {!im.isPending && (
-                    <button style={hoverCircle} title={t('img_edit')} onClick={() => setModal({ doc: images.find(x => x.id === im.id) })}><PencilIcon /></button>
-                  )}
+                  <button style={hoverCircle} title={t('img_edit')}
+                    onClick={() => setModal(im.isPending ? { pendingIdx: (-im.id) - 1 } : { doc: images.find(x => x.id === im.id) })}>
+                    <PencilIcon />
+                  </button>
                   <button style={{ ...hoverCircle, color: '#ef4444' }} title={t('img_del')}
-                    onClick={() => im.isPending ? onRemovePendingImage?.((-im.id) - 1) : markDeleteImage(im.id)}>
+                    onClick={() => setToDelete(im.isPending ? { id: im.id, pendingIdx: (-im.id) - 1 } : { id: im.id })}>
                     ✕
                   </button>
                 </div>
@@ -751,12 +774,14 @@ export function ImagesSection({ productId, t, countries = [], pendingImages = []
       )}
       {lightbox && <Lightbox src={lightbox} onClose={() => setLightbox(null)} />}
       {modal !== null && (
-        <MediaModal kind="image" doc={modal.doc} countries={countries} t={t}
+        <MediaModal kind="image" doc={modal.doc} pendingDoc={modal.pendingIdx !== undefined ? pendingImages[modal.pendingIdx] : undefined} countries={countries} t={t}
           onClose={() => setModal(null)}
           onSaved={() => setTick(x => x + 1)}
           onUpdate={productId ? async (docId, m) => { await updateProductMedia(productId, docId, m) } : undefined}
-          onAddPending={(m) => { onAddPendingImage?.(m) }} />
+          onAddPending={(m) => { onAddPendingImage?.(m) }}
+          onUpdatePending={(m) => { if (modal.pendingIdx !== undefined) onUpdatePendingImage?.(modal.pendingIdx, m) }} />
       )}
+      {toDelete && <ConfirmModal t={t} title={t('del_title')} message={t('img_del_confirm')} onCancel={() => setToDelete(null)} onConfirm={confirmDelete} />}
     </section>
   )
 }

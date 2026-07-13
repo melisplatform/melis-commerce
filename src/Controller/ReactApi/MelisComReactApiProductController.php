@@ -814,9 +814,27 @@ class MelisComReactApiProductController extends MelisAbstractActionController
         try {
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
             $images = []; $files = [];
-            foreach ($db->query('SELECT d.doc_id, d.doc_name, d.doc_path, d.doc_type_id FROM melis_ecom_doc_relations dr JOIN melis_ecom_document d ON d.doc_id = dr.rdoc_doc_id WHERE dr.rdoc_variant_id = ? ORDER BY d.doc_id', [$varId]) as $r) {
-                $r = (array) $r; $entry = ['id' => (int) $r['doc_id'], 'name' => (string) ($r['doc_name'] ?? ''), 'path' => (string) ($r['doc_path'] ?? '')];
-                if ((int) $r['doc_type_id'] === 2) { $files[] = $entry; } else { $images[] = $entry; }
+            $sql = 'SELECT d.doc_id, d.doc_name, d.doc_path, d.doc_type_id, d.doc_subtype_id,
+                           dr.rdoc_country_id,
+                           t.dtype_name AS type_name, t.dtype_code AS type_code,
+                           st.dtype_name AS subtype_name, st.dtype_code AS subtype_code
+                    FROM melis_ecom_doc_relations dr
+                    JOIN melis_ecom_document d ON d.doc_id = dr.rdoc_doc_id
+                    LEFT JOIN melis_ecom_doc_type t ON t.dtype_id = d.doc_type_id
+                    LEFT JOIN melis_ecom_doc_type st ON st.dtype_id = d.doc_subtype_id
+                    WHERE dr.rdoc_variant_id = ? ORDER BY d.doc_id';
+            foreach ($db->query($sql, [$varId]) as $r) {
+                $r = (array) $r;
+                $isFile = (int) $r['doc_type_id'] === 2 || ((int)$r['doc_type_id'] !== 1 && $r['type_code'] !== 'IMG');
+                $entry = [
+                    'id'         => (int) $r['doc_id'],
+                    'name'       => (string) ($r['doc_name'] ?? ''),
+                    'path'       => (string) ($r['doc_path'] ?? ''),
+                    'typeId'     => $isFile ? (int) $r['doc_type_id'] : ($r['doc_subtype_id'] !== null ? (int) $r['doc_subtype_id'] : null),
+                    'typeName'   => $isFile ? (string) ($r['type_name'] ?? '') : (string) ($r['subtype_name'] ?? ''),
+                    'countryId'  => $r['rdoc_country_id'] !== null ? (int) $r['rdoc_country_id'] : -1,
+                ];
+                if ($isFile) { $files[] = $entry; } else { $images[] = $entry; }
             }
             return $this->jsonResponse(['success' => true, 'data' => ['images' => $images, 'files' => $files]]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
