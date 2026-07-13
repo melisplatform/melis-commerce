@@ -10,7 +10,7 @@ import { makeCache } from '../../shared/listCache'
 import { DICT } from './dict'
 import { makeT, fmtDate, currentLang } from '../../shared/i18n'
 import { card, inputCss, btnGhost, btnPrimary, th, td } from '../../shared/styles'
-import { CartIcon, ShoppingCartKpiIcon, PackageIcon, CalendarIcon, PlusIcon, RefreshIcon, PencilIcon } from '../../shared/icons'
+import { CartIcon, ShoppingCartKpiIcon, PackageIcon, CalendarIcon, PlusIcon, RefreshIcon, PencilIcon, ResetIcon } from '../../shared/icons'
 import { Kpi, ViewModeToggle, LegacyFrame, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { DateRangeFilter } from '../../shared/DateRangeFilter'
@@ -156,6 +156,19 @@ function OrderList({ base }: { base: string }) {
     openSubTab(base, { id: path, label: o.reference || `#${o.id}`, path })
   }
 
+  // Réinitialiser les filtres : recherche + statut + plage de dates + tri par défaut (id desc),
+  // retour page 1, puis refetch. On vide `items` : sinon le stale-while-revalidate garde les
+  // lignes affichées et le clic paraît sans effet quand aucun filtre n'était posé.
+  function resetFilters() {
+    setSearchInput(''); setSearch('')
+    setFilterStatus(null)
+    setDateStart(''); setDateEnd('')
+    setSortCol('id'); setSortAsc(false)
+    setItems([])
+    setPage(1)
+    setTick((x) => x + 1)
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: 24, boxSizing: 'border-box', ...(mode === 'old' ? { height: '100%', overflow: 'hidden' } : {}) }}>
       {/* Title row */}
@@ -195,6 +208,7 @@ function OrderList({ base }: { base: string }) {
           <DateRangeFilter from={dateStart} to={dateEnd}
             onChange={(f, to) => { setDateStart(f); setDateEnd(to); setPage(1) }} t={t} />
           <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
+            <button style={{ ...btnGhost, height: 36 }} onClick={resetFilters}><ResetIcon />{t('reset_filters')}</button>
             <div style={{ position: 'relative' }}>
               <button style={{ ...btnGhost, height: 36 }} onClick={() => setShowCols((v) => !v)}><GripIcon />{t('btn_col_manager')}</button>
               {showCols && (

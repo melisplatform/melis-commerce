@@ -9,7 +9,7 @@ import { makeCache } from '../../shared/listCache'
 import { DICT } from './dict'
 import { makeT, fmtDate } from '../../shared/i18n'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } from '../../shared/styles'
-import { PencilIcon, TrashIcon, PlusIcon, GripIcon, FileDownIcon, UsersKpiIcon, ToggleRightIcon, KeyIcon } from '../../shared/icons'
+import { PencilIcon, TrashIcon, PlusIcon, GripIcon, FileDownIcon, UsersKpiIcon, ToggleRightIcon, KeyIcon, ResetIcon } from '../../shared/icons'
 import { StatusBadge, Kpi, ViewModeToggle, LegacyFrame, ConfirmModal, TagsInput, TagsDisplay } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { useCaps } from '../../shared/useCaps'
@@ -114,6 +114,17 @@ function ContactList({ base }: { base: string }) {
   }, [items, sortCol, sortAsc, filterType])
 
   function toggleSort(id: string) { if (sortCol === id) setSortAsc((v) => !v); else { setSortCol(id); setSortAsc(true) } }
+  // Réinitialiser les filtres : recherche + statut + compte + type + tri par défaut (id desc), puis refetch.
+  // On vide `items` : sinon les lignes restent affichées pendant le refetch et le clic paraît sans effet.
+  function resetFilters() {
+    setSearchInput(''); setSearch('')
+    setStatus(null)
+    setFilterAccountId(0)
+    setFilterType('')
+    setSortCol('id'); setSortAsc(false)
+    setItems([])
+    setTick((x) => x + 1)
+  }
   async function confirmDelete() {
     if (!toDelete) return
     try { await deleteContact(toDelete.id); notify('ok', t('title'), t('deleted')); setToDelete(null); setTick((x) => x + 1) } catch { setToDelete(null) }
@@ -163,6 +174,7 @@ function ContactList({ base }: { base: string }) {
             <option value="company">{t('type_company')}</option>
           </select>
           <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
+            <button style={{ ...btnGhost, height: 36 }} onClick={resetFilters}><ResetIcon />{t('reset_filters')}</button>
             <div style={{ position: 'relative' }}>
               <button style={{ ...btnGhost, height: 36 }} onClick={() => setShowCols((v) => !v)}><GripIcon />{t('columns')}</button>
               {showCols && <ColManager cols={cols} labelFor={(id) => t(COL_LABEL[id])} onChange={setCols} onClose={() => setShowCols(false)} save={cols$.save} defaults={cols$.DEFAULT} t={t} />}
