@@ -43,7 +43,12 @@ return [
                     [
                         'tr_client_accounts_import_template_name' => 'Nom du compte 1',
                         'tr_client_accounts_import_template_country' => 'France',
-                        'tr_client_accounts_import_template_tags' => 'tag1,tag2',
+                        // No comma here: it's the only raw comma anywhere in the generated CSV, and
+                        // spreadsheet apps whose regional "list separator" is comma (independent of
+                        // the file's actual ';'-delimited content) split on it when the file is
+                        // opened/re-saved, corrupting every column after it — see the quoting fix in
+                        // MelisComClientListController::executeCompanyContactExport().
+                        'tr_client_accounts_import_template_tags' => 'tag1',
                         'tr_client_accounts_import_template_group_id' => '1',
                         'tr_client_accounts_import_template_address_name' => 'Adresse de facturation',
                         'tr_client_accounts_import_template_address_type' => 'Billing',

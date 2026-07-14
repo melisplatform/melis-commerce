@@ -1999,6 +1999,27 @@ return [
                                     ],
                                 ]
                             ],
+                            // The import test/save actions already accept an "overrideExistingRecord" POST
+                            // flag (MelisComClientController::importAccountsAction/testImportAccountsAction →
+                            // MelisComClientService::importFileValidator/checkMandatoryFields) that lets a
+                            // duplicate account name / company name be re-imported instead of rejected — but
+                            // until this element, nothing in the UI ever surfaced a way to send it, so
+                            // re-uploading the (static, reusable) sample template always failed on the
+                            // "company already exists" check after the first successful import.
+                            [
+                                'spec' => [
+                                    'type' => 'Checkbox',
+                                    'name' => 'overrideExistingRecord',
+                                    'options' => [
+                                        'label' => 'tr_meliscommerce_accounts_import_override_existing',
+                                        'checked_value' => '1',
+                                        'unchecked_value' => '0',
+                                    ],
+                                    'attributes' => [
+                                        'id' => 'account_import_override_existing',
+                                    ],
+                                ]
+                            ],
                         ],
                         'input_filter' => [
                             'account_file' => [

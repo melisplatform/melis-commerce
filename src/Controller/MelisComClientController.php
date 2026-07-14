@@ -2221,7 +2221,9 @@ class MelisComClientController extends MelisAbstractActionController
             while ($fileObject->valid() && $counter <= $checkLines) {
                 $line = $fileObject->fgets();
                 foreach ($delimiters as $delimiter) {
-                    $fields = explode($delimiter, $line);
+                    // str_getcsv (not explode) so a delimiter that only appears inside a quoted field
+                    // (e.g. the sample template's tags column "tag1,tag2") can't outscore the real one.
+                    $fields = str_getcsv($line, $delimiter);
                     $totalFields = count($fields);
                     if ($totalFields > 1) {
                         if (!empty($results[$delimiter])) {

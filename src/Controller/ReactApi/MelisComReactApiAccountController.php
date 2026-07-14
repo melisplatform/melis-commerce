@@ -761,7 +761,9 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
         while ($fileObject->valid() && $counter <= $checkLines) {
             $line = $fileObject->fgets();
             foreach ($delimiters as $delimiter) {
-                $total = count(explode($delimiter, $line));
+                // str_getcsv (not explode) so a delimiter that only appears inside a quoted field
+                // (e.g. the sample template's tags column "tag1,tag2") can't outscore the real one.
+                $total = count(str_getcsv($line, $delimiter));
                 if ($total > 1) { $counts[$delimiter] = ($counts[$delimiter] ?? 0) + $total; }
             }
             $counter++;

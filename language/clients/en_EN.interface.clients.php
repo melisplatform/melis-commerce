@@ -417,6 +417,7 @@
         'tr_client_accounts_import_col_account_contact' => 'Contact',
         'tr_client_accounts_import_col_account_contact_not_exist' => ' does not exist',
         'tr_client_accounts_import_col_account_already_exist' => ' already exist',
+        'tr_meliscommerce_accounts_import_override_existing' => 'Update already-existing accounts and companies instead of failing the import',
 
         'tr_meliscommerce_accounts_import_file_content_format' => 'You can import here a list of accounts.</br>Below is a complete CSV file sample corresponding to the format required that you can use to prepare your import.</br>The CSV file regroups each section of an account in this order:</br>- Properties</br>- Address</br>- Company</br>- Contact',
 //        'tr_meliscommerce_accounts_import_file_content_format' => 'Format of the import <span class="span-8">(Data separated by semi colon (;), the <span class="required">red</span> data is mandatory)</span>',

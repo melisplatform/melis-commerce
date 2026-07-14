@@ -385,7 +385,7 @@ function VarImages({ productId, variantId, t, countries }: { productId: number; 
           onUpdatePending={(m) => { if (modal.pendingIdx !== undefined) setPendingImages((p) => p.map((x, i) => i === modal.pendingIdx ? m : x)) }} />
       )}
       {toDelete !== null && (
-        <ConfirmModal t={t} title={t('del_title')} message={t('img_del_confirm')}
+        <ConfirmModal t={t} title={t('img_del_title')} message={t('img_del_confirm')}
           onCancel={() => setToDelete(null)}
           onConfirm={confirmDelete} />
       )}

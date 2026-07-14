@@ -1880,16 +1880,20 @@ class MelisComContactController extends MelisAbstractActionController
                         }
                     }
 
-                    /**
-                     * to solve the issue of 1 double quoute is to replace it with 2 double quote
-                     * so that it will not break the csv file
-                     */
-                    if(!empty($value)) {
+                    $value = str_replace(array("\r", "\n"), '', (string) $value);
+                    // Only enclose (and escape embedded quotes) when the value actually needs it —
+                    // i.e. it contains the separator or the enclosure character. Unconditionally
+                    // quoting EVERY field made spreadsheet apps' delimiter auto-detection unreliable
+                    // (a file that's entirely quoted can look ambiguous to Excel's sniffer even when
+                    // the true separator is ';'); once misdetected, re-saving corrupts the whole row
+                    // structure. This is what broke re-imports of the account import template.
+                    $needsEnclosure = $enclosed !== '' && $value !== '' && (strpos($value, $separator) !== false || strpos($value, $enclosed) !== false);
+                    if ($needsEnclosure) {
                         $value = str_replace('"', '""', $value);
-                        $value = str_replace(array("\r", "\n"), '', $value);
+                        $content .= $enclosed . $value . $enclosed . $separator;
+                    } else {
+                        $content .= $value . $separator;
                     }
-                    // content
-                    $content .= $enclosed . $value . $enclosed . $separator;
 
                 }
                 $content .= "\r\n";

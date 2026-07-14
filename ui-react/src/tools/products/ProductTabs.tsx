@@ -331,7 +331,7 @@ export function AttributesSection({ productId, options, t, pendingAttrIds = [], 
           ))}
         </div>
       )}
-      {toDelete && <ConfirmModal t={t} title={t('del_title')} message={t('attr_del_confirm', { u: toDelete.name })} onCancel={() => setToDelete(null)} onConfirm={confirmDelete} />}
+      {toDelete && <ConfirmModal t={t} title={t('attr_del_title')} message={t('attr_del_confirm', { u: toDelete.name })} onCancel={() => setToDelete(null)} onConfirm={confirmDelete} />}
     </section>
   )
 }
@@ -413,7 +413,7 @@ export function RecipientsSection({ productId, users, stockLevel, t, pendingReci
           ))}
         </div>
       )}
-      {toDelete && <ConfirmModal t={t} title={t('del_title')} message={t('recip_del_confirm', { u: toDelete.name || toDelete.email })} onCancel={() => setToDelete(null)} onConfirm={confirmDelete} />}
+      {toDelete && <ConfirmModal t={t} title={t('recip_del_title')} message={t('recip_del_confirm', { u: toDelete.name || toDelete.email })} onCancel={() => setToDelete(null)} onConfirm={confirmDelete} />}
     </section>
   )
 }
@@ -781,7 +781,7 @@ export function ImagesSection({ productId, t, countries = [], pendingImages = []
           onAddPending={(m) => { onAddPendingImage?.(m) }}
           onUpdatePending={(m) => { if (modal.pendingIdx !== undefined) onUpdatePendingImage?.(modal.pendingIdx, m) }} />
       )}
-      {toDelete && <ConfirmModal t={t} title={t('del_title')} message={t('img_del_confirm')} onCancel={() => setToDelete(null)} onConfirm={confirmDelete} />}
+      {toDelete && <ConfirmModal t={t} title={t('img_del_title')} message={t('img_del_confirm')} onCancel={() => setToDelete(null)} onConfirm={confirmDelete} />}
     </section>
   )
 }
@@ -920,7 +920,7 @@ export function VariantsTab({ productId, t, onAdd, onEdit, can }: { productId: n
       <p style={{ ...hint, margin: '8px 2px 0' }}>{t('showing', { a: view.length ? 1 : 0, b: view.length, n: items.length })}</p>
 
       {toDelete && (
-        <ConfirmModal t={t} title={t('del_title')} message={t('var_del_confirm', { u: toDelete.sku || `#${toDelete.id}` })} onCancel={() => setToDelete(null)} onConfirm={confirmDelete} />
+        <ConfirmModal t={t} title={t('var_del_title')} message={t('var_del_confirm', { u: toDelete.sku || `#${toDelete.id}` })} onCancel={() => setToDelete(null)} onConfirm={confirmDelete} />
       )}
       {toDup && (
         <DuplicateModal t={t} title={t('dup_var_title')} intro={t('dup_var_intro')} fieldLabel={`${t('dup_sku')} (${toDup.sku})`} fieldPlaceholder={t('dup_sku_ph')}
