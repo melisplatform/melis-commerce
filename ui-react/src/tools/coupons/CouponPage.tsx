@@ -9,6 +9,7 @@ import {
 import { makeCache } from '../../shared/listCache'
 import { DICT } from './dict'
 import { makeT, fmtDate } from '../../shared/i18n'
+import { DatePicker } from '../../shared/DatePicker'
 import { card, inputCss, label, btnGhost, btnPrimary, th, td, iconBtn } from '../../shared/styles'
 import { TagIcon, CheckIcon, RefreshIcon, PlusIcon, PencilIcon, TrashIcon, FileDownIcon, GripIcon, UsersIcon, CartIcon, ResetIcon } from '../../shared/icons'
 import { Kpi, ViewModeToggle, LegacyFrame, ConfirmModal } from '../../shared/widgets'
@@ -357,8 +358,6 @@ function CouponForm({ id, base }: { id: string; base: string }) {
   const [errCode, setErrCode] = useState(false)
   const [errDiscount, setErrDiscount] = useState(false)
   const [formError, setFormError] = useState(false)
-  const startDateRef = useRef<HTMLInputElement>(null)
-  const endDateRef = useRef<HTMLInputElement>(null)
 
   // Assign clients/products — brouillon local uniquement ; rien n'est persisté tant
   // que le bouton Save principal n'a pas été cliqué (voir submit() → reconcile*).
@@ -502,15 +501,11 @@ function CouponForm({ id, base }: { id: string; base: string }) {
                     </div>
                     <div>
                       <div style={labelRow}><label style={label}>{t('field_valid_start')}</label><InfoDot text={t('tip_valid_start')} /></div>
-                      <input ref={startDateRef} style={{ ...inputCss, cursor: 'pointer', color: dateValidStart ? inputCss.color : 'transparent' }} type="date" value={dateValidStart}
-                        onChange={(e) => setDateValidStart(e.target.value)}
-                        onClick={() => { try { startDateRef.current?.showPicker?.() } catch { /* unsupported browser */ } }} />
+                      <DatePicker t={t} value={dateValidStart} onChange={setDateValidStart} />
                     </div>
                     <div>
                       <div style={labelRow}><label style={label}>{t('field_valid_end')}</label><InfoDot text={t('tip_valid_end')} /></div>
-                      <input ref={endDateRef} style={{ ...inputCss, cursor: 'pointer', color: dateValidEnd ? inputCss.color : 'transparent' }} type="date" value={dateValidEnd}
-                        onChange={(e) => setDateValidEnd(e.target.value)}
-                        onClick={() => { try { endDateRef.current?.showPicker?.() } catch { /* unsupported browser */ } }} />
+                      <DatePicker t={t} value={dateValidEnd} onChange={setDateValidEnd} />
                     </div>
                     <div>
                       <div style={labelRow}><label style={label}>{t('field_assign_clients')}</label><InfoDot text={t('tip_assign_clients')} /></div>

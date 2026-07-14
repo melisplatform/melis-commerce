@@ -6,6 +6,7 @@ import {
 } from './api'
 import { DICT } from './dict'
 import { makeT } from '../../shared/i18n'
+import { DatePicker } from '../../shared/DatePicker'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, label, hint, th, td } from '../../shared/styles'
 import { PlusIcon, PencilIcon, TrashIcon, ChevronDownIcon, LayoutIcon, TagIcon, FileTextIcon, MapPinIcon, CartIcon, RefreshIcon } from '../../shared/icons'
 import { ViewModeToggle, LegacyFrame, StatusBadge, ConfirmModal } from '../../shared/widgets'
@@ -451,11 +452,11 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                     <div>
                       <label style={label}>{t('f_valid_start')}</label>
-                      <input style={inputCss} type="date" value={validStart} onChange={(e) => setValidStart(e.target.value)} />
+                      <DatePicker t={t} value={validStart} onChange={setValidStart} />
                     </div>
                     <div>
                       <label style={label}>{t('f_valid_end')}</label>
-                      <input style={inputCss} type="date" value={validEnd} onChange={(e) => setValidEnd(e.target.value)} />
+                      <DatePicker t={t} value={validEnd} onChange={setValidEnd} />
                     </div>
                   </div>
                   <label style={{ ...label, marginTop: 14 }}>{t('f_reference')}</label>

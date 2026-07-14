@@ -13,10 +13,16 @@ import { LinkHeader } from '../../shared/LinkHeader'
 import { ConfirmModal } from '../../shared/ConfirmModal'
 import { DateRangeFilter } from '../../shared/DateRangeFilter'
 import { AddressEditor } from '../../shared/AddressEditor'
-import { TrashIcon, PencilIcon, StarIcon, CheckIcon, UserPlusIcon, PaperclipIcon, PlusIcon } from '../../shared/icons'
+import { DatePicker } from '../../shared/DatePicker'
+import { TrashIcon, PencilIcon, StarIcon, CheckIcon, UserPlusIcon, PaperclipIcon, PlusIcon, ImageIcon } from '../../shared/icons'
 import { fmtDate, type T } from '../../shared/i18n'
 import { notify } from '../../shared/notify'
 import type { Option } from '../../shared/api'
+
+/** Lit un fichier en data URL base64 (pour le logo société). */
+function readFileDataUrl(file: File): Promise<string> {
+  return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result)); r.onerror = rej; r.readAsDataURL(file) })
+}
 
 const CONTACT_ROUTE = '/melis-commerce/contact-list'
 
@@ -24,8 +30,8 @@ const sectionTitle = { fontSize: 11, fontWeight: 600, textTransform: 'uppercase'
 
 // ── Société (éditable, CONTRÔLÉE par AccountForm) — sauvée par le bouton du haut ──
 export const EMPTY_CO: Omit<CompanyData, 'id'> = {
-  name: '', numberId: '', vatNumber: '', group: '', employees: 0,
-  addNumber: '', addStreet: '', addZip: '', addCity: '', addState: '', addCountry: '', phone: '', website: '',
+  name: '', numberId: '', vatNumber: '', group: '', employees: 0, compCreationDate: '',
+  addNumber: '', addStreet: '', addBuilding: '', addZip: '', addCity: '', addState: '', addCountry: '', phone: '', website: '', logo: '',
 }
 export function CompanyTab({ company, onChange, loading, t }: {
   company: Omit<CompanyData, 'id'>; onChange: (c: Omit<CompanyData, 'id'>) => void; loading: boolean; t: T
@@ -46,15 +52,62 @@ export function CompanyTab({ company, onChange, loading, t }: {
         {field('name', t('co_name'))}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>{field('numberId', t('co_number'))}{field('vatNumber', t('co_vat'))}</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>{field('group', t('co_group'))}{field('employees', t('co_employees'), 'number')}</div>
+        <div>
+          <label style={label}>{t('co_creation_date')}</label>
+          <DatePicker t={t} value={company.compCreationDate} onChange={(v) => set('compCreationDate', v)} />
+        </div>
         {field('website', t('co_website'))}
       </div>
       <div style={{ ...card, padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
         <h3 style={sectionTitle}>{t('co_section_addr')}</h3>
         <div style={{ display: 'grid', gridTemplateColumns: '90px 1fr', gap: 14 }}>{field('addNumber', t('co_address'))}{field('addStreet', t('co_street'))}</div>
+        {field('addBuilding', t('co_building'))}
         <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: 14 }}>{field('addZip', t('co_zip'))}{field('addCity', t('co_city'))}</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>{field('addState', t('co_state'))}{field('addCountry', t('co_country'))}</div>
         {field('phone', t('co_phone'))}
       </div>
+      <div style={{ ...card, padding: 28, gridColumn: '1 / -1' }}>
+        <h3 style={sectionTitle}>{t('co_logo')}</h3>
+        <CompanyLogoField value={company.logo} onChange={(v) => set('logo', v)} t={t} />
+      </div>
+    </div>
+  )
+}
+
+// ── Logo société (upload/aperçu/suppression) ────────────────────────────────────
+function CompanyLogoField({ value, onChange, t }: { value: string; onChange: (v: string) => void; t: T }) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [err, setErr] = useState('')
+  const [confirmRemove, setConfirmRemove] = useState(false)
+
+  async function onPick(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    setErr('')
+    if (!file.type.startsWith('image/')) { setErr(t('co_logo_err_type')); return }
+    if (file.size > 500 * 1024) { setErr(t('co_logo_err_size')); return }
+    onChange(await readFileDataUrl(file))
+  }
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <div style={{ width: 96, height: 96, borderRadius: 8, border: '1px solid var(--color-border)', background: 'var(--color-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
+        {value ? <img src={value} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} /> : <ImageIcon />}
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button type="button" style={btnGhost} onClick={() => inputRef.current?.click()}>{t(value ? 'co_logo_change' : 'co_logo_upload')}</button>
+          {value && <button type="button" style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('co_logo_remove')} onClick={() => setConfirmRemove(true)}><TrashIcon /></button>}
+        </div>
+        <input ref={inputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={onPick} />
+        {err ? <span style={{ fontSize: 12, color: 'var(--color-destructive,#ef4444)' }}>{err}</span> : <span style={{ fontSize: 12, color: 'var(--color-muted-foreground)' }}>{t('co_logo_hint')}</span>}
+      </div>
+      {confirmRemove && (
+        <ConfirmModal title={t('co_logo_remove')} message={t('co_logo_remove_confirm')}
+          confirmLabel={t('del')} cancelLabel={t('cancel')}
+          onConfirm={() => { onChange(''); setConfirmRemove(false) }} onClose={() => setConfirmRemove(false)} />
+      )}
     </div>
   )
 }

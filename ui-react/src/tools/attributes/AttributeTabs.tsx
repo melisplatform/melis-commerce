@@ -10,7 +10,8 @@ import { notify } from '../../shared/notify'
 import { SimpleTable, type SimpleCol } from '../../shared/SimpleTable'
 import { ColManager } from '../../shared/ColManager'
 import { makeColStore, visibleCols } from '../../shared/columns'
-import type { T } from '../../shared/i18n'
+import { type T } from '../../shared/i18n'
+import { DatePicker } from '../../shared/DatePicker'
 
 const fieldGap = { display: 'flex', flexDirection: 'column', gap: 16 } as const
 const labelRow = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 } as const
@@ -187,7 +188,7 @@ function AttributeValueEditor({ attributeId, value, typeColumn, languages, t, on
       return <input style={inputCss} type="number" step="0.01" value={v === null || v === undefined ? '' : String(v)} onChange={(e) => setLangValue(langId, e.target.value === '' ? null : e.target.value)} />
     }
     if (typeColumn === 'datetime') {
-      return <input style={inputCss} type="date" value={v === null || v === undefined ? '' : String(v)} onChange={(e) => setLangValue(langId, e.target.value === '' ? null : e.target.value)} />
+      return <DatePicker t={t} value={v === null || v === undefined ? '' : String(v)} onChange={(nv) => setLangValue(langId, nv === '' ? null : nv)} />
     }
     if (typeColumn === 'text') {
       return <textarea style={{ ...inputCss, height: 70, resize: 'vertical', paddingTop: 8 }} value={v === null || v === undefined ? '' : String(v)} onChange={(e) => setLangValue(langId, e.target.value)} />

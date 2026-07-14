@@ -1352,14 +1352,14 @@ class MelisComClientController extends MelisAbstractActionController
     public function validateClientCompanyAction()
     {
         $translator = $this->getServiceManager()->get('translator');
-        
+
         $success = 0;
         $errors = array();
-        
+
         $request = $this->getRequest();
-        
+
         $clientCompanyData = array();
-        
+
         if($request->isPost())
         {
             $postValues = $this->getRequest()->getPost()->toArray();
@@ -1496,13 +1496,13 @@ class MelisComClientController extends MelisAbstractActionController
             'errors' => array('clientCompany_err' => $errors),
             'datas' => array('clientCompany' => $clientCompanyData),
         );
-        
+
         return new JsonModel($result);
     }
-    
+
     /**
         * Validating Client Addresses and return Validated Datas
-        * 
+        *
         * @return \Laminas\View\Model\JsonModel
         */
     public function validateClientAddressesAction()

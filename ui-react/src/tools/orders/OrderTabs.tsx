@@ -6,6 +6,7 @@ import {
 import { card, inputCss, th, td, label, btnPrimary, btnGhost } from '../../shared/styles'
 import { fmtDate, currentLang, type T } from '../../shared/i18n'
 import { PackageIcon, MapPinIcon, CreditCardIcon, TruckIcon, MessageSquareIcon, ChevronDownIcon, UserIcon } from '../../shared/icons'
+import { DatePicker } from '../../shared/DatePicker'
 
 const sectionTitle = { fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 6 } as const
 const hint = { fontSize: 12, color: 'var(--color-muted-foreground)', marginTop: 4 } as const
@@ -240,7 +241,6 @@ function ShippingModal({ orderId, onSaved, onClose, t }: {
   const [form, setForm] = useState({ trackingCode: '', content: '', dateSent: '' })
   const [saving, setSaving] = useState(false)
   const [err, setErr] = useState('')
-  const dateRef = useRef<HTMLInputElement>(null)
 
   const submit = async () => {
     if (!form.trackingCode.trim()) { setErr(t('err_tracking_required')); return }
@@ -278,9 +278,7 @@ function ShippingModal({ orderId, onSaved, onClose, t }: {
                 <label style={{ fontWeight: 700, fontSize: 13, color: '#333' }}>{t('field_date_sent')} *</label>
                 <InfoDot text={t('tip_date_sent')} />
               </div>
-              <input ref={dateRef} type="date" style={{ ...inputCss, cursor: 'pointer' }}
-                value={form.dateSent} onChange={(e) => setForm({ ...form, dateSent: e.target.value })}
-                onClick={() => { try { dateRef.current?.showPicker?.() } catch { /* unsupported browser */ } }} />
+              <DatePicker t={t} value={form.dateSent} onChange={(v) => setForm({ ...form, dateSent: v })} />
             </div>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 6, borderTop: '1px solid #eee' }}>

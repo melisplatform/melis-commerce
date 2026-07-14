@@ -272,26 +272,40 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
             $rows = iterator_to_array($db->query(
                 'SELECT ccomp_id, ccomp_name, ccomp_number_id, ccomp_vat_number, ccomp_group, ccomp_employee_nb,
-                        ccomp_add_number, ccomp_add_street, ccomp_add_zipcode, ccomp_add_city, ccomp_add_state,
-                        ccomp_add_country, ccomp_phone_number, ccomp_website
+                        ccomp_comp_creation_date, ccomp_add_number, ccomp_add_street, ccomp_add_building,
+                        ccomp_add_zipcode, ccomp_add_city, ccomp_add_state, ccomp_add_country,
+                        ccomp_phone_number, ccomp_website, ccomp_logo
                  FROM melis_ecom_client_company WHERE ccomp_client_id = ? LIMIT 1', [$this->routeId()]
             ));
             $r = $rows ? (array) $rows[0] : [];
+            $logo = null;
+            if (!empty($r['ccomp_logo'])) {
+                $mime = 'image/png';
+                if (function_exists('finfo_open')) {
+                    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                    $detected = $finfo ? finfo_buffer($finfo, (string) $r['ccomp_logo']) : false;
+                    if ($detected) { $mime = $detected; }
+                }
+                $logo = 'data:' . $mime . ';base64,' . base64_encode((string) $r['ccomp_logo']);
+            }
             return $this->jsonResponse(['success' => true, 'data' => [
-                'id'        => (int)    ($r['ccomp_id'] ?? 0),
-                'name'      => (string) ($r['ccomp_name'] ?? ''),
-                'numberId'  => (string) ($r['ccomp_number_id'] ?? ''),
-                'vatNumber' => (string) ($r['ccomp_vat_number'] ?? ''),
-                'group'     => (string) ($r['ccomp_group'] ?? ''),
-                'employees' => (int)    ($r['ccomp_employee_nb'] ?? 0),
-                'addNumber' => (string) ($r['ccomp_add_number'] ?? ''),
-                'addStreet' => (string) ($r['ccomp_add_street'] ?? ''),
-                'addZip'    => (string) ($r['ccomp_add_zipcode'] ?? ''),
-                'addCity'   => (string) ($r['ccomp_add_city'] ?? ''),
-                'addState'  => (string) ($r['ccomp_add_state'] ?? ''),
-                'addCountry'=> (string) ($r['ccomp_add_country'] ?? ''),
-                'phone'     => (string) ($r['ccomp_phone_number'] ?? ''),
-                'website'   => (string) ($r['ccomp_website'] ?? ''),
+                'id'               => (int)    ($r['ccomp_id'] ?? 0),
+                'name'             => (string) ($r['ccomp_name'] ?? ''),
+                'numberId'         => (string) ($r['ccomp_number_id'] ?? ''),
+                'vatNumber'        => (string) ($r['ccomp_vat_number'] ?? ''),
+                'group'            => (string) ($r['ccomp_group'] ?? ''),
+                'employees'        => (int)    ($r['ccomp_employee_nb'] ?? 0),
+                'compCreationDate' => $r['ccomp_comp_creation_date'] ? substr((string) $r['ccomp_comp_creation_date'], 0, 10) : '',
+                'addNumber'        => (string) ($r['ccomp_add_number'] ?? ''),
+                'addStreet'        => (string) ($r['ccomp_add_street'] ?? ''),
+                'addBuilding'      => (string) ($r['ccomp_add_building'] ?? ''),
+                'addZip'           => (string) ($r['ccomp_add_zipcode'] ?? ''),
+                'addCity'          => (string) ($r['ccomp_add_city'] ?? ''),
+                'addState'         => (string) ($r['ccomp_add_state'] ?? ''),
+                'addCountry'       => (string) ($r['ccomp_add_country'] ?? ''),
+                'phone'            => (string) ($r['ccomp_phone_number'] ?? ''),
+                'website'          => (string) ($r['ccomp_website'] ?? ''),
+                'logo'             => $logo,
             ]]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -303,20 +317,31 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
         try {
             $clientId = $this->routeId();
             $b = json_decode($this->getRequest()->getContent(), true) ?? [];
+
+            $logoRaw = (string) ($b['logo'] ?? '');
+            if (($p = strpos($logoRaw, ',')) !== false && strpos($logoRaw, ';base64') !== false) { $logoRaw = substr($logoRaw, $p + 1); }
+            $logoBytes = $logoRaw !== '' ? base64_decode($logoRaw, true) : '';
+            if ($logoBytes !== '' && $logoBytes !== false && strlen($logoBytes) > 500 * 1024) {
+                return $this->jsonResponse(['success' => false, 'error' => 'Le logo dépasse la taille maximale de 500kB.'], 400);
+            }
+
             $cols = [
-                'ccomp_name'        => trim((string) ($b['name'] ?? '')),
-                'ccomp_number_id'   => trim((string) ($b['numberId'] ?? '')),
-                'ccomp_vat_number'  => trim((string) ($b['vatNumber'] ?? '')),
-                'ccomp_group'       => trim((string) ($b['group'] ?? '')),
-                'ccomp_employee_nb' => (int) ($b['employees'] ?? 0),
-                'ccomp_add_number'  => trim((string) ($b['addNumber'] ?? '')),
-                'ccomp_add_street'  => trim((string) ($b['addStreet'] ?? '')),
-                'ccomp_add_zipcode' => trim((string) ($b['addZip'] ?? '')),
-                'ccomp_add_city'    => trim((string) ($b['addCity'] ?? '')),
-                'ccomp_add_state'   => trim((string) ($b['addState'] ?? '')),
-                'ccomp_add_country' => trim((string) ($b['addCountry'] ?? '')),
-                'ccomp_phone_number'=> trim((string) ($b['phone'] ?? '')),
-                'ccomp_website'     => trim((string) ($b['website'] ?? '')),
+                'ccomp_name'              => trim((string) ($b['name'] ?? '')),
+                'ccomp_number_id'         => trim((string) ($b['numberId'] ?? '')),
+                'ccomp_vat_number'        => trim((string) ($b['vatNumber'] ?? '')),
+                'ccomp_group'             => trim((string) ($b['group'] ?? '')),
+                'ccomp_employee_nb'       => (int) ($b['employees'] ?? 0),
+                'ccomp_comp_creation_date'=> trim((string) ($b['compCreationDate'] ?? '')) ?: null,
+                'ccomp_add_number'        => trim((string) ($b['addNumber'] ?? '')),
+                'ccomp_add_street'        => trim((string) ($b['addStreet'] ?? '')),
+                'ccomp_add_building'      => trim((string) ($b['addBuilding'] ?? '')),
+                'ccomp_add_zipcode'       => trim((string) ($b['addZip'] ?? '')),
+                'ccomp_add_city'          => trim((string) ($b['addCity'] ?? '')),
+                'ccomp_add_state'         => trim((string) ($b['addState'] ?? '')),
+                'ccomp_add_country'       => trim((string) ($b['addCountry'] ?? '')),
+                'ccomp_phone_number'      => trim((string) ($b['phone'] ?? '')),
+                'ccomp_website'           => trim((string) ($b['website'] ?? '')),
+                'ccomp_logo'              => $logoBytes !== false ? $logoBytes : '',
             ];
             $db  = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
             $now = date('Y-m-d H:i:s');

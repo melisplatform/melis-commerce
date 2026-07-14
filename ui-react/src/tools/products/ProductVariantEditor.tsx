@@ -11,6 +11,7 @@ import {
   type AssocVariant, type AvailVariant, type VariantAttrGroup,
 } from './api'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } from '../../shared/styles'
+import { DatePicker } from '../../shared/DatePicker'
 import { PlusIcon, TrashIcon, PencilIcon, EyeIcon, ToggleRightIcon, ArrowLeftIcon, ImageIcon, SettingsIcon, PaperclipIcon, CubesIcon } from '../../shared/icons'
 import { StatusBadge, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
@@ -264,7 +265,7 @@ function VarStocks({ productId, variantId, countryItems, t, saveRef }: { product
           <div style={labelRow}><label style={label}>{t('stock_qty')}</label><InfoDot text={t('tip_stock_qty')} /></div>
           <input style={inputCss} type="number" value={draft.qty} onChange={(e) => setDraft({ ...draft, qty: e.target.value })} />
           <div style={{ ...labelRow, marginTop: 14 }}><label style={label}>{t('stock_next')}</label><InfoDot text={t('tip_stock_next')} /></div>
-          <input style={inputCss} type="date" value={draft.next} onChange={(e) => setDraft({ ...draft, next: e.target.value })} />
+          <DatePicker t={t} value={draft.next} onChange={(v) => setDraft({ ...draft, next: v })} />
         </div>
       </div>
     </div>

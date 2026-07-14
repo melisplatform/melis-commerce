@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
-import { card, inputCss, btnGhost } from './styles'
+import { card, btnGhost } from './styles'
 import { CalendarIcon, ChevronDownIcon } from './icons'
-import type { T } from './i18n'
+import { fmtDate, type T } from './i18n'
+import { DatePicker } from './DatePicker'
 
 /** yyyy-mm-dd (heure locale) */
 function fmt(d: Date): string {
@@ -44,7 +45,7 @@ export function DateRangeFilter({ from, to, onChange, t }: {
   const activePreset = presets.find((p) => p.from === from && p.to === to)
   const buttonLabel = activePreset && activePreset.key !== 'all'
     ? activePreset.label
-    : (from || to ? `${from || '…'} → ${to || '…'}` : t('dr_label'))
+    : (from || to ? `${from ? fmtDate(from) : '…'} → ${to ? fmtDate(to) : '…'}` : t('dr_label'))
 
   function pick(p: { from: string; to: string }) { onChange(p.from, p.to); setCustom(false); setOpen(false) }
 
@@ -68,10 +69,10 @@ export function DateRangeFilter({ from, to, onChange, t }: {
           {custom && (
             <div style={{ borderTop: '1px solid var(--color-border)', marginTop: 6, paddingTop: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
               <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, fontSize: 12, color: 'var(--color-muted-foreground)' }}>
-                {t('dr_from')}<input type="date" style={{ ...inputCss, height: 32, width: 150 }} value={from} onChange={(e) => onChange(e.target.value, to)} />
+                {t('dr_from')}<DatePicker t={t} style={{ height: 32, width: 150 }} value={from} onChange={(v) => onChange(v, to)} />
               </label>
               <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, fontSize: 12, color: 'var(--color-muted-foreground)' }}>
-                {t('dr_to')}<input type="date" style={{ ...inputCss, height: 32, width: 150 }} value={to} onChange={(e) => onChange(from, e.target.value)} />
+                {t('dr_to')}<DatePicker t={t} style={{ height: 32, width: 150 }} value={to} onChange={(v) => onChange(from, v)} />
               </label>
               <button style={{ ...btnGhost, height: 32, justifyContent: 'center' }} onClick={() => setOpen(false)}>{t('dr_apply')}</button>
             </div>

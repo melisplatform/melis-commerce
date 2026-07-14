@@ -36,12 +36,15 @@ $(function() {
 						var docRelationType = $("#" + activeTabId + " div.ecom-doc-container").data("doc-relation-type"),
 							docRelationId   = $("#" + activeTabId + " div.ecom-doc-container").data("doc-relation-id");
 
-							// $("div.modal").modal("hide");
-							var modalId = $("div.modal").attr("id");
-								if (modalId != "" && modalId != "undefined") {
-									melisCoreTool.hideModal(modalId);
-								}
-							
+							// $("div.modal").attr("id") grabbed the FIRST .modal in the DOM, not necessarily
+							// this one: melisHelper.createModal() appends every modal it opens to
+							// #melis-modals-container and never removes old ones (only hides them), so once
+							// more than one modal has been opened in the session (Categories, Prices, Add
+							// File, Add Image…) this reliably targeted the wrong — often already-hidden —
+							// modal, leaving the real "Add Image"/"Add File" one stuck open. Target its own
+							// known id directly, same pattern as product.tool.js's category modal close.
+							melisCoreTool.hideModal("id_meliscommerce_documents_modal_form_container");
+
 							if ( data.type == "file" ) {
 								melisHelper.zoneReload(activeTabId+" #id_meliscommerce_documents_file_attachments_lists", "meliscommerce_documents_file_attachments_lists", {
 									docRelationType : docRelationType, docRelationId : docRelationId

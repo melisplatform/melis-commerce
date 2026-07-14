@@ -40,8 +40,9 @@ export const ACCOUNT_IMPORT_TEMPLATE_URL = '/melis/download-account-template'
 // ── Onglets de la fiche compte (sous-ressources) ────────────────────────────────
 export interface CompanyData {
   id: number; name: string; numberId: string; vatNumber: string; group: string; employees: number
-  addNumber: string; addStreet: string; addZip: string; addCity: string; addState: string; addCountry: string
-  phone: string; website: string
+  compCreationDate: string
+  addNumber: string; addStreet: string; addBuilding: string; addZip: string; addCity: string; addState: string; addCountry: string
+  phone: string; website: string; logo: string
 }
 export interface AccountContact { id: number; status: number; firstname: string; name: string; email: string; isMain: number; isDefaultAccount: number; civility?: number; civilityName?: string }
 export type { Address as AccountAddress, AddressOptions } from '../../shared/address'
