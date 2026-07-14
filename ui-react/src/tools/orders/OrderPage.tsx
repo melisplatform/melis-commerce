@@ -9,8 +9,8 @@ import {
 import { makeCache } from '../../shared/listCache'
 import { DICT } from './dict'
 import { makeT, fmtDate, currentLang } from '../../shared/i18n'
-import { card, inputCss, btnGhost, btnPrimary, th, td } from '../../shared/styles'
-import { CartIcon, ShoppingCartKpiIcon, PackageIcon, CalendarIcon, PlusIcon, RefreshIcon, PencilIcon, ResetIcon } from '../../shared/icons'
+import { card, inputCss, btnGhost, btnPrimary, th, td, iconBtn } from '../../shared/styles'
+import { CartIcon, ShoppingCartKpiIcon, PackageIcon, CalendarIcon, PlusIcon, RefreshIcon, PencilIcon, ResetIcon, TrashIcon } from '../../shared/icons'
 import { Kpi, ViewModeToggle, LegacyFrame, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { DateRangeFilter } from '../../shared/DateRangeFilter'
@@ -90,7 +90,13 @@ function OrderList({ base }: { base: string }) {
   // (voir shared/externalBricks.ts) — melis-commerce ignore tout du contenu du bouton.
   const OrderInvoiceButton = useExternalBrickComponent<{ orderId: number }>('MelisCommerceOrderInvoiceBrick', 'OrderRowButton')
   const [mode, setMode] = useState<'react' | 'old'>(listCache.get()?.mode ?? 'react')
-  const [oldLoaded, setOldLoaded] = useState(false)
+  // Non-persistent bricks (this one included, see brick.manifest.json) get fully unmounted
+  // when the tab isn't active and rebuilt from scratch when revisited — only `mode` survives
+  // that via listCache. If `oldLoaded` reinitialized to false regardless, coming back to a
+  // tab left in "Old" view rendered neither the (gated-by-oldLoaded) LegacyFrame nor the
+  // (gated-by-mode==='react') React view: a blank tab. Derive the initial value from `mode`
+  // so a remount picks the legacy iframe back up immediately, same as `mode` itself does.
+  const [oldLoaded, setOldLoaded] = useState(() => (listCache.get()?.mode ?? 'react') === 'old')
   const [items, setItems] = useState<OrderItem[]>(listCache.get()?.items ?? [])
   const [stats, setStats] = useState<OrderStats | null>(listCache.get()?.stats ?? null)
   const [statuses, setStatuses] = useState<OrderStatus[]>([])
@@ -261,7 +267,7 @@ function OrderList({ base }: { base: string }) {
                     {can('edit') && (
                       <button
                         onClick={(e) => { e.stopPropagation(); openOrder(o) }}
-                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, border: '1px solid #5cb85c', background: 'transparent', color: '#5cb85c', cursor: 'pointer', padding: 0 }}
+                        style={iconBtn}
                         title={t('col_action')}>
                         <PencilIcon />
                       </button>
@@ -607,8 +613,8 @@ function InformationTab({ orderId, statuses, locked, localStatus, setLocalStatus
                     {a.name}
                   </a>
                   <button onClick={() => setToDelete(a)}
-                    style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 26, height: 26, borderRadius: 5, border: '1px solid rgba(239,68,68,.4)', background: 'transparent', color: '#ef4444', cursor: 'pointer', fontSize: 12, padding: 0, flexShrink: 0 }}>
-                    ✕
+                    style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }}>
+                    <TrashIcon />
                   </button>
                 </div>
               ))}

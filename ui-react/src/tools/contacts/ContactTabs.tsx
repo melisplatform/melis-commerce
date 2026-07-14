@@ -10,7 +10,7 @@ import { SimpleTable } from '../../shared/SimpleTable'
 import { LinkHeader } from '../../shared/LinkHeader'
 import { ConfirmModal } from '../../shared/ConfirmModal'
 import { AddressEditor } from '../../shared/AddressEditor'
-import { actionBtn } from '../../shared/styles'
+import { iconBtn } from '../../shared/styles'
 import { TrashIcon, PencilIcon, StarIcon, CheckIcon, UserPlusIcon } from '../../shared/icons'
 import type { T } from '../../shared/i18n'
 import type { Option } from '../../shared/api'
@@ -58,9 +58,9 @@ export function AssociationTab({ contactId, t, can }: { contactId: number; t: T;
           { key: 'def_contact', label: t('as_def_contact'), render: (r) => (r.isMain ? <StarIcon /> : '—') },
           { key: 'action', label: t('action'), width: 120, render: (r) => (
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6 }}>
-              <button style={actionBtn('#16a34a')} title={t('edit')} onClick={() => navigate(`${ACCOUNT_ROUTE}/${r.id}`)}><PencilIcon /></button>
-              {!r.isDefaultAccount && <button style={actionBtn('#2563eb')} title={t('set_default')} onClick={() => setDefault(r.id)}><CheckIcon /></button>}
-              {allow('association.delete') && <button style={actionBtn('#ef4444')} title={t('unlink')} onClick={() => setToUnlink(r)}><TrashIcon /></button>}
+              <button style={iconBtn} title={t('edit')} onClick={() => navigate(`${ACCOUNT_ROUTE}/${r.id}`)}><PencilIcon /></button>
+              {!r.isDefaultAccount && <button style={iconBtn} title={t('set_default')} onClick={() => setDefault(r.id)}><CheckIcon /></button>}
+              {allow('association.delete') && <button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('unlink')} onClick={() => setToUnlink(r)}><TrashIcon /></button>}
             </div>
           ) },
         ]} />

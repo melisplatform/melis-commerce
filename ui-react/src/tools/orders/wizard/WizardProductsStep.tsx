@@ -7,7 +7,7 @@ import {
   type CheckoutProduct, type CheckoutVariant, type CheckoutBasketLine,
 } from '../api'
 import { fetchCountries, type CountryItem } from '../../countries/api'
-import { card, inputCss, btnPrimary, btnGhost, th, td } from '../../../shared/styles'
+import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td } from '../../../shared/styles'
 import { ChevronDownIcon, TrashIcon } from '../../../shared/icons'
 import { notify } from '../../../shared/notify'
 import type { CSSProperties } from 'react'
@@ -170,7 +170,7 @@ export function WizardProductsStep({ countryId, onBack, onNext }: {
                     <div key={l.variantId} style={{ display: 'flex', flexDirection: 'column', gap: 4, paddingBottom: 8, borderBottom: '1px solid var(--color-border)' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 6 }}>
                         <span style={{ fontSize: 13, fontWeight: 500 }}>{l.productName || l.sku}</span>
-                        <button style={{ ...qtyBtn, border: 0 }} onClick={() => setQty(l.variantId, 0)}><TrashIcon /></button>
+                        <button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} onClick={() => setQty(l.variantId, 0)}><TrashIcon /></button>
                       </div>
                       <code style={{ fontSize: 11, color: 'var(--color-muted-foreground)' }}>{l.sku}</code>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

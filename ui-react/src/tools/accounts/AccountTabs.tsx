@@ -6,7 +6,7 @@ import {
   fetchOrderStatuses, fetchAllContactOptions, linkAccountContact, unlinkAccountContact, setAccountContactDefault,
   type CompanyData, type AccountContact, type AccountAddress, type AddressOptions, type AccountOrder, type AccountFile, type FileOptions,
 } from './api'
-import { card, inputCss, btnGhost, iconBtn, actionBtn, label } from '../../shared/styles'
+import { card, inputCss, btnGhost, iconBtn, label } from '../../shared/styles'
 import { StatusBadge } from '../../shared/widgets'
 import { SimpleTable } from '../../shared/SimpleTable'
 import { LinkHeader } from '../../shared/LinkHeader'
@@ -93,9 +93,9 @@ export function ContactsTab({ accountId, t, can }: { accountId: number; t: T; ca
           { key: 'def_account', label: t('c_def_account'), render: (r) => (r.isDefaultAccount ? <StarIcon /> : '—') },
           { key: 'action', label: t('action'), width: 120, render: (r) => (
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6 }}>
-              <button style={actionBtn('#16a34a')} title={t('edit')} onClick={() => navigate(`${CONTACT_ROUTE}/${r.id}`)}><PencilIcon /></button>
-              {!r.isMain && <button style={actionBtn('#2563eb')} title={t('set_default')} onClick={() => setDefault(r.id)}><CheckIcon /></button>}
-              {allow('contacts.delete') && <button style={actionBtn('#ef4444')} title={t('unlink')} onClick={() => setToUnlink(r)}><TrashIcon /></button>}
+              <button style={iconBtn} title={t('edit')} onClick={() => navigate(`${CONTACT_ROUTE}/${r.id}`)}><PencilIcon /></button>
+              {!r.isMain && <button style={iconBtn} title={t('set_default')} onClick={() => setDefault(r.id)}><CheckIcon /></button>}
+              {allow('contacts.delete') && <button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('unlink')} onClick={() => setToUnlink(r)}><TrashIcon /></button>}
             </div>
           ) },
         ]} />
@@ -233,7 +233,7 @@ export function FilesTab({ accountId, t, can }: { accountId: number; t: T; can?:
               <a href={r.path} target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--color-foreground)', fontSize: 14, fontWeight: 500, textDecoration: 'none', overflow: 'hidden' }}>
                 <PaperclipIcon /><span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.name || r.path}</span>
               </a>
-              {allow('files.delete') && <button style={actionBtn('#ef4444')} title={t('del')} onClick={() => setToDelete(r)}><TrashIcon /></button>}
+              {allow('files.delete') && <button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => setToDelete(r)}><TrashIcon /></button>}
             </div>
           ))}
         </div>

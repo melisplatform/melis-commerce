@@ -7,7 +7,7 @@ import {
 import { makeCache } from '../../shared/listCache'
 import { DICT } from './dict'
 import { makeT } from '../../shared/i18n'
-import { card, inputCss, label, btnGhost, btnPrimary, th, td } from '../../shared/styles'
+import { card, inputCss, label, btnGhost, btnPrimary, th, td, iconBtn } from '../../shared/styles'
 import { TagIcon, CheckIcon, RefreshIcon, PlusIcon, PencilIcon, TrashIcon, FileDownIcon, GripIcon, GlobeIcon, ListIcon, ResetIcon } from '../../shared/icons'
 import { Kpi, ViewModeToggle, LegacyFrame, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
@@ -141,7 +141,13 @@ function AttributeList({ base }: { base: string }) {
   const navigate = useNavigate()
   const { can } = useCaps(TOOL_MELIS_KEY)
   const [mode, setMode] = useState<'react' | 'old'>(listCache.get()?.mode ?? 'react')
-  const [oldLoaded, setOldLoaded] = useState(false)
+  // Non-persistent bricks get fully unmounted when the tab isn't active and rebuilt from
+  // scratch when revisited — only `mode` survives that via listCache. If `oldLoaded`
+  // reinitialized to false regardless, coming back to a tab left in "Old" view rendered
+  // neither the (gated-by-oldLoaded) LegacyFrame nor the (gated-by-mode==='react') React
+  // view: a blank tab. Derive the initial value from `mode` so a remount picks the legacy
+  // iframe back up immediately, same as `mode` itself does.
+  const [oldLoaded, setOldLoaded] = useState(() => (listCache.get()?.mode ?? 'react') === 'old')
   const [items, setItems] = useState<AttributeItem[]>(listCache.get()?.items ?? [])
   const [stats, setStats] = useState<AttributeStats | null>(listCache.get()?.stats ?? null)
   const [options, setOptions] = useState<AttributeOptions | null>(null)
@@ -313,11 +319,9 @@ function AttributeList({ base }: { base: string }) {
                   <td style={{ ...td, textAlign: 'center', width: 90 }} onClick={(e) => e.stopPropagation()}>
                     <div style={{ display: 'inline-flex', gap: 6 }}>
                       {can('edit') && <button onClick={(e) => { e.stopPropagation(); openAttribute(a) }}
-                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, border: '1px solid #5cb85c', background: 'transparent', color: '#5cb85c', cursor: 'pointer', padding: 0 }}
-                        title={t('edit')}><PencilIcon /></button>}
+                        style={iconBtn} title={t('edit')}><PencilIcon /></button>}
                       {can('delete') && <button onClick={(e) => { e.stopPropagation(); setToDelete(a) }}
-                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, border: '1px solid #dc2626', background: 'transparent', color: '#dc2626', cursor: 'pointer', padding: 0 }}
-                        title={t('del')}><TrashIcon /></button>}
+                        style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')}><TrashIcon /></button>}
                     </div>
                   </td>
                 </tr>
@@ -379,7 +383,6 @@ function AttributeForm({ id, base }: { id: string; base: string }) {
   const [translations, setTranslations] = useState<AttributeTranslation[]>([])
   const [errReference, setErrReference] = useState(false)
   const [errType, setErrType] = useState(false)
-  const [errName, setErrName] = useState(false)
   const [formError, setFormError] = useState(false)
 
   useEffect(() => {
@@ -430,7 +433,6 @@ function AttributeForm({ id, base }: { id: string; base: string }) {
   async function submit() {
     if (!reference.trim()) { setErrReference(true); setFormError(true); return }
     if (!typeId) { setErrType(true); setFormError(true); return }
-    if (!translations.some((tr) => tr.name.trim())) { setErrName(true); setFormError(true); return }
     setFormError(false)
     setSaving(true)
     try {
@@ -527,10 +529,9 @@ function AttributeForm({ id, base }: { id: string; base: string }) {
                 <div style={{ ...card, padding: 24 }}>
                   <div style={fieldGap}>
                     <div>
-                      <div style={labelRow}><label style={label}>{t('field_name')} *</label><InfoDot text={t('tip_name')} /></div>
+                      <div style={labelRow}><label style={label}>{t('field_name')}</label><InfoDot text={t('tip_name')} /></div>
                       <input style={inputCss} value={currentTrans?.name ?? ''}
-                        onChange={(e) => { setTrans(lang, 'name', e.target.value); setErrName(false) }} />
-                      {errName && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_name_required')}</p>}
+                        onChange={(e) => setTrans(lang, 'name', e.target.value)} />
                     </div>
                     <div>
                       <div style={labelRow}><label style={label}>{t('field_description')}</label><InfoDot text={t('tip_description')} /></div>

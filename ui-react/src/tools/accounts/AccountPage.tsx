@@ -153,7 +153,13 @@ function AccountList({ base }: { base: string }) {
   const navigate = useNavigate()
   const { can } = useCaps(TOOL_MELIS_KEY)
   const [mode, setMode] = useState<'react' | 'old'>(listCache.get()?.mode ?? 'react')
-  const [oldLoaded, setOldLoaded] = useState(false)
+  // Non-persistent bricks get fully unmounted when the tab isn't active and rebuilt from
+  // scratch when revisited — only `mode` survives that via listCache. If `oldLoaded`
+  // reinitialized to false regardless, coming back to a tab left in "Old" view rendered
+  // neither the (gated-by-oldLoaded) LegacyFrame nor the (gated-by-mode==='react') React
+  // view: a blank tab. Derive the initial value from `mode` so a remount picks the legacy
+  // iframe back up immediately, same as `mode` itself does.
+  const [oldLoaded, setOldLoaded] = useState(() => (listCache.get()?.mode ?? 'react') === 'old')
   const [items, setItems] = useState<AccountItem[]>(listCache.get()?.items ?? [])
   const [stats, setStats] = useState<AccountStats | null>(listCache.get()?.stats ?? null)
   const [loading, setLoading] = useState(false)

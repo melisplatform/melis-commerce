@@ -103,7 +103,13 @@ function ProductList({ base }: { base: string }) {
   const navigate = useNavigate()
   const { can } = useCaps(TOOL_MELIS_KEY)
   const [mode, setMode] = useState<'react' | 'old'>(listCache.get()?.mode ?? 'react')
-  const [oldLoaded, setOldLoaded] = useState(false)
+  // Non-persistent bricks get fully unmounted when the tab isn't active and rebuilt from
+  // scratch when revisited — only `mode` survives that via listCache. If `oldLoaded`
+  // reinitialized to false regardless, coming back to a tab left in "Old" view rendered
+  // neither the (gated-by-oldLoaded) LegacyFrame nor the (gated-by-mode==='react') React
+  // view: a blank tab. Derive the initial value from `mode` so a remount picks the legacy
+  // iframe back up immediately, same as `mode` itself does.
+  const [oldLoaded, setOldLoaded] = useState(() => (listCache.get()?.mode ?? 'react') === 'old')
   const [items, setItems] = useState<ProductItem[]>(listCache.get()?.items ?? [])
   const [stats, setStats] = useState<ProductStats | null>(listCache.get()?.stats ?? null)
   const [loading, setLoading] = useState(false)
@@ -509,7 +515,7 @@ function ProductForm({ id, base }: { id: string; base: string }) {
                   {categoryIds.map((cid) => (
                     <span key={cid} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 999, background: 'var(--color-muted,rgba(0,0,0,.05))', fontSize: 14 }}>
                       {catNames[cid] ?? categories.find((x) => x.id === cid)?.name ?? `#${cid}`}
-                      <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-muted-foreground)' }} title={t('del')} onClick={() => toggleCategory(cid)}>✕</button>
+                      <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => toggleCategory(cid)}><TrashIcon /></button>
                     </span>
                   ))}
                 </div>

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { fetchSettings, fetchSettingsOptions, saveSettings, type AccountType, type StockAlertRecipient, type UserOption } from './api'
 import { DICT } from './dict'
 import { makeT } from '../../shared/i18n'
-import { card, inputCss, label, btnGhost, btnPrimary } from '../../shared/styles'
+import { card, inputCss, label, btnGhost, btnPrimary, iconBtn } from '../../shared/styles'
 import { PlusIcon, TrashIcon, GlobeIcon, UsersIcon, KeyIcon } from '../../shared/icons'
 import { ViewModeToggle, LegacyFrame } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
@@ -148,7 +148,7 @@ export default function SettingsPage() {
                           <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '8px 12px', borderRadius: 6, border: '1px solid var(--color-border)' }}>
                             <span style={{ fontSize: 13 }}>{r.userName ? `${r.userName} — ${r.email}` : r.email}</span>
                             <button onClick={() => removeRecipient(idx)}
-                              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: 6, border: '1px solid #dc2626', background: 'transparent', color: '#dc2626', cursor: 'pointer', padding: 0 }}>
+                              style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }}>
                               <TrashIcon />
                             </button>
                           </div>

@@ -8,7 +8,8 @@
       "icon": "building-2",
       "forwardKey": "MelisCommerce/MelisComClientList",
       "melisKey": "meliscommerce_clients_list_page",
-      "subTabs": true
+      "subTabs": true,
+      "persistent": true
     },
     {
       "id": "commerce-contacts",
@@ -17,7 +18,8 @@
       "icon": "users",
       "forwardKey": "MelisCommerce/MelisComContact",
       "melisKey": "meliscommerce_contact_list_page",
-      "subTabs": true
+      "subTabs": true,
+      "persistent": true
     },
     {
       "id": "commerce-catalog",
@@ -25,7 +27,8 @@
       "label": "Catalogs",
       "forwardKey": "MelisCommerce/MelisComCategoryList",
       "melisKey": "meliscommerce_categories_page",
-      "subTabs": true
+      "subTabs": true,
+      "persistent": true
     },
     {
       "id": "commerce-products",
@@ -33,7 +36,8 @@
       "label": "Products",
       "forwardKey": "MelisCommerce/MelisComProductList",
       "melisKey": "meliscommerce_product_list_container",
-      "subTabs": true
+      "subTabs": true,
+      "persistent": true
     },
     {
       "id": "commerce-orders",
@@ -42,7 +46,8 @@
       "icon": "shopping-cart",
       "forwardKey": "MelisCommerce/MelisComOrderList",
       "melisKey": "meliscommerce_order_list_page",
-      "subTabs": true
+      "subTabs": true,
+      "persistent": true
     },
     {
       "id": "commerce-coupons",
@@ -51,7 +56,8 @@
       "icon": "ticket",
       "forwardKey": "MelisCommerce/MelisComCouponList",
       "melisKey": "meliscommerce_coupon_list_page",
-      "subTabs": true
+      "subTabs": true,
+      "persistent": true
     },
     {
       "id": "commerce-attributes",
@@ -60,7 +66,8 @@
       "icon": "tag",
       "forwardKey": "MelisCommerce/MelisComAttributeList",
       "melisKey": "meliscommerce_attribute_list_page",
-      "subTabs": true
+      "subTabs": true,
+      "persistent": true
     },
     {
       "id": "commerce-countries",
@@ -69,7 +76,8 @@
       "icon": "globe",
       "forwardKey": "MelisCommerce/MelisComCountry",
       "melisKey": "meliscommerce_country_list_container",
-      "subTabs": true
+      "subTabs": true,
+      "persistent": true
     },
     {
       "id": "commerce-languages",
@@ -77,7 +85,8 @@
       "label": "Commerce languages",
       "icon": "globe",
       "forwardKey": "MelisCommerce/MelisComLanguage",
-      "melisKey": "meliscommerce_language_list_container"
+      "melisKey": "meliscommerce_language_list_container",
+      "persistent": true
     },
     {
       "id": "commerce-currencies",
@@ -85,7 +94,8 @@
       "label": "Currencies",
       "icon": "coins",
       "forwardKey": "MelisCommerce/MelisComCurrency",
-      "melisKey": "meliscommerce_currency_conf"
+      "melisKey": "meliscommerce_currency_conf",
+      "persistent": true
     },
     {
       "id": "commerce-order-status",
@@ -94,7 +104,8 @@
       "icon": "list",
       "forwardKey": "MelisCommerce/MelisComOrderStatus",
       "melisKey": "meliscommerce_order_status_tool_page",
-      "subTabs": true
+      "subTabs": true,
+      "persistent": true
     },
     {
       "id": "commerce-clients-groups",
@@ -102,7 +113,8 @@
       "label": "Client's groups",
       "icon": "users",
       "forwardKey": "MelisCommerce/MelisComClientsGroup",
-      "melisKey": "meliscommerce_clients_group_tool_container"
+      "melisKey": "meliscommerce_clients_group_tool_container",
+      "persistent": true
     },
     {
       "id": "commerce-settings",
@@ -110,7 +122,8 @@
       "label": "Commerce settings",
       "icon": "settings",
       "forwardKey": "MelisCommerce/MelisComSettings",
-      "melisKey": "meliscommerce_settings_page"
+      "melisKey": "meliscommerce_settings_page",
+      "persistent": true
     }
   ]
 }

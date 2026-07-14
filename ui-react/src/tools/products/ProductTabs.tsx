@@ -320,13 +320,13 @@ export function AttributesSection({ productId, options, t, pendingAttrIds = [], 
           {items.map((it) => (
             <span key={it.pattId} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 999, background: 'var(--color-muted,rgba(0,0,0,.05))', fontSize: 14 }}>
               {it.name}
-              <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-muted-foreground)' }} title={t('del')} onClick={() => setToDelete(it)}>✕</button>
+              <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => setToDelete(it)}><TrashIcon /></button>
             </span>
           ))}
           {pendingItems.map((o) => (
             <span key={`p-${o.id}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 999, background: 'var(--color-muted,rgba(0,0,0,.05))', fontSize: 14 }}>
               {o.name}
-              <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-muted-foreground)' }} title={t('del')} onClick={() => onTogglePendingAttr?.(o.id)}>✕</button>
+              <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => onTogglePendingAttr?.(o.id)}><TrashIcon /></button>
             </span>
           ))}
         </div>
@@ -396,19 +396,19 @@ export function RecipientsSection({ productId, users, stockLevel, t, pendingReci
           {items.map((it) => (
             <span key={it.seaId} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 999, background: 'var(--color-muted,rgba(0,0,0,.05))', fontSize: 14 }}>
               {it.name || it.email}
-              <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-muted-foreground)' }} title={t('del')} onClick={() => setToDelete(it)}>✕</button>
+              <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => setToDelete(it)}><TrashIcon /></button>
             </span>
           ))}
           {pendingUsers.map((u) => (
             <span key={`p-${u.id}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 999, background: 'var(--color-muted,rgba(0,0,0,.05))', fontSize: 14 }}>
               {u.name}
-              <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-muted-foreground)' }} title={t('del')} onClick={() => onTogglePendingRecipient?.(u.id)}>✕</button>
+              <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => onTogglePendingRecipient?.(u.id)}><TrashIcon /></button>
             </span>
           ))}
           {pendingRecipientEmails.map((email) => (
             <span key={`pe-${email}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 999, background: 'var(--color-muted,rgba(0,0,0,.05))', fontSize: 14 }}>
               {email}
-              <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-muted-foreground)' }} title={t('del')} onClick={() => onRemovePendingRecipientEmail?.(email)}>✕</button>
+              <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => onRemovePendingRecipientEmail?.(email)}><TrashIcon /></button>
             </span>
           ))}
         </div>
@@ -614,13 +614,13 @@ export function FilesSection({ productId, t, countries = [], pendingFiles = [], 
             <span key={f.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 999, background: 'var(--color-muted,rgba(0,0,0,.05))', fontSize: 14 }}>
               <span style={{ color: 'var(--color-foreground)' }}>{f.name || f.path}</span>
               <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-muted-foreground)' }} title={t('file_edit')} onClick={() => setModal({ doc: f })}><PencilIcon /></button>
-              <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-muted-foreground)' }} title={t('del')} onClick={() => markDeleteFile(f.id)}>✕</button>
+              <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => markDeleteFile(f.id)}><TrashIcon /></button>
             </span>
           ))}
           {pendingFiles.map((m, i) => (
             <span key={`p-${i}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 999, background: 'var(--color-muted,rgba(0,0,0,.05))', fontSize: 14 }}>
               <span style={{ color: 'var(--color-muted-foreground)' }}>{m.name}</span>
-              <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-muted-foreground)' }} title={t('del')} onClick={() => onRemovePendingFile?.(i)}>✕</button>
+              <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => onRemovePendingFile?.(i)}><TrashIcon /></button>
             </span>
           ))}
         </div>
@@ -764,7 +764,7 @@ export function ImagesSection({ productId, t, countries = [], pendingImages = []
                   </button>
                   <button style={{ ...hoverCircle, color: '#ef4444' }} title={t('img_del')}
                     onClick={() => setToDelete(im.isPending ? { id: im.id, pendingIdx: (-im.id) - 1 } : { id: im.id })}>
-                    ✕
+                    <TrashIcon />
                   </button>
                 </div>
               )}
@@ -828,8 +828,6 @@ export function VariantTooltipTable({ items, pos, t, onMouseEnter, onMouseLeave,
 }
 
 // ── Onglet Variantes (table type legacy : ID / Principale / Image / Statut / SKU / Attributs / Action) ──
-const actBtn = (color: string) => ({ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 30, height: 30, borderRadius: 6, border: '1px solid ' + color, background: 'transparent', color, cursor: 'pointer', fontSize: 13 } as const)
-
 export function VariantsTab({ productId, t, onAdd, onEdit, can }: { productId: number | null; t: TFn; onAdd: () => void; onEdit: (id: number) => void; can?: (cap: string) => boolean }) {
   const allow = (cap: string) => (can ? can(cap) : true)
   const [items, setItems] = useState<ProductVariant[]>([])
@@ -908,10 +906,10 @@ export function VariantsTab({ productId, t, onAdd, onEdit, can }: { productId: n
                 <td style={{ ...td, color: 'var(--color-muted-foreground)' }}>{v.attributes || '—'}</td>
                 <td style={td}>
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 5 }}>
-                    {allow('variants.edit') && <button style={actBtn(v.status === 1 ? '#dc2626' : '#16a34a')} title={t('var_toggle_status')} onClick={() => toggleStatus(v)}>{v.status === 1 ? '↓' : '↑'}</button>}
-                    {allow('variants.duplicate') && <button style={actBtn('#2563eb')} title={t('var_duplicate')} onClick={() => setToDup(v)}>⧉</button>}
-                    {allow('variants.edit') && <button style={actBtn('#16a34a')} title={t('edit')} onClick={() => onEdit(v.id)}><PencilIcon /></button>}
-                    {allow('variants.delete') && <button style={actBtn('#dc2626')} title={t('del')} onClick={() => setToDelete(v)}>✕</button>}
+                    {allow('variants.edit') && <button style={iconBtn} title={t('var_toggle_status')} onClick={() => toggleStatus(v)}>{v.status === 1 ? '↓' : '↑'}</button>}
+                    {allow('variants.duplicate') && <button style={iconBtn} title={t('var_duplicate')} onClick={() => setToDup(v)}>⧉</button>}
+                    {allow('variants.edit') && <button style={iconBtn} title={t('edit')} onClick={() => onEdit(v.id)}><PencilIcon /></button>}
+                    {allow('variants.delete') && <button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => setToDelete(v)}><TrashIcon /></button>}
                   </div>
                 </td>
               </tr>

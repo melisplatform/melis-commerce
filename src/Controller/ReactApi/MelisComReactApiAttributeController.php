@@ -226,9 +226,6 @@ class MelisComReactApiAttributeController extends MelisAbstractActionController
             }
 
             $rawTranslations = is_array($b['translations'] ?? null) ? $b['translations'] : [];
-            $hasName = false;
-            foreach ($rawTranslations as $t) { if (trim((string) ($t['name'] ?? '')) !== '') { $hasName = true; break; } }
-            if (!$hasName) { return $this->jsonResponse(['success' => false, 'error' => 'Le nom est obligatoire pour au moins une langue.'], 400); }
 
             $existingByLang = [];
             if ($id > 0) {

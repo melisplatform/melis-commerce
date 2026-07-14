@@ -291,7 +291,7 @@ function VarFiles({ productId, variantId, t, countries, onNeedVid }: { productId
               <span key={f.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 999, background: 'var(--color-muted,rgba(0,0,0,.05))', fontSize: 14 }}>
                 <span style={{ color: 'var(--color-foreground)' }}>{f.name || f.path}</span>
                 <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-muted-foreground)' }} title={t('file_edit')} onClick={() => setModal({ doc: f })}><PencilIcon /></button>
-                <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-muted-foreground)' }} title={t('del')} onClick={() => del(f.id)}>✕</button>
+                <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => del(f.id)}><TrashIcon /></button>
               </span>
             ))}
           </div>}
@@ -365,7 +365,7 @@ function VarImages({ productId, variantId, t, countries }: { productId: number; 
                     </button>
                     <button style={{ ...hoverCircle, color: '#ef4444' }} title={t('img_del')}
                       onClick={() => setToDelete(im.isPending ? { id: im.id, pendingIdx: (-im.id) - 1 } : { id: im.id })}>
-                      ✕
+                      <TrashIcon />
                     </button>
                   </div>
                 )}
@@ -446,7 +446,7 @@ function VarAssoc({ productId, variantId, t, onNeedVid }: { productId: number; v
           <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}><tr><th style={{ ...th, width: 50 }}>{t('var_col_id')}</th><th style={{ ...th, width: 80 }}>{t('col_status')}</th><th style={th}>{t('assoc_product')}</th><th style={th}>{t('var_col_sku')}</th><th style={{ ...th, width: 70 }} /></tr></thead>
           <tbody>
             {associated.length === 0 ? <tr><td colSpan={5} style={{ ...td, textAlign: 'center', color: 'var(--color-muted-foreground)', padding: 24 }}>{t('assoc_empty')}</td></tr>
-              : associated.map((v) => (<tr key={v.avarId}><td style={td}>{v.variantId}</td><td style={td}><StatusBadge active={v.status === 1} t={t} /></td><td style={{ ...td, fontWeight: 500 }}>{v.productName}</td><td style={td}>{v.sku || '—'}</td><td style={td}><button style={{ ...iconBtn, color: '#ef4444' }} title={t('del')} onClick={() => del(v.avarId)}><TrashIcon /></button></td></tr>))}
+              : associated.map((v) => (<tr key={v.avarId}><td style={td}>{v.variantId}</td><td style={td}><StatusBadge active={v.status === 1} t={t} /></td><td style={{ ...td, fontWeight: 500 }}>{v.productName}</td><td style={td}>{v.sku || '—'}</td><td style={td}><button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => del(v.avarId)}><TrashIcon /></button></td></tr>))}
           </tbody>
         </table>
       </div>

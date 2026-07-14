@@ -7,7 +7,7 @@ import {
 import { makeCache } from '../../shared/listCache'
 import { DICT } from './dict'
 import { makeT } from '../../shared/i18n'
-import { card, inputCss, label, btnGhost, btnPrimary, th, td } from '../../shared/styles'
+import { card, inputCss, label, btnGhost, btnPrimary, th, td, iconBtn } from '../../shared/styles'
 import { GlobeIcon, CheckIcon, RefreshIcon, PlusIcon, PencilIcon, TrashIcon, FileDownIcon, GripIcon, ListIcon, ResetIcon } from '../../shared/icons'
 import { Kpi, ViewModeToggle, LegacyFrame, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
@@ -108,7 +108,13 @@ function CountryList({ base }: { base: string }) {
   const navigate = useNavigate()
   const { can } = useCaps(TOOL_MELIS_KEY)
   const [mode, setMode] = useState<'react' | 'old'>(listCache.get()?.mode ?? 'react')
-  const [oldLoaded, setOldLoaded] = useState(false)
+  // Non-persistent bricks get fully unmounted when the tab isn't active and rebuilt from
+  // scratch when revisited — only `mode` survives that via listCache. If `oldLoaded`
+  // reinitialized to false regardless, coming back to a tab left in "Old" view rendered
+  // neither the (gated-by-oldLoaded) LegacyFrame nor the (gated-by-mode==='react') React
+  // view: a blank tab. Derive the initial value from `mode` so a remount picks the legacy
+  // iframe back up immediately, same as `mode` itself does.
+  const [oldLoaded, setOldLoaded] = useState(() => (listCache.get()?.mode ?? 'react') === 'old')
   const [items, setItems] = useState<CountryItem[]>(listCache.get()?.items ?? [])
   const [stats, setStats] = useState<CountryStats | null>(listCache.get()?.stats ?? null)
   const [loading, setLoading] = useState(false)
@@ -265,11 +271,9 @@ function CountryList({ base }: { base: string }) {
                   <td style={{ ...td, textAlign: 'center', width: 90 }} onClick={(e) => e.stopPropagation()}>
                     <div style={{ display: 'inline-flex', gap: 6 }}>
                       {can('edit') && <button onClick={(e) => { e.stopPropagation(); openCountry(c) }}
-                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, border: '1px solid #5cb85c', background: 'transparent', color: '#5cb85c', cursor: 'pointer', padding: 0 }}
-                        title={t('edit')}><PencilIcon /></button>}
+                        style={iconBtn} title={t('edit')}><PencilIcon /></button>}
                       {can('delete') && <button onClick={(e) => { e.stopPropagation(); setToDelete(c) }}
-                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, border: '1px solid #dc2626', background: 'transparent', color: '#dc2626', cursor: 'pointer', padding: 0 }}
-                        title={t('del')}><TrashIcon /></button>}
+                        style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')}><TrashIcon /></button>}
                     </div>
                   </td>
                 </tr>

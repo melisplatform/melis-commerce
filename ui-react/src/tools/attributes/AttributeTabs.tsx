@@ -4,7 +4,7 @@ import {
   type AttributeValueItem, type AttributeValueRaw, type LangOption,
 } from './api'
 import { card, inputCss, label, btnGhost, btnPrimary, iconBtn } from '../../shared/styles'
-import { PlusIcon, GripIcon, ChevronDownIcon } from '../../shared/icons'
+import { PlusIcon, GripIcon, ChevronDownIcon, PencilIcon, TrashIcon } from '../../shared/icons'
 import { ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { SimpleTable, type SimpleCol } from '../../shared/SimpleTable'
@@ -74,11 +74,9 @@ export function AttributeValuesTab({ attributeId, languages, can, t }: {
     key: 'action', label: t('col_action'), width: 90, render: (r) => (
       <div style={{ display: 'inline-flex', gap: 6 }}>
         {allow('values.edit') && <button onClick={() => setEditing(r)}
-          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, border: '1px solid #5cb85c', background: 'transparent', color: '#5cb85c', cursor: 'pointer', padding: 0 }}
-          title={t('edit')}>✎</button>}
+          style={iconBtn} title={t('edit')}><PencilIcon /></button>}
         {allow('values.delete') && <button onClick={() => setToDelete(r)}
-          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, border: '1px solid #dc2626', background: 'transparent', color: '#dc2626', cursor: 'pointer', padding: 0 }}
-          title={t('del')}>✕</button>}
+          style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')}><TrashIcon /></button>}
       </div>
     ),
   }

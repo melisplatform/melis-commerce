@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { card, inputCss, btnGhost, iconBtn, label } from './styles'
-import { PlusIcon } from './icons'
+import { PlusIcon, TrashIcon } from './icons'
 import { ConfirmModal } from './ConfirmModal'
 import { type Address, type AddressOptions, newAddress } from './address'
 import type { T } from './i18n'
@@ -83,7 +83,7 @@ export function AddressEditor({ addresses, onChange, options, t }: {
               return (
                 <div key={a.id} onClick={() => setSelId(a.id)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, cursor: 'pointer', borderRadius: 8, padding: '8px 12px', fontSize: 14, fontWeight: 500, background: sel ? 'var(--color-primary)' : 'var(--color-muted,rgba(0,0,0,.04))', color: sel ? 'var(--color-primary-foreground,#fff)' : 'var(--color-foreground)' }}>
                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.addressName || t('ad_new_title')}</span>
-                  <button onClick={(e) => { e.stopPropagation(); setToDelete(a) }} title={t('del')} style={{ border: 0, background: 'transparent', color: 'inherit', cursor: 'pointer', opacity: 0.85, fontSize: 13 }}>✕</button>
+                  <button onClick={(e) => { e.stopPropagation(); setToDelete(a) }} title={t('del')} style={{ ...iconBtn, width: 20, height: 20, color: 'var(--color-destructive,#ef4444)' }}><TrashIcon /></button>
                 </div>
               )
             })}

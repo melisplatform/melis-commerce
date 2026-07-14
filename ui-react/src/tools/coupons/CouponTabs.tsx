@@ -5,7 +5,7 @@ import {
   type CouponClientOption, type CouponProductOption,
   type CouponOrderUsage, type CouponOrderStatus,
 } from './api'
-import { card, inputCss, th, td, actionBtn } from '../../shared/styles'
+import { card, inputCss, th, td, iconBtn } from '../../shared/styles'
 import { fmtDate, currentLang, type T } from '../../shared/i18n'
 import { CartIcon, TrashIcon, PencilIcon, PlusIcon, RefreshIcon } from '../../shared/icons'
 import { AssignTable, type AssignCol } from './AssignTable'
@@ -42,14 +42,14 @@ export function CouponClientsTab({ directory, draftIds, onChange, t }: {
       <AssignTable title={t('assign_clients_title')} columns={cols} rows={assigned} rowKey={(c) => c.clientId}
         emptyText={t('assign_clients_empty')} t={t}
         actions={(c) => (
-          <button onClick={() => remove(c.clientId)} style={actionBtn('#dc2626')} title={t('unlink')}><TrashIcon /></button>
+          <button onClick={() => remove(c.clientId)} style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('unlink')}><TrashIcon /></button>
         )} />
       <AssignTable title={t('client_list_title')} columns={cols} rows={available} rowKey={(c) => c.clientId}
         emptyText={t('empty')} t={t}
         actions={(c) => (
           <div style={{ display: 'inline-flex', gap: 6 }}>
-            <button onClick={() => navigate(`/melis-commerce/clients-list/${c.clientId}`)} style={actionBtn('#5cb85c')} title={t('edit')}><PencilIcon /></button>
-            <button onClick={() => add(c.clientId)} style={actionBtn('#337ab7')} title={t('assign_clients_add')}><PlusIcon /></button>
+            <button onClick={() => navigate(`/melis-commerce/clients-list/${c.clientId}`)} style={iconBtn} title={t('edit')}><PencilIcon /></button>
+            <button onClick={() => add(c.clientId)} style={iconBtn} title={t('assign_clients_add')}><PlusIcon /></button>
           </div>
         )} />
     </div>
@@ -79,14 +79,14 @@ export function CouponProductsTab({ directory, draftIds, onChange, t }: {
       <AssignTable title={t('assign_products_title')} columns={cols} rows={assigned} rowKey={(p) => p.productId}
         emptyText={t('assign_products_empty')} t={t}
         actions={(p) => (
-          <button onClick={() => remove(p.productId)} style={actionBtn('#dc2626')} title={t('unlink')}><TrashIcon /></button>
+          <button onClick={() => remove(p.productId)} style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('unlink')}><TrashIcon /></button>
         )} />
       <AssignTable title={t('product_list_title')} columns={cols} rows={available} rowKey={(p) => p.productId}
         emptyText={t('empty')} t={t}
         actions={(p) => (
           <div style={{ display: 'inline-flex', gap: 6 }}>
-            <button onClick={() => navigate(`/melis-commerce/product-list/${p.productId}`)} style={actionBtn('#5cb85c')} title={t('edit')}><PencilIcon /></button>
-            <button onClick={() => add(p.productId)} style={actionBtn('#337ab7')} title={t('assign_products_add')}><PlusIcon /></button>
+            <button onClick={() => navigate(`/melis-commerce/product-list/${p.productId}`)} style={iconBtn} title={t('edit')}><PencilIcon /></button>
+            <button onClick={() => add(p.productId)} style={iconBtn} title={t('assign_products_add')}><PlusIcon /></button>
           </div>
         )} />
     </div>
