@@ -399,7 +399,7 @@ function ProductForm({ id, base }: { id: string; base: string }) {
   const primaryName = texts.find((x) => x.name.trim())?.name ?? ''
   useEffect(() => {
     const lbl = (primaryName || reference).trim()
-    if (isEdit && lbl) updateSubLabel(base, subTabPath, lbl || `#${productId}`)
+    if (isEdit) updateSubLabel(base, subTabPath, lbl || `#${productId}`)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [primaryName, reference])
 

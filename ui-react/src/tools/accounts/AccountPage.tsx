@@ -409,7 +409,7 @@ function AccountForm({ id, base }: { id: string; base: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   useEffect(() => {
-    if (isEdit && name) updateSubLabel(base, subTabPath, name || `#${accountId}`)
+    if (isEdit) updateSubLabel(base, subTabPath, name || `#${accountId}`)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name])
 

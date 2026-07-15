@@ -342,7 +342,7 @@ function ContactForm({ id, base }: { id: string; base: string }) {
   }, [])
   useEffect(() => {
     const lbl = `${firstname} ${name}`.trim()
-    if (isEdit && lbl) updateSubLabel(base, subTabPath, lbl || `#${contactId}`)
+    if (isEdit) updateSubLabel(base, subTabPath, lbl || `#${contactId}`)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [firstname, name])
 
