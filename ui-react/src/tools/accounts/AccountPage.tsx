@@ -4,7 +4,7 @@ import {
   deleteAccount, fetchAccountById, fetchAccountOptions, fetchAccounts, fetchAccountStats,
   saveAccount, fetchCompany, saveCompany, fetchAccountAddresses, saveAccountAddresses,
   fetchAccountContacts, testImportAccounts, importAccounts, ACCOUNT_IMPORT_TEMPLATE_URL,
-  type AccountItem, type AccountStats, type CompanyData, type AccountAddress, type AccountContact,
+  type AccountItem, type AccountStats, type CompanyData, type AccountAddress, type AccountContact, type AccountNameMode,
 } from './api'
 import { makeCache } from '../../shared/listCache'
 import { DICT } from './dict'
@@ -334,6 +334,7 @@ function AccountForm({ id, base }: { id: string; base: string }) {
 
   const [groups, setGroups] = useState<AccountOptionT[]>([])
   const [countries, setCountries] = useState<AccountOptionT[]>([])
+  const [accountNameMode, setAccountNameMode] = useState<AccountNameMode>('manual_input')
   const [name, setName] = useState('')
   const [active, setActive] = useState(true)
   const [groupId, setGroupId] = useState<number>(0)
@@ -375,7 +376,7 @@ function AccountForm({ id, base }: { id: string; base: string }) {
     setTab(newTab)
   }
 
-  useEffect(() => { fetchAccountOptions().then((o) => { setGroups(o.groups); setCountries(o.countries) }).catch(() => null) }, [])
+  useEffect(() => { fetchAccountOptions().then((o) => { setGroups(o.groups); setCountries(o.countries); setAccountNameMode(o.accountNameMode) }).catch(() => null) }, [])
   // Reset derived/lazy state when switching accounts so stale data from a previous account isn't saved.
   useEffect(() => {
     setCompany(EMPTY_CO); setCompanyLoaded(false)
@@ -415,7 +416,12 @@ function AccountForm({ id, base }: { id: string; base: string }) {
   async function submit() {
     let firstError = ''
     const fail = (msg: string) => { firstError ||= msg; return msg }
-    if (!name.trim()) setNameError(fail(t('err_name'))); else setNameError('')
+    if (accountNameMode === 'manual_input') {
+      if (!name.trim()) setNameError(fail(t('err_name'))); else setNameError('')
+    } else {
+      setNameError('')
+      if (accountNameMode === 'company_name' && !company.name.trim()) { fail(t('err_company_name_required')); setTab('company') }
+    }
     if (!countryId) setCountryError(fail(t('err_country'))); else setCountryError('')
     setFormError(!!firstError)
     if (firstError) return
@@ -424,7 +430,9 @@ function AccountForm({ id, base }: { id: string; base: string }) {
       const r = await saveAccount({ id: accountId, name: name.trim(), status: active, groupId, countryId, tags: tags.trim() })
       const savedId = accountId ?? r?.id
       if (savedId) {
-        if (companyLoaded || visitedTabs.has('company')) { try { await saveCompany(savedId, company) } catch { /* */ } }
+        // company_name mode : la société pilote le nom du compte affiché partout → toujours sauvée,
+        // même si l'onglet Société n'a jamais été ouvert (sinon la validation serveur ne se déclenche jamais).
+        if (companyLoaded || visitedTabs.has('company') || accountNameMode === 'company_name') { try { await saveCompany(savedId, company) } catch { /* */ } }
         if (addressesLoaded || visitedTabs.has('addresses')) { try { await saveAccountAddresses(savedId, addresses) } catch { /* */ } }
       }
       notify('ok', t('title'), t('saved'))
@@ -449,7 +457,7 @@ function AccountForm({ id, base }: { id: string; base: string }) {
       {formError && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14, marginBottom: 16 }}>{t('err_required_fields')}</div>}
 
       {tab === 'company' ? (
-        <CompanyTab company={company} onChange={setCompany} loading={!companyLoaded && !!accountId} t={t} />
+        <CompanyTab company={company} onChange={setCompany} loading={!companyLoaded && !!accountId} t={t} nameRequired={accountNameMode === 'company_name'} />
       ) : tab === 'addresses' ? (
         <AddressesTab addresses={addresses} onChange={setAddresses} t={t} />
       ) : tab === 'contacts' && accountId ? (
@@ -468,10 +476,15 @@ function AccountForm({ id, base }: { id: string; base: string }) {
               <h3 style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: 0 }}>{t('f_identity')}</h3>
               <div>
                 <label style={{ ...label, display: 'flex', alignItems: 'center', gap: 5 }}>
-                  <UserIcon /><span>{t('f_name')} <span style={{ color: '#ef4444' }}>*</span></span>
+                  <UserIcon /><span>{t('f_name')} {accountNameMode === 'manual_input' && <span style={{ color: '#ef4444' }}>*</span>}</span>
                 </label>
-                <input style={inputCss} value={name} onChange={(e) => { setName(e.target.value); if (nameError && e.target.value.trim()) setNameError('') }} placeholder={t('f_name_ph')} autoComplete="off" />
+                <input style={{ ...inputCss, ...(accountNameMode === 'manual_input' ? {} : { color: 'var(--color-muted-foreground)', background: 'var(--color-muted)' }) }}
+                  value={name} readOnly={accountNameMode !== 'manual_input'}
+                  onChange={(e) => { if (accountNameMode !== 'manual_input') return; setName(e.target.value); if (nameError && e.target.value.trim()) setNameError('') }}
+                  placeholder={t('f_name_ph')} autoComplete="off" />
                 {nameError && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{nameError}</p>}
+                {accountNameMode === 'company_name' && <p style={hint}>{t('f_name_auto_company')}</p>}
+                {accountNameMode === 'contact_name' && <p style={hint}>{t('f_name_auto_contact')}</p>}
               </div>
               <div>
                 <label style={{ ...label, display: 'flex', alignItems: 'center', gap: 5 }}>
@@ -540,6 +553,9 @@ function AccountForm({ id, base }: { id: string; base: string }) {
                 <p style={{ fontSize: 13, color: 'var(--color-muted-foreground)', margin: 0 }}>
                   {accountId ? t('c_empty') : t('save_first')}
                 </p>
+              )}
+              {accountNameMode === 'contact_name' && !mainContact && (
+                <p style={{ ...hint, marginTop: 10 }}>{t('c_default_contact_hint')}</p>
               )}
             </div>
             </div>

@@ -33,14 +33,14 @@ export const EMPTY_CO: Omit<CompanyData, 'id'> = {
   name: '', numberId: '', vatNumber: '', group: '', employees: 0, compCreationDate: '',
   addNumber: '', addStreet: '', addBuilding: '', addZip: '', addCity: '', addState: '', addCountry: '', phone: '', website: '', logo: '',
 }
-export function CompanyTab({ company, onChange, loading, t }: {
-  company: Omit<CompanyData, 'id'>; onChange: (c: Omit<CompanyData, 'id'>) => void; loading: boolean; t: T
+export function CompanyTab({ company, onChange, loading, t, nameRequired }: {
+  company: Omit<CompanyData, 'id'>; onChange: (c: Omit<CompanyData, 'id'>) => void; loading: boolean; t: T; nameRequired?: boolean
 }) {
   const set = <K extends keyof typeof company>(k: K, v: (typeof company)[K]) => onChange({ ...company, [k]: v })
-  const field = (k: keyof typeof company, lbl: string, type: 'text' | 'number' = 'text') => (
+  const field = (k: keyof typeof company, lbl: string, type: 'text' | 'number' = 'text', required?: boolean) => (
     <div>
-      <label style={label}>{lbl}</label>
-      <input style={inputCss} type={type} value={String(company[k] ?? '')}
+      <label style={{ ...label, display: 'flex', alignItems: 'center', gap: 4 }}>{lbl} {required && <span style={{ color: '#ef4444' }}>*</span>}</label>
+      <input style={{ ...inputCss, ...(required && !String(company[k] ?? '').trim() ? { borderColor: '#fca5a5' } : {}) }} type={type} value={String(company[k] ?? '')}
         onChange={(e) => set(k, (type === 'number' ? Number(e.target.value) : e.target.value) as never)} autoComplete="off" />
     </div>
   )
@@ -49,7 +49,7 @@ export function CompanyTab({ company, onChange, loading, t }: {
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, alignItems: 'start' }}>
       <div style={{ ...card, padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
         <h3 style={sectionTitle}>{t('co_section_id')}</h3>
-        {field('name', t('co_name'))}
+        {field('name', t('co_name'), 'text', nameRequired)}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>{field('numberId', t('co_number'))}{field('vatNumber', t('co_vat'))}</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>{field('group', t('co_group'))}{field('employees', t('co_employees'), 'number')}</div>
         <div>

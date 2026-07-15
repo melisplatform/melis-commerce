@@ -7,7 +7,8 @@ export interface AccountItem {
   tags: string; dateCreation: string | null; dateEdit: string | null
 }
 export type AccountStats = Stats
-export interface AccountOptions { groups: Option[]; countries: Option[] }
+export type AccountNameMode = 'manual_input' | 'company_name' | 'contact_name'
+export interface AccountOptions { groups: Option[]; countries: Option[]; accountNameMode: AccountNameMode }
 export interface AccountSavePayload { id?: number | null; name: string; status: boolean; groupId: number; countryId: number; tags: string }
 
 export function fetchAccounts(params: { search?: string; status?: number | null; groupId?: number | null } = {}): Promise<ListResult<AccountItem>> {

@@ -52,6 +52,8 @@ $(function() {
 						var navTabsGroup = "id_meliscommerce_clients_list_page";
 
 						if($("#id_meliscommerce_clients_list_page").length > 0) {
+							// Already viewing the Clients/Accounts tool itself (this element lives in
+							// ITS OWN iframe document) — nest the account tab in this same tab bar, as before.
 							melisHelper.tabOpen(
 								data.accountName,
 								"fa fa-user",
@@ -60,7 +62,24 @@ $(function() {
 								{clientId: accountId},
 								navTabsGroup
 							);
+						}else if (window.__melisRealParent) {
+							// Called from a DIFFERENT tool's iframe (e.g. Contacts' Association tab, or a
+							// coupon's linked-client list): melisHelper.tabOpen only manages tabs within
+							// THIS iframe's own document, so opening "Clients" here would just nest it
+							// inside the CURRENT tool's tab bar (mirrored to the React shell as a sub-tab
+							// of the current tool, not a real top-level "Accounts" tab). Ask the host to
+							// open the Accounts tool for real instead — see melis-core App.tsx TabBridge's
+							// __melisOpenTool listener.
+							window.__melisRealParent.postMessage({
+								__melisOpenTool: true,
+								forwardKey: "MelisCommerce/MelisComClientList",
+								id: accountId,
+								label: data.accountName
+							}, "*");
 						}else{
+							// No React shell host (classic standalone back-office) — keep the legacy
+							// in-page tab behavior: open "Clients" as a new top-level tab, then nest
+							// the account tab inside it once it exists.
 							melisHelper.tabOpen(
 								translations.tr_meliscommerce_clients_Clients,
 								"fa fa-users fa-2x",

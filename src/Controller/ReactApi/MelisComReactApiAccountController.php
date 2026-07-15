@@ -21,6 +21,19 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
 {
     private const MELIS_KEY = 'meliscommerce_clients_list_page';
 
+    /**
+     * melis_ecom_settings_account.sa_type ∈ manual_input|company_name|contact_name — pilote l'affichage
+     * ET la validation du nom de compte partout (liste, détail, sauvegarde). Cf. MelisComClientService::
+     * getAccountNameSetting() côté legacy (même table, même logique de reprise dynamique à la lecture).
+     */
+    private function accountNameMode(): string
+    {
+        $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
+        $rows = iterator_to_array($db->query('SELECT sa_type FROM melis_ecom_settings_account LIMIT 1', []));
+        $type = $rows ? (string) ((array) $rows[0])['sa_type'] : 'manual_input';
+        return in_array($type, ['manual_input', 'company_name', 'contact_name'], true) ? $type : 'manual_input';
+    }
+
     // ─── GET /accounts ────────────────────────────────────────────────────────
 
     public function listAction(): HttpResponse
@@ -63,13 +76,19 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
             );
             $total = (int) ($countRow[0]['total'] ?? 0);
 
+            $mode = $this->accountNameMode();
             $dataSql = "
                 SELECT c.cli_id, c.cli_status, c.cli_name, c.cli_group_id,
                        c.cli_country_id, c.cli_tags, c.cli_date_creation, c.cli_date_edit,
-                       g.cgroup_name, cp.ctry_name AS cli_country_name
+                       g.cgroup_name, cp.ctry_name AS cli_country_name,
+                       comp.ccomp_name AS dyn_company_name,
+                       dcp.cper_firstname AS dyn_contact_firstname, dcp.cper_name AS dyn_contact_name
                 FROM melis_ecom_client c
                 LEFT JOIN melis_ecom_client_groups g ON g.cgroup_id = c.cli_group_id
                 LEFT JOIN melis_ecom_country cp ON cp.ctry_id = c.cli_country_id
+                LEFT JOIN melis_ecom_client_company comp ON comp.ccomp_client_id = c.cli_id
+                LEFT JOIN melis_ecom_client_account_rel dcar ON dcar.car_client_id = c.cli_id AND dcar.car_default_person = 1
+                LEFT JOIN melis_ecom_client_person dcp ON dcp.cper_id = dcar.car_client_person_id
                 $whereClause
                 ORDER BY c.cli_id DESC
                 LIMIT ? OFFSET ?
@@ -78,7 +97,7 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
 
             $items = [];
             foreach ($rows as $row) {
-                $items[] = $this->formatAccount((array) $row);
+                $items[] = $this->formatAccount((array) $row, $mode);
             }
 
             return $this->jsonResponse([
@@ -142,7 +161,7 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
                 $countries[] = ['id' => (int) $r['ctry_id'], 'name' => (string) $r['ctry_name']];
             }
 
-            return $this->jsonResponse(['success' => true, 'data' => ['groups' => $groups, 'countries' => $countries]]);
+            return $this->jsonResponse(['success' => true, 'data' => ['groups' => $groups, 'countries' => $countries, 'accountNameMode' => $this->accountNameMode()]]);
         } catch (\Throwable $e) {
             return $this->errorResponse($e);
         }
@@ -164,10 +183,15 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
             $rows = iterator_to_array($db->query(
                 "SELECT c.cli_id, c.cli_status, c.cli_name, c.cli_group_id,
                         c.cli_country_id, c.cli_tags, c.cli_date_creation, c.cli_date_edit,
-                        g.cgroup_name, cp.ctry_name AS cli_country_name
+                        g.cgroup_name, cp.ctry_name AS cli_country_name,
+                        comp.ccomp_name AS dyn_company_name,
+                        dcp.cper_firstname AS dyn_contact_firstname, dcp.cper_name AS dyn_contact_name
                  FROM melis_ecom_client c
                  LEFT JOIN melis_ecom_client_groups g ON g.cgroup_id = c.cli_group_id
                  LEFT JOIN melis_ecom_country cp ON cp.ctry_id = c.cli_country_id
+                 LEFT JOIN melis_ecom_client_company comp ON comp.ccomp_client_id = c.cli_id
+                 LEFT JOIN melis_ecom_client_account_rel dcar ON dcar.car_client_id = c.cli_id AND dcar.car_default_person = 1
+                 LEFT JOIN melis_ecom_client_person dcp ON dcp.cper_id = dcar.car_client_person_id
                  WHERE c.cli_id = ? LIMIT 1",
                 [$id]
             ));
@@ -176,7 +200,7 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
                 return $this->jsonResponse(['success' => false, 'error' => 'Account not found'], 404);
             }
 
-            return $this->jsonResponse(['success' => true, 'data' => $this->formatAccount((array) $rows[0])]);
+            return $this->jsonResponse(['success' => true, 'data' => $this->formatAccount((array) $rows[0], $this->accountNameMode())]);
         } catch (\Throwable $e) {
             return $this->errorResponse($e);
         }
@@ -198,7 +222,9 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
             $countryId = (int) ($body['countryId'] ?? 0);
             $tags      = trim((string) ($body['tags'] ?? ''));
 
-            if ($name === '') {
+            // manual_input seul rend le nom obligatoire ICI — en company_name/contact_name le nom est
+            // dérivé dynamiquement à la lecture (cf. formatAccount()) et n'a donc plus besoin d'être saisi.
+            if ($name === '' && $this->accountNameMode() === 'manual_input') {
                 return $this->jsonResponse(['success' => false, 'error' => 'Le nom est obligatoire.'], 400);
             }
             if ($countryId <= 0) {
@@ -317,6 +343,12 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
         try {
             $clientId = $this->routeId();
             $b = json_decode($this->getRequest()->getContent(), true) ?? [];
+
+            // company_name mode : le nom société pilote le nom de compte affiché partout (formatAccount()) —
+            // devient obligatoire ici, cf. ticket Mantis #10677.
+            if ($this->accountNameMode() === 'company_name' && trim((string) ($b['name'] ?? '')) === '') {
+                return $this->jsonResponse(['success' => false, 'error' => 'Le nom de la société est obligatoire.'], 400);
+            }
 
             $logoRaw = (string) ($b['logo'] ?? '');
             if (($p = strpos($logoRaw, ',')) !== false && strpos($logoRaw, ';base64') !== false) { $logoRaw = substr($logoRaw, $p + 1); }
@@ -812,7 +844,10 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
     private function linkClientPerson($db, int $clientId, int $contactId): void
     {
         if (!iterator_to_array($db->query('SELECT car_id FROM melis_ecom_client_account_rel WHERE car_client_id = ? AND car_client_person_id = ? LIMIT 1', [$clientId, $contactId]))) {
-            $db->query('INSERT INTO melis_ecom_client_account_rel (car_client_id, car_client_person_id, car_default_person) VALUES (?, ?, 0)', [$clientId, $contactId]);
+            // Premier contact associé à ce compte → devient automatiquement son contact par défaut,
+            // cf. MelisComClientService::linkAccountContact() (legacy).
+            $isFirst = !iterator_to_array($db->query('SELECT car_id FROM melis_ecom_client_account_rel WHERE car_client_id = ? LIMIT 1', [$clientId]));
+            $db->query('INSERT INTO melis_ecom_client_account_rel (car_client_id, car_client_person_id, car_default_person) VALUES (?, ?, ?)', [$clientId, $contactId, $isFirst ? 1 : 0]);
         }
         if (!iterator_to_array($db->query('SELECT cpr_id FROM melis_ecom_client_person_rel WHERE cpr_client_id = ? AND cpr_client_person_id = ? LIMIT 1', [$clientId, $contactId]))) {
             $db->query('INSERT INTO melis_ecom_client_person_rel (cpr_client_id, cpr_client_person_id, cpr_default_client) VALUES (?, ?, 0)', [$clientId, $contactId]);
@@ -828,12 +863,24 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
 
     // ─── Helpers (copiés de MelisReactApiUserController) ───────────────────────
 
-    private function formatAccount(array $r): array
+    /**
+     * @param string $mode manual_input|company_name|contact_name — quand différent de manual_input, le nom
+     * affiché est repris DYNAMIQUEMENT de la société / du contact par défaut (cli_name stocké est ignoré),
+     * comme MelisComClientService::getAccountNameSetting() côté legacy (à chaque lecture, pas seulement
+     * à la sauvegarde — un nom peut donc changer sans que le compte lui-même n'ait été ré-enregistré).
+     */
+    private function formatAccount(array $r, string $mode = 'manual_input'): array
     {
+        $name = (string) ($r['cli_name'] ?? '');
+        if ($mode === 'company_name') {
+            $name = (string) ($r['dyn_company_name'] ?? '');
+        } elseif ($mode === 'contact_name') {
+            $name = trim(((string) ($r['dyn_contact_firstname'] ?? '')) . ' ' . ((string) ($r['dyn_contact_name'] ?? '')));
+        }
         return [
             'id'           => (int)    $r['cli_id'],
             'status'       => (int)    $r['cli_status'],
-            'name'         => (string) ($r['cli_name'] ?? ''),
+            'name'         => $name,
             'groupId'      => (int)    ($r['cli_group_id'] ?? 0),
             'groupName'    => (string) ($r['cgroup_name'] ?? ''),
             'countryId'    => (int)    ($r['cli_country_id'] ?? 0),
@@ -841,6 +888,7 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
             'tags'         => (string) ($r['cli_tags'] ?? ''),
             'dateCreation' => $r['cli_date_creation'] ?? null,
             'dateEdit'     => $r['cli_date_edit'] ?? null,
+            'nameMode'     => $mode,
         ];
     }
 
