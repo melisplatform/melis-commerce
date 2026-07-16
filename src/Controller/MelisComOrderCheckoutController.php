@@ -2209,7 +2209,15 @@ class MelisComOrderCheckoutController extends MelisAbstractActionController
             $melisComOrderCheckoutService = $this->getServiceManager()->get('MelisComOrderCheckoutService');
             $melisComOrderCheckoutService->setSiteId(self::SITE_ID);
             $order = $melisComOrderCheckoutService->computeAllCosts($container['checkout'][self::SITE_ID]['clientId']);
-            $totalCost = $order['costs']['order']['total'];
+            // Sum every cost bucket (order, shipment, ...) instead of only 'order' — otherwise the
+            // amount sent to payment excludes shipment while checkoutStep2_postPayment()'s validation
+            // (computeOrderTotalCosts) includes it, causing a guaranteed mismatch on non-zero shipping.
+            $totalCost = 0;
+            foreach ($order['costs'] as $costKey => $costVal) {
+                if ($costKey != 'total') {
+                    $totalCost += $costVal['total'];
+                }
+            }
         }
 
         $couponId = null;

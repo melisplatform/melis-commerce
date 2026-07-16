@@ -348,7 +348,9 @@ return [
                                                         'module' => 'MelisCommerce',
                                                         'controller' => 'MelisComOrderCheckout',
                                                         'action' => 'render-order-checkout-summary-basket',
-                                                        'jscallback' => 'melisCommerce.priceLogTooltip();',
+                                                        // See fixOrderCheckoutZoneWrapper() in checkout.tool.js — this zone's phtml
+                                                        // re-declares its own #id.col-md-4 wrapper, same as the Products step's zones.
+                                                        'jscallback' => 'fixOrderCheckoutZoneWrapper("id_meliscommerce_order_checkout_summary_basket"); melisCommerce.priceLogTooltip();',
                                                     ],
                                                 ],
                                                 'meliscommerce_order_checkout_summary_delivery_address' => [
@@ -361,6 +363,7 @@ return [
                                                         'module' => 'MelisCommerce',
                                                         'controller' => 'MelisComOrderCheckout',
                                                         'action' => 'render-order-checkout-summary-delivery-address',
+                                                        'jscallback' => 'fixOrderCheckoutZoneWrapper("id_meliscommerce_order_checkout_summary_delivery_address");',
                                                     ],
                                                 ],
                                                 'meliscommerce_order_checkout_summary_billing_address' => [
@@ -373,6 +376,7 @@ return [
                                                         'module' => 'MelisCommerce',
                                                         'controller' => 'MelisComOrderCheckout',
                                                         'action' => 'render-order-checkout-summary-billing-address',
+                                                        'jscallback' => 'fixOrderCheckoutZoneWrapper("id_meliscommerce_order_checkout_summary_billing_address");',
                                                     ],
                                                 ],
                                             ]

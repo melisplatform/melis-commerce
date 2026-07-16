@@ -275,6 +275,15 @@ $(function() {
 				"id_meliscommerce_order_checkout_delivery_address",
 				"meliscommerce_order_checkout_delivery_address"
 			);
+		} else if (tabId == "#id_meliscommerce_order_checkout_choose_product_step_nav") {
+			// Quantities may have been edited from the Summary step's own basket zone since this
+			// zone was last rendered; force a fresh reload so its cached quantities never drive a
+			// stale +/- click (a decrement computed off a pre-edit value can zero out and delete
+			// the basket row for a product that was actually just set to a higher quantity).
+			melisHelper.zoneReload(
+				"id_meliscommerce_order_checkout_product_bakset",
+				"meliscommerce_order_checkout_product_bakset"
+			);
 		}
 
 		$body.stop().animate({ scrollTop: 0 }, "500", "swing");
@@ -820,13 +829,9 @@ window.updateSummaryVariantbasket = function(action, variantId, variantQty) {
 		variantQty: variantQty,
 		couponCode: couponCode,
 	});
-	// this will also update the basket list at First step
-	setTimeout(function() {
-		melisHelper.zoneReload(
-			"id_meliscommerce_order_checkout_product_bakset",
-			"meliscommerce_order_checkout_product_bakset"
-		);
-	}, 3000);
+	// The Products step's own basket zone is force-reloaded when the admin navigates back to it
+	// (see .orderCheckoutPrevStep) — that's the only point it's actually visible/interactable,
+	// so no blind delayed reload is needed here.
 };
 
 // This method will update the Basket list at First Step
