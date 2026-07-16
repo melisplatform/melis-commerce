@@ -32,68 +32,68 @@ return [
                                 'rights_checkbox_disable' => false,
                             ],
                             'interface' => [
-                                'meliscommerce_categories' => [
+                                'meliscommerce_categories_page' => [
                                     'conf' => [
                                         'type' => 'meliscommerce/interface/meliscommerce_categories/interface/meliscommerce_categories_leftmenu'
                                     ],
                                 ],
-                                'meliscommerce_product_list' => [
+                                'meliscommerce_product_list_container' => [
                                     'conf' => [
                                         'type' => 'meliscommerce/interface/meliscommerce_product_list/interface/meliscommerce_product_list_leftmenu'
                                     ],
                                 ],
-                                'meliscommerce_clients_list' => [
+                                'meliscommerce_clients_list_page' => [
                                     'conf' => [
                                         'type' => 'meliscommerce/interface/meliscommerce_clients_list/interface/meliscommerce_clients_list_leftmenu'
                                     ],
                                 ],
-                                'meliscommerce_contact_list' => [
+                                'meliscommerce_contact_list_page' => [
                                     'conf' => [
                                         'type' => 'meliscommerce/interface/meliscommerce_contact_list/interface/meliscommerce_contact_list_leftmenu'
                                     ],
                                 ],
-                                'meliscommerce_order_list' => [
+                                'meliscommerce_order_list_page' => [
                                     'conf' => [
                                         'type' => 'meliscommerce/interface/meliscommerce_order_list/interface/meliscommerce_order_list_leftmenu'
                                     ],
                                 ],
-                                'meliscommerce_coupon_list' => [
+                                'meliscommerce_coupon_list_page' => [
                                     'conf' => [
                                         'type' => 'meliscommerce/interface/meliscommerce_coupon_list/interface/meliscommerce_coupon_list_leftmenu'
                                     ],
                                 ],
-                                'meliscommerce_attribute_list' => [
+                                'meliscommerce_attribute_list_page' => [
                                     'conf' => [
                                         'type' => 'meliscommerce/interface/meliscommerce_attribute_list/interface/meliscommerce_attribute_list_leftmenu'
                                     ],
                                 ],
-                                'meliscommerce_country_list' => [
+                                'meliscommerce_country_list_container' => [
                                     'conf' => [
                                         'type' => 'meliscommerce/interface/meliscommerce_country_list/interface/meliscommerce_country_list_leftmenu'
                                     ],
                                 ],
-                                'meliscommerce_language_list' => [
+                                'meliscommerce_language_list_container' => [
                                     'conf' => [
                                         'type' => 'meliscommerce/interface/meliscommerce_language_list/interface/meliscommerce_language_list_leftmenu'
                                     ],
                                 ],
-                                'meliscommerce_currency_lists' => [
+                                'meliscommerce_currency_conf' => [
                                     'conf' => [
                                         'type' => 'meliscommerce/interface/meliscommerce_currency_lists/interface/meliscommerce_currency_left_menu'
                                     ],
                                 ],
-                                'meliscommerce_order_status_lists' => [
+                                'meliscommerce_order_status_tool_page' => [
                                     'conf' => [
                                         'type' => 'meliscommerce/interface/meliscommerce_order_status_tool/interface/meliscommerce_order_status_tool_leftmenu'
                                     ],
                                 ],
-                                'meliscommerce_clients_group_list' => [
+                                'meliscommerce_clients_group_tool_container' => [
                                     'conf' => [
                                         'type' => 'meliscommerce/interface/meliscommerce_clients_group_tool/interface/meliscommerce_clients_group_tool_leftmenu'
                                     ],
                                 ],
 
-                                'meliscommerce_settings' => [
+                                'meliscommerce_settings_page' => [
                                     'conf' => [
                                         'type' => 'meliscommerce/interface/meliscommerce_settings/interface/meliscommerce_settings_leftmenu'
                                     ],
