@@ -6,7 +6,7 @@ export const DICT = mergeDict({
     title: 'Paramètres commerce', subtitle: 'Configurez ici les propriétés générales de la partie commerce.',
     tab_main: 'Propriétés', tab_accounts: 'Comptes',
     section_stock_alert: 'Alerte de stock',
-    field_stock_level: 'Seuil de stock', tip_stock_level: 'Quantité de stock pour chaque variante à partir de laquelle un email d\'alerte est envoyé aux destinataires définis.',
+    field_stock_level: 'Seuil de stock', tip_stock_level: 'Quantité de stock pour chaque variant à partir duquel un email d\'alerte est envoyé aux destinataires définis.',
     section_recipients: 'Destinataires', recipients_empty: 'Aucun destinataire sélectionné.', recipients_add: 'Ajouter un destinataire',
     pick_user: '— Choisir un utilisateur —',
     section_account_name: 'Nom de compte',

@@ -226,7 +226,7 @@ const sectionTitle = { fontSize: 12, fontWeight: 600, display: 'flex', alignItem
 export function readFileDataUrl(file: File): Promise<string> {
   return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result)); r.onerror = rej; r.readAsDataURL(file) })
 }
-/** Modale de duplication (produit ou variante) : options images/documents/en ligne + SKU/référence. */
+/** Modale de duplication (produit ou variant) : options images/documents/en ligne + SKU/référence. */
 const ynBtn = (on: boolean, color: string) => ({ padding: '6px 16px', borderRadius: 6, border: 0, cursor: 'pointer', fontSize: 14, fontWeight: 600, minWidth: 56, background: on ? color : 'transparent', color: on ? '#fff' : 'var(--color-foreground)' } as const)
 export function DuplicateModal({ title, intro, fieldLabel, fieldPlaceholder, t, onClose, onConfirm }: {
   title: string; intro: string; fieldLabel: string; fieldPlaceholder: string; t: TFn
@@ -786,13 +786,13 @@ export function ImagesSection({ productId, t, countries = [], pendingImages = []
   )
 }
 
-/** Table de tooltip variantes (ID/Image/SKU/Attributs/Pays/Prix/Stock), flottante via portal — calquée
+/** Table de tooltip variants (ID/Image/SKU/Attributs/Pays/Prix/Stock), flottante via portal — calquée
  * sur le qTip legacy (MelisComProductListController::getToolTipAction()). Partagée entre le survol du
- * NOM produit (liste produits, toutes ses variantes) et le survol du SKU (onglet Variantes, 1 seule ligne
+ * NOM produit (liste produits, tous ses variants) et le survol du SKU (onglet Variants, 1 seule ligne
  * puisque legacy filtre alors `$vcontent` sur ce variantId — cf. la même action avec `variantId` posté). */
 export function VariantTooltipTable({ items, pos, t, onMouseEnter, onMouseLeave, onRowClick }: {
   items: TooltipVariant[]; pos: { x: number; y: number }; t: TFn; onMouseEnter?: () => void; onMouseLeave?: () => void
-  /** Rend chaque ligne cliquable → ouvre cette variante dans l'onglet Variantes. */
+  /** Rend chaque ligne cliquable → ouvre ce variant dans l'onglet Variants. */
   onRowClick?: (variantId: number) => void
 }) {
   const cellTh = { padding: '6px 12px', textAlign: 'left' as const, fontSize: 11, textTransform: 'uppercase' as const, letterSpacing: '.04em', color: 'rgba(255,255,255,.7)', whiteSpace: 'nowrap' as const }
@@ -827,7 +827,7 @@ export function VariantTooltipTable({ items, pos, t, onMouseEnter, onMouseLeave,
   )
 }
 
-// ── Onglet Variantes (table type legacy : ID / Principale / Image / Statut / SKU / Attributs / Action) ──
+// ── Onglet Variants (table type legacy : ID / Principale / Image / Statut / SKU / Attributs / Action) ──
 export function VariantsTab({ productId, t, onAdd, onEdit, can }: { productId: number | null; t: TFn; onAdd: () => void; onEdit: (id: number) => void; can?: (cap: string) => boolean }) {
   const allow = (cap: string) => (can ? can(cap) : true)
   const [items, setItems] = useState<ProductVariant[]>([])
@@ -835,13 +835,13 @@ export function VariantsTab({ productId, t, onAdd, onEdit, can }: { productId: n
   const [search, setSearch] = useState('')
   const [toDelete, setToDelete] = useState<ProductVariant | null>(null)
   // Tooltip au survol du SKU (calqué sur ProductNameCell / legacy toolTipVarHoverEvent, cf. VariantTooltipTable) —
-  // chargée une fois pour toutes les lignes (déjà toutes les variantes du produit), pas par ligne survolée.
+  // chargée une fois pour toutes les lignes (déjà tous les variants du produit), pas par ligne survolée.
   const [tooltipItems, setTooltipItems] = useState<TooltipVariant[] | null>(null)
   const [hoveredSkuId, setHoveredSkuId] = useState<number | null>(null)
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
   // Le tooltip flotte SOUS le SKU (pas un enfant DOM) : quitter le bouton pour l'atteindre
   // traverse un instant "hors survol" — un délai court (au lieu d'un clearHover immédiat)
-  // laisse la souris arriver dessus avant fermeture, pour pouvoir cliquer une variante dedans.
+  // laisse la souris arriver dessus avant fermeture, pour pouvoir cliquer un variant dedans.
   const tooltipCloseTimer = useRef<number | null>(null)
   function clearTooltipCloseTimer() { if (tooltipCloseTimer.current) { window.clearTimeout(tooltipCloseTimer.current); tooltipCloseTimer.current = null } }
   function scheduleTooltipClose() { clearTooltipCloseTimer(); tooltipCloseTimer.current = window.setTimeout(() => setHoveredSkuId(null), 150) }

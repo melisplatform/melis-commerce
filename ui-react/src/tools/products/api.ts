@@ -48,7 +48,7 @@ export interface DuplicateOpts { duplicateImages: boolean; duplicateDocuments: b
 export const duplicateProduct = (id: number, opts: DuplicateOpts & { reference: string }) =>
   apiFetch<{ id: number }>(`/melis/react-api/products/${id}/duplicate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(opts) })
 
-// ── Variantes ──────────────────────────────────────────────────────────────────
+// ── Variants ──────────────────────────────────────────────────────────────────
 export const fetchProductVariants = (id: number) => apiFetch<{ items: ProductVariant[] }>(`/melis/react-api/products/${id}/variants`)
 export const saveProductVariant = (id: number, v: { variantId?: number | null; sku: string; status: boolean; isMain: boolean }) =>
   apiFetch<{ id: number }>(`/melis/react-api/products/${id}/variants/save`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(v) })
@@ -88,7 +88,7 @@ export const saveProductRecipient = (id: number, recipient: { userId: number } |
 export const deleteProductRecipient = (id: number, seaId: number) =>
   apiFetch<null>(`/melis/react-api/products/${id}/alert/recipients/${seaId}`, { method: 'DELETE' })
 
-// ── Éditeur de variante (détail + sous-ressources) ──────────────────────────────
+// ── Éditeur de variant (détail + sous-ressources) ──────────────────────────────
 export interface VariantSeo { langId: number; langName: string; pageId: string; url: string; urlRedirect: string; url301: string; metaTitle: string; metaDescription: string }
 export interface VariantDetail { id: number; sku: string; status: number; isMain: number; seo: VariantSeo[] }
 export interface VariantPrice { id: number; countryId: number; currency: number; net: number | null; gross: number | null; vatPercent: number | null; vatPrice: number | null; otherTax: number | null }
@@ -116,7 +116,7 @@ export const deleteVariantStock = (prdId: number, varId: number, stockId: number
 export const saveVariantSeo = (prdId: number, varId: number, items: { langId: number; pageId: string; url: string; urlRedirect: string; url301: string; metaTitle: string; metaDescription: string }[]) =>
   apiFetch<null>(`/melis/react-api/products/${prdId}/variants/${varId}/seo/save`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items }) })
 
-// Association de variantes
+// Association de variants
 export interface AssocVariant { avarId: number; variantId: number; sku: string; status: number; productName: string }
 export interface AvailVariant { variantId: number; sku: string; status: number; productName: string }
 export const fetchVariantAssoc = (prdId: number, varId: number) => apiFetch<{ associated: AssocVariant[]; available: AvailVariant[] }>(`/melis/react-api/products/${prdId}/variants/${varId}/assoc`)
@@ -125,7 +125,7 @@ export const saveVariantAssoc = (prdId: number, varId: number, variantId: number
 export const deleteVariantAssoc = (prdId: number, varId: number, avarId: number) =>
   apiFetch<null>(`/melis/react-api/products/${prdId}/variants/${varId}/assoc/${avarId}`, { method: 'DELETE' })
 
-// Valeurs d'attribut de la variante — une entrée par attribut ASSIGNÉ AU PRODUIT, avec sa
+// Valeurs d'attribut du variant — une entrée par attribut ASSIGNÉ AU PRODUIT, avec sa
 // valeur actuellement sélectionnée (0/1 par attribut, comme le legacy) et ses valeurs possibles.
 export interface VariantAttrGroup { attributeId: number; attributeName: string; selectedValueId: number | null; selectedVatvId: number | null; values: Option[] }
 export const fetchVariantAttributes = (prdId: number, varId: number) => apiFetch<{ attributes: VariantAttrGroup[] }>(`/melis/react-api/products/${prdId}/variants/${varId}/attributes`)

@@ -26,7 +26,7 @@ const labelRow = { display: 'flex', alignItems: 'center', justifyContent: 'space
 const num = (v: string) => v === '' ? null : (parseFloat(v) || 0)
 const str = (v: number | null) => v == null ? '' : String(v)
 
-/** Éditeur d'une variante — onglets Propriétés / SEO / Prix / Stocks / Association. */
+/** Éditeur d'un variant — onglets Propriétés / SEO / Prix / Stocks / Association. */
 export function VariantEditor({ productId, variantId, countries, currencies, languages, t, onClose, onSaved, can }: {
   productId: number; variantId: number | null; countries: CountryOption[]; currencies: Option[]; languages: LangOption[]
   t: TFn; onClose: () => void; onSaved: () => void; can?: (cap: string) => boolean
@@ -46,7 +46,7 @@ export function VariantEditor({ productId, variantId, countries, currencies, lan
   const [err, setErr] = useState<string | null>(null)
   const [errSku, setErrSku] = useState(false)
 
-  // Onglets de la variante masqués selon les droits (accès onglet = capacité `variants.<clé>`).
+  // Onglets du variant masqués selon les droits (accès onglet = capacité `variants.<clé>`).
   const allow = (cap: string) => (can ? can(cap) : true)
   const TABS: TabDef[] = ([
     { key: 'properties', label: t('tab_main') }, { key: 'seo', label: t('tab_seo') }, { key: 'prices', label: t('tab_prices') },
@@ -106,12 +106,12 @@ export function VariantEditor({ productId, variantId, countries, currencies, lan
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           {/* Vraie navigation arrière (pas juste décorative) : ce formulaire est niché DANS l'onglet
               Variants du produit — le SubTabBar de l'hôte ne connaît que le niveau Produit, donc cette
-              flèche reste nécessaire pour revenir à la LISTE des variantes. */}
+              flèche reste nécessaire pour revenir à la LISTE des variants. */}
           <button type="button" style={{ ...iconBtn, width: 32, height: 32 }} onClick={onClose} title={t('back')}><ArrowLeftIcon /></button>
           <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>{isEdit ? t('var_edit') : t('var_new')}</h2>
         </div>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-          <button style={btnPrimary} onClick={save} disabled={saving || loading}>{saving ? '…' : t('save')}</button>
+          <button style={btnPrimary} onClick={save} disabled={saving || loading}>{saving ? '…' : t('save_variant')}</button>
         </div>
       </div>
 
@@ -192,7 +192,7 @@ export function VariantEditor({ productId, variantId, countries, currencies, lan
 
 const secT = { fontSize: 12, fontWeight: 600, color: 'var(--color-foreground)', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 6 } as const
 
-// ── Prix de la variante (formulaire par pays : Net/Brut/TVA%/Montant TVA/Autre taxe) ──
+// ── Prix du variant (formulaire par pays : Net/Brut/TVA%/Montant TVA/Autre taxe) ──
 function VarPrices({ productId, variantId, countryItems, currency, t, saveRef }: { productId: number; variantId: number | null; countryItems: { id: number; name: string; flag?: string }[]; currency: number; t: TFn; saveRef?: React.MutableRefObject<((id: number) => Promise<void>) | null> }) {
   const [prices, setPrices] = useState<VariantPrice[]>([])
   const [country, setCountry] = useState<number>(-1)
@@ -235,7 +235,7 @@ function VarPrices({ productId, variantId, countryItems, currency, t, saveRef }:
   )
 }
 
-// ── Stocks de la variante (par pays : Quantité + Date de réapprovisionnement) ────
+// ── Stocks du variant (par pays : Quantité + Date de réapprovisionnement) ────
 function VarStocks({ productId, variantId, countryItems, t, saveRef }: { productId: number; variantId: number | null; countryItems: { id: number; name: string; flag?: string }[]; t: TFn; saveRef?: React.MutableRefObject<((id: number) => Promise<void>) | null> }) {
   const [stocks, setStocks] = useState<VariantStock[]>([])
   const [country, setCountry] = useState<number>(-1)
@@ -272,7 +272,7 @@ function VarStocks({ productId, variantId, countryItems, t, saveRef }: { product
   )
 }
 
-// ── Fichiers / Images de la variante (lecture ; upload via Old) ─────────────────
+// ── Fichiers / Images du variant (lecture ; upload via Old) ─────────────────
 function VarFiles({ productId, variantId, t, countries, onNeedVid }: { productId: number; variantId: number | null; t: TFn; countries: CountryOption[]; onNeedVid?: () => Promise<number | null> }) {
   const [files, setFiles] = useState<MediaItem[]>([])
   const [tick, setTick] = useState(0)
@@ -308,7 +308,7 @@ function VarFiles({ productId, variantId, t, countries, onNeedVid }: { productId
 }
 function VarImages({ productId, variantId, t, countries }: { productId: number; variantId: number | null; t: TFn; countries: CountryOption[] }) {
   const [images, setImages] = useState<MediaItem[]>([])
-  // Images added while the variant doesn't exist yet (still on "Nouvelle variante") are queued
+  // Images added while the variant doesn't exist yet (still on "Nouveau variant") are queued
   // here instead of eagerly auto-saving the variant to get an id — auto-saving would run the same
   // full-form validation (e.g. SKU required) as the main Save button, which must not fire just
   // because the user picked an image. Flushed once `variantId` becomes real (see effect below).
@@ -394,7 +394,7 @@ function VarImages({ productId, variantId, t, countries }: { productId: number; 
   )
 }
 
-// ── Attributs de la variante : une ligne par attribut assigné au produit (Color, Shoe size…),
+// ── Attributs du variant : une ligne par attribut assigné au produit (Color, Shoe size…),
 // chacune avec son propre sélecteur de valeur (une seule valeur par attribut, comme le legacy) ──
 function VarAttributes({ productId, variantId, t, onNeedVid }: { productId: number; variantId: number | null; t: TFn; onNeedVid?: () => Promise<number | null> }) {
   const [groups, setGroups] = useState<VariantAttrGroup[]>([])
@@ -428,7 +428,7 @@ function VarAttributes({ productId, variantId, t, onNeedVid }: { productId: numb
   )
 }
 
-// ── Association : variantes associées + variantes disponibles à associer ────────
+// ── Association : variants associés + variants disponibles à associer ────────
 function VarAssoc({ productId, variantId, t, onNeedVid }: { productId: number; variantId: number | null; t: TFn; onNeedVid?: () => Promise<number | null> }) {
   const [associated, setAssociated] = useState<AssocVariant[]>([])
   const [available, setAvailable] = useState<AvailVariant[]>([])

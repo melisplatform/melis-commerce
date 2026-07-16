@@ -29,7 +29,7 @@ import { Tabs, type TabDef } from '../../shared/Tabs'
 /* Brique « Produits » (MelisCommerce) — full React, montée à /melis-commerce/product-list
  * (et /:id pour le formulaire en sous-onglet). Toggle New/Old → iframe legacy.
  * Logique inchangée : enregistrement via MelisComProductService::saveProduct (cf. contrôleur API).
- * Onglets repris du legacy : Principal / Textes / Variantes / SEO. */
+ * Onglets repris du legacy : Principal / Textes / Variants / SEO. */
 const TOOL_MELIS_KEY = 'meliscommerce_product_list_container'
 const COL_ORDER = ['id', 'status', 'image', 'reference', 'name', 'categories', 'created'] as const
 const COL_LABEL: Record<string, string> = { id: 'col_id', status: 'col_status', image: 'col_image', reference: 'col_reference', name: 'col_name', categories: 'col_categories', created: 'col_created' }
@@ -68,7 +68,7 @@ function ProductThumb({ src, alt }: { src: string; alt: string }) {
   return <img src={src} alt={alt} style={box} onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
 }
 
-// Nom de produit avec tooltip au survol : détails des variantes (image/SKU/attributs/pays/prix/stocks).
+// Nom de produit avec tooltip au survol : détails des variants (image/SKU/attributs/pays/prix/stocks).
 function ProductNameCell({ id, name, t, onOpenVariant }: { id: number; name: string; t: T; onOpenVariant?: (productId: number, variantId: number) => void }) {
   const [show, setShow] = useState(false)
   const [data, setData] = useState<TooltipVariant[] | null>(null)
@@ -76,7 +76,7 @@ function ProductNameCell({ id, name, t, onOpenVariant }: { id: number; name: str
   const ref = useRef<HTMLSpanElement>(null)
   // Le tooltip flotte SOUS le nom (pas un enfant DOM) : quitter le déclencheur pour l'atteindre
   // traverse un instant "hors survol" — un délai court laisse la souris arriver dessus avant
-  // fermeture, pour pouvoir cliquer une variante dedans au lieu qu'il disparaisse aussitôt.
+  // fermeture, pour pouvoir cliquer un variant dedans au lieu qu'il disparaisse aussitôt.
   const closeTimer = useRef<number | null>(null)
   function clearCloseTimer() { if (closeTimer.current) { window.clearTimeout(closeTimer.current); closeTimer.current = null } }
   function scheduleClose() { clearCloseTimer(); closeTimer.current = window.setTimeout(() => setShow(false), 150) }
@@ -162,7 +162,7 @@ function ProductList({ base }: { base: string }) {
     setTick((x) => x + 1)
   }
   async function confirmDelete() { if (!toDelete) return; try { await deleteProduct(toDelete.id); notify('ok', t('title'), t('deleted')); setToDelete(null); setTick((x) => x + 1) } catch { setToDelete(null) } }
-  // Depuis le tooltip variantes (survol du nom) : ouvre le produit sur l'onglet Variantes, cette variante éditée.
+  // Depuis le tooltip variants (survol du nom) : ouvre le produit sur l'onglet Variants, ce variant édité.
   function openVariant(productId: number, variantId: number) { navigate(`${base}/${productId}`, { state: { tab: 'variants', openVariantEditor: variantId } }) }
   const FILTERS: { k: string; v: number | null; dot: string | null }[] = [
     { k: 'f_all', v: null, dot: null },
@@ -295,7 +295,7 @@ function LangSwitcher({ languages, value, onChange }: { languages: LangOption[];
   )
 }
 
-// ── Formulaire (sous-onglet) — onglets Principal / Textes / Variantes / SEO ──────
+// ── Formulaire (sous-onglet) — onglets Principal / Textes / Variants / SEO ──────
 function ProductForm({ id, base }: { id: string; base: string }) {
   const t = makeT(DICT)
   const navigate = useNavigate()
@@ -481,7 +481,7 @@ function ProductForm({ id, base }: { id: string; base: string }) {
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{isEdit ? t('edit_title') : t('new_title')}</h1>
         </div>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-          <button style={btnPrimary} onClick={submit} disabled={saving || loading}>{saving ? '…' : t('save')}</button>
+          <button style={btnPrimary} onClick={submit} disabled={saving || loading}>{saving ? '…' : t('save_product')}</button>
         </div>
       </div>
 

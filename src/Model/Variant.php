@@ -183,9 +183,24 @@ class Variant extends Model
     {
         return $this->variantAttributes
             ->map(function ($attribute) {
-                $value = $attribute['avt_v_' . $attribute['atype_column_value']] ?? null;
+                $type = $attribute['atype_column_value'];
+
+                // File-type attribute values are the raw LONGBLOB file bytes (avt_v_binary), not
+                // displayable text, and are essentially never valid UTF-8 — embedding them here
+                // silently breaks json_encode() for the WHOLE variants list response (it returns
+                // false on invalid UTF-8, which Laminas's JsonModel/JsonStrategy then serializes as
+                // an empty body, reported client-side as "DataTables: Invalid JSON response").
+                if ($type === 'binary') {
+                    return null;
+                }
+
+                $value = $attribute['avt_v_' . $type] ?? null;
                 if ($value === '' || $value === null) {
                     return null;
+                }
+
+                if (is_string($value) && !mb_check_encoding($value, 'UTF-8')) {
+                    $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
                 }
 
                 return sprintf(
