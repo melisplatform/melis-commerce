@@ -540,6 +540,12 @@ class MelisComProductListController extends MelisAbstractActionController
                     case 'avt_v_varchar':
                         $value = $this->getTool()->limitedText($this->getTool()->escapeHtml($value), 50);
                         break;
+                    case 'avt_v_binary':
+                        // File-type values are raw uploaded file bytes, never displayable text
+                        // (this feeds the variant SKU hover tooltip HTML) — show the value's own
+                        // reference label instead, same fallback used when no translation exists.
+                        $value = $attr->atval_reference;
+                        break;
                 }
                 if ($value) {
                     $attributes[] = $value;

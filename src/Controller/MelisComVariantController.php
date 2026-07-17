@@ -1207,14 +1207,23 @@ class MelisComVariantController extends MelisAbstractActionController
         foreach ($productAttributes as $prodAttr) {
             $key = $prodAttr->atrans_name ?: $prodAttr->attr_reference;
             $columnType = "avt_v_$prodAttr->atype_column_value";
-            $value = $prodAttr->$columnType;
 
-            if ($columnType === 'avt_v_datetime') {
-                $value = $this->getTool()->dateFormatLocale($value);
-            }
+            if ($columnType === 'avt_v_binary') {
+                // File-type values are the raw uploaded file bytes — never a displayable string (and
+                // frequently invalid UTF-8/HTML-breaking garbage once rendered). Show the value's own
+                // reference label instead, same fallback already used for missing translations
+                // elsewhere (MelisComAttributeController::getAttributeValueDataAction()).
+                $value = $prodAttr->atval_reference;
+            } else {
+                $value = $prodAttr->$columnType;
 
-            if (in_array($columnType, ['avt_v_text', 'avt_v_varchar'])) {
-                $value = $this->getTool()->limitedText($value, 50);
+                if ($columnType === 'avt_v_datetime') {
+                    $value = $this->getTool()->dateFormatLocale($value);
+                }
+
+                if (in_array($columnType, ['avt_v_text', 'avt_v_varchar'])) {
+                    $value = $this->getTool()->limitedText($value, 50);
+                }
             }
 
             $attributes[$key][] = ['id' => $prodAttr->atval_id, 'value' => $value];

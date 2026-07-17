@@ -72,6 +72,7 @@ class ProductAttribute extends Model
                 'a.attr_reference',
                 DB::raw('COALESCE(att.atrans_name, default_att.atrans_name) AS atrans_name'),
                 'av.atval_id',
+                'av.atval_reference',
                 'attt.atype_column_value',
                 DB::raw('COALESCE(avt.avt_v_int, default_avt.avt_v_int) AS avt_v_int'),
                 DB::raw('COALESCE(avt.avt_v_float, default_avt.avt_v_float) AS avt_v_float'),

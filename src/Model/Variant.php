@@ -249,6 +249,14 @@ class Variant extends Model
         self::$tooltipTable->setTable(self::$type . 'Table' . $this->var_id, 'table-row-' . $this->var_id . ' ' . self::$type . 'Table' . $this->var_id, 'border:1px solid;');
         self::$tooltipTable->setColumns(self::$tooltipColumns);
 
+        // The <table id="variantTable{id}" class="tooltiptext qtipTable"> shell (open tag + thead)
+        // must be rendered here, as a DOM sibling right after the </a>: qTip2's initTooltipVarTable()
+        // (ecommerce-common.js) reads its content from $(this).next(".tooltiptext"), and the hover AJAX
+        // handler (.toolTipVarHoverEvent in variant.tool.js) inserts the fetched rows via
+        // insertAfter("table#variantTable{id} thead"). Without emitting this shell, both selectors match
+        // nothing — qTip2 shows an empty floating box and the AJAX-fetched rows have nowhere to land.
+        $tooltipShell = self::$tooltipTable->getTable() . self::$tooltipTable->getColumns() . '</table>';
+
         return sprintf(
             $format,
             $this->var_id,
@@ -256,7 +264,7 @@ class Variant extends Model
             $this->var_sku,
             $this->var_id,
             $this->var_sku,
-        );
+        ) . $tooltipShell;
     }
 
     public function getvar_imageAttribute()
