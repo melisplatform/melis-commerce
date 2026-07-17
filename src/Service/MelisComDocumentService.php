@@ -234,8 +234,13 @@ class MelisComDocumentService extends MelisComGeneralService
 			$imgData = $data[0];
 			$imagePath = $imgData->doc_path;
 			if(file_exists($_SERVER['DOCUMENT_ROOT'].$imagePath)) {
-				$protocol = strtolower(explode($_SERVER['SERVER_PROTOCOL'], 'HTTP')[0]).'://';
-				$defaultImageData = $imagePath;//$protocol.$_SERVER['SERVER_NAME'].$imagePath;
+				// $protocol used to be computed here for a $protocol.$_SERVER['SERVER_NAME'].$imagePath
+				// URL below, but that usage has been commented out (only $imagePath is actually used) —
+				// dropped the dead computation entirely: explode($_SERVER['SERVER_PROTOCOL'], 'HTTP') had
+				// its arguments backwards (separator/subject swapped) and threw a fatal ValueError
+				// ("empty separator") whenever SERVER_PROTOCOL was unset/empty, crashing mid-serialization
+				// for any variant/product that actually has an image file on disk.
+				$defaultImageData = $imagePath;
 			}
 		}
 
@@ -244,12 +249,11 @@ class MelisComDocumentService extends MelisComGeneralService
 			// on this product
 			$data = $this->getDocumentsByRelationAndTypes($docRelation, $relationId);
 
-			if(!empty($data)) {               
+			if(!empty($data)) {
 				$imgData = $data[0];
 				$imagePath = $imgData->doc_path;
 				if(file_exists($_SERVER['DOCUMENT_ROOT'].$imagePath)) {
-					$protocol = strtolower(explode($_SERVER['SERVER_PROTOCOL'], 'HTTP')[0]).'://';
-					$defaultImageData = $imagePath;//$protocol.$_SERVER['SERVER_NAME'].$imagePath;
+					$defaultImageData = $imagePath;
 				}
 			}
 

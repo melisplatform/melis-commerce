@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   deleteAccount, fetchAccountById, fetchAccountOptions, fetchAccounts, fetchAccountStats,
   saveAccount, fetchCompany, saveCompany, fetchAccountAddresses, saveAccountAddresses,
-  fetchAccountContacts, testImportAccounts, importAccounts, ACCOUNT_IMPORT_TEMPLATE_URL,
+  fetchAccountContacts, linkAccountContact, testImportAccounts, importAccounts, ACCOUNT_IMPORT_TEMPLATE_URL,
   type AccountItem, type AccountStats, type CompanyData, type AccountAddress, type AccountContact, type AccountNameMode,
 } from './api'
 import { makeCache } from '../../shared/listCache'
@@ -353,12 +353,20 @@ function AccountForm({ id, base }: { id: string; base: string }) {
   const [addresses, setAddresses] = useState<AccountAddress[]>([])
   const [addressesLoaded, setAddressesLoaded] = useState(false)
   const [mainContact, setMainContact] = useState<AccountContact | null>(null)
+  // contact_name mode, NEW account only: the account's name is derived from its default contact, and
+  // the Contacts tab is disabled until the account has an id — so without this, an account could be
+  // created with no contact and no way back in. Picked here (before save) and sent alongside the
+  // create payload so the account + its default-contact link are created atomically (mirrors legacy's
+  // hard block at save time, see MelisComReactApiAccountController::saveAction()).
+  const [pendingContacts, setPendingContacts] = useState<AccountContact[]>([])
   const { can, loaded: capsLoaded } = useCaps(TOOL_MELIS_KEY)
 
   // Onglets masqués selon les droits (l'accès à un onglet = capacité de même clé : properties/contacts/…).
   const TABS: TabDef[] = ([
     { key: 'properties', label: t('tab_properties'), icon: <TagIcon /> },
-    { key: 'contacts',   label: t('tab_contacts'),   icon: <UsersIcon />,     disabled: !isEdit },
+    // contact_name mode: kept open pre-save too — the account's name is derived from its default
+    // contact, so it must be pickable BEFORE the account exists (staged locally, see pendingContacts).
+    { key: 'contacts',   label: t('tab_contacts'),   icon: <UsersIcon />,     disabled: !isEdit && accountNameMode !== 'contact_name' },
     { key: 'company',    label: t('tab_company'),    icon: <BuildingIcon /> },
     { key: 'addresses',  label: t('tab_addresses'),  icon: <MapPinIcon /> },
     { key: 'orders',     label: t('tab_orders'),     icon: <CartIcon />,      disabled: !isEdit },
@@ -421,19 +429,32 @@ function AccountForm({ id, base }: { id: string; base: string }) {
     } else {
       setNameError('')
       if (accountNameMode === 'company_name' && !company.name.trim()) { fail(t('err_company_name_required')); setTab('company') }
+      if (!isEdit && accountNameMode === 'contact_name' && !pendingContacts.length) { fail(t('err_contact_required')); setTab('contacts') }
     }
     if (!countryId) setCountryError(fail(t('err_country'))); else setCountryError('')
     setFormError(!!firstError)
     if (firstError) return
     setSaving(true)
+    // The pending contact marked isMain (or the first one) becomes the account's default contact,
+    // created ATOMICALLY with it server-side (saveAction() requires + links it in one request when
+    // accountNameMode is contact_name — never a nameless/contact-less account in between). Any
+    // additional staged contacts are linked individually right after, same as the live Contacts tab.
+    const defaultContact = pendingContacts.find((c) => c.isMain) ?? pendingContacts[0]
     try {
-      const r = await saveAccount({ id: accountId, name: name.trim(), status: active, groupId, countryId, tags: tags.trim() })
+      const r = await saveAccount({
+        id: accountId, name: name.trim(), status: active, groupId, countryId, tags: tags.trim(),
+        ...(!isEdit && accountNameMode === 'contact_name' && defaultContact ? { contactId: defaultContact.id } : {}),
+      })
       const savedId = accountId ?? r?.id
       if (savedId) {
         // company_name mode : la société pilote le nom du compte affiché partout → toujours sauvée,
         // même si l'onglet Société n'a jamais été ouvert (sinon la validation serveur ne se déclenche jamais).
         if (companyLoaded || visitedTabs.has('company') || accountNameMode === 'company_name') { try { await saveCompany(savedId, company) } catch { /* */ } }
         if (addressesLoaded || visitedTabs.has('addresses')) { try { await saveAccountAddresses(savedId, addresses) } catch { /* */ } }
+        if (!isEdit && pendingContacts.length) {
+          const rest = pendingContacts.filter((c) => c.id !== defaultContact?.id)
+          await Promise.all(rest.map((c) => linkAccountContact(savedId, c.id).catch(() => null)))
+        }
       }
       notify('ok', t('title'), t('saved'))
       if (!isEdit) { closeSubTab(base, `${base}/new`); setTimeout(() => navigate(base), 500) }
@@ -460,8 +481,8 @@ function AccountForm({ id, base }: { id: string; base: string }) {
         <CompanyTab company={company} onChange={setCompany} loading={!companyLoaded && !!accountId} t={t} nameRequired={accountNameMode === 'company_name'} />
       ) : tab === 'addresses' ? (
         <AddressesTab addresses={addresses} onChange={setAddresses} t={t} />
-      ) : tab === 'contacts' && accountId ? (
-        <ContactsTab accountId={accountId} t={t} can={can} />
+      ) : tab === 'contacts' && (accountId || accountNameMode === 'contact_name') ? (
+        <ContactsTab accountId={accountId} pending={pendingContacts} onPendingChange={setPendingContacts} t={t} can={can} />
       ) : tab === 'orders' && accountId ? (
         <OrdersTab accountId={accountId} t={t} />
       ) : tab === 'files' && accountId ? (
@@ -528,34 +549,39 @@ function AccountForm({ id, base }: { id: string; base: string }) {
             </div>
             <div style={{ ...card, padding: 16 }}>
               <h3 style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 16px' }}>{t('c_def_contact')}</h3>
-              {mainContact ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  {mainContact.civilityName && (
-                    <div style={{ display: 'flex', gap: 8, fontSize: 13 }}>
-                      <span style={{ color: 'var(--color-muted-foreground)', minWidth: 64 }}>{t('c_civility')}</span>
-                      <span style={{ fontWeight: 500 }}>{mainContact.civilityName}</span>
-                    </div>
-                  )}
-                  {(mainContact.firstname || mainContact.name) && (
-                    <div style={{ display: 'flex', gap: 8, fontSize: 13 }}>
-                      <span style={{ color: 'var(--color-muted-foreground)', minWidth: 64 }}>{t('c_name')}</span>
-                      <span style={{ fontWeight: 500 }}>{`${mainContact.firstname} ${mainContact.name}`.trim()}</span>
-                    </div>
-                  )}
-                  {mainContact.email && (
-                    <div style={{ display: 'flex', gap: 8, fontSize: 13 }}>
-                      <span style={{ color: 'var(--color-muted-foreground)', minWidth: 64 }}>{t('c_email')}</span>
-                      <span>{mainContact.email}</span>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <p style={{ fontSize: 13, color: 'var(--color-muted-foreground)', margin: 0 }}>
-                  {accountId ? t('c_empty') : t('save_first')}
-                </p>
-              )}
-              {accountNameMode === 'contact_name' && !mainContact && (
-                <p style={{ ...hint, marginTop: 10 }}>{t('c_default_contact_hint')}</p>
+              {(() => {
+                // Pre-save (contact_name mode), the tab's staged pick IS the future default contact —
+                // show that here too instead of `mainContact` (only ever populated for existing accounts).
+                const shown = isEdit ? mainContact : (pendingContacts.find((c) => c.isMain) ?? pendingContacts[0] ?? null)
+                return shown ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {shown.civilityName && (
+                      <div style={{ display: 'flex', gap: 8, fontSize: 13 }}>
+                        <span style={{ color: 'var(--color-muted-foreground)', minWidth: 64 }}>{t('c_civility')}</span>
+                        <span style={{ fontWeight: 500 }}>{shown.civilityName}</span>
+                      </div>
+                    )}
+                    {(shown.firstname || shown.name) && (
+                      <div style={{ display: 'flex', gap: 8, fontSize: 13 }}>
+                        <span style={{ color: 'var(--color-muted-foreground)', minWidth: 64 }}>{t('c_name')}</span>
+                        <span style={{ fontWeight: 500 }}>{`${shown.firstname} ${shown.name}`.trim()}</span>
+                      </div>
+                    )}
+                    {shown.email && (
+                      <div style={{ display: 'flex', gap: 8, fontSize: 13 }}>
+                        <span style={{ color: 'var(--color-muted-foreground)', minWidth: 64 }}>{t('c_email')}</span>
+                        <span>{shown.email}</span>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <p style={{ fontSize: 13, color: 'var(--color-muted-foreground)', margin: 0 }}>
+                    {!isEdit && accountNameMode === 'contact_name' ? t('c_default_contact_hint') : accountId ? t('c_empty') : t('save_first')}
+                  </p>
+                )
+              })()}
+              {formError && !isEdit && accountNameMode === 'contact_name' && !pendingContacts.length && (
+                <p style={{ margin: '8px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_contact_required')}</p>
               )}
             </div>
             </div>

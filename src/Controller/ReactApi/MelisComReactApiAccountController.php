@@ -221,14 +221,26 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
             $groupId   = (int) ($body['groupId'] ?? 0);
             $countryId = (int) ($body['countryId'] ?? 0);
             $tags      = trim((string) ($body['tags'] ?? ''));
+            $contactId = (int) ($body['contactId'] ?? 0);
+
+            $mode = $this->accountNameMode();
 
             // manual_input seul rend le nom obligatoire ICI — en company_name/contact_name le nom est
             // dérivé dynamiquement à la lecture (cf. formatAccount()) et n'a donc plus besoin d'être saisi.
-            if ($name === '' && $this->accountNameMode() === 'manual_input') {
+            if ($name === '' && $mode === 'manual_input') {
                 return $this->jsonResponse(['success' => false, 'error' => 'Le nom est obligatoire.'], 400);
             }
             if ($countryId <= 0) {
                 return $this->jsonResponse(['success' => false, 'error' => 'Le pays est obligatoire.'], 400);
+            }
+            // contact_name mode: the displayed name is DERIVED from the account's default contact
+            // (formatAccount()) — creating an account with none linked would produce a permanently
+            // nameless one with no way back in (the Contacts tab only unlocks once the account has an
+            // id). Legacy hard-blocks the same case at save time (MelisComClientController::
+            // validateClientContactsAction). New accounts only — existing ones already manage their
+            // contact links via the Contacts tab.
+            if ($id <= 0 && $mode === 'contact_name' && $contactId <= 0) {
+                return $this->jsonResponse(['success' => false, 'error' => 'Un contact associé est obligatoire.'], 400);
             }
 
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
@@ -251,6 +263,10 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
                 [$status, $name, $groupId ?: null, $countryId, $tags, $now]
             );
             $newId = (int) iterator_to_array($db->query('SELECT LAST_INSERT_ID() AS id', []))[0]['id'];
+
+            if ($contactId > 0) {
+                $this->linkClientPerson($db, $newId, $contactId);
+            }
 
             return $this->jsonResponse(['success' => true, 'data' => ['id' => $newId]], 201);
         } catch (\Throwable $e) {

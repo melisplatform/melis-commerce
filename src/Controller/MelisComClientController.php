@@ -1421,8 +1421,25 @@ class MelisComClientController extends MelisAbstractActionController
                         $dateFormat = 'm/d/Y';
                     }
 
-                    $companyCreationDate = \DateTime::createFromFormat($dateFormat, trim($clientCompanyData['ccomp_comp_creation_date']));
-                    $clientCompanyData['ccomp_comp_creation_date'] = $companyCreationDate->format('Y-m-d');
+                    $rawCompanyCreationDate = trim($clientCompanyData['ccomp_comp_creation_date']);
+                    $companyCreationDate = \DateTime::createFromFormat($dateFormat, $rawCompanyCreationDate);
+                    if (!($companyCreationDate instanceof \DateTime)) {
+                        // Falls back to ISO (Y-m-d): this field can also come pre-formatted this way
+                        // from the React Accounts tool's Company tab, which stores it as a plain ISO
+                        // string rather than the locale format above.
+                        $companyCreationDate = \DateTime::createFromFormat('Y-m-d', $rawCompanyCreationDate);
+                    }
+                    if ($companyCreationDate instanceof \DateTime) {
+                        $clientCompanyData['ccomp_comp_creation_date'] = $companyCreationDate->format('Y-m-d');
+                    } else {
+                        // createFromFormat() returns false (not an exception) on any mismatch — calling
+                        // ->format() on that unconditionally fatals here with a PHP 8 Error ("Call to a
+                        // member function format() on bool"), uncaught anywhere in this save's internal
+                        // forward chain, producing a blank/non-JSON response with nothing in the browser
+                        // console beyond the generic "An error has occurred" fallback alert. Drop the
+                        // unparseable value instead of crashing the whole save.
+                        unset($clientCompanyData['ccomp_comp_creation_date']);
+                    }
                 }else{
                     unset($clientCompanyData['ccomp_comp_creation_date']);
                 }

@@ -30,6 +30,44 @@ class MelisComReactApiContactController extends MelisAbstractActionController
         return $id > 0 ? $id : 1;
     }
 
+    /**
+     * melis_ecom_settings_account.sa_type ∈ manual_input|company_name|contact_name — same read-time
+     * override as MelisComReactApiAccountController::accountNameMode()/formatAccount() (duplicated
+     * here, no shared base controller) so every account name shown from the Contacts tool (list,
+     * options picker, Association tab) matches what the Accounts tool itself displays, instead of
+     * the raw — often blank in company_name/contact_name mode — cli_name column.
+     */
+    private function accountNameMode(): string
+    {
+        $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
+        $rows = iterator_to_array($db->query('SELECT sa_type FROM melis_ecom_settings_account LIMIT 1', []));
+        $type = $rows ? (string) ((array) $rows[0])['sa_type'] : 'manual_input';
+        return in_array($type, ['manual_input', 'company_name', 'contact_name'], true) ? $type : 'manual_input';
+    }
+
+    /** Resolves an account's display name per accountNameMode(), from a row carrying the same
+     *  dyn_company_name / dyn_contact_firstname / dyn_contact_name columns as the joins below. */
+    private function resolveAccountName(array $r, string $mode): string
+    {
+        if ($mode === 'company_name') {
+            return (string) ($r['dyn_company_name'] ?? '');
+        }
+        if ($mode === 'contact_name') {
+            return trim(((string) ($r['dyn_contact_firstname'] ?? '')) . ' ' . ((string) ($r['dyn_contact_name'] ?? '')));
+        }
+        return (string) ($r['cli_name'] ?? '');
+    }
+
+    /** SQL snippet joining the tables resolveAccountName()'s dyn_* columns need, aliased for `$as`. */
+    private function accountNameJoinSql(string $as): string
+    {
+        return "
+            LEFT JOIN melis_ecom_client_company {$as}_comp ON {$as}_comp.ccomp_client_id = {$as}.cli_id
+            LEFT JOIN melis_ecom_client_account_rel {$as}_dcar ON {$as}_dcar.car_client_id = {$as}.cli_id AND {$as}_dcar.car_default_person = 1
+            LEFT JOIN melis_ecom_client_person {$as}_dcp ON {$as}_dcp.cper_id = {$as}_dcar.car_client_person_id
+        ";
+    }
+
     // ─── GET /contacts ────────────────────────────────────────────────────────
     public function listAction(): HttpResponse
     {
@@ -64,14 +102,18 @@ class MelisComReactApiContactController extends MelisAbstractActionController
             );
             $total = (int) ($countRow[0]['total'] ?? 0);
 
+            $mode = $this->accountNameMode();
             $dataSql = "
                 SELECT p.cper_id, p.cper_status, p.cper_type, p.cper_civility, p.cper_firstname,
                        p.cper_name, p.cper_email, p.cper_client_id, p.cper_job_title, p.cper_tel_mobile,
                        p.cper_tags, p.cper_date_creation, p.cper_date_edit,
-                       c.cli_name, civ.civt_min_name AS civility_name
+                       c.cli_name, civ.civt_min_name AS civility_name,
+                       c_comp.ccomp_name AS dyn_company_name,
+                       c_dcp.cper_firstname AS dyn_contact_firstname, c_dcp.cper_name AS dyn_contact_name
                 FROM melis_ecom_client_person p
                 LEFT JOIN melis_ecom_client c ON c.cli_id = p.cper_client_id
                 LEFT JOIN melis_ecom_civility_trans civ ON civ.civt_civ_id = p.cper_civility AND civ.civt_lang_id = ?
+                " . $this->accountNameJoinSql('c') . "
                 $whereClause
                 ORDER BY p.cper_id DESC
                 LIMIT ? OFFSET ?
@@ -79,7 +121,7 @@ class MelisComReactApiContactController extends MelisAbstractActionController
             $rows = $db->query($dataSql, array_merge([$lang], $params, [$limit, $offset]));
 
             $items = [];
-            foreach ($rows as $row) { $items[] = $this->formatContact((array) $row); }
+            foreach ($rows as $row) { $items[] = $this->formatContact((array) $row, $mode); }
 
             return $this->jsonResponse([
                 'success' => true,
@@ -121,10 +163,24 @@ class MelisComReactApiContactController extends MelisAbstractActionController
             $db   = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
             $lang = $this->langId();
 
+            $mode = $this->accountNameMode();
+            $orderExpr = match ($mode) {
+                'company_name' => 'c_comp.ccomp_name',
+                'contact_name' => "TRIM(CONCAT(c_dcp.cper_firstname, ' ', c_dcp.cper_name))",
+                default        => 'c.cli_name',
+            };
             $accounts = [];
-            foreach ($db->query('SELECT cli_id, cli_name FROM melis_ecom_client ORDER BY cli_name', []) as $r) {
+            foreach ($db->query(
+                "SELECT c.cli_id, c.cli_name,
+                        c_comp.ccomp_name AS dyn_company_name,
+                        c_dcp.cper_firstname AS dyn_contact_firstname, c_dcp.cper_name AS dyn_contact_name
+                 FROM melis_ecom_client c
+                 " . $this->accountNameJoinSql('c') . "
+                 ORDER BY $orderExpr",
+                []
+            ) as $r) {
                 $r = (array) $r;
-                $accounts[] = ['id' => (int) $r['cli_id'], 'name' => (string) $r['cli_name']];
+                $accounts[] = ['id' => (int) $r['cli_id'], 'name' => $this->resolveAccountName($r, $mode)];
             }
 
             $civilities = [];
@@ -167,17 +223,20 @@ class MelisComReactApiContactController extends MelisAbstractActionController
                         p.cper_client_id, p.cper_job_title, p.cper_job_service,
                         p.cper_tel_mobile, p.cper_tel_landline,
                         p.cper_tags, p.cper_date_creation, p.cper_date_edit,
-                        c.cli_name, civ.civt_min_name AS civility_name
+                        c.cli_name, civ.civt_min_name AS civility_name,
+                        c_comp.ccomp_name AS dyn_company_name,
+                        c_dcp.cper_firstname AS dyn_contact_firstname, c_dcp.cper_name AS dyn_contact_name
                  FROM melis_ecom_client_person p
                  LEFT JOIN melis_ecom_client c ON c.cli_id = p.cper_client_id
                  LEFT JOIN melis_ecom_civility_trans civ ON civ.civt_civ_id = p.cper_civility AND civ.civt_lang_id = ?
+                 " . $this->accountNameJoinSql('c') . "
                  WHERE p.cper_id = ? LIMIT 1",
                 [$lang, $id]
             ));
 
             if (empty($rows)) { return $this->jsonResponse(['success' => false, 'error' => 'Contact not found'], 404); }
 
-            return $this->jsonResponse(['success' => true, 'data' => $this->formatContact((array) $rows[0])]);
+            return $this->jsonResponse(['success' => true, 'data' => $this->formatContact((array) $rows[0], $this->accountNameMode())]);
         } catch (\Throwable $e) {
             return $this->errorResponse($e);
         }
@@ -386,19 +445,23 @@ class MelisComReactApiContactController extends MelisAbstractActionController
         if ($deny = $this->denyUnlessAccess()) { return $deny; }
         try {
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
+            $mode = $this->accountNameMode();
             $rows = $db->query(
                 'SELECT c.cli_id, c.cli_name, c.cli_status, cpr.cpr_default_client AS is_default_account,
                         (SELECT car.car_default_person FROM melis_ecom_client_account_rel car
-                         WHERE car.car_client_id = cpr.cpr_client_id AND car.car_client_person_id = cpr.cpr_client_person_id LIMIT 1) AS is_main
+                         WHERE car.car_client_id = cpr.cpr_client_id AND car.car_client_person_id = cpr.cpr_client_person_id LIMIT 1) AS is_main,
+                        c_comp.ccomp_name AS dyn_company_name,
+                        c_dcp.cper_firstname AS dyn_contact_firstname, c_dcp.cper_name AS dyn_contact_name
                  FROM melis_ecom_client_person_rel cpr
                  JOIN melis_ecom_client c ON c.cli_id = cpr.cpr_client_id
+                 ' . $this->accountNameJoinSql('c') . '
                  WHERE cpr.cpr_client_person_id = ? ORDER BY c.cli_name', [$this->routeId()]
             );
             $items = [];
             foreach ($rows as $r) {
                 $r = (array) $r;
                 $items[] = [
-                    'id' => (int) $r['cli_id'], 'name' => (string) ($r['cli_name'] ?? ''), 'status' => (int) $r['cli_status'],
+                    'id' => (int) $r['cli_id'], 'name' => $this->resolveAccountName($r, $mode), 'status' => (int) $r['cli_status'],
                     'isDefaultAccount' => (int) ($r['is_default_account'] ?? 0), 'isMain' => (int) ($r['is_main'] ?? 0),
                 ];
             }
@@ -469,7 +532,7 @@ class MelisComReactApiContactController extends MelisAbstractActionController
     }
 
     // ─── Helpers ───────────────────────────────────────────────────────────────
-    private function formatContact(array $r): array
+    private function formatContact(array $r, string $mode = 'manual_input'): array
     {
         return [
             'id'           => (int)    $r['cper_id'],
@@ -483,7 +546,7 @@ class MelisComReactApiContactController extends MelisAbstractActionController
             'langId'       => (int)    ($r['cper_lang_id'] ?? 0),
             'email'        => (string) ($r['cper_email'] ?? ''),
             'accountId'    => (int)    ($r['cper_client_id'] ?? 0),
-            'accountName'  => (string) ($r['cli_name'] ?? ''),
+            'accountName'  => $this->resolveAccountName($r, $mode),
             'jobTitle'     => (string) ($r['cper_job_title'] ?? ''),
             'jobService'   => (string) ($r['cper_job_service'] ?? ''),
             'telMobile'    => (string) ($r['cper_tel_mobile'] ?? ''),

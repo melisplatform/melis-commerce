@@ -37,6 +37,17 @@ class Variant extends Model
         'var_attributes',
     ];
 
+    // The eager-loaded `variantAttributes` relation (see scopeGetProductVariants) is only meant to
+    // feed the curated `var_attributes` accessor above. Without hiding it, Eloquent's toArray()
+    // auto-includes the RAW relation too (as `variant_attributes`) — including every VariantAttribute
+    // row's avt_v_binary column, i.e. genuine raw file bytes for File-type attributes. Those bytes are
+    // essentially never valid UTF-8, which silently breaks json_encode() for the WHOLE variants list
+    // response (returns false; Laminas's JsonModel/JsonStrategy then emits an empty body, reported
+    // client-side as "DataTables: Invalid JSON response") — regardless of the var_attributes fix.
+    protected $hidden = [
+        'variantAttributes',
+    ];
+
     protected $fillable = [
         'var_id',
         'var_prd_id',

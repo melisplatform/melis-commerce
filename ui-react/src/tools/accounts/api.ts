@@ -9,7 +9,7 @@ export interface AccountItem {
 export type AccountStats = Stats
 export type AccountNameMode = 'manual_input' | 'company_name' | 'contact_name'
 export interface AccountOptions { groups: Option[]; countries: Option[]; accountNameMode: AccountNameMode }
-export interface AccountSavePayload { id?: number | null; name: string; status: boolean; groupId: number; countryId: number; tags: string }
+export interface AccountSavePayload { id?: number | null; name: string; status: boolean; groupId: number; countryId: number; tags: string; contactId?: number }
 
 export function fetchAccounts(params: { search?: string; status?: number | null; groupId?: number | null } = {}): Promise<ListResult<AccountItem>> {
   const qs = new URLSearchParams()

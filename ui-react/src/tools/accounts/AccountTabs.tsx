@@ -6,6 +6,7 @@ import {
   fetchOrderStatuses, fetchAllContactOptions, linkAccountContact, unlinkAccountContact, setAccountContactDefault,
   type CompanyData, type AccountContact, type AccountAddress, type AddressOptions, type AccountOrder, type AccountFile, type FileOptions,
 } from './api'
+import { fetchContactById } from '../contacts/api'
 import { card, inputCss, btnGhost, iconBtn, label } from '../../shared/styles'
 import { StatusBadge } from '../../shared/widgets'
 import { SimpleTable } from '../../shared/SimpleTable'
@@ -112,23 +113,60 @@ function CompanyLogoField({ value, onChange, t }: { value: string; onChange: (v:
   )
 }
 
-// ── Contacts (lecture seule) ──────────────────────────────────────────────────
-export function ContactsTab({ accountId, t, can }: { accountId: number; t: T; can?: (cap: string) => boolean }) {
+// ── Contacts ───────────────────────────────────────────────────────────────────
+/**
+ * accountId === null → STAGED mode: the account doesn't exist yet (New Account form). Picks are held
+ * in `pending` (owned by the parent, AccountPage.tsx) instead of hitting the link/unlink API, and get
+ * committed once the account is actually created (first pending = the account's default contact,
+ * created atomically with it — see AccountPage.tsx submit() — required in contact_name mode since the
+ * account's name is derived from that contact and the tab used to be disabled pre-save, silently
+ * allowing a permanently nameless/contact-less account through).
+ */
+export function ContactsTab({ accountId, pending, onPendingChange, t, can }: {
+  accountId: number | null; pending?: AccountContact[]; onPendingChange?: (rows: AccountContact[]) => void
+  t: T; can?: (cap: string) => boolean
+}) {
   const allow = (cap: string) => (can ? can(cap) : true)
   const navigate = useNavigate()
-  const [rows, setRows] = useState<AccountContact[]>([])
+  const staged = accountId === null
+  const [liveRows, setLiveRows] = useState<AccountContact[]>([])
   const [opts, setOpts] = useState<Option[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(!staged)
   const [tick, setTick] = useState(0)
   const [toUnlink, setToUnlink] = useState<AccountContact | null>(null)
-  useEffect(() => { setLoading(true); fetchAccountContacts(accountId).then((r) => setRows(r.items)).catch(() => null).finally(() => setLoading(false)) }, [accountId, tick])
+  useEffect(() => {
+    if (staged) return
+    setLoading(true)
+    fetchAccountContacts(accountId).then((r) => setLiveRows(r.items)).catch(() => null).finally(() => setLoading(false))
+  }, [staged, accountId, tick])
   useEffect(() => { fetchAllContactOptions().then(setOpts).catch(() => null) }, [])
+  const rows = staged ? (pending ?? []) : liveRows
   const linkedIds = new Set(rows.map((r) => r.id))
   const available = opts.filter((o) => !linkedIds.has(o.id))
-  const link = async (id: number) => { await linkAccountContact(accountId, id); setTick((x) => x + 1) }
-  const setDefault = async (id: number) => { try { await setAccountContactDefault(accountId, id); setTick((x) => x + 1) } catch { /* */ } }
+  async function link(id: number) {
+    if (staged) {
+      const c = await fetchContactById(id)
+      onPendingChange?.([
+        ...rows,
+        { id: c.id, status: c.status, firstname: c.firstname, name: c.name, email: c.email, civility: c.civility, civilityName: c.civilityName, isMain: rows.length === 0 ? 1 : 0, isDefaultAccount: 0 },
+      ])
+      return
+    }
+    await linkAccountContact(accountId, id); setTick((x) => x + 1)
+  }
+  async function setDefault(id: number) {
+    if (staged) { onPendingChange?.(rows.map((r) => ({ ...r, isMain: r.id === id ? 1 : 0 }))); return }
+    try { await setAccountContactDefault(accountId, id); setTick((x) => x + 1) } catch { /* */ }
+  }
   async function confirmUnlink() {
     if (!toUnlink) return
+    if (staged) {
+      const left = rows.filter((r) => r.id !== toUnlink.id)
+      if (toUnlink.isMain && left.length) left[0] = { ...left[0], isMain: 1 }
+      onPendingChange?.(left)
+      setToUnlink(null)
+      return
+    }
     try { await unlinkAccountContact(accountId, toUnlink.id); setToUnlink(null); setTick((x) => x + 1) } catch { setToUnlink(null) }
   }
   return (
