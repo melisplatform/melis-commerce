@@ -184,6 +184,12 @@ class MelisComReactApiCountryController extends MelisAbstractActionController
             $newId = $countryTable->save($data, $id ?: null);
             ob_end_clean();
 
+            $this->getEventManager()->trigger('meliscommerce_country_save_end', $this, [
+                'success' => true, 'textTitle' => 'Country',
+                'textMessage' => $id ? 'tr_meliscommerce_country_edit_success' : 'tr_meliscommerce_country_add_success',
+                'typeCode' => $id ? 'ECOM_COUNTRY_UPDATE' : 'ECOM_COUNTRY_ADD', 'itemId' => (int) $newId,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => ['id' => (int) $newId]], $id ? 200 : 201);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -201,6 +207,12 @@ class MelisComReactApiCountryController extends MelisAbstractActionController
             ob_start();
             $countryTable->delete($id);
             ob_end_clean();
+
+            $this->getEventManager()->trigger('meliscommerce_country_delete_end', $this, [
+                'success' => true, 'textTitle' => 'Country', 'textMessage' => 'tr_meliscommerce_country_delete_success',
+                'typeCode' => 'ECOM_COUNTRY_DELETE', 'itemId' => $id,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }

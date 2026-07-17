@@ -154,6 +154,12 @@ class MelisComReactApiCurrencyController extends MelisAbstractActionController
             $currencyTable = $this->getServiceManager()->get('MelisEcomCurrencyTable');
             $newId = $currencyTable->save($data, $id ?: null);
 
+            $this->getEventManager()->trigger('meliscommerce_currency_save_end', $this, [
+                'success' => true, 'textTitle' => 'Devise',
+                'textMessage' => $id ? 'tr_meliscommerce_currency_form_edit_success' : 'tr_meliscommerce_currency_form_add_success',
+                'typeCode' => $id ? 'ECOM_CURRENCY_UPDATE' : 'ECOM_CURRENCY_ADD', 'itemId' => (int) $newId,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => ['id' => (int) $newId]], $id ? 200 : 201);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -174,6 +180,13 @@ class MelisComReactApiCurrencyController extends MelisAbstractActionController
 
             $currencyTable = $this->getServiceManager()->get('MelisEcomCurrencyTable');
             $currencyTable->deleteById($id);
+
+            $this->getEventManager()->trigger('meliscommerce_currency_delete_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_currency_delete_currency',
+                'textMessage' => 'tr_meliscommerce_currency_delete_successful',
+                'typeCode' => 'ECOM_CURRENCY_DELETE', 'itemId' => $id,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -199,6 +212,12 @@ class MelisComReactApiCurrencyController extends MelisAbstractActionController
             $current = $currencyTable->getDefaultCurrency()->current();
             if ($current) { $currencyTable->save(['cur_default' => 0], (int) $current->cur_id); }
             $currencyTable->save(['cur_default' => 1], $id);
+
+            $this->getEventManager()->trigger('meliscommerce_currency_set_default_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_currency_set_default',
+                'textMessage' => 'tr_meliscommerce_currency_set_default_success',
+                'typeCode' => 'ECOM_CURRENCY_SET_DEFAULT', 'itemId' => $id,
+            ]);
 
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }

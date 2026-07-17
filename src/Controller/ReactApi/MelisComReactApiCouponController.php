@@ -167,6 +167,11 @@ class MelisComReactApiCouponController extends MelisAbstractActionController
             $newId = $this->getServiceManager()->get('MelisComCouponService')->saveCoupon($coupon, $id ?: null);
             ob_end_clean();
 
+            $this->getEventManager()->trigger('meliscommerce_coupon_save_end', $this, [
+                'success' => true, 'textTitle' => 'Coupon', 'textMessage' => 'tr_meliscommerce_coupon_save_success',
+                'typeCode' => $id ? 'ECOM_COUPON_UPDATE' : 'ECOM_COUPON_ADD', 'itemId' => (int) $newId,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => ['id' => (int) $newId]], $id ? 200 : 201);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -181,6 +186,12 @@ class MelisComReactApiCouponController extends MelisAbstractActionController
             ob_start();
             $this->getServiceManager()->get('MelisComCouponService')->deleteCouponById($id);
             ob_end_clean();
+
+            $this->getEventManager()->trigger('meliscommerce_coupon_delete_end', $this, [
+                'success' => true, 'textTitle' => 'Coupon', 'textMessage' => 'tr_meliscommerce_coupon_delete_success',
+                'typeCode' => 'ECOM_COUPON_DELETE', 'itemId' => $id,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -254,6 +265,12 @@ class MelisComReactApiCouponController extends MelisAbstractActionController
                 $newId = $this->getServiceManager()->get('MelisComCouponService')->saveCouponClient(['ccli_coupon_id' => $id, 'ccli_client_id' => $clientId]);
                 ob_end_clean();
             }
+
+            $this->getEventManager()->trigger('meliscommerce_coupon_client_management_end', $this, [
+                'success' => true, 'textTitle' => 'Coupon', 'textMessage' => 'tr_meliscommerce_coupon_save_success',
+                'typeCode' => 'ECOM_COUPON_ASSIGN', 'itemId' => $id,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => ['id' => (int) $newId]], 201);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -262,11 +279,18 @@ class MelisComReactApiCouponController extends MelisAbstractActionController
     public function clientDeleteAction(): HttpResponse
     {
         if ($deny = $this->denyUnlessAccess()) { return $deny; }
+        $id     = (int) $this->params()->fromRoute('id', 0);
         $ccliId = (int) $this->params()->fromRoute('ccliId', 0);
         if ($ccliId <= 0) { return $this->jsonResponse(['success' => false, 'error' => 'Invalid'], 400); }
         try {
             $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface')
                 ->query('DELETE FROM melis_ecom_coupon_client WHERE ccli_id = ?', [$ccliId]);
+
+            $this->getEventManager()->trigger('meliscommerce_coupon_remove_from_client_end', $this, [
+                'success' => true, 'textTitle' => 'Coupon', 'textMessage' => 'tr_meliscommerce_coupon_delete_success_remove',
+                'typeCode' => 'ECOM_COUPON_ASSIGN_REMOVE', 'itemId' => $id,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -338,6 +362,12 @@ class MelisComReactApiCouponController extends MelisAbstractActionController
                 $newId = $this->getServiceManager()->get('MelisComCouponService')->saveCouponProduct(['cprod_coupon_id' => $id, 'cprod_product_id' => $productId]);
                 ob_end_clean();
             }
+
+            $this->getEventManager()->trigger('meliscommerce_coupon_client_management_end', $this, [
+                'success' => true, 'textTitle' => 'Coupon', 'textMessage' => 'tr_meliscommerce_coupon_save_success',
+                'typeCode' => 'ECOM_COUPON_ASSIGN', 'itemId' => $id,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => ['id' => (int) $newId]], 201);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -346,11 +376,18 @@ class MelisComReactApiCouponController extends MelisAbstractActionController
     public function productDeleteAction(): HttpResponse
     {
         if ($deny = $this->denyUnlessAccess()) { return $deny; }
+        $id      = (int) $this->params()->fromRoute('id', 0);
         $cprodId = (int) $this->params()->fromRoute('cprodId', 0);
         if ($cprodId <= 0) { return $this->jsonResponse(['success' => false, 'error' => 'Invalid'], 400); }
         try {
             $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface')
                 ->query('DELETE FROM melis_ecom_coupon_product WHERE cprod_id = ?', [$cprodId]);
+
+            $this->getEventManager()->trigger('meliscommerce_coupon_client_management_end', $this, [
+                'success' => true, 'textTitle' => 'Coupon', 'textMessage' => 'tr_meliscommerce_coupon_save_success',
+                'typeCode' => 'ECOM_COUPON_ASSIGN', 'itemId' => $id,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }

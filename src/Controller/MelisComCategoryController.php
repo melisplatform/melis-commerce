@@ -1006,6 +1006,11 @@ class MelisComCategoryController extends MelisAbstractActionController
             'errors' => $errors,
         );
 
+        $this->getEventManager()->trigger('meliscommerce_category_save_end', $this, array_merge(
+            $response,
+            array('typeCode' => 'ECOM_CATEGORY_PRODUCTS_REORDER', 'itemId' => null)
+        ));
+
         return new JsonModel($response);
     }
 

@@ -267,6 +267,14 @@ class MelisComReactApiCatalogController extends MelisAbstractActionController
                 return $this->jsonResponse(['success' => false, 'error' => 'Échec de l\'enregistrement.'], 500);
             }
 
+            // Journalisation (Logs) : rejoue MelisComCategoryController::saveCategoryAction.
+            $type = ($fatherId === -1) ? 'catalog' : 'category';
+            $this->getEventManager()->trigger('meliscommerce_category_save_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_categories_' . $type . '_save',
+                'textMessage' => 'tr_meliscommerce_categories_err_' . $type . '_save_success',
+                'typeCode' => 'ECOM_' . strtoupper($type) . ($id ? '_UPDATE' : '_ADD'), 'itemId' => (int) $catId,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => ['id' => (int) $catId]], $id ? 200 : 201);
         } catch (\Throwable $e) {
             return $this->errorResponse($e);
@@ -311,6 +319,14 @@ class MelisComReactApiCatalogController extends MelisAbstractActionController
 
             try { $this->getServiceManager()->get('MelisComCacheService')->deleteCache('category', $catId, $fatherId); } catch (\Throwable) {}
 
+            // Journalisation (Logs) : rejoue MelisComCategoryListController::saveCategoryTreeViewAction
+            // (même événement/typeCode que le drag-and-drop legacy).
+            $this->getEventManager()->trigger('meliscommerce_category_save_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_categories_category_reorder',
+                'textMessage' => 'tr_meliscommerce_categories_category_reorder_success',
+                'typeCode' => 'ECOM_CATEGORY_REORDER', 'itemId' => $catId,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) {
             return $this->errorResponse($e);
@@ -337,6 +353,15 @@ class MelisComReactApiCatalogController extends MelisAbstractActionController
             if (!$ok) {
                 return $this->jsonResponse(['success' => false, 'error' => 'Échec de la suppression.'], 500);
             }
+
+            // Journalisation (Logs) : rejoue MelisComCategoryController::deleteCategoryAction.
+            $type = ($fatherId === -1) ? 'catalog' : 'category';
+            $this->getEventManager()->trigger('meliscommerce_category_delete_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_categories_' . $type . '_delete',
+                'textMessage' => 'tr_meliscommerce_categories_' . $type . '_delete_success',
+                'typeCode' => 'ECOM_' . strtoupper($type) . '_DELETE', 'itemId' => $id,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) {
             return $this->errorResponse($e);

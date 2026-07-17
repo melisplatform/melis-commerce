@@ -262,6 +262,11 @@ class MelisComReactApiAttributeController extends MelisAbstractActionController
             $newId = $this->getServiceManager()->get('MelisComAttributeService')->saveAttribute($attribute, $transArray, $id ?: null);
             ob_end_clean();
 
+            $this->getEventManager()->trigger('meliscommerce_attribute_save_end', $this, [
+                'success' => true, 'textTitle' => 'Attribute', 'textMessage' => 'tr_meliscommerce_attribute_save_success',
+                'typeCode' => $id ? 'ECOM_ATTRIBUTE_UPDATE' : 'ECOM_ATTRIBUTE_ADD', 'itemId' => (int) $newId,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => ['id' => (int) $newId]], $id ? 200 : 201);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -276,6 +281,12 @@ class MelisComReactApiAttributeController extends MelisAbstractActionController
             ob_start();
             $this->getServiceManager()->get('MelisComAttributeService')->deleteAttributeById($id);
             ob_end_clean();
+
+            $this->getEventManager()->trigger('meliscommerce_attribute_delete_end', $this, [
+                'success' => true, 'textTitle' => 'Attribute', 'textMessage' => 'tr_meliscommerce_attribute_delete_success',
+                'typeCode' => 'ECOM_ATTRIBUTE_DELETE', 'itemId' => $id,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -354,6 +365,8 @@ class MelisComReactApiAttributeController extends MelisAbstractActionController
             $attributeSvc = $this->getServiceManager()->get('MelisComAttributeService');
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
 
+            $isNewValue = $valId <= 0;
+
             ob_start();
             if ($valId <= 0) {
                 $valueRow = ['atval_attribute_id' => $id, 'atval_type_id' => 0, 'atval_reference' => $reference];
@@ -403,6 +416,11 @@ class MelisComReactApiAttributeController extends MelisAbstractActionController
             }
             ob_end_clean();
 
+            $this->getEventManager()->trigger('meliscommerce_attribute_value_save_end', $this, [
+                'success' => true, 'textTitle' => 'Attribute Value', 'textMessage' => 'tr_meliscommerce_attribute_value_save_success',
+                'typeCode' => $isNewValue ? 'ECOM_ATTRIBUTE_VALUE_ADD' : 'ECOM_ATTRIBUTE_VALUE_UPDATE', 'itemId' => $valId,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => ['id' => $valId]], $b['id'] ?? null ? 200 : 201);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -418,6 +436,12 @@ class MelisComReactApiAttributeController extends MelisAbstractActionController
             ob_start();
             $this->getServiceManager()->get('MelisComAttributeService')->deleteAttributeValueById($valId, $id ?: null);
             ob_end_clean();
+
+            $this->getEventManager()->trigger('meliscommerce_attribute_value_delete_end', $this, [
+                'success' => true, 'textTitle' => 'Attribute Value', 'textMessage' => 'tr_meliscommerce_attribute_value_delete_success',
+                'typeCode' => 'ECOM_ATTRIBUTE_VALUE_DELETE', 'itemId' => $valId,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }

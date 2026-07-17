@@ -453,6 +453,12 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
                 "INSERT INTO melis_ecom_doc_relations (rdoc_doc_id, rdoc_order_id, rdoc_country_id) VALUES (?, ?, -1)",
                 [$docId, $id]
             );
+
+            $this->getEventManager()->trigger('meliscommerce_order_save_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_order_page', 'textMessage' => 'tr_meliscommerce_order_page_save_success',
+                'typeCode' => 'ECOM_ORDER_ATTACHMENT_ADD', 'itemId' => $id,
+            ]);
+
             return $this->ok(['id' => $docId, 'name' => $docName, 'path' => $relPath, 'url' => $this->uploadUrl($relPath)]);
         } catch (\Throwable $e) { return $this->err($e); }
     }
@@ -477,6 +483,12 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
 
             $db->query("DELETE FROM melis_ecom_doc_relations WHERE rdoc_doc_id = ? AND rdoc_order_id = ?", [$docId, $id]);
             $db->query("DELETE FROM melis_ecom_document WHERE doc_id = ?", [$docId]);
+
+            $this->getEventManager()->trigger('meliscommerce_order_save_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_order_page', 'textMessage' => 'tr_meliscommerce_order_page_save_success',
+                'typeCode' => 'ECOM_ORDER_ATTACHMENT_DELETE', 'itemId' => $id,
+            ]);
+
             return $this->ok(['id' => $docId]);
         } catch (\Throwable $e) { return $this->err($e); }
     }
@@ -532,6 +544,12 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
                 [$reference, $status, $clientId ?: 0, 0, 0, 0, 0, $now]
             );
             $newId = (int) iterator_to_array($db->query('SELECT LAST_INSERT_ID() AS id', []))[0]['id'];
+
+            $this->getEventManager()->trigger('meliscommerce_checkout_order_add', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_order_checkout_add_order', 'textMessage' => 'tr_meliscommerce_order_checkout_save_success',
+                'typeCode' => 'ECOM_CHECKOUT_ORDER_ADD', 'itemId' => $newId,
+            ]);
+
             return $this->ok(['id' => $newId, 'reference' => $reference]);
         } catch (\Throwable $e) {
             return $this->err($e);
@@ -564,6 +582,11 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             if ($fields) {
                 $params[] = $id;
                 $db->query('UPDATE melis_ecom_order SET ' . implode(', ', $fields) . ' WHERE ord_id = ?', $params);
+
+                $this->getEventManager()->trigger('meliscommerce_order_save_end', $this, [
+                    'success' => true, 'textTitle' => 'tr_meliscommerce_order_page', 'textMessage' => 'tr_meliscommerce_order_page_save_success',
+                    'typeCode' => 'ECOM_ORDER_UPDATE', 'itemId' => $id,
+                ]);
             }
             return $this->ok(['id' => $id]);
         } catch (\Throwable $e) {
@@ -590,6 +613,12 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             }
 
             $db->query("UPDATE melis_ecom_order SET ord_status = ? WHERE ord_id = ?", [$newStatus, $id]);
+
+            $this->getEventManager()->trigger('meliscommerce_order_status_save_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_order_page', 'textMessage' => 'tr_meliscommerce_order_page_save_success',
+                'typeCode' => 'ECOM_ORDER_STATUS_UPDATE', 'itemId' => $id,
+            ]);
+
             return $this->ok(['id' => $id, 'status' => $newStatus]);
         } catch (\Throwable $e) {
             return $this->err($e);
@@ -632,6 +661,12 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
                 $oadd_id = (int) ((array) $existing[0])['oadd_id'];
                 $sets    = implode(', ', array_map(fn($k) => "$k = ?", array_keys($cols)));
                 $db->query("UPDATE melis_ecom_order_address SET $sets WHERE oadd_id = ?", array_merge(array_values($cols), [$oadd_id]));
+
+                $this->getEventManager()->trigger('meliscommerce_order_save_end', $this, [
+                    'success' => true, 'textTitle' => 'tr_meliscommerce_order_page', 'textMessage' => 'tr_meliscommerce_order_page_save_success',
+                    'typeCode' => 'ECOM_ORDER_ADDRESS_UPDATE', 'itemId' => $id,
+                ]);
+
                 return $this->ok(['id' => $oadd_id]);
             }
 
@@ -639,6 +674,12 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             $placeh = implode(', ', array_fill(0, count($cols), '?'));
             $db->query("INSERT INTO melis_ecom_order_address ($keys) VALUES ($placeh)", array_values($cols));
             $newId = (int) iterator_to_array($db->query('SELECT LAST_INSERT_ID() AS id', []))[0]['id'];
+
+            $this->getEventManager()->trigger('meliscommerce_order_save_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_order_page', 'textMessage' => 'tr_meliscommerce_order_page_save_success',
+                'typeCode' => 'ECOM_ORDER_ADDRESS_UPDATE', 'itemId' => $id,
+            ]);
+
             return $this->ok(['id' => $newId]);
         } catch (\Throwable $e) {
             return $this->err($e);
@@ -662,6 +703,12 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
                 [$id, $code, $b['content'] ?? '', $b['dateSent'] ?: date('Y-m-d')]
             );
             $newId = (int) iterator_to_array($db->query('SELECT LAST_INSERT_ID() AS id', []))[0]['id'];
+
+            $this->getEventManager()->trigger('meliscommerce_order_save_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_order_page', 'textMessage' => 'tr_meliscommerce_order_page_save_success',
+                'typeCode' => 'ECOM_ORDER_SHIPPING_UPDATE', 'itemId' => $id,
+            ]);
+
             return $this->ok(['id' => $newId]);
         } catch (\Throwable $e) {
             return $this->err($e);
@@ -1277,6 +1324,11 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             $s['orderId'] = $orderId;
             $container['checkout'][self::WIZARD_SITE_ID] = $s;
 
+            $this->getEventManager()->trigger('meliscommerce_checkout_order_add', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_order_checkout_add_order', 'textMessage' => 'tr_meliscommerce_order_checkout_save_success',
+                'typeCode' => 'ECOM_CHECKOUT_ORDER_ADD', 'itemId' => $orderId,
+            ]);
+
             return $this->ok(['success' => true, 'orderId' => $orderId, 'reference' => $reference]);
         } catch (\Throwable $e) { return $this->err($e); }
     }
@@ -1303,6 +1355,12 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
                 [$id, $clientId, $userId ?: null, $msg, $now]
             );
             $newId = (int) iterator_to_array($db->query('SELECT LAST_INSERT_ID() AS id', []))[0]['id'];
+
+            $this->getEventManager()->trigger('meliscommerce_order_message_save_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_order_page', 'textMessage' => 'tr_meliscommerce_order_message_save_success',
+                'typeCode' => 'ECOM_ORDER_MESSAGE_ADD', 'itemId' => $newId,
+            ]);
+
             return $this->ok(['id' => $newId, 'dateCreation' => $now]);
         } catch (\Throwable $e) {
             return $this->err($e);

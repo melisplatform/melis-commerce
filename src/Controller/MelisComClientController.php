@@ -870,12 +870,13 @@ class MelisComClientController extends MelisAbstractActionController
         $textTitle = $translator->translate('tr_meliscommerce_clients_add_contact_address');
         $textMessage = '';
         $errors = array();
-        
+
         $clientAddressDom = array();
-        
+        $postValues = null;
+
         // Getting Data from Post
         $request = $this->getRequest();
-        
+
         if($request->isPost())
         {
             // Getting Client Address Form from Config
@@ -961,10 +962,15 @@ class MelisComClientController extends MelisAbstractActionController
             'errors' => $errors,
             'clientAddressDom' => $clientAddressDom,
         );
-        
+
+        $this->getEventManager()->trigger('meliscommerce_clients_save_end', $this, array_merge(
+            $response,
+            array('typeCode' => 'ECOM_CLIENT_ADDRESS_ADD', 'itemId' => $postValues['clientId'] ?? null)
+        ));
+
         return new JsonModel($response);
     }
-    
+
     /**
         * Render Client Address tab Content
         * This method return Client Address form with binded data form Post 
@@ -1615,15 +1621,16 @@ class MelisComClientController extends MelisAbstractActionController
         
         $success = 0;
         $errors = array();
-        
+        $clientAddressesIds = null;
+
         $request = $this->getRequest();
-        
+
         if($request->isPost())
         {
             $postValues = $this->getRequest()->getPost()->toArray();
             $postValues = $this->getTool()->sanitizeRecursive($postValues);
 
-            
+
             if (!empty($postValues['deletedaddresses']))
             {
                 // ID's of the Addresses deleted on the frontent
@@ -1655,7 +1662,17 @@ class MelisComClientController extends MelisAbstractActionController
             'errors' => array('deleteedClientAddresses_err' => $errors),
             'datas' => array(),
         );
-        
+
+        $this->getEventManager()->trigger('meliscommerce_clients_delete_end', $this, array_merge(
+            $result,
+            array(
+                'textTitle' => $translator->translate('tr_meliscommerce_clients_delete_contact_address'),
+                'textMessage' => $translator->translate('tr_meliscommerce_clients_delete_contact_address'),
+                'typeCode' => 'ECOM_CLIENT_ADDRESS_DELETE',
+                'itemId' => is_array($clientAddressesIds) ? reset($clientAddressesIds) : $clientAddressesIds,
+            )
+        ));
+
         return new JsonModel($result);
     }
 
@@ -1841,13 +1858,20 @@ class MelisComClientController extends MelisAbstractActionController
             }
         }
 
-        return new JsonModel([
+        $response = [
             'success' => $success,
             'accountId' => $accountId,
             'error' => $error,
             'textTitle' => $translator->translate($title),
             'textMessage' => $translator->translate($message)
-        ]);
+        ];
+
+        $this->getEventManager()->trigger('meliscommerce_clients_save_end', $this, array_merge(
+            $response,
+            ['typeCode' => 'ECOM_CLIENT_CONTACT_LINK', 'itemId' => $accountId]
+        ));
+
+        return new JsonModel($response);
     }
 
     /**
@@ -1887,7 +1911,7 @@ class MelisComClientController extends MelisAbstractActionController
             }
         }
 
-        return new JsonModel([
+        $response = [
             'success' => $success,
             'accountId' => $accountId,
             'contactId' => $contactId,
@@ -1895,7 +1919,14 @@ class MelisComClientController extends MelisAbstractActionController
             'error' => $error,
             'textTitle' => $translator->translate($title),
             'textMessage' => $translator->translate($message)
-        ]);
+        ];
+
+        $this->getEventManager()->trigger('meliscommerce_clients_delete_end', $this, array_merge(
+            $response,
+            ['typeCode' => 'ECOM_CLIENT_CONTACT_UNLINK', 'itemId' => $accountId]
+        ));
+
+        return new JsonModel($response);
     }
 
     /**
@@ -2026,12 +2057,19 @@ class MelisComClientController extends MelisAbstractActionController
             }
         }
 
-        return new JsonModel([
+        $response = [
             'success' => $success,
             'error' => $error,
             'textTitle' => $translator->translate($title),
             'textMessage' => $translator->translate($message)
-        ]);
+        ];
+
+        $this->getEventManager()->trigger('meliscommerce_clients_save_end', $this, array_merge(
+            $response,
+            ['typeCode' => 'ECOM_CLIENT_DEFAULT_CONTACT', 'itemId' => $accountId]
+        ));
+
+        return new JsonModel($response);
     }
 
     /**

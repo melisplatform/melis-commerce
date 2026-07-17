@@ -155,6 +155,14 @@ class MelisComReactApiLanguageController extends MelisAbstractActionController
 
             $newId = $langTable->save($data, $id ?: null);
 
+            // Mêmes clés de traduction que MelisComLanguageController::saveAction() (legacy).
+            $this->getEventManager()->trigger('meliscommerce_language_save_end', $this, [
+                'success' => true,
+                'textTitle' => $id ? 'tr_meliscommerce_language_edit' : 'tr_meliscommerce_language_add',
+                'textMessage' => $id ? 'tr_meliscommerce_language_edit_success' : 'tr_meliscommerce_language_add_success',
+                'typeCode' => $id ? 'ECOM_LANGUAGE_UPDATE' : 'ECOM_LANGUAGE_ADD', 'itemId' => (int) $newId,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => ['id' => (int) $newId]], $id ? 200 : 201);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -167,6 +175,15 @@ class MelisComReactApiLanguageController extends MelisAbstractActionController
         if ($id <= 0) { return $this->jsonResponse(['success' => false, 'error' => 'Invalid ID'], 400); }
         try {
             $this->getServiceManager()->get('MelisEcomLangTable')->deleteById($id);
+
+            // Même clé de traduction que MelisComLanguageController::deleteAction() (legacy) —
+            // note : tr_meliscore_tool_language_delete_success, pas tr_meliscommerce_..., repris tel quel.
+            $this->getEventManager()->trigger('meliscommerce_language_delete_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_language_delete',
+                'textMessage' => 'tr_meliscore_tool_language_delete_success',
+                'typeCode' => 'ECOM_LANGUAGE_DELETE', 'itemId' => $id,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }

@@ -377,6 +377,10 @@ class MelisComContactController extends MelisAbstractActionController
                     $service = $this->getServiceManager()->get('MelisComContactService');
                     $id = $service->saveContact($contactData, $addressData, $personId);
                     if ($id) {
+                        // On create, $personId stays null above (only set from an existing
+                        // cper_id on update) — without this, the log-event trigger below always
+                        // logs a new contact's ADD entry with a null itemId.
+                        $personId = $id;
                         $melisComContactService = $this->getServiceManager()->get('MelisComContactService');
                         $contactData = $melisComContactService->getContactById($id);
 
@@ -896,6 +900,7 @@ class MelisComContactController extends MelisAbstractActionController
         $textTitle = $translator->translate('tr_meliscommerce_clients_add_contact_address');
         $textMessage = 'tr_meliscommerce_contact_page_content_tab_address_save_failed';
         $errors = array();
+        $postValues = null;
 
         $request = $this->getRequest();
 
@@ -958,6 +963,11 @@ class MelisComContactController extends MelisAbstractActionController
             'textMessage' => $textMessage,
             'errors' => $errors
         );
+
+        $this->getEventManager()->trigger('meliscommerce_contact_save_end', $this, array_merge(
+            $response,
+            array('typeCode' => 'ECOM_CONTACT_ADDRESS_ADD', 'itemId' => $postValues['contactId'] ?? null)
+        ));
 
         return new JsonModel($response);
     }
@@ -1028,6 +1038,11 @@ class MelisComContactController extends MelisAbstractActionController
             'errors' => $errors,
             'contactId' => $contactId
         );
+
+        $this->getEventManager()->trigger('meliscommerce_contact_delete_end', $this, array_merge(
+            $response,
+            array('typeCode' => 'ECOM_CONTACT_ADDRESS_DELETE', 'itemId' => $addressId)
+        ));
 
         return new JsonModel($response);
     }
@@ -1504,13 +1519,20 @@ class MelisComContactController extends MelisAbstractActionController
             }
         }
 
-        return new JsonModel([
+        $response = [
             'success' => $success,
             'accountId' => $accountId,
             'error' => $error,
             'textTitle' => $translator->translate($title),
             'textMessage' => $translator->translate($message)
-        ]);
+        ];
+
+        $this->getEventManager()->trigger('meliscommerce_contact_save_end', $this, array_merge(
+            $response,
+            ['typeCode' => 'ECOM_CONTACT_ACCOUNT_LINK', 'itemId' => $contactId]
+        ));
+
+        return new JsonModel($response);
     }
 
     /**
@@ -1543,12 +1565,19 @@ class MelisComContactController extends MelisAbstractActionController
             }
         }
 
-        return new JsonModel([
+        $response = [
             'success' => $success,
             'error' => $error,
             'textTitle' => $translator->translate($title),
             'textMessage' => $translator->translate($message)
-        ]);
+        ];
+
+        $this->getEventManager()->trigger('meliscommerce_contact_save_end', $this, array_merge(
+            $response,
+            ['typeCode' => 'ECOM_CONTACT_DEFAULT_ACCOUNT', 'itemId' => $contactId]
+        ));
+
+        return new JsonModel($response);
     }
 
     /**
@@ -1580,7 +1609,7 @@ class MelisComContactController extends MelisAbstractActionController
             }
         }
 
-        return new JsonModel([
+        $response = [
             'success' => $success,
             'accountId' => $accountId,
             'contactId' => $contactId,
@@ -1588,7 +1617,14 @@ class MelisComContactController extends MelisAbstractActionController
             'error' => $error,
             'textTitle' => $translator->translate($title),
             'textMessage' => $translator->translate($message)
-        ]);
+        ];
+
+        $this->getEventManager()->trigger('meliscommerce_contact_delete_end', $this, array_merge(
+            $response,
+            ['typeCode' => 'ECOM_CONTACT_ACCOUNT_UNLINK', 'itemId' => $contactId]
+        ));
+
+        return new JsonModel($response);
     }
 
     /**

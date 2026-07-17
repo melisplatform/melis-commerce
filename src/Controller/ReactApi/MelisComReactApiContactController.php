@@ -290,6 +290,12 @@ class MelisComReactApiContactController extends MelisAbstractActionController
                 if ($password !== '') { $setSql .= ', cper_password = ?'; $params[] = md5($password); }
                 $params[] = $id;
                 $db->query("UPDATE melis_ecom_client_person SET $setSql WHERE cper_id = ?", $params);
+
+                $this->getEventManager()->trigger('meliscommerce_contact_save_end', $this, [
+                    'success' => true, 'textTitle' => 'Contact', 'textMessage' => 'tr_meliscommerce_contact_save_success',
+                    'typeCode' => 'ECOM_CONTACT_UPDATE', 'itemId' => $id,
+                ]);
+
                 return $this->jsonResponse(['success' => true, 'data' => ['id' => $id]]);
             }
 
@@ -304,6 +310,11 @@ class MelisComReactApiContactController extends MelisAbstractActionController
                  $telMobile, $telLandline, $password !== '' ? md5($password) : '', $tags, $now]
             );
             $newId = (int) iterator_to_array($db->query('SELECT LAST_INSERT_ID() AS id', []))[0]['id'];
+
+            $this->getEventManager()->trigger('meliscommerce_contact_save_end', $this, [
+                'success' => true, 'textTitle' => 'Contact', 'textMessage' => 'tr_meliscommerce_contact_save_success',
+                'typeCode' => 'ECOM_CONTACT_ADD', 'itemId' => $newId,
+            ]);
 
             return $this->jsonResponse(['success' => true, 'data' => ['id' => $newId]], 201);
         } catch (\Throwable $e) {
@@ -322,6 +333,12 @@ class MelisComReactApiContactController extends MelisAbstractActionController
         try {
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
             $db->query('DELETE FROM melis_ecom_client_person WHERE cper_id = ?', [$id]);
+
+            $this->getEventManager()->trigger('meliscommerce_contact_delete_end', $this, [
+                'success' => true, 'textTitle' => 'Contact', 'textMessage' => 'tr_meliscommerce_contact_delete_contact_message_success',
+                'typeCode' => 'ECOM_CONTACT_DELETE', 'itemId' => $id,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) {
             return $this->errorResponse($e);

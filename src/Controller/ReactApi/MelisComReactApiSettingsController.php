@@ -143,6 +143,11 @@ class MelisComReactApiSettingsController extends MelisAbstractActionController
 
             ob_end_clean();
 
+            $this->getEventManager()->trigger('meliscommerce_settings_save_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_settings', 'textMessage' => 'tr_meliscommerce_settings_save_success',
+                'typeCode' => 'ECOM_SETTINGS_UPDATE', 'itemId' => null,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }

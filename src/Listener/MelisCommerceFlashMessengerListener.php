@@ -90,6 +90,8 @@ class MelisCommerceFlashMessengerListener extends MelisGeneralListener implement
             'meliscommerce_contacts_import_end',
             'meliscommerce_order_status_type_save_end',
             'meliscommerce_order_status_delete_end',
+            'meliscommerce_price_save_end',
+            'meliscommerce_price_delete_end',
         ];
 
         $priority = -1000;

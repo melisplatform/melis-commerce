@@ -335,6 +335,14 @@ class MelisComVariantListController extends MelisAbstractActionController
             $success = true;
         }
 
+        $this->getEventManager()->trigger('meliscommerce_variant_save_end', $this, array(
+            'success' => $success,
+            'textTitle' => 'tr_meliscommerce_variant_title',
+            'textMessage' => $success ? 'tr_meliscommerce_variant_save_success' : 'tr_meliscommerce_variant_save_failed',
+            'typeCode' => 'ECOM_VARIANT_STATUS_UPDATE',
+            'itemId' => $variantId,
+        ));
+
         return new JsonModel(array("success" => $success));
     }
 

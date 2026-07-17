@@ -321,6 +321,7 @@ class MelisComCategoryListController extends MelisAbstractActionController
         $status = 1;
         $textMessage = '';
         $textTitle = '';
+        $datas = null;
 
         $request = $this->getRequest();
 
@@ -344,6 +345,11 @@ class MelisComCategoryListController extends MelisAbstractActionController
             'textTitle' => $textTitle,
             'textMessage' => $textMessage,
         );
+
+        $this->getEventManager()->trigger('meliscommerce_category_save_end', $this, array_merge(
+            $response,
+            array('typeCode' => 'ECOM_CATEGORY_REORDER', 'itemId' => $datas['cat_id'] ?? null)
+        ));
 
         return new JsonModel($response);
     }

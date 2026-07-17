@@ -436,10 +436,21 @@ class MelisComPriceController extends MelisAbstractActionController
             'success' => $success,
             'errors' => $errors,
             'datas' => $data,
-        );        
+        );
+
+        $this->getEventManager()->trigger('meliscommerce_price_save_end', $this, array_merge(
+            $results,
+            array(
+                'textTitle' => 'tr_meliscommerce_prices',
+                'textMessage' => $success ? 'tr_meliscommerce_price_save_success' : 'tr_meliscommerce_price_save_failed',
+                'typeCode' => 'ECOM_PRICE_SAVE',
+                'itemId' => $postValues['priceForm'][0]['price_var_id'] ?? null,
+            )
+        ));
+
         return new JsonModel($results);
     }
-    
+
    /**
     * This method deletes the price entry if the country its affected is deleted
     * @return \Laminas\View\Model\JsonModel
@@ -469,9 +480,20 @@ class MelisComPriceController extends MelisAbstractActionController
             'errors' => $errors,
             'datas' => $data,
         );
-        return new JsonModel($results); 
+
+        $this->getEventManager()->trigger('meliscommerce_price_delete_end', $this, array_merge(
+            $results,
+            array(
+                'textTitle' => 'tr_meliscommerce_prices',
+                'textMessage' => $success ? 'tr_meliscommerce_price_delete_success' : 'tr_meliscommerce_price_delete_failed',
+                'typeCode' => 'ECOM_PRICE_DELETE',
+                'itemId' => $countryId,
+            )
+        ));
+
+        return new JsonModel($results);
     }
-    
+
     /**
      * Retrieves  form errors
      * @param object $form the form object

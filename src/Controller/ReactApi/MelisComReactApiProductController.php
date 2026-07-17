@@ -319,6 +319,11 @@ class MelisComReactApiProductController extends MelisAbstractActionController
             $newId = $this->getServiceManager()->get('MelisComVariantService')->saveVariant($variant, [], [], [], [], $varId ?: null);
             ob_end_clean();
 
+            $this->getEventManager()->trigger('meliscommerce_variant_save_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_variants_page', 'textMessage' => 'tr_meliscommerce_variants_page_save_success',
+                'typeCode' => $varId ? 'ECOM_VARIANT_UPDATE' : 'ECOM_VARIANT_ADD', 'itemId' => (int) $newId,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => ['id' => (int) $newId]], $varId ? 200 : 201);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -384,10 +389,18 @@ class MelisComReactApiProductController extends MelisAbstractActionController
             if ($priceId > 0) {
                 $set = implode(', ', array_map(fn($c) => "$c = ?", array_keys($vals)));
                 $db->query("UPDATE melis_ecom_price SET $set WHERE price_id = ?", array_merge(array_values($vals), [$priceId]));
+                $itemId = $priceId;
             } else {
                 $cols = implode(', ', array_keys($vals)); $ph = implode(', ', array_fill(0, count($vals), '?'));
                 $db->query("INSERT INTO melis_ecom_price ($cols) VALUES ($ph)", array_values($vals));
+                $itemId = (int) iterator_to_array($db->query('SELECT LAST_INSERT_ID() AS id', []))[0]['id'];
             }
+
+            $this->getEventManager()->trigger('meliscommerce_price_save_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_prices', 'textMessage' => 'tr_meliscommerce_price_save_success',
+                'typeCode' => 'ECOM_PRICE_SAVE', 'itemId' => $itemId,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => null], $priceId ? 200 : 201);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -395,7 +408,16 @@ class MelisComReactApiProductController extends MelisAbstractActionController
     {
         if ($deny = $this->denyUnlessAccess()) { return $deny; }
         $priceId = (int) $this->params()->fromRoute('priceId', 0);
-        try { $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface')->query('DELETE FROM melis_ecom_price WHERE price_id = ?', [$priceId]); return $this->jsonResponse(['success' => true, 'data' => null]); }
+        try {
+            $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface')->query('DELETE FROM melis_ecom_price WHERE price_id = ?', [$priceId]);
+
+            $this->getEventManager()->trigger('meliscommerce_price_delete_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_prices', 'textMessage' => 'tr_meliscommerce_price_delete_success',
+                'typeCode' => 'ECOM_PRICE_DELETE', 'itemId' => $priceId,
+            ]);
+
+            return $this->jsonResponse(['success' => true, 'data' => null]);
+        }
         catch (\Throwable $e) { return $this->errorResponse($e); }
     }
 
@@ -478,6 +500,12 @@ class MelisComReactApiProductController extends MelisAbstractActionController
             ob_start();
             $this->getServiceManager()->get('MelisComVariantService')->deleteVariantById($varId);
             ob_end_clean();
+
+            $this->getEventManager()->trigger('meliscommerce_variant_delete_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_variants_page', 'textMessage' => 'tr_meliscommerce_variants_delete_success',
+                'typeCode' => 'ECOM_VARIANT_DELETE', 'itemId' => $varId,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -527,9 +555,17 @@ class MelisComReactApiProductController extends MelisAbstractActionController
                 'price_vat_price'  => $num($body['vatPrice'] ?? null),
                 'price_other_tax_price' => $num($body['otherTax'] ?? null),
             ];
+            $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
             ob_start();
             $this->getServiceManager()->get('MelisComProductService')->saveProductPrices($price, $priceId ?: null);
             ob_end_clean();
+            $itemId = $priceId ?: (int) iterator_to_array($db->query('SELECT LAST_INSERT_ID() AS id', []))[0]['id'];
+
+            $this->getEventManager()->trigger('meliscommerce_price_save_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_prices', 'textMessage' => 'tr_meliscommerce_price_save_success',
+                'typeCode' => 'ECOM_PRICE_SAVE', 'itemId' => $itemId,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => null], $priceId ? 200 : 201);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -581,6 +617,12 @@ class MelisComReactApiProductController extends MelisAbstractActionController
         if ($pattId <= 0) { return $this->jsonResponse(['success' => false, 'error' => 'Invalid'], 400); }
         try {
             $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface')->query('DELETE FROM melis_ecom_product_attribute WHERE patt_id = ?', [$pattId]);
+
+            $this->getEventManager()->trigger('meliscommerce_product_attr_remove_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_plugin_product_attribute_name', 'textMessage' => 'tr_meliscommerce_product_attr_remove_success',
+                'typeCode' => 'ECOM_PRODUCT_ATTR_REMOVE', 'itemId' => $pattId,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -714,7 +756,18 @@ class MelisComReactApiProductController extends MelisAbstractActionController
             $typeRow = iterator_to_array($db->query('SELECT avart_id FROM melis_ecom_assoc_variants_type LIMIT 1', []));
             $typeId = $typeRow ? (int) ((array) $typeRow[0])['avart_id'] : 0;
             $dup = iterator_to_array($db->query('SELECT avar_id FROM melis_ecom_assoc_variant WHERE avar_one = ? AND avar_two = ? LIMIT 1', [$varId, $other]));
-            if (!$dup) { $db->query('INSERT INTO melis_ecom_assoc_variant (avar_one, avar_two, avar_type_id) VALUES (?, ?, ?)', [$varId, $other, $typeId]); }
+            if (!$dup) {
+                $db->query('INSERT INTO melis_ecom_assoc_variant (avar_one, avar_two, avar_type_id) VALUES (?, ?, ?)', [$varId, $other, $typeId]);
+                $avarId = (int) iterator_to_array($db->query('SELECT LAST_INSERT_ID() AS id', []))[0]['id'];
+            } else {
+                $avarId = (int) ((array) $dup[0])['avar_id'];
+            }
+
+            $this->getEventManager()->trigger('meliscommerce_assoc_var_assoc_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_assoc_var_assoc_title', 'textMessage' => 'tr_meliscommerce_assoc_var_assoc_ok',
+                'typeCode' => 'ECOM_VARIANT_ASSOCIATE', 'itemId' => $avarId,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => null], 201);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -722,7 +775,16 @@ class MelisComReactApiProductController extends MelisAbstractActionController
     {
         if ($deny = $this->denyUnlessAccess()) { return $deny; }
         $avarId = (int) $this->params()->fromRoute('avarId', 0);
-        try { $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface')->query('DELETE FROM melis_ecom_assoc_variant WHERE avar_id = ?', [$avarId]); return $this->jsonResponse(['success' => true, 'data' => null]); }
+        try {
+            $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface')->query('DELETE FROM melis_ecom_assoc_variant WHERE avar_id = ?', [$avarId]);
+
+            $this->getEventManager()->trigger('meliscommerce_assoc_var_remove_assoc_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_assoc_var_remove_title', 'textMessage' => 'tr_meliscommerce_assoc_var_remove_ok',
+                'typeCode' => 'ECOM_VARIANT_ASSOCIATE_REMOVE', 'itemId' => $avarId,
+            ]);
+
+            return $this->jsonResponse(['success' => true, 'data' => null]);
+        }
         catch (\Throwable $e) { return $this->errorResponse($e); }
     }
 
@@ -877,6 +939,19 @@ class MelisComReactApiProductController extends MelisAbstractActionController
         return $docId;
     }
 
+    /** Trigger meliscommerce_document_save_{image|file}_end, mirroring legacy's docType-based event split. */
+    private function triggerDocumentSaveEvent(array $body, string $relationPrefix, int $docId, bool $isUpdate = false): void
+    {
+        $kind   = ((string) ($body['kind'] ?? 'file')) === 'image' ? 'image' : 'file';
+        $event  = $kind === 'image' ? 'meliscommerce_document_save_image_end' : 'meliscommerce_document_save_file_end';
+        $action = $isUpdate ? 'update' : 'save';
+        $this->getEventManager()->trigger($event, $this, [
+            'success' => true, 'textTitle' => 'tr_meliscommerce_documents_' . $kind . '_attachments',
+            'textMessage' => 'tr_meliscommerce_documents_' . $kind . '_' . $action . '_success',
+            'typeCode' => $relationPrefix . '_' . strtoupper($kind) . ($isUpdate ? '_UPDATE' : '_ADD'), 'itemId' => $docId,
+        ]);
+    }
+
     /**
      * Copies media (images and/or files) from a source product/variant to a new one.
      * Works around the broken dir-path bug in MelisComDuplicationService::duplicateDocuments.
@@ -944,7 +1019,8 @@ class MelisComReactApiProductController extends MelisAbstractActionController
         try {
             $body = json_decode($this->getRequest()->getContent(), true) ?? [];
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
-            $this->storeUpload($db, $prdId, $body, 'rdoc_product_id', $prdId);
+            $docId = $this->storeUpload($db, $prdId, $body, 'rdoc_product_id', $prdId);
+            $this->triggerDocumentSaveEvent($body, 'ECOM_PRODUCT', $docId);
             return $this->jsonResponse(['success' => true, 'data' => null], 201);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -954,7 +1030,19 @@ class MelisComReactApiProductController extends MelisAbstractActionController
         if ($deny = $this->denyUnlessAccess()) { return $deny; }
         $docId = (int) $this->params()->fromRoute('docId', 0);
         if ($docId <= 0) { return $this->jsonResponse(['success' => false, 'error' => 'Invalid'], 400); }
-        try { $this->deleteDoc($this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface'), $docId); return $this->jsonResponse(['success' => true, 'data' => null]); }
+        try {
+            $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
+            $typeRows = iterator_to_array($db->query('SELECT doc_type_id FROM melis_ecom_document WHERE doc_id = ? LIMIT 1', [$docId]));
+            $kind = ($typeRows && (int) ((array) $typeRows[0])['doc_type_id'] === 1) ? 'image' : 'file';
+            $this->deleteDoc($db, $docId);
+
+            $this->getEventManager()->trigger('meliscommerce_document_delete_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_documents_Documents', 'textMessage' => 'tr_meliscommerce_documents_delete_' . $kind . '_success',
+                'typeCode' => 'ECOM_DOCUMENT_' . strtoupper($kind) . '_DELETE', 'itemId' => $docId,
+            ]);
+
+            return $this->jsonResponse(['success' => true, 'data' => null]);
+        }
         catch (\Throwable $e) { return $this->errorResponse($e); }
     }
     // ─── POST /products/:id/variants/:variantId/media/upload ──────────────────
@@ -967,7 +1055,8 @@ class MelisComReactApiProductController extends MelisAbstractActionController
         try {
             $body = json_decode($this->getRequest()->getContent(), true) ?? [];
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
-            $this->storeUpload($db, $prdId ?: $varId, $body, 'rdoc_variant_id', $varId);
+            $docId = $this->storeUpload($db, $prdId ?: $varId, $body, 'rdoc_variant_id', $varId);
+            $this->triggerDocumentSaveEvent($body, 'ECOM_VARIANT', $docId);
             return $this->jsonResponse(['success' => true, 'data' => null], 201);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -1003,6 +1092,11 @@ class MelisComReactApiProductController extends MelisAbstractActionController
             if (($dupImages || $dupDocs) && is_numeric($newVarId) && (int) $newVarId > 0) {
                 $this->copyMedia($db, 'rdoc_variant_id', $varId, $prdId, $prdId, $dupImages, $dupDocs, (int) $newVarId);
             }
+
+            $this->getEventManager()->trigger('meliscommerce_duplicate_variant_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_duplication_Duplicate_variant', 'textMessage' => 'tr_meliscommerce_duplication_variant_success',
+                'typeCode' => 'ECOM_VARIANT_DUPLICATE', 'itemId' => is_numeric($newVarId) ? (int) $newVarId : null,
+            ]);
 
             return $this->jsonResponse(['success' => true, 'data' => null], 201);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
@@ -1090,6 +1184,9 @@ class MelisComReactApiProductController extends MelisAbstractActionController
                     }
                 }
             }
+
+            $this->triggerDocumentSaveEvent(['kind' => $isImage ? 'image' : 'file'], 'ECOM_DOCUMENT', $docId, true);
+
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -1116,6 +1213,20 @@ class MelisComReactApiProductController extends MelisAbstractActionController
                 if ($code === '' || $name === '') { return $this->jsonResponse(['success' => false, 'error' => 'code and name required'], 400); }
                 $parentId = $kind === 'image' ? 1 : 0;
                 $db->query('INSERT INTO melis_ecom_doc_type (dtype_code, dtype_name, dtype_parent_type_id) VALUES (?, ?, ?)', [$code, $name, $parentId]);
+                $dtypeId = (int) iterator_to_array($db->query('SELECT LAST_INSERT_ID() AS id', []))[0]['id'];
+
+                if ($kind === 'image') {
+                    $this->getEventManager()->trigger('meliscommerce_document_add_image_type_end', $this, [
+                        'success' => true, 'textTitle' => 'tr_meliscommerce_documents_image_type_add', 'textMessage' => 'tr_meliscommerce_documents_image_type_add_success',
+                        'typeCode' => 'ECOM_DOCUMENT_IMAGE_TYPE_ADD', 'itemId' => $dtypeId,
+                    ]);
+                } else {
+                    $this->getEventManager()->trigger('meliscommerce_document_add_file_type_end', $this, [
+                        'success' => true, 'textTitle' => 'tr_meliscommerce_documents_file_add_banner_title', 'textMessage' => 'tr_meliscommerce_documents_file_type_add_success',
+                        'typeCode' => 'ECOM_DOCUMENT_FILE_TYPE_ADD', 'itemId' => $dtypeId,
+                    ]);
+                }
+
                 return $this->jsonResponse(['success' => true, 'data' => null], 201);
             }
             return $this->jsonResponse(['success' => true, 'data' => ['imageTypes' => $imageTypes, 'fileTypes' => $fileTypes]]);
@@ -1131,6 +1242,12 @@ class MelisComReactApiProductController extends MelisAbstractActionController
         try {
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
             $db->query('DELETE FROM melis_ecom_price WHERE price_id = ?', [$priceId]);
+
+            $this->getEventManager()->trigger('meliscommerce_price_delete_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_prices', 'textMessage' => 'tr_meliscommerce_price_delete_success',
+                'typeCode' => 'ECOM_PRICE_DELETE', 'itemId' => $priceId,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -1223,6 +1340,11 @@ class MelisComReactApiProductController extends MelisAbstractActionController
                 ob_start(); $service->saveProductPageAssociations($assoc, $newId); ob_end_clean();
             }
 
+            $this->getEventManager()->trigger('meliscommerce_product_save_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_products_Products', 'textMessage' => 'tr_meliscommerce_products_save_success',
+                'typeCode' => $id ? 'ECOM_PRODUCT_UPDATE' : 'ECOM_PRODUCT_ADD', 'itemId' => $newId,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => ['id' => $newId]], $id ? 200 : 201);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -1274,6 +1396,11 @@ class MelisComReactApiProductController extends MelisAbstractActionController
                 }
             }
 
+            $this->getEventManager()->trigger('meliscommerce_duplicate_variant_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_duplication_Duplicate_product', 'textMessage' => 'tr_meliscommerce_duplication_product_success',
+                'typeCode' => 'ECOM_PRODUCT_DUPLICATE', 'itemId' => (int) $newId,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => ['id' => (int) $newId]], 201);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -1288,6 +1415,12 @@ class MelisComReactApiProductController extends MelisAbstractActionController
             ob_start();
             $this->getServiceManager()->get('MelisComProductService')->deleteProductById($id);
             ob_end_clean();
+
+            $this->getEventManager()->trigger('meliscommerce_product_delete_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_products_Products', 'textMessage' => 'tr_meliscommerce_product_remove_success',
+                'typeCode' => 'ECOM_PRODUCT_DELETE', 'itemId' => $id,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }

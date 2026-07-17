@@ -253,6 +253,12 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
                      WHERE cli_id = ?',
                     [$status, $name, $groupId ?: null, $countryId, $tags, $now, $id]
                 );
+
+                $this->getEventManager()->trigger('meliscommerce_clients_save_end', $this, [
+                    'success' => true, 'textTitle' => 'Account', 'textMessage' => 'tr_meliscommerce_client_save_success',
+                    'typeCode' => 'ECOM_ACCOUNT_UPDATE', 'itemId' => $id,
+                ]);
+
                 return $this->jsonResponse(['success' => true, 'data' => ['id' => $id]]);
             }
 
@@ -267,6 +273,11 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
             if ($contactId > 0) {
                 $this->linkClientPerson($db, $newId, $contactId);
             }
+
+            $this->getEventManager()->trigger('meliscommerce_clients_save_end', $this, [
+                'success' => true, 'textTitle' => 'Account', 'textMessage' => 'tr_meliscommerce_client_save_success',
+                'typeCode' => 'ECOM_ACCOUNT_ADD', 'itemId' => $newId,
+            ]);
 
             return $this->jsonResponse(['success' => true, 'data' => ['id' => $newId]], 201);
         } catch (\Throwable $e) {
@@ -288,6 +299,12 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
         try {
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
             $db->query('DELETE FROM melis_ecom_client WHERE cli_id = ?', [$id]);
+
+            $this->getEventManager()->trigger('meliscommerce_clients_delete_end', $this, [
+                'success' => true, 'textTitle' => 'Account', 'textMessage' => 'tr_meliscommerce_client_delete_account_success',
+                'typeCode' => 'ECOM_ACCOUNT_DELETE', 'itemId' => $id,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) {
             return $this->errorResponse($e);
@@ -404,6 +421,11 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
                 $db->query('INSERT INTO melis_ecom_client_company (ccomp_client_id, ' . implode(', ', $names) . ', ccomp_date_creation) VALUES (' . $ph . ')',
                     array_merge([$clientId], array_values($cols), [$now]));
             }
+
+            // No log trigger here: companySaveAction() is always called together with the main
+            // saveAction() as part of one "Save" click on the Account form (AccountPage.tsx's
+            // submit()) — logging it separately would double the entry for a single user action.
+
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -449,6 +471,12 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
             $db->query('UPDATE melis_ecom_client_account_rel SET car_default_person = 0 WHERE car_client_id = ?', [$accountId]);
             $db->query('UPDATE melis_ecom_client_account_rel SET car_default_person = 1 WHERE car_client_id = ? AND car_client_person_id = ?', [$accountId, $contactId]);
+
+            $this->getEventManager()->trigger('meliscommerce_clients_save_end', $this, [
+                'success' => true, 'textTitle' => 'Account', 'textMessage' => 'tr_meliscommerce_client_set_default_account_success',
+                'typeCode' => 'ECOM_CLIENT_DEFAULT_CONTACT', 'itemId' => $accountId,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -555,6 +583,11 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
                 $eid = (int) ((array) $r)['cadd_id'];
                 if (!in_array($eid, $kept, true)) { $db->query('DELETE FROM melis_ecom_client_address WHERE cadd_id = ?', [$eid]); }
             }
+
+            // No log trigger here: addressesSaveAction() is always called together with the main
+            // saveAction() as part of one "Save" click on the Account form (AccountPage.tsx's
+            // submit()) — logging it separately would double the entry for a single user action.
+
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -641,6 +674,12 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
             $db->query('INSERT INTO melis_ecom_document (doc_name, doc_path, doc_type_id) VALUES (?, ?, ?)', [$name, $relPath, $typeId]);
             $docId = (int) iterator_to_array($db->query('SELECT LAST_INSERT_ID() AS id', []))[0]['id'];
             $db->query('INSERT INTO melis_ecom_doc_relations (rdoc_doc_id, rdoc_client_id, rdoc_country_id) VALUES (?, ?, ?)', [$docId, $clientId, $countryId ?: null]);
+
+            $this->getEventManager()->trigger('meliscommerce_clients_save_end', $this, [
+                'success' => true, 'textTitle' => 'Account', 'textMessage' => 'tr_meliscommerce_client_file_save_success',
+                'typeCode' => 'ECOM_ACCOUNT_FILE_ADD', 'itemId' => $docId,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => ['id' => $docId, 'name' => $name, 'path' => $relPath, 'typeId' => $typeId]], 201);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -698,6 +737,12 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
             }
             $db->query('DELETE FROM melis_ecom_doc_relations WHERE rdoc_doc_id = ?', [$fileId]);
             $db->query('DELETE FROM melis_ecom_document WHERE doc_id = ?', [$fileId]);
+
+            $this->getEventManager()->trigger('meliscommerce_clients_delete_end', $this, [
+                'success' => true, 'textTitle' => 'Account', 'textMessage' => 'tr_meliscommerce_client_file_delete_success',
+                'typeCode' => 'ECOM_ACCOUNT_FILE_DELETE', 'itemId' => $fileId,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -744,6 +789,12 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
             if ($contactId <= 0) { return $this->jsonResponse(['success' => false, 'error' => 'Invalid contact'], 400); }
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
             $this->linkClientPerson($db, $clientId, $contactId);
+
+            $this->getEventManager()->trigger('meliscommerce_clients_save_end', $this, [
+                'success' => true, 'textTitle' => 'Account', 'textMessage' => 'tr_meliscommerce_client_link_contact_success',
+                'typeCode' => 'ECOM_CLIENT_CONTACT_LINK', 'itemId' => $clientId,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -753,8 +804,15 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
     {
         if ($deny = $this->denyUnlessAccess()) { return $deny; }
         try {
+            $accountId = $this->routeId();
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
-            $this->unlinkClientPerson($db, $this->routeId(), (int) $this->params()->fromRoute('contactId', 0));
+            $this->unlinkClientPerson($db, $accountId, (int) $this->params()->fromRoute('contactId', 0));
+
+            $this->getEventManager()->trigger('meliscommerce_clients_delete_end', $this, [
+                'success' => true, 'textTitle' => 'Account', 'textMessage' => 'tr_meliscommerce_client_unlink_contact_success',
+                'typeCode' => 'ECOM_CLIENT_CONTACT_UNLINK', 'itemId' => $accountId,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -806,6 +864,13 @@ class MelisComReactApiAccountController extends MelisAbstractActionController
                 $con->rollback();
                 throw $ex;
             }
+
+            $this->getEventManager()->trigger('meliscommerce_clients_import_end', $this, [
+                'success' => true, 'textTitle' => 'tr_meliscommerce_contact_import_title',
+                'textMessage' => 'tr_meliscommerce_accounts_import_success', 'typeCode' => 'ECOM_CLIENTS_IMPORT',
+                'itemId' => null,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => ['imported' => true, 'errors' => []]]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }

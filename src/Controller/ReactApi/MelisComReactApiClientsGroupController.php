@@ -139,6 +139,11 @@ class MelisComReactApiClientsGroupController extends MelisAbstractActionControll
             $newId = $this->getServiceManager()->get('MelisComClientGroupsService')->saveClientsGroup($data, $id ?: null);
             ob_end_clean();
 
+            $this->getEventManager()->trigger('meliscommerce_clients_group_flash_messenger', $this, [
+                'success' => true, 'textTitle' => 'Client Group', 'textMessage' => 'tr_meliscommerce_clients_group_save_success',
+                'typeCode' => $id ? 'UPDATE_CLIENTS_GROUP' : 'ADD_CLIENTS_GROUP', 'itemId' => (int) $newId,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => ['id' => (int) $newId]], $id ? 200 : 201);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
@@ -156,6 +161,12 @@ class MelisComReactApiClientsGroupController extends MelisAbstractActionControll
             ob_start();
             $this->getServiceManager()->get('MelisComClientGroupsService')->deleteClientsGroupById($id);
             ob_end_clean();
+
+            $this->getEventManager()->trigger('meliscommerce_clients_group_flash_messenger', $this, [
+                'success' => true, 'textTitle' => 'Client Group', 'textMessage' => 'tr_meliscommerce_clients_group_delete_ok',
+                'typeCode' => 'DELETE_CLIENTS_GROUP', 'itemId' => $id,
+            ]);
+
             return $this->jsonResponse(['success' => true, 'data' => null]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
