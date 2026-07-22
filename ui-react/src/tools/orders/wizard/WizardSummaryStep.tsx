@@ -86,7 +86,8 @@ export function WizardSummaryStep({ clientId, billingId, deliveryId, onBack, onN
     }
   }
 
-  const hasErrors = summary ? Object.keys(summary.errors ?? {}).length > 0 : false
+  const isEmpty = summary ? summary.items.length === 0 : false
+  const hasErrors = isEmpty || (summary ? Object.keys(summary.errors ?? {}).length > 0 : false)
   const billingAddress = addresses.find((a) => a.id === billingId) ?? null
   const deliveryAddress = addresses.find((a) => a.id === deliveryId) ?? null
 
@@ -147,7 +148,7 @@ export function WizardSummaryStep({ clientId, billingId, deliveryId, onBack, onN
 
               {hasErrors && (
                 <div style={{ padding: 10, borderRadius: 8, background: 'rgba(220,38,38,.08)', color: '#dc2626', fontSize: 13 }}>
-                  {t('checkout_summary_errors')}
+                  {isEmpty ? t('checkout_basket_empty') : t('checkout_summary_errors')}
                 </div>
               )}
             </div>

@@ -5,8 +5,8 @@ import { ConfirmModal } from './ConfirmModal'
 import { type Address, type AddressOptions, newAddress } from './address'
 import type { T } from './i18n'
 
-/** Formulaire d'adresse (réutilisé : modale d'ajout + panneau d'édition de droite). */
-function AddressForm({ value, onChange, opts, t }: { value: Address; onChange: (a: Address) => void; opts: AddressOptions; t: T }) {
+/** Formulaire d'adresse (réutilisé : modale d'ajout + panneau d'édition de droite + wizard commande). */
+export function AddressForm({ value, onChange, opts, t }: { value: Address; onChange: (a: Address) => void; opts: AddressOptions; t: T }) {
   const set = <K extends keyof Address>(k: K, v: Address[K]) => onChange({ ...value, [k]: v })
   const field = (k: keyof Address, lbl: string) => (
     <div><label style={label}>{lbl}</label><input style={inputCss} value={String(value[k] ?? '')} onChange={(e) => set(k, e.target.value as never)} autoComplete="off" /></div>

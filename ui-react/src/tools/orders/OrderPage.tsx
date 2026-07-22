@@ -315,6 +315,9 @@ function OrderForm({ id, base }: { id: string; base: string }) {
   const subTabPath = `${base}/${id}`
 
   const { can, loaded: capsLoaded } = useCaps(TOOL_MELIS_KEY)
+  // Onglet apporté par une brique optionnelle : n'existe que si MelisCommerceOrderInvoice
+  // est actif (voir shared/externalBricks.ts) — melis-commerce ignore tout de la facturation.
+  const InvoicesTabComp = useExternalBrickComponent<{ orderId: number }>('MelisCommerceOrderInvoiceBrick', 'InvoicesTab')
 
   const [order, setOrder]       = useState<OrderDetail | null>(null)
   const [statuses, setStatuses] = useState<OrderStatus[]>([])
@@ -353,6 +356,7 @@ function OrderForm({ id, base }: { id: string; base: string }) {
     { key: 'shipping',    label: t('tab_shipping'),   disabled: !isEdit },
     { key: 'messages',    label: t('tab_messages'),   disabled: !isEdit },
     { key: 'returns',     label: t('tab_returns'),    disabled: !isEdit },
+    ...(InvoicesTabComp ? [{ key: 'invoices', label: t('tab_invoices'), disabled: !isEdit }] : []),
   ].filter((tb) => can(tb.key))
 
   // Si l'onglet actif vient d'être retiré par les droits, basculer sur le premier autorisé.
@@ -432,6 +436,9 @@ function OrderForm({ id, base }: { id: string; base: string }) {
             )}
             {activeTab === 'returns'   && order && (
               <ReturnsTab orderId={orderId!} t={t} />
+            )}
+            {activeTab === 'invoices'  && order && InvoicesTabComp && (
+              <InvoicesTabComp orderId={orderId!} />
             )}
           </div>
         </>

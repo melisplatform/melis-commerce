@@ -118,6 +118,7 @@ return [
                 ['key' => 'messages',    'label' => 'tr_meliscommerce_orders_content_tab_messages',         // Messages
                     'actions' => ['list', 'create']],                                                        // saveOrderMessage
                 ['key' => 'returns',     'label' => 'tr_meliscommerce_orders_content_tab_return_products'],  // Returns (lecture seule)
+                ['key' => 'invoices',    'label' => 'tr_meliscommerce_order_invoice_invoices'],              // Invoices (lecture seule) — onglet apporté par MelisCommerceOrderInvoice si actif
             ],
         ],
 

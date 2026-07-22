@@ -174,18 +174,27 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                 // End of Variant Stocks Validations
             }
         }
-        
-        
+
+
         if (!empty($okVariant))
         {
             $results['basket']['ok'] = $okVariant;
         }
-        
+
         if (!empty($koVariant))
         {
             $results['basket']['ko'] = $koVariant;
         }
-        else 
+
+        if (is_null($clientBasket))
+        {
+            // KO : basket is empty, there is nothing to checkout. Kept out of 'basket.ko' since
+            // callers (e.g. MelisComOrderCheckoutController) assume every 'ko' entry carries a
+            // nested MelisBasket object keyed by its own id — a synthetic entry without one would
+            // crash that lookup. A dedicated flag keeps 'success' false without that assumption.
+            $results['basket']['empty'] = true;
+        }
+        else if (empty($koVariant))
         {
             $results['success'] = true;
         }
@@ -448,14 +457,19 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
                             $errors[$variantId] = 'MELIS_COMMERCE_CHECKOUT_ERROR_PRODUCT_PRICE_NOT_SET';
                         }
                     }
-                    else 
+                    else
                     {
                         // KO : Variant not exist
                         $errors[$variantId] = 'MELIS_COMMERCE_CHECKOUT_ERROR_PRODUCT_NOT_EXISTING';
                     }
                 }
             }
-            
+            else
+            {
+                // KO : basket is empty, there is nothing to checkout
+                $errors['_basket'] = 'MELIS_COMMERCE_CHECKOUT_ERROR_BASKET_EMPTY';
+            }
+
             $results['costs']['order']['details'] = $variantDetails;
 
             // as default value subTotal is equal to the total of order cost
@@ -717,7 +731,7 @@ class MelisComOrderCheckoutService extends MelisComGeneralService
             
         } else {
             // create response with errors from basket or costs
-            if ($basketValidity != true)
+            if ($basketValidity != true && !empty($basketResults['basket']['ko']))
                 foreach ($basketResults['basket']['ko'] As $key => $val)
                     $results['errors']['basket'][$key] = $val;
             
