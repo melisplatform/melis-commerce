@@ -44,7 +44,7 @@ return [
                         'melisKey' => 'MelisCommerceDashboardPluginOrdersNumber'
                     ],
                     'datas' => [
-                        'plugin_id' => 'MelisCommerceDashboardPluginOrderMessages',
+                        'plugin_id' => 'MelisCommerceDashboardPluginOrdersNumber',
                         'name' => 'tr_melis_commerce_dashboard_plugin_orders_number',
                         'description' => 'tr_melis_commerce_dashboard_plugin_orders_number_description',
                         'icon' => 'fa fa-shopping-cart',
