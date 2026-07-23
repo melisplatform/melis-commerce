@@ -25,6 +25,22 @@ $(function () {
                 orderId         = $this.find('.melis-commerce-dashboard-plugin-orders-number-item-id').text(),
                 orderReference  = $this.find('.melis-commerce-dashboard-plugin-orders-number-item-ref').text();
 
+                // REACT back-office: the dashboard plugin runs inside the iframe pool. melisHelper.tabOpen
+                // would only open the Orders tool INSIDE this plugin's own iframe tab shell (not a real
+                // top-level React tab), and the legacy tab lookups below don't resolve there. Ask the React
+                // host to open the Orders tool for this order instead — same bridge the Order Messages plugin
+                // uses (see melis-core App.tsx __melisOpenTool listener). In the classic standalone back-office
+                // __melisRealParent is undefined → keep the legacy flow below.
+                if (window.__melisRealParent) {
+                    window.__melisRealParent.postMessage({
+                        __melisOpenTool: true,
+                        forwardKey: "MelisCommerce/MelisComOrderList",
+                        id: orderId,
+                        label: translations.tr_meliscommerce_orders_Order + ' ' + orderReference
+                    }, "*");
+                    return;
+                }
+
                 // Open parent tab
                 melisHelper.tabOpen(translations.tr_meliscommerce_orders_Orders, 'fa fa fa-cart-plus fa-2x', 'id_meliscommerce_order_list_page', 'meliscommerce_order_list_page');
 

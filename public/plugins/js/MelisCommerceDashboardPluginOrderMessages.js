@@ -15,7 +15,12 @@ $(function() {
         });
 
         //opening the message in orders
-        $body.on("click", ".commerce-dashboard-plugin-order-messages", function (e) {
+        // NOTE: scope to the message anchors only. In the BS5 markup the All/Unanswered
+        // toggle radios also carry the class `commerce-dashboard-plugin-order-messages`
+        // (via `btn-check`); matching them here would run openOrderMessages() on a radio
+        // (no order id) and wrongly open the Orders tool when switching filter.
+        $body.on("click", "a.commerce-dashboard-plugin-order-messages", function (e) {
+            e.preventDefault();
             orderMessages.openOrderMessages(this);
         });
 
@@ -35,8 +40,8 @@ $(function() {
                     placeholder = "#" + target.closest(".melis-commerce-dashboard-plugin-order-messages-parent").find(".commerce-dashboard-plugin-order-messages-list").attr("id");
                 }
 
-                commDashPluginOrderMessagesWithUnansweredFilterInstance = $(".melis-commerce-dashboard-plugin-order-messages-parent").find('label.active input[value="unseen"]').length;
-                commerceDashPluginorderMessagesInstanceCount = $(".melis-commerce-dashboard-plugin-order-messages-parent").find('label.active input[value="all"]').length;
+                commDashPluginOrderMessagesWithUnansweredFilterInstance = $(".melis-commerce-dashboard-plugin-order-messages-parent").find('input.commerce-dashboard-plugin-order-messages[value="unseen"]:checked').length;
+                commerceDashPluginorderMessagesInstanceCount = $(".melis-commerce-dashboard-plugin-order-messages-parent").find('input.commerce-dashboard-plugin-order-messages[value="all"]:checked').length;
                 
                 // console.log(`commerceDashboardPluginOrderMessagesInit() filter: `, filter);
                 appendMessages(filter);
@@ -79,7 +84,7 @@ $(function() {
                 // console.log(`appendMessages() data:`, data);
                 if ( data ) {
                     //empty divs first
-                    $(".melis-commerce-dashboard-plugin-order-messages-parent").find('label.active input[value=' + '"' + filter + '"' + ']').each(function (index, element) {
+                    $(".melis-commerce-dashboard-plugin-order-messages-parent").find('input.commerce-dashboard-plugin-order-messages[value=' + '"' + filter + '"' + ']:checked').each(function (index, element) {
                         orderMessages.clear(element);
                         orderMessages.setUnansweredMessages(data.unansweredMessages, element);
                     });
@@ -97,9 +102,26 @@ $(function() {
         var orderMessages = {
             openOrderMessages: function (element) {
                 var orderId         = $(element).find('.order-message-id').val(),
-                    orderReference  = $(element).find('.order-message-reference').val();
+                    orderReference  = $(element).find('.order-message-reference').val(),
+                    navTabsGroup    = "id_meliscommerce_order_list_page";
 
-                    // Open parent tab
+                    // REACT back-office: the dashboard plugin runs inside the iframe pool. melisHelper.tabOpen
+                    // would only open the Orders tool INSIDE this plugin's own iframe tab shell (not a real
+                    // top-level React tab), and the legacy tab lookups below don't resolve there → JS errors.
+                    // Ask the React host to open the Orders tool for this order instead — same bridge the
+                    // Clients tool uses (see melis-core App.tsx __melisOpenTool listener). In the classic
+                    // standalone back-office __melisRealParent is undefined → keep the legacy flow below.
+                    if (window.__melisRealParent) {
+                        window.__melisRealParent.postMessage({
+                            __melisOpenTool: true,
+                            forwardKey: "MelisCommerce/MelisComOrderList",
+                            id: orderId,
+                            label: translations.tr_meliscommerce_orders_Order + ' ' + orderReference
+                        }, "*");
+                        return;
+                    }
+
+                    // Open parent tab (Orders list)
                     melisHelper.tabOpen(
                         translations.tr_meliscommerce_orders_Orders,
                         'fa fa fa-cart-plus fa-2x',
@@ -107,49 +129,56 @@ $(function() {
                         'meliscommerce_order_list_page'
                     );
 
-                    var ordersTab           = $("body #melis-id-nav-bar-tabs li a.tab-element[data-id='id_meliscommerce_order_list_page']"),
-                        specificOrderTab    = $("body a.tab-element[data-id='" + orderId + "_id_meliscommerce_orders_page']"),
-                        orderPage           = $("body #" + orderId + "_id_meliscommerce_orders_page");
+                    // Callback: once the order page content is loaded, switch to its Messages sub-tab.
+                    // NOTE: use jQuery .trigger("click") on the matched SET — never `[0].trigger(...)`,
+                    // because `[0]` is a raw DOM node (no jQuery methods) and is `undefined` when the
+                    // selector matches nothing → "can't access property 'trigger', ...[0] is undefined".
+                    var openMessagesTab = function () {
+                        var parent      = orderId + '_id_meliscommerce_orders_content_tabs',
+                            messagesTab = $('#' + parent).find("a[href='#" + orderId + "_id_meliscommerce_orders_content_tabs_content_messages']");
 
-                        // check if it exists
-                        var checkOrders = setInterval(function () {
-                            if (ordersTab.length) {
-                                if (specificOrderTab.length) {
-                                    specificOrderTab[0].trigger("click");
-                                    melisHelper.zoneReload(
-                                        orderId + '_id_meliscommerce_orders_content_tabs_content_messages_details',
-                                        'meliscommerce_orders_content_tabs_content_messages_details',
-                                        {orderId: orderId},
-                                        function() {
-                                            var parent = orderId + '_id_meliscommerce_orders_content_tabs';
-                                            
-                                                $('#' + parent).find("a[href='#" + orderId + "_id_meliscommerce_orders_content_tabs_content_messages']")[0].trigger("click");
-                                        }
-                                    ); 
-                                }
-                                else {
-                                    var navTabsGroup = "id_meliscommerce_order_list_page";                        
+                        if (messagesTab.length) {
+                            messagesTab.trigger("click");
+                        }
+                    };
 
-                                        melisHelper.tabOpen(
-                                            translations.tr_meliscommerce_orders_Order + ' ' + orderReference,
-                                            'fa fa fa-cart-plus fa-2x',
-                                            orderId + '_id_meliscommerce_orders_page',
-                                            'meliscommerce_orders_page',
-                                            {orderId: orderId},
-                                            navTabsGroup,
-                                            function () {
-                                                //JS CALLBACK FOR THE ORDER MESSAGES
-                                                //TO OPEN THE MESSAGE TAB OF A SPECIFIC ORDER
-                                                var parent = orderId + '_id_meliscommerce_orders_content_tabs';
-                                                
-                                                $('#' + parent).find("a[href='#" + orderId + "_id_meliscommerce_orders_content_tabs_content_messages']")[0].trigger("click");
-                                            }
-                                        );
-                                }
-                            }
+                    // Wait for the Orders list tab to exist, then open/switch to the specific order.
+                    var checkOrders = setInterval(function () {
+                        var ordersTab = $("body #melis-id-nav-bar-tabs li a.tab-element[data-id='id_meliscommerce_order_list_page']");
 
-                            clearInterval(checkOrders);
-                        }, 500);
+                        if (!ordersTab.length) {
+                            return;
+                        }
+
+                        clearInterval(checkOrders);
+
+                        // Re-evaluate here (not before the interval): the order tab may have been
+                        // opened between the click and this tick.
+                        var specificOrderTab = $("body a.tab-element[data-id='" + orderId + "_id_meliscommerce_orders_page']");
+
+                        if (specificOrderTab.length) {
+                            // Order already open -> focus it and reload its Messages zone
+                            specificOrderTab.trigger("click");
+                            melisHelper.zoneReload(
+                                orderId + '_id_meliscommerce_orders_content_tabs_content_messages_details',
+                                'meliscommerce_orders_content_tabs_content_messages_details',
+                                {orderId: orderId},
+                                openMessagesTab
+                            );
+                        }
+                        else {
+                            // Order not open yet -> open its tab, then open the Messages sub-tab
+                            melisHelper.tabOpen(
+                                translations.tr_meliscommerce_orders_Order + ' ' + orderReference,
+                                'fa fa fa-cart-plus fa-2x',
+                                orderId + '_id_meliscommerce_orders_page',
+                                'meliscommerce_orders_page',
+                                {orderId: orderId},
+                                navTabsGroup,
+                                openMessagesTab
+                            );
+                        }
+                    }, 500);
             },
             clear: function (element) {
                 $(element).closest('.melis-commerce-dashboard-plugin-order-messages-parent').find('.commerce-dashboard-plugin-order-messages-list').empty();
@@ -196,37 +225,42 @@ $(function() {
 
                     var month = months[parseInt(message_created.format("M")) - 1];
 
-                    var dateHtml = '<span class="label label-inverse float-right">' +
+                    var dateHtml = '<span class="label label-inverse text-nowrap ms-2">' +
                         message_created.format("HH:mm:ss") + ' ' + month.replace('%day', message_created.format("DD")) +
                         '</span>';
 
-                    var doubleArrow = '<i class="fa fa-angle-double-right"<i/>';
+                    // BS5-safe angle-double-right separator (the old markup emitted a malformed <i> tag)
+                    var doubleArrow = ' <i class="fa fa-angle-double-right"></i> ';
 
-                    var nameHtml = '<span>' +
+                    var nameHtml = '<div class="commerce-dashboard-plugin-order-messages-line">' +
+                        '<span class="fw-semibold">' +
                         message.clientFirstName + ' ' + message.clientLastName +
-                        '</span> ' + doubleArrow +
-                        ' <small>' +
+                        '</span>' + doubleArrow +
+                        '<small class="text-muted">' +
                         translations.tr_melis_commerce_dashboard_plugin_order_messages_message_order_amount + message.totalOrderAmount +
-                        '</small> ' + doubleArrow +
-                        ' <small>' +
+                        '</small>' + doubleArrow +
+                        '<small class="text-muted">' +
                         translations.tr_melis_commerce_dashboard_plugin_order_messages_message_placed_on + message.orderDate +
-                        '</small>';
+                        '</small>' +
+                        '</div>';
 
+                    // NOTE (BS5 migration): the old row used the Bootstrap 4 media object
+                    // (.media / .media-body) which was removed in Bootstrap 5, so the layout
+                    // collapsed (date badge overlapping the preview text). Rebuilt with flex utils:
+                    // meta + preview on the left (truncated), date badge kept on the right.
                     var messageHtml = '<a href="#" class="list-group-item commerce-dashboard-plugin-order-messages ' + flag + '">' +
                         '  <input class="order-message-id" type="text" value="' + message.omsg_order_id + '" hidden="hidden">' +
                         '  <input class="order-message-reference" type="text" value="' + message.reference + '" hidden="hidden">' +
-                        '  <span class="media">' +
-                        '    <span class="media-body media-body-inline">' +
-                        dateHtml +
+                        '  <div class="d-flex justify-content-between align-items-start">' +
+                        '    <div class="flex-grow-1 pe-2" style="min-width:0;">' +
                         nameHtml +
-                        '    <p class="list-group-item-text"> ' +
-                        text + ' ' +
-                        '    </p>' +
-                        '    </span>' +
-                        '  </span>' +
+                        '      <p class="list-group-item-text text-truncate mb-0">' + text + '</p>' +
+                        '    </div>' +
+                        dateHtml +
+                        '  </div>' +
                         '</a>';
 
-                    $(".melis-commerce-dashboard-plugin-order-messages-parent").find('label.active input[value=' + '"' + filter + '"' + ']').each(function (index, element) {
+                    $(".melis-commerce-dashboard-plugin-order-messages-parent").find('input.commerce-dashboard-plugin-order-messages[value=' + '"' + filter + '"' + ']:checked').each(function (index, element) {
                         $(element).closest('.melis-commerce-dashboard-plugin-order-messages-parent').find('.commerce-dashboard-plugin-order-messages-list').append(messageHtml);
                     });
             }
@@ -236,7 +270,7 @@ $(function() {
 //delete callback if there is only one plugin and it is deleted the interval will be cleared
 function commerceDasboardPluginOrderMessagesDelete(element) {
     if ( element.find(".melis-commerce-dashboard-plugin-order-messages-parent").length === 1 ) {
-        if ( element.find(".melis-commerce-dashboard-plugin-order-messages-parent label.active input[value='all']").length > 0 ) {
+        if ( element.find(".melis-commerce-dashboard-plugin-order-messages-parent input.commerce-dashboard-plugin-order-messages[value='all']:checked").length > 0 ) {
             commerceDashPluginorderMessagesInstanceCount--;
             if ( commerceDashPluginorderMessagesInstanceCount === 0 ) {
                 clearInterval(commerceDashPluginOrderMessagesAllMessagesInterval);
