@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { makeT } from '../../../shared/i18n'
 import { DICT } from '../dict'
 import { UserIcon, UsersIcon, CartIcon, MapPinIcon, FileTextIcon, CreditCardIcon, CheckIcon } from '../../../shared/icons'
 import { card } from '../../../shared/styles'
-import { checkoutStart } from '../api'
+import { checkoutStart, checkoutAbandon, fetchCheckoutState } from '../api'
 import { openSubTab } from '../../../shared/subtabs'
 import { WizardContactStep } from './WizardContactStep'
 import { WizardAccountStep } from './WizardAccountStep'
@@ -48,9 +48,55 @@ export default function OrderCheckoutWizard({ base }: { base: string }) {
 
   useEffect(() => {
     openSubTab(base, { id: subTabPath, label: t('new'), path: subTabPath })
-    checkoutStart().finally(() => setReady(true))
+    // checkoutStart() is now idempotent server-side: it primes the session bucket without
+    // wiping an in-progress one. Resume step + selections from that bucket (Mantis 0010748) —
+    // switching to a different tool tab and back unmounts/remounts this component, and without
+    // this the wizard always restarted from step 0 with everything blank.
+    checkoutStart()
+      .then(() => fetchCheckoutState())
+      .then((s) => {
+        setState((p) => ({
+          ...p,
+          contactId: s.contactId, clientId: s.clientId, countryId: s.countryId,
+          billingId: s.billingId, deliveryId: s.deliveryId,
+          orderId: s.orderId, reference: s.reference,
+        }))
+        if (s.orderId) setStep(6)
+        else if (s.billingId && s.deliveryId) setStep(4)
+        else if (s.clientId) setStep(2)
+        else if (s.contactId) setStep(1)
+      })
+      .finally(() => setReady(true))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Distinguish "switched tabs" (resumable, handled above) from "explicitly closed the New
+  // order tab/tool before confirming" (should clear — Mantis 0010748 follow-up). melis-core
+  // (host, separate bundle) publishes two generic window events for exactly this: 'melis:tab-
+  // closed' (detail.path = the closed TOP-LEVEL tab, fired synchronously — no race) when e.g.
+  // the "Commandes" tab's × is clicked, and 'melis:subtabs-changed' (+ read-only
+  // window.__melisSubTabs, already updated by the time this fires) when a SUB-tab like
+  // "Nouvelle commande" is closed individually. Neither fires on a mere navigate-away.
+  const orderIdRef = useRef<number | null>(null)
+  useEffect(() => { orderIdRef.current = state.orderId }, [state.orderId])
+  useEffect(() => {
+    function onTopTabClosed(e: Event) {
+      const path = (e as CustomEvent<{ path?: string }>).detail?.path
+      if (path === base && !orderIdRef.current) checkoutAbandon().catch(() => null)
+    }
+    function onSubTabsChanged() {
+      const w = window as unknown as { __melisSubTabs?: Record<string, { tabs: { id: string }[] }> }
+      const stillOpen = (w.__melisSubTabs?.[base]?.tabs ?? []).some((tb) => tb.id === subTabPath)
+      if (!stillOpen && !orderIdRef.current) checkoutAbandon().catch(() => null)
+    }
+    window.addEventListener('melis:tab-closed', onTopTabClosed)
+    window.addEventListener('melis:subtabs-changed', onSubTabsChanged)
+    return () => {
+      window.removeEventListener('melis:tab-closed', onTopTabClosed)
+      window.removeEventListener('melis:subtabs-changed', onSubTabsChanged)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [base, subTabPath])
 
   const goNext = () => setStep((s) => Math.min(STEPS.length - 1, s + 1))
   const goBack = () => setStep((s) => Math.max(0, s - 1))

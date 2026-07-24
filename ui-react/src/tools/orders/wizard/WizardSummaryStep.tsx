@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { makeT } from '../../../shared/i18n'
 import { DICT } from '../dict'
-import { fetchCheckoutSummary, checkoutApplyCoupon, checkoutBasketSetQty, type CheckoutSummary } from '../api'
+import { fetchCheckoutSummary, checkoutApplyCoupon, checkoutRemoveCoupon, checkoutBasketSetQty, type CheckoutSummary } from '../api'
 import { fetchAccountAddresses, fetchAddressOptions } from '../../accounts/api'
 import type { Address, AddressOptions } from '../../../shared/address'
 import { card, inputCss, btnPrimary, btnGhost } from '../../../shared/styles'
@@ -50,7 +50,10 @@ export function WizardSummaryStep({ clientId, billingId, deliveryId, onBack, onN
   const [loading, setLoading] = useState(false)
   const [couponCode, setCouponCode] = useState('')
   const [applying, setApplying] = useState(false)
-  const [couponApplied, setCouponApplied] = useState(false)
+  const [removingId, setRemovingId] = useState<number | null>(null)
+  // Lets typing a big value (100, 1000) directly instead of only +/- one at a time (Mantis
+  // 0010749) — draft text kept locally while editing, committed (one API call) on blur/Enter.
+  const [qtyDraft, setQtyDraft] = useState<Record<number, string>>({})
 
   useEffect(() => { refresh() }, [])
 
@@ -60,6 +63,12 @@ export function WizardSummaryStep({ clientId, billingId, deliveryId, onBack, onN
       .then(([s, a, o]) => { setSummary(s); setAddresses(a.items); setAddrOptions(o) })
       .catch(() => null)
       .finally(() => setLoading(false))
+  }
+
+  function commitQtyDraft(variantId: number, raw: string) {
+    setQtyDraft((d) => { const c = { ...d }; delete c[variantId]; return c })
+    const n = parseInt(raw, 10)
+    if (!isNaN(n)) setQty(variantId, n)
   }
 
   async function setQty(variantId: number, qty: number) {
@@ -77,12 +86,27 @@ export function WizardSummaryStep({ clientId, billingId, deliveryId, onBack, onN
     setApplying(true)
     try {
       await checkoutApplyCoupon(couponCode.trim())
-      setCouponApplied(true)
+      setCouponCode('')
       notify('ok', t('checkout_step_summary'), t('checkout_coupon_applied'))
+      const s = await fetchCheckoutSummary()
+      setSummary(s)
     } catch (e) {
       notify('ko', t('checkout_step_summary'), e instanceof Error ? e.message : 'Error')
     } finally {
       setApplying(false)
+    }
+  }
+
+  async function removeCoupon(couponId: number) {
+    setRemovingId(couponId)
+    try {
+      await checkoutRemoveCoupon(couponId)
+      const s = await fetchCheckoutSummary()
+      setSummary(s)
+    } catch (e) {
+      notify('ko', t('checkout_step_summary'), e instanceof Error ? e.message : 'Error')
+    } finally {
+      setRemovingId(null)
     }
   }
 
@@ -114,7 +138,12 @@ export function WizardSummaryStep({ clientId, billingId, deliveryId, onBack, onN
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <button style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, border: '1px solid #dc2626', background: 'transparent', color: '#dc2626', cursor: 'pointer', padding: 0 }}
                       onClick={() => setQty(l.variantId, l.quantity - 1)}>−</button>
-                    <input style={{ ...inputCss, height: 28, width: 50, textAlign: 'center', padding: 0 }} value={l.quantity} readOnly />
+                    <input type="number" min={0} inputMode="numeric"
+                      style={{ ...inputCss, height: 28, width: 56, textAlign: 'center', padding: '0 4px' }}
+                      value={qtyDraft[l.variantId] ?? String(l.quantity)}
+                      onChange={(e) => setQtyDraft((d) => ({ ...d, [l.variantId]: e.target.value }))}
+                      onBlur={(e) => commitQtyDraft(l.variantId, e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur() }} />
                     <button style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, border: '1px solid #dc2626', background: 'transparent', color: '#dc2626', cursor: 'pointer', padding: 0 }}
                       onClick={() => setQty(l.variantId, l.quantity + 1)}>+</button>
                     <span style={{ marginLeft: 'auto', fontWeight: 700, color: '#dc2626' }}>{l.lineTotal != null ? l.lineTotal.toFixed(2) : '—'}</span>
@@ -122,11 +151,26 @@ export function WizardSummaryStep({ clientId, billingId, deliveryId, onBack, onN
                 </div>
               ))}
 
+              {summary.coupons.length > 0 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {summary.coupons.map((c) => (
+                    <div key={c.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '4px 10px', borderRadius: 6, background: 'var(--color-accent)', fontSize: 13 }}>
+                      <code style={{ fontWeight: 600 }}>{c.code}</code>
+                      <button style={{ ...smallOutlineBtn, height: 26, padding: '0 10px', fontSize: 12 }}
+                        disabled={removingId === c.id} onClick={() => removeCoupon(c.id)}>
+                        {removingId === c.id ? '…' : t('checkout_coupon_remove')}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <div style={{ display: 'flex', gap: 8 }}>
                 <input style={{ ...inputCss, height: 34, flex: 1 }} value={couponCode} onChange={(e) => setCouponCode(e.target.value)}
-                  placeholder={t('checkout_coupon_ph')} disabled={couponApplied} />
-                <button style={smallOutlineBtn} disabled={applying || couponApplied || !couponCode.trim()} onClick={applyCoupon}>
-                  {applying ? '…' : couponApplied ? t('checkout_coupon_applied') : t('checkout_apply_coupon')}
+                  placeholder={t('checkout_coupon_ph')}
+                  onKeyDown={(e) => { if (e.key === 'Enter') applyCoupon() }} />
+                <button style={smallOutlineBtn} disabled={applying || !couponCode.trim()} onClick={applyCoupon}>
+                  {applying ? '…' : t('checkout_apply_coupon')}
                 </button>
               </div>
 
@@ -136,10 +180,10 @@ export function WizardSummaryStep({ clientId, billingId, deliveryId, onBack, onN
                 </div>
                 <div style={{ fontSize: 14, fontWeight: 600, marginTop: 4 }}>{t('checkout_reduction')}</div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: 'var(--color-muted-foreground)', paddingLeft: 8 }}>
-                  <span>{t('checkout_reduction_products')}</span><span>{(0).toFixed(2)}</span>
+                  <span>{t('checkout_reduction_products')}</span><span>{summary.productDiscount.toFixed(2)}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: 'var(--color-muted-foreground)', paddingLeft: 8 }}>
-                  <span>{t('checkout_reduction_order')}</span><span>{(0).toFixed(2)}</span>
+                  <span>{t('checkout_reduction_order')}</span><span>{summary.orderDiscount.toFixed(2)}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 16, fontWeight: 700, marginTop: 6, paddingTop: 6, borderTop: '1px solid var(--color-border)' }}>
                   <span>{t('checkout_basket_total')}</span><span>{summary.total.toFixed(2)}</span>

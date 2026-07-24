@@ -566,12 +566,6 @@ class MelisComOrderController extends MelisAbstractActionController
     public function renderOrdersContentTabsContentPaymentDetailsContentListAction()
     {        
         $payments = $this->layout()->payment;
-        // $this->layout()->payment is set upstream by setOrderVariables(), which skips it
-        // (leaving it null) when the orderId doesn't match a real order - e.g. the dashboard
-        // Order Messages plugin opening a stale/invalid orderId (Mantis 0010736).
-        if (!is_array($payments)) {
-            $payments = array();
-        }
         //order by most recent date
         usort($payments, function($a, $b) {
             return strtotime($b->opay_date_payment) - strtotime($a->opay_date_payment);
@@ -645,11 +639,6 @@ class MelisComOrderController extends MelisAbstractActionController
         $factory->setFormElementManager($formElements);
         $shippingForm = $factory->createForm($appConfigForm);
         $ships = $this->layout()->shipping;
-        // same null-guard as the payment list above (Mantis 0010736): setOrderVariables()
-        // leaves this null when orderId doesn't match a real order.
-        if (!is_array($ships)) {
-            $ships = array();
-        }
         //order by most recent date
         usort($ships, function($a, $b) {
             return strtotime($b->oship_date_sent) - strtotime($a->oship_date_sent);

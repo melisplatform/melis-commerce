@@ -746,7 +746,20 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
         return $container['checkout'][self::WIZARD_SITE_ID] ?? [];
     }
 
+    // Same 'tr_' + code convention MelisCommerceCheckoutCouponListener already uses for the
+    // legacy flow's coupon errors — reuses the existing language/coupons/*.forms.coupons.php
+    // strings instead of showing the raw error code in the UI (Mantis 0010750 follow-up).
+    private function translateCouponError(string $code): string
+    {
+        return (string) $this->getServiceManager()->get('translator')->translate('tr_' . $code);
+    }
+
     // ─── POST /orders/checkout/start ──────────────────────────────────────────
+    // Idempotent: the wizard calls this on every mount, including when the tab was only
+    // switched away and back (React unmounts/remounts it) — unconditionally overwriting the
+    // bucket here used to nuke an in-progress session (selected contact/account, basket) every
+    // time, which is what made the wizard "restart from the beginning" (Mantis 0010748). Only
+    // initialize a fresh bucket if one doesn't already exist.
     public function checkoutStartAction(): HttpResponse
     {
         if ($deny = $this->denyUnlessAccess()) { return $deny; }
@@ -755,8 +768,52 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             if (empty($container['checkout']) || !is_array($container['checkout'])) {
                 $container['checkout'] = [];
             }
-            $container['checkout'][self::WIZARD_SITE_ID] = ['countryId' => null];
+            if (!isset($container['checkout'][self::WIZARD_SITE_ID]) || !is_array($container['checkout'][self::WIZARD_SITE_ID])) {
+                $container['checkout'][self::WIZARD_SITE_ID] = ['countryId' => null];
+            }
             return $this->ok(['started' => true]);
+        } catch (\Throwable $e) { return $this->err($e); }
+    }
+
+    // ─── GET /orders/checkout/state ───────────────────────────────────────────
+    // Lets the wizard resume an in-progress session (step + selections) after an
+    // unmount/remount instead of restarting blank — Mantis 0010748.
+    public function checkoutStateAction(): HttpResponse
+    {
+        if ($deny = $this->denyUnlessAccess()) { return $deny; }
+        try {
+            $state = $this->checkoutState();
+            return $this->ok([
+                'contactId'  => isset($state['contactId'])  ? (int) $state['contactId']  : null,
+                'clientId'   => isset($state['clientId'])   ? (int) $state['clientId']   : null,
+                'countryId'  => isset($state['countryId'])  ? (int) $state['countryId']  : null,
+                'billingId'  => isset($state['billingId'])  ? (int) $state['billingId']  : null,
+                'deliveryId' => isset($state['deliveryId']) ? (int) $state['deliveryId'] : null,
+                'orderId'    => isset($state['orderId'])    ? (int) $state['orderId']    : null,
+                'reference'  => $state['reference'] ?? '',
+            ]);
+        } catch (\Throwable $e) { return $this->err($e); }
+    }
+
+    // ─── POST /orders/checkout/abandon ─────────────────────────────────────────
+    // Explicitly clears the in-progress wizard session — called by the frontend when the
+    // "New order" tab/tool is closed before the order is confirmed (Mantis 0010748 follow-up).
+    // Unlike checkoutStartAction() (idempotent by design, meant to survive a mere tab SWITCH so
+    // the wizard can resume), this is an intentional reset for a tab CLOSE — also empties the
+    // client's persistent basket (same as checkoutSelectAccountAction does when switching
+    // accounts) so a future order for that same client doesn't inherit the abandoned basket.
+    public function checkoutAbandonAction(): HttpResponse
+    {
+        if ($deny = $this->denyUnlessAccess()) { return $deny; }
+        try {
+            $container = $this->checkoutContainer();
+            $state     = $container['checkout'][self::WIZARD_SITE_ID] ?? [];
+            $clientId  = (int) ($state['clientId'] ?? 0);
+            if ($clientId) {
+                $this->getServiceManager()->get('MelisComBasketService')->emptyBasket($clientId);
+            }
+            unset($container['checkout'][self::WIZARD_SITE_ID]);
+            return $this->ok(['abandoned' => true]);
         } catch (\Throwable $e) { return $this->err($e); }
     }
 
@@ -1168,6 +1225,14 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             }
 
             $result = $this->checkoutSvc()->validateAddresses($deliveryArr, $billingArr);
+            if (!empty($result['success'])) {
+                // Persist so a wizard remount (Mantis 0010748) can resume past the addresses step.
+                $container = $this->checkoutContainer();
+                $s = $container['checkout'][self::WIZARD_SITE_ID] ?? [];
+                $s['billingId']  = $billingId;
+                $s['deliveryId'] = $deliveryId;
+                $container['checkout'][self::WIZARD_SITE_ID] = $s;
+            }
             return $this->ok(['success' => (bool) ($result['success'] ?? false)]);
         } catch (\Throwable $e) { return $this->err($e); }
     }
@@ -1182,22 +1247,43 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             if (!$clientId) return $this->jsonResponse(['success' => false, 'error' => 'No account selected'], 400);
 
             $costs = $this->checkoutSvc()->computeAllCosts($clientId);
+
+            // Applied coupons, for display + removal — same session shape the listener reads/writes.
+            $coupons = $state['coupons'] ?? [];
+            $appliedCoupons = [];
+            foreach (($coupons['generalCoupons'] ?? []) as $cId => $cpn) {
+                $appliedCoupons[] = ['id' => (int) $cId, 'code' => $cpn->coup_code, 'type' => 'general'];
+            }
+            foreach (($coupons['productCoupons'] ?? []) as $cId => $cpn) {
+                $appliedCoupons[] = ['id' => (int) $cId, 'code' => $cpn->coup_code, 'type' => 'product'];
+            }
+
             return $this->ok([
-                'success'  => (bool) ($costs['success'] ?? false),
-                'subTotal' => (float) ($costs['costs']['order']['subTotal'] ?? 0),
-                'total'    => (float) ($costs['costs']['order']['total'] ?? 0),
-                'errors'   => $costs['costs']['order']['errors'] ?? [],
-                'items'    => $this->basketItems(),
+                'success'         => (bool) ($costs['success'] ?? false),
+                'subTotal'        => (float) ($costs['costs']['order']['subTotal'] ?? 0),
+                'total'           => (float) ($costs['costs']['order']['total'] ?? 0),
+                'productDiscount' => (float) ($costs['costs']['order']['totalProductDiscount'] ?? 0),
+                'orderDiscount'   => (float) ($costs['costs']['order']['orderDiscount'] ?? 0),
+                'coupons'         => $appliedCoupons,
+                'errors'          => $costs['costs']['order']['errors'] ?? [],
+                'items'           => $this->basketItems(),
             ]);
         } catch (\Throwable $e) { return $this->err($e); }
     }
 
     // ─── POST /orders/checkout/coupon ─────────────────────────────────────────
-    // MelisComOrderCheckoutService::validateCoupon() only VALIDATES (status/dates/usage-limit/client
-    // assignment) — it doesn't itself persist to session or apply a discount (that's done by the
-    // legacy CONTROLLER + only actually reflected in totals via a listener on the cost-computation
-    // event, none of which is wired in this deployment). V1 scope: validate + store a single couponId
-    // in session for future use; the displayed total is computeAllCosts()'s real, undiscounted figure.
+    // validateCoupon() only VALIDATES (status/dates/usage-limit/client assignment) — the actual
+    // discount math (percentage/fixed, multiple general coupons) is already implemented and
+    // registered (Module.php) in MelisCommerceCheckoutCouponListener, on computeAllCosts()'s
+    // 'meliscommerce_service_checkout_order_computation_end' event. That listener reads applied
+    // coupons from $container['checkout'][$siteId]['coupons']['generalCoupons'|'productCoupons'],
+    // keyed by coup_id, merged (not overwritten) — mirroring what its OWN '_start' handler does
+    // when the legacy flow passes ?couponCode= as a query param. This used to instead store a
+    // flat single 'couponId' that no listener ever read, so the coupon was accepted but never
+    // actually discounted the total, and only one could ever be "applied" (Mantis 0010750). Write
+    // into the shape the listener expects instead, so checkoutSummaryAction's computeAllCosts()
+    // call picks it up on every subsequent request — also fixes order-coupon-usage tracking,
+    // which reads this same structure on confirm.
     public function checkoutCouponAction(): HttpResponse
     {
         if ($deny = $this->denyUnlessAccess()) { return $deny; }
@@ -1219,16 +1305,49 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
 
             $result = $this->checkoutSvc()->validateCoupon($code, $clientId, $productIds);
             if (empty($result['success'])) {
-                return $this->jsonResponse(['success' => false, 'error' => (string) ($result['error'] ?? 'Invalid coupon')], 422);
+                $errCode = (string) ($result['error'] ?? 'MELIS_COMMERCE_COUPON_NOT_FOUND');
+                return $this->jsonResponse(['success' => false, 'error' => $this->translateCouponError($errCode)], 422);
             }
 
-            $couponId = isset($result['coupon']->coup_id) ? (int) $result['coupon']->coup_id : null;
-            $container = $this->checkoutContainer();
-            $s = $container['checkout'][self::WIZARD_SITE_ID] ?? [];
-            $s['couponId'] = $couponId;
+            $coupon   = $result['coupon'];
+            $couponId = (int) $coupon->coup_id;
+
+            $container      = $this->checkoutContainer();
+            $s              = $container['checkout'][self::WIZARD_SITE_ID] ?? [];
+            $c              = $s['coupons'] ?? [];
+            $productCoupons = $c['productCoupons'] ?? [];
+            $generalCoupons = $c['generalCoupons'] ?? [];
+            if (isset($productCoupons[$couponId]) || isset($generalCoupons[$couponId])) {
+                return $this->jsonResponse(['success' => false, 'error' => $this->translateCouponError('MELIS_COMMERCE_COUPON_ALREADY_APPLIED')], 422);
+            }
+            if ($result['type'] === 'product') { $productCoupons[$couponId] = $coupon; }
+            else { $generalCoupons[$couponId] = $coupon; }
+            $c['productCoupons'] = $productCoupons;
+            $c['generalCoupons'] = $generalCoupons;
+            $s['coupons'] = $c;
             $container['checkout'][self::WIZARD_SITE_ID] = $s;
 
-            return $this->ok(['couponId' => $couponId, 'type' => $result['type'] ?? null]);
+            return $this->ok(['couponId' => $couponId, 'code' => $coupon->coup_code, 'type' => $result['type'] ?? null]);
+        } catch (\Throwable $e) { return $this->err($e); }
+    }
+
+    // ─── POST /orders/checkout/coupon/remove ──────────────────────────────────
+    public function checkoutRemoveCouponAction(): HttpResponse
+    {
+        if ($deny = $this->denyUnlessAccess()) { return $deny; }
+        try {
+            $b        = json_decode((string) $this->getRequest()->getContent(), true) ?? [];
+            $couponId = (int) ($b['couponId'] ?? 0);
+            if (!$couponId) return $this->jsonResponse(['success' => false, 'error' => 'Missing couponId'], 400);
+
+            $container = $this->checkoutContainer();
+            $s = $container['checkout'][self::WIZARD_SITE_ID] ?? [];
+            $c = $s['coupons'] ?? [];
+            unset($c['productCoupons'][$couponId], $c['generalCoupons'][$couponId]);
+            $s['coupons'] = $c;
+            $container['checkout'][self::WIZARD_SITE_ID] = $s;
+
+            return $this->ok(['couponId' => $couponId]);
         } catch (\Throwable $e) { return $this->err($e); }
     }
 
@@ -1322,6 +1441,7 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             $container = $this->checkoutContainer();
             $s = $container['checkout'][self::WIZARD_SITE_ID] ?? [];
             $s['orderId'] = $orderId;
+            $s['reference'] = $reference;
             $container['checkout'][self::WIZARD_SITE_ID] = $s;
 
             $this->getEventManager()->trigger('meliscommerce_checkout_order_add', $this, [

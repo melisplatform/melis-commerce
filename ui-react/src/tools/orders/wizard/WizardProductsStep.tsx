@@ -31,6 +31,9 @@ export function WizardProductsStep({ countryId, onBack, onNext }: {
   const [variantsLoading, setVariantsLoading] = useState(false)
   const [basket, setBasket] = useState<CheckoutBasketLine[]>([])
   const [adding, setAdding] = useState<number | null>(null)
+  // Lets typing a big value (100, 1000) directly instead of only +/- one at a time (Mantis
+  // 0010749) — draft text kept locally while editing, committed (one API call) on blur/Enter.
+  const [qtyDraft, setQtyDraft] = useState<Record<number, string>>({})
 
   useEffect(() => { fetchCountries({ status: 1, limit: 200 }).then((r) => setCountries(r.items)).catch(() => null) }, [])
   useEffect(() => { refreshBasket() }, [])
@@ -76,6 +79,12 @@ export function WizardProductsStep({ countryId, onBack, onNext }: {
       const r = qty <= 0 ? await checkoutBasketRemove(variantId) : await checkoutBasketSetQty(variantId, qty)
       setBasket(r.items)
     } catch (e) { notify('ko', t('checkout_step_products'), e instanceof Error ? e.message : 'Error') }
+  }
+
+  function commitQtyDraft(variantId: number, raw: string) {
+    setQtyDraft((d) => { const c = { ...d }; delete c[variantId]; return c })
+    const n = parseInt(raw, 10)
+    if (!isNaN(n)) setQty(variantId, n)
   }
 
   const totalPages = Math.max(1, Math.ceil(total / 25))
@@ -175,7 +184,12 @@ export function WizardProductsStep({ countryId, onBack, onNext }: {
                       <code style={{ fontSize: 11, color: 'var(--color-muted-foreground)' }}>{l.sku}</code>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <button style={qtyBtn} onClick={() => setQty(l.variantId, l.quantity - 1)}>−</button>
-                        <span style={{ fontSize: 13, minWidth: 20, textAlign: 'center' }}>{l.quantity}</span>
+                        <input type="number" min={0} inputMode="numeric"
+                          style={{ ...inputCss, height: 24, width: 56, textAlign: 'center', padding: '0 4px' }}
+                          value={qtyDraft[l.variantId] ?? String(l.quantity)}
+                          onChange={(e) => setQtyDraft((d) => ({ ...d, [l.variantId]: e.target.value }))}
+                          onBlur={(e) => commitQtyDraft(l.variantId, e.target.value)}
+                          onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur() }} />
                         <button style={qtyBtn} onClick={() => setQty(l.variantId, l.quantity + 1)}>+</button>
                         <span style={{ marginLeft: 'auto', fontSize: 13, fontWeight: 600 }}>{l.lineTotal != null ? l.lineTotal.toFixed(2) : '—'}</span>
                       </div>

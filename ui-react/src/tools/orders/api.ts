@@ -136,6 +136,14 @@ export const fetchCheckoutContacts = (params: { search?: string } = {}) => {
 }
 
 export const checkoutStart = () => postJson<{ started: boolean }>(`${CHECKOUT_BASE}/start`, {})
+
+export interface CheckoutState {
+  contactId: number | null; clientId: number | null; countryId: number | null
+  billingId: number | null; deliveryId: number | null
+  orderId: number | null; reference: string
+}
+export const fetchCheckoutState = () => apiFetch<CheckoutState>(`${CHECKOUT_BASE}/state`)
+export const checkoutAbandon = () => postJson<{ abandoned: boolean }>(`${CHECKOUT_BASE}/abandon`, {})
 export const checkoutSelectContact = (contactId: number) => postJson<{ contactId: number }>(`${CHECKOUT_BASE}/select-contact`, { contactId })
 export const checkoutSelectAccount = (clientId: number) => postJson<{ clientId: number }>(`${CHECKOUT_BASE}/select-account`, { clientId })
 export const checkoutSetCountry = (countryId: number) => postJson<{ countryId: number }>(`${CHECKOUT_BASE}/country`, { countryId })
@@ -162,11 +170,15 @@ export const checkoutBasketRemove = (variantId: number) => postJson<{ items: Che
 export const checkoutValidateAddresses = (billingId: number, deliveryId: number) =>
   postJson<{ success: boolean }>(`${CHECKOUT_BASE}/addresses`, { billingId, deliveryId })
 
+export interface AppliedCoupon { id: number; code: string; type: 'general' | 'product' }
 export interface CheckoutSummary {
-  success: boolean; subTotal: number; total: number; errors: Record<string, string>; items: CheckoutBasketLine[]
+  success: boolean; subTotal: number; total: number
+  productDiscount: number; orderDiscount: number; coupons: AppliedCoupon[]
+  errors: Record<string, string>; items: CheckoutBasketLine[]
 }
 export const fetchCheckoutSummary = () => apiFetch<CheckoutSummary>(`${CHECKOUT_BASE}/summary`)
-export const checkoutApplyCoupon = (code: string) => postJson<{ couponId: number | null; type: string | null }>(`${CHECKOUT_BASE}/coupon`, { code })
+export const checkoutApplyCoupon = (code: string) => postJson<{ couponId: number; code: string; type: string | null }>(`${CHECKOUT_BASE}/coupon`, { code })
+export const checkoutRemoveCoupon = (couponId: number) => postJson<{ couponId: number }>(`${CHECKOUT_BASE}/coupon/remove`, { couponId })
 
 export interface CheckoutConfirmResult {
   success?: boolean; orderId?: number; reference?: string

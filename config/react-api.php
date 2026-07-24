@@ -687,6 +687,20 @@ return [
                                     'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'checkoutStart'],
                                 ],
                             ],
+                            'orders-checkout-state' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/orders/checkout/state[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'checkoutState'],
+                                ],
+                            ],
+                            'orders-checkout-abandon' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/orders/checkout/abandon[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'checkoutAbandon'],
+                                ],
+                            ],
                             'orders-checkout-debug-state' => [
                                 'type' => 'Segment',
                                 'options' => [
@@ -783,6 +797,13 @@ return [
                                 'options' => [
                                     'route' => '/orders/checkout/coupon[/]',
                                     'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'checkoutCoupon'],
+                                ],
+                            ],
+                            'orders-checkout-coupon-remove' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/orders/checkout/coupon/remove[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'checkoutRemoveCoupon'],
                                 ],
                             ],
                             'orders-checkout-confirm' => [
