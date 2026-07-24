@@ -784,6 +784,7 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
         try {
             $state = $this->checkoutState();
             return $this->ok([
+                'step'       => isset($state['step'])       ? (int) $state['step']       : 0,
                 'contactId'  => isset($state['contactId'])  ? (int) $state['contactId']  : null,
                 'clientId'   => isset($state['clientId'])   ? (int) $state['clientId']   : null,
                 'countryId'  => isset($state['countryId'])  ? (int) $state['countryId']  : null,
@@ -792,6 +793,28 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
                 'orderId'    => isset($state['orderId'])    ? (int) $state['orderId']    : null,
                 'reference'  => $state['reference'] ?? '',
             ]);
+        } catch (\Throwable $e) { return $this->err($e); }
+    }
+
+    // ─── POST /orders/checkout/step ────────────────────────────────────────────
+    // Persists the wizard's current step index so a remount (switching tool tabs and
+    // reopening the "New order" sub-tab — Mantis 0010748) resumes on the EXACT step the user
+    // was on, instead of inferring it from which fields are populated: e.g. "clientId set,
+    // billingId/deliveryId not yet" is ambiguous between the Products step (2) and the
+    // Addresses step (3) not yet submitted — only the real step index disambiguates that.
+    public function checkoutSetStepAction(): HttpResponse
+    {
+        if ($deny = $this->denyUnlessAccess()) { return $deny; }
+        try {
+            $b    = json_decode((string) $this->getRequest()->getContent(), true) ?? [];
+            $step = (int) ($b['step'] ?? 0);
+
+            $container = $this->checkoutContainer();
+            $s = $container['checkout'][self::WIZARD_SITE_ID] ?? [];
+            $s['step'] = $step;
+            $container['checkout'][self::WIZARD_SITE_ID] = $s;
+
+            return $this->ok(['step' => $step]);
         } catch (\Throwable $e) { return $this->err($e); }
     }
 

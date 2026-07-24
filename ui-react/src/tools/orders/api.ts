@@ -138,12 +138,14 @@ export const fetchCheckoutContacts = (params: { search?: string } = {}) => {
 export const checkoutStart = () => postJson<{ started: boolean }>(`${CHECKOUT_BASE}/start`, {})
 
 export interface CheckoutState {
+  step: number
   contactId: number | null; clientId: number | null; countryId: number | null
   billingId: number | null; deliveryId: number | null
   orderId: number | null; reference: string
 }
 export const fetchCheckoutState = () => apiFetch<CheckoutState>(`${CHECKOUT_BASE}/state`)
 export const checkoutAbandon = () => postJson<{ abandoned: boolean }>(`${CHECKOUT_BASE}/abandon`, {})
+export const checkoutSetStep = (step: number) => postJson<{ step: number }>(`${CHECKOUT_BASE}/step`, { step })
 export const checkoutSelectContact = (contactId: number) => postJson<{ contactId: number }>(`${CHECKOUT_BASE}/select-contact`, { contactId })
 export const checkoutSelectAccount = (clientId: number) => postJson<{ clientId: number }>(`${CHECKOUT_BASE}/select-account`, { clientId })
 export const checkoutSetCountry = (countryId: number) => postJson<{ countryId: number }>(`${CHECKOUT_BASE}/country`, { countryId })

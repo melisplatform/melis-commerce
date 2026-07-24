@@ -694,6 +694,13 @@ return [
                                     'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'checkoutState'],
                                 ],
                             ],
+                            'orders-checkout-step' => [
+                                'type' => 'Segment',
+                                'options' => [
+                                    'route' => '/orders/checkout/step[/]',
+                                    'defaults' => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiOrder', 'action' => 'checkoutSetStep'],
+                                ],
+                            ],
                             'orders-checkout-abandon' => [
                                 'type' => 'Segment',
                                 'options' => [

@@ -3,7 +3,7 @@ import { makeT } from '../../../shared/i18n'
 import { DICT } from '../dict'
 import { UserIcon, UsersIcon, CartIcon, MapPinIcon, FileTextIcon, CreditCardIcon, CheckIcon } from '../../../shared/icons'
 import { card } from '../../../shared/styles'
-import { checkoutStart, checkoutAbandon, fetchCheckoutState } from '../api'
+import { checkoutStart, checkoutAbandon, checkoutSetStep, fetchCheckoutState } from '../api'
 import { openSubTab } from '../../../shared/subtabs'
 import { WizardContactStep } from './WizardContactStep'
 import { WizardAccountStep } from './WizardAccountStep'
@@ -61,14 +61,28 @@ export default function OrderCheckoutWizard({ base }: { base: string }) {
           billingId: s.billingId, deliveryId: s.deliveryId,
           orderId: s.orderId, reference: s.reference,
         }))
-        if (s.orderId) setStep(6)
-        else if (s.billingId && s.deliveryId) setStep(4)
-        else if (s.clientId) setStep(2)
-        else if (s.contactId) setStep(1)
+        // Trust the persisted step index (set below) for the EXACT resume point — which
+        // fields are populated alone can't disambiguate e.g. "on Products" from "on Addresses,
+        // not yet submitted": both only have clientId set, no billingId/deliveryId yet. Still
+        // clamp it to what the data can actually render (WizardAddressesStep/Summary need
+        // clientId, WizardConfirmationStep needs orderId — see the guards below) as a safety
+        // net against a stale/corrupted step surviving past an abandon.
+        const maxStepFromData =
+          s.orderId ? 6 : (s.billingId && s.deliveryId) ? 5 : s.clientId ? 4 : s.contactId ? 1 : 0
+        setStep(Math.min(s.step, maxStepFromData))
       })
       .finally(() => setReady(true))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Keep the server-side session in sync with the current step (Mantis 0010748 follow-up) so
+  // the resume logic above can restore the EXACT step, not just an approximation. Gated on
+  // `ready` so this doesn't fire with the initial step=0 before the resume fetch above has had
+  // a chance to set the real value.
+  useEffect(() => {
+    if (!ready) return
+    checkoutSetStep(step).catch(() => null)
+  }, [step, ready])
 
   // Distinguish "switched tabs" (resumable, handled above) from "explicitly closed the New
   // order tab/tool before confirming" (should clear — Mantis 0010748 follow-up). melis-core
