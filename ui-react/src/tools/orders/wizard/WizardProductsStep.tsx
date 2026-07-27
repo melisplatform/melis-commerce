@@ -75,8 +75,13 @@ export function WizardProductsStep({ countryId, onBack, onNext }: {
   }
 
   async function setQty(variantId: number, qty: number) {
+    // Server clamps to available stock too (source of truth) — capping here just avoids a
+    // round-trip flicker when the typed value is already known to be over the limit.
+    const stock = basket.find((b) => b.variantId === variantId)?.stock ?? null
+    const capped = stock != null ? Math.min(qty, stock) : qty
+    if (capped < qty) notify('ko', t('checkout_step_products'), t('checkout_qty_capped', { n: capped }))
     try {
-      const r = qty <= 0 ? await checkoutBasketRemove(variantId) : await checkoutBasketSetQty(variantId, qty)
+      const r = capped <= 0 ? await checkoutBasketRemove(variantId) : await checkoutBasketSetQty(variantId, capped)
       setBasket(r.items)
     } catch (e) { notify('ko', t('checkout_step_products'), e instanceof Error ? e.message : 'Error') }
   }
@@ -184,13 +189,15 @@ export function WizardProductsStep({ countryId, onBack, onNext }: {
                       <code style={{ fontSize: 11, color: 'var(--color-muted-foreground)' }}>{l.sku}</code>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <button style={qtyBtn} onClick={() => setQty(l.variantId, l.quantity - 1)}>−</button>
-                        <input type="number" min={0} inputMode="numeric"
+                        <input type="text" inputMode="numeric" pattern="[0-9]*"
                           style={{ ...inputCss, height: 24, width: 56, textAlign: 'center', padding: '0 4px' }}
                           value={qtyDraft[l.variantId] ?? String(l.quantity)}
-                          onChange={(e) => setQtyDraft((d) => ({ ...d, [l.variantId]: e.target.value }))}
+                          onChange={(e) => setQtyDraft((d) => ({ ...d, [l.variantId]: e.target.value.replace(/\D/g, '') }))}
                           onBlur={(e) => commitQtyDraft(l.variantId, e.target.value)}
                           onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur() }} />
-                        <button style={qtyBtn} onClick={() => setQty(l.variantId, l.quantity + 1)}>+</button>
+                        <button style={{ ...qtyBtn, opacity: l.stock != null && l.quantity >= l.stock ? 0.4 : 1 }}
+                          disabled={l.stock != null && l.quantity >= l.stock}
+                          onClick={() => setQty(l.variantId, l.quantity + 1)}>+</button>
                         <span style={{ marginLeft: 'auto', fontSize: 13, fontWeight: 600 }}>{l.lineTotal != null ? l.lineTotal.toFixed(2) : '—'}</span>
                       </div>
                     </div>

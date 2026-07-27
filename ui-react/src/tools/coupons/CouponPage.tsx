@@ -426,18 +426,21 @@ function CouponForm({ id, base }: { id: string; base: string }) {
   }
 
   // Onglets masqués selon les droits (l'accès à un onglet = capacité de même clé).
+  // Clients/Products restent en plus verrouillés tant que le toggle "Assign to
+  // accounts/products" correspondant n'est pas activé (Mantis 0010792).
   const TABS = [
     { key: 'information', label: t('tab_information'), icon: <GearIcon /> },
-    { key: 'clients',     label: t('tab_clients'),  icon: <UsersIcon /> },
-    { key: 'products',    label: t('tab_products'), icon: <TagIcon /> },
+    { key: 'clients',     label: t('tab_clients'),  icon: <UsersIcon />, disabled: !assignClients },
+    { key: 'products',    label: t('tab_products'), icon: <TagIcon />, disabled: !assignProducts },
     { key: 'orders',      label: t('tab_orders'),   disabled: !isEdit, icon: <CartIcon /> },
   ].filter((tb) => can(tb.key))
 
-  // Si l'onglet actif vient d'être retiré par les droits, basculer sur le premier autorisé.
+  // Si l'onglet actif vient d'être retiré par les droits, ou verrouillé par un toggle
+  // qu'on vient de désactiver, basculer sur le premier onglet disponible.
   useEffect(() => {
-    if (capsLoaded && TABS.length && !TABS.some((tb) => tb.key === activeTab)) setActiveTab(TABS[0].key)
+    if (capsLoaded && TABS.length && !TABS.some((tb) => tb.key === activeTab && !tb.disabled)) setActiveTab(TABS[0].key)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [capsLoaded])
+  }, [capsLoaded, assignClients, assignProducts])
 
   async function submit() {
     if (!code.trim()) { setErrCode(true); setFormError(true); return }

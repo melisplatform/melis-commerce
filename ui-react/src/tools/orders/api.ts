@@ -163,7 +163,7 @@ export interface CheckoutVariant { id: number; sku: string; image: string; attri
 export const fetchCheckoutVariants = (productId: number) =>
   apiFetch<{ items: CheckoutVariant[] }>(`${CHECKOUT_BASE}/products/${productId}/variants`)
 
-export interface CheckoutBasketLine { variantId: number; sku: string; productName: string; quantity: number; price: number | null; lineTotal: number | null }
+export interface CheckoutBasketLine { variantId: number; sku: string; productName: string; quantity: number; stock: number | null; price: number | null; lineTotal: number | null }
 export const fetchCheckoutBasket = () => apiFetch<{ items: CheckoutBasketLine[] }>(`${CHECKOUT_BASE}/basket`)
 export const checkoutBasketAdd = (variantId: number, quantity: number) => postJson<{ items: CheckoutBasketLine[] }>(`${CHECKOUT_BASE}/basket/add`, { variantId, quantity })
 export const checkoutBasketSetQty = (variantId: number, quantity: number) => postJson<{ items: CheckoutBasketLine[] }>(`${CHECKOUT_BASE}/basket/qty`, { variantId, quantity })

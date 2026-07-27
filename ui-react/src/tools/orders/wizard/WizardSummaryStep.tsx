@@ -72,8 +72,13 @@ export function WizardSummaryStep({ clientId, billingId, deliveryId, onBack, onN
   }
 
   async function setQty(variantId: number, qty: number) {
+    // Server clamps to available stock too (source of truth) — capping here just avoids a
+    // round-trip flicker when the typed value is already known to be over the limit.
+    const stock = summary?.items.find((l) => l.variantId === variantId)?.stock ?? null
+    const capped = stock != null ? Math.min(qty, stock) : qty
+    if (capped < qty) notify('ko', t('checkout_step_summary'), t('checkout_qty_capped', { n: capped }))
     try {
-      await checkoutBasketSetQty(variantId, qty)
+      await checkoutBasketSetQty(variantId, capped)
       const s = await fetchCheckoutSummary()
       setSummary(s)
     } catch (e) {
@@ -138,13 +143,14 @@ export function WizardSummaryStep({ clientId, billingId, deliveryId, onBack, onN
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <button style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, border: '1px solid #dc2626', background: 'transparent', color: '#dc2626', cursor: 'pointer', padding: 0 }}
                       onClick={() => setQty(l.variantId, l.quantity - 1)}>−</button>
-                    <input type="number" min={0} inputMode="numeric"
+                    <input type="text" inputMode="numeric" pattern="[0-9]*"
                       style={{ ...inputCss, height: 28, width: 56, textAlign: 'center', padding: '0 4px' }}
                       value={qtyDraft[l.variantId] ?? String(l.quantity)}
-                      onChange={(e) => setQtyDraft((d) => ({ ...d, [l.variantId]: e.target.value }))}
+                      onChange={(e) => setQtyDraft((d) => ({ ...d, [l.variantId]: e.target.value.replace(/\D/g, '') }))}
                       onBlur={(e) => commitQtyDraft(l.variantId, e.target.value)}
                       onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur() }} />
-                    <button style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, border: '1px solid #dc2626', background: 'transparent', color: '#dc2626', cursor: 'pointer', padding: 0 }}
+                    <button style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, border: '1px solid #dc2626', background: 'transparent', color: '#dc2626', cursor: l.stock != null && l.quantity >= l.stock ? 'not-allowed' : 'pointer', padding: 0, opacity: l.stock != null && l.quantity >= l.stock ? 0.4 : 1 }}
+                      disabled={l.stock != null && l.quantity >= l.stock}
                       onClick={() => setQty(l.variantId, l.quantity + 1)}>+</button>
                     <span style={{ marginLeft: 'auto', fontWeight: 700, color: '#dc2626' }}>{l.lineTotal != null ? l.lineTotal.toFixed(2) : '—'}</span>
                   </div>

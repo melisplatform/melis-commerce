@@ -1123,6 +1123,7 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
         $ttId       = $this->titleTypeId($db);
         $groupId    = $this->clientGroupId($db, $clientId);
         $priceSvc   = $this->getServiceManager()->get('MelisComPriceService');
+        $variantSvc = $this->getServiceManager()->get('MelisComVariantService');
         $basketSvc  = $this->getServiceManager()->get('MelisComBasketService');
 
         $basket = $basketSvc->getBasket($clientId);
@@ -1143,18 +1144,34 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
 
                 $price = $priceSvc->getItemPrice($variantId, $countryId, $groupId, 'variant', ['skipLogsTranslation' => true]);
                 $unitPrice = $price['price'] !== null ? (float) $price['price'] : null;
+                $stock = $variantSvc->getVariantFinalStocks($variantId, $countryId);
 
                 $items[] = [
                     'variantId'   => $variantId,
                     'sku'         => $r['var_sku'] ?? '',
                     'productName' => ($r['name_cur'] ?: null) ?? ($r['name_any'] ?: null) ?? '',
                     'quantity'    => $qty,
+                    'stock'       => isset($stock->stock_quantity) ? (int) $stock->stock_quantity : null,
                     'price'       => $unitPrice,
                     'lineTotal'   => $unitPrice !== null ? $unitPrice * $qty : null,
                 ];
             }
         }
         return $items;
+    }
+
+    // Without this, the basket happily stores any quantity typed in the React wizard (Mantis
+    // ~"unlimited quantity") and the only existing guard — legacy validateBasket()'s
+    // MELIS_COMMERCE_CHECKOUT_ERROR_BASKET_QUANTITY — only fires at the very last "Confirm" click
+    // (checkoutStep1_prePayment). Clamping here, at the point of mutation, means the basket itself
+    // can never exceed available stock, same lookup checkoutVariantsAction/checkoutConfirmAction use.
+    private function clampToStock(int $variantId, int $countryId, int $quantity): int
+    {
+        $stock = $this->getServiceManager()->get('MelisComVariantService')->getVariantFinalStocks($variantId, $countryId);
+        if ($stock && isset($stock->stock_quantity)) {
+            $quantity = min($quantity, max(0, (int) $stock->stock_quantity));
+        }
+        return $quantity;
     }
 
     // ─── POST /orders/checkout/basket/add ─────────────────────────────────────
@@ -1171,6 +1188,7 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             $quantity  = max(1, (int) ($b['quantity'] ?? 1));
             if (!$variantId) return $this->jsonResponse(['success' => false, 'error' => 'Missing variantId'], 400);
 
+            $quantity = $this->clampToStock($variantId, (int) ($state['countryId'] ?? -1), $quantity);
             $this->getServiceManager()->get('MelisComBasketService')->addVariantToBasket($variantId, $quantity, $clientId);
             return $this->ok(['items' => $this->basketItems()]);
         } catch (\Throwable $e) { return $this->err($e); }
@@ -1191,6 +1209,7 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
             $quantity  = max(0, (int) ($b['quantity'] ?? 0));
             if (!$variantId) return $this->jsonResponse(['success' => false, 'error' => 'Missing variantId'], 400);
 
+            $quantity = $this->clampToStock($variantId, (int) ($state['countryId'] ?? -1), $quantity);
             $this->getServiceManager()->get('MelisComBasketService')->removeVariantFromBasket($variantId, $quantity, $clientId);
             return $this->ok(['items' => $this->basketItems()]);
         } catch (\Throwable $e) { return $this->err($e); }
