@@ -1,14 +1,15 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useState } from 'react'
 import {
   deleteCategory, fetchCatalogOptions, fetchCatalogTree, fetchCategoryById, fetchCategoryProducts,
   fetchCategorySeo, reorderCategory, saveCategory, saveCategorySeo,
   type CatNode, type CatText, type CatSeo, type CatProduct, type LangOption,
 } from './api'
 import { DICT } from './dict'
+import CatalogTree from './CatalogTree'
 import { makeT } from '../../shared/i18n'
 import { DatePicker } from '../../shared/DatePicker'
-import { card, inputCss, btnPrimary, btnGhost, iconBtn, label, hint, th, td } from '../../shared/styles'
-import { PlusIcon, PencilIcon, TrashIcon, ChevronDownIcon, LayoutIcon, TagIcon, FileTextIcon, MapPinIcon, CartIcon, RefreshIcon } from '../../shared/icons'
+import { card, inputCss, btnPrimary, btnGhost, label, hint, th, td } from '../../shared/styles'
+import { PlusIcon, PencilIcon, TrashIcon, LayoutIcon, TagIcon, FileTextIcon, MapPinIcon, CartIcon } from '../../shared/icons'
 import { ViewModeToggle, LegacyFrame, StatusBadge, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { Tabs, type TabDef } from '../../shared/Tabs'
@@ -26,28 +27,39 @@ type Selection =
   | { mode: 'edit'; catId: number; type: 'catalog' | 'category' }
 
 // ── Helpers arbre ──────────────────────────────────────────────────────────────
-function collectIds(node: CatNode, acc: Set<number>) { acc.add(node.id); node.children.forEach((c) => collectIds(c, acc)) }
-function allIds(nodes: CatNode[]): number[] { const a: number[] = []; const w = (l: CatNode[]) => l.forEach((n) => { a.push(n.id); w(n.children) }); w(nodes); return a }
 function findNode(nodes: CatNode[], id: number): CatNode | null {
   for (const n of nodes) { if (n.id === id) return n; const f = findNode(n.children, id); if (f) return f }
   return null
 }
-/** Surligne (en rouge) la première occurrence de `query` dans `text` — insensible à la casse. */
-function highlightMatch(text: string, query: string): ReactNode {
-  if (!query) return text
-  const i = text.toLowerCase().indexOf(query.toLowerCase())
-  if (i === -1) return text
-  return <>{text.slice(0, i)}<span style={{ color: '#dc2626' }}>{text.slice(i, i + query.length)}</span>{text.slice(i + query.length)}</>
+
+// ── Case tri-état (design melis-core Users / gestion de droits) ───────────────────
+// all = case cochée · some = tiret (sélection partielle) · none = case vide.
+type Tri = 'all' | 'some' | 'none'
+function TriCheckbox({ state, onChange }: { state: Tri; onChange: (v: boolean) => void }) {
+  const color = state === 'none' ? 'var(--color-muted-foreground)' : 'var(--color-primary)'
+  const opacity = state === 'all' ? 1 : state === 'some' ? 0.7 : 0.6
+  return (
+    <button type="button" onClick={() => onChange(state !== 'all')}
+      style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: 0, background: 'transparent', cursor: 'pointer', padding: 0, color, opacity, flexShrink: 0 }}>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ pointerEvents: 'none' }}>
+        <rect x="3" y="3" width="18" height="18" rx="2" />
+        {state === 'all' && <path d="m8 12 3 3 5-6" />}
+        {state === 'some' && <path d="M8 12h8" />}
+      </svg>
+    </button>
+  )
 }
-function filterTree(nodes: CatNode[], q: string): CatNode[] {
-  if (!q) return nodes
-  const lq = q.toLowerCase()
-  const walk = (list: CatNode[]): CatNode[] => list.flatMap((n) => {
-    const kids = walk(n.children)
-    if (n.name.toLowerCase().includes(lq) || String(n.id).includes(lq) || kids.length) return [{ ...n, children: kids }]
-    return []
-  })
-  return walk(nodes)
+/** Ligne cliquable (case tri-état + libellé) façon éditeur de droits melis-core. */
+function CheckRow({ state, label, strong, onChange }: { state: Tri; label: string; strong?: boolean; onChange: (v: boolean) => void }) {
+  const [hover, setHover] = useState(false)
+  return (
+    <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
+      style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px', borderRadius: 6, background: hover ? 'var(--color-muted,rgba(0,0,0,.04))' : 'transparent' }}>
+      <TriCheckbox state={state} onChange={onChange} />
+      <button type="button" onClick={() => onChange(state !== 'all')}
+        style={{ flex: 1, textAlign: 'left', border: 0, background: 'transparent', cursor: 'pointer', fontSize: 14, fontWeight: strong ? 600 : 400, color: 'var(--color-foreground)', padding: 0 }}>{label}</button>
+    </div>
+  )
 }
 
 export default function CatalogPage() {
@@ -57,132 +69,87 @@ export default function CatalogPage() {
   const [oldLoaded, setOldLoaded] = useState(false)
   const [tree, setTree] = useState<CatNode[]>([])
   const [loading, setLoading] = useState(false)
-  const [search, setSearch] = useState('')
   const [languages, setLanguages] = useState<LangOption[]>([])
   const [countries, setCountries] = useState<Option[]>([])
   const [langId, setLangId] = useState<number>(0)
-  const [expanded, setExpanded] = useState<Set<number>>(new Set())
   const [sel, setSel] = useState<Selection | null>(null)
   const [highlightId, setHighlightId] = useState<number | null>(null)
   const [ctxMenu, setCtxMenu] = useState<{ node: CatNode; x: number; y: number } | null>(null)
   const [toDelete, setToDelete] = useState<CatNode | null>(null)
-  const [drag, setDrag] = useState<{ id: number; fatherId: number; type: string; descendants: Set<number> } | null>(null)
-  const [dropHint, setDropHint] = useState<string | null>(null)
   const [err, setErr] = useState<string | null>(null)
   const [tick, setTick] = useState(0)
 
   useEffect(() => { fetchCatalogOptions().then((o) => { setLanguages(o.languages); setCountries(o.countries); setLangId((v) => v || o.languages[0]?.id || 0) }).catch(() => null) }, [])
   useEffect(() => {
     setLoading(true)
-    fetchCatalogTree(langId || undefined).then((r) => {
-      setTree(r.items)
-      setExpanded((prev) => prev.size ? prev : new Set(r.items.map((n) => n.id)))
-    }).catch(() => null).finally(() => setLoading(false))
+    fetchCatalogTree(langId || undefined).then((r) => setTree(r.items)).catch(() => null).finally(() => setLoading(false))
   }, [langId, tick])
 
-  const view = useMemo(() => filterTree(tree, search.trim()), [tree, search])
   const refresh = () => setTick((x) => x + 1)
-
-  // Nœud surligné (simple clic) = ancre pour « Ajouter une catégorie » et la surbrillance.
   const anchorId = highlightId
 
-  function toggle(id: number) { setExpanded((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n }) }
   function openEdit(n: CatNode) { setErr(null); setHighlightId(n.id); setSel({ mode: 'edit', catId: n.id, type: n.type }) }
   function addChild(n: CatNode) { setErr(null); setHighlightId(n.id); setSel({ mode: 'new-category', fatherId: n.id }) }
-  function addCategory() {
-    // Parent = nœud surligné dans l'arbre, sinon 1er catalogue.
-    const parent = highlightId ?? tree[0]?.id ?? -1
-    setErr(null); setSel({ mode: 'new-category', fatherId: parent })
-  }
   async function confirmDelete() {
     if (!toDelete) return
     const wasSel = anchorId === toDelete.id
     try { await deleteCategory(toDelete.id); notify('ok', t('title'), t('deleted')); setToDelete(null); if (wasSel) { setSel(null); setHighlightId(null) } refresh() } catch { setToDelete(null) }
   }
 
-  // Drag-and-drop : réordonnancement / changement de parent.
-  function startDrag(node: CatNode) { const d = new Set<number>(); collectIds(node, d); setDrag({ id: node.id, fatherId: node.fatherId, type: node.type, descendants: d }); setErr(null) }
-  function canDrop(targetFatherId: number): boolean {
-    if (!drag) return false
-    if (drag.descendants.has(targetFatherId)) return false
-    if (drag.type === 'catalog' && targetFatherId !== -1) return false
-    if (drag.type === 'category' && targetFatherId === -1) return false
-    return true
-  }
-  async function doMove(fatherId: number, order: number) {
-    if (!drag) return
-    if (!canDrop(fatherId)) { setErr(drag.type === 'category' && fatherId === -1 ? t('move_cat_to_root') : t('err_move')); setDrag(null); setDropHint(null); return }
-    const d = drag; setDrag(null); setDropHint(null)
-    try { await reorderCategory({ catId: d.id, fatherId, order, oldParent: d.fatherId }); refresh() }
+  // Réordonnancement / changement de parent (validation faite dans CatalogTree).
+  async function doMove(move: { catId: number; fatherId: number; order: number; oldParent: number }) {
+    setErr(null)
+    try { await reorderCategory(move); refresh() }
     catch (e) { setErr(e instanceof Error ? e.message : t('err_move')) }
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', padding: 24, boxSizing: 'border-box', ...(mode === 'old' ? { height: '100%', overflow: 'hidden' } : {}) }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', padding: 24, boxSizing: 'border-box', height: '100%', overflow: 'hidden' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexShrink: 0 }}>
         <div>
           <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>{t('title')}</h1>
           <p style={{ fontSize: 14, color: 'var(--color-muted-foreground)', margin: '2px 0 0' }}>{t('subtitle')}</p>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <ViewModeToggle mode={mode} onReact={() => setMode('react')} onOld={() => { setMode('old'); setOldLoaded(true) }} />
-          {can('create') && <button style={btnGhost} onClick={() => { setErr(null); setSel({ mode: 'new-catalog' }) }}><PlusIcon />{t('add_catalog')}</button>}
-          {can('create') && <button style={btnPrimary} onClick={addCategory}><PlusIcon />{t('add_category')}</button>}
         </div>
       </div>
 
       {oldLoaded && <LegacyFrame melisKey={TOOL_MELIS_KEY} title={t('title')} visible={mode === 'old'} />}
 
-      <div style={{ display: mode === 'react' ? 'flex' : 'none', flexDirection: 'column', gap: 16, flexShrink: 0, marginTop: 20 }}>
-        {/* Toolbar : recherche + langue + Effacer / Réduire / Déplier / Rafraîchir (même largeur que l'arbre) */}
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', maxWidth: 760 }}>
-          <input style={{ ...inputCss, height: 36, flex: 1, minWidth: 220 }} value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('search')} />
-          <select style={{ ...inputCss, height: 36, width: 'auto', minWidth: 120 }} value={langId} onChange={(e) => setLangId(Number(e.target.value))}>
-            {languages.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
-          </select>
-          <button style={{ ...btnGhost, height: 36 }} onClick={() => setSearch('')}>{t('clear')}</button>
-          <button style={{ ...btnGhost, height: 36 }} onClick={() => setExpanded(new Set())}>{t('collapse_all')}</button>
-          <button style={{ ...btnGhost, height: 36 }} onClick={() => setExpanded(new Set(allIds(tree)))}>{t('expand_all')}</button>
-          <button style={{ ...btnGhost, height: 36 }} onClick={refresh}><RefreshIcon />{t('refresh')}</button>
-        </div>
+      {/* Vue React — maître-détail : arbre à gauche, édition à droite (comme melis-cms category) */}
+      <div style={{ display: mode === 'react' ? 'flex' : 'none', flexDirection: 'column', gap: 12, flex: 1, minHeight: 0, marginTop: 16 }}>
+        {err && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14, flexShrink: 0 }}>{err}</div>}
 
-        {err && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14 }}>{err}</div>}
-
-        {/* Recherche sans résultat : bandeau d'avertissement — l'arbre COMPLET reste affiché en dessous (comme le legacy), pas de vide. */}
-        {!loading && search.trim() && view.length === 0 && tree.length > 0 && (
-          <div style={{ maxWidth: 760, border: '1px solid color-mix(in srgb, #f59e0b 50%, transparent)', background: 'color-mix(in srgb, #f59e0b 16%, transparent)', color: 'var(--color-foreground)', borderRadius: 8, padding: '8px 14px', fontSize: 14, fontWeight: 500 }}>
-            {t('search_not_found', { q: search.trim() })}
-          </div>
-        )}
-
-        {/* Arbre — largeur limitée (pas plein écran), toujours visible, scroll interne si grand */}
-        <div style={{ ...card, padding: 8, minHeight: 90, maxHeight: '45vh', maxWidth: 760, overflow: 'auto', flexShrink: 0 }}>
-          {loading && !tree.length ? (
-            <div style={{ padding: 40, textAlign: 'center', color: 'var(--color-muted-foreground)' }}>{t('loading')}</div>
-          ) : !tree.length ? (
-            <div style={{ padding: 40, textAlign: 'center', color: 'var(--color-muted-foreground)' }}>{t('empty')}</div>
-          ) : (
-            <div onDragEnd={() => { setDrag(null); setDropHint(null) }}>
-              <NodeList
-                nodes={view.length ? view : tree} depth={0} parentId={-1} t={t} anchorId={anchorId} can={can} search={search.trim()}
-                expanded={expanded} toggle={toggle}
-                onHighlight={(n) => setHighlightId(n.id)} onEdit={openEdit} onAddChild={addChild} onDelete={setToDelete}
-                onContext={(n, x, y) => { setHighlightId(n.id); setCtxMenu({ node: n, x, y }) }}
-                drag={drag} dropHint={dropHint} setDropHint={setDropHint} startDrag={startDrag} doMove={doMove} canDrop={canDrop}
-              />
-            </div>
-          )}
-          <p style={{ ...hint, margin: '8px 4px 2px' }}>{t('reorder_hint')}</p>
-        </div>
-
-        {/* Formulaire inline (sous l'arbre) */}
-        {sel && (
-          <CategoryForm
-            key={sel.mode === 'edit' ? `e${sel.catId}` : sel.mode === 'new-category' ? `nc${sel.fatherId}` : 'ncat'}
-            sel={sel} tree={tree} languages={languages} countries={countries}
-            onSaved={(id, type) => { refresh(); setSel({ mode: 'edit', catId: id, type }) }} onClose={() => setSel(null)} t={t}
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(320px, 440px) minmax(0, 1fr)', gap: 16, flex: 1, minHeight: 0 }}>
+          {/* Colonne gauche : arbre */}
+          <CatalogTree
+            nodes={tree} languages={languages} currentLangId={langId} onLangChange={setLangId}
+            selectedId={highlightId} loading={loading} can={can} t={t}
+            onSelect={openEdit} onAddChild={addChild}
+            onAddCatalog={() => { setErr(null); setHighlightId(null); setSel({ mode: 'new-catalog' }) }}
+            onDelete={setToDelete}
+            onContext={(n, x, y) => { setHighlightId(n.id); setCtxMenu({ node: n, x, y }) }}
+            onReorder={doMove}
+            onRefresh={refresh}
           />
-        )}
+
+          {/* Colonne droite : édition (ou placeholder) */}
+          <div style={{ minWidth: 0, minHeight: 0, overflow: 'auto' }}>
+            {sel ? (
+              <CategoryForm
+                key={sel.mode === 'edit' ? `e${sel.catId}` : sel.mode === 'new-category' ? `nc${sel.fatherId}` : 'ncat'}
+                sel={sel} tree={tree} languages={languages} countries={countries}
+                onSaved={(id, type) => { refresh(); setHighlightId(id); setSel({ mode: 'edit', catId: id, type }) }}
+                onClose={() => { setSel(null); setHighlightId(null) }} t={t}
+              />
+            ) : (
+              <div style={{ ...card, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 40, boxSizing: 'border-box' }}>
+                <p style={{ maxWidth: 320, fontSize: 14, color: 'var(--color-muted-foreground)', margin: 0 }}>{t('editor_empty')}</p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Menu contextuel (clic droit sur un nœud) */}
@@ -211,87 +178,6 @@ export default function CatalogPage() {
           onConfirm={confirmDelete} onCancel={() => setToDelete(null)} t={t} />
       )}
     </div>
-  )
-}
-
-// ── Arbre (liste de nœuds d'un niveau + barres de drop) ──────────────────────────
-type RowProps = {
-  depth: number; parentId: number; t: (k: string, v?: Record<string, string | number>) => string; anchorId: number | null
-  can: (cap: string) => boolean; search: string
-  expanded: Set<number>; toggle: (id: number) => void
-  onHighlight: (n: CatNode) => void; onEdit: (n: CatNode) => void; onAddChild: (n: CatNode) => void; onDelete: (n: CatNode) => void
-  onContext: (n: CatNode, x: number, y: number) => void
-  drag: { id: number; type: string } | null; dropHint: string | null; setDropHint: (s: string | null) => void
-  startDrag: (n: CatNode) => void; doMove: (fatherId: number, order: number) => void; canDrop: (fatherId: number) => boolean
-}
-
-function NodeList(props: RowProps & { nodes: CatNode[] }) {
-  const { nodes, depth, parentId, drag, dropHint, setDropHint, doMove, canDrop } = props
-  return (
-    <div>
-      {nodes.map((n) => (
-        <div key={n.id}>
-          <DropBar active={!!drag && dropHint === `before-${parentId}-${n.id}` && canDrop(parentId)} depth={depth}
-            onOver={() => setDropHint(`before-${parentId}-${n.id}`)} onDrop={() => doMove(parentId, n.order)} />
-          <NodeRow {...props} node={n} />
-        </div>
-      ))}
-      <DropBar active={!!drag && dropHint === `end-${parentId}` && canDrop(parentId)} depth={depth}
-        onOver={() => setDropHint(`end-${parentId}`)} onDrop={() => doMove(parentId, nodes.length + 1)} />
-    </div>
-  )
-}
-
-function DropBar({ active, depth, onOver, onDrop }: { active: boolean; depth: number; onOver: () => void; onDrop: () => void }) {
-  return (
-    <div onDragOver={(e) => { e.preventDefault(); onOver() }} onDrop={(e) => { e.preventDefault(); onDrop() }}
-      style={{ height: active ? 22 : 6, marginLeft: 12 + depth * 22, borderRadius: 4, transition: 'height .08s',
-        background: active ? 'color-mix(in srgb, var(--color-primary) 25%, transparent)' : 'transparent',
-        border: active ? '1px dashed var(--color-primary)' : '1px solid transparent' }} />
-  )
-}
-
-function NodeRow(props: RowProps & { node: CatNode }) {
-  const { node, depth, t, anchorId, can, search, expanded, toggle, onHighlight, onEdit, onAddChild, onDelete, onContext, drag, dropHint, setDropHint, startDrag, doMove, canDrop } = props
-  const isOpen = expanded.has(node.id)
-  const hasKids = node.children.length > 0
-  const intoActive = !!drag && drag.id !== node.id && dropHint === `into-${node.id}` && canDrop(node.id)
-  const active = anchorId === node.id
-  const [hover, setHover] = useState(false)
-
-  return (
-    <>
-      <div
-        draggable
-        onDragStart={(e) => { e.stopPropagation(); e.dataTransfer.effectAllowed = 'move'; startDrag(node) }}
-        onDragOver={(e) => { if (drag && drag.id !== node.id) { e.preventDefault(); e.stopPropagation(); setDropHint(`into-${node.id}`) } }}
-        onDrop={(e) => { if (drag && drag.id !== node.id) { e.preventDefault(); e.stopPropagation(); doMove(node.id, node.children.length + 1) } }}
-        onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
-        onClick={() => onHighlight(node)}
-        onDoubleClick={() => onEdit(node)}
-        onContextMenu={(e) => { e.preventDefault(); onContext(node, e.clientX, e.clientY) }}
-        style={{
-          display: 'flex', alignItems: 'center', gap: 8, padding: '7px 10px', borderRadius: 6, cursor: 'pointer',
-          marginLeft: depth * 22, userSelect: 'none',
-          background: active ? 'color-mix(in srgb, var(--color-primary) 16%, transparent)' : intoActive ? 'color-mix(in srgb, var(--color-primary) 14%, transparent)' : hover ? 'var(--color-muted,rgba(0,0,0,.03))' : 'transparent',
-          outline: intoActive ? '1px dashed var(--color-primary)' : 'none', opacity: drag?.id === node.id ? 0.4 : 1,
-        }}
-      >
-        <button onClick={(e) => { e.stopPropagation(); hasKids && toggle(node.id) }} style={{ ...iconBtn, width: 22, height: 22, visibility: hasKids ? 'visible' : 'hidden' }}>
-          <span style={{ display: 'inline-flex', transform: isOpen ? 'none' : 'rotate(-90deg)', transition: 'transform .1s' }}><ChevronDownIcon /></span>
-        </button>
-        <span style={{ display: 'inline-flex', color: node.status === 1 ? '#16a34a' : '#dc2626', fontSize: 10 }} title={node.status === 1 ? t('online') : t('offline')}>●</span>
-        <span style={{ display: 'inline-flex', color: 'var(--color-muted-foreground)' }}>{node.type === 'catalog' ? <LayoutIcon /> : <TagIcon />}</span>
-        <span style={{ fontWeight: node.type === 'catalog' || active ? 600 : 400, color: active ? 'var(--color-primary)' : 'inherit' }}>{node.id} - {highlightMatch(node.name, search)}</span>
-        <span style={{ fontSize: 12, color: 'var(--color-muted-foreground)' }}>{t('products_n', { n: node.productCount })}</span>
-        <div style={{ marginLeft: 'auto', display: 'flex', gap: 4, opacity: hover || active ? 1 : 0, transition: 'opacity .1s' }}>
-          {can('create') && <button style={iconBtn} title={t('add_child')} onClick={(e) => { e.stopPropagation(); onAddChild(node) }}><PlusIcon /></button>}
-          {can('edit') && <button style={iconBtn} title={t('edit')} onClick={(e) => { e.stopPropagation(); onEdit(node) }}><PencilIcon /></button>}
-          {can('delete') && <button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={(e) => { e.stopPropagation(); onDelete(node) }}><TrashIcon /></button>}
-        </div>
-      </div>
-      {isOpen && hasKids && <NodeList {...props} nodes={node.children} depth={depth + 1} parentId={node.id} />}
-    </>
   )
 }
 
@@ -360,9 +246,8 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
 
   function setText(langId: number, field: 'name' | 'description', value: string) { setTexts((p) => p.map((x) => x.langId === langId ? { ...x, [field]: value } : x)) }
   function setSeoField(langId: number, field: 'pageId' | 'url' | 'urlRedirect' | 'url301' | 'metaTitle' | 'metaDescription', value: string) { setSeo((p) => p.map((x) => x.langId === langId ? { ...x, [field]: value } : x)) }
-  function toggleCountry(cid: number) { setCountryIds((p) => p.includes(cid) ? p.filter((x) => x !== cid) : [...p, cid]) }
-  const allCountries = countries.length > 0 && countryIds.length === countries.length
-  function toggleAllCountries() { setCountryIds(allCountries ? [] : countries.map((c) => c.id)) }
+  // Tri-état de l'affectation pays : aucune → none, toutes → all, partielle → some (tiret).
+  const countriesState: Tri = countryIds.length === 0 ? 'none' : (countries.length > 0 && countryIds.length >= countries.length ? 'all' : 'some')
 
   const parentName = !isCatalog ? (findNode(tree, fatherId)?.name ?? '') : ''
 
@@ -465,16 +350,13 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
                 <div>
                   <h4 style={secTitle}>🌐 {t('sec_countries')}</h4>
                   {countries.length === 0 ? <p style={{ ...hint, margin: 0 }}>{t('f_no_country')}</p> : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 240, overflow: 'auto' }}>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, cursor: 'pointer', padding: '5px 8px', borderRadius: 6, fontWeight: 600 }}>
-                        <input type="checkbox" checked={allCountries} onChange={toggleAllCountries} style={{ accentColor: 'var(--color-primary)' }} />
-                        {t('countries_all')}
-                      </label>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 1, maxHeight: 260, overflow: 'auto' }}>
+                      {/* Tous les pays : tri-état (tiret si sélection partielle) — design melis-core Users/droits. */}
+                      <CheckRow strong state={countriesState} label={t('countries_all')}
+                        onChange={(v) => setCountryIds(v ? countries.map((c) => c.id) : [])} />
                       {countries.map((c) => (
-                        <label key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, cursor: 'pointer', padding: '5px 8px', borderRadius: 6, border: '1px solid var(--color-border)' }}>
-                          <input type="checkbox" checked={countryIds.includes(c.id)} onChange={() => toggleCountry(c.id)} style={{ accentColor: 'var(--color-primary)' }} />
-                          {c.name}
-                        </label>
+                        <CheckRow key={c.id} state={countryIds.includes(c.id) ? 'all' : 'none'} label={c.name}
+                          onChange={(v) => setCountryIds((p) => v ? [...new Set([...p, c.id])] : p.filter((x) => x !== c.id))} />
                       ))}
                     </div>
                   )}
