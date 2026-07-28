@@ -350,7 +350,7 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
                 <div>
                   <h4 style={secTitle}>🌐 {t('sec_countries')}</h4>
                   {countries.length === 0 ? <p style={{ ...hint, margin: 0 }}>{t('f_no_country')}</p> : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 1, maxHeight: 260, overflow: 'auto' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                       {/* Tous les pays : tri-état (tiret si sélection partielle) — design melis-core Users/droits. */}
                       <CheckRow strong state={countriesState} label={t('countries_all')}
                         onChange={(v) => setCountryIds(v ? countries.map((c) => c.id) : [])} />
