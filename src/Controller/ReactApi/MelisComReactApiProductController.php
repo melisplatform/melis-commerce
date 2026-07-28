@@ -174,9 +174,8 @@ class MelisComReactApiProductController extends MelisAbstractActionController
                 $r = (array) $r; $languages[] = ['id' => (int) $r['elang_id'], 'name' => (string) $r['elang_name'], 'flag' => (string) ($r['elang_flag'] ?? '')];
             }
             $countries = [];
-            // Tous les pays (comme l'outil catalogue React et le legacy `fetchAll()`) — pas de filtre
-            // ctry_status : n'afficher que les pays « actifs » masquait la quasi-totalité de la liste.
-            foreach ($db->query('SELECT ctry_id, ctry_name, ctry_flag FROM melis_ecom_country ORDER BY ctry_name', []) as $r) {
+            // Seuls les pays ACTIFS (ctry_status = 1) sont proposés (images, prix, stocks — produit & variant).
+            foreach ($db->query('SELECT ctry_id, ctry_name, ctry_flag FROM melis_ecom_country WHERE ctry_status = 1 ORDER BY ctry_name', []) as $r) {
                 $r = (array) $r; $countries[] = ['id' => (int) $r['ctry_id'], 'name' => (string) $r['ctry_name'], 'flag' => (string) ($r['ctry_flag'] ?? '')];
             }
             $currencies = [];

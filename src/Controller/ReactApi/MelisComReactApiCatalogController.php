@@ -113,7 +113,8 @@ class MelisComReactApiCatalogController extends MelisAbstractActionController
             }
 
             $countries = [];
-            foreach ($db->query('SELECT ctry_id, ctry_name FROM melis_ecom_country ORDER BY ctry_name', []) as $r) {
+            // Seuls les pays ACTIFS (ctry_status = 1) sont proposés à l'affectation.
+            foreach ($db->query('SELECT ctry_id, ctry_name FROM melis_ecom_country WHERE ctry_status = 1 ORDER BY ctry_name', []) as $r) {
                 $r = (array) $r;
                 $countries[] = ['id' => (int) $r['ctry_id'], 'name' => (string) $r['ctry_name']];
             }
