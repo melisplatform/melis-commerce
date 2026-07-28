@@ -372,6 +372,13 @@ return [
                                     'defaults'    => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCatalog', 'action' => 'seoSave'],
                                 ],
                             ],
+                            'catalog-products-reorder' => [
+                                'type'    => 'Segment',
+                                'options' => [
+                                    'route'       => '/catalog/:id/products/reorder[/]', 'constraints' => ['id' => '[0-9]+'],
+                                    'defaults'    => ['__NAMESPACE__' => 'MelisCommerce\Controller', 'controller' => 'MelisComReactApiCatalog', 'action' => 'productsReorder'],
+                                ],
+                            ],
                             'catalog-products' => [
                                 'type'    => 'Segment',
                                 'options' => [

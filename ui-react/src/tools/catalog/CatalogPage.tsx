@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react'
 import {
   deleteCategory, fetchCatalogOptions, fetchCatalogTree, fetchCategoryById, fetchCategoryProducts,
-  fetchCategorySeo, reorderCategory, saveCategory, saveCategorySeo,
+  fetchCategorySeo, reorderCategory, reorderCategoryProducts, saveCategory, saveCategorySeo,
   type CatNode, type CatText, type CatSeo, type CatProduct, type LangOption,
 } from './api'
 import { DICT } from './dict'
 import CatalogTree from './CatalogTree'
 import { makeT } from '../../shared/i18n'
 import { DatePicker } from '../../shared/DatePicker'
-import { card, inputCss, btnPrimary, btnGhost, label, hint, th, td } from '../../shared/styles'
-import { PlusIcon, PencilIcon, TrashIcon, LayoutIcon, TagIcon, FileTextIcon, MapPinIcon, CartIcon } from '../../shared/icons'
+import { card, inputCss, btnPrimary, btnGhost, label, hint } from '../../shared/styles'
+import { PlusIcon, PencilIcon, TrashIcon, LayoutIcon, TagIcon, FileTextIcon, MapPinIcon, CartIcon, GripIcon } from '../../shared/icons'
 import { ViewModeToggle, LegacyFrame, StatusBadge, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { Tabs, type TabDef } from '../../shared/Tabs'
@@ -211,6 +211,9 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
   const [seoLoaded, setSeoLoaded] = useState(false)
   const [products, setProducts] = useState<CatProduct[]>([])
   const [prodLoaded, setProdLoaded] = useState(false)
+  // Drag-and-drop de l'ordre des produits affectés (persiste pcat_order, comme le legacy).
+  const [dragProd, setDragProd] = useState<number | null>(null)
+  const [dropProd, setDropProd] = useState<{ id: number; pos: 'before' | 'after' } | null>(null)
 
   useEffect(() => {
     setTexts(languages.map((l) => ({ langId: l.id, langName: l.name, name: '', description: '' })))
@@ -248,6 +251,21 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
   function setSeoField(langId: number, field: 'pageId' | 'url' | 'urlRedirect' | 'url301' | 'metaTitle' | 'metaDescription', value: string) { setSeo((p) => p.map((x) => x.langId === langId ? { ...x, [field]: value } : x)) }
   // Tri-état de l'affectation pays : aucune → none, toutes → all, partielle → some (tiret).
   const countriesState: Tri = countryIds.length === 0 ? 'none' : (countries.length > 0 && countryIds.length >= countries.length ? 'all' : 'some')
+
+  // Réordonne les produits de la catégorie (optimiste) puis persiste l'ordre (pcat_order).
+  function moveProduct(fromId: number, targetId: number, pos: 'before' | 'after') {
+    if (fromId === targetId || !catId) return
+    const next = [...products]
+    const from = next.findIndex((p) => p.id === fromId)
+    if (from < 0) return
+    const [moved] = next.splice(from, 1)
+    let to = next.findIndex((p) => p.id === targetId)
+    if (to < 0) return
+    if (pos === 'after') to += 1
+    next.splice(to, 0, moved)
+    setProducts(next)
+    reorderCategoryProducts(catId, next.map((p) => p.id)).catch(() => notify('ko', t('title'), t('err_save')))
+  }
 
   const parentName = !isCatalog ? (findNode(tree, fatherId)?.name ?? '') : ''
 
@@ -390,26 +408,42 @@ function CategoryForm({ sel, tree, languages, countries, onSaved, onClose, t }: 
           !isEdit ? <p style={{ ...hint }}>{t('save_first_tab')}</p> : (
             <div>
               <h3 style={{ fontSize: 15, fontWeight: 600, margin: '0 0 4px' }}>{t('prod_title')}</h3>
-              <p style={{ ...hint, marginTop: 0 }}>{t('products_n', { n: products.length })}</p>
+              <p style={{ ...hint, marginTop: 0 }}>{products.length > 0 ? t('prod_reorder_hint') : t('products_n', { n: products.length })}</p>
               {products.length === 0 ? (
                 <div style={{ padding: 30, textAlign: 'center', color: 'var(--color-muted-foreground)', border: '1px dashed var(--color-border)', borderRadius: 8 }}>{t('prod_empty')}</div>
               ) : (
-                <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, overflow: 'hidden' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}>
-                      <tr><th style={{ ...th, width: 60 }}>{t('prod_col_id')}</th><th style={th}>{t('prod_col_ref')}</th><th style={th}>{t('prod_col_name')}</th><th style={{ ...th, width: 100 }}>{t('prod_col_status')}</th></tr>
-                    </thead>
-                    <tbody>
-                      {products.map((p) => (
-                        <tr key={p.id}>
-                          <td style={{ ...td, color: 'var(--color-muted-foreground)' }}>{p.id}</td>
-                          <td style={td}>{p.reference || '—'}</td>
-                          <td style={{ ...td, fontWeight: 500 }}>{p.name}</td>
-                          <td style={td}><StatusBadge active={p.status === 1} t={t} /></td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, overflow: 'hidden' }} onDragEnd={() => { setDragProd(null); setDropProd(null) }}>
+                  {/* En-tête */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', background: 'var(--color-muted,rgba(0,0,0,.03))', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.04em', color: 'var(--color-muted-foreground)' }}>
+                    <span style={{ width: 16 }} />
+                    <span style={{ width: 50 }}>{t('prod_col_id')}</span>
+                    <span style={{ flex: 1 }}>{t('prod_col_ref')}</span>
+                    <span style={{ flex: 2 }}>{t('prod_col_name')}</span>
+                    <span style={{ width: 90 }}>{t('prod_col_status')}</span>
+                  </div>
+                  {/* Lignes drag-and-drop */}
+                  {products.map((p) => {
+                    const isTarget = dropProd?.id === p.id && dragProd !== p.id
+                    return (
+                      <div key={p.id} draggable
+                        onDragStart={(e) => { setDragProd(p.id); e.dataTransfer.effectAllowed = 'move' }}
+                        onDragOver={(e) => { if (dragProd == null || dragProd === p.id) return; e.preventDefault(); const r = e.currentTarget.getBoundingClientRect(); setDropProd({ id: p.id, pos: (e.clientY - r.top) < r.height / 2 ? 'before' : 'after' }) }}
+                        onDragLeave={() => setDropProd((d) => (d?.id === p.id ? null : d))}
+                        onDrop={(e) => { e.preventDefault(); if (dragProd != null && dropProd) moveProduct(dragProd, dropProd.id, dropProd.pos); setDragProd(null); setDropProd(null) }}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', fontSize: 14, cursor: 'grab',
+                          borderTop: '1px solid var(--color-border)', userSelect: 'none', opacity: dragProd === p.id ? 0.4 : 1,
+                          background: 'var(--color-card)',
+                          boxShadow: isTarget ? (dropProd!.pos === 'before' ? 'inset 0 2px 0 0 var(--color-primary)' : 'inset 0 -2px 0 0 var(--color-primary)') : 'none',
+                        }}>
+                        <span style={{ display: 'inline-flex', color: 'var(--color-muted-foreground)', opacity: 0.6 }}><GripIcon /></span>
+                        <span style={{ width: 50, color: 'var(--color-muted-foreground)' }}>{p.id}</span>
+                        <span style={{ flex: 1 }}>{p.reference || '—'}</span>
+                        <span style={{ flex: 2, fontWeight: 500 }}>{p.name}</span>
+                        <span style={{ width: 90 }}><StatusBadge active={p.status === 1} t={t} /></span>
+                      </div>
+                    )
+                  })}
                 </div>
               )}
             </div>

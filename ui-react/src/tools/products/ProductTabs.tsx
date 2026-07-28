@@ -1,5 +1,5 @@
 import { createPortal } from 'react-dom'
-import { type ChangeEvent, useEffect, useRef, useState } from 'react'
+import { type ChangeEvent, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import {
   fetchProductVariants, saveProductVariant, deleteProductVariant, duplicateProductVariant,
   fetchProductPrices, saveProductPrice, deleteProductPrice,
@@ -797,31 +797,63 @@ export function VariantTooltipTable({ items, pos, t, onMouseEnter, onMouseLeave,
 }) {
   const cellTh = { padding: '6px 12px', textAlign: 'left' as const, fontSize: 11, textTransform: 'uppercase' as const, letterSpacing: '.04em', color: 'rgba(255,255,255,.7)', whiteSpace: 'nowrap' as const }
   const cellTd = { padding: '6px 12px', fontSize: 13, color: '#fff', whiteSpace: 'nowrap' as const }
+  // Pagination par 10 (l'encart peut lister beaucoup de variants).
+  const PER = 10
+  const [page, setPage] = useState(0)
+  useEffect(() => { setPage(0) }, [items])
+  const pageCount = Math.max(1, Math.ceil(items.length / PER))
+  const cur = Math.min(page, pageCount - 1)
+  const shown = items.slice(cur * PER, cur * PER + PER)
+  // Hauteur VERROUILLÉE sur la 1re page pleine puis appliquée à toutes les pages : l'encart garde
+  // exactement la même taille (le pied ne bouge pas sous la souris → plus de fermeture au changement
+  // de page). Mesuré, donc indépendant de la hauteur réelle des lignes.
+  const bodyRef = useRef<HTMLDivElement>(null)
+  const [lockedH, setLockedH] = useState<number>()
+  useLayoutEffect(() => {
+    if (lockedH == null && bodyRef.current && shown.length === PER) setLockedH(bodyRef.current.offsetHeight)
+  }, [lockedH, shown.length])
+  const pagerBtn = (disabled: boolean) => ({
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 26, height: 26, borderRadius: 6,
+    border: '1px solid rgba(255,255,255,.25)', background: 'transparent', color: '#fff', fontSize: 15,
+    cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.4 : 1,
+  })
   return createPortal(
     <div onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}
       style={{ position: 'fixed', top: pos.y, left: pos.x, zIndex: 9999, background: '#4a4a4a', borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,.3)', padding: 4, maxWidth: 'min(90vw, 900px)', maxHeight: '80vh', overflow: 'auto' }}>
-      <table style={{ borderCollapse: 'collapse' }}>
-        <thead><tr>
-          <th style={cellTh}>{t('var_col_id')}</th><th style={cellTh}>{t('col_image')}</th><th style={cellTh}>{t('var_col_sku')}</th>
-          <th style={cellTh}>{t('var_col_attrs')}</th><th style={cellTh}>{t('tt_country')}</th><th style={cellTh}>{t('tt_price')}</th><th style={cellTh}>{t('tt_stocks')}</th>
-        </tr></thead>
-        <tbody>
-          {items.map((v) => (
-            <tr key={v.id} onClick={onRowClick ? () => onRowClick(v.id) : undefined}
-              style={onRowClick ? { cursor: 'pointer' } : undefined}
-              onMouseOver={onRowClick ? (e) => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,.1)' } : undefined}
-              onMouseOut={onRowClick ? (e) => { (e.currentTarget as HTMLElement).style.background = 'transparent' } : undefined}>
-              <td style={cellTd}>{v.id}</td>
-              <td style={cellTd}>{v.image ? <img src={v.image} alt="" style={{ width: 28, height: 28, objectFit: 'cover', borderRadius: 4 }} /> : '🖼'}</td>
-              <td style={cellTd}>{v.sku || '—'}</td>
-              <td style={cellTd}>{v.attributes || '—'}</td>
-              <td style={cellTd}>🌐 {t('price_general')}</td>
-              <td style={cellTd}>{v.price == null ? '—' : v.price.toFixed(2)}</td>
-              <td style={cellTd}>{v.stock == null ? '—' : v.stock}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div ref={bodyRef} style={{ minHeight: lockedH }}>
+        <table style={{ borderCollapse: 'collapse' }}>
+          <thead><tr>
+            <th style={cellTh}>{t('var_col_id')}</th><th style={cellTh}>{t('col_image')}</th><th style={cellTh}>{t('var_col_sku')}</th>
+            <th style={cellTh}>{t('var_col_attrs')}</th><th style={cellTh}>{t('tt_country')}</th><th style={cellTh}>{t('tt_price')}</th><th style={cellTh}>{t('tt_stocks')}</th>
+          </tr></thead>
+          <tbody>
+            {shown.map((v) => (
+              <tr key={v.id} onClick={onRowClick ? () => onRowClick(v.id) : undefined}
+                style={onRowClick ? { cursor: 'pointer' } : undefined}
+                onMouseOver={onRowClick ? (e) => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,.1)' } : undefined}
+                onMouseOut={onRowClick ? (e) => { (e.currentTarget as HTMLElement).style.background = 'transparent' } : undefined}>
+                <td style={cellTd}>{v.id}</td>
+                <td style={cellTd}>{v.image ? <img src={v.image} alt="" style={{ width: 28, height: 28, objectFit: 'cover', borderRadius: 4 }} /> : '🖼'}</td>
+                <td style={cellTd}>{v.sku || '—'}</td>
+                <td style={cellTd}>{v.attributes || '—'}</td>
+                <td style={cellTd}>🌐 {t('price_general')}</td>
+                <td style={cellTd}>{v.price == null ? '—' : v.price.toFixed(2)}</td>
+                <td style={cellTd}>{v.stock == null ? '—' : v.stock}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {items.length > PER && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, padding: '6px 12px', color: 'rgba(255,255,255,.85)', fontSize: 12 }}>
+          <span>{t('tt_total', { n: items.length })}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <button type="button" title={t('tt_prev')} disabled={cur === 0} onClick={() => setPage(cur - 1)} style={pagerBtn(cur === 0)}>‹</button>
+            <span style={{ minWidth: 70, textAlign: 'center' }}>{t('tt_page', { c: cur + 1, t: pageCount })}</span>
+            <button type="button" title={t('tt_next')} disabled={cur >= pageCount - 1} onClick={() => setPage(cur + 1)} style={pagerBtn(cur >= pageCount - 1)}>›</button>
+          </div>
+        </div>
+      )}
     </div>,
     document.body
   )

@@ -481,6 +481,30 @@ class MelisComReactApiCatalogController extends MelisAbstractActionController
         } catch (\Throwable $e) { return $this->errorResponse($e); }
     }
 
+    // ─── POST /catalog/:id/products/reorder ───────────────────────────────────
+    // Ré-ordonne les produits d'une catégorie (drag-and-drop) : écrit pcat_order
+    // (1..N dans l'ordre reçu) sur melis_ecom_product_category — comme le legacy.
+    public function productsReorderAction(): HttpResponse
+    {
+        if ($deny = $this->denyUnlessAccess()) { return $deny; }
+        $id = (int) $this->params()->fromRoute('id', 0);
+        if ($id <= 0) { return $this->jsonResponse(['success' => false, 'error' => 'Invalid ID'], 400); }
+
+        try {
+            $body = json_decode($this->getRequest()->getContent(), true) ?? [];
+            $ids  = array_values(array_filter(array_map('intval', (array) ($body['productIds'] ?? []))));
+            $db   = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
+            $order = 1;
+            foreach ($ids as $prdId) {
+                $db->query(
+                    'UPDATE melis_ecom_product_category SET pcat_order = ? WHERE pcat_cat_id = ? AND pcat_prd_id = ?',
+                    [$order++, $id, $prdId]
+                );
+            }
+            return $this->jsonResponse(['success' => true, 'data' => null]);
+        } catch (\Throwable $e) { return $this->errorResponse($e); }
+    }
+
     // ─── Helpers ───────────────────────────────────────────────────────────────
     /** Normalise une date ISO (YYYY-MM-DD[ HH:MM:SS]) → 'Y-m-d H:i:s' ou null. */
     private function normalizeDate($value): ?string

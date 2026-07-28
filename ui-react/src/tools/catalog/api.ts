@@ -36,3 +36,5 @@ export const fetchCategorySeo = (id: number) => apiFetch<{ items: CatSeo[] }>(`/
 export const saveCategorySeo = (id: number, items: { langId: number; pageId: string; url: string; urlRedirect: string; url301: string; metaTitle: string; metaDescription: string }[]) =>
   apiFetch<null>(`/melis/react-api/catalog/${id}/seo/save`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items }) })
 export const fetchCategoryProducts = (id: number) => apiFetch<{ items: CatProduct[] }>(`/melis/react-api/catalog/${id}/products`)
+export const reorderCategoryProducts = (id: number, productIds: number[]) =>
+  apiFetch<null>(`/melis/react-api/catalog/${id}/products/reorder`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ productIds }) })
