@@ -477,46 +477,53 @@ function AttributeForm({ id, base }: { id: string; base: string }) {
           {formError && <div style={{ border: '1px solid #fca5a5', background: 'color-mix(in srgb, #ef4444 8%, transparent)', color: '#dc2626', borderRadius: 8, padding: '8px 14px', fontSize: 14, marginBottom: 16 }}>{t('err_required_fields')}</div>}
           <div>
             {activeTab === 'main' && (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 260px', gap: 16, alignItems: 'start' }}>
-                <div style={{ ...card, padding: 24 }}>
-                  <h3 style={fieldSectionTitle}><GearIcon />{t('section_general_data')}</h3>
-                  <div style={fieldGap}>
-                    <div>
-                      <div style={labelRow}><label style={label}>{t('field_reference')} *</label><InfoDot text={t('tip_reference')} /></div>
-                      <input style={inputCss} value={reference}
-                        onChange={(e) => { setReference(e.target.value); setErrReference(false) }} />
-                      {errReference && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_reference_required')}</p>}
-                    </div>
-                    <div>
-                      <div style={labelRow}><label style={label}>{t('field_type')} *</label><InfoDot text={t('tip_type')} /></div>
-                      <select style={{ ...inputCss, opacity: isEdit ? 0.6 : 1, cursor: isEdit ? 'not-allowed' : 'pointer' }}
-                        value={typeId} disabled={isEdit}
-                        onChange={(e) => { setTypeId(Number(e.target.value)); setErrType(false) }}>
-                        <option value={0} disabled>—</option>
-                        {(options?.types ?? []).map((ty) => <option key={ty.id} value={ty.id}>{ty.name}</option>)}
-                      </select>
-                      {errType && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_type_required')}</p>}
-                    </div>
+              <div>
+                {/* En-tête : titre + statut (remonté ici, plus de carte minuscule isolée) */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, borderBottom: '1px solid var(--color-border)', paddingBottom: 12, marginBottom: 20 }}>
+                  <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0 }}>{t('tab_main')}</h2>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)' }}>{t('status_label')}</span>
+                    <StatusBadge active={status} onClick={() => setStatus((s) => !s)} t={t} />
                   </div>
                 </div>
 
-                <div style={{ ...card, padding: 24 }}>
-                  <h3 style={fieldSectionTitle}>{t('section_display')}</h3>
-                  <div style={fieldGap}>
-                    <div>
-                      <div style={labelRow}><label style={label}>{t('field_visible')}</label><InfoDot text={t('tip_visible')} /></div>
-                      <YesNoToggle value={visible} onChange={setVisible} t={t} />
-                    </div>
-                    <div>
-                      <div style={labelRow}><label style={label}>{t('field_searchable')}</label><InfoDot text={t('tip_searchable')} /></div>
-                      <YesNoToggle value={searchable} onChange={setSearchable} t={t} />
+                {/* 2 colonnes équilibrées, chaque section dans sa propre carte */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 16, alignItems: 'start' }}>
+                  <div style={{ ...card, padding: 20 }}>
+                    <h3 style={fieldSectionTitle}><GearIcon />{t('section_general_data')}</h3>
+                    <div style={fieldGap}>
+                      <div>
+                        <div style={labelRow}><label style={label}>{t('field_reference')} *</label><InfoDot text={t('tip_reference')} /></div>
+                        <input style={inputCss} value={reference}
+                          onChange={(e) => { setReference(e.target.value); setErrReference(false) }} />
+                        {errReference && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_reference_required')}</p>}
+                      </div>
+                      <div>
+                        <div style={labelRow}><label style={label}>{t('field_type')} *</label><InfoDot text={t('tip_type')} /></div>
+                        <select style={{ ...inputCss, opacity: isEdit ? 0.6 : 1, cursor: isEdit ? 'not-allowed' : 'pointer' }}
+                          value={typeId} disabled={isEdit}
+                          onChange={(e) => { setTypeId(Number(e.target.value)); setErrType(false) }}>
+                          <option value={0} disabled>—</option>
+                          {(options?.types ?? []).map((ty) => <option key={ty.id} value={ty.id}>{ty.name}</option>)}
+                        </select>
+                        {errType && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_type_required')}</p>}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div style={{ ...card, padding: 24 }}>
-                  <h3 style={fieldSectionTitle}>{t('status_label')}</h3>
-                  <StatusBadge active={status} onClick={() => setStatus((s) => !s)} t={t} />
+                  <div style={{ ...card, padding: 20 }}>
+                    <h3 style={fieldSectionTitle}>{t('section_display')}</h3>
+                    <div style={fieldGap}>
+                      <div>
+                        <div style={labelRow}><label style={label}>{t('field_visible')}</label><InfoDot text={t('tip_visible')} /></div>
+                        <YesNoToggle value={visible} onChange={setVisible} t={t} />
+                      </div>
+                      <div>
+                        <div style={labelRow}><label style={label}>{t('field_searchable')}</label><InfoDot text={t('tip_searchable')} /></div>
+                        <YesNoToggle value={searchable} onChange={setSearchable} t={t} />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}

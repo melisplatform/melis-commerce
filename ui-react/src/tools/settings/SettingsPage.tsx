@@ -8,6 +8,7 @@ import { ViewModeToggle, LegacyFrame } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { useCaps } from '../../shared/useCaps'
 import { Tabs } from '../../shared/Tabs'
+import { SearchableSelect } from '../../shared/SearchableSelect'
 
 const TOOL_MELIS_KEY = 'meliscommerce_settings_page'
 
@@ -38,7 +39,7 @@ export default function SettingsPage() {
   const [users, setUsers] = useState<UserOption[]>([])
   const [stockLevelAlert, setStockLevelAlert] = useState('')
   const [recipients, setRecipients] = useState<StockAlertRecipient[]>([])
-  const [pickUserId, setPickUserId] = useState('')
+  const [pickUserId, setPickUserId] = useState<number>(0)
 
   const [accountType, setAccountType] = useState<AccountType>('manual_input')
   const [accountsLocked, setAccountsLocked] = useState(true)
@@ -69,11 +70,10 @@ export default function SettingsPage() {
   const availableUsers = users.filter((u) => !recipients.some((r) => r.userId === u.id))
 
   function addRecipient() {
-    const uid = Number(pickUserId)
-    const u = users.find((x) => x.id === uid)
+    const u = users.find((x) => x.id === pickUserId)
     if (!u) return
     setRecipients((p) => [...p, { id: 0, email: u.email, userId: u.id, userName: u.name }])
-    setPickUserId('')
+    setPickUserId(0)
   }
 
   function removeRecipient(idx: number) {
@@ -119,43 +119,34 @@ export default function SettingsPage() {
             <Tabs tabs={TABS} active={activeTab} onChange={setActiveTab} />
 
             {activeTab === 'main' && (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, alignItems: 'start' }}>
-                <div style={{ ...card, padding: 24 }}>
+              // Même design que l'onglet Propriétés produit (carte Alerte) : niveau + destinataires
+              // (comptes BO uniquement, sélecteur recherchable par email + pastilles).
+              <div style={{ maxWidth: 680 }}>
+                <div style={{ ...card, padding: 20 }}>
                   <h3 style={fieldSectionTitle}><GearIcon />{t('section_stock_alert')}</h3>
-                  <div style={fieldGap}>
-                    <div>
-                      <div style={labelRow}><label style={label}>{t('field_stock_level')}</label><InfoDot text={t('tip_stock_level')} /></div>
-                      <input style={inputCss} type="number" value={stockLevelAlert} onChange={(e) => setStockLevelAlert(e.target.value)} />
-                    </div>
+                  <div style={{ marginBottom: 20 }}>
+                    <div style={labelRow}><label style={label}>{t('field_stock_level')}</label><InfoDot text={t('tip_stock_level')} /></div>
+                    <input style={inputCss} type="number" min={0} value={stockLevelAlert} onChange={(e) => setStockLevelAlert(e.target.value)} />
                   </div>
-                </div>
 
-                <div style={{ ...card, padding: 24 }}>
-                  <h3 style={fieldSectionTitle}><UsersIcon />{t('section_recipients')}</h3>
-                  <div style={fieldGap}>
-                    <div style={{ display: 'flex', gap: 8 }}>
-                      <select style={{ ...inputCss, flex: 1 }} value={pickUserId} onChange={(e) => setPickUserId(e.target.value)}>
-                        <option value="">{t('pick_user')}</option>
-                        {availableUsers.map((u) => <option key={u.id} value={u.id}>{u.name} ({u.email})</option>)}
-                      </select>
-                      <button style={btnGhost} onClick={addRecipient} disabled={!pickUserId}><PlusIcon />{t('recipients_add')}</button>
-                    </div>
-                    {recipients.length === 0 ? (
-                      <p style={{ fontSize: 13, color: 'var(--color-muted-foreground)', margin: 0 }}>{t('recipients_empty')}</p>
-                    ) : (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        {recipients.map((r, idx) => (
-                          <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '8px 12px', borderRadius: 6, border: '1px solid var(--color-border)' }}>
-                            <span style={{ fontSize: 13 }}>{r.userName ? `${r.userName} — ${r.email}` : r.email}</span>
-                            <button onClick={() => removeRecipient(idx)}
-                              style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }}>
-                              <TrashIcon />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                  <h4 style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 10px' }}>{t('section_recipients')}</h4>
+                  <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+                    <SearchableSelect options={availableUsers.map((u) => ({ id: u.id, name: u.name ? `${u.name} (${u.email})` : u.email }))} value={pickUserId} onChange={setPickUserId}
+                      placeholder={t('pick_user')} searchPlaceholder={t('recip_search_ph')} noResult={t('recip_no_result')} />
+                    <button style={btnGhost} onClick={addRecipient} disabled={!pickUserId}><PlusIcon />{t('recipients_add')}</button>
                   </div>
+                  {recipients.length === 0 ? (
+                    <p style={{ fontSize: 13, color: 'var(--color-muted-foreground)', margin: 0 }}>{t('recipients_empty')}</p>
+                  ) : (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                      {recipients.map((r, idx) => (
+                        <span key={idx} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 999, background: 'var(--color-muted,rgba(0,0,0,.05))', fontSize: 14 }}>
+                          {r.userName ? `${r.userName} (${r.email})` : r.email}
+                          <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => removeRecipient(idx)}><TrashIcon /></button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )}

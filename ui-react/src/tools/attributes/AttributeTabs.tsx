@@ -126,7 +126,10 @@ function AttributeValueEditor({ attributeId, value, typeColumn, languages, t, on
     const init: Record<number, AttributeValueRaw> = {}
     for (const l of languages) {
       const existing = value?.translations.find((tr) => tr.langId === l.id)
-      init[l.id] = existing ? existing.value : (typeColumn === 'bool' ? false : null)
+      // Booléen = saisi comme un champ texte 0/1 (comme le legacy), stocké en string dans l'état.
+      init[l.id] = existing
+        ? (typeColumn === 'bool' ? (existing.value ? '1' : '0') : existing.value)
+        : (typeColumn === 'bool' ? '' : null)
     }
     return init
   })
@@ -158,8 +161,8 @@ function AttributeValueEditor({ attributeId, value, typeColumn, languages, t, on
           if (typeof v === 'string' && v !== '') translations.push({ langId: l.id, value: v })
         }
       } else if (fillAll.trim() !== '') {
-        const converted: AttributeValueRaw = typeColumn === 'bool' ? fillAll === '1' : fillAll
-        for (const l of languages) translations.push({ langId: l.id, value: converted })
+        // Le backend coerce en (int)(bool) pour le booléen : "1" → 1, "0"/"" → 0.
+        for (const l of languages) translations.push({ langId: l.id, value: fillAll })
       } else {
         for (const l of languages) translations.push({ langId: l.id, value: perLang[l.id] ?? null })
       }
@@ -174,12 +177,8 @@ function AttributeValueEditor({ attributeId, value, typeColumn, languages, t, on
   function ValueInput({ langId }: { langId: number }) {
     const v = perLang[langId]
     if (typeColumn === 'bool') {
-      return (
-        <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
-          <input type="checkbox" checked={!!v} onChange={(e) => setLangValue(langId, e.target.checked)} />
-          <span style={{ fontSize: 13 }}>{v ? t('yes') : t('no')}</span>
-        </label>
-      )
+      // Champ texte 0/1 comme le legacy (pas de case à cocher).
+      return <input style={inputCss} inputMode="numeric" placeholder="0 / 1" value={v === null || v === undefined ? '' : String(v)} onChange={(e) => setLangValue(langId, e.target.value)} />
     }
     if (typeColumn === 'int') {
       return <input style={inputCss} type="number" step="1" value={v === null || v === undefined ? '' : String(v)} onChange={(e) => setLangValue(langId, e.target.value === '' ? null : e.target.value)} />
@@ -221,11 +220,7 @@ function AttributeValueEditor({ attributeId, value, typeColumn, languages, t, on
             <div>
               <div style={labelRow}><label style={label}>{t(`type_${typeColumn}`)}</label></div>
               {typeColumn === 'bool' ? (
-                <select style={inputCss} value={fillAll} onChange={(e) => setFillAll(e.target.value)}>
-                  <option value="">—</option>
-                  <option value="1">{t('yes')}</option>
-                  <option value="0">{t('no')}</option>
-                </select>
+                <input style={inputCss} inputMode="numeric" placeholder="0 / 1" value={fillAll} onChange={(e) => setFillAll(e.target.value)} />
               ) : typeColumn === 'text' ? (
                 <textarea style={{ ...inputCss, height: 70, resize: 'vertical', paddingTop: 8 }} value={fillAll} onChange={(e) => setFillAll(e.target.value)} />
               ) : (
