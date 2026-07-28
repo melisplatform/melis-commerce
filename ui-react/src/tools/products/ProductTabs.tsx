@@ -279,6 +279,56 @@ export function UploadBtn({ label, accept, busy, onPick }: { label: string; acce
 }
 
 // ── Section Attributs (Propriétés) — ajout / suppression ────────────────────────
+/** Liste déroulante RECHERCHABLE (combobox) — remplace un <select> natif quand la liste est longue. */
+export function SearchableSelect({ options, value, onChange, placeholder, searchPlaceholder, noResult }: {
+  options: { id: number; name: string }[]; value: number; onChange: (id: number) => void
+  placeholder: string; searchPlaceholder?: string; noResult?: string
+}) {
+  const [open, setOpen] = useState(false)
+  const [q, setQ] = useState('')
+  const ref = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+  useEffect(() => {
+    if (!open) return
+    const onDown = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false) }
+    document.addEventListener('mousedown', onDown)
+    return () => document.removeEventListener('mousedown', onDown)
+  }, [open])
+  useEffect(() => { if (open) { setQ(''); const id = window.setTimeout(() => inputRef.current?.focus(), 0); return () => window.clearTimeout(id) } }, [open])
+  const selected = options.find((o) => o.id === value)
+  const ql = q.trim().toLowerCase()
+  const filtered = ql ? options.filter((o) => o.name.toLowerCase().includes(ql)) : options
+  return (
+    <div ref={ref} style={{ position: 'relative', flex: 1, minWidth: 0 }}>
+      <button type="button" onClick={() => setOpen((o) => !o)}
+        style={{ ...inputCss, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, cursor: 'pointer', textAlign: 'left' }}>
+        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: selected ? 'var(--color-foreground)' : 'var(--color-muted-foreground)' }}>{selected ? selected.name : placeholder}</span>
+        <ChevronDownIcon />
+      </button>
+      {open && (
+        <div style={{ ...card, position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 6, zIndex: 60, padding: 6, maxHeight: 300, display: 'flex', flexDirection: 'column' }}>
+          <input ref={inputRef} value={q} onChange={(e) => setQ(e.target.value)} placeholder={searchPlaceholder ?? ''}
+            onKeyDown={(e) => { if (e.key === 'Escape') setOpen(false); else if (e.key === 'Enter' && filtered.length) { onChange(filtered[0].id); setOpen(false) } }}
+            style={{ ...inputCss, height: 34, marginBottom: 6 }} />
+          <div style={{ overflowY: 'auto' }}>
+            {filtered.length === 0 ? (
+              <div style={{ padding: '8px 10px', fontSize: 13, color: 'var(--color-muted-foreground)' }}>{noResult ?? '—'}</div>
+            ) : filtered.map((o) => (
+              <button key={o.id} type="button" onClick={() => { onChange(o.id); setOpen(false) }}
+                style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 10px', border: 0, borderRadius: 6, cursor: 'pointer', fontSize: 14, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                  background: o.id === value ? 'var(--color-primary)' : 'transparent', color: o.id === value ? 'var(--color-primary-foreground,#fff)' : 'var(--color-foreground)' }}
+                onMouseOver={(e) => { if (o.id !== value) e.currentTarget.style.background = 'var(--color-muted,rgba(0,0,0,.06))' }}
+                onMouseOut={(e) => { if (o.id !== value) e.currentTarget.style.background = 'transparent' }}>
+                {o.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function AttributesSection({ productId, options, t, pendingAttrIds = [], onTogglePendingAttr, onMarkDeleteAttr }: {
   productId: number | null; options: Option[]; t: TFn
   pendingAttrIds?: number[]; onTogglePendingAttr?: (id: number) => void
@@ -309,10 +359,8 @@ export function AttributesSection({ productId, options, t, pendingAttrIds = [], 
     <section>
       <h3 style={sectionTitle}><span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><CubesIcon />{t('sec_attributes')}</span></h3>
       <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-        <select style={{ ...inputCss, flex: 1 }} value={pick} onChange={(e) => setPick(Number(e.target.value))}>
-          <option value={0}>{t('attr_add_ph')}</option>
-          {avail.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
-        </select>
+        <SearchableSelect options={avail} value={pick} onChange={setPick}
+          placeholder={t('attr_add_ph')} searchPlaceholder={t('attr_search_ph')} noResult={t('attr_no_result')} />
         <button style={btnGhost} onClick={add} disabled={pick <= 0}><PlusIcon />{t('attr_add')}</button>
       </div>
       {allEmpty ? <p style={{ ...hint, margin: 0 }}>{t('attr_empty')}</p> : (
@@ -336,19 +384,15 @@ export function AttributesSection({ productId, options, t, pendingAttrIds = [], 
   )
 }
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
 // ── Section Destinataires d'alerte stock (ajout / suppression) ──────────────────
-export function RecipientsSection({ productId, users, stockLevel, t, pendingRecipientIds = [], onTogglePendingRecipient, pendingRecipientEmails = [], onAddPendingRecipientEmail, onRemovePendingRecipientEmail, onMarkDeleteRecipient }: {
-  productId: number | null; users: UserOption[]; stockLevel: number | null; t: TFn
+export function RecipientsSection({ productId, users, t, pendingRecipientIds = [], onTogglePendingRecipient, onMarkDeleteRecipient }: {
+  productId: number | null; users: UserOption[]; stockLevel?: number | null; t: TFn
   pendingRecipientIds?: number[]; onTogglePendingRecipient?: (id: number) => void
-  pendingRecipientEmails?: string[]; onAddPendingRecipientEmail?: (email: string) => void; onRemovePendingRecipientEmail?: (email: string) => void
   onMarkDeleteRecipient?: (seaId: number) => void
 }) {
   const [items, setItems] = useState<AlertRecipient[]>([])
   const [tick, setTick] = useState(0)
   const [pick, setPick] = useState<number>(0)
-  const [emailInput, setEmailInput] = useState('')
   const [toDelete, setToDelete] = useState<AlertRecipient | null>(null)
 
   useEffect(() => { if (!productId) return; fetchProductAlert(productId).then((r) => setItems(r.recipients)).catch(() => null) }, [productId, tick])
@@ -356,12 +400,6 @@ export function RecipientsSection({ productId, users, stockLevel, t, pendingReci
   function add() {
     if (pick <= 0) return
     onTogglePendingRecipient?.(pick); setPick(0)
-  }
-  function addEmail() {
-    const email = emailInput.trim()
-    if (!EMAIL_RE.test(email)) return
-    if (items.some((it) => it.email === email) || pendingRecipientEmails.includes(email)) { setEmailInput(''); return }
-    onAddPendingRecipientEmail?.(email); setEmailInput('')
   }
   function confirmDelete() {
     if (!toDelete) return
@@ -371,49 +409,34 @@ export function RecipientsSection({ productId, users, stockLevel, t, pendingReci
   }
   const pendingUsers = users.filter((u) => pendingRecipientIds.includes(u.id))
   const avail = users.filter((u) => !items.some((it) => it.userId === u.id) && !pendingRecipientIds.includes(u.id))
-  const allEmpty = items.length === 0 && pendingUsers.length === 0 && pendingRecipientEmails.length === 0
-  const emailValid = EMAIL_RE.test(emailInput.trim())
+  const allEmpty = items.length === 0 && pendingUsers.length === 0
 
   return (
     <section>
       <h3 style={sectionTitle}>{t('sec_recipients')}</h3>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-        <select style={{ ...inputCss, flex: 1 }} value={pick} onChange={(e) => setPick(Number(e.target.value))}>
-          <option value={0}>{t('recip_add_ph')}</option>
-          {avail.map((u) => <option key={u.id} value={u.id}>{u.name}</option>)}
-        </select>
+      {/* Destinataires = comptes BO uniquement (comme le legacy). Pas de saisie d'email libre. */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+        <SearchableSelect options={avail.map((u) => ({ id: u.id, name: u.email || u.name }))} value={pick} onChange={setPick}
+          placeholder={t('recip_add_ph')} searchPlaceholder={t('recip_search_ph')} noResult={t('recip_no_result')} />
         <button style={btnGhost} onClick={add} disabled={pick <= 0}><PlusIcon />{t('recip_add')}</button>
       </div>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-        <input type="email" style={{ ...inputCss, flex: 1 }} value={emailInput} onChange={(e) => setEmailInput(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addEmail() } }}
-          placeholder={t('recip_email_ph')} autoComplete="off" />
-        <button style={btnGhost} onClick={addEmail} disabled={!emailValid}><PlusIcon />{t('recip_email_add')}</button>
-      </div>
-      {emailInput.trim() !== '' && !emailValid && <p style={{ ...hint, color: '#dc2626', margin: '-6px 0 12px' }}>{t('err_invalid_email')}</p>}
       {allEmpty ? <p style={{ ...hint, margin: 0 }}>{t('recip_empty')}</p> : (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           {items.map((it) => (
             <span key={it.seaId} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 999, background: 'var(--color-muted,rgba(0,0,0,.05))', fontSize: 14 }}>
-              {it.name || it.email}
+              {it.email || it.name}
               <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => setToDelete(it)}><TrashIcon /></button>
             </span>
           ))}
           {pendingUsers.map((u) => (
             <span key={`p-${u.id}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 999, background: 'var(--color-muted,rgba(0,0,0,.05))', fontSize: 14 }}>
-              {u.name}
+              {u.email || u.name}
               <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => onTogglePendingRecipient?.(u.id)}><TrashIcon /></button>
-            </span>
-          ))}
-          {pendingRecipientEmails.map((email) => (
-            <span key={`pe-${email}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 999, background: 'var(--color-muted,rgba(0,0,0,.05))', fontSize: 14 }}>
-              {email}
-              <button style={{ ...iconBtn, width: 18, height: 18, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => onRemovePendingRecipientEmail?.(email)}><TrashIcon /></button>
             </span>
           ))}
         </div>
       )}
-      {toDelete && <ConfirmModal t={t} title={t('recip_del_title')} message={t('recip_del_confirm', { u: toDelete.name || toDelete.email })} onCancel={() => setToDelete(null)} onConfirm={confirmDelete} />}
+      {toDelete && <ConfirmModal t={t} title={t('recip_del_title')} message={t('recip_del_confirm', { u: toDelete.email || toDelete.name })} onCancel={() => setToDelete(null)} onConfirm={confirmDelete} />}
     </section>
   )
 }
@@ -642,9 +665,15 @@ export const hoverCircle: import('react').CSSProperties = { width: 36, height: 3
 /** Un seul bouton de filtre : icône + libellé (statique, ou la valeur choisie une fois sélectionnée) +
  * chevron, ouvrant un menu « Tous » + options — calqué sur le dropdown Bootstrap legacy
  * (documents.tool.js : le clic met à jour le texte du bouton avec le libellé choisi). */
+/** Petit drapeau (base64) — affiché devant un pays dans les dropdowns. */
+function FlagImg({ flag }: { flag?: string }) {
+  if (!flag) return null
+  return <img src={`data:image/png;base64,${flag}`} alt="" style={{ width: 18, height: 12, borderRadius: 2, objectFit: 'cover', boxShadow: '0 0 0 1px rgba(0,0,0,.1)', flexShrink: 0 }} />
+}
+
 function FilterDropdownButton({ icon, label, allLabel, options, valueId, onChange }: {
   icon: import('react').ReactNode; label: string; allLabel: string
-  options: { id: number; name: string }[]; valueId: number; onChange: (id: number) => void
+  options: { id: number; name: string; flag?: string }[]; valueId: number; onChange: (id: number) => void
 }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -657,7 +686,7 @@ function FilterDropdownButton({ icon, label, allLabel, options, valueId, onChang
   const selected = options.find((o) => o.id === valueId)
   const buttonLabel = selected ? selected.name : label
   const itemStyle = (active: boolean): import('react').CSSProperties => ({
-    display: 'block', width: '100%', textAlign: 'left', padding: '8px 12px', border: 0, borderRadius: 6,
+    display: 'flex', alignItems: 'center', gap: 8, width: '100%', textAlign: 'left', padding: '8px 12px', border: 0, borderRadius: 6,
     background: active ? 'var(--color-primary)' : 'transparent', color: active ? 'var(--color-primary-foreground,#fff)' : 'var(--color-foreground)',
     fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap',
   })
@@ -665,12 +694,12 @@ function FilterDropdownButton({ icon, label, allLabel, options, valueId, onChang
   return (
     <div ref={ref} style={{ position: 'relative', display: 'inline-flex' }}>
       <button style={{ ...btnGhost, height: 32, gap: 6 }} onClick={() => setOpen((o) => !o)}>
-        {icon}<span style={{ maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{buttonLabel}</span><ChevronDownIcon />
+        {selected?.flag ? <FlagImg flag={selected.flag} /> : icon}<span style={{ maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{buttonLabel}</span><ChevronDownIcon />
       </button>
       {open && (
         <div style={{ ...card, position: 'absolute', top: '100%', left: 0, marginTop: 6, zIndex: 60, padding: 6, minWidth: 200, maxHeight: 260, overflowY: 'auto' }}>
           <button style={itemStyle(valueId === 0)} onClick={() => pick(0)}>{allLabel}</button>
-          {options.map((o) => <button key={o.id} style={itemStyle(valueId === o.id)} onClick={() => pick(o.id)}>{o.name}</button>)}
+          {options.map((o) => <button key={o.id} style={itemStyle(valueId === o.id)} onClick={() => pick(o.id)}><FlagImg flag={o.flag} />{o.name}</button>)}
         </div>
       )}
     </div>

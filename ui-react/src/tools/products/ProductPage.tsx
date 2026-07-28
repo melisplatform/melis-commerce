@@ -9,12 +9,13 @@ import { makeCache } from '../../shared/listCache'
 import type { T } from '../../shared/i18n'
 import { VariantsTab, PricesTab, AttributesSection, FilesSection, ImagesSection, RecipientsSection, CategoryPickerModal, SiteTreeModal, DuplicateModal, InfoDot, SitemapIcon, StatusToggle, flattenCatNames, VariantTooltipTable, type PendingPrice, type PendingMedia } from './ProductTabs'
 import { VariantEditor } from './ProductVariantEditor'
+import { MelisToolEditor } from '../../shared/MelisToolEditor'
 import type { UserOption, CountryOption } from './api'
 import { fetchCatalogTree } from '../catalog/api'
 import { DICT } from './dict'
 import { makeT, fmtDate } from '../../shared/i18n'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint, segBtn } from '../../shared/styles'
-import { PencilIcon, TrashIcon, PlusIcon, GripIcon, FileDownIcon, TagIcon, FileTextIcon, LayoutIcon, CartIcon, PackageIcon, PackageCheckIcon, PackageXIcon, ToggleRightIcon, ResetIcon } from '../../shared/icons'
+import { PencilIcon, TrashIcon, PlusIcon, GripIcon, FileDownIcon, TagIcon, FileTextIcon, LayoutIcon, CartIcon, PackageIcon, PackageCheckIcon, PackageXIcon, ResetIcon } from '../../shared/icons'
 import { StatusBadge, Kpi, ViewModeToggle, LegacyFrame, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { useCaps } from '../../shared/useCaps'
@@ -322,7 +323,6 @@ function ProductForm({ id, base }: { id: string; base: string }) {
   const [pendingFiles, setPendingFiles] = useState<PendingMedia[]>([])
   const [pendingAttrIds, setPendingAttrIds] = useState<number[]>([])
   const [pendingRecipientIds, setPendingRecipientIds] = useState<number[]>([])
-  const [pendingRecipientEmails, setPendingRecipientEmails] = useState<string[]>([])
   const [pendingPrices, setPendingPrices] = useState<PendingPrice[]>([])
   const [pendingDeleteAttrPattIds, setPendingDeleteAttrPattIds] = useState<number[]>([])
   const [pendingDeleteRecipientSeaIds, setPendingDeleteRecipientSeaIds] = useState<number[]>([])
@@ -369,7 +369,7 @@ function ProductForm({ id, base }: { id: string; base: string }) {
   // Reset all pending/delta state when switching between products (React Router reuses the component).
   useEffect(() => {
     setPendingImages([]); setPendingFiles([])
-    setPendingAttrIds([]); setPendingRecipientIds([]); setPendingRecipientEmails([]); setPendingPrices([])
+    setPendingAttrIds([]); setPendingRecipientIds([]); setPendingPrices([])
     setPendingDeleteAttrPattIds([]); setPendingDeleteRecipientSeaIds([])
     setPendingDeleteFileIds([]); setPendingDeleteImageIds([])
   }, [productId])
@@ -427,7 +427,6 @@ function ProductForm({ id, base }: { id: string; base: string }) {
           ...pendingFiles.map((m) => uploadProductMedia(pid, { ...m, kind: 'file' })),
           ...pendingAttrIds.map((aid) => saveProductAttribute(pid, aid)),
           ...pendingRecipientIds.map((uid) => saveProductRecipient(pid, { userId: uid }, stockLow.trim() === '' ? null : parseInt(stockLow, 10) || 0)),
-          ...pendingRecipientEmails.map((email) => saveProductRecipient(pid, { email }, stockLow.trim() === '' ? null : parseInt(stockLow, 10) || 0)),
           ...meaningfulPrices.map((p) => saveProductPrice(pid, { id: null, countryId: p.countryId, currency: p.currency, net: p.net, gross: p.gross, vatPercent: p.vatPercent, vatPrice: p.vatPrice, otherTax: p.otherTax })),
         ])
         setPendingImages([]); setPendingFiles([])
@@ -443,7 +442,6 @@ function ProductForm({ id, base }: { id: string; base: string }) {
           ...meaningfulPrices.map((p) => saveProductPrice(productId!, { id: p.id ?? null, countryId: p.countryId, currency: p.currency, net: p.net, gross: p.gross, vatPercent: p.vatPercent, vatPrice: p.vatPrice, otherTax: p.otherTax })),
           ...pendingAttrIds.map((aid) => saveProductAttribute(productId!, aid)),
           ...pendingRecipientIds.map((uid) => saveProductRecipient(productId!, { userId: uid }, stockLevelNum)),
-          ...pendingRecipientEmails.map((email) => saveProductRecipient(productId!, { email }, stockLevelNum)),
           ...pendingImages.map((m) => uploadProductMedia(productId!, { ...m, kind: 'image' })),
           ...pendingFiles.map((m) => uploadProductMedia(productId!, { ...m, kind: 'file' })),
           ...pendingDeleteAttrPattIds.map((pattId) => deleteProductAttribute(productId!, pattId)),
@@ -493,19 +491,32 @@ function ProductForm({ id, base }: { id: string; base: string }) {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '40vh', color: 'var(--color-muted-foreground)' }}>{t('loading')}</div>
       ) : tab === 'main' ? (
         <div>
-        <div style={{ borderBottom: '1px solid var(--color-border)', paddingBottom: 12, marginBottom: 20 }}>
+        {/* En-tête : titre + statut (remonté ici, plus de carte minuscule isolée) */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, borderBottom: '1px solid var(--color-border)', paddingBottom: 12, marginBottom: 20 }}>
           <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0 }}>{t('tab_main')}</h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)' }}>{t('status_label')}</span>
+            <button type="button" onClick={() => setActive((v) => !v)} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
+              <div style={{ position: 'relative', width: 40, height: 22, borderRadius: 999, background: active ? '#22c55e' : 'var(--color-muted-foreground)', transition: 'background .15s', flexShrink: 0 }}>
+                <span style={{ position: 'absolute', top: 2, left: active ? 20 : 2, width: 18, height: 18, borderRadius: 999, background: '#fff', transition: 'left .15s', boxShadow: '0 1px 2px rgba(0,0,0,.3)' }} />
+              </div>
+              <span style={{ fontSize: 14, fontWeight: 600, color: active ? '#16a34a' : 'var(--color-muted-foreground)' }}>{active ? t('online') : t('offline')}</span>
+            </button>
+          </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr minmax(200px,220px)', gap: 20, alignItems: 'start' }}>
-          {/* Col 1 : Info card */}
-          <div style={{ ...card, padding: 24, display: 'flex', flexDirection: 'column', gap: 24 }}>
-            <section>
+
+        {/* 2 colonnes équilibrées, chaque section dans sa propre carte */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 20, alignItems: 'start' }}>
+          {/* Colonne gauche */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20, minWidth: 0 }}>
+            <div style={{ ...card, padding: 20 }}>
               <h3 style={secTitle}>{t('sec_general')}</h3>
               <div style={labelRow}><label style={label}>{t('f_reference')} *</label><InfoDot text={t('tip_reference')} /></div>
               <input style={inputCss} value={reference} onChange={(e) => { setReference(e.target.value); setErrRef(false); setFormError(false) }} placeholder={t('f_reference_ph')} autoComplete="off" />
               {errRef && <p style={{ margin: '4px 0 0', fontSize: 12, color: '#ef4444' }}>{t('err_reference')}</p>}
-            </section>
-            <section>
+            </div>
+
+            <div style={{ ...card, padding: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                 <h3 style={{ ...secTitle, margin: 0 }}>{t('sec_categories')}</h3>
                 <button style={btnGhost} onClick={() => setShowCatModal(true)}>{t('cat_see_all')}</button>
@@ -520,21 +531,13 @@ function ProductForm({ id, base }: { id: string; base: string }) {
                   ))}
                 </div>
               )}
-            </section>
-            <FilesSection productId={productId} t={t} countries={countries} pendingFiles={pendingFiles} onAddPendingFile={(m) => setPendingFiles((p) => [...p, m])} onRemovePendingFile={(i) => setPendingFiles((p) => p.filter((_, idx) => idx !== i))} onMarkDeleteFile={(id) => setPendingDeleteFileIds((p) => [...p, id])} refreshSignal={mediaTick} />
-            <AttributesSection productId={productId} options={attrOptions} t={t} pendingAttrIds={pendingAttrIds} onTogglePendingAttr={(id) => setPendingAttrIds((p) => p.includes(id) ? p.filter((x) => x !== id) : [...p, id])} onMarkDeleteAttr={(pattId) => setPendingDeleteAttrPattIds((p) => [...p, pattId])} />
-            <section>
-              <h3 style={secTitle}>{t('sec_alert')}</h3>
-              <div style={labelRow}><label style={label}>{t('f_stock_alert')}</label><InfoDot text={t('tip_stock_alert')} /></div>
-              <input style={inputCss} type="number" min={0} value={stockLow} onChange={(e) => setStockLow(e.target.value)} placeholder={t('f_stock_ph')} autoComplete="off" />
-              <div style={{ marginTop: 16 }}>
-                <RecipientsSection productId={productId} users={users} stockLevel={stockLow.trim() === '' ? null : parseInt(stockLow, 10) || 0} t={t}
-                  pendingRecipientIds={pendingRecipientIds} onTogglePendingRecipient={(id) => setPendingRecipientIds((p) => p.includes(id) ? p.filter((x) => x !== id) : [...p, id])}
-                  pendingRecipientEmails={pendingRecipientEmails} onAddPendingRecipientEmail={(email) => setPendingRecipientEmails((p) => p.includes(email) ? p : [...p, email])} onRemovePendingRecipientEmail={(email) => setPendingRecipientEmails((p) => p.filter((x) => x !== email))}
-                  onMarkDeleteRecipient={(seaId) => setPendingDeleteRecipientSeaIds((p) => [...p, seaId])} />
-              </div>
-            </section>
-            <section>
+            </div>
+
+            <div style={{ ...card, padding: 20 }}>
+              <AttributesSection productId={productId} options={attrOptions} t={t} pendingAttrIds={pendingAttrIds} onTogglePendingAttr={(id) => setPendingAttrIds((p) => p.includes(id) ? p.filter((x) => x !== id) : [...p, id])} onMarkDeleteAttr={(pattId) => setPendingDeleteAttrPattIds((p) => [...p, pattId])} />
+            </div>
+
+            <div style={{ ...card, padding: 20 }}>
               <h3 style={secTitle}>{t('sec_page_assoc')}</h3>
               {([['link1', 1], ['link2', 2], ['link3', 3]] as const).map(([k, n]) => (
                 <div key={k} style={{ marginTop: n === 1 ? 0 : 14 }}>
@@ -545,39 +548,42 @@ function ProductForm({ id, base }: { id: string; base: string }) {
                   </div>
                 </div>
               ))}
-            </section>
+            </div>
           </div>
 
-          {/* Col 2 : Images card */}
-          <div style={{ ...card, padding: 24 }}>
-            <ImagesSection productId={productId} t={t} countries={countries} pendingImages={pendingImages} onAddPendingImage={(m) => setPendingImages((p) => [...p, m])} onRemovePendingImage={(i) => setPendingImages((p) => p.filter((_, idx) => idx !== i))} onMarkDeleteImage={(id) => setPendingDeleteImageIds((p) => [...p, id])} onUpdatePendingImage={(i, m) => setPendingImages((p) => p.map((x, idx) => idx === i ? m : x))} refreshSignal={mediaTick} />
-          </div>
+          {/* Colonne droite */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20, minWidth: 0 }}>
+            <div style={{ ...card, padding: 20 }}>
+              <ImagesSection productId={productId} t={t} countries={countries} pendingImages={pendingImages} onAddPendingImage={(m) => setPendingImages((p) => [...p, m])} onRemovePendingImage={(i) => setPendingImages((p) => p.filter((_, idx) => idx !== i))} onMarkDeleteImage={(id) => setPendingDeleteImageIds((p) => [...p, id])} onUpdatePendingImage={(i, m) => setPendingImages((p) => p.map((x, idx) => idx === i ? m : x))} refreshSignal={mediaTick} />
+            </div>
 
-          {/* Col 3 : Status card */}
-          <div style={{ ...card, padding: 16 }}>
-            <h3 style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 12px' }}>
-              <ToggleRightIcon />{t('status_label')}
-            </h3>
-            <button type="button" onClick={() => setActive((v) => !v)} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
-              <div style={{ position: 'relative', width: 36, height: 20, borderRadius: 999, background: active ? '#22c55e' : 'var(--color-muted-foreground)', transition: 'background .15s', flexShrink: 0 }}>
-                <span style={{ position: 'absolute', top: 2, left: active ? 18 : 2, width: 16, height: 16, borderRadius: 999, background: '#fff', transition: 'left .15s', boxShadow: '0 1px 2px rgba(0,0,0,.3)' }} />
+            <div style={{ ...card, padding: 20 }}>
+              <FilesSection productId={productId} t={t} countries={countries} pendingFiles={pendingFiles} onAddPendingFile={(m) => setPendingFiles((p) => [...p, m])} onRemovePendingFile={(i) => setPendingFiles((p) => p.filter((_, idx) => idx !== i))} onMarkDeleteFile={(id) => setPendingDeleteFileIds((p) => [...p, id])} refreshSignal={mediaTick} />
+            </div>
+
+            <div style={{ ...card, padding: 20 }}>
+              <h3 style={secTitle}>{t('sec_alert')}</h3>
+              <div style={labelRow}><label style={label}>{t('f_stock_alert')}</label><InfoDot text={t('tip_stock_alert')} /></div>
+              <input style={inputCss} type="number" min={0} value={stockLow} onChange={(e) => setStockLow(e.target.value)} placeholder={t('f_stock_ph')} autoComplete="off" />
+              <div style={{ marginTop: 16 }}>
+                <RecipientsSection productId={productId} users={users} t={t}
+                  pendingRecipientIds={pendingRecipientIds} onTogglePendingRecipient={(id) => setPendingRecipientIds((p) => p.includes(id) ? p.filter((x) => x !== id) : [...p, id])}
+                  onMarkDeleteRecipient={(seaId) => setPendingDeleteRecipientSeaIds((p) => [...p, seaId])} />
               </div>
-              <span style={{ fontSize: 14, fontWeight: 500, color: active ? '#16a34a' : 'var(--color-muted-foreground)' }}>
-                {active ? t('online') : t('offline')}
-              </span>
-            </button>
+            </div>
           </div>
         </div>
         </div>
       ) : tab === 'text' ? (
-        <div style={{ display: 'grid', gridTemplateColumns: '150px 1fr', gap: 14, maxWidth: 760 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '150px minmax(0, 1fr)', gap: 14, maxWidth: 1080 }}>
           <LangSwitcher languages={languages} value={lang} onChange={setLang} />
           {texts.filter((x) => x.langId === lang).map((tx) => (
-            <div key={tx.langId} style={{ ...card, padding: 18 }}>
+            <div key={tx.langId} style={{ ...card, padding: 18, minWidth: 0 }}>
               <div style={labelRow}><label style={label}>{t('f_name')}</label></div>
               <input style={inputCss} value={tx.name} onChange={(e) => setText(tx.langId, 'name', e.target.value)} placeholder={t('f_name_ph')} autoComplete="off" />
-              <div style={{ ...labelRow, marginTop: 14 }}><label style={label}>{t('f_description')}</label></div>
-              <textarea style={{ ...inputCss, minHeight: 140, resize: 'vertical', paddingTop: 8 }} value={tx.description} onChange={(e) => setText(tx.langId, 'description', e.target.value)} placeholder={t('f_description_ph')} />
+              <div style={{ ...labelRow, marginTop: 14, marginBottom: 6 }}><label style={label}>{t('f_description')}</label></div>
+              {/* Éditeur riche TinyMCE (config 'tool' de melis-core), comme la gestion des emails. */}
+              <MelisToolEditor value={tx.description} onChange={(html) => setText(tx.langId, 'description', html)} minHeight={300} />
             </div>
           ))}
         </div>

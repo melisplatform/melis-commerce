@@ -174,7 +174,9 @@ class MelisComReactApiProductController extends MelisAbstractActionController
                 $r = (array) $r; $languages[] = ['id' => (int) $r['elang_id'], 'name' => (string) $r['elang_name'], 'flag' => (string) ($r['elang_flag'] ?? '')];
             }
             $countries = [];
-            foreach ($db->query('SELECT ctry_id, ctry_name, ctry_flag FROM melis_ecom_country WHERE ctry_status = 1 ORDER BY ctry_name', []) as $r) {
+            // Tous les pays (comme l'outil catalogue React et le legacy `fetchAll()`) — pas de filtre
+            // ctry_status : n'afficher que les pays « actifs » masquait la quasi-totalité de la liste.
+            foreach ($db->query('SELECT ctry_id, ctry_name, ctry_flag FROM melis_ecom_country ORDER BY ctry_name', []) as $r) {
                 $r = (array) $r; $countries[] = ['id' => (int) $r['ctry_id'], 'name' => (string) $r['ctry_name'], 'flag' => (string) ($r['ctry_flag'] ?? '')];
             }
             $currencies = [];
@@ -186,7 +188,9 @@ class MelisComReactApiProductController extends MelisAbstractActionController
                 $r = (array) $r; $attributes[] = ['id' => (int) $r['attr_id'], 'name' => (string) ($r['name'] ?? ('#' . $r['attr_id']))];
             }
             $users = [];
-            foreach ($db->query('SELECT usr_id, usr_login, usr_email, usr_firstname, usr_lastname FROM melis_core_user WHERE usr_status = 1 ORDER BY usr_login', []) as $r) {
+            // Destinataires d'alerte stock = TOUS les utilisateurs BO (comme le legacy `MelisCoreTableUser::fetchAll()`),
+            // sans filtre usr_status. La liste est affichée/recherchée par email côté React.
+            foreach ($db->query('SELECT usr_id, usr_login, usr_email, usr_firstname, usr_lastname FROM melis_core_user ORDER BY usr_email', []) as $r) {
                 $r = (array) $r;
                 $nm = trim(((string) ($r['usr_firstname'] ?? '')) . ' ' . ((string) ($r['usr_lastname'] ?? ''))) ?: (string) ($r['usr_login'] ?? '');
                 $email = (string) ($r['usr_email'] ?? '');
