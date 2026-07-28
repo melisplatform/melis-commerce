@@ -287,6 +287,26 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
                 if ((int) $r['oadd_type'] === 2) $delivery = $addr;
             }
 
+            // Coupons applied to the order (legacy payment view shows these per payment — Mantis 0010795,
+            // "payment details missing" — same list attached to every payment row, matching legacy).
+            $couponRows = iterator_to_array($db->query(
+                "SELECT c.coup_code, c.coup_percentage, c.coup_discount_value, co.cord_quantity_used
+                 FROM melis_ecom_coupon_order co
+                 JOIN melis_ecom_coupon c ON c.coup_id = co.cord_coupon_id
+                 WHERE co.cord_order_id = ?",
+                [$id]
+            ));
+            $orderCoupons = [];
+            foreach ($couponRows as $row) {
+                $r = (array) $row;
+                $orderCoupons[] = [
+                    'code' => $r['coup_code'] ?? '',
+                    'percentage' => $r['coup_percentage'] !== null ? (float) $r['coup_percentage'] : null,
+                    'discountValue' => $r['coup_discount_value'] !== null ? (float) $r['coup_discount_value'] : null,
+                    'qtyUsed' => (int) ($r['cord_quantity_used'] ?? 0),
+                ];
+            }
+
             $payRows = iterator_to_array($db->query(
                 "SELECT p.*, pt.opty_name AS payment_type_name, cu.cur_code AS currency_code
                  FROM melis_ecom_order_payment p
@@ -303,7 +323,7 @@ class MelisComReactApiOrderController extends MelisAbstractActionController
                     'orderPrice' => (float) ($r['opay_price_order'] ?? 0), 'shipping' => (float) ($r['opay_price_shipping'] ?? 0),
                     'currency' => $r['currency_code'] ?? '', 'paymentType' => $r['payment_type_name'] ?? '',
                     'transacId' => $r['opay_transac_id'] ?? '', 'confirmed' => (float) ($r['opay_transac_price_paid_confirm'] ?? 0),
-                    'datePay' => $r['opay_date_payment'] ?? null,
+                    'datePay' => $r['opay_date_payment'] ?? null, 'coupons' => $orderCoupons,
                 ];
             }
 

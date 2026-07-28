@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import {
   fetchOrderReturns, saveOrderAddress, saveOrderShipping, saveOrderMessage,
-  type OrderBasketItem, type OrderAddress, type OrderPayment, type OrderShipping, type OrderMessage, type OrderReturn,
+  type OrderBasketItem, type OrderAddress, type OrderPayment, type OrderPaymentCoupon, type OrderShipping, type OrderMessage, type OrderReturn,
 } from './api'
 import { card, inputCss, th, td, label, btnPrimary, btnGhost } from '../../shared/styles'
 import { fmtDate, currentLang, type T } from '../../shared/i18n'
-import { PackageIcon, MapPinIcon, CreditCardIcon, TruckIcon, MessageSquareIcon, ChevronDownIcon, UserIcon } from '../../shared/icons'
+import { PackageIcon, MapPinIcon, TruckIcon, MessageSquareIcon, ChevronDownIcon, UserIcon } from '../../shared/icons'
 import { DatePicker } from '../../shared/DatePicker'
 
 const sectionTitle = { fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 6 } as const
@@ -205,31 +205,49 @@ export function AddressesTab({ orderId, billing, delivery, locked, t, onSaved, c
   )
 }
 
-// ── Payment tab ───────────────────────────────────────────────────────────────
-export function PaymentTab({ payments, t }: { payments: OrderPayment[]; t: T }) {
-  const fmt = (v: number) => v.toLocaleString(currentLang() === 'fr' ? 'fr-FR' : 'en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-  const headers = [t('payment_col_type'), t('payment_col_transac'), t('payment_col_total'), t('payment_col_order'), t('payment_col_shipping'), t('payment_col_currency'), t('payment_col_date')]
+// ── Payment tab — one collapsible-style card per payment (label/value rows),
+// matching the legacy accordion layout instead of a wide data table ───────────
+function PaymentCard({ p, t }: { p: OrderPayment; t: T }) {
+  const fmt = (v: number) => `${v.toLocaleString(currentLang() === 'fr' ? 'fr-FR' : 'en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}${p.currency ? ' ' + p.currency : ''}`
+  const couponLabel = (c: OrderPaymentCoupon) => `${c.code} (${c.percentage != null ? c.percentage + '%' : fmt(c.discountValue ?? 0)}) x ${c.qtyUsed}`
+  const rows: [string, string][] = [
+    [t('payment_col_order'), fmt(p.orderPrice)],
+    [t('payment_col_shipping'), fmt(p.shipping)],
+    [t('payment_col_total'), fmt(p.total)],
+    [t('payment_col_paid'), fmt(p.confirmed)],
+    [t('payment_col_type'), p.paymentType || '—'],
+    [t('payment_col_transac'), p.transacId || '—'],
+  ]
   return (
-    <div style={{ ...card, padding: 28 }}>
-      <h3 style={sectionTitle}><CreditCardIcon />{t('section_payment')}</h3>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead><tr>{headers.map((h) => <th key={h} style={th}>{h}</th>)}</tr></thead>
-        <tbody>
-          {payments.length === 0 ? (
-            <tr><td colSpan={headers.length} style={{ ...td, textAlign: 'center', padding: '28px', color: 'var(--color-muted-foreground)' }}>{t('no_payments')}</td></tr>
-          ) : payments.map((p) => (
-            <tr key={p.id}>
-              <td style={td}>{p.paymentType || '—'}</td>
-              <td style={td}><code style={{ fontSize: 12 }}>{p.transacId || '—'}</code></td>
-              <td style={{ ...td, textAlign: 'right', fontWeight: 700 }}>{fmt(p.total)}</td>
-              <td style={{ ...td, textAlign: 'right' }}>{fmt(p.orderPrice)}</td>
-              <td style={{ ...td, textAlign: 'right' }}>{fmt(p.shipping)}</td>
-              <td style={td}>{p.currency}</td>
-              <td style={td}>{p.datePay ? fmtDate(p.datePay) : '—'}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div style={{ ...card, overflow: 'hidden' }}>
+      <div style={{ background: 'var(--color-primary)', color: 'var(--color-primary-foreground,#fff)', padding: '10px 16px', fontWeight: 600, fontSize: 14, display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+        <span>{t('section_payment')}{p.paymentType ? ' — ' + p.paymentType : ''}</span>
+        <span>{p.datePay ? fmtDate(p.datePay) : '—'}</span>
+      </div>
+      <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {rows.map(([lbl, value]) => (
+          <div key={lbl} style={{ display: 'flex', justifyContent: 'space-between', gap: 12, fontSize: 13, paddingBottom: 8, borderBottom: '1px solid var(--color-border)' }}>
+            <span style={{ color: 'var(--color-muted-foreground)' }}>{lbl}</span>
+            <span style={{ textAlign: 'right' }}>{value}</span>
+          </div>
+        ))}
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, fontSize: 13 }}>
+          <span style={{ color: 'var(--color-muted-foreground)' }}>{t('payment_col_coupons')}</span>
+          <span style={{ textAlign: 'right' }}>
+            {p.coupons.length === 0 ? '—' : p.coupons.map((c) => <div key={c.code}>{couponLabel(c)}</div>)}
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function PaymentTab({ payments, t }: { payments: OrderPayment[]; t: T }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {payments.length === 0 ? (
+        <div style={{ ...card, padding: 28, textAlign: 'center', color: 'var(--color-muted-foreground)' }}>{t('no_payments')}</div>
+      ) : payments.map((p) => <PaymentCard key={p.id} p={p} t={t} />)}
     </div>
   )
 }

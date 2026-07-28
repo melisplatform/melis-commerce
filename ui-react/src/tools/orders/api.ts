@@ -25,9 +25,12 @@ export interface OrderBasketItem {
   qty: number; priceNet: number; priceGross: number; attributes: string; currency: string
 }
 
+export interface OrderPaymentCoupon { code: string; percentage: number | null; discountValue: number | null; qtyUsed: number }
+
 export interface OrderPayment {
   id: number; total: number; orderPrice: number; shipping: number
   currency: string; paymentType: string; transacId: string; confirmed: number; datePay: string | null
+  coupons: OrderPaymentCoupon[]
 }
 
 export interface OrderShipping { id: number; trackingCode: string; content: string; dateSent: string | null }
