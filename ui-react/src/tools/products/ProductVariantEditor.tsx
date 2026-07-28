@@ -12,7 +12,7 @@ import {
 } from './api'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } from '../../shared/styles'
 import { DatePicker } from '../../shared/DatePicker'
-import { PlusIcon, TrashIcon, PencilIcon, EyeIcon, ToggleRightIcon, ArrowLeftIcon, ImageIcon, SettingsIcon, PaperclipIcon, CubesIcon } from '../../shared/icons'
+import { PlusIcon, TrashIcon, PencilIcon, EyeIcon, ArrowLeftIcon, ImageIcon, SettingsIcon, PaperclipIcon, CubesIcon } from '../../shared/icons'
 import { StatusBadge, ConfirmModal } from '../../shared/widgets'
 import { notify } from '../../shared/notify'
 import { Tabs, type TabDef } from '../../shared/Tabs'
@@ -121,12 +121,24 @@ export function VariantEditor({ productId, variantId, countries, currencies, lan
       {loading ? <div style={{ padding: 30, color: 'var(--color-muted-foreground)' }}>{t('loading')}</div>
       : tab === 'properties' ? (
         <div>
-          <div style={{ borderBottom: '1px solid var(--color-border)', paddingBottom: 12, marginBottom: 20 }}>
+          {/* En-tête : titre + statut (remonté ici, plus de carte minuscule isolée) */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, borderBottom: '1px solid var(--color-border)', paddingBottom: 12, marginBottom: 20 }}>
             <h3 style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>{t('tab_main')}</h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)' }}>{t('status_label')}</span>
+              <button type="button" onClick={() => setStatus((v) => !v)} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
+                <div style={{ position: 'relative', width: 40, height: 22, borderRadius: 999, background: status ? '#22c55e' : 'var(--color-muted-foreground)', transition: 'background .15s', flexShrink: 0 }}>
+                  <span style={{ position: 'absolute', top: 2, left: status ? 20 : 2, width: 18, height: 18, borderRadius: 999, background: '#fff', transition: 'left .15s', boxShadow: '0 1px 2px rgba(0,0,0,.3)' }} />
+                </div>
+                <span style={{ fontSize: 14, fontWeight: 600, color: status ? '#16a34a' : 'var(--color-muted-foreground)' }}>{status ? t('online') : t('offline')}</span>
+              </button>
+            </div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr minmax(200px,220px)', gap: 20, alignItems: 'start' }}>
-            <div style={{ ...card, padding: 24, display: 'flex', flexDirection: 'column', gap: 24 }}>
-              <section>
+
+          {/* 2 colonnes équilibrées, chaque section dans sa propre carte */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 20, alignItems: 'start' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20, minWidth: 0 }}>
+              <div style={{ ...card, padding: 20 }}>
                 <h3 style={secT}><SettingsIcon />{t('var_information')}</h3>
                 <div style={labelRow}><label style={{ ...label, color: errSku ? '#dc2626' : undefined }}>{t('var_sku')}</label><InfoDot text={t('tip_sku')} /></div>
                 <input style={{ ...inputCss, ...(errSku ? { borderColor: '#dc2626' } : {}) }} value={sku} onChange={(e) => { setSku(e.target.value); setErr(null); setErrSku(false) }} placeholder={t('var_sku_ph')} autoComplete="off" />
@@ -135,23 +147,12 @@ export function VariantEditor({ productId, variantId, countries, currencies, lan
                   <button style={seg(isMain)} onClick={() => setIsMain(true)}>{t('yes')}</button>
                   <button style={seg(!isMain)} onClick={() => setIsMain(false)}>{t('no')}</button>
                 </div>
-              </section>
-              <VarFiles productId={productId} variantId={vid} t={t} countries={countries} onNeedVid={ensureVid} />
-              <VarAttributes productId={productId} variantId={vid} t={t} onNeedVid={ensureVid} />
+              </div>
+              <div style={{ ...card, padding: 20 }}><VarAttributes productId={productId} variantId={vid} t={t} onNeedVid={ensureVid} /></div>
             </div>
-            <div style={{ ...card, padding: 24 }}><VarImages productId={productId} variantId={vid} t={t} countries={countries} /></div>
-            <div style={{ ...card, padding: 16 }}>
-              <h3 style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--color-muted-foreground)', margin: '0 0 12px' }}>
-                <ToggleRightIcon />{t('status_label')}
-              </h3>
-              <button type="button" onClick={() => setStatus((v) => !v)} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
-                <div style={{ position: 'relative', width: 36, height: 20, borderRadius: 999, background: status ? '#22c55e' : 'var(--color-muted-foreground)', transition: 'background .15s', flexShrink: 0 }}>
-                  <span style={{ position: 'absolute', top: 2, left: status ? 18 : 2, width: 16, height: 16, borderRadius: 999, background: '#fff', transition: 'left .15s', boxShadow: '0 1px 2px rgba(0,0,0,.3)' }} />
-                </div>
-                <span style={{ fontSize: 14, fontWeight: 500, color: status ? '#16a34a' : 'var(--color-muted-foreground)' }}>
-                  {status ? t('online') : t('offline')}
-                </span>
-              </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20, minWidth: 0 }}>
+              <div style={{ ...card, padding: 20 }}><VarImages productId={productId} variantId={vid} t={t} countries={countries} /></div>
+              <div style={{ ...card, padding: 20 }}><VarFiles productId={productId} variantId={vid} t={t} countries={countries} onNeedVid={ensureVid} /></div>
             </div>
           </div>
         </div>
@@ -444,10 +445,10 @@ function VarAssoc({ productId, variantId, t, onNeedVid }: { productId: number; v
       <h3 style={{ fontSize: 16, fontWeight: 600, margin: '0 0 12px' }}>{t('var_tab_assoc')}</h3>
       <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, overflow: 'hidden', marginBottom: 24 }}>
         <table style={tbl}>
-          <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}><tr><th style={{ ...th, width: 50 }}>{t('var_col_id')}</th><th style={{ ...th, width: 80 }}>{t('col_status')}</th><th style={th}>{t('assoc_product')}</th><th style={th}>{t('var_col_sku')}</th><th style={{ ...th, width: 70 }} /></tr></thead>
+          <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}><tr><th style={{ ...th, width: 50 }}>{t('var_col_id')}</th><th style={{ ...th, width: 80 }}>{t('col_status')}</th><th style={th}>{t('assoc_product')}</th><th style={th}>{t('var_col_sku')}</th><th style={th}>{t('var_col_attrs')}</th><th style={{ ...th, width: 70 }} /></tr></thead>
           <tbody>
-            {associated.length === 0 ? <tr><td colSpan={5} style={{ ...td, textAlign: 'center', color: 'var(--color-muted-foreground)', padding: 24 }}>{t('assoc_empty')}</td></tr>
-              : associated.map((v) => (<tr key={v.avarId}><td style={td}>{v.variantId}</td><td style={td}><StatusBadge active={v.status === 1} t={t} /></td><td style={{ ...td, fontWeight: 500 }}>{v.productName}</td><td style={td}>{v.sku || '—'}</td><td style={td}><button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => del(v.avarId)}><TrashIcon /></button></td></tr>))}
+            {associated.length === 0 ? <tr><td colSpan={6} style={{ ...td, textAlign: 'center', color: 'var(--color-muted-foreground)', padding: 24 }}>{t('assoc_empty')}</td></tr>
+              : associated.map((v) => (<tr key={v.avarId}><td style={td}>{v.variantId}</td><td style={td}><StatusBadge active={v.status === 1} t={t} /></td><td style={{ ...td, fontWeight: 500 }}>{v.productName}</td><td style={td}>{v.sku || '—'}</td><td style={{ ...td, color: 'var(--color-muted-foreground)' }}>{v.attributes || '—'}</td><td style={td}><button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => del(v.avarId)}><TrashIcon /></button></td></tr>))}
           </tbody>
         </table>
       </div>
@@ -456,10 +457,10 @@ function VarAssoc({ productId, variantId, t, onNeedVid }: { productId: number; v
       <input style={{ ...inputCss, height: 34, maxWidth: 320, marginBottom: 10 }} value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('search')} />
       <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, overflow: 'hidden' }}>
         <table style={tbl}>
-          <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}><tr><th style={{ ...th, width: 50 }}>{t('var_col_id')}</th><th style={{ ...th, width: 80 }}>{t('col_status')}</th><th style={th}>{t('assoc_product')}</th><th style={th}>{t('var_col_sku')}</th><th style={{ ...th, width: 70 }} /></tr></thead>
+          <thead style={{ background: 'var(--color-muted,rgba(0,0,0,.03))' }}><tr><th style={{ ...th, width: 50 }}>{t('var_col_id')}</th><th style={{ ...th, width: 80 }}>{t('col_status')}</th><th style={th}>{t('assoc_product')}</th><th style={th}>{t('var_col_sku')}</th><th style={th}>{t('var_col_attrs')}</th><th style={{ ...th, width: 70 }} /></tr></thead>
           <tbody>
-            {filt.length === 0 ? <tr><td colSpan={5} style={{ ...td, textAlign: 'center', color: 'var(--color-muted-foreground)', padding: 24 }}>{t('empty')}</td></tr>
-              : filt.map((v) => (<tr key={v.variantId}><td style={td}>{v.variantId}</td><td style={td}><StatusBadge active={v.status === 1} t={t} /></td><td style={{ ...td, fontWeight: 500 }}>{v.productName}</td><td style={td}>{v.sku || '—'}</td><td style={td}><button style={iconBtn} title={t('assoc_add')} onClick={() => add(v.variantId)}><PlusIcon /></button></td></tr>))}
+            {filt.length === 0 ? <tr><td colSpan={6} style={{ ...td, textAlign: 'center', color: 'var(--color-muted-foreground)', padding: 24 }}>{t('empty')}</td></tr>
+              : filt.map((v) => (<tr key={v.variantId}><td style={td}>{v.variantId}</td><td style={td}><StatusBadge active={v.status === 1} t={t} /></td><td style={{ ...td, fontWeight: 500 }}>{v.productName}</td><td style={td}>{v.sku || '—'}</td><td style={{ ...td, color: 'var(--color-muted-foreground)' }}>{v.attributes || '—'}</td><td style={td}><button style={iconBtn} title={t('assoc_add')} onClick={() => add(v.variantId)}><PlusIcon /></button></td></tr>))}
           </tbody>
         </table>
       </div>

@@ -10,7 +10,7 @@ import {
   type ProductVariant, type ProductPrice, type ProductAttribute, type MediaItem, type DocType, type AlertRecipient, type UserOption, type CountryOption, type TooltipVariant,
 } from './api'
 import { card, inputCss, btnPrimary, btnGhost, iconBtn, th, td, label, hint } from '../../shared/styles'
-import { PencilIcon, EyeIcon, TrashIcon, PlusIcon, GlobeIcon, ImageIcon, ChevronDownIcon, PaperclipIcon, CubesIcon } from '../../shared/icons'
+import { PencilIcon, EyeIcon, TrashIcon, PlusIcon, GlobeIcon, ImageIcon, ChevronDownIcon, PaperclipIcon, CubesIcon, PowerIcon } from '../../shared/icons'
 import { StatusBadge } from '../../shared/widgets'
 import type { Option } from '../../shared/api'
 import { notify } from '../../shared/notify'
@@ -967,7 +967,7 @@ export function VariantsTab({ productId, t, onAdd, onEdit, can }: { productId: n
                 <td style={{ ...td, color: 'var(--color-muted-foreground)' }}>{v.attributes || '—'}</td>
                 <td style={td}>
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 5 }}>
-                    {allow('variants.edit') && <button style={iconBtn} title={t('var_toggle_status')} onClick={() => toggleStatus(v)}>{v.status === 1 ? '↓' : '↑'}</button>}
+                    {allow('variants.edit') && <button style={{ ...iconBtn, color: v.status === 1 ? '#16a34a' : 'var(--color-muted-foreground)' }} title={v.status === 1 ? t('var_deactivate') : t('var_activate')} onClick={() => toggleStatus(v)}><PowerIcon /></button>}
                     {allow('variants.duplicate') && <button style={iconBtn} title={t('var_duplicate')} onClick={() => setToDup(v)}>⧉</button>}
                     {allow('variants.edit') && <button style={iconBtn} title={t('edit')} onClick={() => onEdit(v.id)}><PencilIcon /></button>}
                     {allow('variants.delete') && <button style={{ ...iconBtn, color: 'var(--color-destructive,#ef4444)' }} title={t('del')} onClick={() => setToDelete(v)}><TrashIcon /></button>}

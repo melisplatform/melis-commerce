@@ -734,16 +734,23 @@ class MelisComReactApiProductController extends MelisAbstractActionController
         try {
             $db = $this->getServiceManager()->get('Laminas\Db\Adapter\AdapterInterface');
             $lbl = $this->variantLabelSql();
+            $lang = $this->langId();
+            $valName = $this->attributeValueNameSql();
+            // Chaîne des attributs de la variante (mêmes valeurs que la liste des variants).
+            $attrsSub = "(SELECT GROUP_CONCAT($valName SEPARATOR ', ') FROM melis_ecom_variant_attribute_value vatv
+                JOIN melis_ecom_attribute_value av ON av.atval_id = vatv.vatv_attribute_value_id
+                LEFT JOIN melis_ecom_attribute_value_trans tr ON tr.av_attribute_value_id = av.atval_id AND tr.avt_lang_id = ?
+                WHERE vatv.vatv_variant_id = v.var_id)";
             $assoc = [];
-            foreach ($db->query("SELECT a.avar_id, v.var_id, v.var_sku, v.var_status, $lbl AS pname
+            foreach ($db->query("SELECT a.avar_id, v.var_id, v.var_sku, v.var_status, $lbl AS pname, $attrsSub AS attrs
                 FROM melis_ecom_assoc_variant a JOIN melis_ecom_variant v ON v.var_id = a.avar_two
-                WHERE a.avar_one = ? ORDER BY a.avar_id", [$varId]) as $r) {
-                $r = (array) $r; $assoc[] = ['avarId' => (int) $r['avar_id'], 'variantId' => (int) $r['var_id'], 'sku' => (string) ($r['var_sku'] ?? ''), 'status' => (int) $r['var_status'], 'productName' => (string) ($r['pname'] ?? ('#' . $r['var_id']))];
+                WHERE a.avar_one = ? ORDER BY a.avar_id", [$lang, $varId]) as $r) {
+                $r = (array) $r; $assoc[] = ['avarId' => (int) $r['avar_id'], 'variantId' => (int) $r['var_id'], 'sku' => (string) ($r['var_sku'] ?? ''), 'status' => (int) $r['var_status'], 'productName' => (string) ($r['pname'] ?? ('#' . $r['var_id'])), 'attributes' => (string) ($r['attrs'] ?? '')];
             }
             $available = [];
-            foreach ($db->query("SELECT v.var_id, v.var_sku, v.var_status, $lbl AS pname FROM melis_ecom_variant v
-                WHERE v.var_id <> ? AND v.var_id NOT IN (SELECT avar_two FROM melis_ecom_assoc_variant WHERE avar_one = ?) ORDER BY v.var_id", [$varId, $varId]) as $r) {
-                $r = (array) $r; $available[] = ['variantId' => (int) $r['var_id'], 'sku' => (string) ($r['var_sku'] ?? ''), 'status' => (int) $r['var_status'], 'productName' => (string) ($r['pname'] ?? ('#' . $r['var_id']))];
+            foreach ($db->query("SELECT v.var_id, v.var_sku, v.var_status, $lbl AS pname, $attrsSub AS attrs FROM melis_ecom_variant v
+                WHERE v.var_id <> ? AND v.var_id NOT IN (SELECT avar_two FROM melis_ecom_assoc_variant WHERE avar_one = ?) ORDER BY v.var_id", [$lang, $varId, $varId]) as $r) {
+                $r = (array) $r; $available[] = ['variantId' => (int) $r['var_id'], 'sku' => (string) ($r['var_sku'] ?? ''), 'status' => (int) $r['var_status'], 'productName' => (string) ($r['pname'] ?? ('#' . $r['var_id'])), 'attributes' => (string) ($r['attrs'] ?? '')];
             }
             return $this->jsonResponse(['success' => true, 'data' => ['associated' => $assoc, 'available' => $available]]);
         } catch (\Throwable $e) { return $this->errorResponse($e); }
