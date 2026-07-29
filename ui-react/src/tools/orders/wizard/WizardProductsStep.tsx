@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { makeT } from '../../../shared/i18n'
 import { DICT } from '../dict'
 import {
@@ -36,6 +36,11 @@ export function WizardProductsStep({ countryId, onBack, onNext }: {
   // Lets typing a big value (100, 1000) directly instead of only +/- one at a time (Mantis
   // 0010749) — draft text kept locally while editing, committed (one API call) on blur/Enter.
   const [qtyDraft, setQtyDraft] = useState<Record<number, string>>({})
+  // Debounce/sequence guard for setQty's network call (see below) — rapid +/- clicks each fired
+  // their own request whose responses could arrive out of order and clobber a newer quantity
+  // with a stale one (visible as the number flickering up/down).
+  const qtyTimer = useRef<Record<number, ReturnType<typeof setTimeout>>>({})
+  const qtySeq = useRef<Record<number, number>>({})
 
   useEffect(() => { fetchCountries({ status: 1, limit: 200 }).then((r) => setCountries(r.items)).catch(() => null) }, [])
   useEffect(() => { refreshBasket() }, [])
@@ -76,7 +81,7 @@ export function WizardProductsStep({ countryId, onBack, onNext }: {
     finally { setAdding(null) }
   }
 
-  async function setQty(variantId: number, qty: number) {
+  function setQty(variantId: number, qty: number) {
     // Server clamps to available stock too (source of truth) — capping here just avoids a
     // round-trip flicker when the typed value is already known to be over the limit.
     const stock = basket.find((b) => b.variantId === variantId)?.stock ?? null
@@ -88,13 +93,22 @@ export function WizardProductsStep({ countryId, onBack, onNext }: {
         ? { ...b, quantity: capped, lineTotal: b.price != null ? b.price * capped : b.lineTotal }
         : b))
     }
-    try {
-      const r = capped <= 0 ? await checkoutBasketRemove(variantId) : await checkoutBasketSetQty(variantId, capped)
-      setBasket(r.items)
-    } catch (e) {
-      notify('ko', t('checkout_step_products'), e instanceof Error ? e.message : 'Error')
-      refreshBasket()
-    }
+    // Debounce the actual request and only apply whichever response corresponds to the LAST
+    // request issued for this line — rapid +/- clicks each used to fire their own request, and
+    // out-of-order responses could clobber a newer quantity with a stale one.
+    if (qtyTimer.current[variantId]) clearTimeout(qtyTimer.current[variantId])
+    const seq = (qtySeq.current[variantId] = (qtySeq.current[variantId] ?? 0) + 1)
+    qtyTimer.current[variantId] = setTimeout(async () => {
+      try {
+        const r = capped <= 0 ? await checkoutBasketRemove(variantId) : await checkoutBasketSetQty(variantId, capped)
+        if (qtySeq.current[variantId] === seq) setBasket(r.items)
+      } catch (e) {
+        if (qtySeq.current[variantId] === seq) {
+          notify('ko', t('checkout_step_products'), e instanceof Error ? e.message : 'Error')
+          refreshBasket()
+        }
+      }
+    }, 300)
   }
 
   function commitQtyDraft(variantId: number, raw: string) {

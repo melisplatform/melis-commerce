@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { makeT } from '../../../shared/i18n'
 import { DICT } from '../dict'
 import { fetchCheckoutSummary, checkoutApplyCoupon, checkoutRemoveCoupon, checkoutBasketSetQty, type CheckoutSummary } from '../api'
@@ -54,6 +54,11 @@ export function WizardSummaryStep({ clientId, billingId, deliveryId, onBack, onN
   // Lets typing a big value (100, 1000) directly instead of only +/- one at a time (Mantis
   // 0010749) — draft text kept locally while editing, committed (one API call) on blur/Enter.
   const [qtyDraft, setQtyDraft] = useState<Record<number, string>>({})
+  // Debounce/sequence guard for setQty's network call (see below) — rapid +/- clicks each fired
+  // their own request whose responses could arrive out of order and clobber a newer quantity
+  // with a stale one (visible as the number flickering up/down).
+  const qtyTimer = useRef<Record<number, ReturnType<typeof setTimeout>>>({})
+  const qtySeq = useRef<Record<number, number>>({})
 
   useEffect(() => { refresh() }, [])
 
@@ -71,7 +76,7 @@ export function WizardSummaryStep({ clientId, billingId, deliveryId, onBack, onN
     if (!isNaN(n)) setQty(variantId, n)
   }
 
-  async function setQty(variantId: number, qty: number) {
+  function setQty(variantId: number, qty: number) {
     // Server clamps to available stock too (source of truth) — capping here just avoids a
     // round-trip flicker when the typed value is already known to be over the limit.
     const stock = summary?.items.find((l) => l.variantId === variantId)?.stock ?? null
@@ -88,14 +93,23 @@ export function WizardSummaryStep({ clientId, billingId, deliveryId, onBack, onN
           : l),
       })
     }
-    try {
-      await checkoutBasketSetQty(variantId, capped)
-      const s = await fetchCheckoutSummary()
-      setSummary(s)
-    } catch (e) {
-      notify('ko', t('checkout_step_summary'), e instanceof Error ? e.message : 'Error')
-      fetchCheckoutSummary().then(setSummary).catch(() => null)
-    }
+    // Debounce the actual request and only apply whichever response corresponds to the LAST
+    // request issued for this line — rapid +/- clicks each used to fire their own request, and
+    // out-of-order responses could clobber a newer quantity with a stale one.
+    if (qtyTimer.current[variantId]) clearTimeout(qtyTimer.current[variantId])
+    const seq = (qtySeq.current[variantId] = (qtySeq.current[variantId] ?? 0) + 1)
+    qtyTimer.current[variantId] = setTimeout(async () => {
+      try {
+        await checkoutBasketSetQty(variantId, capped)
+        const s = await fetchCheckoutSummary()
+        if (qtySeq.current[variantId] === seq) setSummary(s)
+      } catch (e) {
+        if (qtySeq.current[variantId] === seq) {
+          notify('ko', t('checkout_step_summary'), e instanceof Error ? e.message : 'Error')
+          fetchCheckoutSummary().then(setSummary).catch(() => null)
+        }
+      }
+    }, 300)
   }
 
   async function applyCoupon() {
